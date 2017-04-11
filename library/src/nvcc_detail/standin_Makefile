@@ -1,0 +1,19 @@
+
+CMAKE_CXX_COMPILER=/opt/rocm/hip/bin/hipcc
+CMAKE_CXX_COMPILER_FLAGS=-fPIC -O3 -DNDEBUG -D__HIP_PLATFORM_NVCC__
+HIPBLAS_INCLUDE=../../include
+
+LD=/usr/bin/ar
+LDFLAGS=cr
+
+OBJ=hipblas.cpp.o
+HIPBLAS_LIB=libhipblas-nvcc.a
+
+$(HIPBLAS_LIB) : $(OBJ)
+	$(LD) $(LDFLAGS) $@ $(OBJ)
+
+%.cpp.o: %.cpp
+	$(CMAKE_CXX_COMPILER) -I$(HIPBLAS_INCLUDE) -c -o $@ $< $(CMAKE_CXX_COMPILER_FLAGS)
+
+clean:
+	rm -f $(HIPBLAS_LIB) $(OBJ) 
