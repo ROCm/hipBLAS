@@ -1,6 +1,29 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 2.8.8) 
 MESSAGE(STATUS "CMAKE VERSION ${CMAKE_VERSION}")
 
+# The following is cmake code to generate a config file package for hipblas
+# Documentation for how to use the following package:
+# https://cmake.org/cmake/help/v3.0/module/CMakePackageConfigHelpers.html
+#include( CMakePackageConfigHelpers )
+
+#set( LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} )
+#set( INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} )
+#set( config_package_location ${LIB_INSTALL_DIR}/cmake/hipblas )
+
+#configure_package_config_file(
+#  hipblas-config.cmake.in
+#  ${CMAKE_CURRENT_BINARY_DIR}/hipblas-config.cmake
+#  INSTALL_DESTINATION ${config_package_location}
+#  PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
+#)
+#
+#write_basic_package_version_file(
+#  ${CMAKE_CURRENT_BINARY_DIR}/hipblas-config-version.cmake
+#  VERSION ${hipblas_VERSION}
+#  COMPATIBILITY SameMajorVersion
+#)
+
+
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 #Setting a Project name
@@ -17,14 +40,16 @@ set (HIP_PATH $ENV{HIP_PATH})
 if (NOT DEFINED HIP_PATH)
        set (HIP_PATH ${ROCM_PATH}/hip)
 endif()
-
-execute_process(COMMAND ${HIP_PATH}/bin/hipconfig --platform OUTPUT_VARIABLE HIP_PLATFORM)
 MESSAGE (STATUS "HIP_PATH : ${HIP_PATH}")
+
+execute_process(COMMAND ${HIP_PATH}/bin/hipconfig --platform OUTPUT_VARIABLE PLATFORM)
+MESSAGE (STATUS "PLATFORM : ${PLATFORM}")
 
 # Build hcfft and hipfft from source on AMD platform
 IF (${PLATFORM} MATCHES "hcc")
+  MESSAGE (STATUS "building for hcc")
   # Find HCC compiler
-  FIND_PACKAGE(HC++ 1.0 REQUIRED)
+# FIND_PACKAGE(HC++ 1.0 REQUIRED)
 
   #Setting a variable for source files
   SET (HCBLASSRCS ${BLASSRC} hcblas.cpp)
@@ -38,7 +63,7 @@ IF (${PLATFORM} MATCHES "hcc")
   string(STRIP "${HCC_LDFLAGS}" HCC_LDFLAGS)
   
 
-  set (HCC_CXXFLAGS "${HCC_CXXFLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}/../include -I${ROCM_PATH}/include -I${HIP_PATH}/include -D__HIP_PLATFORM_HCC__=")
+  set (HCC_CXXFLAGS "${HCC_CXXFLAGS} -I${ROCM_PATH}/rocblas/include -I${CMAKE_CURRENT_SOURCE_DIR}/../include -I${ROCM_PATH}/include -I${HIP_PATH}/include -D__HIP_PLATFORM_HCC__=")
   set (HCC_LDFLAGS "${HCC_LDFLAGS} -L${HIP_PATH}/lib -lhip_hcc -Wl,-rpath-link,${HIP_PATH}/lib")
  
   SET (HIPBLASSRCS ${CMAKE_CURRENT_SOURCE_DIR}/hcc_detail/hipblas.cpp)
@@ -60,7 +85,10 @@ IF (${PLATFORM} MATCHES "hcc")
         PERMISSIONS WORLD_READ WORLD_WRITE WORLD_EXECUTE
   )
   
-  INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../include/" DESTINATION include PATTERN "*.h.in" EXCLUDE)  
+  MESSAGE(STATUS "CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR}")
+
+# INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../include/" DESTINATION include )  
+# INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../include/" DESTINATION include PATTERN "*.h.in" EXCLUDE)  
 
 ELSEIF (${PLATFORM} MATCHES "nvcc")
   
