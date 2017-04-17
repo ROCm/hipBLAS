@@ -13,7 +13,7 @@ endif( )
 # This has to be initialized before the project() command appears
 # Set the default of CMAKE_BUILD_TYPE to be release, unless user specifies with -D.  MSVC_IDE does not use CMAKE_BUILD_TYPE
 if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE "Debug" CACHE STRINGS "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel.")
+  set( CMAKE_BUILD_TYPE "Release" CACHE STRINGS "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel.")
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS None Debug Release RelWithDebInfo MinSizeRel)
 endif()
 
@@ -43,7 +43,7 @@ option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" OFF )
 set( HIP_ROOT /opt/rocm/hip CACHE PATH "Specify hip installation dir")
 
 # set( hipblas_INSTALL_DIR ${CMAKE_INSTALL_PREFIX} )
-set( hipblas_INSTALL_DIR "${PROJECT_BINARY_DIR}/package" )
+set( hipblas_INSTALL_DIR "${PROJECT_BINARY_DIR}/library-package" )
 
 # Default behavior is to NOT install library, but clients may overload
 set( hipblas_INSTALL_COMMAND INSTALL_COMMAND ${CMAKE_COMMAND} -E echo_append )
@@ -55,6 +55,13 @@ include( ExternalProject )
 set( hipblas_dependencies )
 
 set( BASE_CMAKE_ARGS )
+
+message( STATUS "CMAKE_BUILD_TYPE         : ${CMAKE_BUILD_TYPE} " )
+message( STATUS "BUILD_LIBRARY            : ${BUILD_LIBRARY} " )
+message( STATUS "BUILD_SHARED_LIBS        : ${BUILD_SHARED_LIBS} " )
+message( STATUS "hipblas_INSTALL_DIR      : ${hipblas_INSTALL_DIR} " )
+message( STATUS "PROJECT_BINARY_DIR       : ${PROJECT_BINARY_DIR} " )
+message( STATUS "CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR} " )
 
 # Noramlize the different ways of specifying a c++ compiler through -DCMAKE_CXX_COMPILER
 if( DEFINED CMAKE_CXX_COMPILER )
@@ -100,9 +107,8 @@ if( BUILD_LIBRARY )
   string(REGEX REPLACE ";" "^^" LIBRARY_PREFIX_PATH "${CMAKE_PREFIX_PATH}" )
   string(REGEX REPLACE ";" "^^" LIBRARY_MODULE_PATH "${CMAKE_MODULE_PATH}" )
 
-  MESSAGE (STATUS "HIP_ROOT_DIR : ${HIP_ROOT_DIR}")
   execute_process(COMMAND ${HIP_ROOT_DIR}/bin/hipconfig --platform OUTPUT_VARIABLE PLATFORM)
-  MESSAGE (STATUS "PLATFORM : ${PLATFORM}")
+  message (STATUS "PLATFORM                 : ${PLATFORM}")
   IF (${PLATFORM} MATCHES "hcc")
     set( LIBRARY_CXX_COMPILER ${DEVICE_CXX_COMPILER})
   ELSEIF (${PLATFORM} MATCHES "nvcc")
