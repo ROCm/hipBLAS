@@ -34,8 +34,8 @@ endif()
 include( build-version )
 project_version( NAME hipblas LANGUAGES CXX )
 
-message( STATUS "hipblas_VERSION= ${hipblas_VERSION}" )
-message( STATUS "CMAKE_BUILD_TYPE= ${CMAKE_BUILD_TYPE}" )
+message( STATUS "hipblas_VERSION                        : ${hipblas_VERSION} " )
+message( STATUS "CMAKE_BUILD_TYPE                       : ${CMAKE_BUILD_TYPE} " )
 
 # This is incremented when the ABI to the library changes
 set( hipblas_SOVERSION 1 )
@@ -65,14 +65,12 @@ endif( )
 
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
 
-#include( build-bitness )
+include( build-bitness )
 
 # Print out compiler flags for viewing/debug
-message( STATUS "CMAKE_CXX_COMPILER flags: " ${CMAKE_CXX_FLAGS} )
-message( STATUS "CMAKE_CXX_COMPILER debug flags: " ${CMAKE_CXX_FLAGS_DEBUG} )
-message( STATUS "CMAKE_CXX_COMPILER release flags: " ${CMAKE_CXX_FLAGS_RELEASE} )
-message( STATUS "CMAKE_CXX_COMPILER relwithdebinfo flags: " ${CMAKE_CXX_FLAGS_RELWITHDEBINFO} )
-message( STATUS "CMAKE_EXE_LINKER link flags: " ${CMAKE_EXE_LINKER_FLAGS} )
+message( STATUS "CMAKE_CXX_COMPILER debug flags         : ${CMAKE_CXX_FLAGS_DEBUG} " )
+message( STATUS "CMAKE_CXX_COMPILER release flags       : ${CMAKE_CXX_FLAGS_RELEASE} " )
+message( STATUS "CMAKE_CXX_COMPILER relwithdebinfo flags: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO} " )
 
 include( GNUInstallDirs )
 
@@ -88,19 +86,6 @@ source_group( "Header Files\\Public" FILES ${hipblas_headers_public} )
 
 # Build into subdirectories
 add_subdirectory( src )
-
-MESSAGE(STATUS "CMAKE_INSTALL_INCLUDEDIR: ${CMAKE_INSTALL_INCLUDEDIR}")
-install( FILES
-		${hipblas_headers_public}
-	DESTINATION
-#       /home/achapman/repos/hipBLAS-build)
- 		${CMAKE_INSTALL_INCLUDEDIR} )
-
-install( FILES
-                include/hcc_detail/hip_blas.h
-        DESTINATION
-#               /home/achapman/repos/hipBLAS-build/hcc_detail )
-                ${CMAKE_INSTALL_INCLUDEDIR}/hcc_detail )
 
 # Depending on whether we are building for 64 or 32 bit, construct common paths and names that subdirectories can reference for their use
 if( BUILD_64 )
