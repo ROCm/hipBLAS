@@ -67,7 +67,6 @@ hipblasStatus_t hipblasCreate(hipblasHandle_t* handle) {
 
   if (handle == nullptr)
   {
-   //handle = new hipblasHandle_t();
      handle = (hipblasHandle_t *) new rocblas_handle();
   }
 
@@ -160,6 +159,7 @@ hipblasStatus_t  hipblasSscal(hipblasHandle_t handle, int n, const float *alpha,
 hipblasStatus_t  hipblasDscal(hipblasHandle_t handle, int n, const double *alpha,  double *x, int incx){
 	return rocBLASStatusToHIPStatus(rocblas_dscal((rocblas_handle)handle, n, alpha, x, incx));
 }
+
 /*   complex not implemented
 hipblasStatus_t  hipblasCscal(hipblasHandle_t handle, int n, const hipComplex *alpha,  hipComplex *x, int incx){
 	return rocBLASStatusToHIPStatus(rocblas_cscal((rocblas_handle)handle, n, (const rocblas_precision_complex_single*)alpha,  (rocblas_precision_complex_single*)x, incx));
@@ -233,13 +233,11 @@ hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t handle,  hipblasOperation_t 
 hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const double *alpha, const double *A[], int lda, const double *B[], int ldb, const double *beta, double *C[], int ldc, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
 
-
 /*   complex not implemented
 hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const hipComplex *alpha, const hipComplex *A[], int lda, const hipComplex *B[], int ldb, const hipComplex *beta, hipComplex *C[], int ldc, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
 
 */
-
 
 #ifdef __cplusplus
 }

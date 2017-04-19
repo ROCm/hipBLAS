@@ -15,6 +15,8 @@
 #pragma once
 #include <hip/hip_runtime_api.h>
 
+typedef void * hipblasHandle_t;
+
 enum hipblasStatus_t {
   HIPBLAS_STATUS_SUCCESS,          // Function succeeds
   HIPBLAS_STATUS_NOT_INITIALIZED,  // HIPBLAS library not initialized
@@ -31,8 +33,6 @@ enum hipblasOperation_t {
 	HIPBLAS_OP_T,
 	HIPBLAS_OP_C
 };
-
-typedef void * hipblasHandle_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -95,7 +95,6 @@ hipblasStatus_t  hipblasCscal(hipblasHandle_t handle, int n, const hipComplex *a
 hipblasStatus_t  hipblasZscal(hipblasHandle_t handle, int n, const hipDoubleComplex *alpha,  hipDoubleComplex *x, int incx);
 */
 
-// not implemented
 hipblasStatus_t  hipblasSscalBatched(hipblasHandle_t handle, int n, const float *alpha,  float *x, int incx, int batchCount);
 
 hipblasStatus_t  hipblasDscalBatched(hipblasHandle_t handle, int n, const double *alpha,  double *x, int incx, int batchCount);
@@ -138,13 +137,10 @@ hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t handle,  hipblasOperation_t 
 hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const double *alpha, const double *A[], int lda, const double *B[], int ldb, const double *beta, double *C[], int ldc, int batchCount);
 
-
 /* not implementes, requires complex support
 hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const hipComplex *alpha, const hipComplex *A[], int lda, const hipComplex *B[], int ldb, const hipComplex *beta, hipComplex *C[], int ldc, int batchCount);
-
 */
-
 
 #ifdef __cplusplus
 }
