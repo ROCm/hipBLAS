@@ -37,6 +37,8 @@ set(ROCM_PATH "/opt/rocm/")
 project (${PROJECT_NAME})
 message (STATUS "PROJECT NAME       : ${PROJECT_NAME}")
 
+find_package( rocblas REQUIRED CONFIG )
+
 set(HIP_SUPPORT $ENV{HIP_SUPPORT})
 
 # Find HIP
@@ -63,7 +65,7 @@ if (${PLATFORM} MATCHES "hcc")
   string(STRIP "${HCC_CXXFLAGS}" HCC_CXXFLAGS)
   string(STRIP "${HCC_LDFLAGS}" HCC_LDFLAGS)
   
-  set (HCC_CXXFLAGS "${HCC_CXXFLAGS} -I${ROCM_PATH}/rocblas/include -I${CMAKE_CURRENT_SOURCE_DIR}/../include -I${ROCM_PATH}/include -I${HIP_PATH}/include -D__HIP_PLATFORM_HCC__= -fPIC")
+  set (HCC_CXXFLAGS "${HCC_CXXFLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}/../include -I${ROCM_PATH}/include -I${HIP_PATH}/include -D__HIP_PLATFORM_HCC__= -fPIC")
   set (HCC_LDFLAGS "${HCC_LDFLAGS} -L${HIP_PATH}/lib -lhip_hcc -Wl,-rpath-link,${HIP_PATH}/lib -fPIC")
   message (STATUS "CMAKE_CXX_COMPILER : ${CMAKE_CXX_COMPILER}")
   message (STATUS "HCC_CXXFLAGS       : ${HCC_CXXFLAGS}")
@@ -79,7 +81,7 @@ if (${PLATFORM} MATCHES "hcc")
   #Generating hipblas shared object
   add_library("${PROJECT_NAME}-hcc" ${HIPBLASSRCS})
   set_PROPERTY(TARGET "${PROJECT_NAME}-hcc" APPEND_STRING PROPERTY LINK_FLAGS " ${HCC_LDFLAGS} ")
-  target_link_libraries("${PROJECT_NAME}-hcc" hc_am)
+  target_link_libraries("${PROJECT_NAME}-hcc" hc_am rocblas )
 
   install(TARGETS "${PROJECT_NAME}-hcc" 
         RUNTIME DESTINATION lib
