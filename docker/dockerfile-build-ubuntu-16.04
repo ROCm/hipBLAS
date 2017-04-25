@@ -1,0 +1,22 @@
+FROM ubuntu:16.04
+MAINTAINER Kent Knox <kent.knox@amd>
+
+# Install Packages
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
+    sudo \
+    file \
+    software-properties-common \
+    build-essential \
+    git \
+    rpm \
+    cmake \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# docker pipeline runs containers with uid 1000; create a jenkins user with this specific
+# uid so it can use sudo priviledges
+RUN useradd --create-home -u 1000 -G sudo --shell /bin/bash jenkins
+
+# Grant any member of sudo group password-less sudo privileges
+COPY ["sudo-nopasswd", "/etc/sudoers.d/"]
