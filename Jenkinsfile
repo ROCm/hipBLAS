@@ -11,6 +11,7 @@ properties([buildDiscarder(logRotator(
    ])
 
 ////////////////////////////////////////////////////////////////////////
+// -- HELPER AUXILLARY FUNCTIONS
 // Construct the path of the build directory
 // This doesn't parse in a jenkinsfile because of returning multiple values
 // https://issues.jenkins-ci.org/browse/JENKINS-38846
@@ -32,24 +33,7 @@ properties([buildDiscarder(logRotator(
 // }
 
 ////////////////////////////////////////////////////////////////////////
-// Construct the path of the build directory
-def build_directory( String build_config, String root_path, StringBuilder build_dir_rel, StringBuilder build_dir_abs )
-{
-  if( build_config.equalsIgnoreCase( 'release' ) )
-  {
-    build_dir_rel = "build/release"
-  }
-  else
-  {
-    build_dir_rel = "build/debug"
-  }
-  build_dir_abs = "${root_path}/${build_dir_rel}"
-
-  return void
-}
-
-////////////////////////////////////////////////////////////////////////
-// Construct the path of the build directory
+// Construct the relative path of the build directory
 String build_directory_rel( String build_config )
 {
   if( build_config.equalsIgnoreCase( 'release' ) )
@@ -62,12 +46,8 @@ String build_directory_rel( String build_config )
   }
 }
 
-String build_directory_abs( String build_config, String root_path )
-{
-    return "${root_path}/" + build_directory_rel( build_config )
-}
-
 ////////////////////////////////////////////////////////////////////////
+// -- FUNCTIONS RELATED TO BUILD
 // This encapsulates running of unit tests
 def docker_build_image(  )
 {
@@ -95,7 +75,7 @@ def docker_build_inside_image( def build_image, String build_config, String work
 {
   // def ( String build_dir_rel, String build_dir_abs ) = build_directory( build_config, workspace_dir_abs )
   String build_dir_rel = build_directory_rel( build_config );
-  String build_dir_abs = build_directory_abs( build_config, workspace_dir_abs )
+  String build_dir_abs = "${workspace_dir_abs}/" + build_dir_rel
 
   // JENKINS-33510: the jenkinsfile dir() command is not workin well with docker.inside()
   build_image.inside( )
@@ -105,8 +85,7 @@ def docker_build_inside_image( def build_image, String build_config, String work
       String install_prefix = "/opt/rocm"
 
       // Copy our rocBLAS dependency
-        step ([$class: 'CopyArtifact',
-                projectName: 'kknox/rocBLAS/copy-artifact']);
+        step( [$class: 'CopyArtifact', projectName: 'kknox/rocBLAS/copy-artifact'] );
 
       // cmake -B${build_dir_abs} specifies to cmake where to generate build files
       // This is necessary because cmake seemingly randomly generates build makefile into the docker
@@ -145,8 +124,8 @@ def docker_upload_artifactory( String build_config, String workspace_dir_abs )
   String artifactory_org = "${env.JOB_NAME}".toLowerCase( )
 
   // def ( String build_dir_rel, String build_dir_abs ) = build_directory( build_config, workspace_dir_abs )
-  StringBuilder build_dir_rel, build_dir_abs;
-  build_directory( build_config, workspace_dir_abs, build_dir_rel, build_dir_abs )
+  String build_dir_rel = build_directory_rel( build_config );
+  String build_dir_abs = "${workspace_dir_abs}/" + build_dir_rel
 
   stage( 'artifactory' )
   {
@@ -180,7 +159,9 @@ def hipblas_build_pipeline( String build_type )
 
   dir("${workspace_dir_abs}")
   {
-    stage("github clone") {
+    stage("github clone")
+    {
+      deleteDir( )
       checkout scm
     }
   }
@@ -197,10 +178,10 @@ def hipblas_build_pipeline( String build_type )
 }
 
 ////////////////////////////////////////////////////////////////////////
-// This following are the nodes to build on
-// Acts like a main() to the Jenkinsfile
+// -- MAIN
+// This following are build nodes; start of build pipeline
 //node('rocmtest')
 node('docker && rocm')
 {
-  hipblas_build_pipeline( "Release" )
+  hipblas_build_pipeline( 'Release' )
 }

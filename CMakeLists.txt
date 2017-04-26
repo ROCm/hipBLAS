@@ -19,16 +19,16 @@ endif()
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake /opt/rocm/hip/cmake )
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
-# Temp fix, there is a problem building our test program using googletest with gcc
-# Change compiler default to clang
-if( NOT DEFINED CMAKE_CXX_COMPILER AND NOT DEFINED ENV{CXX} )
-  set( CMAKE_CXX_COMPILER clang++ )
-endif( )
-if( NOT DEFINED CMAKE_C_COMPILER AND NOT DEFINED ENV{CC} )
-  set( CMAKE_C_COMPILER clang )
-endif( )
+# # Temp fix, there is a problem building our test program using googletest with gcc
+# # Change compiler default to clang
+# if( NOT DEFINED CMAKE_CXX_COMPILER AND NOT DEFINED ENV{CXX} )
+#   set( CMAKE_CXX_COMPILER clang++ )
+# endif( )
+# if( NOT DEFINED CMAKE_C_COMPILER AND NOT DEFINED ENV{CC} )
+#   set( CMAKE_C_COMPILER clang )
+# endif( )
 
 # The superbuild does not build anything itself, all compiling is done in external projects
 project( hipblas-superbuild NONE )
@@ -39,8 +39,6 @@ option( BUILD_LIBRARY "Build hipBLAS library" OFF )
 
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" OFF )
-
-set( HIP_ROOT /opt/rocm/hip CACHE PATH "Specify hip installation dir")
 
 # set( hipblas_INSTALL_DIR ${CMAKE_INSTALL_PREFIX} )
 set( hipblas_INSTALL_DIR "${PROJECT_BINARY_DIR}/library-package" )
@@ -63,38 +61,38 @@ message( STATUS "hipblas_INSTALL_DIR      : ${hipblas_INSTALL_DIR} " )
 message( STATUS "PROJECT_BINARY_DIR       : ${PROJECT_BINARY_DIR} " )
 message( STATUS "CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR} " )
 
-# Noramlize the different ways of specifying a c++ compiler through -DCMAKE_CXX_COMPILER
-if( DEFINED CMAKE_CXX_COMPILER )
-  message( STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} " )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} )
-elseif( DEFINED ENV{CXX} )
-  message( STATUS "ENV{CXX}: $ENV{CXX} " )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_COMPILER=$ENV{CXX} )
-endif( )
+# # Noramlize the different ways of specifying a c++ compiler through -DCMAKE_CXX_COMPILER
+# if( DEFINED CMAKE_CXX_COMPILER )
+#   message( STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} " )
+#   list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} )
+# elseif( DEFINED ENV{CXX} )
+#   message( STATUS "ENV{CXX}: $ENV{CXX} " )
+#   list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_COMPILER=$ENV{CXX} )
+# endif( )
 
-# Noramlize the different ways of specifying a c compiler through -DCMAKE_C_COMPILER
-if( DEFINED CMAKE_C_COMPILER )
-  message( STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}" )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} )
-elseif( DEFINED ENV{CC} )
-  message( STATUS "ENV{CC}: $ENV{CC} " )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_C_COMPILER=$ENV{CC} )
-endif( )
+# # Noramlize the different ways of specifying a c compiler through -DCMAKE_C_COMPILER
+# if( DEFINED CMAKE_C_COMPILER )
+#   message( STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}" )
+#   list( APPEND BASE_CMAKE_ARGS -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} )
+# elseif( DEFINED ENV{CC} )
+#   message( STATUS "ENV{CC}: $ENV{CC} " )
+#   list( APPEND BASE_CMAKE_ARGS -DCMAKE_C_COMPILER=$ENV{CC} )
+# endif( )
 
-if( DEFINED CMAKE_CXX_FLAGS )
-  message( STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS} " )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} )
-endif( )
+# if( DEFINED CMAKE_CXX_FLAGS )
+#   message( STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS} " )
+#   list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} )
+# endif( )
 
-if( DEFINED CMAKE_C_FLAGS )
-  message( STATUS "CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}" )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} )
-endif( )
+# if( DEFINED CMAKE_C_FLAGS )
+#   message( STATUS "CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}" )
+#   list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} )
+# endif( )
 
 # CMAKE_BUILD_TYPE only applies to single configuration build systems
-if( DEFINED CMAKE_BUILD_TYPE )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
-endif( )
+# if( DEFINED CMAKE_BUILD_TYPE )
+#   list( APPEND BASE_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
+# endif( )
 
 # if( NOT DEFINED DEVICE_CXX_COMPILER )
 #   find_package( HIP REQUIRED )
@@ -123,9 +121,9 @@ if( BUILD_LIBRARY )
     -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
     -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
     -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
-    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_CXX_COMPILER=${LIBRARY_CXX_COMPILER}
+    # -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+    # -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    # -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   )
 
