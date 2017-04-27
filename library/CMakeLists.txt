@@ -78,8 +78,8 @@ include( GNUInstallDirs )
 configure_file( "${PROJECT_SOURCE_DIR}/include/hipblas-version.h.in" "${PROJECT_BINARY_DIR}/include/hipblas-version.h" )
 
 set( hipblas_headers_public
-  include/hipblas.h
-#  ${PROJECT_BINARY_DIR}/include/hipblas-version.h
+  ${PROJECT_SOURCE_DIR}/include/hipblas.h
+  ${PROJECT_BINARY_DIR}/include/hipblas-version.h
 )
 
 source_group( "Header Files\\Public" FILES ${hipblas_headers_public} )
@@ -87,12 +87,12 @@ source_group( "Header Files\\Public" FILES ${hipblas_headers_public} )
 # Build into subdirectories
 add_subdirectory( src )
 
-# Depending on whether we are building for 64 or 32 bit, construct common paths and names that subdirectories can reference for their use
-if( BUILD_64 )
-	set( CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}-amd64" )
-else( )
-	set( CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}-i686" )
-endif( )
+# # Depending on whether we are building for 64 or 32 bit, construct common paths and names that subdirectories can reference for their use
+# if( BUILD_64 )
+# 	set( CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}-amd64" )
+# else( )
+# 	set( CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}-i686" )
+# endif( )
 
 # The following code is setting variables to control the behavior of CPack to generate our
 if( WIN32 )
@@ -101,7 +101,7 @@ if( WIN32 )
 else( )
 	set( CPACK_SOURCE_GENERATOR "TGZ" )
 
-	set( CPACK_GENERATOR "DEB" )
+	set( CPACK_GENERATOR "DEB;RPM" CACHE STRING "Specify standard cpack generators" )
 	set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64" )
 	set( CPACK_DEBIAN_COMPRESSION_TYPE "xz" )
 	# set( CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON )

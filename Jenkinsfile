@@ -85,21 +85,21 @@ def docker_build_inside_image( def build_image, String build_config, String work
       String install_prefix = "/opt/rocm"
 
       // Copy our rocBLAS dependency
-      step( [$class: 'CopyArtifact', projectName: 'kknox/rocBLAS/copy-artifact', filter: 'library-build/*.deb'] );
+      // Commented out because we need to compile static rocblas with fpic enabled
+      // step( [$class: 'CopyArtifact', projectName: 'kknox/rocBLAS/copy-artifact', filter: 'library-build/*.deb'] );
 
       // cmake -B${build_dir_abs} specifies to cmake where to generate build files
       // This is necessary because cmake seemingly randomly generates build makefile into the docker
       // workspace instead of the current set directory.  Not sure why, but it seems like a bug
       sh  """
-          sudo dpkg -i library-build/*.deb
           mkdir -p ${build_dir_rel}
           cd ${build_dir_rel}
           cmake -B${build_dir_abs} \
             -DCMAKE_INSTALL_PREFIX=${install_prefix} \
             -DCMAKE_BUILD_TYPE=${build_config} \
+            -DCMAKE_PREFIX_PATH='/opt/rocm;/usr/local/src/rocBLAS/build/library-package' \
             -DBUILD_LIBRARY=ON \
             -DBUILD_SHARED_LIBS=ON \
-            -DCMAKE_PREFIX_PATH=/opt/rocm \
             ../..
           make -j\$(nproc)
         """
@@ -107,8 +107,10 @@ def docker_build_inside_image( def build_image, String build_config, String work
 
     stage("packaging")
     {
-      sh "cd ${build_dir_abs}; make package"
-      archiveArtifacts artifacts: "${build_dir_rel}/*.deb", fingerprint: true
+      sh "cd ${build_dir_abs}/library-build; make package"
+      archiveArtifacts artifacts: "${build_dir_rel}/library-build/*.deb", fingerprint: true
+      archiveArtifacts artifacts: "${build_dir_rel}/library-build/*.rpm", fingerprint: true
+      sh "sudo dpkg -c ${build_dir_abs}/library-build/*.deb"
     }
   }
 
@@ -133,15 +135,15 @@ def docker_upload_artifactory( String build_config, String workspace_dir_abs )
     {
       //  We copy the docker files into the bin directory where the .deb lives so that it's a clean
       //  build everytime
-      sh "cp -r ${workspace_dir_abs}/docker/* .; cp ${build_dir_abs}/*.deb ."
+      sh "cp -r ${workspace_dir_abs}/docker/* .; cp ${build_dir_abs}/library-build/*.deb ."
       rocblas_install_image = docker.build( "${artifactory_org}/${image_name}:${env.BUILD_NUMBER}", "-f dockerfile-${image_name} ." )
     }
 
-    docker.withRegistry('http://compute-artifactory:5001', 'artifactory-cred' )
-    {
-      rocblas_install_image.push( "${env.BUILD_NUMBER}" )
-      rocblas_install_image.push( 'latest' )
-    }
+    // docker.withRegistry('http://compute-artifactory:5001', 'artifactory-cred' )
+    // {
+    //  rocblas_install_image.push( "${env.BUILD_NUMBER}" )
+    //  rocblas_install_image.push( 'latest' )
+    // }
 
     // Lots of images with tags are created above; no apparent way to delete images:tags with docker global variable
     // run bash script to clean images:tags after successful pushing
@@ -172,7 +174,7 @@ def hipblas_build_pipeline( String build_type )
   // Build hipblas inside of the build environment
   docker_build_inside_image( hipblas_build_image, "${build_type}", "${workspace_dir_abs}" )
 
-  // docker_upload_artifactory( "${build_type}", "${workspace_dir_abs}" )
+  docker_upload_artifactory( "${build_type}", "${workspace_dir_abs}" )
 
   return void
 }
