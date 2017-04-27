@@ -2,7 +2,10 @@ FROM ubuntu:16.04
 MAINTAINER Kent Knox <kent.knox@amd>
 
 # Install Packages
-RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl && \
+    curl -sL http://packages.amd.com/rocm/apt/debian/rocm.gpg.key | apt-key add - && \
+    echo 'deb [arch=amd64] http://packages.amd.com/rocm/apt/debian/ xenial main' | tee /etc/apt/sources.list.d/rocm.list && \
+    apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     sudo \
     file \
     software-properties-common \
@@ -10,13 +13,14 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-rec
     git \
     rpm \
     cmake \
+    clang \
+    rocm-dev \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# docker pipeline runs containers with uid 1000; create a jenkins user with this specific
-# uid so it can use sudo priviledges
-RUN useradd --create-home -u 1000 -G sudo --shell /bin/bash jenkins
-
+# docker pipeline runs containers with uid 1000
+# create a jenkins user with this specific uid so it can use sudo priviledges
 # Grant any member of sudo group password-less sudo privileges
-COPY ["sudo-nopasswd", "/etc/sudoers.d/"]
+RUN useradd --create-home -u 1000 -G sudo --shell /bin/bash jenkins && \
+    echo '%sudo   ALL=(ALL) NOPASSWD:ALL' | tee /etc/sudoers.d/sudo-nopasswd

@@ -85,7 +85,7 @@ def docker_build_inside_image( def build_image, String build_config, String work
       String install_prefix = "/opt/rocm"
 
       // Copy our rocBLAS dependency
-        step( [$class: 'CopyArtifact', projectName: 'kknox/rocBLAS/copy-artifact'] );
+      step( [$class: 'CopyArtifact', projectName: 'kknox/rocBLAS/copy-artifact', filter: 'library-build/*.deb'] );
 
       // cmake -B${build_dir_abs} specifies to cmake where to generate build files
       // This is necessary because cmake seemingly randomly generates build makefile into the docker

@@ -1,3 +1,0 @@
-# This line grants the any members of the sudo group
-# passwordless sudo privileges
-%sudo   ALL=(ALL) NOPASSWD:ALL
