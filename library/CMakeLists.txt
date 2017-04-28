@@ -8,7 +8,7 @@ cmake_minimum_required( VERSION 2.8.12 )
 
 # MACOSX_RPATH is enabled by default policy
 if( POLICY CMP0042 )
-	cmake_policy( SET CMP0042 NEW )
+    cmake_policy( SET CMP0042 NEW )
 endif( )
 
 # CMP0063: Honor visibility properties for all target types [cmake 3.3]
@@ -17,12 +17,12 @@ if( POLICY CMP0063 )
 endif( )
 
 if( CMAKE_GENERATOR MATCHES "NMake" )
-	option( NMAKE_COMPILE_VERBOSE "Print VERBOSE compile/link msgs to the console" OFF )
-	if( NMAKE_COMPILE_VERBOSE )
-		set( CMAKE_START_TEMP_FILE "" )
-		set( CMAKE_END_TEMP_FILE "" )
-		set( CMAKE_VERBOSE_MAKEFILE 1 )
-	endif( )
+    option( NMAKE_COMPILE_VERBOSE "Print VERBOSE compile/link msgs to the console" OFF )
+    if( NMAKE_COMPILE_VERBOSE )
+        set( CMAKE_START_TEMP_FILE "" )
+        set( CMAKE_END_TEMP_FILE "" )
+        set( CMAKE_VERBOSE_MAKEFILE 1 )
+    endif( )
 endif( )
 
 # This has to be initialized before the project() command appears
@@ -49,18 +49,18 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 # On windows, it's convenient to change the default install prefix such that it does NOT point to 'program files'
 # Need to check out CMAKE_RUNTIME_OUTPUT_DIRECTORY variable, and see if that eliminates the need to modify install path
 if( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
-	set( CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/package" CACHE PATH "Install path prefix, prepended onto install directories" FORCE )
+    set( CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/package" CACHE PATH "Install path prefix, prepended onto install directories" FORCE )
 endif( )
 
 # Set common compile and link options
 if( MSVC )
-	# Following options for nMake
-	message( STATUS "Detected MSVS Ver: " ${MSVC_VERSION} )
+    # Following options for nMake
+    message( STATUS "Detected MSVS Ver: " ${MSVC_VERSION} )
 
-	# CMake uses huge stack frames for windows, we would like to remove.
-	string( REGEX REPLACE "/STACK:[0-9]+" "" CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" )
-	string( REGEX REPLACE "/STACK:[0-9]+" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}" )
-	string( REGEX REPLACE "/STACK:[0-9]+" "" CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS}" )
+    # CMake uses huge stack frames for windows, we would like to remove.
+    string( REGEX REPLACE "/STACK:[0-9]+" "" CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" )
+    string( REGEX REPLACE "/STACK:[0-9]+" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}" )
+    string( REGEX REPLACE "/STACK:[0-9]+" "" CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS}" )
 endif( )
 
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
@@ -96,15 +96,17 @@ add_subdirectory( src )
 
 # The following code is setting variables to control the behavior of CPack to generate our
 if( WIN32 )
-	set( CPACK_SOURCE_GENERATOR "ZIP" )
-	set( CPACK_GENERATOR "ZIP" )
+    set( CPACK_SOURCE_GENERATOR "ZIP" )
+    set( CPACK_GENERATOR "ZIP" )
 else( )
-	set( CPACK_SOURCE_GENERATOR "TGZ" )
+    set( CPACK_SOURCE_GENERATOR "TGZ" )
 
-	set( CPACK_GENERATOR "DEB;RPM" CACHE STRING "Specify standard cpack generators" )
-	set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64" )
-	set( CPACK_DEBIAN_COMPRESSION_TYPE "xz" )
-	# set( CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON )
+    set( CPACK_GENERATOR "DEB;RPM" CACHE STRING "cpack list: 7Z, DEB, IFW, NSIS, NSIS64, RPM, STGZ, TBZ2, TGZ, TXZ, TZ, ZIP" )
+    # set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64" )
+    # set( CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/DEBIAN/postinst;${CMAKE_CURRENT_SOURCE_DIR}/DEBIAN/prerm" )
+    # set( CPACK_DEBIAN_PACKAGE_DEPENDS "" )
+    # set( CPACK_DEBIAN_COMPRESSION_TYPE "xz" )
+    # set( CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON )
 endif( )
 
 set( CPACK_PACKAGE_CONTACT "Kent Knox <kent.knox@amd.com>" )
@@ -115,6 +117,7 @@ set( CPACK_PACKAGE_VERSION_PATCH ${hipblas_VERSION_PATCH} )
 set( CPACK_PACKAGE_VERSION_TWEAK ${hipblas_VERSION_TWEAK} )
 set( CPACK_PACKAGE_VERSION ${hipblas_VERSION} )
 set( CPACK_PACKAGE_VENDOR "AMD")
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/../LICENSE" )
 set( CPACK_SOURCE_IGNORE_FILES "/\\\\.git/" )
 
 # Define all variables that influence CPack before including CPack, such as install targets
