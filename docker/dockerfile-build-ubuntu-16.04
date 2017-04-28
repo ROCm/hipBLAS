@@ -1,0 +1,59 @@
+FROM ubuntu:16.04
+MAINTAINER Kent Knox <kent.knox@amd>
+
+ARG build_type=Release
+
+# Install Packages
+# RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl && \
+#     curl -sL http://packages.amd.com/rocm/apt/debian/rocm.gpg.key | apt-key add - && \
+#     echo 'deb [arch=amd64] http://packages.amd.com/rocm/apt/debian/ xenial main' | tee /etc/apt/sources.list.d/rocm.list && \
+#     apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y curl && \
+    echo 'deb [arch=amd64] http://compute-artifactory.amd.com/artifactory/rocm-release-1.5-deb xenial main' | tee /etc/apt/sources.list.d/rocm.list && \
+    apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y --allow-unauthenticated \
+    sudo \
+    file \
+    software-properties-common \
+    build-essential \
+    git \
+    rpm \
+    cmake \
+    clang \
+    hsakmt-roct-dev \
+    hsa-rocr-dev \
+    hsa-ext-rocr-dev \
+    rocm-device-libs \
+    hcc \
+    hip_base \
+    hip_hcc \
+    hip_doc \
+    hip_samples \
+    python-yaml \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# docker pipeline runs containers with uid 1000
+# create a jenkins user with this specific uid so it can use sudo priviledges
+# Grant any member of sudo group password-less sudo privileges
+RUN useradd --create-home -u 1000 -G sudo --shell /bin/bash jenkins && \
+    echo '%sudo   ALL=(ALL) NOPASSWD:ALL' | tee /etc/sudoers.d/sudo-nopasswd
+
+# Build static version of rocBLAS with -fPIC enabled
+RUN cd /usr/local/src && \
+    git clone --depth 1 -b develop https://github.com/RadeonOpenCompute/rocBLAS.git && \
+    mkdir -p rocBLAS/build && \
+    cd rocBLAS/build && \
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_BUILD_TYPE=${build_type} \
+        -DCMAKE_CXX_FLAGS="-fPIC" \
+        -DCMAKE_C_FLAGS="-fPIC" \
+        -DBUILD_LIBRARY=ON \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DBUILD_WITH_TENSILE=ON \
+        -DBUILD_CLIENTS=OFF \
+        /usr/local/src/rocBLAS && \
+    make -j $(nproc) && \
+    cd library-build && \
+    make install
