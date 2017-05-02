@@ -82,7 +82,7 @@ def docker_build_inside_image( def build_image, String build_config, String work
   {
     stage("build ${build_config}")
     {
-      String install_prefix = "/opt/rocm"
+      String install_prefix = "/opt/rocm/hipblas"
 
       // Copy our rocBLAS dependency
       // Commented out because we need to compile static rocblas with fpic enabled
@@ -96,6 +96,7 @@ def docker_build_inside_image( def build_image, String build_config, String work
           cd ${build_dir_rel}
           cmake -B${build_dir_abs} \
             -DCMAKE_INSTALL_PREFIX=${install_prefix} \
+            -DCPACK_PACKAGING_INSTALL_PREFIX=${install_prefix} \
             -DCMAKE_BUILD_TYPE=${build_config} \
             -DCMAKE_PREFIX_PATH='/opt/rocm;/usr/local/src/rocBLAS/build/library-package' \
             -DBUILD_LIBRARY=ON \

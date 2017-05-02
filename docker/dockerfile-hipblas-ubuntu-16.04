@@ -2,7 +2,23 @@ FROM ubuntu:16.04
 MAINTAINER Kent Knox <kent.knox@amd>
 
 # Initialize the image we are working with
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-  && \
-  apt-get clean && \
-  rm -rf /var/lib/apt/lists/*
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y curl && \
+    curl -sL http://packages.amd.com/rocm/apt/debian/rocm.gpg.key | apt-key add - && \
+    echo 'deb [arch=amd64] http://packages.amd.com/rocm/apt/debian/ xenial main' | tee /etc/apt/sources.list.d/rocm.list && \
+    apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+    rocm-dev \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy the debian package of hcc-lc into the container from host
+COPY *.deb /tmp/
+
+# Install the debian package, and print out expected changed locations
+RUN dpkg -i /tmp/*.deb && \
+    rm -f /tmp/*.deb && \
+    cat /etc/ld.so.conf.d/hipblas-dev.conf && \
+    ls -la /opt/rocm/include && \
+    ls -la /opt/rocm/lib && \
+    ls -la /opt/rocm/lib/cmake && \
+    ls -la /opt/rocm/hipblas
