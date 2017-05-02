@@ -74,15 +74,13 @@ elseif (${PLATFORM} MATCHES "nvcc")
 
 endif()
 
-set_target_properties( hipblas PROPERTIES VERSION ${hipblas_VERSION} SOVERSION ${hipblas_SOVERSION} )
-
-install(TARGETS hipblas
-  EXPORT hipblas-targets
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
+target_include_directories( hipblas
+  PUBLIC  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+          $<INSTALL_INTERFACE:include>
 )
+
+set_target_properties( hipblas PROPERTIES VERSION ${hipblas_VERSION} SOVERSION ${hipblas_SOVERSION} )
 
 # Package that helps me set visibility for function names exported from shared library
 include( GenerateExportHeader )
@@ -92,6 +90,14 @@ else()
   set_target_properties( hipblas PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON )
 endif( )
 GENERATE_EXPORT_HEADER( hipblas EXPORT_FILE_NAME hipblas-export.h )
+
+install(TARGETS hipblas
+  EXPORT hipblas-targets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
+)
 
 # The following is cmake code to generate a config file package for hipblas
 # Documentation for how to use the following package:
