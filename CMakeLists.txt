@@ -126,6 +126,10 @@ if( BUILD_LIBRARY )
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   )
 
+  if( DEFINED CPACK_PACKAGING_INSTALL_PREFIX )
+    list( APPEND LIBRARY_CMAKE_ARGS -DCPACK_PACKAGING_INSTALL_PREFIX=${CPACK_PACKAGING_INSTALL_PREFIX} )
+  endif()
+
   # Build the library as an external project
   ExternalProject_Add( hipblas
     DEPENDS ${hipblas_dependencies}
