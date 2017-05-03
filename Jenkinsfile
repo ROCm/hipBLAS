@@ -82,7 +82,7 @@ def docker_build_inside_image( def build_image, String build_config, String work
   {
     stage("build ${build_config}")
     {
-      String install_prefix = "/opt/rocm"
+      String install_prefix = "/opt/rocm/hipblas"
 
       // Copy our rocBLAS dependency
       // Commented out because we need to compile static rocblas with fpic enabled
@@ -96,6 +96,7 @@ def docker_build_inside_image( def build_image, String build_config, String work
           cd ${build_dir_rel}
           cmake -B${build_dir_abs} \
             -DCMAKE_INSTALL_PREFIX=${install_prefix} \
+            -DCPACK_PACKAGING_INSTALL_PREFIX=${install_prefix} \
             -DCMAKE_BUILD_TYPE=${build_config} \
             -DCMAKE_PREFIX_PATH='/opt/rocm;/usr/local/src/rocBLAS/build/library-package' \
             -DBUILD_LIBRARY=ON \
@@ -152,6 +153,32 @@ def docker_upload_artifactory( String build_config, String workspace_dir_abs )
 }
 
 ////////////////////////////////////////////////////////////////////////
+// Checkout the desired source code and update the version number
+def checkout_and_version( String workspace_dir_abs )
+{
+  dir("${workspace_dir_abs}")
+  {
+    stage("github clone")
+    {
+      deleteDir( )
+      checkout scm
+
+      if( fileExists( 'cmake/build-version.cmake' ) )
+      {
+        def cmake_version_file = readFile( 'cmake/build-version.cmake' ).trim()
+        //echo "cmake_version_file:\n${cmake_version_file}"
+
+        cmake_version_file = cmake_version_file.replaceAll(/(\d+\.)(\d+\.)(\d+\.)\d+/, "\$1\$2\$3${env.BUILD_ID}")
+        cmake_version_file = cmake_version_file.replaceAll(/VERSION_TWEAK\s+\d+/, "VERSION_TWEAK ${env.BUILD_ID}")
+        //echo "cmake_version_file:\n${cmake_version_file}"
+        writeFile( file: 'cmake/build-version.cmake', text: cmake_version_file )
+      }
+    }
+  }
+
+}
+
+////////////////////////////////////////////////////////////////////////
 // This routines defines the build flow of the project
 // Calls helper routines to do the work and stitches them together
 def hipblas_build_pipeline( String build_type )
@@ -159,14 +186,7 @@ def hipblas_build_pipeline( String build_type )
   // Convenience variables for common paths used in building
   String workspace_dir_abs = pwd()
 
-  dir("${workspace_dir_abs}")
-  {
-    stage("github clone")
-    {
-      deleteDir( )
-      checkout scm
-    }
-  }
+  checkout_and_version( "${workspace_dir_abs}" )
 
   // Create/reuse a docker image that represents the hipblas build environment
   def hipblas_build_image = docker_build_image( )
@@ -182,7 +202,6 @@ def hipblas_build_pipeline( String build_type )
 ////////////////////////////////////////////////////////////////////////
 // -- MAIN
 // This following are build nodes; start of build pipeline
-//node('rocmtest')
 node('docker && rocm')
 {
   hipblas_build_pipeline( 'Release' )
