@@ -14,11 +14,12 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 # Copy the debian package of hcc-lc into the container from host
 COPY *.deb /tmp/
 
-# Install the debian package, and print out expected changed locations
+# Install the debian package, and print out contents of expected changed locations
 RUN dpkg -i /tmp/*.deb && \
     rm -f /tmp/*.deb && \
-    cat /etc/ld.so.conf.d/hipblas-dev.conf && \
-    ls -la /opt/rocm/include && \
-    ls -la /opt/rocm/lib && \
-    ls -la /opt/rocm/lib/cmake && \
-    ls -la /opt/rocm/hipblas
+    printf "cat /etc/ld.so.conf.d/hipblas-dev.conf\n" && cat /etc/ld.so.conf.d/hipblas-dev.conf && \
+    printf "ls -la /opt/rocm/include\n" && ls -la /opt/rocm/include && \
+    printf "ls -la /opt/rocm/lib \n" && ls -la /opt/rocm/lib && \
+    printf "ls -la /opt/rocm/lib/cmake\n" && ls -la /opt/rocm/lib/cmake && \
+    printf "ls -la /opt/rocm/hipblas/include\n" && ls -la /opt/rocm/hipblas/include && \
+    printf "ls -la /opt/rocm/hipblas/lib\n" && ls -la /opt/rocm/hipblas/lib
