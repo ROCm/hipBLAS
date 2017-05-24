@@ -9,8 +9,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../cma
 set(ROCM_PATH "/opt/rocm/")
 message (STATUS "PROJECT NAME       : ${PROJECT_NAME}")
 
-find_package( rocblas REQUIRED CONFIG )
-
 set(HIP_SUPPORT $ENV{HIP_SUPPORT})
 
 # Find HIP
@@ -28,7 +26,6 @@ if (${PLATFORM} MATCHES "hcc")
   message (STATUS "building for hcc")
 
 # Find HCC compiler
-# FIND_PACKAGE(HC++ 1.0 REQUIRED)
   execute_process(COMMAND ${HCC_CONFIG} --install --cxxflags
                             OUTPUT_VARIABLE HCC_CXXFLAGS)
   execute_process(COMMAND ${HCC_CONFIG} --install --ldflags --shared
@@ -50,6 +47,8 @@ if (${PLATFORM} MATCHES "hcc")
     set_property(SOURCE ${src_file} APPEND_STRING PROPERTY COMPILE_FLAGS " ${HCC_CXXFLAGS} ")
   endforeach()
 
+  find_package( rocblas REQUIRED CONFIG )
+
   #Generating hipblas shared object
   add_library( hipblas ${HIPBLASSRCS} )
   set_property(TARGET hipblas APPEND_STRING PROPERTY LINK_FLAGS " ${HCC_LDFLAGS} ")
@@ -57,22 +56,23 @@ if (${PLATFORM} MATCHES "hcc")
   set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" OUTPUT_NAME hipblas-hcc )
 
 elseif (${PLATFORM} MATCHES "nvcc")
-  message(STATUS "Building hipblas.cpp")
+  message(STATUS "Building for nvcc")
+  find_package( HIP REQUIRED ) # Using module mode; make sure to set CMAKE_MODULE_PATH to /opt/rocm/hip/cmake
+  find_package( CUDA REQUIRED ) # Using module mode; packaged in cmake
 
-  set (CXXFLAGS "-I${CMAKE_CURRENT_SOURCE_DIR}/../include -I${HIP_PATH}/include -I/usr/local/cuda/include -D__HIP_PLATFORM_NVCC__=")
-  set (LDFLAGS "-L/usr/local/cuda/lib64 -L/usr/local/cuda/lib")
   set (HIPBLASSRCS ${CMAKE_CURRENT_SOURCE_DIR}/nvcc_detail/hipblas.cpp)
 
-  foreach(src_file ${HIPBLASSRCS})
-	  set_property(SOURCE ${src_file} APPEND_STRING PROPERTY COMPILE_FLAGS " ${CXXFLAGS} ")
-  endforeach()
+  hip_add_library( hipblas ${HIPBLASSRCS} )
+  target_link_libraries( hipblas PRIVATE ${CUDA_CUBLAS_LIBRARIES} )
 
-  add_library( hipblas ${HIPBLASSRCS})
-  set_property(TARGET hipblas APPEND_STRING PROPERTY LINK_FLAGS " ${LDFLAGS} ")
-  target_link_libraries( hipblas cudart cublas )
+  target_include_directories( hipblas PRIVATE 
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> 
+	 $<BUILD_INTERFACE:${HIP_PATH}/include>
+	 $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}> )
+
+  target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
   set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" OUTPUT_NAME hipblas-nvcc )
-
-endif()
+endif() # (${PLATFORM} MATCHES "hcc")
 
 target_include_directories( hipblas
   PUBLIC  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
