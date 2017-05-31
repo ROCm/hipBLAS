@@ -95,13 +95,21 @@ hipblasStatus_t  hipblasGetStream(hipblasHandle_t handle, hipStream_t *streamId)
   return rocBLASStatusToHIPStatus(rocblas_get_stream((rocblas_handle) handle, streamId));
 }
 
-hipblasStatus_t hipblasSetVector(int n, int elemSize, const void *x, int incx, void *y, int incy){return HIPBLAS_STATUS_NOT_SUPPORTED;}
+hipblasStatus_t hipblasSetVector(int n, int elemSize, const void *x, int incx, void *y, int incy){
+    return rocBLASStatusToHIPStatus(rocblas_set_vector(n, elemSize, x, incx, y, incy));
+}
 
-hipblasStatus_t hipblasGetVector(int n, int elemSize, const void *x, int incx, void *y, int incy){return HIPBLAS_STATUS_NOT_SUPPORTED;}
+hipblasStatus_t hipblasGetVector(int n, int elemSize, const void *x, int incx, void *y, int incy){
+    return rocBLASStatusToHIPStatus(rocblas_get_vector(n, elemSize, x, incx, y, incy));
+}
 
-hipblasStatus_t hipblasSetMatrix(int rows, int cols, int elemSize, const void *A, int lda, void *B, int ldb){return HIPBLAS_STATUS_NOT_SUPPORTED;}
+hipblasStatus_t hipblasSetMatrix(int rows, int cols, int elemSize, const void *A, int lda, void *B, int ldb){
+    return rocBLASStatusToHIPStatus(rocblas_set_matrix(rows, cols, elemSize, A, lda, B, ldb));
+}
 
-hipblasStatus_t hipblasGetMatrix(int rows, int cols, int elemSize, const void *A, int lda, void *B, int ldb){return HIPBLAS_STATUS_NOT_SUPPORTED;}
+hipblasStatus_t hipblasGetMatrix(int rows, int cols, int elemSize, const void *A, int lda, void *B, int ldb){
+    return rocBLASStatusToHIPStatus(rocblas_get_matrix(rows, cols, elemSize, A, lda, B, ldb));
+}
 
 hipblasStatus_t  hipblasSasum(hipblasHandle_t handle, int n, const float *x, int incx, float  *result){
 	return rocBLASStatusToHIPStatus(rocblas_sasum((rocblas_handle)handle, n, const_cast<float*>(x), incx, result));
