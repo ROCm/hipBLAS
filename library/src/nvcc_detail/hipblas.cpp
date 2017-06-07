@@ -48,6 +48,37 @@ hipblasOperation_t CudaOperationToHIPOperation( cublasOperation_t op)
 	}
 }
 
+cublasPointerMode_t HIPPointerModeToCudaPointerMode( hipblasPointerMode_t mode)
+{
+	switch (mode)
+	{
+		case HIPBLAS_POINTER_MODE_HOST :
+			return CUBLAS_POINTER_MODE_HOST;
+
+		case HIPBLAS_POINTER_MODE_DEVICE :
+			return CUBLAS_POINTER_MODE_DEVICE;
+
+		default:
+			throw "Non existent PointerMode";
+	}
+}
+
+
+hipblasPointerMode_t CudaPointerModeToHIPPointerMode( cublasPointerMode_t mode)
+{
+	switch (mode)
+	{
+		case CUBLAS_POINTER_MODE_HOST :
+			return HIPBLAS_POINTER_MODE_HOST;
+
+		case CUBLAS_POINTER_MODE_DEVICE :
+			return HIPBLAS_POINTER_MODE_DEVICE;
+
+		default:
+			throw "Non existent PointerMode";
+	}
+}
+
 
 hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
 {
@@ -89,6 +120,17 @@ hipblasStatus_t hipblasCreate(hipblasHandle_t* handle) {
 //TODO broke common API semantics, think about this again.
 hipblasStatus_t hipblasDestroy(hipblasHandle_t handle) {
     return hipCUBLASStatusToHIPStatus(cublasDestroy((cublasHandle_t) handle));
+}
+
+hipblasStatus_t hipblasSetPointerMode(hipblasHandle_t handle, hipblasPointerMode_t mode){
+	return hipCUBLASStatusToHIPStatus(cublasSetPointerMode((cublasHandle_t) handle, HIPPointerModeToCudaPointerMode(mode)));
+}
+
+hipblasStatus_t hipblasGetPointerMode(hipblasHandle_t handle, hipblasPointerMode_t *mode){
+    cublasPointerMode_t cublasMode;
+    cublasStatus status = cublasGetPointerMode((cublasHandle_t) handle, &cublasMode);
+    *mode = CudaPointerModeToHIPPointerMode(cublasMode);
+    return hipCUBLASStatusToHIPStatus(status);
 }
 
 //note: no handle

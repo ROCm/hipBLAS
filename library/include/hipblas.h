@@ -36,6 +36,11 @@ enum hipblasOperation_t {
 	HIPBLAS_OP_C
 };
 
+enum hipblasPointerMode_t {
+    HIPBLAS_POINTER_MODE_HOST,
+    HIPBLAS_POINTER_MODE_DEVICE
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -47,6 +52,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDestroy(hipblasHandle_t handle);
 HIPBLAS_EXPORT hipblasStatus_t hipblasSetStream(hipblasHandle_t handle, hipStream_t streamId);
 
 HIPBLAS_EXPORT hipblasStatus_t  hipblasGetStream(hipblasHandle_t handle, hipStream_t *streamId);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSetPointerMode(hipblasHandle_t handle, hipblasPointerMode_t mode);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGetPointerMode(hipblasHandle_t handle, hipblasPointerMode_t *mode);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSetVector(int n, int elemSize, const void *x, int incx, void *y, int incy);
 
