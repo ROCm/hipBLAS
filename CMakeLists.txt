@@ -35,6 +35,7 @@ project( hipblas-superbuild NONE )
 
 # Everything is initially off, so that cache is not initialized until user elects to build
 option( BUILD_LIBRARY "Build hipBLAS library" OFF )
+option( BUILD_CLIENTS "Build rocBLAS clients" OFF )
 
 
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
@@ -47,6 +48,13 @@ set( hipblas_INSTALL_DIR "${PROJECT_BINARY_DIR}/library-package" )
 
 # Default behavior is to NOT install library, but clients may overload
 set( hipblas_INSTALL_COMMAND INSTALL_COMMAND ${CMAKE_COMMAND} -E echo_append )
+
+# Clients are programs provided in this repository, that make use of the library as a library client.  This can include
+# but is not limited to benchmarks, tests and samples.
+if( BUILD_CLIENTS )
+  # Clients need to find and link rocblas; we install it locally instead of globally
+  unset( hipblas_INSTALL_COMMAND )
+endif()
 
 # standard cmake module to manage dependencies
 include( ExternalProject )
@@ -139,6 +147,50 @@ if( BUILD_LIBRARY )
     LIST_SEPARATOR ^^
     CMAKE_ARGS ${LIBRARY_CMAKE_ARGS}
     ${hipblas_INSTALL_COMMAND}
+  )
+endif( )
+
+# Build clients of the library
+if( BUILD_CLIENTS )
+  include( clients/cmake/build-options.cmake )
+
+  if( BUILD_LIBRARY )
+    ExternalProject_Get_Property( hipblas install_dir )
+    list( APPEND CMAKE_PREFIX_PATH ${install_dir} )
+  endif( )
+
+  # WARNING: do not surround CMAKE_PREFIX_PATH with quotes, it breaks
+  # Replace all occurances of ; with ^^, which we elect to use a path seperator
+  string(REGEX REPLACE ";" "^^" CLIENT_PREFIX_PATH "${CMAKE_PREFIX_PATH}" )
+  string(REGEX REPLACE ";" "^^" CLIENT_MODULE_PATH "${CMAKE_MODULE_PATH}" )
+
+  # Default arguments that get passed down into all external projects
+  set( CLIENTS_CMAKE_ARGS
+    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DDEVICE_CXX_COMPILER=${DEVICE_CXX_COMPILER}
+    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+    -DCMAKE_PREFIX_PATH=${CLIENT_PREFIX_PATH}
+    -DCMAKE_MODULE_PATH=${CLIENT_MODULE_PATH}
+    -DBUILD_CLIENTS_SAMPLES=${BUILD_CLIENTS_SAMPLES}
+    -DBUILD_CLIENTS_BENCHMARKS=${BUILD_CLIENTS_BENCHMARKS}
+    -DBUILD_CLIENTS_TESTS=${BUILD_CLIENTS_TESTS}
+    -DDEVICE_CXX_COMPILER=${DEVICE_CXX_COMPILER}
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    -DCMAKE_HIPBLAS_INSTALL_DIR=${hipblas_INSTALL_DIR}
+  )
+
+  # Clients are set up as an external project to take advantage of specifying toolchain files.
+  # We want cmake to go through it's usual discovery process
+  ExternalProject_Add( hipblas-clients
+    DEPENDS hipblas
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/clients
+    BINARY_DIR clients-build
+    INSTALL_DIR clients-package
+    LIST_SEPARATOR ^^
+    CMAKE_ARGS ${CLIENTS_CMAKE_ARGS}
+    INSTALL_COMMAND ""
   )
 endif( )
 
