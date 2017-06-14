@@ -36,6 +36,39 @@ hipblasOperation_t HCCOperationToHIPOperation( rocblas_operation_ op) {
 	}
 }
 
+rocblas_pointer_mode HIPPointerModeToRocblasPointerMode( hipblasPointerMode_t mode)
+{
+    switch (mode)
+    {
+        case HIPBLAS_POINTER_MODE_HOST :
+            return rocblas_pointer_mode_host;
+
+        case HIPBLAS_POINTER_MODE_DEVICE :
+            return rocblas_pointer_mode_device;
+
+        default:
+            throw "Non existent PointerMode";
+    }
+}
+
+
+hipblasPointerMode_t RocblasPointerModeToHIPPointerMode( rocblas_pointer_mode mode)
+{
+    switch (mode)
+    {
+        case rocblas_pointer_mode_host :
+            return HIPBLAS_POINTER_MODE_HOST;
+
+        case rocblas_pointer_mode_device :
+            return HIPBLAS_POINTER_MODE_DEVICE;
+
+        default:
+            throw "Non existent PointerMode";
+    }
+}
+
+
+
 hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
 {
         switch(error)
@@ -93,6 +126,17 @@ hipblasStatus_t  hipblasGetStream(hipblasHandle_t handle, hipStream_t *streamId)
     return HIPBLAS_STATUS_NOT_INITIALIZED;
   }
   return rocBLASStatusToHIPStatus(rocblas_get_stream((rocblas_handle) handle, streamId));
+}
+
+hipblasStatus_t hipblasSetPointerMode(hipblasHandle_t handle, hipblasPointerMode_t mode){
+    return rocBLASStatusToHIPStatus(rocblas_set_pointer_mode((rocblas_handle) handle, HIPPointerModeToRocblasPointerMode(mode)));
+}
+
+hipblasStatus_t hipblasGetPointerMode(hipblasHandle_t handle, hipblasPointerMode_t *mode){
+    rocblas_pointer_mode rocblas_mode;
+    rocblas_status status = rocblas_get_pointer_mode((rocblas_handle) handle, &rocblas_mode);
+    *mode = RocblasPointerModeToHIPPointerMode(rocblas_mode);
+    return rocBLASStatusToHIPStatus(status);
 }
 
 hipblasStatus_t hipblasSetVector(int n, int elemSize, const void *x, int incx, void *y, int incy){
