@@ -64,17 +64,41 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 # message( STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}" )
 
 find_package( GTest REQUIRED )
+find_package( cblas REQUIRED CONFIG )
 find_package( HIP REQUIRED )
 
 find_library( HIPBLAS_LIBRARY NAMES hipblas-hcc PATHS ${CMAKE_HIPBLAS_INSTALL_DIR}/lib )
 
+#if( BUILD_WITH_TENSILE )
+set(Tensile_TEST_SRC
+    gemm_gtest.cpp
+#   gemm_strided_batched_gtest.cpp
+#   trsm_gtest.cpp
+    )
+#endif()
+
 set(hipblas_test_source
     hipblas_gtest_main.cpp
     set_get_pointer_mode_gtest.cpp
+    set_get_vector_gtest.cpp
+    set_get_matrix_gtest.cpp
+    blas1_gtest.cpp
+    gemv_gtest.cpp
+    ger_gtest.cpp
+    ${Tensile_TEST_SRC}
+    )
+
+set( hipblas_benchmark_common
+      ../common/utility.cpp
+      ../common/cblas_interface.cpp
+      ../common/flops.cpp
+      ../common/norm.cpp
+      ../common/unit.cpp
+      ../common/hipblas_template_specialization.cpp
     )
 
 # link_directories( /opt/rocm/lib )
-add_executable( hipblas-test ${hipblas_test_source} )
+add_executable( hipblas-test ${hipblas_test_source} ${hipblas_benchmark_common})
 
 # Try to test for specific compiler features if cmake version is recent enough
 if( CMAKE_VERSION VERSION_GREATER "3.0" )
@@ -95,12 +119,13 @@ target_compile_definitions( hipblas-test PRIVATE GTEST_USE_OWN_TR1_TUPLE=1 -DGOO
 target_include_directories( hipblas-test
   PRIVATE
     $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     $<BUILD_INTERFACE:${HIP_ROOT_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_HIPBLAS_INSTALL_DIR}/include>
 )
 
-target_link_libraries( hipblas-test ${GTEST_LIBRARIES} ${HIPBLAS_LIBRARY})
+target_link_libraries( hipblas-test ${HIPBLAS_LIBRARY} ${CBLAS_LIBRARIES} ${GTEST_LIBRARIES} lapack gfortran)
 
 # Ubuntu systems need to explicitely link to pthreads lib because of --as-needed
 # https://github.com/google/googletest/issues/391#issuecomment-125645879

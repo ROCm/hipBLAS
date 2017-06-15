@@ -23,6 +23,13 @@ if( BUILD_CLIENTS_TESTS )
   endif( )
 endif()
 
+if( BUILD_CLIENTS_TESTS )
+  if( NOT DEFINED LAPACK_ROOT )
+    include( external-lapack )
+    list( APPEND hipblas_clients_dependencies lapack )
+  endif( )
+endif()
+
 # WARNING: do not surround CMAKE_PREFIX_PATH with quotes, it breaks
 # Replace all occurances of ; with ^^, which we elect to use a path seperator
 string(REGEX REPLACE ";" "^^" CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" )
@@ -71,7 +78,7 @@ endif( )
 if( BUILD_CLIENTS_TESTS )
   set( TESTS_CMAKE_ARGS
         ${CLIENTS_CMAKE_ARGS}
-        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}^^${GTEST_ROOT}
+        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}^^${GTEST_ROOT}^^${LAPACK_ROOT}
         -DBUILD_WITH_TENSILE=${BUILD_WITH_TENSILE}
         -DCMAKE_HIPBLAS_INSTALL_DIR=${CMAKE_HIPBLAS_INSTALL_DIR}
     )
