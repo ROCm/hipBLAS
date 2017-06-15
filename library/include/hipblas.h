@@ -14,6 +14,7 @@
 #define HIPBLAS_H
 #pragma once
 #include <hip/hip_runtime_api.h>
+#include <hip/hip_complex.h>
 #include "hipblas-export.h"
 #include "hipblas-version.h"
 
@@ -30,15 +31,33 @@ enum hipblasStatus_t {
   HIPBLAS_STATUS_NOT_SUPPORTED     // function not implemented
 };
 
+// set the values of enum constants to be the same as those used in cblas
 enum hipblasOperation_t {
-	HIPBLAS_OP_N,
-	HIPBLAS_OP_T,
-	HIPBLAS_OP_C
+	HIPBLAS_OP_N = 111,
+	HIPBLAS_OP_T = 112,
+	HIPBLAS_OP_C = 113
 };
 
 enum hipblasPointerMode_t {
     HIPBLAS_POINTER_MODE_HOST,
     HIPBLAS_POINTER_MODE_DEVICE
+};
+
+enum hipblasFillMode_t {
+    HIPBLAS_FILL_MODE_UPPER = 121,
+    HIPBLAS_FILL_MODE_LOWER = 122,
+    HIPBLAS_FILL_MODE_FULL  = 123
+};
+
+enum hipblasDiagType_t {
+    HIPBLAS_DIAG_NON_UNIT = 131,
+    HIPBLAS_DIAG_UNIT     = 132
+};
+
+enum hipblasSideMode_t {
+    HIPBLAS_SIDE_LEFT   = 141,
+    HIPBLAS_SIDE_RIGHT  = 142,
+    HIPBLAS_SIDE_BOTH   = 143
 };
 
 #ifdef __cplusplus
@@ -100,7 +119,7 @@ HIPBLAS_EXPORT hipblasStatus_t  hipblasSscal(hipblasHandle_t handle, int n, cons
 
 HIPBLAS_EXPORT hipblasStatus_t  hipblasDscal(hipblasHandle_t handle, int n, const double *alpha,  double *x, int incx);
 
-/* not implementes, requires complex support
+/* not implemented, requires complex support
 hipblasStatus_t  hipblasCscal(hipblasHandle_t handle, int n, const hipComplex *alpha,  hipComplex *x, int incx);
 
 hipblasStatus_t  hipblasZscal(hipblasHandle_t handle, int n, const hipDoubleComplex *alpha,  hipDoubleComplex *x, int incx);
