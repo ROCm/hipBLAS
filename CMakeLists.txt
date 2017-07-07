@@ -34,13 +34,12 @@ endif( )
 project( hipblas-superbuild NONE )
 
 # Everything is initially off, so that cache is not initialized until user elects to build
-option( BUILD_LIBRARY "Build hipBLAS library" OFF )
+option( BUILD_LIBRARY "Build hipBLAS library" ON )
 option( BUILD_CLIENTS "Build rocBLAS clients" OFF )
 
 
-# BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
-option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" OFF )
-
+# BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui 
+option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON ) 
 set( HIP_ROOT /opt/rocm/hip CACHE PATH "Specify hip installation dir")
 
 # set( hipblas_INSTALL_DIR ${CMAKE_INSTALL_PREFIX} )
