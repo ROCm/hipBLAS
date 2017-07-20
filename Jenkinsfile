@@ -61,7 +61,7 @@ def docker_build_image(  )
   {
     dir('docker')
     {
-      build_image = docker.build( "${project}/${build_image_name}:latest", "-f ${dockerfile_name} ." )
+      build_image = docker.build( "${project}/${build_image_name}:latest", "-f ${dockerfile_name} --build-arg REPO_RADEON=10.255.8.5 ." )
     }
   }
 

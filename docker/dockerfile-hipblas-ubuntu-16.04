@@ -1,10 +1,13 @@
 FROM ubuntu:16.04
 MAINTAINER Kent Knox <kent.knox@amd>
 
+# Parameters related to building hipblas
+ARG REPO_RADEON=repo.radeon.com
+
 # Initialize the image we are working with
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y curl && \
-    curl -sL http://packages.amd.com/rocm/apt/debian/rocm.gpg.key | apt-key add - && \
-    echo 'deb [arch=amd64] http://packages.amd.com/rocm/apt/debian/ xenial main' | tee /etc/apt/sources.list.d/rocm.list && \
+    curl -sL http://${REPO_RADEON}/rocm/apt/debian/rocm.gpg.key | apt-key add - && \
+    echo 'deb [arch=amd64] http://${REPO_RADEON}/rocm/apt/debian/ xenial main' | tee /etc/apt/sources.list.d/rocm.list && \
     apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     rocm-dev \
     && \
