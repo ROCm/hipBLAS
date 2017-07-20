@@ -30,6 +30,10 @@ if( NOT DEFINED CMAKE_C_COMPILER AND NOT DEFINED ENV{CC} )
   set( CMAKE_C_COMPILER clang )
 endif( )
 
+# Defaults for common use
+set( CPACK_PACKAGING_INSTALL_PREFIX "/opt/rocm/hipblas" CACHE STRING "Directory for packages")
+set( CMAKE_PREFIX_PATH  "/opt/rocm/rocblas" CACHE STRING "Directory to find rocBLAS")
+
 # The superbuild does not build anything itself, all compiling is done in external projects
 project( hipblas-superbuild NONE )
 
@@ -131,6 +135,8 @@ if( BUILD_LIBRARY )
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
     -DCMAKE_CXX_COMPILER=${LIBRARY_CXX_COMPILER}
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    -DCPACK_PACKAGING_INSTALL_PREFIX=${CPACK_PACKAGING_INSTALL_PREFIX}
+    -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
   )
 
   if( DEFINED CPACK_PACKAGING_INSTALL_PREFIX )

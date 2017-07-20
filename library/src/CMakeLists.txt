@@ -72,7 +72,7 @@ elseif (${PLATFORM} MATCHES "nvcc")
 
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
   set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" OUTPUT_NAME hipblas-nvcc )
-endif() # (${PLATFORM} MATCHES "hcc")
+endif() # (${PLATFORM} MATCHES "hcc" or "nvcc")
 
 target_include_directories( hipblas
   PUBLIC  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>

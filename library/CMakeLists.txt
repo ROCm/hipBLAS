@@ -114,8 +114,8 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/../LICENSE" )
 set( CPACK_SOURCE_IGNORE_FILES "/\\\\.git/" )
 
 # Package specific CPACK vars
-set( CPACK_DEBIAN_PACKAGE_DEPENDS "hip_hcc (>= 1.0.17174)" )
-set( CPACK_RPM_PACKAGE_REQUIRES "hip_hcc >= 1.0.17174" )
+set( CPACK_DEBIAN_PACKAGE_DEPENDS "hip_hcc (>= 1.0.17174), rocblas" )
+set( CPACK_RPM_PACKAGE_REQUIRES "hip_hcc >= 1.0.17174, rocblas" )
 
 if( "${CPACK_PACKAGING_INSTALL_PREFIX}" MATCHES "^/opt/rocm.*$")
     include( package-functions )
