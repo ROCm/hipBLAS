@@ -202,7 +202,7 @@ def hipblas_build_pipeline( String build_type )
 ////////////////////////////////////////////////////////////////////////
 // -- MAIN
 // This following are build nodes; start of build pipeline
-node('docker && rocm')
+node('docker && rocm && fiji')
 {
   hipblas_build_pipeline( 'Release' )
 }
