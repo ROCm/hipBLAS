@@ -137,7 +137,7 @@ def docker_upload_artifactory( String build_config, String workspace_dir_abs )
       //  We copy the docker files into the bin directory where the .deb lives so that it's a clean
       //  build everytime
       sh "cp -r ${workspace_dir_abs}/docker/* .; cp ${build_dir_abs}/library-build/*.deb ."
-      rocblas_install_image = docker.build( "${artifactory_org}/${image_name}:${env.BUILD_NUMBER}", "-f dockerfile-${image_name} ." )
+      rocblas_install_image = docker.build( "${artifactory_org}/${image_name}:${env.BUILD_NUMBER}", "-f dockerfile-${image_name} --build-arg REPO_RADEON=10.255.8.5 ." )
     }
 
     // docker.withRegistry('http://compute-artifactory:5001', 'artifactory-cred' )
