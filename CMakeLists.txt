@@ -42,8 +42,8 @@ option( BUILD_LIBRARY "Build hipBLAS library" ON )
 option( BUILD_CLIENTS "Build rocBLAS clients" OFF )
 
 
-# BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui 
-option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON ) 
+# BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
+option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 set( HIP_ROOT /opt/rocm/hip CACHE PATH "Specify hip installation dir")
 
 # set( hipblas_INSTALL_DIR ${CMAKE_INSTALL_PREFIX} )
@@ -126,12 +126,15 @@ if( BUILD_LIBRARY )
     set( LIBRARY_CXX_COMPILER ${CMAKE_CXX_COMPILER})
   ENDIF()
 
+  # Make sure LIBRARY_CXX_FLAGS begins with whitespace so that the flags do not merge with CMAKE_CXX_FLAGS
+  set( LIBRARY_CXX_FLAGS " --amdgpu-target=gfx803 --amdgpu-target=gfx900" CACHE STRING "hcc specific compiler flags for hipblas" )
+
   set( LIBRARY_CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
     -DCMAKE_PREFIX_PATH=${LIBRARY_PREFIX_PATH}
     -DCMAKE_MODULE_PATH=${LIBRARY_MODULE_PATH}
     -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
-    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}${LIBRARY_CXX_FLAGS}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
     -DCMAKE_CXX_COMPILER=${LIBRARY_CXX_COMPILER}
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
