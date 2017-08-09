@@ -47,7 +47,7 @@ vector<vector<int>> matrix_size_range = {
                                         {32, 32, 32, 100, 100, 100},
                                         {64, 64, 64, 128, 128, 128},
                                         {128, 128, 128, 128, 128, 128},
-                                        {500, 500, 500, 500, 600, 500},
+                            //          {500, 500, 500, 500, 600, 500},
                                        };
 
 
@@ -78,8 +78,9 @@ vector<int> batch_count_range = {
                                         -1,
                                         0,
                                         1,
+                                        2,
                                         10,
-                                        100,
+                       //               100,
                                        };
 
 
@@ -152,7 +153,7 @@ TEST_P(gemm_strided_batched_gtest, gemm_strided_batched_gtest_float)
 
     Arguments arg = setup_gemm_strided_batched_arguments( GetParam() );
 
-    hipblasStatus_t status = testing_gemm_strided_batched<float>( arg );
+    hipblasStatus_t status = testing_GemmStridedBatched<float>( arg );
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS){
@@ -181,7 +182,7 @@ TEST_P(gemm_strided_batched_gtest, gemm_strided_batched_gtest_float)
 //ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, K, lda, ldb, ldc}, {alpha, beta}, {transA, transB}, {batch_count} }
 
-INSTANTIATE_TEST_CASE_P(hipblasGemm_strided_batched,
+INSTANTIATE_TEST_CASE_P(hipblasGemmStridedBatched,
                         gemm_strided_batched_gtest,
                         Combine(
                                   ValuesIn(matrix_size_range), ValuesIn(alpha_beta_range), ValuesIn(transA_transB_range), ValuesIn(batch_count_range)
