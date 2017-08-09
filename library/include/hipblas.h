@@ -161,16 +161,25 @@ hipblasStatus_t hipblasHgemm(hipblasHandle_t handle,  hipblasOperation_t transa,
                            int m, int n, int k,  const __half *alpha, __half *A, int lda, __half *B, int ldb, const __half *beta, __half *C, int ldc);
 */
 
+/*
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const float *alpha, const float *A[], int lda, const float *B[], int ldb, const float *beta, float *C[], int ldc, int batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const double *alpha, const double *A[], int lda, const double *B[], int ldb, const double *beta, double *C[], int ldc, int batchCount);
+*/
 
 /* not implementes, requires complex support
 hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const hipComplex *alpha, const hipComplex *A[], int lda, const hipComplex *B[], int ldb, const hipComplex *beta, hipComplex *C[], int ldc, int batchCount);
 */
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const float *alpha, const float *A, int lda, long long bsa, const float *B, int ldb, long long bsb, const float *beta, float *C, int ldc, long long bsc, int batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const double *alpha, const double *A, int lda, long long bsa, const double *B, int ldb, long long bsb, const double *beta, double *C, int ldc, long long bsc, int batchCount);
+
 
 #ifdef __cplusplus
 }
