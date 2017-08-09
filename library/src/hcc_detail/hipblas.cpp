@@ -3,6 +3,7 @@
  * ************************************************************************ */
 #include "rocblas.h"
 #include "hipblas.h"
+#include "limits.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -279,17 +280,43 @@ hipblasStatus_t hipblasHgemm(hipblasHandle_t handle,  hipblasOperation_t transa,
 }
 */
 
-hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const float *alpha, const float *A[], int lda, const float *B[], int ldb, const float *beta, float *C[], int ldc, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
+hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
+int m, int n, int k,  const float *alpha, const float *A, int lda, long long bsa, const float *B, int ldb, long long bsb, const float *beta, float *C, int ldc, long long bsc, int batchCount)
+{
+    int bsa_int, bsb_int, bsc_int;
+    if (bsa < INT_MAX && bsb < INT_MAX && bsc < INT_MAX)
+    {
+        bsa_int = static_cast<int>(bsa);
+        bsb_int = static_cast<int>(bsb);
+        bsc_int = static_cast<int>(bsc);
+    }
+    else
+    {
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    }
 
-hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const double *alpha, const double *A[], int lda, const double *B[], int ldb, const double *beta, double *C[], int ldc, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
+    return rocBLASStatusToHIPStatus(rocblas_sgemm_strided_batched((rocblas_handle)handle, hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb),
+    m, n, k, alpha, const_cast<float*>(A), lda, bsa_int, const_cast<float*>(B), ldb, bsb_int, beta, C, ldc, bsc_int, batchCount));
+}
 
-/*   complex not implemented
-hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const hipComplex *alpha, const hipComplex *A[], int lda, const hipComplex *B[], int ldb, const hipComplex *beta, hipComplex *C[], int ldc, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
+hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
+int m, int n, int k,  const double *alpha, const double *A, int lda, long long bsa, const double *B, int ldb, long long bsb, const double *beta, double *C, int ldc, long long bsc, int batchCount)
+{
+    int bsa_int, bsb_int, bsc_int;
+    if (bsa < INT_MAX && bsb < INT_MAX && bsc < INT_MAX)
+    {
+        bsa_int = static_cast<int>(bsa);
+        bsb_int = static_cast<int>(bsb);
+        bsc_int = static_cast<int>(bsc);
+    }
+    else
+    {
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    }
 
-*/
+    return rocBLASStatusToHIPStatus(rocblas_dgemm_strided_batched((rocblas_handle)handle, hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb),
+    m, n, k, alpha, const_cast<double*>(A), lda, bsa_int, const_cast<double*>(B), ldb, bsb_int, beta, C, ldc, bsc_int, batchCount));
+}
 
 #ifdef __cplusplus
 }

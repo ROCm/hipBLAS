@@ -131,7 +131,7 @@
         T *C, int ldc);
 
     template<typename T>
-    hipblasStatus_t hipblasGemm_strided_batched(
+    hipblasStatus_t hipblasGemmStridedBatched(
         hipblasHandle_t handle,
         hipblasOperation_t transA, hipblasOperation_t transB,
         int m, int n, int k,
