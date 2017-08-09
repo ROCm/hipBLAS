@@ -22,7 +22,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template<typename T>
-hipblasStatus_t testing_gemm_strided_batched(Arguments argus)
+hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
 {
 
     int M = argus.M;
@@ -106,7 +106,7 @@ hipblasStatus_t testing_gemm_strided_batched(Arguments argus)
     =================================================================== */
 
     //library interface
-    status = hipblasGemm_strided_batched<T>(handle, transA, transB,
+    status = hipblasGemmStridedBatched<T>(handle, transA, transB,
                     M, N, K,
                     &alpha, dA, lda, bsa,
                     dB, ldb, bsb,

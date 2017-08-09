@@ -471,10 +471,8 @@
         return hipblasDgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
     }
 
-
-/*
     template<>
-    hipblasStatus_t hipblasGemm_strided_batched<float>(
+    hipblasStatus_t hipblasGemmStridedBatched<float>(
         hipblasHandle_t handle,
         hipblasOperation_t transA, hipblasOperation_t transB,
         int m, int n, int k,
@@ -485,11 +483,11 @@
         float *C, int ldc, int bsc,
         int batch_count){
 
-        return hipblasSgemm_strided_batched(handle, transA, transB, m, n, k, alpha, A, lda, bsa, B, ldb, bsb, beta, C, ldc, bsc, batch_count);
+        return hipblasSgemmStridedBatched(handle, transA, transB, m, n, k, alpha, A, lda, bsa, B, ldb, bsb, beta, C, ldc, bsc, batch_count);
     }
 
     template<>
-    hipblasStatus_t hipblasGemm_strided_batched<double>(
+    hipblasStatus_t hipblasGemmStridedBatched<double>(
         hipblasHandle_t handle,
         hipblasOperation_t transA, hipblasOperation_t transB,
         int m, int n, int k,
@@ -500,9 +498,9 @@
         double *C, int ldc, int bsc,
         int batch_count){
 
-        return hipblasDgemm_strided_batched(handle, transA, transB, m, n, k, alpha, A, lda, bsa, B, ldb, bsb, beta, C, ldc, bsc, batch_count);
+        return hipblasDgemmStridedBatched(handle, transA, transB, m, n, k, alpha, A, lda, bsa, B, ldb, bsb, beta, C, ldc, bsc, batch_count);
     }
-*/
+
 /*
     template<>
     hipblasStatus_t hipblasTrsm<float>(hipblasHandle_t handle,
