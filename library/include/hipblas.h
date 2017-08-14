@@ -167,9 +167,23 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t handle
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
         int m, int n, int k,  const double *alpha, const double *A, int lda, long long bsa, const double *B, int ldb, long long bsb, const double *beta, double *C, int ldc, long long bsc, int batchCount);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t handle,
+hipblasOperation_t transa, hipblasOperation_t transb,
+int m, int n, int k,  const float *alpha,
+const float * const A[], int lda,
+const float * const B[], int ldb,
+const float *beta,
+float * const C[], int ldc, int batchCount) __attribute__((deprecated("low performance implementation", "hipblasSgemmStridedBatched")));
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,
+hipblasOperation_t transa, hipblasOperation_t transb,
+int m, int n, int k,  const double *alpha,
+const double * const A[], int lda,
+const double * const B[], int ldb,
+const double *beta,
+double * const C[], int ldc, int batchCount) __attribute__((deprecated("low performance implementation", "hipblasDgemmStridedBatched")));
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

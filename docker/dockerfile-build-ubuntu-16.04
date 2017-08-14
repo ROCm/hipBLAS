@@ -40,21 +40,16 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 RUN useradd --create-home -u 1000 -G sudo --shell /bin/bash jenkins && \
     echo '%sudo   ALL=(ALL) NOPASSWD:ALL' | tee /etc/sudoers.d/sudo-nopasswd
 
-# Build static version of rocBLAS with -fPIC enabled
-RUN cd /usr/local/src && \
-    git clone --depth 1 -b develop https://github.com/RadeonOpenCompute/rocBLAS.git && \
-    mkdir -p rocBLAS/build && \
-    cd rocBLAS/build && \
-    cmake \
-        -DCMAKE_INSTALL_PREFIX=/usr/local \
-        -DCMAKE_BUILD_TYPE=${build_type} \
-        -DCMAKE_CXX_FLAGS="-fPIC" \
-        -DCMAKE_C_FLAGS="-fPIC" \
-        -DBUILD_LIBRARY=ON \
-        -DBUILD_SHARED_LIBS=ON \
-        -DBUILD_WITH_TENSILE=ON \
-        -DBUILD_CLIENTS=OFF \
-        /usr/local/src/rocBLAS && \
-    make -j $(nproc) && \
-    cd library-build && \
-    make install
+# Build and install rocBLAS with -fPIC enabled
+ARG ROCBLAS_SRC_ROOT=/usr/local/src/rocBLAS
+
+# Clone rocblas repo
+RUN mkdir -p ${ROCBLAS_SRC_ROOT} && cd ${ROCBLAS_SRC_ROOT} && \
+    git clone -b develop --depth=1 https://github.com/ROCmSoftwarePlatform/rocBLAS . && \
+
+# Build library; build package and install from package so ldconfig is updated
+    mkdir ${ROCBLAS_SRC_ROOT}/build && \
+    cd ${ROCBLAS_SRC_ROOT}/build && \
+    CXX=/opt/rocm/bin/hcc cmake ${ROCBLAS_SRC_ROOT} && \
+    make -j $(nproc) package && \
+    dpkg -i *.deb

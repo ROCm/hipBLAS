@@ -69,6 +69,7 @@ hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
         B_row = N; B_col = K;
     }
 
+    // test where bsa != lda*A_col, also test with bsc = ldc * N
     bsa = lda * A_col * 2; bsb = ldb * B_col * 2; bsc = ldc * N;
     A_size = bsa * batch_count;
     B_size = bsb * batch_count;

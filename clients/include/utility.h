@@ -63,6 +63,14 @@ using namespace std;
             }
         }
     };
+    template<typename T>
+    void hipblas_init(T* A, int M, int N, int lda){
+        for (int i = 0; i < M; ++i){
+            for (int j = 0; j < N; ++j){
+                A[i+j*lda] = random_generator<T>();
+            }
+        }
+    };
 
     /*! \brief  symmetric matrix initialization: */
     // for real matrix only
