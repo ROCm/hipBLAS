@@ -24,7 +24,6 @@ using namespace std;
 template<typename T>
 hipblasStatus_t testing_gemm(Arguments argus)
 {
-
     int M = argus.M;
     int N = argus.N;
     int K = argus.K;

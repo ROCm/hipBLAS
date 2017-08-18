@@ -73,6 +73,7 @@ find_library( HIPBLAS_LIBRARY NAMES hipblas-hcc PATHS ${CMAKE_HIPBLAS_INSTALL_DI
 set(Tensile_TEST_SRC
     gemm_gtest.cpp
     gemm_strided_batched_gtest.cpp
+    gemm_batched_gtest.cpp
 #   trsm_gtest.cpp
     )
 #endif()
@@ -94,6 +95,7 @@ set( hipblas_benchmark_common
       ../common/flops.cpp
       ../common/norm.cpp
       ../common/unit.cpp
+      ../common/arg_check.cpp
       ../common/hipblas_template_specialization.cpp
     )
 

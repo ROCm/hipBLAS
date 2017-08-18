@@ -52,7 +52,6 @@ rocblas_pointer_mode HIPPointerModeToRocblasPointerMode( hipblasPointerMode_t mo
     }
 }
 
-
 hipblasPointerMode_t RocblasPointerModeToHIPPointerMode( rocblas_pointer_mode mode)
 {
     switch (mode)
@@ -67,8 +66,6 @@ hipblasPointerMode_t RocblasPointerModeToHIPPointerMode( rocblas_pointer_mode mo
             throw "Non existent PointerMode";
     }
 }
-
-
 
 hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
 {
@@ -93,22 +90,22 @@ hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
         }
 }
 
+hipblasStatus_t hipblasCreate(hipblasHandle_t* handle) 
+{
+    int deviceId;
+    hipError_t err;
+    hipblasStatus_t retval = HIPBLAS_STATUS_SUCCESS;
 
-hipblasStatus_t hipblasCreate(hipblasHandle_t* handle) {
-  int deviceId;
-  hipError_t err;
-  hipblasStatus_t retval = HIPBLAS_STATUS_SUCCESS;
+    if (handle == nullptr)
+    {
+       handle = (hipblasHandle_t *) new rocblas_handle();
+    }
 
-  if (handle == nullptr)
-  {
-     handle = (hipblasHandle_t *) new rocblas_handle();
-  }
-
-  err = hipGetDevice(&deviceId);
-  if (err == hipSuccess) {
-      retval = rocBLASStatusToHIPStatus (rocblas_create_handle((rocblas_handle *) handle));
-  }
-  return retval;
+    err = hipGetDevice(&deviceId);
+    if (err == hipSuccess) {
+        retval = rocBLASStatusToHIPStatus (rocblas_create_handle((rocblas_handle *) handle));
+    }
+    return retval;
 }
 
 hipblasStatus_t hipblasDestroy(hipblasHandle_t handle) {
@@ -280,8 +277,15 @@ hipblasStatus_t hipblasHgemm(hipblasHandle_t handle,  hipblasOperation_t transa,
 }
 */
 
-hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-int m, int n, int k,  const float *alpha, const float *A, int lda, long long bsa, const float *B, int ldb, long long bsb, const float *beta, float *C, int ldc, long long bsc, int batchCount)
+hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t handle,  
+        hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  
+        const float *alpha, 
+        const float *A, int lda, long long bsa, 
+        const float *B, int ldb, long long bsb, 
+        const float *beta, 
+        float *C, int ldc, long long bsc, 
+        int batchCount)
 {
     int bsa_int, bsb_int, bsc_int;
     if (bsa < INT_MAX && bsb < INT_MAX && bsc < INT_MAX)
@@ -295,12 +299,26 @@ int m, int n, int k,  const float *alpha, const float *A, int lda, long long bsa
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    return rocBLASStatusToHIPStatus(rocblas_sgemm_strided_batched((rocblas_handle)handle, hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb),
-    m, n, k, alpha, const_cast<float*>(A), lda, bsa_int, const_cast<float*>(B), ldb, bsb_int, beta, C, ldc, bsc_int, batchCount));
+    return rocBLASStatusToHIPStatus(rocblas_sgemm_strided_batched((rocblas_handle)handle, 
+                hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb),
+                m, n, k, 
+                alpha, 
+                const_cast<float*>(A), lda, bsa_int, 
+                const_cast<float*>(B), ldb, bsb_int, 
+                beta, 
+                C, ldc, bsc_int, 
+                batchCount));
 }
 
-hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-int m, int n, int k,  const double *alpha, const double *A, int lda, long long bsa, const double *B, int ldb, long long bsb, const double *beta, double *C, int ldc, long long bsc, int batchCount)
+hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t handle,  
+        hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  
+        const double *alpha, 
+        const double *A, int lda, long long bsa, 
+        const double *B, int ldb, long long bsb, 
+        const double *beta, 
+        double *C, int ldc, long long bsc, 
+        int batchCount)
 {
     int bsa_int, bsb_int, bsc_int;
     if (bsa < INT_MAX && bsb < INT_MAX && bsc < INT_MAX)
@@ -314,10 +332,156 @@ int m, int n, int k,  const double *alpha, const double *A, int lda, long long b
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    return rocBLASStatusToHIPStatus(rocblas_dgemm_strided_batched((rocblas_handle)handle, hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb),
-    m, n, k, alpha, const_cast<double*>(A), lda, bsa_int, const_cast<double*>(B), ldb, bsb_int, beta, C, ldc, bsc_int, batchCount));
+    return rocBLASStatusToHIPStatus(rocblas_dgemm_strided_batched((rocblas_handle)handle, 
+                hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb),
+                m, n, k, 
+                alpha, 
+                const_cast<double*>(A), lda, bsa_int, 
+                const_cast<double*>(B), ldb, bsb_int, 
+                beta, 
+                C, ldc, bsc_int, 
+                batchCount));
 }
 
 #ifdef __cplusplus
 }
 #endif
+
+template<typename T>
+rocblas_status gemm_template(rocblas_handle handle,
+    rocblas_operation transA, rocblas_operation transB,
+    rocblas_int m, rocblas_int n, rocblas_int k,
+    const T *alpha,
+    const T *A, rocblas_int lda,
+    const T *B, rocblas_int ldb,
+    const T *beta,
+    T *C, rocblas_int ldc);
+
+template<>
+rocblas_status
+gemm_template<float>(rocblas_handle handle,
+    rocblas_operation transA,
+    rocblas_operation transB,
+    rocblas_int M, rocblas_int N, rocblas_int K,
+    const float *alpha,
+    const float *A, rocblas_int lda,
+    const float *B, rocblas_int ldb,
+    const float *beta,
+    float *C, rocblas_int ldc)
+{
+    return rocblas_sgemm(handle, transA, transB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+
+template<>
+rocblas_status
+gemm_template<double>(rocblas_handle handle,
+    rocblas_operation transA,
+    rocblas_operation transB,
+    rocblas_int M, rocblas_int N, rocblas_int K,
+    const double *alpha,
+    const double *A, rocblas_int lda,
+    const double *B, rocblas_int ldb,
+    const double *beta,
+    double *C, rocblas_int ldc)
+{
+    return rocblas_dgemm(handle, transA, transB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+
+template<typename T>
+hipblasStatus_t 
+hipblasGemmBatched_template(hipblasHandle_t handle,  
+        hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const T *alpha, 
+        const T * const A[], int lda, 
+        const T * const B[], int ldb, 
+        const T *beta, 
+        T * const C[], int ldc, int batchCount)
+{
+    if (batchCount < 0 || m < 0 || n < 0 || k < 0 || lda < 0 || ldb < 0 || ldc < 0) 
+    {
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    }
+
+    // A, B, and C arrays are on device
+    if (rocblas_pointer_to_mode((void *)A) == rocblas_pointer_mode_device ||
+        rocblas_pointer_to_mode((void *)B) == rocblas_pointer_mode_device ||
+        rocblas_pointer_to_mode((void *)C) == rocblas_pointer_mode_device )
+    {
+        T *hA[batchCount], *hB[batchCount], *hC[batchCount];
+        // copy arrays from device to host
+        hipError_t err_A = hipMemcpy(hA, A, batchCount * sizeof(*A), hipMemcpyDeviceToHost);
+        hipError_t err_B = hipMemcpy(hB, B, batchCount * sizeof(*B), hipMemcpyDeviceToHost);
+        hipError_t err_C = hipMemcpy(hC, C, batchCount * sizeof(*C), hipMemcpyDeviceToHost);
+        if ((err_A != hipSuccess) || (err_B != hipSuccess) || (err_C != hipSuccess))
+        {
+            return HIPBLAS_STATUS_ALLOC_FAILED;
+        }
+        for (int i = 0; i < batchCount; i++)
+        {
+            rocblas_status status = gemm_template<T>((rocblas_handle)handle, 
+                hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb), 
+                m,  n,  k, alpha, 
+                const_cast<T*>(hA[i]),  lda, 
+                const_cast<T*>(hB[i]),  ldb, 
+                beta, hC[i],  ldc);
+            if (status != rocblas_status_success)
+            {
+                return rocBLASStatusToHIPStatus(status);
+            }
+        }
+    }
+    // A, B, and C arrays are on host
+    else if (rocblas_pointer_to_mode((void *)A) != rocblas_pointer_mode_device &&
+             rocblas_pointer_to_mode((void *)B) != rocblas_pointer_mode_device &&
+             rocblas_pointer_to_mode((void *)C) != rocblas_pointer_mode_device )
+    {
+        for (int i = 0; i < batchCount; i++)
+        {
+            rocblas_status status = gemm_template<T>((rocblas_handle)handle, 
+                hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb), 
+                m,  n,  k, alpha, 
+                const_cast<T*>(A[i]),  lda, 
+                const_cast<T*>(B[i]),  ldb, 
+                beta, C[i],  ldc);
+
+            if (status != rocblas_status_success)
+            {
+                return rocBLASStatusToHIPStatus(status);
+            }
+        }
+    }
+    else
+    {
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    }
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+extern "C"
+hipblasStatus_t 
+hipblasSgemmBatched(hipblasHandle_t handle,  
+        hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const float *alpha, 
+        const float * const A[], int lda, 
+        const float * const B[], int ldb, 
+        const float *beta, 
+        float * const C[], int ldc, int batchCount)
+{
+    return hipblasGemmBatched_template<float>(handle,  
+        transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+}
+
+extern "C"
+hipblasStatus_t 
+hipblasDgemmBatched(hipblasHandle_t handle,  
+        hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const double *alpha, 
+        const double * const A[], int lda, 
+        const double * const B[], int ldb, 
+        const double *beta, 
+        double * const C[], int ldc, int batchCount)
+{
+    return hipblasGemmBatched_template<double>(handle,  
+        transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+}
+

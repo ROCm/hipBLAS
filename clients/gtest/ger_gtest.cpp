@@ -117,18 +117,16 @@ Arguments setup_ger_arguments(ger_tuple tup)
     return arg;
 }
 
-
-class ger_gtest: public :: TestWithParam <ger_tuple>
+class blas2_ger_gtest: public :: TestWithParam <ger_tuple>
 {
     protected:
-        ger_gtest(){}
-        virtual ~ger_gtest(){}
+        blas2_ger_gtest(){}
+        virtual ~blas2_ger_gtest(){}
         virtual void SetUp(){}
         virtual void TearDown(){}
 };
 
-
-TEST_P(ger_gtest, ger_gtest_float)
+TEST_P(blas2_ger_gtest, float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -156,7 +154,36 @@ TEST_P(ger_gtest, ger_gtest_float)
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
     }
+}
 
+TEST_P(blas2_ger_gtest, double)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+
+    Arguments arg = setup_ger_arguments( GetParam() );
+
+    hipblasStatus_t status = testing_ger<double>( arg );
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS){
+
+        if( arg.M < 0 || arg.N < 0 ){
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M){
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0){
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0){
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
 }
 
 //notice we are using vector of vector
@@ -164,8 +191,8 @@ TEST_P(ger_gtest, ger_gtest_float)
 //ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
-INSTANTIATE_TEST_CASE_P(hipblasGer,
-                        ger_gtest,
+INSTANTIATE_TEST_CASE_P(hipblasBlas2,
+                        blas2_ger_gtest,
                         Combine(
                                   ValuesIn(matrix_size_range), ValuesIn(incx_incy_range), ValuesIn(alpha_range)
                                )
