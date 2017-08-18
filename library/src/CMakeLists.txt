@@ -52,7 +52,7 @@ if (${PLATFORM} MATCHES "hcc")
   #Generating hipblas shared object
   add_library( hipblas ${HIPBLASSRCS} )
   set_property(TARGET hipblas APPEND_STRING PROPERTY LINK_FLAGS " ${HCC_LDFLAGS} ")
-  target_link_libraries( hipblas hc_am rocblas )
+  target_link_libraries( hipblas hc_am roc::rocblas )
   set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" OUTPUT_NAME hipblas-hcc )
 
 elseif (${PLATFORM} MATCHES "nvcc")
@@ -65,8 +65,8 @@ elseif (${PLATFORM} MATCHES "nvcc")
   hip_add_library( hipblas ${HIPBLASSRCS} )
   target_link_libraries( hipblas PRIVATE ${CUDA_CUBLAS_LIBRARIES} )
 
-  target_include_directories( hipblas PRIVATE 
-     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> 
+  target_include_directories( hipblas PRIVATE
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
 	 $<BUILD_INTERFACE:${HIP_PATH}/include>
 	 $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}> )
 
