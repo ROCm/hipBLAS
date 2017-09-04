@@ -29,8 +29,10 @@ if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
     ${relative_hipblas_headers_public}
   )
 
+  find_package( rocblas REQUIRED CONFIG )
+
   # NOTE: hipblas header 'hipblas-types.h' exposes the hip header hip/hip_vector_types.h, requiring exposing hip::hip_hcc as PUBLIC
-  target_link_libraries( hipblas PUBLIC hip::hip_hcc PRIVATE hip::hip_device hcc::hccshared )
+  target_link_libraries( hipblas PUBLIC hip::hip_hcc PRIVATE hip::hip_device hcc::hccshared roc::rocblas )
 
   # Test for specific compiler features if cmake version is recent enough
   if( CMAKE_VERSION VERSION_GREATER "3.0" )
@@ -54,7 +56,7 @@ if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
 else( )
   # If HiP is not installed in default path, user can append to CMAKE_MODULE_PATH
   list( APPEND CMAKE_MODULE_PATH /opt/rocm/hip/cmake )
-  find_package( HIP REQUIRED ) # Using module mode; 
+  find_package( HIP REQUIRED ) # Using module mode;
   find_package( CUDA REQUIRED ) # Using module mode; packaged in cmake
 
   hip_add_library( hipblas

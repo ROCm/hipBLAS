@@ -103,7 +103,7 @@ rm -rf ${build_dir}
 # #################################################
 if [[ "${install_dependencies}" == true ]]; then
   # dependencies needed for hipblas and clients to build
-  library_dependencies_ubuntu=( "make" "cmake-curses-gui" "python2.7" "python-yaml" "hip_hcc" "hcc" "pkg-config" )
+  library_dependencies_ubuntu=( "make" "cmake-curses-gui" "hip_hcc" "hcc" "pkg-config" )
   client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
 
   sudo apt update
