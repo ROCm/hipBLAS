@@ -2,203 +2,79 @@
 # Copyright 2016 Advanced Micro Devices, Inc.
 # ########################################################################
 
-# Natively available on including Ubuntu 14.04, OpenSUSE 13.2, CentOS 6.6
-cmake_minimum_required( VERSION 2.8.12 )
+# The ROCm platform requires Ubuntu 16.04 or Fedora 24, which has cmake 3.5
+cmake_minimum_required( VERSION 3.5 )
 
-# On windows, it's convenient to change the default install prefix such that it does NOT point to 'program files'
-if( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
-  set( CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/library-package" CACHE PATH "Install path prefix, prepended onto install directories" FORCE )
+# Consider removing this in the future
+# This should appear before the project command, because it does not use FORCE
+if( WIN32 )
+  set( CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/package" CACHE PATH "Install path prefix, prepended onto install directories" )
+else( )
+  set( CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE PATH "Install path prefix, prepended onto install directories" )
 endif( )
 
 # This has to be initialized before the project() command appears
 # Set the default of CMAKE_BUILD_TYPE to be release, unless user specifies with -D.  MSVC_IDE does not use CMAKE_BUILD_TYPE
 if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE "Release" CACHE STRINGS "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel.")
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS None Debug Release RelWithDebInfo MinSizeRel)
+  set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
 endif()
+
+project( hipblas LANGUAGES CXX )
+
+# This finds the rocm-cmake project, and installs it if not found
+# rocm-cmake contains common cmake code for rocm projects to help setup and install
+set( PROJECT_EXTERN_DIR ${CMAKE_CURRENT_BINARY_DIR}/extern )
+find_package( ROCM CONFIG QUIET PATHS /opt/rocm )
+if( NOT ROCM_FOUND )
+  set( rocm_cmake_tag "master" CACHE STRING "rocm-cmake tag to download" )
+  file( DOWNLOAD https://github.com/RadeonOpenCompute/rocm-cmake/archive/${rocm_cmake_tag}.zip
+    ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag}.zip )
+
+  execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag}.zip
+    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR} )
+
+  find_package( ROCM REQUIRED CONFIG PATHS ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag} )
+endif( )
+
+include( ROCMSetupVersion )
+include( ROCMCreatePackage )
+include( ROCMInstallTargets )
+include( ROCMPackageConfigHelpers )
+include( ROCMInstallSymlinks )
+
+rocm_setup_version( VERSION 0.5.4.0 )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake /opt/rocm/hip/cmake )
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
-# Temp fix, there is a problem building our test program using googletest with gcc
-# Change compiler default to clang
-if( NOT DEFINED CMAKE_CXX_COMPILER AND NOT DEFINED ENV{CXX} )
-  set( CMAKE_CXX_COMPILER clang++ )
-endif( )
-if( NOT DEFINED CMAKE_C_COMPILER AND NOT DEFINED ENV{CC} )
-  set( CMAKE_C_COMPILER clang )
-endif( )
+# NOTE:  workaround until hcc & hip cmake modules fixes symlink logic in their config files; remove when fixed
+list( APPEND CMAKE_PREFIX_PATH /opt/rocm/hcc /opt/rocm/hip )
 
-# Defaults for common use
-set( CPACK_PACKAGING_INSTALL_PREFIX "/opt/rocm/hipblas" CACHE STRING "Directory for packages")
-set( CMAKE_PREFIX_PATH  "/opt/rocm/rocblas" CACHE STRING "Directory to find rocBLAS")
-
-# The superbuild does not build anything itself, all compiling is done in external projects
-project( hipblas-superbuild NONE )
-
-# Everything is initially off, so that cache is not initialized until user elects to build
-option( BUILD_LIBRARY "Build hipBLAS library" ON )
-option( BUILD_CLIENTS "Build rocBLAS clients" OFF )
-
+# Building tensile can add significant compile time; this option allows to build
+# library without tensile to allow for rapid iteration without GEMM functionality
+option( BUILD_VERBOSE "Output additional build information" OFF )
 
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
-set( HIP_ROOT /opt/rocm/hip CACHE PATH "Specify hip installation dir")
 
-# set( hipblas_INSTALL_DIR ${CMAKE_INSTALL_PREFIX} )
-set( hipblas_INSTALL_DIR "${PROJECT_BINARY_DIR}/library-package" )
-
-# Default behavior is to NOT install library, but clients may overload
-set( hipblas_INSTALL_COMMAND INSTALL_COMMAND ${CMAKE_COMMAND} -E echo_append )
-
-# Clients are programs provided in this repository, that make use of the library as a library client.  This can include
-# but is not limited to benchmarks, tests and samples.
-if( BUILD_CLIENTS )
-  # Clients need to find and link rocblas; we install it locally instead of globally
-  unset( hipblas_INSTALL_COMMAND )
-endif()
-
-# standard cmake module to manage dependencies
-include( ExternalProject )
-
-# This captures all of the dependencies cmake builds itself
-set( hipblas_dependencies )
-
-set( BASE_CMAKE_ARGS )
-
-message( STATUS "CMAKE_BUILD_TYPE         : ${CMAKE_BUILD_TYPE} " )
-message( STATUS "BUILD_LIBRARY            : ${BUILD_LIBRARY} " )
-message( STATUS "BUILD_SHARED_LIBS        : ${BUILD_SHARED_LIBS} " )
-message( STATUS "hipblas_INSTALL_DIR      : ${hipblas_INSTALL_DIR} " )
-message( STATUS "PROJECT_BINARY_DIR       : ${PROJECT_BINARY_DIR} " )
-message( STATUS "CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR} " )
-
-# Noramlize the different ways of specifying a c++ compiler through -DCMAKE_CXX_COMPILER
-if( DEFINED CMAKE_CXX_COMPILER )
-  message( STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} " )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} )
-elseif( DEFINED ENV{CXX} )
-  message( STATUS "ENV{CXX}: $ENV{CXX} " )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_COMPILER=$ENV{CXX} )
+# Find HCC/HIP dependencies
+if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
+  find_package( hcc REQUIRED CONFIG PATHS /opt/rocm )
+elseif( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
+  find_package( hip REQUIRED CONFIG PATHS /opt/rocm )
+else( )
+  message( AUTHOR_WARNING "hipblas library probably won't build without either the hcc or hipcc compilers. Set the CXX environment variable to specify your desired compiler" )
 endif( )
 
-# Noramlize the different ways of specifying a c compiler through -DCMAKE_C_COMPILER
-if( DEFINED CMAKE_C_COMPILER )
-  message( STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}" )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} )
-elseif( DEFINED ENV{CC} )
-  message( STATUS "ENV{CC}: $ENV{CC} " )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_C_COMPILER=$ENV{CC} )
-endif( )
+# CMake list of machine targets
+set( AMDGPU_TARGETS gfx803;gfx900 CACHE STRING "List of specific machine types for library to target" )
 
-if( DEFINED CMAKE_CXX_FLAGS )
-  message( STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS} " )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} )
-endif( )
+add_subdirectory( library )
 
-if( DEFINED CMAKE_C_FLAGS )
-  message( STATUS "CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}" )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} )
-endif( )
-
-# CMAKE_BUILD_TYPE only applies to single configuration build systems
-if( DEFINED CMAKE_BUILD_TYPE )
-  list( APPEND BASE_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
-endif( )
-
-if( NOT DEFINED DEVICE_CXX_COMPILER )
-  find_package( HIP REQUIRED )
-  set( DEVICE_CXX_COMPILER ${HIP_ROOT_DIR}/bin/hipcc )
-endif()
-
-if( BUILD_LIBRARY )
-  # WARNING: do not surround CMAKE_PREFIX_PATH with quotes, it breaks
-  # Replace all occurances of ; with ^^, which we elect to use a path seperator
-  string(REGEX REPLACE ";" "^^" LIBRARY_PREFIX_PATH "${CMAKE_PREFIX_PATH}" )
-  string(REGEX REPLACE ";" "^^" LIBRARY_MODULE_PATH "${CMAKE_MODULE_PATH}" )
-
-  execute_process(COMMAND ${HIP_ROOT_DIR}/bin/hipconfig --platform OUTPUT_VARIABLE PLATFORM)
-  message (STATUS "PLATFORM                 : ${PLATFORM}")
-  IF (${PLATFORM} MATCHES "hcc")
-    set( LIBRARY_CXX_COMPILER ${DEVICE_CXX_COMPILER})
-  ELSEIF (${PLATFORM} MATCHES "nvcc")
-    set( LIBRARY_CXX_COMPILER ${CMAKE_CXX_COMPILER})
-  ENDIF()
-
-  # Make sure LIBRARY_CXX_FLAGS begins with whitespace so that the flags do not merge with CMAKE_CXX_FLAGS
-  set( LIBRARY_CXX_FLAGS " --amdgpu-target=gfx803 --amdgpu-target=gfx900" CACHE STRING "hcc specific compiler flags for hipblas" )
-
-  set( LIBRARY_CMAKE_ARGS
-    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-    -DCMAKE_PREFIX_PATH=${LIBRARY_PREFIX_PATH}
-    -DCMAKE_MODULE_PATH=${LIBRARY_MODULE_PATH}
-    -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
-    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}${LIBRARY_CXX_FLAGS}
-    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_CXX_COMPILER=${LIBRARY_CXX_COMPILER}
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    -DCPACK_PACKAGING_INSTALL_PREFIX=${CPACK_PACKAGING_INSTALL_PREFIX}
-    -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
-  )
-
-  if( DEFINED CPACK_PACKAGING_INSTALL_PREFIX )
-    list( APPEND LIBRARY_CMAKE_ARGS -DCPACK_PACKAGING_INSTALL_PREFIX=${CPACK_PACKAGING_INSTALL_PREFIX} )
-  endif()
-
-  # Build the library as an external project
-  ExternalProject_Add( hipblas
-    DEPENDS ${hipblas_dependencies}
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/library
-    BINARY_DIR library-build
-    INSTALL_DIR library-package
-    LIST_SEPARATOR ^^
-    CMAKE_ARGS ${LIBRARY_CMAKE_ARGS}
-    ${hipblas_INSTALL_COMMAND}
-  )
-endif( )
+include( clients/cmake/build-options.cmake )
 
 # Build clients of the library
-if( BUILD_CLIENTS )
-  include( clients/cmake/build-options.cmake )
-
-  if( BUILD_LIBRARY )
-    ExternalProject_Get_Property( hipblas install_dir )
-    list( APPEND CMAKE_PREFIX_PATH ${install_dir} )
-  endif( )
-
-  # WARNING: do not surround CMAKE_PREFIX_PATH with quotes, it breaks
-  # Replace all occurances of ; with ^^, which we elect to use a path seperator
-  string(REGEX REPLACE ";" "^^" CLIENT_PREFIX_PATH "${CMAKE_PREFIX_PATH}" )
-  string(REGEX REPLACE ";" "^^" CLIENT_MODULE_PATH "${CMAKE_MODULE_PATH}" )
-
-  # Default arguments that get passed down into all external projects
-  set( CLIENTS_CMAKE_ARGS
-    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DDEVICE_CXX_COMPILER=${DEVICE_CXX_COMPILER}
-    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-    -DCMAKE_PREFIX_PATH=${CLIENT_PREFIX_PATH}
-    -DCMAKE_MODULE_PATH=${CLIENT_MODULE_PATH}
-    -DBUILD_CLIENTS_SAMPLES=${BUILD_CLIENTS_SAMPLES}
-    -DBUILD_CLIENTS_BENCHMARKS=${BUILD_CLIENTS_BENCHMARKS}
-    -DBUILD_CLIENTS_TESTS=${BUILD_CLIENTS_TESTS}
-    -DDEVICE_CXX_COMPILER=${DEVICE_CXX_COMPILER}
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    -DCMAKE_HIPBLAS_INSTALL_DIR=${hipblas_INSTALL_DIR}
-  )
-
-  # Clients are set up as an external project to take advantage of specifying toolchain files.
-  # We want cmake to go through it's usual discovery process
-  ExternalProject_Add( hipblas-clients
-    DEPENDS hipblas
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/clients
-    BINARY_DIR clients-build
-    INSTALL_DIR clients-package
-    LIST_SEPARATOR ^^
-    CMAKE_ARGS ${CLIENTS_CMAKE_ARGS}
-    INSTALL_COMMAND ""
-  )
+if( BUILD_CLIENTS_TESTS )
+  add_subdirectory( clients )
 endif( )
-
