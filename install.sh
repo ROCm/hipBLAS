@@ -144,7 +144,7 @@ pushd .
   mkdir -p ${build_dir}/release && cd ${build_dir}/release
   export CXX=/opt/rocm/bin/hcc
   if [[ "${build_clients}" == true ]]; then
-    cmake -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON ../..
+    cmake -DBUILD_CLIENTS_TESTS=ON ../..
   else
     cmake ../..
   fi
