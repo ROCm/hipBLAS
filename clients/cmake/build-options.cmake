@@ -10,6 +10,6 @@
 # parameters, which would already define them.
 
 if( NOT BUILD_CLIENTS_TESTS )
-  option( BUILD_CLIENTS_TESTS "Build hipBLAS unit tests" ON )
+  option( BUILD_CLIENTS_TESTS "Build hipBLAS unit tests" OFF )
 endif( )
 
