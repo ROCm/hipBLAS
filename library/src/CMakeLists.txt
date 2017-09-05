@@ -66,12 +66,15 @@ else( )
 
   target_link_libraries( hipblas PRIVATE ${CUDA_CUBLAS_LIBRARIES} )
 
-  target_include_directories( hipblas PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-  $<BUILD_INTERFACE:${HIP_PATH}/include>
-  $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}> )
+  target_include_directories( hipblas
+    PRIVATE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+    PUBLIC
+      $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
+      $<BUILD_INTERFACE:${hip_INCLUDE_DIRS}>
+    )
 
-  target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
+  target_compile_definitions( hipblas PUBLIC __HIP_PLATFORM_NVCC__ )
   set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" OUTPUT_NAME hipblas-nvcc )
 endif( )
 
