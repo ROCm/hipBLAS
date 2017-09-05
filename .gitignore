@@ -27,3 +27,6 @@
 *.exe
 *.out
 *.app
+
+# Tool meta-data
+.vscode
