@@ -69,10 +69,11 @@ else( )
   target_include_directories( hipblas
     PRIVATE
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-    PUBLIC
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
+      PUBLIC
       $<BUILD_INTERFACE:${hip_INCLUDE_DIRS}>
-    )
+      $<INSTALL_INTERFACE:${hip_INCLUDE_DIRS}>
+      )
 
   target_compile_definitions( hipblas PUBLIC __HIP_PLATFORM_NVCC__ )
   set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" OUTPUT_NAME hipblas-nvcc )
