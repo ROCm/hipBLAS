@@ -57,18 +57,7 @@ set( hipblas_benchmark_common
   ../common/hipblas_template_specialization.cpp
 )
 
-if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" OR CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
-  # ROCm path
-  add_executable( hipblas-test ${hipblas_test_source} ${hipblas_benchmark_common} )
-else( )
-  # Nvidia path
-  # If HiP is not installed in default path, user can append to CMAKE_MODULE_PATH
-  list( APPEND CMAKE_MODULE_PATH /opt/rocm/hip/cmake )
-  find_package( HIP REQUIRED ) # Using module mode;
-  find_package( CUDA REQUIRED ) # Using module mode; packaged in cmake
-
-  add_executable( hipblas-test ${hipblas_test_source} ${hipblas_benchmark_common} )
-endif( )
+add_executable( hipblas-test ${hipblas_test_source} ${hipblas_benchmark_common} )
 
 set( THREADS_PREFER_PTHREAD_FLAG ON )
 find_package( Threads REQUIRED )
@@ -109,6 +98,13 @@ if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" OR CMAKE_CXX_COMPILER MATCHES ".*/hipcc
     target_link_libraries( hipblas-test PRIVATE --amdgpu-target=${target} )
   endforeach( )
 else( )
+  find_package( CUDA REQUIRED )
+
+  target_include_directories( hipblas-test
+  PRIVATE
+    $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
+  )
+
   target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} )
 endif( )
 
