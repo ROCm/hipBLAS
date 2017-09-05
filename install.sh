@@ -38,6 +38,7 @@ function display_help()
   echo "    [-i|--install] install after build"
   echo "    [-d|--dependencies] install build dependencies"
   echo "    [-c|--clients] build library clients too (combines with -i & -d)"
+  echo "    [--cuda] build library for cuda backend"
 }
 
 # #################################################
@@ -46,6 +47,7 @@ function display_help()
 install_package=false
 install_dependencies=false
 build_clients=false
+build_cuda=false
 
 # #################################################
 # Parameter parsing
@@ -54,7 +56,7 @@ build_clients=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies: --options hicd -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,cuda --options hicd -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -82,6 +84,9 @@ while true; do
     -c|--clients)
         build_clients=true
         shift ;;
+    --cuda)
+        build_cuda=true
+        shift ;;
     --) shift ; break ;;
     *)  echo "Unexpected command line parameter received; aborting";
         exit 1
@@ -103,7 +108,14 @@ rm -rf ${build_dir}
 # #################################################
 if [[ "${install_dependencies}" == true ]]; then
   # dependencies needed for hipblas and clients to build
-  library_dependencies_ubuntu=( "make" "cmake-curses-gui" "hip_hcc" "hcc" "pkg-config" )
+  library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" "hip_hcc" )
+  if [[ "${build_cuda}" == false ]]; then
+    library_dependencies_ubuntu+=( "hcc" "rocblas" )
+  else
+    # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
+    library_dependencies_ubuntu+=( "cuda" )
+  fi
+
   client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
 
   sudo apt update
@@ -119,7 +131,7 @@ if [[ "${install_dependencies}" == true ]]; then
   # Dependencies required by library client apps
   if [[ "${build_clients}" == true ]]; then
     for package in "${client_dependencies_ubuntu[@]}"; do
-    if [[ $(dpkg-query --show --showformat='${db:Status-Abbrev}\n' ${package} 2> /dev/null | grep -q "ii"; echo $?) -ne 0 ]]; then
+      if [[ $(dpkg-query --show --showformat='${db:Status-Abbrev}\n' ${package} 2> /dev/null | grep -q "ii"; echo $?) -ne 0 ]]; then
         printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
         sudo apt install -y --no-install-recommends ${package}
       fi
@@ -142,7 +154,11 @@ pushd .
 # configure
 # #################################################
   mkdir -p ${build_dir}/release && cd ${build_dir}/release
-  export CXX=/opt/rocm/bin/hcc
+
+  if [[ "${build_cuda}" == false ]]; then
+    export CXX=/opt/rocm/bin/hcc
+  fi
+
   if [[ "${build_clients}" == true ]]; then
     cmake -DBUILD_CLIENTS_TESTS=ON ../..
   else

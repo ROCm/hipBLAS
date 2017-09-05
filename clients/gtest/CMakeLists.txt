@@ -30,7 +30,7 @@ if( NOT TARGET hipblas )
   find_package( hipblas CONFIG PATHS /opt/rocm/hipblas )
 
   if( NOT hipblas_FOUND )
-    message( FATAL_ERROR "rocBLAS is a required dependency and is not found; try adding hipblas path to CMAKE_PREFIX_PATH")
+    message( FATAL_ERROR "hipBLAS is a required dependency and is not found; try adding hipblas path to CMAKE_PREFIX_PATH")
   endif( )
 endif( )
 
@@ -89,7 +89,7 @@ endif( )
 
 target_link_libraries( hipblas-test PRIVATE cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} )
 
-if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
+if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" OR CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.1
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
   target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument )
@@ -97,6 +97,15 @@ if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
   foreach( target ${AMDGPU_TARGETS} )
     target_link_libraries( hipblas-test PRIVATE --amdgpu-target=${target} )
   endforeach( )
+else( )
+  find_package( CUDA REQUIRED )
+
+  target_include_directories( hipblas-test
+  PRIVATE
+    $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
+  )
+
+  target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} )
 endif( )
 
 set_target_properties( hipblas-test PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )

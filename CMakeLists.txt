@@ -60,11 +60,13 @@ option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
 # Find HCC/HIP dependencies
 if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
+  message( STATUS "Building for ROCm backend" )
   find_package( hcc REQUIRED CONFIG PATHS /opt/rocm )
 elseif( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
+  message( STATUS "Building for ROCm backend" )
   find_package( hip REQUIRED CONFIG PATHS /opt/rocm )
 else( )
-  message( AUTHOR_WARNING "hipblas library probably won't build without either the hcc or hipcc compilers. Set the CXX environment variable to specify your desired compiler" )
+  message( STATUS "Building for CUDA backend" )
 endif( )
 
 # CMake list of machine targets
