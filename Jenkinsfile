@@ -221,11 +221,11 @@ Boolean docker_build_inside_image( def build_image, compiler_data compiler_args,
     }
     catch( err )
     {
+      // NOTE: This should be removed when the cuda unit tests pass
       // There are failures using the cuda stack, which we believe that we can
       // safely ignore in the future with a gtest filter
       if( compiler_args.compiler_name.toLowerCase( ).startsWith( 'nvcc-' ) )
       {
-        printf "\033[31m nvcc unit test error: ${err}\033[0m"
         currentBuild.result = 'UNSTABLE'
       }
       return false
@@ -438,6 +438,8 @@ def build_pipeline( compiler_data compiler_args, docker_data docker_args, projec
 {
   ansiColor( 'vga' )
   {
+    // NOTE: build_succeeded does not appear to be local to each function invokation.  I couldn't use it where each
+    // node had a different success value.
     def build_succeeded = false;
 
     stage( "Build ${compiler_args.compiler_name} ${compiler_args.build_config}" )
@@ -459,18 +461,15 @@ def build_pipeline( compiler_data compiler_args, docker_data docker_args, projec
     }
 
     // After a successful build, upload a docker image of the results
-    if( build_succeeded == true )
-    {
-      String job_name = env.JOB_NAME.toLowerCase( )
-      String hipblas_image_name = docker_upload_artifactory( compiler_args, docker_args, hipblas_paths, job_name )
+    String job_name = env.JOB_NAME.toLowerCase( )
+    String hipblas_image_name = docker_upload_artifactory( compiler_args, docker_args, hipblas_paths, job_name )
 
-      // if( params.push_image_to_docker_hub )
-      // {
-      //   docker_upload_dockerhub( job_name, hipblas_image_name, 'rocm' )
-      //   docker_clean_images( 'rocm', hipblas_image_name )
-      // }
-      docker_clean_images( job_name, hipblas_image_name )
-    }
+    // if( params.push_image_to_docker_hub )
+    // {
+    //   docker_upload_dockerhub( job_name, hipblas_image_name, 'rocm' )
+    //   docker_clean_images( 'rocm', hipblas_image_name )
+    // }
+    docker_clean_images( job_name, hipblas_image_name )
   }
 }
 
@@ -546,7 +545,7 @@ nvcc:
     def hcc_docker_args = new docker_data(
         from_image:'nvidia/cuda:8.0-devel',
         build_docker_file:'dockerfile-build-nvidia-cuda-8',
-        install_docker_file:'dockerfile-hipblas-nvidia-cuda-8',
+        install_docker_file:'dockerfile-install-nvidia-cuda-8',
         docker_run_args:'--device=/dev/nvidiactl --device=/dev/nvidia0 --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools --volume-driver=nvidia-docker --volume=nvidia_driver_375.74:/usr/local/nvidia:ro',
         docker_build_args:' --pull' )
 
