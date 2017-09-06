@@ -41,6 +41,18 @@ function display_help()
   echo "    [--cuda] build library for cuda backend"
 }
 
+# This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
+elevate_if_not_root( )
+{
+  local uid=$(id -u)
+
+  if (( ${uid} )); then
+    sudo $@
+  else
+    $@
+  fi
+}
+
 # #################################################
 # global variables
 # #################################################
@@ -94,12 +106,13 @@ while true; do
   esac
 done
 
-build_dir=build
-printf "\033[32mCreating project build directory in: \033[33m./${build_dir}\033[0m\n"
+build_dir=./build
+printf "\033[32mCreating project build directory in: \033[33m${build_dir}\033[0m\n"
 
 # #################################################
 # prep
 # #################################################
+
 # ensure a clean build environment
 rm -rf ${build_dir}
 
@@ -118,13 +131,13 @@ if [[ "${install_dependencies}" == true ]]; then
 
   client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
 
-  sudo apt update
+  elevate_if_not_root apt update
 
   # Dependencies required by main library
   for package in "${library_dependencies_ubuntu[@]}"; do
     if [[ $(dpkg-query --show --showformat='${db:Status-Abbrev}\n' ${package} 2> /dev/null | grep -q "ii"; echo $?) -ne 0 ]]; then
       printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
-      sudo apt install -y --no-install-recommends ${package}
+      elevate_if_not_root apt install -y --no-install-recommends ${package}
     fi
   done
 
@@ -133,7 +146,7 @@ if [[ "${install_dependencies}" == true ]]; then
     for package in "${client_dependencies_ubuntu[@]}"; do
       if [[ $(dpkg-query --show --showformat='${db:Status-Abbrev}\n' ${package} 2> /dev/null | grep -q "ii"; echo $?) -ne 0 ]]; then
         printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
-        sudo apt install -y --no-install-recommends ${package}
+        elevate_if_not_root apt install -y --no-install-recommends ${package}
       fi
     done
 
@@ -143,16 +156,16 @@ if [[ "${install_dependencies}" == true ]]; then
       mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
       cmake -DBUILD_BOOST=OFF ../../deps
       make -j$(nproc)
-      sudo make install
+      elevate_if_not_root make install
     popd
   fi
 
 fi
 
 pushd .
-# #################################################
-# configure
-# #################################################
+  # #################################################
+  # configure
+  # #################################################
   mkdir -p ${build_dir}/release && cd ${build_dir}/release
 
   if [[ "${build_cuda}" == false ]]; then
@@ -165,17 +178,17 @@ pushd .
     cmake ../..
   fi
 
-# #################################################
-# build
-# #################################################
+  # #################################################
+  # build
+  # #################################################
   make -j$(nproc)
 
-# #################################################
-# install
-# #################################################
-# installing through package manager, which makes uninstalling easy
+  # #################################################
+  # install
+  # #################################################
+  # installing through package manager, which makes uninstalling easy
   if [[ "${install_package}" == true ]]; then
     make package
-    sudo dpkg -i hipblas-*.deb
+    elevate_if_not_root dpkg -i hipblas-*.deb
   fi
 popd
