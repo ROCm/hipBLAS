@@ -77,6 +77,6 @@ add_subdirectory( library )
 include( clients/cmake/build-options.cmake )
 
 # Build clients of the library
-if( BUILD_CLIENTS_TESTS )
+if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS )
   add_subdirectory( clients )
 endif( )
