@@ -37,3 +37,7 @@ endif( )
 if( BUILD_CLIENTS_TESTS )
   add_subdirectory( gtest )
 endif( )
+
+if( BUILD_CLIENTS_SAMPLES )
+  add_subdirectory( samples )
+endif( )
