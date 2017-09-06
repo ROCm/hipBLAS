@@ -13,7 +13,7 @@ RUN sudo apt-get update && DEBIAN_FRONTEND=noninteractive sudo apt-get install -
     && sudo rm -f /tmp/*.deb \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/* \
-    && printf "cat /etc/ld.so.conf.d/hipblas-dev.conf\n" && cat /etc/ld.so.conf.d/hipblas-dev.conf \
+    && printf "ls -la /etc/ld.so.conf.d/\n" && ls -la /etc/ld.so.conf.d/ \
     && printf "ls -la /opt/rocm/include\n" && ls -la /opt/rocm/include \
     && printf "ls -la /opt/rocm/lib\n" && ls -la /opt/rocm/lib \
     && printf "ls -la /opt/rocm/lib/cmake\n" && ls -la /opt/rocm/lib/cmake \
