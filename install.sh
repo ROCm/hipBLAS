@@ -173,7 +173,7 @@ pushd .
   fi
 
   if [[ "${build_clients}" == true ]]; then
-    cmake -DBUILD_CLIENTS_TESTS=ON ../..
+    cmake -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON ../..
   else
     cmake ../..
   fi
