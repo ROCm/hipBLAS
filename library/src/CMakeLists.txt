@@ -52,7 +52,7 @@ if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
     target_link_libraries( hipblas PRIVATE --amdgpu-target=${target} )
   endforeach( )
 
-  set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" OUTPUT_NAME hipblas-hcc )
+  set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" )
 else( )
   # If HiP is not installed in default path, user can append to CMAKE_MODULE_PATH
   list( APPEND CMAKE_MODULE_PATH /opt/rocm/hip/cmake )
@@ -76,7 +76,7 @@ else( )
       )
 
   target_compile_definitions( hipblas PUBLIC __HIP_PLATFORM_NVCC__ )
-  set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" OUTPUT_NAME hipblas-nvcc )
+  set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" )
 endif( )
 
 target_include_directories( hipblas
