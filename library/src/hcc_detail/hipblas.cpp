@@ -156,6 +156,18 @@ hipblasStatus_t hipblasGetMatrix(int rows, int cols, int elemSize, const void *A
     return rocBLASStatusToHIPStatus(rocblas_get_matrix(rows, cols, elemSize, A, lda, B, ldb));
 }
 
+hipblasStatus_t hipblasSgeam(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
+    int m, int n, const float *alpha, const float *A, int lda, const float *B, int ldb, const float *beta, float *C, int ldc){
+   // TODO: Remove const_cast
+	    return rocBLASStatusToHIPStatus(rocblas_sgeam((rocblas_handle)handle, hipOperationToHCCOperation(transa), hipOperationToHCCOperation(transb), m, n, alpha, const_cast<float*>(A), lda, const_cast<float*>(B), ldb, beta, C, ldc));
+}
+
+hipblasStatus_t hipblasDgeam(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
+    int m, int n, const double *alpha, const double *A, int lda, const double *B, int ldb, const double *beta, double *C, int ldc){
+   // TODO: Remove const_cast
+	    return rocBLASStatusToHIPStatus(rocblas_dgeam((rocblas_handle)handle, hipOperationToHCCOperation(transa), hipOperationToHCCOperation(transb), m, n, alpha, const_cast<double*>(A), lda, const_cast<double*>(B), ldb, beta, C, ldc));
+}
+
 hipblasStatus_t  hipblasSasum(hipblasHandle_t handle, int n, const float *x, int incx, float  *result){
 	return rocBLASStatusToHIPStatus(rocblas_sasum((rocblas_handle)handle, n, const_cast<float*>(x), incx, result));
 }
