@@ -526,5 +526,30 @@
     }
 */
 
+    template<>
+    hipblasStatus_t hipblasGeam<float>(hipblasHandle_t handle,
+        hipblasOperation_t transA, hipblasOperation_t transB,
+        int m, int n,
+        const float *alpha,
+        const float *A, int lda,
+        const float *beta,
+        const float *B, int ldb,
+        float *C, int ldc){
+        return hipblasSgeam(handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc);
+    }
+
+    template<>
+    hipblasStatus_t hipblasGeam<double>(hipblasHandle_t handle,
+        hipblasOperation_t transA, hipblasOperation_t transB,
+        int m, int n,
+        const double *alpha,
+        const double *A, int lda,
+        const double *beta,
+        const double *B, int ldb,
+        double *C, int ldc){
+        return hipblasDgeam(handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc);
+    }
+
+
 
 

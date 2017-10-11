@@ -153,6 +153,16 @@ hipblasStatus_t hipblasGetMatrix(int rows, int cols, int elemSize, const void *A
   return hipCUBLASStatusToHIPStatus(cublasGetMatrix(rows, cols, elemSize, A, lda, B, ldb));
 }
 
+hipblasStatus_t hipblasSgeam(hipblasHandle_t handle, hipblasOperation_t transa, hipblasOperation_t transb,
+    int m, int n, const float *alpha, const float *A, int lda, const float *beta, const float *B, int ldb, float *C, int ldc){
+    return hipCUBLASStatusToHIPStatus(cublasSgeam((cublasHandle_t) handle, hipOperationToCudaOperation(transa),  hipOperationToCudaOperation(transb), m, n, alpha, A, lda, beta, B, ldb, C,  ldc));
+}
+
+hipblasStatus_t hipblasDgeam(hipblasHandle_t handle, hipblasOperation_t transa, hipblasOperation_t transb,
+    int m, int n, const double *alpha, const double *A, int lda, const double *beta, const double *B, int ldb, double *C, int ldc){
+    return hipCUBLASStatusToHIPStatus(cublasDgeam ((cublasHandle_t) handle, hipOperationToCudaOperation(transa), hipOperationToCudaOperation(transb), m, n, alpha, A, lda, beta, B, ldb, C, ldc));
+}
+
 hipblasStatus_t  hipblasSasum(hipblasHandle_t handle, int n, const float *x, int incx, float  *result){
   return hipCUBLASStatusToHIPStatus(cublasSasum((cublasHandle_t) handle, n, x, incx, result));
 }
