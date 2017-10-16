@@ -24,7 +24,6 @@ using namespace std;
 template<typename T>
 hipblasStatus_t testing_gemm(Arguments argus)
 {
-
     int M = argus.M;
     int N = argus.N;
     int K = argus.K;
@@ -36,12 +35,10 @@ hipblasStatus_t testing_gemm(Arguments argus)
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
 
-    int  A_size, B_size, C_size, A_row, A_col, B_row, B_col;
     T alpha = argus.alpha;
     T beta = argus.beta;
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops;
+    int  A_size, B_size, C_size, A_row, A_col, B_row, B_col;
 
     hipblasHandle_t handle;
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;

@@ -84,6 +84,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSetMatrix(int rows, int cols, int elemSize
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetMatrix(int rows, int cols, int elemSize, const void *A, int lda, void *B, int ldb);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgeam(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
+    int m, int n, const float *alpha, const float *A, int lda, const float *B, int ldb, const float *beta, float *C, int ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgeam(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb, 
+    int m, int n, const double *alpha, const double *A, int lda, const double *B, int ldb, const double *beta, double *C, int ldc);
+
 HIPBLAS_EXPORT hipblasStatus_t  hipblasSasum(hipblasHandle_t handle, int n, const float *x, int incx, float  *result);
 
 HIPBLAS_EXPORT hipblasStatus_t  hipblasDasum(hipblasHandle_t handle, int n, const double *x, int incx, double *result);
