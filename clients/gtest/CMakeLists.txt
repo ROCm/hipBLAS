@@ -46,6 +46,7 @@ set(hipblas_test_source
   ger_gtest.cpp
   gemm_gtest.cpp
   gemm_strided_batched_gtest.cpp
+  geam_gtest.cpp
 )
 
 set( hipblas_benchmark_common

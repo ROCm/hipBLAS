@@ -182,5 +182,16 @@
         T *invA);
 
 
+    template<typename T>
+    hipblasStatus_t hipblasGeam(hipblasHandle_t handle,
+        hipblasOperation_t transA, hipblasOperation_t transB,
+        int m, int n,
+        const T *alpha,
+        const T *A, int lda,
+        const T *beta,
+        const T *B, int ldb,
+        T *C, int ldc);
+
+
 
 #endif  // _ROCBLAS_HPP_
