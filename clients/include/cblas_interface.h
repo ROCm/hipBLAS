@@ -50,12 +50,12 @@
                      T2 *result);
 
     template<typename T>
-    void cblas_amax( int n,
+    void cblas_iamax( int n,
                      const T *x, int incx,
                      int *result);
 
     template<typename T>
-    void cblas_amin( int n,
+    void cblas_iamin( int n,
                      const T *x, int incx,
                      int *result);
 

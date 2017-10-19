@@ -293,28 +293,28 @@
         return hipblasDzamin(handle, n, x, incx, result);
     }
 */
-/*
     //amax
     template<>
     hipblasStatus_t
-    hipblasAmax<float>(hipblasHandle_t handle,
+    hipblasIamax<float>(hipblasHandle_t handle,
         int n,
         const float *x, int incx,
-        int *result){
-
-        return hipblasSamax(handle, n, x, incx, result);
+        int *result)
+    {
+        return hipblasIsamax(handle, n, x, incx, result);
     }
 
     template<>
     hipblasStatus_t
-    hipblasAmax<double>(hipblasHandle_t handle,
+    hipblasIamax<double>(hipblasHandle_t handle,
         int n,
         const double *x, int incx,
-        int *result){
-
-        return hipblasDamax(handle, n, x, incx, result);
+        int *result)
+    {
+        return hipblasIdamax(handle, n, x, incx, result);
     }
 
+/*
     template<>
     hipblasStatus_t
     hipblasAmax<hipComplex>(hipblasHandle_t handle,
