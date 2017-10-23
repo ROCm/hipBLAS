@@ -21,14 +21,14 @@
 typedef void * hipblasHandle_t;
 
 enum hipblasStatus_t {
-  HIPBLAS_STATUS_SUCCESS,          // Function succeeds
-  HIPBLAS_STATUS_NOT_INITIALIZED,  // HIPBLAS library not initialized
-  HIPBLAS_STATUS_ALLOC_FAILED,     // resource allocation failed
-  HIPBLAS_STATUS_INVALID_VALUE,    // unsupported numerical value was passed to function
-  HIPBLAS_STATUS_MAPPING_ERROR,    // access to GPU memory space failed
-  HIPBLAS_STATUS_EXECUTION_FAILED, // GPU program failed to execute
-  HIPBLAS_STATUS_INTERNAL_ERROR,    // an internal HIPBLAS operation failed
-  HIPBLAS_STATUS_NOT_SUPPORTED     // function not implemented
+  HIPBLAS_STATUS_SUCCESS = 0,          // Function succeeds
+  HIPBLAS_STATUS_NOT_INITIALIZED = 1,  // HIPBLAS library not initialized
+  HIPBLAS_STATUS_ALLOC_FAILED = 2,     // resource allocation failed
+  HIPBLAS_STATUS_INVALID_VALUE = 3,    // unsupported numerical value was passed to function
+  HIPBLAS_STATUS_MAPPING_ERROR = 4,    // access to GPU memory space failed
+  HIPBLAS_STATUS_EXECUTION_FAILED = 5, // GPU program failed to execute
+  HIPBLAS_STATUS_INTERNAL_ERROR = 6,    // an internal HIPBLAS operation failed
+  HIPBLAS_STATUS_NOT_SUPPORTED = 7     // function not implemented
 };
 
 // set the values of enum constants to be the same as those used in cblas
@@ -89,6 +89,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgeam(hipblasHandle_t handle,  hipblasOper
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgeam(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
     int m, int n, const double *alpha, const double *A, int lda, const double *beta, const double *B, int ldb, double *C, int ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t  hipblasIsamax(hipblasHandle_t handle, int n, const float *x, int incx, int *result);
+
+HIPBLAS_EXPORT hipblasStatus_t  hipblasIdamax(hipblasHandle_t handle, int n, const double *x, int incx, int *result);
 
 HIPBLAS_EXPORT hipblasStatus_t  hipblasSasum(hipblasHandle_t handle, int n, const float *x, int incx, float  *result);
 

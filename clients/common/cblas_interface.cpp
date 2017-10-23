@@ -241,7 +241,7 @@ extern "C" {
 
     //amax
     template<>
-    void cblas_amax<float>( int n,
+    void cblas_iamax<float>( int n,
                             const float *x, int incx,
                             int *result)
     {
@@ -249,7 +249,7 @@ extern "C" {
     }
 
     template<>
-    void cblas_amax<double>( int n,
+    void cblas_iamax<double>( int n,
                             const double *x, int incx,
                             int *result)
     {
@@ -257,7 +257,7 @@ extern "C" {
     }
 
     template<>
-    void cblas_amax<hipComplex>( int n,
+    void cblas_iamax<hipComplex>( int n,
                             const hipComplex *x, int incx,
                             int *result)
     {
@@ -265,7 +265,7 @@ extern "C" {
     }
 
     template<>
-    void cblas_amax<hipDoubleComplex>( int n,
+    void cblas_iamax<hipDoubleComplex>( int n,
                             const hipDoubleComplex *x, int incx,
                             int *result)
     {

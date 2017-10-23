@@ -69,7 +69,7 @@
 
      template<typename T>
      hipblasStatus_t
-     hipblasAmax(hipblasHandle_t handle,
+     hipblasIamax(hipblasHandle_t handle,
          int n,
          const T *x, int incx,
          int *result);
