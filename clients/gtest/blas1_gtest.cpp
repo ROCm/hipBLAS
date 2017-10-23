@@ -11,7 +11,7 @@
 #include "testing_scal.hpp"
 #include "testing_dot.hpp"
 #include "testing_asum.hpp"
-#include "testing_amax.hpp"
+#include "testing_iamax.hpp"
 #include "utility.h"
 
 using ::testing::TestWithParam;
@@ -176,26 +176,36 @@ TEST_P(blas1_gtest, asum_float)
     }
 }
 
-/*
+
 TEST_P(blas1_gtest, amax_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
+
     Arguments arg = setup_blas1_arguments( GetParam() );
+
     hipblasStatus_t status = testing_amax<float>( arg );
-    // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS){
-        if( arg.N < 0 ){
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if( arg.incx < 0){
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-    }
+
+    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
-*/
+
+
+TEST_P(blas1_gtest, amax_double)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_blas1_arguments( GetParam() );
+
+    hipblasStatus_t status = testing_amax<double>( arg );
+
+    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
 
 //Values is for a single item; ValuesIn is for an array
 //notice we are using vector of vector
