@@ -26,20 +26,21 @@ hipblasStatus_t testing_dot(Arguments argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
 
     //argument sanity check, quick return if input parameters are invalid before allocating invalid memory
     if ( N < 0 ){
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        status_1 = HIPBLAS_STATUS_INVALID_VALUE;
+        return status_1;
     }
     else if ( incx < 0 ){
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        status_1 = HIPBLAS_STATUS_INVALID_VALUE;
+        return status_1;
     }
     else if ( incy < 0 ){
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        status_1 = HIPBLAS_STATUS_INVALID_VALUE;
+        return status_1;
     }
 
 
@@ -83,24 +84,31 @@ hipblasStatus_t testing_dot(Arguments argus)
      =================================================================== */
      //hipblasDot accept both dev/host pointer for the scalar
      if(device_pointer){
-        status = hipblasDot<T>(handle,
+
+        status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
+
+        status_2 = hipblasDot<T>(handle,
                         N,
                         dx, incx,
                         dy, incy, d_rocblas_result);
     }
     else{
-        status = hipblasDot<T>(handle,
+
+        status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+
+        status_2 = hipblasDot<T>(handle,
                         N,
                         dx, incx,
                         dy, incy, &rocblas_result);
     }
 
-    if (status != HIPBLAS_STATUS_SUCCESS) {
+    if ((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)) {
         CHECK_HIP_ERROR(hipFree(dx));
         CHECK_HIP_ERROR(hipFree(dy));
         CHECK_HIP_ERROR(hipFree(d_rocblas_result));
         hipblasDestroy(handle);
-        return status;
+        if (status_1 != HIPBLAS_STATUS_SUCCESS) return status_1;
+        if (status_2 != HIPBLAS_STATUS_SUCCESS) return status_2;
     }
 
     if(device_pointer)    CHECK_HIP_ERROR(hipMemcpy(&rocblas_result, d_rocblas_result, sizeof(T), hipMemcpyDeviceToHost));
