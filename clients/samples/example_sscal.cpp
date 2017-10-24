@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <vector>
 
-#include "hipblas.h"
+#include "rocblas.h"
 #include "utility.h"
 
 using namespace std;
@@ -43,7 +43,7 @@ int main()
 
     hipMemcpy(dx, hx.data(), sizeof(float)*N, hipMemcpyHostToDevice);
 
-    printf("N        hipblas(us)     \n");
+    printf("N        rocblas(us)     \n");
 
     gpu_time_used = get_time_us();// in microseconds
 
@@ -66,7 +66,7 @@ int main()
     //copy output from device to CPU
     hipMemcpy(hx.data(), dx, sizeof(float)*N, hipMemcpyDeviceToHost);
 
-    //verify hipblas_scal result
+    //verify rocblas_scal result
     bool error_in_element = false;
     for(int i=0;i<N;i++){
         if(hz[i] * alpha != hx[i]){
@@ -89,5 +89,5 @@ int main()
 
     hipFree(dx);
     hipblasDestroy(handle);
-    return EXIT_SUCCESS;
+    return rocblas_status_success;
 }

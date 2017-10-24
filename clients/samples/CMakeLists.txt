@@ -38,7 +38,7 @@ foreach( exe example-sscal;example_sgemm;example_sgemm_strided_batched )
   set_target_properties( ${exe} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
   target_include_directories( ${exe} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> )
 
-  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" OR CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
     # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.1
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
     target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument )
@@ -46,19 +46,6 @@ foreach( exe example-sscal;example_sgemm;example_sgemm_strided_batched )
     foreach( target ${AMDGPU_TARGETS} )
       target_link_libraries( ${exe} PRIVATE --amdgpu-target=${target} )
     endforeach( )
-  else( )
-    find_package( CUDA REQUIRED )
-
-    message( STATUS "------------------------------ CUDA_INCLUDE_DIRS  = ${CUDA_INCLUDE_DIRS}")
-    message( STATUS "------------------------------ CUDA_INCLUDE_DIRS  = ${CUDA_INCLUDE_DIRS}")
-    target_include_directories( ${exe}
-    PRIVATE
-      $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
-    )
-
-    target_link_libraries( ${exe} PRIVATE ${CUDA_LIBRARIES} )
-    message( STATUS "------------------------------ CUDA_LIBRARIES = ${CUDA_LIBRARIES}")
   endif( )
-
 endforeach( )
 
