@@ -24,8 +24,9 @@ hipblasStatus_t testing_amax(Arguments argus)
     int N = argus.N;
     int incx = argus.incx;
 
-    hipblasStatus_t status1 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status2 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
@@ -42,7 +43,7 @@ hipblasStatus_t testing_amax(Arguments argus)
         CHECK_HIP_ERROR(hipMalloc(&dx, 100 * sizeof(T)));
         CHECK_HIP_ERROR(hipMalloc(&d_rocblas_result, sizeof(int)));
 
-        status1 = hipblasIamax<T>(handle, N, dx, incx, &rocblas_result1);
+        status_1 = hipblasIamax<T>(handle, N, dx, incx, &rocblas_result1);
 
         unit_check_general<int>(1, 1, 1, &zero, &rocblas_result1);
     }
@@ -69,17 +70,22 @@ hipblasStatus_t testing_amax(Arguments argus)
          =================================================================== */
         // device_pointer for d_rocblas_result
         {
-            status1 = hipblasIamax<T>(handle, N, dx, incx, d_rocblas_result);
+
+            status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
+
+            status_1 = hipblasIamax<T>(handle, N, dx, incx, d_rocblas_result);
  
             CHECK_HIP_ERROR(hipMemcpy(&rocblas_result1, d_rocblas_result, sizeof(int), hipMemcpyDeviceToHost));
         }
         // host_pointer for rocblas_result2
-        if (status1 == HIPBLAS_STATUS_SUCCESS) 
+        if ((status_1 == HIPBLAS_STATUS_SUCCESS) && (status_3 == HIPBLAS_STATUS_SUCCESS))
         {
-            status2 = hipblasIamax<T>(handle, N, dx, incx, &rocblas_result2);
+            status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+
+            status_2 = hipblasIamax<T>(handle, N, dx, incx, &rocblas_result2);
         }
  
-        if (status1 == HIPBLAS_STATUS_SUCCESS && status2 == HIPBLAS_STATUS_SUCCESS) 
+        if ((status_1 == HIPBLAS_STATUS_SUCCESS) && (status_2 == HIPBLAS_STATUS_SUCCESS) && (status_3 == HIPBLAS_STATUS_SUCCESS)) 
         {
          /* =====================================================================
                      CPU BLAS
@@ -96,13 +102,17 @@ hipblasStatus_t testing_amax(Arguments argus)
     CHECK_HIP_ERROR(hipFree(d_rocblas_result));
     hipblasDestroy(handle);
 
-    if (status1 != HIPBLAS_STATUS_SUCCESS)
+    if (status_1 != HIPBLAS_STATUS_SUCCESS)
     {
-        return status1;
+        return status_1;
     }
-    else if (status2 != HIPBLAS_STATUS_SUCCESS)
+    else if (status_2 != HIPBLAS_STATUS_SUCCESS)
     {
-        return status2;
+        return status_2;
+    }
+    else if (status_3 != HIPBLAS_STATUS_SUCCESS)
+    {
+        return status_3;
     }
     else
     {

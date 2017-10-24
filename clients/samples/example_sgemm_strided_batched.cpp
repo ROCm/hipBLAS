@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <vector>
 #include <limits>
+#include <iostream>
 #include "hipblas.h"
 
 using namespace std;
@@ -66,39 +67,39 @@ int main()
     int m = DIM1, n = DIM2, k = DIM3, batch_count = BATCH_COUNT;
     int lda, ldb, ldc, bsa, bsb, bsc;
     int a_stride_1, a_stride_2, b_stride_1, b_stride_2;
-    cout << "sgemm_strided_batched example" << endl;
+    std::cout << "sgemm_strided_batched example" << std::endl;
     if (transa == HIPBLAS_OP_N)
     {
         lda = m;
         bsa = k * lda;
         a_stride_1 = 1; a_stride_2 = lda;
-        cout << "N";
+        std::cout << "N";
     }
     else
     {
         lda = k;
         bsa = m * lda;
         a_stride_1 = lda; a_stride_2 = 1;
-        cout << "T";
+        std::cout << "T";
     }
     if (transb == HIPBLAS_OP_N)
     {
         ldb = k;
         bsb = n * ldb;
         b_stride_1 = 1; b_stride_2 = ldb;
-        cout << "N: ";
+        std::cout << "N: ";
     }
     else
     {
         ldb = n;
         bsb = k * ldb;
         b_stride_1 = ldb; b_stride_2 = 1;
-        cout << "T: ";
+        std::cout << "T: ";
     }
     ldc = m;
     bsc = n * ldc;
 
-    cout << "M, N, K, lda, bsa, ldb, bsb, ldc, bsc = " << m << ", " << n << ", " << k << ", " << lda << ", " << bsa << ", " << ldb << ", " << bsb << ", " << ldc << ", " << bsc << endl;
+    std::cout << "M, N, K, lda, bsa, ldb, bsb, ldc, bsc = " << m << ", " << n << ", " << k << ", " << lda << ", " << bsa << ", " << ldb << ", " << bsb << ", " << ldc << ", " << bsc << std::endl;
 
     int size_a = bsa * batch_count;
     int size_b = bsb * batch_count;
@@ -162,11 +163,11 @@ int main()
     float tolerance = 10;
     if (max_relative_error != max_relative_error || max_relative_error > eps * tolerance)
     {
-        cout << "FAIL: max_relative_error = " << max_relative_error << endl;
+        std::cout << "FAIL: max_relative_error = " << max_relative_error << std::endl;
     }
     else
     {
-        cout << "PASS: max_relative_error = " << max_relative_error << endl;
+        std::cout << "PASS: max_relative_error = " << max_relative_error << std::endl;
     }
 
     CHECK_HIP_ERROR(hipFree(da));
