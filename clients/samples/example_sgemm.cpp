@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <vector>
 #include <limits>
+#include <iostream>
 #include "hipblas.h"
 
 using namespace std;
