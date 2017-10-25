@@ -91,6 +91,8 @@ hipblasStatus_t testing_amax(Arguments argus)
                      CPU BLAS
          =================================================================== */
             cblas_iamax<T>(N, hx.data(), incx, &cpu_result);
+            // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
+            cpu_result += 1;
  
             unit_check_general<int>(1, 1, 1, &cpu_result, &rocblas_result1);
             unit_check_general<int>(1, 1, 1, &cpu_result, &rocblas_result2);
