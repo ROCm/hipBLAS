@@ -545,14 +545,14 @@ nvcc:
   node( 'docker && cuda' )
   {
     def hcc_docker_args = new docker_data(
-        from_image:'nvidia/cuda:8.0-devel',
-        build_docker_file:'dockerfile-build-nvidia-cuda-8',
-        install_docker_file:'dockerfile-install-nvidia-cuda-8',
-        docker_run_args:'--device=/dev/nvidiactl --device=/dev/nvidia0 --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools --volume-driver=nvidia-docker --volume=nvidia_driver_375.74:/usr/local/nvidia:ro',
+        from_image:'nvidia/cuda:9.0-devel',
+        build_docker_file:'dockerfile-build-nvidia-cuda',
+        install_docker_file:'dockerfile-install-nvidia-cuda',
+        docker_run_args:'--device=/dev/nvidiactl --device=/dev/nvidia0 --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools --volume-driver=nvidia-docker --volume=nvidia_driver_384.90:/usr/local/nvidia:ro',
         docker_build_args:' --pull' )
 
     def hcc_compiler_args = new compiler_data(
-        compiler_name:'nvcc-8.0',
+        compiler_name:'nvcc-9.0',
         build_config:'Release',
         compiler_path:'g++' )
 
