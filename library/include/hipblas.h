@@ -168,10 +168,35 @@ HIPBLAS_EXPORT hipblasStatus_t  hipblasSgerBatched(hipblasHandle_t handle, int m
 */
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const float *alpha, const float *A, int lda, const float *B, int ldb, const float *beta, float *C, int ldc);
+                           int m, int n, int k, const float *alpha, 
+                           const float *A, int lda, 
+                           const float *B, int ldb, 
+                           const float *beta, 
+                           float *C, int ldc);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const double *alpha, const double *A, int lda, const double *B, int ldb, const double *beta, double *C, int ldc);
+                           int m, int n, int k, const double *alpha, 
+                           const double *A, int lda, 
+                           const double *B, int ldb, 
+                           const double *beta, 
+                           double *C, int ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t handle,
+        hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const float *alpha,
+        const float * A[], int lda,
+        const float * B[], int ldb,
+        const float *beta,
+        float * C[], int ldc, int batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,
+        hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const double *alpha,
+        const double * A[], int lda,
+        const double * B[], int ldb,
+        const double *beta,
+        double * C[], int ldc, int batchCount);
+
 
 /* not implementes, requires complex support
 hipblasStatus_t hipblasCgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,

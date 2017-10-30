@@ -46,6 +46,7 @@ set(hipblas_test_source
   ger_gtest.cpp
   gemm_gtest.cpp
   gemm_strided_batched_gtest.cpp
+  gemm_batched_gtest.cpp
   geam_gtest.cpp
 )
 
@@ -55,6 +56,7 @@ set( hipblas_benchmark_common
   ../common/flops.cpp
   ../common/norm.cpp
   ../common/unit.cpp
+  ../common/arg_check.cpp
   ../common/hipblas_template_specialization.cpp
 )
 
