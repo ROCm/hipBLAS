@@ -142,6 +142,17 @@
         T *C, int ldc, int bsc,
         int batch_count);
 
+    template<typename T>
+    hipblasStatus_t hipblasGemmBatched(
+        hipblasHandle_t handle,
+        hipblasOperation_t transA, hipblasOperation_t transB,
+        int m, int n, int k,
+        const T *alpha,
+        const T *A[], int lda,
+        const T *B[], int ldb,
+        const T *beta,
+        T *C[], int ldc,
+        int batch_count);
 
     template<typename T>
     hipblasStatus_t hipblasTrsm(hipblasHandle_t handle,
