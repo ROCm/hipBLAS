@@ -31,11 +31,11 @@ README: This file contains testers to verify the correctness of
 //add/delete as a group
 const
 vector<vector<int>> matrix_size_range = {
-//                                      {  -1,   -1,   -1,    1,    1},
+                                        {  -1,   -1,   -1,    1,    1},
                                         {   5,    5,    5,    5,    5},
-//                                      {   3,   33,   33,   34,   35},
-//                                      {  10,   10,  100,   10,   10},
-//                                      { 600,  500,  500,  600,  500},
+                                        {   3,   33,   33,   34,   35},
+                                        {  10,   10,  100,   10,   10},
+                                        { 600,  500,  500,  600,  500},
 //                                      {1024, 1024, 1024, 1024, 1024}
                                        };
 
@@ -43,9 +43,9 @@ vector<vector<int>> matrix_size_range = {
 //add/delete this list in pairs, like {2.0, 4.0}
 const
 vector<vector<double>> alpha_beta_range = { 
-                                        //  {1.4, 0.0},
-                                        //  {3.1, 0.3},
-                                        //  {0.0, 1.3},
+                                            {1.4, 0.0},
+                                            {3.1, 0.3},
+                                            {0.0, 1.3},
                                             {0.0, 0.0},
                                           };
 
@@ -56,9 +56,9 @@ vector<vector<double>> alpha_beta_range = {
 const
 vector<vector<char>> transA_transB_range = {
                                         {'N', 'N'},
-//                                      {'N', 'T'},
-//                                      {'C', 'N'},
-//                                      {'T', 'C'}
+                                        {'N', 'T'},
+                                        {'C', 'N'},
+                                        {'T', 'C'}
                                        };
 
 
@@ -116,7 +116,7 @@ class geam_gtest: public :: TestWithParam <geam_tuple>
         virtual void TearDown(){}
 };
 
-/*
+
 TEST_P(geam_gtest, geam_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -195,4 +195,4 @@ INSTANTIATE_TEST_CASE_P(hipblasGeam_scalar_transpose, geam_gtest,
                                   ValuesIn(transA_transB_range)
                                )
                         );
-*/
+
