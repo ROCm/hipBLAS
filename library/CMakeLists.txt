@@ -72,7 +72,7 @@ endif( )
 
 rocm_create_package(
     NAME ${package_name}
-    DESCRIPTION "Radeon Open Compute BLAS marshelling library"
+    DESCRIPTION "Radeon Open Compute BLAS marshalling library"
     MAINTAINER "Kent Knox <kent.knox@amd.com>"
     LDCONFIG
 )
