@@ -163,6 +163,14 @@ hipblasStatus_t hipblasDgeam(hipblasHandle_t handle, hipblasOperation_t transa, 
     return hipCUBLASStatusToHIPStatus(cublasDgeam ((cublasHandle_t) handle, hipOperationToCudaOperation(transa), hipOperationToCudaOperation(transb), m, n, alpha, A, lda, beta, B, ldb, C, ldc));
 }
 
+hipblasStatus_t  hipblasIsamax(hipblasHandle_t handle, int n, const float *x, int incx, int *result){
+  return hipCUBLASStatusToHIPStatus(cublasIsamax((cublasHandle_t) handle, n, x, incx, result));
+}
+
+hipblasStatus_t  hipblasIdamax(hipblasHandle_t handle, int n, const double *x, int incx, int *result){
+  return hipCUBLASStatusToHIPStatus(cublasIdamax((cublasHandle_t) handle, n, x, incx, result));
+}
+
 hipblasStatus_t  hipblasSasum(hipblasHandle_t handle, int n, const float *x, int incx, float  *result){
   return hipCUBLASStatusToHIPStatus(cublasSasum((cublasHandle_t) handle, n, x, incx, result));
 }
@@ -282,16 +290,6 @@ hipblasStatus_t hipblasHgemm(hipblasHandle_t handle,  hipblasOperation_t transa,
 }
 */
 
-hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const float *alpha, const float *A[], int lda, const float *B[], int ldb, const float *beta, float *C[], int ldc, int batchCount){
-  return hipCUBLASStatusToHIPStatus(cublasSgemmBatched((cublasHandle_t) handle, hipOperationToCudaOperation(transa),  hipOperationToCudaOperation(transb), m,  n,  k, alpha, A,  lda, B,  ldb, beta, C,  ldc, batchCount));
-}
-
-hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const double *alpha, const double *A[], int lda, const double *B[], int ldb, const double *beta, double *C[], int ldc, int batchCount){
-  return hipCUBLASStatusToHIPStatus(cublasDgemmBatched((cublasHandle_t) handle, hipOperationToCudaOperation(transa),  hipOperationToCudaOperation(transb), m,  n,  k, alpha, A,  lda, B,  ldb, beta, C,  ldc, batchCount));
-}
-
 /*  complex not supported in hcc
 hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const hipComplex *alpha, const hipComplex *A[], int lda, const hipComplex *B[], int ldb, const hipComplex *beta, hipComplex *C[], int ldc, int batchCount){
@@ -326,6 +324,36 @@ hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t handle,  hipblasOpera
 {
     return hipCUBLASStatusToHIPStatus(cublasDgemmStridedBatched((cublasHandle_t)handle, hipOperationToCudaOperation(transa), hipOperationToCudaOperation(transb),
     m, n, k, alpha, const_cast<double*>(A), lda, bsa, const_cast<double*>(B), ldb, bsb, beta, C, ldc, bsc, batchCount));
+}
+
+hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t handle,  
+    hipblasOperation_t transa, hipblasOperation_t transb,
+    int m, int n, int k, 
+    const float *alpha, 
+    const float * A[], int lda, 
+    const float * B[], int ldb, 
+    const float *beta, 
+    float * C[], int ldc, 
+    int batchCount)
+{
+    return hipCUBLASStatusToHIPStatus(cublasSgemmBatched((cublasHandle_t)handle, 
+        hipOperationToCudaOperation(transa), hipOperationToCudaOperation(transb),
+        m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount));
+}
+
+hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,  
+    hipblasOperation_t transa, hipblasOperation_t transb,
+    int m, int n, int k,  
+    const double *alpha, 
+    const double * A[], int lda, 
+    const double * B[], int ldb, 
+    const double *beta, 
+    double * C[], int ldc, 
+    int batchCount)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDgemmBatched((cublasHandle_t)handle, 
+        hipOperationToCudaOperation(transa), hipOperationToCudaOperation(transb),
+        m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount));
 }
 
 #ifdef __cplusplus
