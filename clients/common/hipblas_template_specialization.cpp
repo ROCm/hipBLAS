@@ -293,28 +293,28 @@
         return hipblasDzamin(handle, n, x, incx, result);
     }
 */
-/*
     //amax
     template<>
     hipblasStatus_t
-    hipblasAmax<float>(hipblasHandle_t handle,
+    hipblasIamax<float>(hipblasHandle_t handle,
         int n,
         const float *x, int incx,
-        int *result){
-
-        return hipblasSamax(handle, n, x, incx, result);
+        int *result)
+    {
+        return hipblasIsamax(handle, n, x, incx, result);
     }
 
     template<>
     hipblasStatus_t
-    hipblasAmax<double>(hipblasHandle_t handle,
+    hipblasIamax<double>(hipblasHandle_t handle,
         int n,
         const double *x, int incx,
-        int *result){
-
-        return hipblasDamax(handle, n, x, incx, result);
+        int *result)
+    {
+        return hipblasIdamax(handle, n, x, incx, result);
     }
 
+/*
     template<>
     hipblasStatus_t
     hipblasAmax<hipComplex>(hipblasHandle_t handle,
@@ -500,6 +500,36 @@
 
         return hipblasDgemmStridedBatched(handle, transA, transB, m, n, k, alpha, A, lda, bsa, B, ldb, bsb, beta, C, ldc, bsc, batch_count);
     }
+
+    template<>
+    hipblasStatus_t hipblasGemmBatched<float>(
+        hipblasHandle_t handle,
+        hipblasOperation_t transA, hipblasOperation_t transB,
+        int m, int n, int k,
+        const float *alpha,
+        const float *A[], int lda,
+        const float *B[], int ldb,
+        const float *beta,
+        float *C[], int ldc,
+        int batch_count)
+        {
+            return hipblasSgemmBatched(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
+        }
+
+    template<>
+    hipblasStatus_t hipblasGemmBatched<double>(
+        hipblasHandle_t handle,
+        hipblasOperation_t transA, hipblasOperation_t transB,
+        int m, int n, int k,
+        const double *alpha,
+        const double *A[], int lda,
+        const double *B[], int ldb,
+        const double *beta,
+        double *C[], int ldc,
+        int batch_count)
+        {
+            return hipblasDgemmBatched(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
+        }
 
 /*
     template<>

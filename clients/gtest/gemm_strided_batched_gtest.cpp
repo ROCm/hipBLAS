@@ -55,7 +55,8 @@ vector<vector<int>> matrix_size_range = {
 //vector of vector, each pair is a {alpha, beta};
 //add/delete this list in pairs, like {2.0, 4.0}
 const
-vector<vector<double>> alpha_beta_range = { {1.0, 0.0},
+vector<vector<double>> alpha_beta_range = { 
+                                            {1.0, 0.0},
                                             {-1.0, -1.0},
                                           };
 
@@ -143,7 +144,7 @@ class gemm_strided_batched_gtest: public :: TestWithParam <gemm_strided_batched_
 };
 
 
-TEST_P(gemm_strided_batched_gtest, gemm_strided_batched_gtest_float)
+TEST_P(gemm_strided_batched_gtest, float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -156,25 +157,68 @@ TEST_P(gemm_strided_batched_gtest, gemm_strided_batched_gtest_float)
     hipblasStatus_t status = testing_GemmStridedBatched<float>( arg );
 
     // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS){
-
-        if( arg.M < 0 || arg.N < 0 || arg.K < 0 ){
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if( arg.M < 0 || arg.N < 0 || arg.K < 0 )
+        {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K){
+        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N){
+        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.ldc < arg.M){
+        else if(arg.ldc < arg.M)
+        {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.batch_count < 0){
+        else if(arg.batch_count < 0)
+        {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
     }
+}
 
+
+TEST_P(gemm_strided_batched_gtest, double)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+
+    Arguments arg = setup_gemm_strided_batched_arguments( GetParam() );
+
+    hipblasStatus_t status = testing_GemmStridedBatched<double>( arg );
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if( arg.M < 0 || arg.N < 0 || arg.K < 0 )
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.ldc < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
 }
 
 //notice we are using vector of vector
@@ -185,6 +229,9 @@ TEST_P(gemm_strided_batched_gtest, gemm_strided_batched_gtest_float)
 INSTANTIATE_TEST_CASE_P(hipblasGemmStridedBatched,
                         gemm_strided_batched_gtest,
                         Combine(
-                                  ValuesIn(matrix_size_range), ValuesIn(alpha_beta_range), ValuesIn(transA_transB_range), ValuesIn(batch_count_range)
+                                  ValuesIn(matrix_size_range), 
+                                  ValuesIn(alpha_beta_range), 
+                                  ValuesIn(transA_transB_range), 
+                                  ValuesIn(batch_count_range)
                                )
                         );

@@ -10,6 +10,7 @@
 #include <limits>
 
 #include "hipblas.hpp"
+#include "hipblas_unique_ptr.hpp"
 #include "utility.h"
 #include "norm.h"
 #include "unit.h"
@@ -35,15 +36,14 @@ hipblasStatus_t testing_geam(Arguments argus)
     T h_alpha = argus.alpha;
     T h_beta = argus.beta;
 
-    T *dA, *dB, *dC, *d_alpha, *d_beta;
-
     int  A_size, B_size, C_size, A_row, A_col, B_row, B_col;
     int  inc1_A, inc2_A, inc1_B, inc2_B;
 
     T hipblas_error = 0.0;
 
     hipblasHandle_t handle;
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status1 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status2 = HIPBLAS_STATUS_SUCCESS;
     hipblasCreate(&handle);
 
     if(transA == HIPBLAS_OP_N)
@@ -72,15 +72,26 @@ hipblasStatus_t testing_geam(Arguments argus)
     //check here to prevent undefined memory allocation error
     if( M <= 0 || N <= 0 || lda < A_row || ldb < B_row || ldc < M )
     {
+        hipblasDestroy(handle);
         return HIPBLAS_STATUS_INVALID_VALUE; 
     }
 
     //allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dA, A_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dB, B_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dC, C_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&d_alpha, sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&d_beta, sizeof(T)));
+    auto dA_managed = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * A_size),hipblas::device_free};
+    auto dB_managed = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * B_size),hipblas::device_free};
+    auto dC_managed = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * C_size),hipblas::device_free};
+    auto d_alpha_managed = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)),hipblas::device_free};
+    auto d_beta_managed = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)),hipblas::device_free};
+    T* dA = (T*) dA_managed.get();
+    T* dB = (T*) dB_managed.get();
+    T* dC = (T*) dC_managed.get();
+    T* d_alpha = (T*) d_alpha_managed.get();
+    T* d_beta = (T*) d_beta_managed.get();
+    if (!dA || !dB || !dC || !d_alpha || !d_beta) 
+    {
+        hipblasDestroy(handle);
+        return HIPBLAS_STATUS_ALLOC_FAILED;
+    }
 
     //Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
     vector<T> hA(A_size);
@@ -108,33 +119,62 @@ hipblasStatus_t testing_geam(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    // &h_alpha and &h_beta are host pointers
-    status = hipblasGeam<T>(handle, transA, transB,
-                M, N,
-                &h_alpha, dA, lda,
-                &h_beta, dB, ldb,
-                dC, ldc);
+    {
+        // &h_alpha and &h_beta are host pointers
+        status1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-    CHECK_HIP_ERROR(hipMemcpy(hC1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        if (status1 != HIPBLAS_STATUS_SUCCESS) 
+        {
+            hipblasDestroy(handle);
+            return status1;
+        }
 
+        status2 = hipblasGeam<T>(handle, transA, transB,
+            M, N,
+            &h_alpha, dA, lda,
+            &h_beta, dB, ldb,
+            dC, ldc);
 
-    // d_alpha and d_beta are device pointers
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC2.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
+        if (status2 != HIPBLAS_STATUS_SUCCESS) 
+        {
+            hipblasDestroy(handle);
+            return status2;
+        }
 
-    status = hipblasGeam<T>(handle, transA, transB,
-                M, N,
-                d_alpha, dA, lda,
-                d_beta, dB, ldb,
-                dC, ldc);
+        CHECK_HIP_ERROR(hipMemcpy(hC1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+    }
+    {
+        // d_alpha and d_beta are device pointers
+        status1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-    //copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hC2.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        if (status1 != HIPBLAS_STATUS_SUCCESS) 
+        {
+            hipblasDestroy(handle);
+            return status1;
+        }
+
+        CHECK_HIP_ERROR(hipMemcpy(dC, hC2.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
+
+        status2 = hipblasGeam<T>(handle, transA, transB,
+            M, N,
+            d_alpha, dA, lda,
+            d_beta, dB, ldb,
+            dC, ldc);
+
+        if (status2 != HIPBLAS_STATUS_SUCCESS) 
+        {
+            hipblasDestroy(handle);
+            return status2;
+        }
+
+        CHECK_HIP_ERROR(hipMemcpy(hC2.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+    }
 
 
      /* =====================================================================
              CPU BLAS
      =================================================================== */
-    if(status != HIPBLAS_STATUS_INVALID_VALUE) //only valid size compare with cblas
+    if(status2 != HIPBLAS_STATUS_INVALID_VALUE) //only valid size compare with cblas
     {
         // reference calculation
         for (int i1 = 0; i1 < M; i1++)
@@ -158,10 +198,6 @@ hipblasStatus_t testing_geam(Arguments argus)
         unit_check_general<T>(M, N, ldc, hC_copy.data(), hC2.data());
     }
 
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dB));
-    CHECK_HIP_ERROR(hipFree(dC));
-
     hipblasDestroy(handle);
-    return status;
+    return HIPBLAS_STATUS_SUCCESS;
 }
