@@ -1,44 +1,40 @@
 #!/usr/bin/env bash
 # Author: Kent Knox
 
-# #################################################
-# Pre-requisites check
-# #################################################
-# Exit code 0: alls well
-# Exit code 1: problems with getopt
-# Exit code 2: problems with supported platforms
-
-# check if getopt command is installed
-type getopt > /dev/null
-if [[ $? -ne 0 ]]; then
-  echo "This script uses getopt to parse arguments; try installing the util-linux package";
-  exit 1
-fi
-
-# lsb-release file describes the system
-if [[ ! -e "/etc/lsb-release" ]]; then
-  echo "This script depends on the /etc/lsb-release file"
-  exit 2
-fi
-source /etc/lsb-release
-
-if [[ ${DISTRIB_ID} != Ubuntu ]]; then
-  echo "This script only validated with Ubuntu"
-  exit 2
-fi
 
 # #################################################
 # helper functions
 # #################################################
 function display_help()
 {
-  echo "hipblas build & installation helper script"
+  echo "hipBLAS build & installation helper script"
   echo "./install [-h|--help] "
   echo "    [-h|--help] prints this help message"
   echo "    [-i|--install] install after build"
   echo "    [-d|--dependencies] install build dependencies"
   echo "    [-c|--clients] build library clients too (combines with -i & -d)"
+  echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [--cuda] build library for cuda backend"
+}
+
+# This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
+# true is a system command that completes successfully, function returns success
+# prereq: ${ID} must be defined before calling
+supported_distro( )
+{
+  if [ -z ${ID+foo} ]; then
+    printf "supported_distro(): \$ID must be set\n"
+    exit 2
+  fi
+
+  case "${ID}" in
+    ubuntu|centos|rhel|fedora)
+        true
+        ;;
+    *)  printf "This script is currently supported on Ubuntu, CentOS, RHEL and Fedora\n"
+        exit 2
+        ;;
+  esac
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
@@ -53,13 +49,145 @@ elevate_if_not_root( )
   fi
 }
 
+# Take an array of packages as input, and install those packages with 'apt' if they are not already installed
+install_apt_packages( )
+{
+  package_dependencies=("$@")
+  for package in "${package_dependencies[@]}"; do
+    if [[ $(dpkg-query --show --showformat='${db:Status-Abbrev}\n' ${package} 2> /dev/null | grep -q "ii"; echo $?) -ne 0 ]]; then
+      printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
+      elevate_if_not_root apt install -y --no-install-recommends ${package}
+    fi
+  done
+}
+
+# Take an array of packages as input, and install those packages with 'yum' if they are not already installed
+install_yum_packages( )
+{
+  package_dependencies=("$@")
+  for package in "${package_dependencies[@]}"; do
+    if [[ $(yum list installed ${package} &> /dev/null; echo $? ) -ne 0 ]]; then
+      printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
+      elevate_if_not_root yum install -y ${package}
+    fi
+  done
+}
+
+# Take an array of packages as input, and install those packages with 'dnf' if they are not already installed
+install_dnf_packages( )
+{
+  package_dependencies=("$@")
+  for package in "${package_dependencies[@]}"; do
+    if [[ $(dnf list installed ${package} &> /dev/null; echo $? ) -ne 0 ]]; then
+      printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
+      elevate_if_not_root dnf install -y ${package}
+    fi
+  done
+}
+
+# Take an array of packages as input, and delegate the work to the appropriate distro installer
+# prereq: ${ID} must be defined before calling
+# prereq: ${build_clients} must be defined before calling
+install_packages( )
+{
+  if [ -z ${ID+foo} ]; then
+    printf "install_packages(): \$ID must be set\n"
+    exit 2
+  fi
+
+  if [ -z ${build_clients+foo} ]; then
+    printf "install_packages(): \$build_clients must be set\n"
+    exit 2
+  fi
+
+  # dependencies needed for library and clients to build
+  local library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" "hip_hcc" )
+  local library_dependencies_centos=( "epel-release" "make" "cmake3" "hip_hcc" "gcc-c++" )
+  local library_dependencies_fedora=( "make" "cmake" "hip_hcc" "gcc-c++" "libcxx-devel" "rpm-build" )
+
+  if [[ "${build_cuda}" == true ]]; then
+    # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
+    library_dependencies_ubuntu+=( "cuda" )
+    library_dependencies_centos+=( "" ) # how to install cuda on centos?
+    library_dependencies_fedora+=( "" ) # how to install cuda on fedora?
+  else
+    library_dependencies_ubuntu+=( "hcc" "rocblas" )
+    library_dependencies_centos+=( "hcc" "rocblas" )
+    library_dependencies_fedora+=( "hcc" "rocblas" )
+  fi
+
+  local client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
+  local client_dependencies_centos=( "gcc-gfortran" "boost-devel" )
+  local client_dependencies_fedora=( "gcc-gfortran" "boost-devel" )
+
+  case "${ID}" in
+    ubuntu)
+      elevate_if_not_root apt update
+      install_apt_packages "${library_dependencies_ubuntu[@]}"
+
+      if [[ "${build_clients}" == true ]]; then
+        install_apt_packages "${client_dependencies_ubuntu[@]}"
+      fi
+      ;;
+
+    centos|rhel)
+      elevate_if_not_root yum -y update
+      install_yum_packages "${library_dependencies_centos[@]}"
+
+      if [[ "${build_clients}" == true ]]; then
+        install_yum_packages "${client_dependencies_centos[@]}"
+      fi
+      ;;
+
+    fedora)
+      elevate_if_not_root dnf -y update
+      install_dnf_packages "${library_dependencies_fedora[@]}"
+
+      if [[ "${build_clients}" == true ]]; then
+        install_dnf_packages "${client_dependencies_fedora[@]}"
+      fi
+      ;;
+    *)
+      echo "This script is currently supported on Ubuntu, CentOS, RHEL and Fedora"
+      exit 2
+      ;;
+  esac
+}
+
+# #################################################
+# Pre-requisites check
+# #################################################
+# Exit code 0: alls well
+# Exit code 1: problems with getopt
+# Exit code 2: problems with supported platforms
+
+# check if getopt command is installed
+type getopt > /dev/null
+if [[ $? -ne 0 ]]; then
+  echo "This script uses getopt to parse arguments; try installing the util-linux package";
+  exit 1
+fi
+
+# os-release file describes the system
+if [[ -e "/etc/os-release" ]]; then
+  source /etc/os-release
+else
+  echo "This script depends on the /etc/os-release file"
+  exit 2
+fi
+
+# The following function exits script if an unsupported distro is detected
+supported_distro
+
 # #################################################
 # global variables
 # #################################################
 install_package=false
 install_dependencies=false
+install_prefix=hipblas-install
 build_clients=false
 build_cuda=false
+build_release=true
 
 # #################################################
 # Parameter parsing
@@ -68,7 +196,7 @@ build_cuda=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,cuda --options hicd -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,cuda --options hicdg -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -96,9 +224,15 @@ while true; do
     -c|--clients)
         build_clients=true
         shift ;;
+    -g|--debug)
+        build_release=false
+        shift ;;
     --cuda)
         build_cuda=true
         shift ;;
+    --prefix)
+        install_prefix=${2}
+        shift 2 ;;
     --) shift ; break ;;
     *)  echo "Unexpected command line parameter received; aborting";
         exit 1
@@ -112,75 +246,66 @@ printf "\033[32mCreating project build directory in: \033[33m${build_dir}\033[0m
 # #################################################
 # prep
 # #################################################
-
 # ensure a clean build environment
-rm -rf ${build_dir}
+if [[ "${build_release}" == true ]]; then
+  rm -rf ${build_dir}/release
+else
+  rm -rf ${build_dir}/debug
+fi
+
+# Default cmake executable is called cmake
+cmake_executable=cmake
+
+case "${ID}" in
+  centos|rhel)
+  cmake_executable=cmake3
+  ;;
+esac
 
 # #################################################
-# install build dependencies on request
+# dependencies
 # #################################################
 if [[ "${install_dependencies}" == true ]]; then
-  # dependencies needed for hipblas and clients to build
-  library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" "hip_hcc" )
-  if [[ "${build_cuda}" == false ]]; then
-    library_dependencies_ubuntu+=( "hcc" "rocblas" )
-  else
-    # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
-    library_dependencies_ubuntu+=( "cuda" )
+
+  install_packages
+
+  # The following builds googletest & lapack from source, installs into cmake default /usr/local
+  pushd .
+    printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into \033[33m/usr/local\033[0m\n"
+    mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
+    ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install -DBUILD_BOOST=OFF ../../deps
+    make -j$(nproc)
+    make install
+  popd
   fi
 
-  client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
-
-  elevate_if_not_root apt update
-
-  # Dependencies required by main library
-  for package in "${library_dependencies_ubuntu[@]}"; do
-    if [[ $(dpkg-query --show --showformat='${db:Status-Abbrev}\n' ${package} 2> /dev/null | grep -q "ii"; echo $?) -ne 0 ]]; then
-      printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
-      elevate_if_not_root apt install -y --no-install-recommends ${package}
-    fi
-  done
-
-  # Dependencies required by library client apps
-  if [[ "${build_clients}" == true ]]; then
-    for package in "${client_dependencies_ubuntu[@]}"; do
-      if [[ $(dpkg-query --show --showformat='${db:Status-Abbrev}\n' ${package} 2> /dev/null | grep -q "ii"; echo $?) -ne 0 ]]; then
-        printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
-        elevate_if_not_root apt install -y --no-install-recommends ${package}
-      fi
-    done
-
-    # The following builds googletest & lapack from source, installs into cmake default /usr/local
-    pushd .
-      printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into \033[33m/usr/local\033[0m\n"
-      mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
-      cmake -DBUILD_BOOST=OFF ../../deps
-      make -j$(nproc)
-      elevate_if_not_root make install
-    popd
-  fi
-
-fi
+# We append customary rocm path; if user provides custom rocm path in ${path}, our
+# hard-coded path has lesser priority
+# export PATH=${PATH}:/opt/rocm/bin
 
 pushd .
   # #################################################
-  # configure
+  # configure & build
   # #################################################
-  mkdir -p ${build_dir}/release && cd ${build_dir}/release
+  cmake_common_options=""
+  cmake_client_options=""
 
-  if [[ "${build_cuda}" == false ]]; then
-    export CXX=/opt/rocm/bin/hcc
-  fi
-
-  if [[ "${build_clients}" == true ]]; then
-    cmake -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON ../..
+  # build type
+  if [[ "${build_release}" == true ]]; then
+    mkdir -p ${build_dir}/release/clients && cd ${build_dir}/release
+    cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Release"
   else
-    cmake ../..
+    mkdir -p ${build_dir}/debug/clients && cd ${build_dir}/debug
+    cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Debug"
   fi
 
-  # #################################################
-  # build
-  # #################################################
+  # clients
+  if [[ "${build_clients}" == true ]]; then
+    cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
+  fi
+
+  # Build library only with hcc
+  ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install" ../..
   make -j$(nproc)
 
   # #################################################
@@ -189,6 +314,18 @@ pushd .
   # installing through package manager, which makes uninstalling easy
   if [[ "${install_package}" == true ]]; then
     make package
-    elevate_if_not_root dpkg -i hipblas-*.deb
+
+    case "${ID}" in
+      ubuntu)
+        elevate_if_not_root dpkg -i hipblas-*.deb
+      ;;
+      centos|rhel)
+        elevate_if_not_root yum localinstall hipblas-*.rpm
+      ;;
+      fedora)
+        elevate_if_not_root dnf install hipblas-*.rpm
+      ;;
+    esac
+
   fi
 popd

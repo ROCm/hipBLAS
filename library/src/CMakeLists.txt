@@ -19,74 +19,67 @@ endfunction( )
 # ########################################################################
 # Main
 # ########################################################################
+prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
+
+if( NOT CUDA_FOUND )
+  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/hcc_detail/hipblas.cpp" )
+else( )
+  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvcc_detail/hipblas.cpp" )
+endif( )
+
+add_library( hipblas
+  ${hipblas_source}
+  ${relative_hipblas_headers_public}
+)
+add_library( roc::hipblas ALIAS hipblas )
+
+# External header includes included as system files
+target_include_directories( hipblas
+  SYSTEM PRIVATE
+    $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+)
+
+# Test for specific compiler features if cmake version is recent enough
+target_compile_features( hipblas PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 
 # Build hipblas from source on AMD platform
-if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
-  prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
-
-  add_library( hipblas
-    ${CMAKE_CURRENT_SOURCE_DIR}/hcc_detail/hipblas.cpp
-    ${relative_hipblas_headers_public}
-  )
-
-  find_package( rocblas REQUIRED CONFIG )
-
-  # NOTE: hipblas header 'hipblas-types.h' exposes the hip header hip/hip_vector_types.h, requiring exposing hip::hip_hcc as PUBLIC
-  target_link_libraries( hipblas PUBLIC hip::hip_hcc PRIVATE hip::hip_device hcc::hccshared roc::rocblas )
-
-  # Test for specific compiler features if cmake version is recent enough
-  if( CMAKE_VERSION VERSION_GREATER "3.0" )
-    target_compile_features( hipblas PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
-  else( )
-    # Otherwise, just try to compile the library with a standards flag
-    if( CMAKE_COMPILER_IS_GNUCXX OR ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" ) )
-      target_compile_options( hipblas PRIVATE -std=c++11 )
-    endif( )
+if( NOT CUDA_FOUND )
+  if( NOT TARGET rocblas )
+    find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm/rocblas )
   endif( )
+
+  target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_HCC__ )
+
+  get_target_property( HIPHCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
+  target_link_libraries( hipblas PRIVATE roc::rocblas ${HIPHCC_LOCATION} )
 
   # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  target_compile_options( hipblas PRIVATE -Wno-unused-command-line-argument )
-
-  foreach( target ${AMDGPU_TARGETS} )
-    target_link_libraries( hipblas PRIVATE --amdgpu-target=${target} )
-  endforeach( )
-
-  set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" )
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
+    target_compile_options( hipblas PRIVATE -Wno-unused-command-line-argument )
+  endif( )
 else( )
-  # If HiP is not installed in default path, user can append to CMAKE_MODULE_PATH
-  list( APPEND CMAKE_MODULE_PATH /opt/rocm/hip/cmake )
-  find_package( HIP REQUIRED ) # Using module mode;
-  find_package( CUDA REQUIRED ) # Using module mode; packaged in cmake
-
-  hip_add_library( hipblas
-    ${CMAKE_CURRENT_SOURCE_DIR}/nvcc_detail/hipblas.cpp
-    ${relative_hipblas_headers_public}
-  )
+  target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
 
   target_link_libraries( hipblas PRIVATE ${CUDA_CUBLAS_LIBRARIES} )
 
+  # External header includes included as system files
   target_include_directories( hipblas
-    PRIVATE
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+    SYSTEM PRIVATE
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
-      PUBLIC
-      $<BUILD_INTERFACE:${hip_INCLUDE_DIRS}>
-      $<INSTALL_INTERFACE:${hip_INCLUDE_DIRS}>
-      )
-
-  target_compile_definitions( hipblas PUBLIC __HIP_PLATFORM_NVCC__ )
-  set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" )
+  )
 endif( )
 
+# Internal header includes
 target_include_directories( hipblas
-PUBLIC  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/library/include>
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+  PUBLIC  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/library/include>
+          $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
+          $<INSTALL_INTERFACE:include>
 )
 
 set_target_properties( hipblas PROPERTIES VERSION ${hipblas_VERSION} SOVERSION ${hipblas_SOVERSION} CXX_EXTENSIONS NO )
 set_target_properties( hipblas PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
+set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" )
 
 # Package that helps me set visibility for function names exported from shared library
 include( GenerateExportHeader )
