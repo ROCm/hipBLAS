@@ -55,16 +55,15 @@ if( WIN32 )
 else( )
     set( CPACK_SOURCE_GENERATOR "TGZ" )
     set( CPACK_GENERATOR "DEB;RPM" CACHE STRING "cpack list: 7Z, DEB, IFW, NSIS, NSIS64, RPM, STGZ, TBZ2, TGZ, TXZ, TZ, ZIP" )
-    # set( CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON )
 endif( )
 
 # Package specific CPACK vars
-set( CPACK_DEBIAN_PACKAGE_DEPENDS "hip_hcc (>= 1.0.17174)" )
-set( CPACK_RPM_PACKAGE_REQUIRES "hip_hcc >= 1.0.17174" )
+set( CPACK_DEBIAN_PACKAGE_DEPENDS "hip_hcc (>= 1.3), rocblas (>= 0.10.3)" )
+set( CPACK_RPM_PACKAGE_REQUIRES "hip_hcc >= 1.3, rocblas >= 0.10.3" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md" )
 
 # Give hipblas compiled for CUDA backend a different name
-if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" OR CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
+if( NOT CUDA_FOUND )
     set( package_name hipblas )
 else( )
     set( package_name hipblas-alt )
