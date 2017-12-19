@@ -304,7 +304,7 @@ pushd .
     cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
   fi
 
-  # Build library only with hcc
+  # Build library
   ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install" ../..
   make -j$(nproc)
 

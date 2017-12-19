@@ -1,28 +1,25 @@
-# This Dockerfile provides a starting point for a ROCm installation of hipCaffe.
-
 # Parameters related to building hip
 ARG base_image
 
 FROM ${base_image}
 LABEL maintainer="kent.knox@amd"
 
-USER root
 ARG user_uid
 
 # Install dependent packages
 # Dependencies:
 # * hcc-config.cmake: pkg-config
 # * tensile: python2.7, python-yaml
-# * rocblas-test: gfortran, googletest
-# * rocblas-bench: libboost-program-options-dev
+# * hipblas-test: gfortran, googletest
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    cmake \
+    sudo \
     ca-certificates \
     git \
+    make \
+    cmake \
     pkg-config \
     gfortran \
     libboost-program-options-dev \
-    rpm \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -36,7 +33,7 @@ RUN useradd --create-home -u ${user_uid} -o -G sudo --shell /bin/bash jenkins &&
 
 ARG HIPBLAS_SRC_ROOT=/usr/local/src/hipBLAS
 
-# Clone rocblas repo
+# Clone hipblas repo
 RUN mkdir -p ${HIPBLAS_SRC_ROOT} && cd ${HIPBLAS_SRC_ROOT} && \
     git clone -b develop --depth=1 https://github.com/ROCmSoftwarePlatform/hipBLAS . && \
 
