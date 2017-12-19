@@ -27,7 +27,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     gfortran \
     libboost-program-options-dev \
     hip_hcc \
-    hip_nvcc \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -42,10 +41,9 @@ RUN useradd --create-home -u ${user_uid} -o -G sudo --shell /bin/bash jenkins &&
 ARG HIPBLAS_SRC_ROOT=/usr/local/src/rocBLAS
 
 # Clone hipblas repo
+# Build client dependencies and install into /usr/local (LAPACK & GTEST)
 RUN mkdir -p ${HIPBLAS_SRC_ROOT} && cd ${HIPBLAS_SRC_ROOT} && \
     git clone -b develop --depth=1 https://github.com/ROCmSoftwarePlatform/rocBLAS . && \
-
-# Build client dependencies and install into /usr/local (LAPACK & GTEST)
     mkdir -p build/deps && cd build/deps && \
     cmake -DBUILD_BOOST=OFF ${HIPBLAS_SRC_ROOT}/deps && \
     make -j $(nproc) install && \

@@ -56,14 +56,15 @@ String g_relativize( String root_string, String rel_source, String rel_build )
 // Construct the relative path of the build directory
 void build_directory_rel( project_paths paths, compiler_data hcc_args )
 {
-  if( hcc_args.build_config.equalsIgnoreCase( 'release' ) )
-  {
-    paths.project_build_prefix = paths.build_prefix + '/' + paths.project_name + '/release';
-  }
-  else
-  {
-    paths.project_build_prefix = paths.build_prefix + '/' + paths.project_name + '/debug';
-  }
+  // if( hcc_args.build_config.equalsIgnoreCase( 'release' ) )
+  // {
+  //   paths.project_build_prefix = paths.build_prefix + '/' + paths.project_name + '/release';
+  // }
+  // else
+  // {
+  //   paths.project_build_prefix = paths.build_prefix + '/' + paths.project_name + '/debug';
+  // }
+  paths.project_build_prefix = paths.build_prefix + '/' + paths.project_name;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -157,18 +158,26 @@ Boolean docker_build_inside_image( def build_image, compiler_data compiler_args,
     build_type_postfix = "-d"
   }
 
-  // For the nvidia path, we somewhat arbitrarily choose to use the hcc-ctu rocblas package
-  String rocblas_archive_path=compiler_args.compiler_name;
-  if( rocblas_archive_path.toLowerCase( ).startsWith( 'nvcc-' ) )
+  if( paths.project_name.equalsIgnoreCase( 'hipblas-ubuntu' ) || paths.project_name.equalsIgnoreCase( 'hipblas-hcc-ctu' ) )
   {
-    rocblas_archive_path='hcc-ctu'
-  }
+    String rocblas_archive_path='hcc-rocm-ubuntu';
 
-  // This invokes 'copy artifact plugin' to copy latest archive from rocblas project
-  step([$class: 'CopyArtifact', filter: "Release/${rocblas_archive_path}/*.deb",
-    fingerprintArtifacts: true, projectName: 'ROCmSoftwarePlatform/rocBLAS/develop', flatten: true,
-    selector: [$class: 'StatusBuildSelector', stable: false],
-    target: '.' ])
+    // This invokes 'copy artifact plugin' to copy latest archive from rocblas project
+    step([$class: 'CopyArtifact', filter: "Release/${rocblas_archive_path}/*.deb",
+      fingerprintArtifacts: true, projectName: 'ROCmSoftwarePlatform/rocBLAS/develop', flatten: true,
+      selector: [$class: 'StatusBuildSelector', stable: false],
+      target: "${paths.project_build_prefix}" ])
+  }
+  else if( paths.project_name.equalsIgnoreCase( 'hipblas-fedora' ) )
+  {
+    String rocblas_archive_path='hcc-rocm-fedora';
+
+    // This invokes 'copy artifact plugin' to copy latest archive from rocblas project
+    step([$class: 'CopyArtifact', filter: "Release/${rocblas_archive_path}/*.rpm",
+      fingerprintArtifacts: true, projectName: 'ROCmSoftwarePlatform/rocBLAS/develop', flatten: true,
+      selector: [$class: 'StatusBuildSelector', stable: false],
+      target: "${paths.project_build_prefix}" ])
+  }
 
   build_image.inside( docker_args.docker_run_args )
   {
@@ -177,60 +186,57 @@ Boolean docker_build_inside_image( def build_image, compiler_data compiler_args,
       // Build library & clients
       sh  """#!/usr/bin/env bash
           set -x
-          sudo dpkg -i rocblas-*.deb
-          rm -rf ${paths.project_build_prefix} && mkdir -p ${paths.project_build_prefix} && cd ${paths.project_build_prefix}
-          cmake -DBUILD_CLIENTS_TESTS=ON ${rel_path_to_src}
-          make -j \$(nproc)
+          cd ${paths.project_build_prefix}
+          ${paths.build_command}
         """
     }
 
-    try
+    stage( "Test ${compiler_args.compiler_name} ${compiler_args.build_config}" )
     {
-      stage( "Test ${compiler_args.compiler_name} ${compiler_args.build_config}" )
+      // Cap the maximum amount of testing to be a few hours; assume failure if the time limit is hit
+      timeout(time: 1, unit: 'HOURS')
       {
-        // Cap the maximum amount of testing to be a few hours; assume failure if the time limit is hit
-        timeout(time: 1, unit: 'HOURS')
-        {
-          sh """#!/usr/bin/env bash
-                set -x
-                cd ${paths.project_build_prefix}/clients/staging
-                ./hipblas-test${build_type_postfix} --gtest_output=xml --gtest_color=yes
-            """
-          junit "${paths.project_build_prefix}/clients/staging/*.xml"
-        }
-
-        String docker_context = "${compiler_args.build_config}/${compiler_args.compiler_name}"
-        if( compiler_args.compiler_name.toLowerCase( ).startsWith( 'hcc-' ) )
-        {
-          sh  """#!/usr/bin/env bash
+        sh """#!/usr/bin/env bash
               set -x
-              cd ${paths.project_build_prefix}
-              make package
-            """
+              cd ${paths.project_build_prefix}/build/release/clients/staging
+              ./hipblas-test${build_type_postfix} --gtest_output=xml --gtest_color=yes
+          """
+        junit "${paths.project_build_prefix}/build/release/clients/staging/*.xml"
+      }
 
+      String docker_context = "${compiler_args.build_config}/${compiler_args.compiler_name}"
+      if( compiler_args.compiler_name.toLowerCase( ).startsWith( 'hcc-' ) )
+      {
+        sh  """#!/usr/bin/env bash
+            set -x
+            cd ${paths.project_build_prefix}/build/release
+            make package
+          """
+
+        if( paths.project_name.equalsIgnoreCase( 'hipblas-ubuntu' ) )
+        {
           sh  """#!/usr/bin/env bash
               set -x
               rm -rf ${docker_context} && mkdir -p ${docker_context}
-              mv ${paths.project_build_prefix}/*.deb ${docker_context}
-              mv ${paths.project_build_prefix}/*.rpm ${docker_context}
+              mv ${paths.project_build_prefix}/build/release/*.deb ${docker_context}
               dpkg -c ${docker_context}/*.deb
           """
+          archiveArtifacts artifacts: "${docker_context}/hipblas-*.deb", fingerprint: true
+        }
+        else if( paths.project_name.equalsIgnoreCase( 'hipblas-fedora' ) )
+        {
+          sh  """#!/usr/bin/env bash
+              set -x
+              rm -rf ${docker_context} && mkdir -p ${docker_context}
+              mv ${paths.project_build_prefix}/build/release/*.rpm ${docker_context}
 
-          archiveArtifacts artifacts: "${docker_context}/*.deb", fingerprint: true
-          archiveArtifacts artifacts: "${docker_context}/*.rpm", fingerprint: true
+              # Temp rocblas mv because repo.radeon.com does not have rpms for rocblas
+              mv ${paths.project_build_prefix}/*.rpm ${docker_context}
+              rpm -qlp ${docker_context}/*.rpm
+          """
+          archiveArtifacts artifacts: "${docker_context}/hipblas-*.rpm", fingerprint: true
         }
       }
-    }
-    catch( err )
-    {
-      // NOTE: This should be removed when the cuda unit tests pass
-      // There are failures using the cuda stack, which we believe that we can
-      // safely ignore in the future with a gtest filter
-      if( compiler_args.compiler_name.toLowerCase( ).startsWith( 'nvcc-' ) )
-      {
-        currentBuild.result = 'UNSTABLE'
-      }
-      return false
     }
   }
 
@@ -247,7 +253,7 @@ String docker_upload_artifactory( compiler_data compiler_args, docker_data docke
   String image_name = "hipblas-hip-${compiler_args.compiler_name}-ubuntu-16.04"
   String docker_context = "${compiler_args.build_config}/${compiler_args.compiler_name}"
 
-  stage( "Artifactory ${compiler_args.compiler_name} ${compiler_args.build_config}" )
+  stage( "Install ${compiler_args.compiler_name} ${compiler_args.build_config}" )
   {
     //  We copy the docker files into the bin directory where the .deb lives so that it's a clean build everytime
     sh  """#!/usr/bin/env bash
@@ -405,35 +411,12 @@ class project_paths implements Serializable
   String project_src_prefix
   String build_prefix
   String project_build_prefix
+  String build_command
 }
 
 ////////////////////////////////////////////////////////////////////////
 // -- MAIN
 // Following this line is the start of MAIN of this Jenkinsfile
-
-// sh  """
-//     set -x
-// # printf '\033[31mHello World\033[0m'
-// # echo "TERM=${env.TERM}"
-// # echo "LANG=${env.LANG}"
-// # echo "SHELL=${env.SHELL}"
-// """
-
-// Integration testing is a special path which implies testing of an upsteam build of hcc,
-// but does not need testing across older builds of hcc or cuda.
-// params.hip_integration_test is set in HIP build
-// NOTE: hip does not currently set this bit; this is non-functioning at this time
-// if( params.hip_integration_test )
-// {
-//   println "Enabling hipblas integration testing pass"
-
-//   node('docker && rocm')
-//   {
-//     hip_integration_testing( '--device=/dev/kfd', 'hip-ctu', 'Release' )
-//   }
-
-//   return
-// }
 
 // This defines a common build pipeline used by most targets
 def build_pipeline( compiler_data compiler_args, docker_data docker_args, project_paths hipblas_paths, def docker_inside_closure )
@@ -475,27 +458,63 @@ def build_pipeline( compiler_data compiler_args, docker_data docker_args, projec
   }
 }
 
-// The following launches 3 builds in parallel: hcc-ctu, hcc-1.6 and cuda
-parallel hcc_ctu:
+// Disabling hcc-ctu builds as we now build hipblas with native host compilers
+
+// parallel hcc_ctu:
+// {
+//   node( 'docker && rocm' )
+//   {
+//     def docker_args = new docker_data(
+//         from_image:'compute-artifactory:5001/rocm-developer-tools/hip/master/hip-hcc-ctu-ubuntu-16.04:latest',
+//         build_docker_file:'dockerfile-build-ubuntu',
+//         install_docker_file:'dockerfile-install-ubuntu',
+//         docker_run_args:'--device=/dev/kfd',
+//         docker_build_args:' --pull' )
+
+//     def compiler_args = new compiler_data(
+//         compiler_name:'hcc-ctu',
+//         build_config:'Release',
+//         compiler_path:'/opt/rocm/bin/hcc' )
+
+//     def hipblas_paths = new project_paths(
+//         project_name:'hipblas-hcc-ctu',
+//         src_prefix:'src',
+//         build_prefix:'src',
+//         build_command: 'sudo dpkg -i rocblas-*.deb; ./install.sh -c' )
+
+//     def print_version_closure = {
+//       sh  """
+//           set -x
+//           /opt/rocm/bin/rocm_agent_enumerator -t ALL
+//           /opt/rocm/bin/hcc --version
+//         """
+//     }
+
+//     build_pipeline( compiler_args, docker_args, hipblas_paths, print_version_closure )
+//   }
+// },
+// rocm_ubuntu:
+parallel rocm_ubuntu:
 {
   node( 'docker && rocm' )
   {
-    def docker_args = new docker_data(
-        from_image:'compute-artifactory:5001/rocm-developer-tools/hip/master/hip-hcc-ctu-ubuntu-16.04:latest',
-        build_docker_file:'dockerfile-build-hip-hcc-ctu-ubuntu-16.04',
-        install_docker_file:'dockerfile-install-hip-hcc-ctu-ubuntu-16.04',
+    def hcc_docker_args = new docker_data(
+        from_image:'rocm/dev-ubuntu-16.04:latest',
+        build_docker_file:'dockerfile-build-ubuntu',
+        install_docker_file:'dockerfile-install-ubuntu',
         docker_run_args:'--device=/dev/kfd',
         docker_build_args:' --pull' )
 
-    def compiler_args = new compiler_data(
-        compiler_name:'hcc-ctu',
+    def hcc_compiler_args = new compiler_data(
+        compiler_name:'hcc-rocm-ubuntu',
         build_config:'Release',
-        compiler_path:'/opt/rocm/bin/hcc' )
+        compiler_path:'g++' )
 
     def hipblas_paths = new project_paths(
-        project_name:'hipblas',
+        project_name:'hipblas-ubuntu',
         src_prefix:'src',
-        build_prefix:'build' )
+        build_prefix:'src',
+        build_command: 'sudo dpkg -i rocblas-*.deb; ./install.sh -c' )
 
     def print_version_closure = {
       sh  """
@@ -505,29 +524,31 @@ parallel hcc_ctu:
         """
     }
 
-    build_pipeline( compiler_args, docker_args, hipblas_paths, print_version_closure )
+    build_pipeline( hcc_compiler_args, hcc_docker_args, hipblas_paths, print_version_closure )
   }
 },
-hcc_rocm:
+rocm_fedora:
 {
   node( 'docker && rocm' )
   {
     def hcc_docker_args = new docker_data(
-        from_image:'rocm/rocm-terminal:latest',
-        build_docker_file:'dockerfile-build-rocm-terminal',
-        install_docker_file:'dockerfile-install-rocm-terminal',
+        from_image:'rocm/dev-fedora-24:latest',
+        build_docker_file:'dockerfile-build-fedora',
+        install_docker_file:'dockerfile-install-fedora',
         docker_run_args:'--device=/dev/kfd',
         docker_build_args:' --pull' )
 
     def hcc_compiler_args = new compiler_data(
-        compiler_name:'hcc-rocm',
+        compiler_name:'hcc-rocm-fedora',
         build_config:'Release',
-        compiler_path:'/opt/rocm/bin/hcc' )
+        compiler_path:'g++' )
 
     def hipblas_paths = new project_paths(
-        project_name:'hipblas',
+        project_name:'hipblas-fedora',
         src_prefix:'src',
-        build_prefix:'build' )
+        build_prefix:'src',
+        build_command: 'sudo rpm -iv rocblas-*.rpm; ./install.sh -c' )
+//        build_command: 'sudo dnf install -y rocblas-*.rpm; ./install.sh -c' )
 
     def print_version_closure = {
       sh  """
@@ -548,7 +569,7 @@ nvcc:
         from_image:'nvidia/cuda:9.0-devel',
         build_docker_file:'dockerfile-build-nvidia-cuda',
         install_docker_file:'dockerfile-install-nvidia-cuda',
-        docker_run_args:'--device=/dev/nvidiactl --device=/dev/nvidia0 --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools --volume-driver=nvidia-docker --volume=nvidia_driver_384.90:/usr/local/nvidia:ro',
+        docker_run_args:'--runtime=nvidia',
         docker_build_args:' --pull' )
 
     def hcc_compiler_args = new compiler_data(
@@ -557,9 +578,11 @@ nvcc:
         compiler_path:'g++' )
 
     def hipblas_paths = new project_paths(
-        project_name:'hipblas',
+        project_name:'hipblas-cuda',
         src_prefix:'src',
-        build_prefix:'build' )
+        build_prefix:'src',
+        build_command: './install.sh -c' )
+        // build_command: 'sudo apt-get install -y cuda-cublas-dev-9-*; ./install.sh -c' )
 
     def print_version_closure = {
       sh  """
