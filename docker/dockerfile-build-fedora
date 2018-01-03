@@ -1,5 +1,3 @@
-# This Dockerfile provides a starting point for a ROCm installation of hipCaffe.
-
 # Parameters related to building hip
 ARG base_image
 
@@ -13,33 +11,32 @@ ARG user_uid
 # * hcc-config.cmake: pkg-config
 # * tensile: python2.7, python-yaml
 # * hipblas-test: gfortran, googletest
-# * hipblas-bench: libboost-program-options-dev
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN dnf -y update && dnf install -y \
     sudo \
-    build-essential \
-    cmake \
     ca-certificates \
     git \
-    pkg-config \
-    gfortran \
-    libboost-program-options-dev \
-    rpm \
+    make \
+    cmake \
+    gcc-c++ \
+    gcc-gfortran \
+    libcxx-devel \
+    rpm-build \
+    boost-devel \
     && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    dnf -y clean all
 
 # docker pipeline runs containers with particular uid
 # create a jenkins user with this specific uid so it can use sudo priviledges
 # Grant any member of sudo group password-less sudo privileges
-RUN useradd --create-home -u ${user_uid} -G sudo --shell /bin/bash jenkins && \
+RUN useradd --create-home -u ${user_uid} -o -G wheel --shell /bin/bash jenkins && \
     mkdir -p /etc/sudoers.d/ && \
-    echo '%sudo   ALL=(ALL) NOPASSWD:ALL' | tee /etc/sudoers.d/sudo-nopasswd
+    echo '%wheel   ALL=(ALL) NOPASSWD:ALL' | tee /etc/sudoers.d/sudo-nopasswd
 
-ARG HIPBLAS_SRC_ROOT=/usr/local/src/rocBLAS
+ARG HIPBLAS_SRC_ROOT=/usr/local/src/hipBLAS
 
 # Clone hipblas repo
 RUN mkdir -p ${HIPBLAS_SRC_ROOT} && cd ${HIPBLAS_SRC_ROOT} && \
-    git clone -b develop --depth=1 https://github.com/ROCmSoftwarePlatform/rocBLAS . && \
+    git clone -b develop --depth=1 https://github.com/ROCmSoftwarePlatform/hipBLAS . && \
 
 # Build client dependencies and install into /usr/local (LAPACK & GTEST)
     mkdir -p build/deps && cd build/deps && \

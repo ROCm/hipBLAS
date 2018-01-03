@@ -1,10 +1,10 @@
-# Parameters related to building rocblas
+# Parameters related to building hipblas
 ARG base_image
 
 FROM ${base_image}
 LABEL maintainer="kent.knox@amd"
 
-# Copy the debian package of rocblas into the container from host
+# Copy the debian package of hipblas into the container from host
 COPY *.deb /tmp/
 
 # Install the debian package, and print out contents of expected changed locations
