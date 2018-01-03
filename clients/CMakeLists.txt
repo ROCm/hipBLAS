@@ -26,14 +26,6 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 include( build-options )
 
-get_target_property( hipblas_type hipblas TYPE )
-
-if( hipblas_type MATCHES "STATIC_LIBRARY" )
-  if( NOT CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
-    message( AUTHOR_WARNING "Linking static hipblas library probably requires hcc compiler" )
-  endif( )
-endif( )
-
 if( BUILD_CLIENTS_TESTS )
   add_subdirectory( gtest )
 endif( )
