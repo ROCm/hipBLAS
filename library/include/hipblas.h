@@ -20,6 +20,8 @@
 
 typedef void * hipblasHandle_t;
 
+typedef uint16_t hipblasHalf;
+
 enum hipblasStatus_t {
   HIPBLAS_STATUS_SUCCESS = 0,          // Function succeeds
   HIPBLAS_STATUS_NOT_INITIALIZED = 1,  // HIPBLAS library not initialized
@@ -204,10 +206,14 @@ hipblasStatus_t hipblasCgemm(hipblasHandle_t handle,  hipblasOperation_t transa,
 
 hipblasStatus_t hipblasZgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const hipDoubleComplex *alpha, const hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, const hipDoubleComplex *beta, hipDoubleComplex *C, int ldc);
-
-hipblasStatus_t hipblasHgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const __half *alpha, __half *A, int lda, __half *B, int ldb, const __half *beta, __half *C, int ldc);
 */
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasHgemm(hipblasHandle_t handle,  
+        hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const hipblasHalf *alpha, 
+        hipblasHalf *A, int lda, 
+        hipblasHalf *B, int ldb, const hipblasHalf *beta, 
+        hipblasHalf *C, int ldc);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
         int m, int n, int k,  const float *alpha, const float *A, int lda, long long bsa, const float *B, int ldb, long long bsb, const float *beta, float *C, int ldc, long long bsc, int batchCount);
