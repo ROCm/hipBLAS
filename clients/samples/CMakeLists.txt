@@ -6,6 +6,7 @@ set( hipblas_samples_common ../common/utility.cpp )
 
 add_executable( example-sscal example_sscal.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
+add_executable( example-hgemm example_hgemm.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
 
 if( NOT TARGET hipblas )
@@ -16,7 +17,7 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
+foreach( exe example-sscal;example-sgemm;example-hgemm;example-sgemm-strided-batched )
 
   target_link_libraries( ${exe} PRIVATE roc::hipblas )
 
