@@ -1,6 +1,5 @@
 /* ************************************************************************
  * Copyright 2016 Advanced Micro Devices, Inc.
- *
  * ************************************************************************ */
 
 #pragma once
@@ -10,8 +9,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <memory>
 #include "hipblas.h"
 #include <sys/time.h>
+#include <immintrin.h>
+#include <typeinfo>
 
 using namespace std;
 
@@ -39,6 +41,20 @@ using namespace std;
         }                                                                        \
         cout << endl;                                                            \
     }
+
+// Helper routine to convert floats into their half equivalent; uses F16C instructions
+inline hipblasHalf float_to_half(float val)
+{
+    // return static_cast<rocblas_half>( _mm_cvtsi128_si32( _mm_cvtps_ph( _mm_set_ss(val), 0)));
+    return _cvtss_sh(val, 0);
+}
+
+// Helper routine to convert halfs into their floats equivalent; uses F16C instructions
+inline float half_to_float(hipblasHalf val)
+{
+    // return static_cast<rocblas_half>(_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(val), 0)));
+    return _cvtsh_ss(val);
+}
 
     /* ============================================================================================ */
     /* generate random number :*/
