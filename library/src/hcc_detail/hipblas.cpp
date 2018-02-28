@@ -372,12 +372,22 @@ hipblasStatus_t hipblasZgemm(hipblasHandle_t handle,  hipblasOperation_t transa,
                            int m, int n, int k,  const hipDoubleComplex *alpha, const hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, const hipDoubleComplex *beta, hipDoubleComplex *C, int ldc){
 	return rocBLASStatusToHIPStatus(rocblas_zgemm((rocblas_handle)handle, hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb), m, n, k, (const rocblas_precision_complex_double*)(alpha), const_cast<rocblas_precision_complex_double*>((const rocblas_precision_complex_double*)(A)),  lda, const_cast<rocblas_precision_complex_double*>((const rocblas_precision_complex_double*)(B)),  ldb, (const rocblas_precision_complex_double*)(beta), (rocblas_precision_complex_double*)(C),  ldc));
 }
+*/
 
 hipblasStatus_t hipblasHgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const __half *alpha, __half *A, int lda, __half *B, int ldb, const __half *beta, __half *C, int ldc){
-	return rocBLASStatusToHIPStatus(rocblas_hgemm((rocblas_handle)handle, hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb), m, n, k, alpha, A, lda, rocblas_half *B, ldb, beta, rocblas_half *C, ldc));
+    int m, int n, int k,  const hipblasHalf *alpha,
+    hipblasHalf *A, int lda,
+    hipblasHalf *B, int ldb, const hipblasHalf *beta,
+    hipblasHalf *C, int ldc)
+{
+	return rocBLASStatusToHIPStatus(rocblas_hgemm((rocblas_handle)handle,
+        hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb),
+        m, n, k, (rocblas_half*) alpha,
+        (rocblas_half*) A, lda,
+        (rocblas_half*) B, ldb, (rocblas_half*) beta,
+        (rocblas_half*) C, ldc));
 }
-*/
+
 
 hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t handle,  
     hipblasOperation_t transa, hipblasOperation_t transb,
