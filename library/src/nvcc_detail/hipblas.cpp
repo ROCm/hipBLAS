@@ -286,16 +286,9 @@ hipblasStatus_t hipblasCgemm(hipblasHandle_t handle,  hipblasOperation_t transa,
 */
 
 hipblasStatus_t hipblasHgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
-                           int m, int n, int k,  const hipblasHalf *alpha, hipblasHalf *A, int lda, hipblasHalf *B, int ldb, const hipblasHalf *beta, hipblasHalf *C, int ldc)
-{
-  return hipCUBLASStatusToHIPStatus(cublasHgemm((cublasHandle_t) handle, 
-              hipOperationToCudaOperation(transa),  hipOperationToCudaOperation(transb), 
-              m,  n,  k, (__half*)alpha, 
-              (__half*)A,  lda, 
-              (__half*)B,  ldb, (__half*)beta, 
-              (__half*)C,  ldc));
+                                   int m, int n, int k,  const hipblasHalf *alpha, const hipblasHalf *A, int lda, const hipblasHalf *B, int ldb, const hipblasHalf *beta, hipblasHalf *C, int ldc){
+      return hipCUBLASStatusToHIPStatus(cublasHgemm((cublasHandle_t) handle, hipOperationToCudaOperation(transa),  hipOperationToCudaOperation(transb), m,  n,  k, alpha, A,  lda, B,  ldb, beta, C,  ldc));
 }
-
 
 /*  complex not supported in hcc
 hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
