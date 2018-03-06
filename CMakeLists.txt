@@ -5,6 +5,15 @@
 # The ROCm platform requires Ubuntu 16.04 or Fedora 24, which has cmake 3.5
 cmake_minimum_required( VERSION 3.5 )
 
+# HIP_PATH
+IF(NOT DEFINED $ENV{HIP_PATH})
+      SET(HIP_PATH "/opt/rocm/hip")
+ELSE()
+        SET(HIP_PATH $ENV{HIP_PATH})
+ENDIF()
+
+
+
 # Consider removing this in the future
 # This should appear before the project command, because it does not use FORCE
 if( WIN32 )
@@ -12,6 +21,7 @@ if( WIN32 )
 else( )
   set( CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE PATH "Install path prefix, prepended onto install directories" )
 endif( )
+
 
 # This has to be initialized before the project() command appears
 # Set the default of CMAKE_BUILD_TYPE to be release, unless user specifies with -D.  MSVC_IDE does not use CMAKE_BUILD_TYPE
@@ -46,7 +56,8 @@ rocm_setup_version( VERSION 0.11.1.0 NO_GIT_TAG_VERSION )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
+# Adding FindHIP.cmake
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${HIP_PATH}/cmake)
 
 # NOTE:  workaround until hcc & hip cmake modules fixes symlink logic in their config files; remove when fixed
 list( APPEND CMAKE_PREFIX_PATH /opt/rocm/hcc /opt/rocm/hip )
@@ -63,9 +74,6 @@ if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
   message( STATUS "Building with ROCm tools" )
   find_package( hcc REQUIRED CONFIG PATHS /opt/rocm )
 endif( )
-
-# Hip headers required of all clients; clients use hip to allocate device memory
-find_package( hip REQUIRED CONFIG PATHS /opt/rocm )
 
 # Quietly look for CUDA, but if not found it's not an error
 # The presense of hip is not sufficient to determine if we want a rocm or cuda backend
