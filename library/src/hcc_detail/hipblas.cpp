@@ -39,6 +39,93 @@ hipblasOperation_t HCCOperationToHIPOperation( rocblas_operation_ op)
 	}
 }
 
+rocblas_fill_ hipFillToHCCFill( hipblasFillMode_t fill)
+{
+        switch (fill)
+        {
+                case HIPBLAS_FILL_MODE_UPPER:
+                        return rocblas_fill_upper;
+                case HIPBLAS_FILL_MODE_LOWER:
+                        return rocblas_fill_lower;
+                case HIPBLAS_FILL_MODE_FULL:
+                        return rocblas_fill_full;
+                default:
+                        throw "Non existent FILL";
+        }
+}
+
+hipblasFillMode_t HCCFillToHIPFill( rocblas_fill_ fill)
+{
+	switch (fill)
+	{
+		case rocblas_fill_upper:
+			return HIPBLAS_FILL_MODE_UPPER;
+		case rocblas_fill_lower:
+			return HIPBLAS_FILL_MODE_LOWER;
+		case rocblas_fill_full:
+			return HIPBLAS_FILL_MODE_FULL;
+		default:
+			throw "Non existent FILL";
+	}
+}
+
+rocblas_diagonal_ hipDiagonalToHCCDiagonal( hipblasDiagType_t diagonal)
+{
+        switch (diagonal)
+        {
+                case HIPBLAS_DIAG_NON_UNIT:
+                        return rocblas_diagonal_non_unit;
+                case HIPBLAS_DIAG_UNIT:
+                        return rocblas_diagonal_unit;
+                default:
+                        throw "Non existent DIAGONAL";
+        }
+}
+
+hipblasDiagType_t HCCDiagonalToHIPDiagonal( rocblas_diagonal_ diagonal)
+{
+	switch (diagonal)
+	{
+		case rocblas_diagonal_non_unit:
+			return HIPBLAS_DIAG_NON_UNIT;
+		case rocblas_diagonal_unit:
+			return HIPBLAS_DIAG_UNIT;
+		default:
+			throw "Non existent DIAGONAL";
+	}
+}
+
+rocblas_side_ hipSideToHCCSide( hipblasSideMode_t side)
+{
+        switch (side)
+        {
+                case HIPBLAS_SIDE_LEFT:
+                        return rocblas_side_left;
+                case HIPBLAS_SIDE_RIGHT:
+                        return rocblas_side_right;
+                case HIPBLAS_SIDE_BOTH:
+                        return rocblas_side_both;
+                default:
+                        throw "Non existent SIDE";
+        }
+}
+
+hipblasSideMode_t HCCSideToHIPSide( rocblas_side_ side)
+{
+	switch (side)
+	{
+		case rocblas_side_left:
+			return HIPBLAS_SIDE_LEFT;
+		case rocblas_side_right:
+			return HIPBLAS_SIDE_RIGHT;
+		case rocblas_side_both:
+			return HIPBLAS_SIDE_BOTH;
+		default:
+			throw "Non existent SIDE";
+	}
+}
+
+
 rocblas_pointer_mode HIPPointerModeToRocblasPointerMode( hipblasPointerMode_t mode)
 {
     switch (mode)
@@ -339,6 +426,30 @@ hipblasStatus_t  hipblasDger(hipblasHandle_t handle,
 /* not implemented
 hipblasStatus_t  hipblasSgerBatched(hipblasHandle_t handle, int m, int n, const float *alpha, const float *x, int incx, const float *y, int incy, float *A, int lda, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
 */
+
+//------------------------------------------------------------------------------------------------------------
+      
+hipblasStatus_t hipblasStrsm(hipblasHandle_t handle,
+    hipblasSideMode_t side, hipblasFillMode_t uplo, hipblasOperation_t transA, hipblasDiagType_t diag,
+    int m, int n, const float* alpha,
+    float* A, int lda,
+    float* B, int ldb)
+{
+    return rocBLASStatusToHIPStatus(rocblas_strsm((rocblas_handle) handle,
+        hipSideToHCCSide(side), hipFillToHCCFill(uplo), hipOperationToHCCOperation(transA), hipDiagonalToHCCDiagonal(diag),
+        m, n,  alpha,  A, lda,  B, ldb));
+}
+      
+hipblasStatus_t hipblasDtrsm(hipblasHandle_t handle,
+    hipblasSideMode_t side, hipblasFillMode_t uplo, hipblasOperation_t transA, hipblasDiagType_t diag,
+    int m, int n, const double* alpha,
+    double* A, int lda,
+    double* B, int ldb)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dtrsm((rocblas_handle) handle,
+        hipSideToHCCSide(side), hipFillToHCCFill(uplo), hipOperationToHCCOperation(transA), hipDiagonalToHCCDiagonal(diag),
+        m, n,  alpha,  A, lda,  B, ldb));
+}
 
 hipblasStatus_t hipblasSgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
     int m, int n, int k,  const float *alpha, 
