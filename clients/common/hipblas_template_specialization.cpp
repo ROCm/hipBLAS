@@ -531,7 +531,7 @@
             return hipblasDgemmBatched(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
         }
 
-/*
+
     template<>
     hipblasStatus_t hipblasTrsm<float>(hipblasHandle_t handle,
         hipblasSideMode_t side, hipblasFillMode_t uplo,
@@ -554,7 +554,7 @@
         double* B, int ldb){
         return hipblasDtrsm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
     }
-*/
+
 
     template<>
     hipblasStatus_t hipblasGeam<float>(hipblasHandle_t handle,

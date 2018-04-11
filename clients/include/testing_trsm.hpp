@@ -117,7 +117,7 @@ hipblasStatus_t testing_trsm(Arguments argus)
 
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
 
     status = hipblasTrsm<T>(handle,
@@ -144,7 +144,7 @@ hipblasStatus_t testing_trsm(Arguments argus)
                 (const T*)hA.data(), lda,
                 hB_copy.data(), ldb);
 
-        print_matrix(hB_copy, hB, min(M, 3), min(N,3), ldb);
+//      print_matrix(hB_copy, hB, min(M, 3), min(N,3), ldb);
 
         //if enable norm check, norm check is invasive
         //any typeinfo(T) will not work here, because template deduction is matched in compilation time
