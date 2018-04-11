@@ -48,6 +48,84 @@ hipblasOperation_t CudaOperationToHIPOperation( cublasOperation_t op)
   }
 }
 
+cublasFillMode_t hipFillToCudaFill( hipblasFillMode_t fill)
+{
+        switch (fill)
+        {
+                case HIPBLAS_FILL_MODE_UPPER:
+                        return CUBLAS_FILL_MODE_UPPER;
+                case HIPBLAS_FILL_MODE_LOWER:
+                        return CUBLAS_FILL_MODE_LOWER;
+                default:
+                        throw "Non existent FILL";
+        }
+}
+
+hipblasFillMode_t CudaFillToHIPFill( cublasFillMode_t fill)
+{
+	switch (fill)
+	{
+		case CUBLAS_FILL_MODE_UPPER:
+			return HIPBLAS_FILL_MODE_UPPER;
+		case CUBLAS_FILL_MODE_LOWER:
+			return HIPBLAS_FILL_MODE_LOWER;
+		default:
+			throw "Non existent FILL";
+	}
+}
+
+cublasDiagType_t hipDiagonalToCudaDiagonal( hipblasDiagType_t diagonal)
+{
+        switch (diagonal)
+        {
+                case HIPBLAS_DIAG_NON_UNIT:
+                        return CUBLAS_DIAG_NON_UNIT;
+                case HIPBLAS_DIAG_UNIT:
+                        return CUBLAS_DIAG_UNIT;
+                default:
+                        throw "Non existent DIAGONAL";
+        }
+}
+
+hipblasDiagType_t CudaDiagonalToHIPDiagonal( cublasDiagType_t diagonal)
+{
+	switch (diagonal)
+	{
+		case CUBLAS_DIAG_NON_UNIT:
+			return HIPBLAS_DIAG_NON_UNIT;
+		case CUBLAS_DIAG_UNIT:
+			return HIPBLAS_DIAG_UNIT;
+		default:
+			throw "Non existent DIAGONAL";
+	}
+}
+
+cublasSideMode_t hipSideToCudaSide( hipblasSideMode_t side)
+{
+        switch (side)
+        {
+                case HIPBLAS_SIDE_LEFT:
+                        return CUBLAS_SIDE_LEFT;
+                case HIPBLAS_SIDE_RIGHT:
+                        return CUBLAS_SIDE_RIGHT;
+                default:
+                        throw "Non existent SIDE";
+        }
+}
+
+hipblasSideMode_t CudaSideToHIPSide( cublasSideMode_t side)
+{
+	switch (side)
+	{
+		case CUBLAS_SIDE_LEFT:
+			return HIPBLAS_SIDE_LEFT;
+		case CUBLAS_SIDE_RIGHT:
+			return HIPBLAS_SIDE_RIGHT;
+		default:
+			throw "Non existent SIDE";
+	}
+}
+
 cublasPointerMode_t HIPPointerModeToCudaPointerMode( hipblasPointerMode_t mode)
 {
   switch (mode)
@@ -271,6 +349,28 @@ hipblasStatus_t  hipblasDger(hipblasHandle_t handle, int m, int n, const double 
 hipblasStatus_t  hipblasSgerBatched(hipblasHandle_t handle, int m, int n, const float *alpha, const float *x, int incx, const float *y, int incy, float *A, int lda, int batchCount){
   //TODO warn user that function was demoted to ignore batch
   return hipCUBLASStatusToHIPStatus(cublasSger((cublasHandle_t) handle, m, n, alpha, x, incx, y, incy, A, lda));
+}
+
+hipblasStatus_t hipblasStrsm(hipblasHandle_t handle,
+    hipblasSideMode_t side, hipblasFillMode_t uplo, hipblasOperation_t transA, hipblasDiagType_t diag,
+    int m, int n, const float* alpha,
+    float* A, int lda,
+    float* B, int ldb)
+{
+    return hipCUBLASStatusToHIPStatus(cublasStrsm((cublasHandle_t) handle,
+        hipSideToCudaSide(side), hipFillToCudaFill(uplo), hipOperationToCudaOperation(transA), hipDiagonalToCudaDiagonal(diag),
+        m, n,  alpha,  A, lda,  B, ldb));
+}
+      
+hipblasStatus_t hipblasDtrsm(hipblasHandle_t handle,
+    hipblasSideMode_t side, hipblasFillMode_t uplo, hipblasOperation_t transA, hipblasDiagType_t diag,
+    int m, int n, const double* alpha,
+    double* A, int lda,
+    double* B, int ldb)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDtrsm((cublasHandle_t) handle,
+        hipSideToCudaSide(side), hipFillToCudaFill(uplo), hipOperationToCudaOperation(transA), hipDiagonalToCudaDiagonal(diag),
+        m, n,  alpha,  A, lda,  B, ldb));
 }
 
 hipblasStatus_t hipblasSgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
