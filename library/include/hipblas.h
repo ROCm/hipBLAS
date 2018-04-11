@@ -169,6 +169,18 @@ HIPBLAS_EXPORT hipblasStatus_t  hipblasDger(hipblasHandle_t handle, int m, int n
 HIPBLAS_EXPORT hipblasStatus_t  hipblasSgerBatched(hipblasHandle_t handle, int m, int n, const float *alpha, const float *x, int incx, const float *y, int incy, float *A, int lda, int batchCount);
 */
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasStrsm(hipblasHandle_t handle,
+            hipblasSideMode_t side, hipblasFillMode_t uplo, hipblasOperation_t transA, hipblasDiagType_t diag,
+            int m, int n, const float* alpha,
+            float* A, int lda,
+            float* B, int ldb);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsm(hipblasHandle_t handle,
+            hipblasSideMode_t side, hipblasFillMode_t uplo, hipblasOperation_t transA, hipblasDiagType_t diag,
+            int m, int n, const double* alpha,
+            double* A, int lda,
+            double* B, int ldb);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k, const float *alpha, 
                            const float *A, int lda, 
