@@ -360,6 +360,16 @@ hipblasStatus_t hipblasSdotBatched (hipblasHandle_t handle, int n, const float *
 hipblasStatus_t hipblasDdotBatched (hipblasHandle_t handle, int n, const double *x, int incx, const double *y, int incy, double *result, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
 */
 
+hipblasStatus_t hipblasSnrm2(hipblasHandle_t handle, int n, const float *x, int incx, float *result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_snrm2((rocblas_handle)handle, n, x, incx, result));
+}
+
+hipblasStatus_t hipblasDnrm2(hipblasHandle_t handle, int n, const double *x, int incx, double *result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dnrm2((rocblas_handle)handle, n, x, incx, result));
+}
+
 hipblasStatus_t  hipblasSscal(hipblasHandle_t handle, int n, const float *alpha,  float *x, int incx)
 {
 	return rocBLASStatusToHIPStatus(rocblas_sscal((rocblas_handle)handle, n, alpha, x, incx));

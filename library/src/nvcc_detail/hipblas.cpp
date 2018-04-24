@@ -312,6 +312,14 @@ hipblasStatus_t hipblasDdotBatched (hipblasHandle_t handle, int n, const double 
   return 	hipCUBLASStatusToHIPStatus(cublasDdot ((cublasHandle_t) handle, n, x, incx, y, incy, result));
 }
 
+hipblasStatus_t hipblasSnrm2(hipblasHandle_t handle, int n, const float *x, int incx, float *result){
+  return    hipCUBLASStatusToHIPStatus(cublasSnrm2 ((cublasHandle_t) handle, n, x, incx, result));
+}
+
+hipblasStatus_t hipblasDnrm2(hipblasHandle_t handle, int n, const double *x, int incx, double *result){
+  return    hipCUBLASStatusToHIPStatus(cublasDnrm2 ((cublasHandle_t) handle, n, x, incx, result));
+}
+
 hipblasStatus_t  hipblasSscal(hipblasHandle_t handle, int n, const float *alpha,  float *x, int incx){
   return hipCUBLASStatusToHIPStatus(cublasSscal((cublasHandle_t) handle, n, alpha,  x, incx));
 }
