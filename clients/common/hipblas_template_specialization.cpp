@@ -208,7 +208,7 @@
         return hipblasScasum(handle, n, x, incx, result);
     }
 */
-/*
+
     //nrm2
     template<>
     hipblasStatus_t
@@ -229,7 +229,7 @@
 
         return hipblasDnrm2(handle, n, x, incx, result);
     }
-
+/*
     template<>
     hipblasStatus_t
     hipblasNrm2<hipComplex, float>(hipblasHandle_t handle,

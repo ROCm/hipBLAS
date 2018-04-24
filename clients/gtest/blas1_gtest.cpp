@@ -10,6 +10,7 @@
 #include <vector>
 #include "testing_scal.hpp"
 #include "testing_dot.hpp"
+#include "testing_nrm2.hpp"
 #include "testing_asum.hpp"
 #include "testing_iamax.hpp"
 #include "utility.h"
@@ -76,7 +77,7 @@ vector<vector<int>> incx_incy_range = { {1, 1},
 
 
 /* =====================================================================
-     BLAS-1: scal, dot, asum, amax
+     BLAS-1: scal, dot, nrm2, asum, amax
 =================================================================== */
 
 class blas1_gtest: public :: TestWithParam <blas1_tuple>
@@ -152,6 +153,25 @@ TEST_P(blas1_gtest, dot_float)
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else if( arg.incy < 0){
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
+}
+
+TEST_P(blas1_gtest, nrm2_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments arg = setup_blas1_arguments( GetParam() );
+    hipblasStatus_t status = testing_nrm2<float, float>( arg );
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS){
+        if( arg.N < 0 ){
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if( arg.incx < 0){
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
     }

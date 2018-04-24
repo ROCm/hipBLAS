@@ -25,12 +25,13 @@ hipblasStatus_t testing_nrm2(Arguments argus)
     int N = argus.N;
     int incx = argus.incx;
 
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
 
     //check to prevent undefined memory allocation error
     if( N < 0 || incx < 0 ){
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        status_1 = HIPBLAS_STATUS_INVALID_VALUE;
+        return status_1;
     }
 
     int sizeX = N * incx;
@@ -65,29 +66,35 @@ hipblasStatus_t testing_nrm2(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-
      /* =====================================================================
                  CPU BLAS
      =================================================================== */
      //hipblasNrm2 accept both dev/host pointer for the scalar
     if(device_pointer){
-        status = hipblasNrm2<T1, T2>(handle,
+
+        status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
+
+        status_2 = hipblasNrm2<T1, T2>(handle,
                         N,
                         dx, incx,
                         d_rocblas_result);
     }
     else{
-        status = hipblasNrm2<T1, T2>(handle,
+
+        status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+
+        status_2 = hipblasNrm2<T1, T2>(handle,
                         N,
                         dx, incx,
                         &rocblas_result);
     }
 
-    if (status != HIPBLAS_STATUS_SUCCESS) {
+    if ((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)) {
         CHECK_HIP_ERROR(hipFree(dx));
         CHECK_HIP_ERROR(hipFree(d_rocblas_result));
         hipblasDestroy(handle);
-        return status;
+        if (status_1 != HIPBLAS_STATUS_SUCCESS) return status_1;
+        if (status_2 != HIPBLAS_STATUS_SUCCESS) return status_2;
     }
 
     if(device_pointer)    CHECK_HIP_ERROR(hipMemcpy(&rocblas_result, d_rocblas_result, sizeof(T2), hipMemcpyDeviceToHost));
@@ -97,9 +104,11 @@ hipblasStatus_t testing_nrm2(Arguments argus)
      /* =====================================================================
                  CPU BLAS
      =================================================================== */
+
         cblas_nrm2<T1, T2>(N,
                     hx.data(), incx,
                     &cpu_result);
+
 
 
         if(argus.unit_check){
@@ -109,7 +118,7 @@ hipblasStatus_t testing_nrm2(Arguments argus)
     }// end of if unit/norm check
 
 
-    BLAS_1_RESULT_PRINT
+//  BLAS_1_RESULT_PRINT
 
 
     CHECK_HIP_ERROR(hipFree(dx));
