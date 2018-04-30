@@ -188,6 +188,7 @@ install_prefix=hipblas-install
 build_clients=false
 build_cuda=false
 build_release=true
+dts7_bin=/opt/rh/devtoolset-7/root/usr/bin	# only for CentOS
 
 # #################################################
 # Parameter parsing
@@ -262,6 +263,14 @@ case "${ID}" in
   ;;
 esac
 
+case "${ID}" in
+  centos)
+    export CXX=${dts7_bin}/g++
+    export CC=${dts7_bin}/gcc
+    export FC=${dts7_bin}/gfortran
+  ;;
+esac
+
 # #################################################
 # dependencies
 # #################################################
@@ -299,13 +308,17 @@ pushd .
     cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Debug"
   fi
 
+  if [[ "${ID}" == centos ]]; then
+    cmake_common_options="${cmake_common_options} -DCMAKE_INSTALL_LIBDIR=lib"
+  fi
+
   # clients
   if [[ "${build_clients}" == true ]]; then
     cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
   fi
 
   # Build library
-  ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install" ../..
+  ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install" ../..
   make -j$(nproc)
 
   # #################################################
