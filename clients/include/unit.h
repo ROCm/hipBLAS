@@ -41,4 +41,15 @@
     template<typename T>
     T get_trsm_tolerance();
 
+    template<typename T>
+    void unit_check_nrm2(T cpu_result, T gpu_result, T tolerance)
+{
+    T allowable_error = tolerance * std::numeric_limits<T>::epsilon() * (cpu_result + gpu_result) / 2.0;
+    if (allowable_error == 0) allowable_error = tolerance * std::numeric_limits<T>::epsilon();
+#ifdef GOOGLE_TEST
+        ASSERT_NEAR(cpu_result, gpu_result, allowable_error);
+#endif
+
+}
+
 #endif
