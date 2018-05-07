@@ -178,6 +178,8 @@ hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
       return HIPBLAS_STATUS_INTERNAL_ERROR;
     case CUBLAS_STATUS_NOT_SUPPORTED:
       return HIPBLAS_STATUS_NOT_SUPPORTED;
+    case CUBLAS_STATUS_ARCH_MISMATCH:
+      return HIPBLAS_STATUS_ARCH_MISMATCH;
     default:
       throw "Unimplemented status";
   }
