@@ -78,6 +78,9 @@ add_subdirectory( library )
 
 include( clients/cmake/build-options.cmake )
 
+# force library install path to lib (CentOS 7 defaults to lib64)
+set(CMAKE_INSTALL_LIBDIR "lib" CACHE INTERNAL "Installation directory for libraries" FORCE)
+
 # Build clients of the library
 if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS )
   add_subdirectory( clients )
