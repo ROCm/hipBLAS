@@ -131,7 +131,9 @@ install_packages( )
       ;;
 
     centos|rhel)
-      elevate_if_not_root yum -y update
+#     yum -y update brings *all* installed packages up to date
+#     without seeking user approval
+#     elevate_if_not_root yum -y update
       install_yum_packages "${library_dependencies_centos[@]}"
 
       if [[ "${build_clients}" == true ]]; then
@@ -140,7 +142,7 @@ install_packages( )
       ;;
 
     fedora)
-      elevate_if_not_root dnf -y update
+#     elevate_if_not_root dnf -y update
       install_dnf_packages "${library_dependencies_fedora[@]}"
 
       if [[ "${build_clients}" == true ]]; then
