@@ -460,43 +460,49 @@ def build_pipeline( compiler_data compiler_args, docker_data docker_args, projec
 
 // Disabling hcc-ctu builds as we now build hipblas with native host compilers
 
-// parallel hcc_ctu:
-// {
-//   node( 'docker && rocm' )
-//   {
-//     def docker_args = new docker_data(
-//         from_image:'compute-artifactory:5001/rocm-developer-tools/hip/master/hip-hcc-ctu-ubuntu-16.04:latest',
-//         build_docker_file:'dockerfile-build-ubuntu',
-//         install_docker_file:'dockerfile-install-ubuntu',
-//         docker_run_args:'--device=/dev/kfd',
-//         docker_build_args:' --pull' )
-
-//     def compiler_args = new compiler_data(
-//         compiler_name:'hcc-ctu',
-//         build_config:'Release',
-//         compiler_path:'/opt/rocm/bin/hcc' )
-
-//     def hipblas_paths = new project_paths(
-//         project_name:'hipblas-hcc-ctu',
-//         src_prefix:'src',
-//         build_prefix:'src',
-//         build_command: 'sudo dpkg -i rocblas-*.deb; ./install.sh -c' )
-
-//     def print_version_closure = {
-//       sh  """
-//           set -x
-//           /opt/rocm/bin/rocm_agent_enumerator -t ALL
-//           /opt/rocm/bin/hcc --version
-//         """
-//     }
-
-//     build_pipeline( compiler_args, docker_args, hipblas_paths, print_version_closure )
-//   }
-// },
-// rocm_ubuntu:
-parallel rocm_ubuntu:
+//hcc_ctu:
+parallel hcc_ctu:
 {
-  node( 'docker && rocm && jenkins-rocm-2' )
+  try
+  {
+    node( 'docker && gfx900' )
+    {
+      def docker_args = new docker_data(
+          from_image:'compute-artifactory:5001/rocm-developer-tools/hip/master/hip-hcc-ctu-ubuntu-16.04:latest',
+          build_docker_file:'dockerfile-build-ubuntu',
+          install_docker_file:'dockerfile-install-ubuntu',
+          docker_run_args:'--device=/dev/kfd --device=/dev/dri --group-add=video',
+          docker_build_args:' --pull' )
+
+      def compiler_args = new compiler_data(
+          compiler_name:'hcc-ctu',
+          build_config:'Release',
+          compiler_path:'/opt/rocm/bin/hcc' )
+
+      def hipblas_paths = new project_paths(
+          project_name:'hipblas-hcc-ctu',
+          src_prefix:'src',
+          build_prefix:'src',
+          build_command: 'dpkg -x rocblas-*.deb ~/install_dir;  ./install.sh -c -p ~/install_dir/opt/rocm' )
+
+      def print_version_closure = {
+        sh  """
+            set -x
+            /opt/rocm/bin/hcc --version
+           """
+      }
+
+      build_pipeline( compiler_args, docker_args, hipblas_paths, print_version_closure )
+    }
+  }
+  catch( err )
+  {
+    currentBuild.result = 'UNSTABLE'
+  }
+},
+rocm_ubuntu:
+{
+  node( 'docker && rocm && gfx900' )
   {
     def hcc_docker_args = new docker_data(
         from_image:'rocm/dev-ubuntu-16.04:1.7.1',
@@ -514,7 +520,7 @@ parallel rocm_ubuntu:
         project_name:'hipblas-ubuntu',
         src_prefix:'src',
         build_prefix:'src',
-        build_command: 'sudo dpkg -i rocblas-*.deb; ./install.sh -c' )
+        build_command: 'dpkg -x rocblas-*.deb ~/install_dir;  ./install.sh -c -p ~/install_dir/opt/rocm' )
 
     def print_version_closure = {
       sh  """
@@ -563,35 +569,42 @@ parallel rocm_ubuntu:
 // },
 nvcc:
 {
-  node( 'docker && cuda' )
+  try
   {
-    def hcc_docker_args = new docker_data(
-        from_image:'nvidia/cuda:9.0-devel',
-        build_docker_file:'dockerfile-build-nvidia-cuda',
-        install_docker_file:'dockerfile-install-nvidia-cuda',
-        docker_run_args:'--runtime=nvidia',
-        docker_build_args:' --pull' )
-
-    def hcc_compiler_args = new compiler_data(
-        compiler_name:'nvcc-9.0',
-        build_config:'Release',
-        compiler_path:'g++' )
-
-    def hipblas_paths = new project_paths(
-        project_name:'hipblas-cuda',
-        src_prefix:'src',
-        build_prefix:'src',
-        build_command: './install.sh -c' )
-        // build_command: 'sudo apt-get install -y cuda-cublas-dev-9-*; ./install.sh -c' )
-
-    def print_version_closure = {
-      sh  """
-          set -x
-          nvidia-smi
-          nvcc --version
-        """
+    node( 'docker && cuda' )
+    {
+      def hcc_docker_args = new docker_data(
+          from_image:'nvidia/cuda:9.0-devel',
+          build_docker_file:'dockerfile-build-nvidia-cuda',
+          install_docker_file:'dockerfile-install-nvidia-cuda',
+          docker_run_args:'--runtime=nvidia',
+          docker_build_args:' --pull' )
+  
+      def hcc_compiler_args = new compiler_data(
+          compiler_name:'nvcc-9.0',
+          build_config:'Release',
+          compiler_path:'g++' )
+  
+      def hipblas_paths = new project_paths(
+          project_name:'hipblas-cuda',
+          src_prefix:'src',
+          build_prefix:'src',
+          build_command: './install.sh -c' )
+          // build_command: 'sudo apt-get install -y cuda-cublas-dev-9-*; ./install.sh -c' )
+  
+      def print_version_closure = {
+        sh  """
+            set -x
+            nvidia-smi
+            nvcc --version
+          """
+      }
+  
+      build_pipeline( hcc_compiler_args, hcc_docker_args, hipblas_paths, print_version_closure )
     }
-
-    build_pipeline( hcc_compiler_args, hcc_docker_args, hipblas_paths, print_version_closure )
+  }
+  catch( err )
+  {
+    currentBuild.result = 'UNSTABLE'
   }
 }
