@@ -14,7 +14,6 @@
 #define HIPBLAS_H
 #pragma once
 #include <hip/hip_runtime_api.h>
-#include <hip/hip_complex.h>
 #include "hipblas-export.h"
 #include "hipblas-version.h"
 
