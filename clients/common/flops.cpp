@@ -19,15 +19,15 @@
      */
 
     /* \brief floating point counts of GEMV */
-    template<>
-    double  gemv_gflop_count<hipComplex>(int m, int n){
-        return (double)(8.0 * m * n)/1e9;
-    }
+//  template<>
+//  double  gemv_gflop_count<hipComplex>(int m, int n){
+//      return (double)(8.0 * m * n)/1e9;
+//  }
 
-    template<>
-    double  gemv_gflop_count<hipDoubleComplex>(int m, int n){
-        return (double)(8.0 * m * n)/1e9;
-    }
+//  template<>
+//  double  gemv_gflop_count<hipDoubleComplex>(int m, int n){
+//      return (double)(8.0 * m * n)/1e9;
+//  }
 
     /* \brief floating point counts of SY(HE)MV */
 
@@ -40,35 +40,35 @@
 
 
     /* \brief floating point counts of GEMM */
-    template<>
-    double  gemm_gflop_count<hipComplex>(int m, int n, int k){
-        return (double)(8.0 * m * n * k)/1e9;
-    }
+//  template<>
+//  double  gemm_gflop_count<hipComplex>(int m, int n, int k){
+//      return (double)(8.0 * m * n * k)/1e9;
+//  }
 
-    template<>
-    double  gemm_gflop_count<hipDoubleComplex>(int m, int n, int k){
-        return (double)(8.0 * m * n * k)/1e9;
-    }
+//  template<>
+//  double  gemm_gflop_count<hipDoubleComplex>(int m, int n, int k){
+//      return (double)(8.0 * m * n * k)/1e9;
+//  }
 
     /* \brief floating point counts of TRMM */
-    template<>
-    double  trsm_gflop_count<hipComplex>(int m, int n, int k){
-        return (double)(4.0 * m * n * (k+1))/1e9;
-    }
+//  template<>
+//  double  trsm_gflop_count<hipComplex>(int m, int n, int k){
+//      return (double)(4.0 * m * n * (k+1))/1e9;
+//  }
 
-    template<>
-    double  trsm_gflop_count<hipDoubleComplex>(int m, int n, int k){
-        return (double)(4.0 * m * n * (k+1))/1e9;
-    }
+//  template<>
+//  double  trsm_gflop_count<hipDoubleComplex>(int m, int n, int k){
+//      return (double)(4.0 * m * n * (k+1))/1e9;
+//  }
 
     /* \brief floating point counts of TRTRI */
-    template<>
-    double  trtri_gflop_count<hipComplex>(int n){
-        return (double)(8.0 * n * n * n)/3.0/1e9;
-    }
+//  template<>
+//  double  trtri_gflop_count<hipComplex>(int n){
+//      return (double)(8.0 * n * n * n)/3.0/1e9;
+//  }
 
 
-    template<>
-    double  trtri_gflop_count<hipDoubleComplex>(int n){
-        return (double)(8.0 * n * n * n)/3.0/1e9;
-    }
+//  template<>
+//  double  trtri_gflop_count<hipDoubleComplex>(int n){
+//      return (double)(8.0 * n * n * n)/3.0/1e9;
+//  }

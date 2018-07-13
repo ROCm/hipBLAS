@@ -26,19 +26,19 @@ extern "C" {
 
     float  slange_(char* norm_type, int* m, int* n, float* A, int* lda, float* work);
     double dlange_(char* norm_type, int* m, int* n, double* A, int* lda, double* work);
-    float  clange_(char* norm_type, int* m, int* n, hipComplex* A, int* lda, float* work);
-    double zlange_(char* norm_type, int* m, int* n, hipDoubleComplex* A, int* lda, double* work);
+//  float  clange_(char* norm_type, int* m, int* n, hipComplex* A, int* lda, float* work);
+//  double zlange_(char* norm_type, int* m, int* n, hipDoubleComplex* A, int* lda, double* work);
 
     float  slansy_(char* norm_type, char* uplo, int* n, float* A, int* lda, float* work);
     double dlansy_(char* norm_type, char* uplo, int* n, double* A, int* lda, double* work);
-    float  clanhe_(char* norm_type, char* uplo, int* n, hipComplex* A, int* lda, float* work);
-    double zlanhe_(char* norm_type, char* uplo, int* n, hipDoubleComplex* A, int* lda, double* work);
+//  float  clanhe_(char* norm_type, char* uplo, int* n, hipComplex* A, int* lda, float* work);
+//  double zlanhe_(char* norm_type, char* uplo, int* n, hipDoubleComplex* A, int* lda, double* work);
 
 
     void   saxpy_(int* n, float* alpha, float* x, int* incx, float* y, int* incy);
     void   daxpy_(int* n, double* alpha, double* x, int* incx, double* y, int* incy);
-    void   caxpy_(int* n, float* alpha, hipComplex* x, int* incx, hipComplex* y, int* incy);
-    void   zaxpy_(int* n, double* alpha, hipDoubleComplex* x, int* incx, hipDoubleComplex* y, int* incy);
+//  void   caxpy_(int* n, float* alpha, hipComplex* x, int* incx, hipComplex* y, int* incy);
+//  void   zaxpy_(int* n, double* alpha, hipDoubleComplex* x, int* incx, hipDoubleComplex* y, int* incy);
 
 
 #ifdef __cplusplus
@@ -86,43 +86,43 @@ double norm_check_general<double>(char norm_type, int M, int N, int lda, double 
 }
 
 
-template<>
-double norm_check_general<hipComplex>(char norm_type, int M, int N, int lda, hipComplex *hCPU, hipComplex *hGPU)
-{
-//norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
-
-    float work[1];
-    int incx = 1;
-    float alpha = -1.0f;
-    int size = lda * N;
-
-    float cpu_norm = clange_(&norm_type, &M, &N, hCPU, &lda, work);
-    caxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
-
-    float error = clange_(&norm_type, &M, &N, hGPU, &lda, work)/cpu_norm;
-
-    return (double)error;
-}
-
-
-template<>
-double norm_check_general<hipDoubleComplex>(char norm_type, int M, int N, int lda, hipDoubleComplex *hCPU,
-hipDoubleComplex *hGPU)
-{
-//norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
-
-    double work[1];
-    int incx = 1;
-    double alpha = -1.0;
-    int size = lda * N;
-
-    double cpu_norm = zlange_(&norm_type, &M, &N, hCPU, &lda, work);
-    zaxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
-
-    double error = zlange_(&norm_type, &M, &N, hGPU, &lda, work)/cpu_norm;
-
-    return error;
-}
+//template<>
+//double norm_check_general<hipComplex>(char norm_type, int M, int N, int lda, hipComplex *hCPU, hipComplex *hGPU)
+//{
+////norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
+//
+//    float work[1];
+//    int incx = 1;
+//    float alpha = -1.0f;
+//    int size = lda * N;
+//
+//    float cpu_norm = clange_(&norm_type, &M, &N, hCPU, &lda, work);
+//    caxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
+//
+//    float error = clange_(&norm_type, &M, &N, hGPU, &lda, work)/cpu_norm;
+//
+//    return (double)error;
+//}
+//
+//
+//template<>
+//double norm_check_general<hipDoubleComplex>(char norm_type, int M, int N, int lda, hipDoubleComplex *hCPU,
+//hipDoubleComplex *hGPU)
+//{
+////norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
+//
+//    double work[1];
+//    int incx = 1;
+//    double alpha = -1.0;
+//    int size = lda * N;
+//
+//    double cpu_norm = zlange_(&norm_type, &M, &N, hCPU, &lda, work);
+//    zaxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
+//
+//    double error = zlange_(&norm_type, &M, &N, hGPU, &lda, work)/cpu_norm;
+//
+//    return error;
+//}
 
 
 
@@ -170,38 +170,38 @@ double norm_check_symmetric<double>(char norm_type, char uplo, int N, int lda, d
 
 }
 
-template<>
-double norm_check_symmetric<hipComplex>(char norm_type, char uplo, int N, int lda, hipComplex *hCPU, hipComplex *hGPU)
-{
-//norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
-
-    float work[1];
-    int incx = 1;
-    float alpha = -1.0f;
-    int size = lda * N;
-
-    float cpu_norm = clanhe_(&norm_type, &uplo, &N, hCPU, &lda, work);
-    caxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
-
-     float error = clanhe_(&norm_type, &uplo, &N, hGPU, &lda, work)/cpu_norm;
-
-    return (double)error;
-}
-
-template<>
-double norm_check_symmetric<hipDoubleComplex>(char norm_type, char uplo, int N, int lda, hipDoubleComplex *hCPU, hipDoubleComplex *hGPU)
-{
-//norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
-
-    double work[1];
-    int incx = 1;
-    double alpha = -1.0;
-    int size = lda * N;
-
-    double cpu_norm = zlanhe_(&norm_type, &uplo, &N, hCPU, &lda, work);
-    zaxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
-
-     double error = zlanhe_(&norm_type, &uplo, &N, hGPU, &lda, work)/cpu_norm;
-
-    return error;
-}
+//template<>
+//double norm_check_symmetric<hipComplex>(char norm_type, char uplo, int N, int lda, hipComplex *hCPU, hipComplex *hGPU)
+//{
+////norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
+//
+//    float work[1];
+//    int incx = 1;
+//    float alpha = -1.0f;
+//    int size = lda * N;
+//
+//    float cpu_norm = clanhe_(&norm_type, &uplo, &N, hCPU, &lda, work);
+//    caxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
+//
+//     float error = clanhe_(&norm_type, &uplo, &N, hGPU, &lda, work)/cpu_norm;
+//
+//    return (double)error;
+//}
+//
+//template<>
+//double norm_check_symmetric<hipDoubleComplex>(char norm_type, char uplo, int N, int lda, hipDoubleComplex *hCPU, hipDoubleComplex *hGPU)
+//{
+////norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
+//
+//    double work[1];
+//    int incx = 1;
+//    double alpha = -1.0;
+//    int size = lda * N;
+//
+//    double cpu_norm = zlanhe_(&norm_type, &uplo, &N, hCPU, &lda, work);
+//    zaxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
+//
+//     double error = zlanhe_(&norm_type, &uplo, &N, hGPU, &lda, work)/cpu_norm;
+//
+//    return error;
+//}
