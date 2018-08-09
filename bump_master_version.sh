@@ -6,7 +6,7 @@
 # - after running this script and merging develop into master, run bump_develop_version.sh in master and
 #   merge master into develop
 
-OLD_HIPBLAS_VERSION="11.3.0"
-NEW_HIPBLAS_VERSION="10.3.1"
+OLD_HIPBLAS_VERSION="11.3.1"
+NEW_HIPBLAS_VERSION="10.4.0"
 
 sed -i "s/${OLD_HIPBLAS_VERSION}/${NEW_HIPBLAS_VERSION}/g" CMakeLists.txt
