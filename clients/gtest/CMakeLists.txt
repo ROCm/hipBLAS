@@ -97,6 +97,10 @@ if( NOT CUDA_FOUND )
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
     target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument )
   endif( )
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
+    # hip-clang needs specific flag to turn on pthread and m
+    target_link_libraries( hipblas-test PRIVATE -lpthread -lm )
+  endif()
 else( )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_NVCC__ )
 
