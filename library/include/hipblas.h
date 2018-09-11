@@ -62,6 +62,19 @@ enum hipblasSideMode_t {
     HIPBLAS_SIDE_BOTH   = 143
 };
 
+enum hipblasDatatype_t {
+    HIPBLAS_R_16F = 150,
+    HIPBLAS_R_32F = 151,
+    HIPBLAS_R_64F = 152,
+    HIPBLAS_C_16F = 153,
+    HIPBLAS_C_32F = 154,
+    HIPBLAS_C_64F = 155
+};
+
+enum hipblasGemmAlgo_t {
+    HIPBLAS_GEMM_DEFAULT = 160
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -215,8 +228,21 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,
         const double *beta,
         double * C[], int ldc, int batchCount);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(
+        hipblasHandle_t handle,
+        hipblasOperation_t trans_a, 
+        hipblasOperation_t trans_b,
+        int m, 
+        int n, 
+        int k, 
+        const void* alpha,
+        const void* a, hipblasDatatype_t a_type, int lda,
+        const void* b, hipblasDatatype_t b_type, int ldb, const void* beta,
+              void* c, hipblasDatatype_t c_type, int ldc,
+        hipblasDatatype_t compute_type,
+        hipblasGemmAlgo_t algo);
 
-/* not implementes, requires complex support
+/* not implemented, requires complex support
 hipblasStatus_t hipblasCgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
                            int m, int n, int k,  const hipComplex *alpha, const hipComplex *A, int lda, const hipComplex *B, int ldb, const hipComplex *beta, hipComplex *C, int ldc);
 
