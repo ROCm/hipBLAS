@@ -125,7 +125,6 @@ hipblasSideMode_t HCCSideToHIPSide( rocblas_side_ side)
 	}
 }
 
-
 rocblas_pointer_mode HIPPointerModeToRocblasPointerMode( hipblasPointerMode_t mode)
 {
     switch (mode)
@@ -140,7 +139,6 @@ rocblas_pointer_mode HIPPointerModeToRocblasPointerMode( hipblasPointerMode_t mo
             throw "Non existent PointerMode";
     }
 }
-
 
 hipblasPointerMode_t RocblasPointerModeToHIPPointerMode( rocblas_pointer_mode mode)
 {
@@ -157,7 +155,83 @@ hipblasPointerMode_t RocblasPointerModeToHIPPointerMode( rocblas_pointer_mode mo
     }
 }
 
+rocblas_datatype HIPDatatypeToRocblasDatatype ( hipblasDatatype_t type)
+{
+    switch (type)
+    {
+        case HIPBLAS_R_16F:
+            return rocblas_datatype_f16_r ;
 
+        case HIPBLAS_R_32F:
+            return rocblas_datatype_f32_r ;
+
+        case HIPBLAS_R_64F:
+            return rocblas_datatype_f64_r ;
+
+        case HIPBLAS_C_16F:
+            return rocblas_datatype_f16_c ;
+
+        case HIPBLAS_C_32F:
+            return rocblas_datatype_f32_c ;
+
+        case HIPBLAS_C_64F:
+            return rocblas_datatype_f64_c ;
+
+        default:
+            throw "Non existant DataType";
+    }
+}
+
+hipblasDatatype_t RocblasDatatypeToHIPDatatype( rocblas_datatype type)
+{
+    switch (type)
+    {
+        case rocblas_datatype_f16_r :
+            return HIPBLAS_R_16F;
+
+        case rocblas_datatype_f32_r :
+            return HIPBLAS_R_32F;
+
+        case rocblas_datatype_f64_r :
+            return HIPBLAS_R_64F;
+
+        case rocblas_datatype_f16_c :
+            return HIPBLAS_C_16F;
+
+        case rocblas_datatype_f32_c :
+            return HIPBLAS_C_32F;
+
+        case rocblas_datatype_f64_c :
+            return HIPBLAS_C_64F;
+
+        default:
+            throw "Non existant DataType";
+    }
+}
+
+rocblas_gemm_algo HIPGemmAlgoToRocblasGemmAlgo( hipblasGemmAlgo_t algo)
+{
+    switch (algo)
+    {
+        case HIPBLAS_GEMM_DEFAULT:
+            return rocblas_gemm_algo_standard;
+
+        default:
+            throw "Non existant GemmAlgo";
+    }
+}
+
+hipblasGemmAlgo_t RocblasGemmAlgoToHIPGemmAlgo ( rocblas_gemm_algo algo)
+{
+    switch (algo)
+    {
+        case rocblas_gemm_algo_standard:
+            return HIPBLAS_GEMM_DEFAULT;
+
+        default:
+            throw "Non existant GemmAlgo";
+    }
+}
 
 hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
 {
@@ -709,3 +783,33 @@ hipblasDgemmBatched(hipblasHandle_t handle,
         transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
 }
 
+extern "C"
+hipblasStatus_t
+hipblasGemmEx(hipblasHandle_t handle,
+        hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const void *alpha,
+        const void * A, hipblasDatatype_t a_type, int lda,
+        const void * B, hipblasDatatype_t b_type, int ldb, const void * beta,
+              void * C, hipblasDatatype_t c_type, int ldc,
+                          hipblasDatatype_t compute_type,
+        hipblasGemmAlgo_t algo)
+{
+    uint32_t solution_index = 0;
+
+    uint32_t flags = 0;
+
+    size_t* workspace_size = 0;
+
+    void* workspace = 0;
+
+	return rocBLASStatusToHIPStatus(rocblas_gemm_ex((rocblas_handle)handle,
+                hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb),
+                m, n, k, alpha,
+                A, HIPDatatypeToRocblasDatatype(a_type), lda,
+                B, HIPDatatypeToRocblasDatatype(b_type), ldb, beta,
+                C, HIPDatatypeToRocblasDatatype(c_type), ldc,
+                C, HIPDatatypeToRocblasDatatype(c_type), ldc,
+                   HIPDatatypeToRocblasDatatype(compute_type),
+                   HIPGemmAlgoToRocblasGemmAlgo(algo),
+                solution_index, flags, workspace_size, workspace));
+}

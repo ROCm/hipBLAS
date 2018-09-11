@@ -1,6 +1,5 @@
 /* ************************************************************************
  * Copyright 2016 Advanced Micro Devices, Inc.
- *
  * ************************************************************************ */
 
 #pragma once
@@ -12,6 +11,8 @@
 #include <vector>
 #include "hipblas.h"
 #include <sys/time.h>
+#include <immintrin.h>
+#include <typeinfo>
 
 using namespace std;
 
@@ -40,16 +41,62 @@ using namespace std;
         cout << endl;                                                            \
     }
 
-    /* ============================================================================================ */
-    /* generate random number :*/
+// Helper routine to convert floats into their half equivalent; uses F16C instructions
+inline hipblasHalf float_to_half(float val)
+{
+    // return static_cast<hipblasHalf>( _mm_cvtsi128_si32( _mm_cvtps_ph( _mm_set_ss( val ), 0 ) )
+    // );
+    const int zero = 0;
+    short unsigned int a;
+    a = _cvtss_sh(val, zero);
+//  return _cvtss_sh(val, zero);
+    return a;
+}
 
-    /*! \brief  generate a random number between [0, 0.999...] . */
-    template<typename T>
-    T random_generator(){
-        //return rand()/( (T)RAND_MAX + 1);
-        return (T)(rand() % 10 + 1); //generate a integer number between [1, 10]
-    };
+// Helper routine to convert halfs into their floats equivalent; uses F16C instructions
+inline float half_to_float(hipblasHalf val)
+{
+    // return static_cast<hipblasHalf>(_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(val), 0)));
+    return _cvtsh_ss(val);
+}
 
+/* ============================================================================================ */
+/* generate random number :*/
+
+/*! \brief  generate a random number in range [1,2,3,4,5,6,7,8,9,10] */
+template <typename T>
+T random_generator()
+{
+    // return rand()/( (T)RAND_MAX + 1);
+    return (T)(rand() % 10 + 1);
+};
+
+// for hipblasHalf, generate float, and convert to hipblasHalf
+/*! \brief  generate a random number in range [1,2,3] */
+template <>
+inline hipblasHalf random_generator<hipblasHalf>()
+{
+    return float_to_half(
+        static_cast<float>((rand() % 3 + 1))); // generate a integer number in range [1,2,3]
+};
+
+/*! \brief  generate a random number in range [-1,-2,-3,-4,-5,-6,-7,-8,-9,-10] */
+template <typename T>
+T random_generator_negative()
+{
+    // return rand()/( (T)RAND_MAX + 1);
+    return -(T)(rand() % 10 + 1);
+};
+
+// for hipblasHalf, generate float, and convert to hipblasHalf
+/*! \brief  generate a random number in range [-1,-2,-3] */
+template <>
+inline hipblasHalf random_generator_negative<hipblasHalf>()
+{
+    return float_to_half(-static_cast<float>((rand() % 3 + 1)));
+};
+
+/* ============================================================================================ */
 
     /* ============================================================================================ */
     /*! \brief  matrix/vector initialization: */
@@ -60,6 +107,66 @@ using namespace std;
         for (int i = 0; i < M; ++i){
             for (int j = 0; j < N; ++j){
                 A[i+j*lda] = random_generator<T>();
+            }
+        }
+    };
+
+    template <typename T>
+    void hipblas_init_alternating_sign(vector<T>& A, int M, int N, int lda)
+    {
+        // Initialize matrix so adjacent entries have alternating sign.
+        // In gemm if either A or B are initialized with alernating
+        // sign the reduction sum will be summing positive
+        // and negative numbers, so it should not get too large.
+        // This helps reduce floating point inaccuracies for 16bit
+        // arithmetic where the exponent has only 5 bits, and the
+        // mantissa 10 bits.
+        for(int i = 0; i < M; ++i)
+        {
+            for(int j = 0; j < N; ++j)
+            {
+                if(j % 2 ^ i % 2)
+                {
+                    A[i + j * lda] = random_generator<T>();
+                }
+                else
+                {
+                    A[i + j * lda] = random_generator_negative<T>();
+                }
+            }
+        }
+    };
+
+    template <typename T>
+    void hipblas_init_alternating_sign(vector<T>& A,
+                                       int M,
+                                       int N,
+                                       int lda,
+                                       int stride,
+                                       int batch_count)
+    {
+        // Initialize matrix so adjacent entries have alternating sign.
+        // In gemm if either A or B are initialized with alernating
+        // sign the reduction sum will be summing positive
+        // and negative numbers, so it should not get too large.
+        // This helps reduce floating point inaccuracies for 16bit
+        // arithmetic where the exponent has only 5 bits, and the
+        // mantissa 10 bits.
+        for(int i_batch = 0; i_batch < batch_count; i_batch++)
+        {
+            for(int i = 0; i < M; ++i)
+            {
+                for(int j = 0; j < N; ++j)
+                {
+                    if(j % 2 ^ i % 2)
+                    {
+                        A[i + j * lda + i_batch * stride] = random_generator<T>();
+                    }
+                    else
+                    {
+                        A[i + j * lda + i_batch * stride] = random_generator_negative<T>();
+                    }
+                }
             }
         }
     };
@@ -191,6 +298,11 @@ class Arguments {
     int lda = 128;
     int ldb = 128;
     int ldc = 128;
+
+    hipblasDatatype_t a_type = HIPBLAS_R_32F;
+    hipblasDatatype_t b_type = HIPBLAS_R_32F;
+    hipblasDatatype_t c_type = HIPBLAS_R_32F;
+    hipblasDatatype_t compute_type = HIPBLAS_R_32F;
 
     int incx = 1 ;
     int incy = 1 ;
