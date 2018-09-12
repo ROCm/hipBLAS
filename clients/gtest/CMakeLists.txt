@@ -45,6 +45,7 @@ set(hipblas_test_source
   gemv_gtest.cpp
   ger_gtest.cpp
   gemm_gtest.cpp
+  gemm_ex_gtest.cpp
   gemm_strided_batched_gtest.cpp
   gemm_batched_gtest.cpp
   geam_gtest.cpp
@@ -92,11 +93,18 @@ if( NOT CUDA_FOUND )
   get_target_property( HCC_AM_LOCATION hcc::hc_am IMPORTED_LOCATION_RELEASE )
   target_link_libraries( hipblas-test PRIVATE ${HIP_HCC_LOCATION} ${HCC_AM_LOCATION} )
 
+
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
     # Remove following when hcc is fixed; hcc emits following spurious warning
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-    target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument )
+    target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument -mf16c)
+
+  elseif( CMAKE_COMPILER_IS_GNUCXX )
+    # GCC needs specific flag to turn on f16c intrinsics
+    target_compile_options( hipblas-test PRIVATE -mf16c )
+
   endif( )
+
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
     # hip-clang needs specific flag to turn on pthread and m
     target_link_libraries( hipblas-test PRIVATE -lpthread -lm )
