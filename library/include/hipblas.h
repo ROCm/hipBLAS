@@ -30,7 +30,8 @@ enum hipblasStatus_t {
   HIPBLAS_STATUS_EXECUTION_FAILED = 5, // GPU program failed to execute
   HIPBLAS_STATUS_INTERNAL_ERROR = 6,    // an internal HIPBLAS operation failed
   HIPBLAS_STATUS_NOT_SUPPORTED = 7,     // function not implemented
-  HIPBLAS_STATUS_ARCH_MISMATCH = 8
+  HIPBLAS_STATUS_ARCH_MISMATCH = 8,
+  HIPBLAS_STATUS_HANDLE_IS_NULLPTR = 9  // hipBLAS handle is null pointer
 };
 
 // set the values of enum constants to be the same as those used in cblas

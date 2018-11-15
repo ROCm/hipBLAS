@@ -265,7 +265,7 @@ hipblasStatus_t hipblasCreate(hipblasHandle_t* handle)
 
     if (handle == nullptr)
     {
-        handle = (hipblasHandle_t *) new rocblas_handle();
+        return HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
     }
 
     err = hipGetDevice(&deviceId);
