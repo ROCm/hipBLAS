@@ -104,7 +104,7 @@ rocm_install_targets(
 #         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
 
 rocm_export_targets(
-  TARGETS hipblas-targets
+  TARGETS roc::hipblas
   PREFIX hipblas
   DEPENDS PACKAGE hip
   NAMESPACE roc::
