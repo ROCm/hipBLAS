@@ -264,6 +264,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t handle
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
         int m, int n, int k,  const double *alpha, const double *A, int lda, long long bsa, const double *B, int ldb, long long bsb, const double *beta, double *C, int ldc, long long bsc, int batchCount);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasHgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
+        int m, int n, int k,  const hipblasHalf *alpha, const hipblasHalf *A, int lda, long long bsa, const hipblasHalf *B, int ldb, long long bsb, const hipblasHalf *beta, hipblasHalf *C, int ldc, long long bsc, int batchCount);
 
 #ifdef __cplusplus
 }

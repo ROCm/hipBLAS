@@ -650,6 +650,39 @@ hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t handle,
         batchCount));
 }
 
+hipblasStatus_t hipblasHgemmStridedBatched(hipblasHandle_t handle,
+    hipblasOperation_t transa, hipblasOperation_t transb,
+    int m, int n, int k,
+    const hipblasHalf *alpha,
+    const hipblasHalf *A, int lda, long long bsa,
+    const hipblasHalf *B, int ldb, long long bsb,
+    const hipblasHalf *beta,
+    hipblasHalf *C, int ldc, long long bsc,
+    int batchCount)
+{
+    int bsa_int, bsb_int, bsc_int;
+    if (bsa < INT_MAX && bsb < INT_MAX && bsc < INT_MAX)
+    {
+        bsa_int = static_cast<int>(bsa);
+        bsb_int = static_cast<int>(bsb);
+        bsc_int = static_cast<int>(bsc);
+    }
+    else
+    {
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    }
+
+    return rocBLASStatusToHIPStatus(rocblas_hgemm_strided_batched((rocblas_handle)handle,
+        hipOperationToHCCOperation(transa),  hipOperationToHCCOperation(transb),
+        m, n, k,
+        alpha,
+        A, lda, bsa_int,
+        B, ldb, bsb_int,
+        beta,
+        C, ldc, bsc_int,
+        batchCount));
+}
+
 #ifdef __cplusplus
 }
 #endif

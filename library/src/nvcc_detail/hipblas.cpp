@@ -443,6 +443,13 @@ hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t handle,  hipblasOpera
     m, n, k, alpha, const_cast<double*>(A), lda, bsa, const_cast<double*>(B), ldb, bsb, beta, C, ldc, bsc, batchCount));
 }
 
+hipblasStatus_t hipblasHgemmStridedBatched(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t transb,
+  int m, int n, int k,  const hipblasHalf *alpha, const hipblasHalf *A, int lda, long long bsa, const hipblasHalf *B, int ldb, long long bsb, const hipblasHalf *beta, hipblasHalf *C, int ldc, long long bsc, int batchCount)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDgemmStridedBatched((cublasHandle_t)handle, hipOperationToCudaOperation(transa), hipOperationToCudaOperation(transb),
+    m, n, k, (const __half*)alpha, (const __half*)(A), lda, bsa, (const __half*)(B), ldb, bsb, (const __half*)beta, (__half*)C, ldc, bsc, batchCount));
+}
+
 hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t handle,  
     hipblasOperation_t transa, hipblasOperation_t transb,
     int m, int n, int k, 

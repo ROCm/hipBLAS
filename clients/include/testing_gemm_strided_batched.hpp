@@ -44,13 +44,22 @@ hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
 
     int  A_size, B_size, C_size, A_row, A_col, B_row, B_col;
     int  bsa, bsb, bsc; // batch size A, B, C
-    T alpha = argus.alpha;
-    T beta = argus.beta;
+    T alpha;
+    T beta;
+    T rocblas_error;
+    if(std::is_same<T, hipblasHalf>::value){
+        alpha = float_to_half((float)argus.alpha);
+        beta = float_to_half((float)argus.beta);
+        rocblas_error = float_to_half(0.0);
+    }else{
+        alpha = argus.alpha;
+        beta = argus.beta;
+        rocblas_error = 0.0;
+    }
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
 
-    T rocblas_error = 0.0;
     hipblasHandle_t handle;
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
     hipblasCreate(&handle);
