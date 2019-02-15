@@ -111,6 +111,8 @@ if( NOT CUDA_FOUND )
   endif()
 else( )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_NVCC__ )
+  # need mf16c flag for float->half convertion
+  target_compile_options( hipblas-test PRIVATE -mf16c )
 
   target_include_directories( hipblas-test
     PRIVATE
