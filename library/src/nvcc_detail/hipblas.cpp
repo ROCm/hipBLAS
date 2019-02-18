@@ -185,6 +185,38 @@ hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
   }
 }
 
+cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
+{
+  switch (type)
+  {
+    case HIPBLAS_R_16F:
+      return CUDA_R_16F ;
+    case HIPBLAS_R_32F:
+      return CUDA_R_32F ;
+    case HIPBLAS_R_64F:
+      return CUDA_R_64F ;
+    case HIPBLAS_C_16F:
+      return CUDA_C_16F ;
+    case HIPBLAS_C_32F:
+      return CUDA_C_32F ;
+    case HIPBLAS_C_64F:
+      return CUDA_C_64F ;
+    default:
+      throw "Non existant DataType";
+  }
+}
+
+CublasGemmAlgo_t HIPGemmAlgoToCublasGemmAlgo( hipblasGemmAlgo_t algo)
+{
+  switch (algo)
+  {
+    case HIPBLAS_GEMM_DEFAULT:
+      return CUBLAS_GEMM_DEFAULT;
+    default:
+      throw "Non existant GemmAlgo";
+  }
+}
+
 hipblasStatus_t hipblasSetStream(hipblasHandle_t handle, hipStream_t streamId) {
     return hipCUBLASStatusToHIPStatus(cublasSetStream((cublasHandle_t) handle, streamId));
 }
@@ -478,6 +510,28 @@ hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t handle,
     return hipCUBLASStatusToHIPStatus(cublasDgemmBatched((cublasHandle_t)handle, 
         hipOperationToCudaOperation(transa), hipOperationToCudaOperation(transb),
         m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount));
+}
+
+hipblasStatus_t hipblasGemmEx(hipblasHandle_t handle,
+    hipblasOperation_t transa, hipblasOperation_t transb,
+    int m, int n, int k,
+    const void *alpha,
+    const void * A, hipblasDatatype_t a_type, int lda,
+    const void * B, hipblasDatatype_t b_type, int ldb, const void * beta,
+          void * C, hipblasDatatype_t c_type, int ldc,
+    hipblasDatatype_t compute_type,
+    hipblasGemmAlgo_t algo)
+{
+    return hipCUBLASStatusToHIPStatus(cublasGemmEx((cublasHandle_t)handle,
+        hipOperationToCudaOperation(transa), hipOperationToCudaOperation(transb),
+        m, n, k,
+        alpha,
+        A, HIPDatatypeToCudaDatatype(a_type), lda,
+        B, HIPDatatypeToCudaDatatype(b_type), ldb,
+        beta,
+        C, HIPDatatypeToCudaDatatype(c_type), ldc,
+        HIPDatatypeToCudaDatatype(compute_type),
+        HIPGemmAlgoToCublasGemmAlgo(algo)));
 }
 
 #ifdef __cplusplus
