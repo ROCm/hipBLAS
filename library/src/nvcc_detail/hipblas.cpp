@@ -206,7 +206,7 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
   }
 }
 
-CublasGemmAlgo_t HIPGemmAlgoToCublasGemmAlgo( hipblasGemmAlgo_t algo)
+cublasGemmAlgo_t HIPGemmAlgoToCublasGemmAlgo( hipblasGemmAlgo_t algo)
 {
   switch (algo)
   {
