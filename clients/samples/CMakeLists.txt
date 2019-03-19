@@ -44,6 +44,7 @@ if( NOT CUDA_FOUND )
     # Remove following when hcc is fixed; hcc emits following spurious warning
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
     target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument )
+    target_include_directories( ${exe} PRIVATE /opt/rocm/hsa/include)
   endif( )
 else( )
   target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_NVCC__ )

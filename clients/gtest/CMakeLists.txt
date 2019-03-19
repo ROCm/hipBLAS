@@ -98,6 +98,7 @@ if( NOT CUDA_FOUND )
     # Remove following when hcc is fixed; hcc emits following spurious warning
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
     target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument -mf16c)
+    target_include_directories( hipblas-test PRIVATE /opt/rocm/hsa/include)
 
   elseif( CMAKE_COMPILER_IS_GNUCXX )
     # GCC needs specific flag to turn on f16c intrinsics
