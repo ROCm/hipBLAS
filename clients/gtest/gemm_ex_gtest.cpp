@@ -238,9 +238,9 @@ const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIPBLAS_R_16F,
 
 Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
 {
-    vector<int> matrix_size                  = std::get<0>(tup);
-    vector<double> alpha_beta                = std::get<1>(tup);
-    vector<char> transA_transB               = std::get<2>(tup);
+    vector<int> matrix_size                   = std::get<0>(tup);
+    vector<double> alpha_beta                 = std::get<1>(tup);
+    vector<char> transA_transB                = std::get<2>(tup);
     vector<hipblasDatatype_t> precision_types = std::get<3>(tup);
 
     Arguments arg;
@@ -355,7 +355,7 @@ class parameterized_half_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
     virtual void TearDown() {}
 };
 
-//TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
+// TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
 
 //----small
 INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_hpa_half,
