@@ -18,11 +18,11 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template<typename T1, typename T2>
+template <typename T1, typename T2>
 hipblasStatus_t testing_nrm2(Arguments argus)
 {
 
-    int N = argus.N;
+    int N    = argus.N;
     int incx = argus.incx;
 
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
@@ -30,19 +30,20 @@ hipblasStatus_t testing_nrm2(Arguments argus)
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
-    //check to prevent undefined memory allocation error
-    if( N < 0 || incx < 0 ){
+    // check to prevent undefined memory allocation error
+    if(N < 0 || incx < 0)
+    {
         status_1 = HIPBLAS_STATUS_INVALID_VALUE;
         return status_1;
     }
 
     int sizeX = N * incx;
 
-    //Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
+    // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     vector<T1> hx(sizeX);
 
-    T1 *dx;
-    T2 *d_rocblas_result;
+    T1* dx;
+    T2* d_rocblas_result;
     T2 cpu_result, rocblas_result_1, rocblas_result_2;
 
     int device_pointer = 1;
@@ -53,68 +54,65 @@ hipblasStatus_t testing_nrm2(Arguments argus)
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
-    //allocate memory on device
+    // allocate memory on device
     CHECK_HIP_ERROR(hipMalloc(&dx, sizeX * sizeof(T1)));
     CHECK_HIP_ERROR(hipMalloc(&d_rocblas_result, sizeof(T2)));
 
-    //Initial Data on CPU
+    // Initial Data on CPU
     srand(1);
     hipblas_init<T1>(hx, 1, N, incx);
 
-    //copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T1)*N*incx, hipMemcpyHostToDevice));
+    // copy data from CPU to device, does not work for incx != 1
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T1) * N * incx, hipMemcpyHostToDevice));
 
-
-    //hipblasNrm2 accept both dev/host pointer for the scalar
+    // hipblasNrm2 accept both dev/host pointer for the scalar
 
     status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-    status_2 = hipblasNrm2<T1, T2>(handle,
-                        N,
-                        dx, incx,
-                        d_rocblas_result);
+    status_2 = hipblasNrm2<T1, T2>(handle, N, dx, incx, d_rocblas_result);
 
     status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-    status_4 = hipblasNrm2<T1, T2>(handle,
-                        N,
-                        dx, incx,
-                        &rocblas_result_1);
+    status_4 = hipblasNrm2<T1, T2>(handle, N, dx, incx, &rocblas_result_1);
 
-    if ((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS) ||
-        (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS)) {
+    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS) ||
+       (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
+    {
         CHECK_HIP_ERROR(hipFree(dx));
         CHECK_HIP_ERROR(hipFree(d_rocblas_result));
         hipblasDestroy(handle);
-        if (status_1 != HIPBLAS_STATUS_SUCCESS) return status_1;
-        if (status_2 != HIPBLAS_STATUS_SUCCESS) return status_2;
-        if (status_3 != HIPBLAS_STATUS_SUCCESS) return status_3;
-        if (status_4 != HIPBLAS_STATUS_SUCCESS) return status_4;
+        if(status_1 != HIPBLAS_STATUS_SUCCESS)
+            return status_1;
+        if(status_2 != HIPBLAS_STATUS_SUCCESS)
+            return status_2;
+        if(status_3 != HIPBLAS_STATUS_SUCCESS)
+            return status_3;
+        if(status_4 != HIPBLAS_STATUS_SUCCESS)
+            return status_4;
     }
 
-    CHECK_HIP_ERROR(hipMemcpy(&rocblas_result_2, d_rocblas_result, sizeof(T2), hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(
+        hipMemcpy(&rocblas_result_2, d_rocblas_result, sizeof(T2), hipMemcpyDeviceToHost));
 
-    if(argus.unit_check || argus.norm_check){
+    if(argus.unit_check || argus.norm_check)
+    {
 
-     /* =====================================================================
-                 CPU BLAS
-     =================================================================== */
+        /* =====================================================================
+                    CPU BLAS
+        =================================================================== */
 
-        cblas_nrm2<T1, T2>(N,
-                    hx.data(), incx,
-                    &cpu_result);
+        cblas_nrm2<T1, T2>(N, hx.data(), incx, &cpu_result);
 
-        if(argus.unit_check){
+        if(argus.unit_check)
+        {
             T2 tolerance = 100;
             unit_check_nrm2<T2>(cpu_result, rocblas_result_1, tolerance);
             unit_check_nrm2<T2>(cpu_result, rocblas_result_2, tolerance);
         }
 
-    }// end of if unit/norm check
+    } // end of if unit/norm check
 
-
-//  BLAS_1_RESULT_PRINT
-
+    //  BLAS_1_RESULT_PRINT
 
     CHECK_HIP_ERROR(hipFree(dx));
     CHECK_HIP_ERROR(hipFree(d_rocblas_result));

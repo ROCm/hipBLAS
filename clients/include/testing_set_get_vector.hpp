@@ -16,13 +16,12 @@
 
 using namespace std;
 
-
 /* ============================================================================================ */
 
-template<typename T>
+template <typename T>
 hipblasStatus_t testing_set_get_vector(Arguments argus)
 {
-    int M = argus.M;
+    int M    = argus.M;
     int incx = argus.incx;
     int incy = argus.incy;
     int incd = argus.incd;
@@ -31,39 +30,44 @@ hipblasStatus_t testing_set_get_vector(Arguments argus)
     hipblasStatus_t status_set = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_get = HIPBLAS_STATUS_SUCCESS;
 
-    //argument sanity check, quick return if input parameters are invalid before allocating invalid memory
-    if ( M < 0 ){
+    // argument sanity check, quick return if input parameters are invalid before allocating invalid
+    // memory
+    if(M < 0)
+    {
         status = HIPBLAS_STATUS_INVALID_VALUE;
         return status;
     }
-    else if ( incx <= 0 ){
+    else if(incx <= 0)
+    {
         status = HIPBLAS_STATUS_INVALID_VALUE;
         return status;
     }
-    else if ( incy <= 0 ){
+    else if(incy <= 0)
+    {
         status = HIPBLAS_STATUS_INVALID_VALUE;
         return status;
     }
-    else if ( incd <= 0 ){
+    else if(incd <= 0)
+    {
         status = HIPBLAS_STATUS_INVALID_VALUE;
         return status;
     }
 
-    //Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
+    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     vector<T> hx(M * incx);
     vector<T> hy(M * incy);
     vector<T> hy_ref(M * incy);
 
-    T *db;
+    T* db;
 
     hipblasHandle_t handle;
 
     hipblasCreate(&handle);
 
-    //allocate memory on device
+    // allocate memory on device
     CHECK_HIP_ERROR(hipMalloc(&db, M * incd * sizeof(T)));
 
-    //Initial Data on CPU
+    // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hx, 1, M, incx);
     hipblas_init<T>(hy, 1, M, incy);
@@ -72,43 +76,40 @@ hipblasStatus_t testing_set_get_vector(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status_set = hipblasSetVector(
-                 M,
-                 sizeof(T),
-                 (void *) hx.data(), incx,
-                 (void *) db, incd);
+    status_set = hipblasSetVector(M, sizeof(T), (void*)hx.data(), incx, (void*)db, incd);
 
-    status_get = hipblasGetVector(
-                 M,
-                 sizeof(T),
-                 (void *) db, incd,
-                 (void *) hy.data(), incy);
+    status_get = hipblasGetVector(M, sizeof(T), (void*)db, incd, (void*)hy.data(), incy);
 
-    if (status_set != HIPBLAS_STATUS_SUCCESS) {
+    if(status_set != HIPBLAS_STATUS_SUCCESS)
+    {
         CHECK_HIP_ERROR(hipFree(db));
         hipblasDestroy(handle);
         return status;
     }
 
-    if (status_get != HIPBLAS_STATUS_SUCCESS) {
+    if(status_get != HIPBLAS_STATUS_SUCCESS)
+    {
         CHECK_HIP_ERROR(hipFree(db));
         hipblasDestroy(handle);
         return status;
     }
 
-    if (argus.unit_check) {
+    if(argus.unit_check)
+    {
         /* =====================================================================
            CPU BLAS
         =================================================================== */
 
         // reference calculation
-        for (int i = 0; i < M; i++) {
-            hy_ref[i*incy] = hx[i*incx];
+        for(int i = 0; i < M; i++)
+        {
+            hy_ref[i * incy] = hx[i * incx];
         }
 
-        //enable unit check, notice unit check is not invasive, but norm check is,
+        // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if (argus.unit_check) {
+        if(argus.unit_check)
+        {
             unit_check_general<T>(1, M, incy, hy.data(), hy_ref.data());
         }
     }
