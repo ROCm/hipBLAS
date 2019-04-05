@@ -26,7 +26,7 @@ properties([
 ////////////////////////////////////////////////////////////////////////
 import java.nio.file.Path;
 
-rocBLASCI:
+hipBLASCI:
 {
 
     def hipblas = new rocProject('hipblas')
