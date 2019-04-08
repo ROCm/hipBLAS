@@ -2,12 +2,12 @@
  * Copyright 2016 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
+#include "testing_geam.hpp"
+#include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
-#include "testing_geam.hpp"
-#include "utility.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -69,9 +69,9 @@ const vector<vector<char>> transA_transB_range = {{'N', 'N'}, {'N', 'T'}, {'C', 
 Arguments setup_geam_arguments(geam_tuple tup)
 {
 
-    vector<int> matrix_size    = std::get<0>(tup);
-    vector<double> alpha_beta  = std::get<1>(tup);
-    vector<char> transA_transB = std::get<2>(tup);
+    vector<int>    matrix_size   = std::get<0>(tup);
+    vector<double> alpha_beta    = std::get<1>(tup);
+    vector<char>   transA_transB = std::get<2>(tup);
 
     Arguments arg;
 
@@ -96,11 +96,19 @@ Arguments setup_geam_arguments(geam_tuple tup)
 
 class geam_gtest : public ::TestWithParam<geam_tuple>
 {
-    protected:
-    geam_gtest() {}
-    virtual ~geam_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    geam_gtest()
+    {
+    }
+    virtual ~geam_gtest()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 TEST_P(geam_gtest, geam_gtest_float)

@@ -3,10 +3,10 @@
  *
  * ************************************************************************ */
 
-#include <stdio.h>
-#include "hipblas.h"
 #include "norm.h"
 #include "cblas.h"
+#include "hipblas.h"
+#include <stdio.h>
 
 /* =====================================================================
      README: Norm check: norm(A-B)/norm(A), evaluate relative error
@@ -56,9 +56,9 @@ double norm_check_general<float>(char norm_type, int M, int N, int lda, float* h
     // norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
 
     float work;
-    int incx    = 1;
+    int   incx  = 1;
     float alpha = -1.0f;
-    int size    = lda * N;
+    int   size  = lda * N;
 
     float cpu_norm = slange_(&norm_type, &M, &N, hCPU, &lda, &work);
     saxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
@@ -74,9 +74,9 @@ double norm_check_general<double>(char norm_type, int M, int N, int lda, double*
     // norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
 
     double work[1];
-    int incx     = 1;
+    int    incx  = 1;
     double alpha = -1.0;
-    int size     = lda * N;
+    int    size  = lda * N;
 
     double cpu_norm = dlange_(&norm_type, &M, &N, hCPU, &lda, work);
     daxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
@@ -133,14 +133,14 @@ double norm_check_general<double>(char norm_type, int M, int N, int lda, double*
 
 template <>
 double
-norm_check_symmetric<float>(char norm_type, char uplo, int N, int lda, float* hCPU, float* hGPU)
+    norm_check_symmetric<float>(char norm_type, char uplo, int N, int lda, float* hCPU, float* hGPU)
 {
     // norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
 
     float work[1];
-    int incx    = 1;
+    int   incx  = 1;
     float alpha = -1.0f;
-    int size    = lda * N;
+    int   size  = lda * N;
 
     float cpu_norm = slansy_(&norm_type, &uplo, &N, hCPU, &lda, work);
     saxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
@@ -151,15 +151,15 @@ norm_check_symmetric<float>(char norm_type, char uplo, int N, int lda, float* hC
 }
 
 template <>
-double
-norm_check_symmetric<double>(char norm_type, char uplo, int N, int lda, double* hCPU, double* hGPU)
+double norm_check_symmetric<double>(
+    char norm_type, char uplo, int N, int lda, double* hCPU, double* hGPU)
 {
     // norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
 
     double work[1];
-    int incx     = 1;
+    int    incx  = 1;
     double alpha = -1.0;
-    int size     = lda * N;
+    int    size  = lda * N;
 
     double cpu_norm = dlansy_(&norm_type, &uplo, &N, hCPU, &lda, work);
     daxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);

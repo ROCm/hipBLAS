@@ -6,13 +6,13 @@
 #ifndef _TESTING_UTILITY_H_
 #define _TESTING_UTILITY_H_
 
+#include "hipblas.h"
+#include <immintrin.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <vector>
-#include "hipblas.h"
 #include <sys/time.h>
-#include <immintrin.h>
 #include <typeinfo>
+#include <vector>
 
 using namespace std;
 
@@ -55,7 +55,7 @@ inline hipblasHalf float_to_half(float val)
 {
     // return static_cast<hipblasHalf>( _mm_cvtsi128_si32( _mm_cvtps_ph( _mm_set_ss( val ), 0 ) )
     // );
-    const int zero = 0;
+    const int          zero = 0;
     short unsigned int a;
     a = _cvtss_sh(val, zero);
     //  return _cvtss_sh(val, zero);
@@ -299,7 +299,7 @@ hipblasSideMode_t char2hipblas_side(char value);
 
 class Arguments
 {
-    public:
+public:
     int M = 128;
     int N = 128;
     int K = 128;

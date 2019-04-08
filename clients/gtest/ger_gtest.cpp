@@ -3,12 +3,12 @@
  *
  * ************************************************************************ */
 
+#include "testing_ger.hpp"
+#include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
-#include "testing_ger.hpp"
-#include "utility.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -82,7 +82,7 @@ Arguments setup_ger_arguments(ger_tuple tup)
 
     vector<int> matrix_size = std::get<0>(tup);
     vector<int> incx_incy   = std::get<1>(tup);
-    double alpha            = std::get<2>(tup);
+    double      alpha       = std::get<2>(tup);
 
     Arguments arg;
 
@@ -104,11 +104,19 @@ Arguments setup_ger_arguments(ger_tuple tup)
 
 class blas2_ger_gtest : public ::TestWithParam<ger_tuple>
 {
-    protected:
-    blas2_ger_gtest() {}
-    virtual ~blas2_ger_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    blas2_ger_gtest()
+    {
+    }
+    virtual ~blas2_ger_gtest()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 TEST_P(blas2_ger_gtest, float)

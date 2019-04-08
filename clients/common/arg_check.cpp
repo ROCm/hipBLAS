@@ -2,9 +2,9 @@
  * Copyright 2016 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
-#include <iostream>
-#include "hipblas.h"
 #include "arg_check.h"
+#include "hipblas.h"
+#include <iostream>
 
 void verify_hipblas_status_invalid_value(hipblasStatus_t status, const char* message)
 {

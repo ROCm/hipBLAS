@@ -3,17 +3,17 @@
  *
  * ************************************************************************ */
 
-#include <stdlib.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <stdlib.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "flops.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
-#include "flops.h"
+#include "utility.h"
 
 using namespace std;
 
@@ -69,8 +69,8 @@ hipblasStatus_t testing_symv(Arguments argus)
 
     hipblasHandle_t handle;
 
-    char char_fill         = argus.uplo_option;
-    hipblasFillMode_t uplo = char2hipblasFillMode_t(char_fill);
+    char              char_fill = argus.uplo_option;
+    hipblasFillMode_t uplo      = char2hipblasFillMode_t(char_fill);
 
     hipblasCreate(&handle);
 
@@ -100,8 +100,8 @@ hipblasStatus_t testing_symv(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status =
-            hipblasSymv<T>(handle, uplo, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy);
+        status
+            = hipblasSymv<T>(handle, uplo, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

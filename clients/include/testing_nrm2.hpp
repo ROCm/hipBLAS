@@ -3,15 +3,15 @@
  *
  * ************************************************************************ */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
+#include "utility.h"
 #include <complex.h>
 
 using namespace std;
@@ -44,7 +44,7 @@ hipblasStatus_t testing_nrm2(Arguments argus)
 
     T1* dx;
     T2* d_rocblas_result;
-    T2 cpu_result, rocblas_result_1, rocblas_result_2;
+    T2  cpu_result, rocblas_result_1, rocblas_result_2;
 
     int device_pointer = 1;
 
@@ -75,8 +75,9 @@ hipblasStatus_t testing_nrm2(Arguments argus)
 
     status_4 = hipblasNrm2<T1, T2>(handle, N, dx, incx, &rocblas_result_1);
 
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS) ||
-       (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
+    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
+       || (status_3 != HIPBLAS_STATUS_SUCCESS)
+       || (status_4 != HIPBLAS_STATUS_SUCCESS))
     {
         CHECK_HIP_ERROR(hipFree(dx));
         CHECK_HIP_ERROR(hipFree(d_rocblas_result));

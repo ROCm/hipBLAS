@@ -3,17 +3,17 @@
  *
  * ************************************************************************ */
 
-#include <stdlib.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <stdlib.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "flops.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
-#include "flops.h"
+#include "utility.h"
 
 using namespace std;
 
@@ -32,12 +32,12 @@ hipblasStatus_t testing_trsm(Arguments argus)
     char char_uplo   = argus.uplo_option;
     char char_transA = argus.transA_option;
     char char_diag   = argus.diag_option;
-    T alpha          = argus.alpha;
+    T    alpha       = argus.alpha;
 
-    hipblasSideMode_t side    = char2hipblas_side(char_side);
-    hipblasFillMode_t uplo    = char2hipblas_fill(char_uplo);
+    hipblasSideMode_t  side   = char2hipblas_side(char_side);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(char_uplo);
     hipblasOperation_t transA = char2hipblas_operation(char_transA);
-    hipblasDiagType_t diag    = char2hipblas_diagonal(char_diag);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(char_diag);
 
     int K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
     int A_size = lda * K;

@@ -3,12 +3,12 @@
  *
  * ************************************************************************ */
 
+#include "testing_set_get_vector.hpp"
+#include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
-#include "testing_set_get_vector.hpp"
-#include "utility.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -74,7 +74,7 @@ const vector<vector<int>> incx_incy_incd_range = {{1, 1, 1},
 Arguments setup_set_get_vector_arguments(set_get_vector_tuple tup)
 {
 
-    int M                      = std::get<0>(tup);
+    int         M              = std::get<0>(tup);
     vector<int> incx_incy_incd = std::get<1>(tup);
 
     Arguments arg;
@@ -92,11 +92,19 @@ Arguments setup_set_get_vector_arguments(set_get_vector_tuple tup)
 
 class set_vector_get_vector_gtest : public ::TestWithParam<set_get_vector_tuple>
 {
-    protected:
-    set_vector_get_vector_gtest() {}
-    virtual ~set_vector_get_vector_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    set_vector_get_vector_gtest()
+    {
+    }
+    virtual ~set_vector_get_vector_gtest()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 // TEST_P(set_vector_get_vector_gtest, set_get_vector_float)

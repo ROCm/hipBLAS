@@ -3,12 +3,12 @@
  *
  * ************************************************************************ */
 
+#include "testing_gemv.hpp"
+#include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
-#include "testing_gemv.hpp"
-#include "utility.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -88,10 +88,10 @@ const vector<char> transA_range = {
 Arguments setup_gemv_arguments(gemv_tuple tup)
 {
 
-    vector<int> matrix_size   = std::get<0>(tup);
-    vector<int> incx_incy     = std::get<1>(tup);
-    vector<double> alpha_beta = std::get<2>(tup);
-    char transA               = std::get<3>(tup);
+    vector<int>    matrix_size = std::get<0>(tup);
+    vector<int>    incx_incy   = std::get<1>(tup);
+    vector<double> alpha_beta  = std::get<2>(tup);
+    char           transA      = std::get<3>(tup);
 
     Arguments arg;
 
@@ -117,11 +117,19 @@ Arguments setup_gemv_arguments(gemv_tuple tup)
 
 class gemv_gtest : public ::TestWithParam<gemv_tuple>
 {
-    protected:
-    gemv_gtest() {}
-    virtual ~gemv_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    gemv_gtest()
+    {
+    }
+    virtual ~gemv_gtest()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 TEST_P(gemv_gtest, gemv_gtest_float)

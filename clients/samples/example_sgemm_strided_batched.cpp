@@ -2,12 +2,12 @@
  * Copyright 2016 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <vector>
-#include <limits>
-#include <iostream>
 #include "hipblas.h"
+#include <iostream>
+#include <limits>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
 using namespace std;
 
@@ -55,18 +55,18 @@ using namespace std;
 #define BATCH_COUNT 10
 
 template <typename T>
-void mat_mat_mult(T alpha,
-                  T beta,
+void mat_mat_mult(T   alpha,
+                  T   beta,
                   int M,
                   int N,
                   int K,
-                  T* A,
+                  T*  A,
                   int As1,
                   int As2,
-                  T* B,
+                  T*  B,
                   int Bs1,
                   int Bs2,
-                  T* C,
+                  T*  C,
                   int Cs1,
                   int Cs2)
 {
@@ -87,7 +87,7 @@ void mat_mat_mult(T alpha,
 int main()
 {
     hipblasOperation_t transa = HIPBLAS_OP_N, transb = HIPBLAS_OP_T;
-    float alpha = 1.1, beta = 0.9;
+    float              alpha = 1.1, beta = 0.9;
 
     int m = DIM1, n = DIM2, k = DIM3, batch_count = BATCH_COUNT;
     int lda, ldb, ldc, bsa, bsb, bsc;
@@ -221,8 +221,8 @@ int main()
     {
         float relative_error = (hc_gold[i] - hc[i]) / hc_gold[i];
         relative_error       = relative_error > 0 ? relative_error : -relative_error;
-        max_relative_error =
-            relative_error < max_relative_error ? max_relative_error : relative_error;
+        max_relative_error
+            = relative_error < max_relative_error ? max_relative_error : relative_error;
     }
     float eps       = numeric_limits<float>::epsilon();
     float tolerance = 10;

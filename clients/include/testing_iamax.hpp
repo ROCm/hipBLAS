@@ -3,15 +3,15 @@
  *
  * ************************************************************************ */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
+#include "utility.h"
 #include <complex.h>
 
 using namespace std;
@@ -31,7 +31,7 @@ hipblasStatus_t testing_amax(Arguments argus)
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
-    T* dx;
+    T*   dx;
     int* d_rocblas_result;
 
     int cpu_result, rocblas_result1, rocblas_result2;
@@ -87,8 +87,8 @@ hipblasStatus_t testing_amax(Arguments argus)
             status_2 = hipblasIamax<T>(handle, N, dx, incx, &rocblas_result2);
         }
 
-        if((status_1 == HIPBLAS_STATUS_SUCCESS) && (status_2 == HIPBLAS_STATUS_SUCCESS) &&
-           (status_3 == HIPBLAS_STATUS_SUCCESS))
+        if((status_1 == HIPBLAS_STATUS_SUCCESS) && (status_2 == HIPBLAS_STATUS_SUCCESS)
+           && (status_3 == HIPBLAS_STATUS_SUCCESS))
         {
             /* =====================================================================
                         CPU BLAS

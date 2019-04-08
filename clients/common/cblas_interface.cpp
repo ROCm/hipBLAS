@@ -3,12 +3,12 @@
  *
  * ************************************************************************/
 
-#include <typeinfo>
-#include <memory>
-#include "hipblas.h"
 #include "cblas_interface.h"
 #include "cblas.h"
+#include "hipblas.h"
 #include "utility.h"
+#include <memory>
+#include <typeinfo>
 
 /*!\file
  * \brief provide template functions interfaces to CBLAS C89 interfaces, it is only used for testing
@@ -250,16 +250,16 @@ void cblas_iamax<double>(int n, const double* x, int incx, int* result)
 
 template <>
 void cblas_gemv<float>(hipblasOperation_t transA,
-                       int m,
-                       int n,
-                       float alpha,
-                       float* A,
-                       int lda,
-                       float* x,
-                       int incx,
-                       float beta,
-                       float* y,
-                       int incy)
+                       int                m,
+                       int                n,
+                       float              alpha,
+                       float*             A,
+                       int                lda,
+                       float*             x,
+                       int                incx,
+                       float              beta,
+                       float*             y,
+                       int                incy)
 {
     cblas_sgemv(
         CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
@@ -267,16 +267,16 @@ void cblas_gemv<float>(hipblasOperation_t transA,
 
 template <>
 void cblas_gemv<double>(hipblasOperation_t transA,
-                        int m,
-                        int n,
-                        double alpha,
-                        double* A,
-                        int lda,
-                        double* x,
-                        int incx,
-                        double beta,
-                        double* y,
-                        int incy)
+                        int                m,
+                        int                n,
+                        double             alpha,
+                        double*            A,
+                        int                lda,
+                        double*            x,
+                        int                incx,
+                        double             beta,
+                        double*            y,
+                        int                incy)
 {
     cblas_dgemv(
         CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
@@ -306,30 +306,30 @@ void cblas_gemv<double>(hipblasOperation_t transA,
 
 template <>
 void cblas_symv<float>(hipblasFillMode_t uplo,
-                       int n,
-                       float alpha,
-                       float* A,
-                       int lda,
-                       float* x,
-                       int incx,
-                       float beta,
-                       float* y,
-                       int incy)
+                       int               n,
+                       float             alpha,
+                       float*            A,
+                       int               lda,
+                       float*            x,
+                       int               incx,
+                       float             beta,
+                       float*            y,
+                       int               incy)
 {
     cblas_ssymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
 }
 
 template <>
 void cblas_symv<double>(hipblasFillMode_t uplo,
-                        int n,
-                        double alpha,
-                        double* A,
-                        int lda,
-                        double* x,
-                        int incx,
-                        double beta,
-                        double* y,
-                        int incy)
+                        int               n,
+                        double            alpha,
+                        double*           A,
+                        int               lda,
+                        double*           x,
+                        int               incx,
+                        double            beta,
+                        double*           y,
+                        int               incy)
 {
     cblas_dsymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
 }
@@ -379,17 +379,17 @@ void cblas_ger<double>(
 template <>
 void cblas_gemm<hipblasHalf>(hipblasOperation_t transA,
                              hipblasOperation_t transB,
-                             int m,
-                             int n,
-                             int k,
-                             hipblasHalf alpha,
-                             hipblasHalf* A,
-                             int lda,
-                             hipblasHalf* B,
-                             int ldb,
-                             hipblasHalf beta,
-                             hipblasHalf* C,
-                             int ldc)
+                             int                m,
+                             int                n,
+                             int                k,
+                             hipblasHalf        alpha,
+                             hipblasHalf*       A,
+                             int                lda,
+                             hipblasHalf*       B,
+                             int                ldb,
+                             hipblasHalf        beta,
+                             hipblasHalf*       C,
+                             int                ldc)
 {
     // cblas does not support hipblasHalf, so convert to higher precision float
     // This will give more precise result which is acceptable for testing
@@ -443,17 +443,17 @@ void cblas_gemm<hipblasHalf>(hipblasOperation_t transA,
 template <>
 void cblas_gemm<float>(hipblasOperation_t transA,
                        hipblasOperation_t transB,
-                       int m,
-                       int n,
-                       int k,
-                       float alpha,
-                       float* A,
-                       int lda,
-                       float* B,
-                       int ldb,
-                       float beta,
-                       float* C,
-                       int ldc)
+                       int                m,
+                       int                n,
+                       int                k,
+                       float              alpha,
+                       float*             A,
+                       int                lda,
+                       float*             B,
+                       int                ldb,
+                       float              beta,
+                       float*             C,
+                       int                ldc)
 {
     // just directly cast, since transA, transB are integers in the enum
     // printf("transA: hipblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
@@ -476,17 +476,17 @@ void cblas_gemm<float>(hipblasOperation_t transA,
 template <>
 void cblas_gemm<double>(hipblasOperation_t transA,
                         hipblasOperation_t transB,
-                        int m,
-                        int n,
-                        int k,
-                        double alpha,
-                        double* A,
-                        int lda,
-                        double* B,
-                        int ldb,
-                        double beta,
-                        double* C,
-                        int ldc)
+                        int                m,
+                        int                n,
+                        int                k,
+                        double             alpha,
+                        double*            A,
+                        int                lda,
+                        double*            B,
+                        int                ldb,
+                        double             beta,
+                        double*            C,
+                        int                ldc)
 {
     cblas_dgemm(CblasColMajor,
                 (CBLAS_TRANSPOSE)transA,
@@ -529,17 +529,17 @@ void cblas_gemm<double>(hipblasOperation_t transA,
 
 // trsm
 template <>
-void cblas_trsm<float>(hipblasSideMode_t side,
-                       hipblasFillMode_t uplo,
+void cblas_trsm<float>(hipblasSideMode_t  side,
+                       hipblasFillMode_t  uplo,
                        hipblasOperation_t transA,
-                       hipblasDiagType_t diag,
-                       int m,
-                       int n,
-                       float alpha,
-                       const float* A,
-                       int lda,
-                       float* B,
-                       int ldb)
+                       hipblasDiagType_t  diag,
+                       int                m,
+                       int                n,
+                       float              alpha,
+                       const float*       A,
+                       int                lda,
+                       float*             B,
+                       int                ldb)
 {
     // just directly cast, since transA, transB are integers in the enum
     cblas_strsm(CblasColMajor,
@@ -557,17 +557,17 @@ void cblas_trsm<float>(hipblasSideMode_t side,
 }
 
 template <>
-void cblas_trsm<double>(hipblasSideMode_t side,
-                        hipblasFillMode_t uplo,
+void cblas_trsm<double>(hipblasSideMode_t  side,
+                        hipblasFillMode_t  uplo,
                         hipblasOperation_t transA,
-                        hipblasDiagType_t diag,
-                        int m,
-                        int n,
-                        double alpha,
-                        const double* A,
-                        int lda,
-                        double* B,
-                        int ldb)
+                        hipblasDiagType_t  diag,
+                        int                m,
+                        int                n,
+                        double             alpha,
+                        const double*      A,
+                        int                lda,
+                        double*            B,
+                        int                ldb)
 {
     // just directly cast, since transA, transB are integers in the enum
     cblas_dtrsm(CblasColMajor,
@@ -633,17 +633,17 @@ int cblas_trtri<double>(char uplo, char diag, int n, double* A, int lda)
 
 // trmm
 template <>
-void cblas_trmm<float>(hipblasSideMode_t side,
-                       hipblasFillMode_t uplo,
+void cblas_trmm<float>(hipblasSideMode_t  side,
+                       hipblasFillMode_t  uplo,
                        hipblasOperation_t transA,
-                       hipblasDiagType_t diag,
-                       int m,
-                       int n,
-                       float alpha,
-                       const float* A,
-                       int lda,
-                       float* B,
-                       int ldb)
+                       hipblasDiagType_t  diag,
+                       int                m,
+                       int                n,
+                       float              alpha,
+                       const float*       A,
+                       int                lda,
+                       float*             B,
+                       int                ldb)
 {
     // just directly cast, since transA, transB are integers in the enum
     cblas_strmm(CblasColMajor,
@@ -661,17 +661,17 @@ void cblas_trmm<float>(hipblasSideMode_t side,
 }
 
 template <>
-void cblas_trmm<double>(hipblasSideMode_t side,
-                        hipblasFillMode_t uplo,
+void cblas_trmm<double>(hipblasSideMode_t  side,
+                        hipblasFillMode_t  uplo,
                         hipblasOperation_t transA,
-                        hipblasDiagType_t diag,
-                        int m,
-                        int n,
-                        double alpha,
-                        const double* A,
-                        int lda,
-                        double* B,
-                        int ldb)
+                        hipblasDiagType_t  diag,
+                        int                m,
+                        int                n,
+                        double             alpha,
+                        const double*      A,
+                        int                lda,
+                        double*            B,
+                        int                ldb)
 {
     // just directly cast, since transA, transB are integers in the enum
     cblas_dtrmm(CblasColMajor,

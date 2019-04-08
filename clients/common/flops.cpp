@@ -3,8 +3,8 @@
  *
  * ************************************************************************/
 
-#include "hipblas.h"
 #include "flops.h"
+#include "hipblas.h"
 
 /*!\file
  * \brief provides Floating point counts of Basic Linear Algebra Subprograms (BLAS) of Level 2 and
