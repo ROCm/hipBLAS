@@ -44,16 +44,16 @@ void cblas_iamin(int n, const T* x, int incx, int* result);
 
 template <typename T>
 void cblas_gemv(hipblasOperation_t transA,
-                int m,
-                int n,
-                T alpha,
-                T* A,
-                int lda,
-                T* x,
-                int incx,
-                T beta,
-                T* y,
-                int incy);
+                int                m,
+                int                n,
+                T                  alpha,
+                T*                 A,
+                int                lda,
+                T*                 x,
+                int                incx,
+                T                  beta,
+                T*                 y,
+                int                incy);
 
 template <typename T>
 void cblas_symv(
@@ -69,46 +69,46 @@ void cblas_hemv(
 template <typename T>
 void cblas_gemm(hipblasOperation_t transA,
                 hipblasOperation_t transB,
-                int m,
-                int n,
-                int k,
-                T alpha,
-                T* A,
-                int lda,
-                T* B,
-                int ldb,
-                T beta,
-                T* C,
-                int ldc);
+                int                m,
+                int                n,
+                int                k,
+                T                  alpha,
+                T*                 A,
+                int                lda,
+                T*                 B,
+                int                ldb,
+                T                  beta,
+                T*                 C,
+                int                ldc);
 
 template <typename T>
-void cblas_trsm(hipblasSideMode_t side,
-                hipblasFillMode_t uplo,
+void cblas_trsm(hipblasSideMode_t  side,
+                hipblasFillMode_t  uplo,
                 hipblasOperation_t transA,
-                hipblasDiagType_t diag,
-                int m,
-                int n,
-                T alpha,
-                const T* A,
-                int lda,
-                T* B,
-                int ldb);
+                hipblasDiagType_t  diag,
+                int                m,
+                int                n,
+                T                  alpha,
+                const T*           A,
+                int                lda,
+                T*                 B,
+                int                ldb);
 
 template <typename T>
 int cblas_trtri(char uplo, char diag, int n, T* A, int lda);
 
 template <typename T>
-void cblas_trmm(hipblasSideMode_t side,
-                hipblasFillMode_t uplo,
+void cblas_trmm(hipblasSideMode_t  side,
+                hipblasFillMode_t  uplo,
                 hipblasOperation_t transA,
-                hipblasDiagType_t diag,
-                int m,
-                int n,
-                T alpha,
-                const T* A,
-                int lda,
-                T* B,
-                int ldb);
+                hipblasDiagType_t  diag,
+                int                m,
+                int                n,
+                T                  alpha,
+                const T*           A,
+                int                lda,
+                T*                 B,
+                int                ldb);
 
 template <typename T>
 int cblas_getrf(int m, int n, T* A, int lda, int* ipiv);

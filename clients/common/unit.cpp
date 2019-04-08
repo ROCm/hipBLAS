@@ -3,8 +3,8 @@
  *
  * ************************************************************************ */
 
-#include "hipblas.h"
 #include "unit.h"
+#include "hipblas.h"
 #include "utility.h"
 
 /* ========================================Gtest Unit Check

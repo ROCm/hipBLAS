@@ -3,12 +3,12 @@
  *
  * ************************************************************************ */
 
+#include "testing_gemm_strided_batched.hpp"
+#include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
-#include "testing_gemm_strided_batched.hpp"
-#include "utility.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -85,10 +85,10 @@ const vector<int> batch_count_range = {
 Arguments setup_gemm_strided_batched_arguments(gemm_strided_batched_tuple tup)
 {
 
-    vector<int> matrix_size    = std::get<0>(tup);
-    vector<double> alpha_beta  = std::get<1>(tup);
-    vector<char> transA_transB = std::get<2>(tup);
-    int batch_count            = std::get<3>(tup);
+    vector<int>    matrix_size   = std::get<0>(tup);
+    vector<double> alpha_beta    = std::get<1>(tup);
+    vector<char>   transA_transB = std::get<2>(tup);
+    int            batch_count   = std::get<3>(tup);
 
     Arguments arg;
 
@@ -115,11 +115,19 @@ Arguments setup_gemm_strided_batched_arguments(gemm_strided_batched_tuple tup)
 
 class gemm_strided_batched_gtest : public ::TestWithParam<gemm_strided_batched_tuple>
 {
-    protected:
-    gemm_strided_batched_gtest() {}
-    virtual ~gemm_strided_batched_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    gemm_strided_batched_gtest()
+    {
+    }
+    virtual ~gemm_strided_batched_gtest()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 TEST_P(gemm_strided_batched_gtest, float)

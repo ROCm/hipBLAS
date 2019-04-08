@@ -3,15 +3,15 @@
  *
  * ************************************************************************ */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
+#include "utility.h"
 #include <complex.h>
 
 using namespace std;
@@ -41,12 +41,12 @@ hipblasStatus_t testing_scal(Arguments argus)
     }
 
     int sizeX = N * incx;
-    T alpha   = argus.alpha;
+    T   alpha = argus.alpha;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     vector<T> hx(sizeX);
     vector<T> hz(sizeX);
-    T* dx;
+    T*        dx;
 
     double gpu_time_used, cpu_time_used;
     double rocblas_error = 0.0;

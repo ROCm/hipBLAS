@@ -3,16 +3,16 @@
  *
  * ************************************************************************ */
 
-#include <stdlib.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <stdlib.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
+#include "utility.h"
 
 using namespace std;
 

@@ -3,15 +3,15 @@
  *
  * ************************************************************************ */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
+#include "utility.h"
 #include <complex.h>
 
 using namespace std;
@@ -54,8 +54,8 @@ hipblasStatus_t testing_dot(Arguments argus)
     vector<T> hx(sizeX);
     vector<T> hy(sizeY);
 
-    T cpu_result, rocblas_result;
-    T *dx, *dy, *d_rocblas_result;
+    T   cpu_result, rocblas_result;
+    T * dx, *dy, *d_rocblas_result;
     int device_pointer = 1;
 
     double gpu_time_used, cpu_time_used;

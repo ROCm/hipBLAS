@@ -3,12 +3,12 @@
  *
  * ************************************************************************ */
 
+#include "testing_trsm.hpp"
+#include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
-#include "testing_trsm.hpp"
-#include "utility.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -107,8 +107,8 @@ const vector<vector<char>> full_side_uplo_transA_diag_range = {
 Arguments setup_trsm_arguments(trsm_tuple tup)
 {
 
-    vector<int> matrix_size            = std::get<0>(tup);
-    double alpha                       = std::get<1>(tup);
+    vector<int>  matrix_size           = std::get<0>(tup);
+    double       alpha                 = std::get<1>(tup);
     vector<char> side_uplo_transA_diag = std::get<2>(tup);
 
     Arguments arg;
@@ -133,11 +133,19 @@ Arguments setup_trsm_arguments(trsm_tuple tup)
 
 class trsm_gtest : public ::TestWithParam<trsm_tuple>
 {
-    protected:
-    trsm_gtest() {}
-    virtual ~trsm_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    trsm_gtest()
+    {
+    }
+    virtual ~trsm_gtest()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 TEST_P(trsm_gtest, trsm_gtest_float)

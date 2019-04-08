@@ -3,9 +3,9 @@
  *
  * ************************************************************************ */
 
-#include <sys/time.h>
-#include "hipblas.h"
 #include "utility.h"
+#include "hipblas.h"
+#include <sys/time.h>
 
 template <>
 char type2char<float>()
@@ -58,7 +58,7 @@ double get_time_us_sync(hipStream_t stream)
 /*  device query and print out their ID and name; return number of compute-capable devices. */
 int query_device_property()
 {
-    int device_count;
+    int             device_count;
     hipblasStatus_t status = (hipblasStatus_t)hipGetDeviceCount(&device_count);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -120,9 +120,12 @@ char hipblas2char_operation(hipblasOperation_t value)
 {
     switch(value)
     {
-    case HIPBLAS_OP_N: return 'N';
-    case HIPBLAS_OP_T: return 'T';
-    case HIPBLAS_OP_C: return 'C';
+    case HIPBLAS_OP_N:
+        return 'N';
+    case HIPBLAS_OP_T:
+        return 'T';
+    case HIPBLAS_OP_C:
+        return 'C';
     }
     return '\0';
 }
@@ -131,9 +134,12 @@ char hipblas2char_fill(hipblasFillMode_t value)
 {
     switch(value)
     {
-    case HIPBLAS_FILL_MODE_UPPER: return 'U';
-    case HIPBLAS_FILL_MODE_LOWER: return 'L';
-    case HIPBLAS_FILL_MODE_FULL: return 'F';
+    case HIPBLAS_FILL_MODE_UPPER:
+        return 'U';
+    case HIPBLAS_FILL_MODE_LOWER:
+        return 'L';
+    case HIPBLAS_FILL_MODE_FULL:
+        return 'F';
     }
     return '\0';
 }
@@ -142,8 +148,10 @@ char hipblas2char_diagonal(hipblasDiagType_t value)
 {
     switch(value)
     {
-    case HIPBLAS_DIAG_UNIT: return 'U';
-    case HIPBLAS_DIAG_NON_UNIT: return 'N';
+    case HIPBLAS_DIAG_UNIT:
+        return 'U';
+    case HIPBLAS_DIAG_NON_UNIT:
+        return 'N';
     }
     return '\0';
 }
@@ -152,9 +160,12 @@ char hipblas2char_side(hipblasSideMode_t value)
 {
     switch(value)
     {
-    case HIPBLAS_SIDE_LEFT: return 'L';
-    case HIPBLAS_SIDE_RIGHT: return 'R';
-    case HIPBLAS_SIDE_BOTH: return 'B';
+    case HIPBLAS_SIDE_LEFT:
+        return 'L';
+    case HIPBLAS_SIDE_RIGHT:
+        return 'R';
+    case HIPBLAS_SIDE_BOTH:
+        return 'B';
     }
     return '\0';
 }
@@ -166,12 +177,18 @@ hipblasOperation_t char2hipblas_operation(char value)
 {
     switch(value)
     {
-    case 'N': return HIPBLAS_OP_N;
-    case 'T': return HIPBLAS_OP_T;
-    case 'C': return HIPBLAS_OP_C;
-    case 'n': return HIPBLAS_OP_N;
-    case 't': return HIPBLAS_OP_T;
-    case 'c': return HIPBLAS_OP_C;
+    case 'N':
+        return HIPBLAS_OP_N;
+    case 'T':
+        return HIPBLAS_OP_T;
+    case 'C':
+        return HIPBLAS_OP_C;
+    case 'n':
+        return HIPBLAS_OP_N;
+    case 't':
+        return HIPBLAS_OP_T;
+    case 'c':
+        return HIPBLAS_OP_C;
     }
     return HIPBLAS_OP_N;
 }
@@ -180,10 +197,14 @@ hipblasFillMode_t char2hipblas_fill(char value)
 {
     switch(value)
     {
-    case 'U': return HIPBLAS_FILL_MODE_UPPER;
-    case 'L': return HIPBLAS_FILL_MODE_LOWER;
-    case 'u': return HIPBLAS_FILL_MODE_UPPER;
-    case 'l': return HIPBLAS_FILL_MODE_LOWER;
+    case 'U':
+        return HIPBLAS_FILL_MODE_UPPER;
+    case 'L':
+        return HIPBLAS_FILL_MODE_LOWER;
+    case 'u':
+        return HIPBLAS_FILL_MODE_UPPER;
+    case 'l':
+        return HIPBLAS_FILL_MODE_LOWER;
     }
     return HIPBLAS_FILL_MODE_LOWER;
 }
@@ -192,10 +213,14 @@ hipblasDiagType_t char2hipblas_diagonal(char value)
 {
     switch(value)
     {
-    case 'U': return HIPBLAS_DIAG_UNIT;
-    case 'N': return HIPBLAS_DIAG_NON_UNIT;
-    case 'u': return HIPBLAS_DIAG_UNIT;
-    case 'n': return HIPBLAS_DIAG_NON_UNIT;
+    case 'U':
+        return HIPBLAS_DIAG_UNIT;
+    case 'N':
+        return HIPBLAS_DIAG_NON_UNIT;
+    case 'u':
+        return HIPBLAS_DIAG_UNIT;
+    case 'n':
+        return HIPBLAS_DIAG_NON_UNIT;
     }
     return HIPBLAS_DIAG_NON_UNIT;
 }
@@ -204,10 +229,14 @@ hipblasSideMode_t char2hipblas_side(char value)
 {
     switch(value)
     {
-    case 'L': return HIPBLAS_SIDE_LEFT;
-    case 'R': return HIPBLAS_SIDE_RIGHT;
-    case 'l': return HIPBLAS_SIDE_LEFT;
-    case 'r': return HIPBLAS_SIDE_RIGHT;
+    case 'L':
+        return HIPBLAS_SIDE_LEFT;
+    case 'R':
+        return HIPBLAS_SIDE_RIGHT;
+    case 'l':
+        return HIPBLAS_SIDE_LEFT;
+    case 'r':
+        return HIPBLAS_SIDE_RIGHT;
     }
     return HIPBLAS_SIDE_LEFT;
 }

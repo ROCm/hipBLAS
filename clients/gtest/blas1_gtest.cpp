@@ -3,16 +3,16 @@
  *
  * ************************************************************************ */
 
+#include "testing_asum.hpp"
+#include "testing_dot.hpp"
+#include "testing_iamax.hpp"
+#include "testing_nrm2.hpp"
+#include "testing_scal.hpp"
+#include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
-#include "testing_scal.hpp"
-#include "testing_dot.hpp"
-#include "testing_nrm2.hpp"
-#include "testing_asum.hpp"
-#include "testing_iamax.hpp"
-#include "utility.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -76,19 +76,27 @@ vector<vector<int>> incx_incy_range = {
 
 class blas1_gtest : public ::TestWithParam<blas1_tuple>
 {
-    protected:
-    blas1_gtest() {}
-    virtual ~blas1_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    blas1_gtest()
+    {
+    }
+    virtual ~blas1_gtest()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 Arguments setup_blas1_arguments(blas1_tuple tup)
 {
 
-    int N                     = std::get<0>(tup);
+    int            N          = std::get<0>(tup);
     vector<double> alpha_beta = std::get<1>(tup);
-    vector<int> incx_incy     = std::get<2>(tup);
+    vector<int>    incx_incy  = std::get<2>(tup);
 
     // the first element of alpha_beta_range is always alpha, and the second is always beta
     double alpha = alpha_beta[0];
@@ -104,8 +112,8 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
     arg.incx  = incx;
     arg.incy  = incy;
 
-    arg.timing =
-        0; // disable timing data print out. Not supposed to collect performance data in gtest
+    arg.timing
+        = 0; // disable timing data print out. Not supposed to collect performance data in gtest
 
     return arg;
 }
@@ -116,7 +124,7 @@ TEST_P(blas1_gtest, scal_float)
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
-    Arguments arg          = setup_blas1_arguments(GetParam());
+    Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_scal<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -138,7 +146,7 @@ TEST_P(blas1_gtest, dot_float)
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
-    Arguments arg          = setup_blas1_arguments(GetParam());
+    Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_dot<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -164,7 +172,7 @@ TEST_P(blas1_gtest, nrm2_float)
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
-    Arguments arg          = setup_blas1_arguments(GetParam());
+    Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_nrm2<float, float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -186,7 +194,7 @@ TEST_P(blas1_gtest, asum_float)
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
-    Arguments arg          = setup_blas1_arguments(GetParam());
+    Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_asum<float, float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)

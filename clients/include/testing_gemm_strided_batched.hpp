@@ -3,18 +3,18 @@
  *
  * ************************************************************************ */
 
-#include <sys/time.h>
-#include <stdlib.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <stdlib.h>
+#include <sys/time.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "flops.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
-#include "flops.h"
+#include "utility.h"
 #include <typeinfo>
 
 using namespace std;
@@ -45,13 +45,13 @@ hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
 
     int A_size, B_size, C_size, A_row, A_col, B_row, B_col;
     int bsa, bsb, bsc; // batch size A, B, C
-    T alpha = argus.alpha;
-    T beta  = argus.beta;
+    T   alpha = argus.alpha;
+    T   beta  = argus.beta;
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
 
-    T rocblas_error = 0.0;
+    T               rocblas_error = 0.0;
     hipblasHandle_t handle;
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
     hipblasCreate(&handle);

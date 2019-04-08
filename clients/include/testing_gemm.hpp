@@ -3,18 +3,18 @@
  *
  * ************************************************************************ */
 
-#include <sys/time.h>
-#include <stdlib.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <stdlib.h>
+#include <sys/time.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "flops.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
-#include "flops.h"
+#include "utility.h"
 #include <typeinfo>
 
 using namespace std;
@@ -107,8 +107,8 @@ hipblasStatus_t testing_gemm(Arguments argus)
     =================================================================== */
 
     // library interface
-    status =
-        hipblasGemm<T>(handle, transA, transB, M, N, K, &alpha, dA, lda, dB, ldb, &beta, dC, ldc);
+    status
+        = hipblasGemm<T>(handle, transA, transB, M, N, K, &alpha, dA, lda, dB, ldb, &beta, dC, ldc);
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));

@@ -3,9 +3,9 @@
  *
  * ************************************************************************/
 
-#include <typeinfo>
 #include "hipblas.h"
 #include "hipblas.hpp"
+#include <typeinfo>
 
 /*!\file
  * \brief provide template functions interfaces to ROCBLAS C89 interfaces
@@ -19,7 +19,7 @@
 // scal
 template <>
 hipblasStatus_t
-hipblasScal<float>(hipblasHandle_t handle, int n, const float* alpha, float* x, int incx)
+    hipblasScal<float>(hipblasHandle_t handle, int n, const float* alpha, float* x, int incx)
 {
 
     return hipblasSscal(handle, n, alpha, x, incx);
@@ -27,7 +27,7 @@ hipblasScal<float>(hipblasHandle_t handle, int n, const float* alpha, float* x, 
 
 template <>
 hipblasStatus_t
-hipblasScal<double>(hipblasHandle_t handle, int n, const double* alpha, double* x, int incx)
+    hipblasScal<double>(hipblasHandle_t handle, int n, const double* alpha, double* x, int incx)
 {
 
     return hipblasDscal(handle, n, alpha, x, incx);
@@ -94,14 +94,14 @@ hipblasScal<double>(hipblasHandle_t handle, int n, const double* alpha, double* 
 // copy
 template <>
 hipblasStatus_t
-hipblasCopy<float>(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy)
+    hipblasCopy<float>(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy)
 {
     return hipblasScopy(handle, n, x, incx, y, incy);
 }
 
 template <>
-hipblasStatus_t
-hipblasCopy<double>(hipblasHandle_t handle, int n, const double* x, int incx, double* y, int incy)
+hipblasStatus_t hipblasCopy<double>(
+    hipblasHandle_t handle, int n, const double* x, int incx, double* y, int incy)
 {
     return hipblasDcopy(handle, n, x, incx, y, incy);
 }
@@ -127,24 +127,24 @@ hipblasCopy<double>(hipblasHandle_t handle, int n, const double* x, int incx, do
 // dot
 template <>
 hipblasStatus_t hipblasDot<float>(hipblasHandle_t handle,
-                                  int n,
-                                  const float* x,
-                                  int incx,
-                                  const float* y,
-                                  int incy,
-                                  float* result)
+                                  int             n,
+                                  const float*    x,
+                                  int             incx,
+                                  const float*    y,
+                                  int             incy,
+                                  float*          result)
 {
     return hipblasSdot(handle, n, x, incx, y, incy, result);
 }
 
 template <>
 hipblasStatus_t hipblasDot<double>(hipblasHandle_t handle,
-                                   int n,
-                                   const double* x,
-                                   int incx,
-                                   const double* y,
-                                   int incy,
-                                   double* result)
+                                   int             n,
+                                   const double*   x,
+                                   int             incx,
+                                   const double*   y,
+                                   int             incy,
+                                   double*         result)
 {
     return hipblasDdot(handle, n, x, incx, y, incy, result);
 }
@@ -172,8 +172,8 @@ hipblasStatus_t hipblasDot<double>(hipblasHandle_t handle,
 
 // asum
 template <>
-hipblasStatus_t
-hipblasAsum<float, float>(hipblasHandle_t handle, int n, const float* x, int incx, float* result)
+hipblasStatus_t hipblasAsum<float, float>(
+    hipblasHandle_t handle, int n, const float* x, int incx, float* result)
 {
 
     return hipblasSasum(handle, n, x, incx, result);
@@ -200,8 +200,8 @@ hipblasStatus_t hipblasAsum<double, double>(
 
 // nrm2
 template <>
-hipblasStatus_t
-hipblasNrm2<float, float>(hipblasHandle_t handle, int n, const float* x, int incx, float* result)
+hipblasStatus_t hipblasNrm2<float, float>(
+    hipblasHandle_t handle, int n, const float* x, int incx, float* result)
 {
 
     return hipblasSnrm2(handle, n, x, incx, result);
@@ -281,14 +281,14 @@ hipblasStatus_t hipblasNrm2<double, double>(
 // amax
 template <>
 hipblasStatus_t
-hipblasIamax<float>(hipblasHandle_t handle, int n, const float* x, int incx, int* result)
+    hipblasIamax<float>(hipblasHandle_t handle, int n, const float* x, int incx, int* result)
 {
     return hipblasIsamax(handle, n, x, incx, result);
 }
 
 template <>
 hipblasStatus_t
-hipblasIamax<double>(hipblasHandle_t handle, int n, const double* x, int incx, int* result)
+    hipblasIamax<double>(hipblasHandle_t handle, int n, const double* x, int incx, int* result)
 {
     return hipblasIdamax(handle, n, x, incx, result);
 }
@@ -321,50 +321,50 @@ hipblasIamax<double>(hipblasHandle_t handle, int n, const double* x, int incx, i
  */
 
 template <>
-hipblasStatus_t hipblasGemv<float>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGemv<float>(hipblasHandle_t    handle,
                                    hipblasOperation_t transA,
-                                   int m,
-                                   int n,
-                                   const float* alpha,
-                                   const float* A,
-                                   int lda,
-                                   const float* x,
-                                   int incx,
-                                   const float* beta,
-                                   float* y,
-                                   int incy)
+                                   int                m,
+                                   int                n,
+                                   const float*       alpha,
+                                   const float*       A,
+                                   int                lda,
+                                   const float*       x,
+                                   int                incx,
+                                   const float*       beta,
+                                   float*             y,
+                                   int                incy)
 {
     return hipblasSgemv(handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
 }
 
 template <>
-hipblasStatus_t hipblasGemv<double>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGemv<double>(hipblasHandle_t    handle,
                                     hipblasOperation_t transA,
-                                    int m,
-                                    int n,
-                                    const double* alpha,
-                                    const double* A,
-                                    int lda,
-                                    const double* x,
-                                    int incx,
-                                    const double* beta,
-                                    double* y,
-                                    int incy)
+                                    int                m,
+                                    int                n,
+                                    const double*      alpha,
+                                    const double*      A,
+                                    int                lda,
+                                    const double*      x,
+                                    int                incx,
+                                    const double*      beta,
+                                    double*            y,
+                                    int                incy)
 {
     return hipblasDgemv(handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
 }
 
 template <>
 hipblasStatus_t hipblasGer<float>(hipblasHandle_t handle,
-                                  int m,
-                                  int n,
-                                  const float* alpha,
-                                  const float* x,
-                                  int incx,
-                                  const float* y,
-                                  int incy,
-                                  float* A,
-                                  int lda)
+                                  int             m,
+                                  int             n,
+                                  const float*    alpha,
+                                  const float*    x,
+                                  int             incx,
+                                  const float*    y,
+                                  int             incy,
+                                  float*          A,
+                                  int             lda)
 {
 
     return hipblasSger(handle, m, n, alpha, x, incx, y, incy, A, lda);
@@ -372,15 +372,15 @@ hipblasStatus_t hipblasGer<float>(hipblasHandle_t handle,
 
 template <>
 hipblasStatus_t hipblasGer<double>(hipblasHandle_t handle,
-                                   int m,
-                                   int n,
-                                   const double* alpha,
-                                   const double* x,
-                                   int incx,
-                                   const double* y,
-                                   int incy,
-                                   double* A,
-                                   int lda)
+                                   int             m,
+                                   int             n,
+                                   const double*   alpha,
+                                   const double*   x,
+                                   int             incx,
+                                   const double*   y,
+                                   int             incy,
+                                   double*         A,
+                                   int             lda)
 {
 
     return hipblasDger(handle, m, n, alpha, x, incx, y, incy, A, lda);
@@ -445,62 +445,62 @@ hipblasStatus_t hipblasGer<double>(hipblasHandle_t handle,
 */
 
 template <>
-hipblasStatus_t hipblasGemm<float>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGemm<float>(hipblasHandle_t    handle,
                                    hipblasOperation_t transA,
                                    hipblasOperation_t transB,
-                                   int m,
-                                   int n,
-                                   int k,
-                                   const float* alpha,
-                                   const float* A,
-                                   int lda,
-                                   const float* B,
-                                   int ldb,
-                                   const float* beta,
-                                   float* C,
-                                   int ldc)
+                                   int                m,
+                                   int                n,
+                                   int                k,
+                                   const float*       alpha,
+                                   const float*       A,
+                                   int                lda,
+                                   const float*       B,
+                                   int                ldb,
+                                   const float*       beta,
+                                   float*             C,
+                                   int                ldc)
 {
     return hipblasSgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 }
 
 template <>
-hipblasStatus_t hipblasGemm<double>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGemm<double>(hipblasHandle_t    handle,
                                     hipblasOperation_t transA,
                                     hipblasOperation_t transB,
-                                    int m,
-                                    int n,
-                                    int k,
-                                    const double* alpha,
-                                    const double* A,
-                                    int lda,
-                                    const double* B,
-                                    int ldb,
-                                    const double* beta,
-                                    double* C,
-                                    int ldc)
+                                    int                m,
+                                    int                n,
+                                    int                k,
+                                    const double*      alpha,
+                                    const double*      A,
+                                    int                lda,
+                                    const double*      B,
+                                    int                ldb,
+                                    const double*      beta,
+                                    double*            C,
+                                    int                ldc)
 {
     return hipblasDgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 }
 
 template <>
-hipblasStatus_t hipblasGemmStridedBatched<float>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGemmStridedBatched<float>(hipblasHandle_t    handle,
                                                  hipblasOperation_t transA,
                                                  hipblasOperation_t transB,
-                                                 int m,
-                                                 int n,
-                                                 int k,
-                                                 const float* alpha,
-                                                 const float* A,
-                                                 int lda,
-                                                 int bsa,
-                                                 const float* B,
-                                                 int ldb,
-                                                 int bsb,
-                                                 const float* beta,
-                                                 float* C,
-                                                 int ldc,
-                                                 int bsc,
-                                                 int batch_count)
+                                                 int                m,
+                                                 int                n,
+                                                 int                k,
+                                                 const float*       alpha,
+                                                 const float*       A,
+                                                 int                lda,
+                                                 int                bsa,
+                                                 const float*       B,
+                                                 int                ldb,
+                                                 int                bsb,
+                                                 const float*       beta,
+                                                 float*             C,
+                                                 int                ldc,
+                                                 int                bsc,
+                                                 int                batch_count)
 {
 
     return hipblasSgemmStridedBatched(handle,
@@ -524,24 +524,24 @@ hipblasStatus_t hipblasGemmStridedBatched<float>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemmStridedBatched<double>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGemmStridedBatched<double>(hipblasHandle_t    handle,
                                                   hipblasOperation_t transA,
                                                   hipblasOperation_t transB,
-                                                  int m,
-                                                  int n,
-                                                  int k,
-                                                  const double* alpha,
-                                                  const double* A,
-                                                  int lda,
-                                                  int bsa,
-                                                  const double* B,
-                                                  int ldb,
-                                                  int bsb,
-                                                  const double* beta,
-                                                  double* C,
-                                                  int ldc,
-                                                  int bsc,
-                                                  int batch_count)
+                                                  int                m,
+                                                  int                n,
+                                                  int                k,
+                                                  const double*      alpha,
+                                                  const double*      A,
+                                                  int                lda,
+                                                  int                bsa,
+                                                  const double*      B,
+                                                  int                ldb,
+                                                  int                bsb,
+                                                  const double*      beta,
+                                                  double*            C,
+                                                  int                ldc,
+                                                  int                bsc,
+                                                  int                batch_count)
 {
 
     return hipblasDgemmStridedBatched(handle,
@@ -565,113 +565,113 @@ hipblasStatus_t hipblasGemmStridedBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemmBatched<float>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGemmBatched<float>(hipblasHandle_t    handle,
                                           hipblasOperation_t transA,
                                           hipblasOperation_t transB,
-                                          int m,
-                                          int n,
-                                          int k,
-                                          const float* alpha,
-                                          const float* A[],
-                                          int lda,
-                                          const float* B[],
-                                          int ldb,
-                                          const float* beta,
-                                          float* C[],
-                                          int ldc,
-                                          int batch_count)
+                                          int                m,
+                                          int                n,
+                                          int                k,
+                                          const float*       alpha,
+                                          const float*       A[],
+                                          int                lda,
+                                          const float*       B[],
+                                          int                ldb,
+                                          const float*       beta,
+                                          float*             C[],
+                                          int                ldc,
+                                          int                batch_count)
 {
     return hipblasSgemmBatched(
         handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
 }
 
 template <>
-hipblasStatus_t hipblasGemmBatched<double>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGemmBatched<double>(hipblasHandle_t    handle,
                                            hipblasOperation_t transA,
                                            hipblasOperation_t transB,
-                                           int m,
-                                           int n,
-                                           int k,
-                                           const double* alpha,
-                                           const double* A[],
-                                           int lda,
-                                           const double* B[],
-                                           int ldb,
-                                           const double* beta,
-                                           double* C[],
-                                           int ldc,
-                                           int batch_count)
+                                           int                m,
+                                           int                n,
+                                           int                k,
+                                           const double*      alpha,
+                                           const double*      A[],
+                                           int                lda,
+                                           const double*      B[],
+                                           int                ldb,
+                                           const double*      beta,
+                                           double*            C[],
+                                           int                ldc,
+                                           int                batch_count)
 {
     return hipblasDgemmBatched(
         handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
 }
 
 template <>
-hipblasStatus_t hipblasTrsm<float>(hipblasHandle_t handle,
-                                   hipblasSideMode_t side,
-                                   hipblasFillMode_t uplo,
+hipblasStatus_t hipblasTrsm<float>(hipblasHandle_t    handle,
+                                   hipblasSideMode_t  side,
+                                   hipblasFillMode_t  uplo,
                                    hipblasOperation_t transA,
-                                   hipblasDiagType_t diag,
-                                   int m,
-                                   int n,
-                                   const float* alpha,
-                                   float* A,
-                                   int lda,
-                                   float* B,
-                                   int ldb)
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   int                n,
+                                   const float*       alpha,
+                                   float*             A,
+                                   int                lda,
+                                   float*             B,
+                                   int                ldb)
 {
     return hipblasStrsm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
 }
 
 template <>
-hipblasStatus_t hipblasTrsm<double>(hipblasHandle_t handle,
-                                    hipblasSideMode_t side,
-                                    hipblasFillMode_t uplo,
+hipblasStatus_t hipblasTrsm<double>(hipblasHandle_t    handle,
+                                    hipblasSideMode_t  side,
+                                    hipblasFillMode_t  uplo,
                                     hipblasOperation_t transA,
-                                    hipblasDiagType_t diag,
-                                    int m,
-                                    int n,
-                                    const double* alpha,
-                                    double* A,
-                                    int lda,
-                                    double* B,
-                                    int ldb)
+                                    hipblasDiagType_t  diag,
+                                    int                m,
+                                    int                n,
+                                    const double*      alpha,
+                                    double*            A,
+                                    int                lda,
+                                    double*            B,
+                                    int                ldb)
 {
     return hipblasDtrsm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
 }
 
 template <>
-hipblasStatus_t hipblasGeam<float>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGeam<float>(hipblasHandle_t    handle,
                                    hipblasOperation_t transA,
                                    hipblasOperation_t transB,
-                                   int m,
-                                   int n,
-                                   const float* alpha,
-                                   const float* A,
-                                   int lda,
-                                   const float* beta,
-                                   const float* B,
-                                   int ldb,
-                                   float* C,
-                                   int ldc)
+                                   int                m,
+                                   int                n,
+                                   const float*       alpha,
+                                   const float*       A,
+                                   int                lda,
+                                   const float*       beta,
+                                   const float*       B,
+                                   int                ldb,
+                                   float*             C,
+                                   int                ldc)
 {
     return hipblasSgeam(handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc);
 }
 
 template <>
-hipblasStatus_t hipblasGeam<double>(hipblasHandle_t handle,
+hipblasStatus_t hipblasGeam<double>(hipblasHandle_t    handle,
                                     hipblasOperation_t transA,
                                     hipblasOperation_t transB,
-                                    int m,
-                                    int n,
-                                    const double* alpha,
-                                    const double* A,
-                                    int lda,
-                                    const double* beta,
-                                    const double* B,
-                                    int ldb,
-                                    double* C,
-                                    int ldc)
+                                    int                m,
+                                    int                n,
+                                    const double*      alpha,
+                                    const double*      A,
+                                    int                lda,
+                                    const double*      beta,
+                                    const double*      B,
+                                    int                ldb,
+                                    double*            C,
+                                    int                ldc)
 {
     return hipblasDgeam(handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc);
 }

@@ -3,8 +3,8 @@
  *
  * ************************************************************************ */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <vector>
 
 #include "hipblas.h"
@@ -17,14 +17,14 @@ using namespace std;
 int main()
 {
 
-    int N                  = 10240;
+    int             N      = 10240;
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-    float alpha            = 10.0;
+    float           alpha  = 10.0;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     vector<float> hx(N);
     vector<float> hz(N);
-    float* dx;
+    float*        dx;
 
     double gpu_time_used;
 

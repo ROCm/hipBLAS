@@ -3,19 +3,19 @@
  *
  * ************************************************************************ */
 
-#include <sys/time.h>
-#include <stdlib.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <stdlib.h>
+#include <sys/time.h>
 #include <vector>
 
-#include "hipblas.hpp"
-#include "utility.h"
+#include "arg_check.h"
 #include "cblas_interface.h"
+#include "flops.h"
+#include "hipblas.hpp"
 #include "norm.h"
 #include "unit.h"
-#include "arg_check.h"
-#include "flops.h"
+#include "utility.h"
 #include <typeinfo>
 
 using namespace std;
@@ -97,7 +97,7 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         hipblasCreate(&handle);
 
         const T *dA_array[1], *dB_array[1];
-        T* dC1_array[1];
+        T*       dC1_array[1];
 
         status = hipblasGemmBatched<T>(handle,
                                        transA,
@@ -179,7 +179,7 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     T** dB_array  = (T**)malloc(batch_count * sizeof(*dB_array));
     T** dC1_array = (T**)malloc(batch_count * sizeof(*dC1_array));
     T** dC2_array = (T**)malloc(batch_count * sizeof(*dC2_array));
-    T *d_alpha, *d_beta;
+    T * d_alpha, *d_beta;
 
     // Arrays of pointers-to-device on device
     T** dA_array_dev  = NULL;
@@ -187,8 +187,9 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     T** dC1_array_dev = NULL;
     T** dC2_array_dev = NULL;
 
-    if((!hA_array) || (!hB_array) || (!hC_array) || (!hC_copy_array) || (!dA_array) ||
-       (!dB_array) || (!dC1_array) || (!dC2_array))
+    if((!hA_array) || (!hB_array) || (!hC_array) || (!hC_copy_array) || (!dA_array) || (!dB_array)
+       || (!dC1_array)
+       || (!dC2_array))
     {
         CLEANUP();
         hipblasDestroy(handle);
@@ -205,8 +206,10 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     err_alpha = hipMalloc(&d_alpha, sizeof(T));
     err_beta  = hipMalloc(&d_beta, sizeof(T));
 
-    if((err_A != hipSuccess) || (err_C_1 != hipSuccess) || (err_alpha != hipSuccess) ||
-       (err_B != hipSuccess) || (err_C_2 != hipSuccess) || (err_beta != hipSuccess))
+    if((err_A != hipSuccess) || (err_C_1 != hipSuccess) || (err_alpha != hipSuccess)
+       || (err_B != hipSuccess)
+       || (err_C_2 != hipSuccess)
+       || (err_beta != hipSuccess))
     {
         CLEANUP();
         hipblasDestroy(handle);
@@ -237,8 +240,8 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         err_C_1 = hipMalloc((void**)&dC1_array[i], C_mat_size * sizeof(dC1_array[0][0]));
         err_C_2 = hipMalloc((void**)&dC2_array[i], C_mat_size * sizeof(dC2_array[0][0]));
 
-        if((err_A != hipSuccess) || (err_B != hipSuccess) || (err_C_1 != hipSuccess) ||
-           (err_C_2 != hipSuccess))
+        if((err_A != hipSuccess) || (err_B != hipSuccess) || (err_C_1 != hipSuccess)
+           || (err_C_2 != hipSuccess))
         {
             CLEANUP();
             hipblasDestroy(handle);
@@ -263,15 +266,17 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         // copy initialized matrices from host to device
         err_A = hipMemcpy(dA_array[i], hA_array[i], sizeof(T) * A_mat_size, hipMemcpyHostToDevice);
         err_B = hipMemcpy(dB_array[i], hB_array[i], sizeof(T) * B_mat_size, hipMemcpyHostToDevice);
-        err_C_1 =
-            hipMemcpy(dC1_array[i], hC_array[i], sizeof(T) * C_mat_size, hipMemcpyHostToDevice);
-        err_C_2 =
-            hipMemcpy(dC2_array[i], hC_array[i], sizeof(T) * C_mat_size, hipMemcpyHostToDevice);
+        err_C_1
+            = hipMemcpy(dC1_array[i], hC_array[i], sizeof(T) * C_mat_size, hipMemcpyHostToDevice);
+        err_C_2
+            = hipMemcpy(dC2_array[i], hC_array[i], sizeof(T) * C_mat_size, hipMemcpyHostToDevice);
         err_alpha = hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice);
         err_beta  = hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice);
 
-        if((err_A != hipSuccess) || (err_C_1 != hipSuccess) || (err_alpha != hipSuccess) ||
-           (err_B != hipSuccess) || (err_C_2 != hipSuccess) || (err_beta != hipSuccess))
+        if((err_A != hipSuccess) || (err_C_1 != hipSuccess) || (err_alpha != hipSuccess)
+           || (err_B != hipSuccess)
+           || (err_C_2 != hipSuccess)
+           || (err_beta != hipSuccess))
         {
             CLEANUP();
             hipblasDestroy(handle);
@@ -281,16 +286,16 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     }
 
     // copy array of pointers-to-device from host to device
-    err_A =
-        hipMemcpy(dA_array_dev, dA_array, batch_count * sizeof(*dA_array), hipMemcpyHostToDevice);
-    err_B =
-        hipMemcpy(dB_array_dev, dB_array, batch_count * sizeof(*dB_array), hipMemcpyHostToDevice);
+    err_A
+        = hipMemcpy(dA_array_dev, dA_array, batch_count * sizeof(*dA_array), hipMemcpyHostToDevice);
+    err_B
+        = hipMemcpy(dB_array_dev, dB_array, batch_count * sizeof(*dB_array), hipMemcpyHostToDevice);
     err_C_1 = hipMemcpy(
         dC1_array_dev, dC1_array, batch_count * sizeof(*dC1_array), hipMemcpyHostToDevice);
     err_C_2 = hipMemcpy(
         dC2_array_dev, dC2_array, batch_count * sizeof(*dC2_array), hipMemcpyHostToDevice);
-    if((err_A != hipSuccess) || (err_B != hipSuccess) || (err_C_1 != hipSuccess) ||
-       (err_C_2 != hipSuccess))
+    if((err_A != hipSuccess) || (err_B != hipSuccess) || (err_C_1 != hipSuccess)
+       || (err_C_2 != hipSuccess))
     {
         CLEANUP();
         hipblasDestroy(handle);
@@ -350,8 +355,8 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         for(int i = 0; i < batch_count; i++)
         {
             // copy result matrices from device to host
-            err_C_2 =
-                hipMemcpy(hC_array[i], dC2_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
+            err_C_2 = hipMemcpy(
+                hC_array[i], dC2_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
 
             if(err_C_2 != hipSuccess)
             {
@@ -400,8 +405,8 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         for(int i = 0; i < batch_count; i++)
         {
             // copy result matrices from device to host
-            err_C_1 =
-                hipMemcpy(hC_array[i], dC1_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
+            err_C_1 = hipMemcpy(
+                hC_array[i], dC1_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
 
             if(err_C_1 != hipSuccess)
             {

@@ -3,12 +3,12 @@
  *
  * ************************************************************************ */
 
+#include "testing_trtri.hpp"
+#include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
-#include "testing_trtri.hpp"
-#include "utility.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -38,8 +38,8 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 
 // vector of vector, each vector is a {N, lda}; N > 32 will return not implemented
 // add/delete as a group
-const vector<vector<int>> matrix_size_range = {
-    {-1, -1}, {10, 10}, {20, 160}, {21, 14}, {32, 32}, {111, 122}};
+const vector<vector<int>> matrix_size_range
+    = {{-1, -1}, {10, 10}, {20, 160}, {21, 14}, {32, 32}, {111, 122}};
 
 const vector<char> uplo_range = {'U', 'L'};
 const vector<char> diag_range = {'N', 'U'};
@@ -67,9 +67,9 @@ Arguments setup_trtri_arguments(trtri_tuple tup)
 {
 
     vector<int> matrix_size = std::get<0>(tup);
-    char uplo               = std::get<1>(tup);
-    char diag               = std::get<2>(tup);
-    int batch_count         = std::get<2>(tup);
+    char        uplo        = std::get<1>(tup);
+    char        diag        = std::get<2>(tup);
+    int         batch_count = std::get<2>(tup);
 
     Arguments arg;
 
@@ -87,11 +87,19 @@ Arguments setup_trtri_arguments(trtri_tuple tup)
 
 class trtri_gtest : public ::TestWithParam<trtri_tuple>
 {
-    protected:
-    trtri_gtest() {}
-    virtual ~trtri_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    trtri_gtest()
+    {
+    }
+    virtual ~trtri_gtest()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 TEST_P(trtri_gtest, trtri_float)

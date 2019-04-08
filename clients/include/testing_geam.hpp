@@ -2,18 +2,18 @@
  * Copyright 2016 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
-#include <sys/time.h>
-#include <stdlib.h>
-#include <iostream>
 #include <fstream>
-#include <vector>
+#include <iostream>
 #include <limits>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <vector>
 
 #include "hipblas.hpp"
 #include "hipblas_unique_ptr.hpp"
-#include "utility.h"
 #include "norm.h"
 #include "unit.h"
+#include "utility.h"
 #include <typeinfo>
 
 using namespace std;
@@ -87,16 +87,16 @@ hipblasStatus_t testing_geam(Arguments argus)
     }
 
     // allocate memory on device
-    auto dA_managed =
-        hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * A_size), hipblas::device_free};
-    auto dB_managed =
-        hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * B_size), hipblas::device_free};
-    auto dC_managed =
-        hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * C_size), hipblas::device_free};
-    auto d_alpha_managed =
-        hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
-    auto d_beta_managed =
-        hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
+    auto dA_managed
+        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * A_size), hipblas::device_free};
+    auto dB_managed
+        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * B_size), hipblas::device_free};
+    auto dC_managed
+        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * C_size), hipblas::device_free};
+    auto d_alpha_managed
+        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
+    auto d_beta_managed
+        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
     T* dA      = (T*)dA_managed.get();
     T* dB      = (T*)dB_managed.get();
     T* dC      = (T*)dC_managed.get();
@@ -189,8 +189,8 @@ hipblasStatus_t testing_geam(Arguments argus)
         {
             for(int i2 = 0; i2 < N; i2++)
             {
-                hC_copy[i1 + i2 * ldc] = h_alpha * hA[i1 * inc1_A + i2 * inc2_A] +
-                                         h_beta * hB[i1 * inc1_B + i2 * inc2_B];
+                hC_copy[i1 + i2 * ldc] = h_alpha * hA[i1 * inc1_A + i2 * inc2_A]
+                                         + h_beta * hB[i1 * inc1_B + i2 * inc2_B];
             }
         }
     }
