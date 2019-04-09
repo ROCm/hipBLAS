@@ -31,7 +31,7 @@ hipBLASCI:
 
     def hipblas = new rocProject('hipblas')
     // customize for project
-    hipblas.paths.build_command = './install.sh -c'
+    hipblas.paths.build_command = './install.sh -cd -p /opt/rocm/rocblas/lib/cmake'
 
     // Define test architectures, optional rocm version argument is available
     def nodes = new dockerNodes(['gfx900', 'gfx906'], hipblas)
