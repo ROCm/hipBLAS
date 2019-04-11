@@ -2,12 +2,12 @@
  * Copyright 2016 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
+#include "testing_gemm_ex.hpp"
+#include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
-#include "testing_gemm_ex.hpp"
-#include "utility.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -238,9 +238,9 @@ const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIPBLAS_R_16F,
 
 Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
 {
-    vector<int> matrix_size                  = std::get<0>(tup);
-    vector<double> alpha_beta                = std::get<1>(tup);
-    vector<char> transA_transB               = std::get<2>(tup);
+    vector<int>               matrix_size     = std::get<0>(tup);
+    vector<double>            alpha_beta      = std::get<1>(tup);
+    vector<char>              transA_transB   = std::get<2>(tup);
     vector<hipblasDatatype_t> precision_types = std::get<3>(tup);
 
     Arguments arg;
@@ -272,11 +272,19 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
 
 class parameterized_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
 {
-    protected:
-    parameterized_gemm_ex() {}
-    virtual ~parameterized_gemm_ex() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    parameterized_gemm_ex()
+    {
+    }
+    virtual ~parameterized_gemm_ex()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 TEST_P(parameterized_gemm_ex, standard)
@@ -310,11 +318,19 @@ TEST_P(parameterized_gemm_ex, standard)
 
 class parameterized_chunk_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
 {
-    protected:
-    parameterized_chunk_gemm_ex() {}
-    virtual ~parameterized_chunk_gemm_ex() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    parameterized_chunk_gemm_ex()
+    {
+    }
+    virtual ~parameterized_chunk_gemm_ex()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
 TEST_P(parameterized_chunk_gemm_ex, float)
@@ -348,14 +364,22 @@ TEST_P(parameterized_chunk_gemm_ex, float)
 
 class parameterized_half_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
 {
-    protected:
-    parameterized_half_gemm_ex() {}
-    virtual ~parameterized_half_gemm_ex() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+protected:
+    parameterized_half_gemm_ex()
+    {
+    }
+    virtual ~parameterized_half_gemm_ex()
+    {
+    }
+    virtual void SetUp()
+    {
+    }
+    virtual void TearDown()
+    {
+    }
 };
 
-//TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
+// TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
 
 //----small
 INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_hpa_half,

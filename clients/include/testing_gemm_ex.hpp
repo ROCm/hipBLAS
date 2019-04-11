@@ -2,21 +2,21 @@
  * Copyright 2016 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
-#include <sys/time.h>
-#include <stdlib.h>
-#include <iostream>
 #include <fstream>
-#include <vector>
+#include <iostream>
 #include <limits>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <vector>
 
-#include "hipblas.hpp"
 #include "arg_check.h"
-#include "hipblas_unique_ptr.hpp"
-#include "utility.h"
 #include "cblas_interface.h"
+#include "flops.h"
+#include "hipblas.hpp"
+#include "hipblas_unique_ptr.hpp"
 #include "norm.h"
 #include "unit.h"
-#include "flops.h"
+#include "utility.h"
 #include <typeinfo>
 
 using namespace std;
@@ -25,27 +25,27 @@ using namespace std;
 
 template <typename Td, typename Tc>
 hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
-                                        hipblasOperation_t transB,
-                                        int M,
-                                        int N,
-                                        int K,
-                                        float alpha_float,
-                                        int lda,
-                                        int ldb,
-                                        float beta_float,
-                                        int ldc,
-                                        int norm_check,
-                                        int unit_check,
-                                        hipblasDatatype_t a_type,
-                                        hipblasDatatype_t b_type,
-                                        hipblasDatatype_t c_type,
-                                        hipblasDatatype_t compute_type)
+                                         hipblasOperation_t transB,
+                                         int                M,
+                                         int                N,
+                                         int                K,
+                                         float              alpha_float,
+                                         int                lda,
+                                         int                ldb,
+                                         float              beta_float,
+                                         int                ldc,
+                                         int                norm_check,
+                                         int                unit_check,
+                                         hipblasDatatype_t  a_type,
+                                         hipblasDatatype_t  b_type,
+                                         hipblasDatatype_t  c_type,
+                                         hipblasDatatype_t  compute_type)
 {
-    hipblasGemmAlgo_t algo  = HIPBLAS_GEMM_DEFAULT;
-    uint32_t solution_index = 0;
-    uint32_t flags          = 0;
-    size_t* workspace_size  = 0;
-    void* workspace         = 0;
+    hipblasGemmAlgo_t algo           = HIPBLAS_GEMM_DEFAULT;
+    uint32_t          solution_index = 0;
+    uint32_t          flags          = 0;
+    size_t*           workspace_size = 0;
+    void*             workspace      = 0;
 
     Td h_alpha_Td;
     Td h_beta_Td;
@@ -113,24 +113,24 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     const size_t size_C = static_cast<size_t>(ldc) * static_cast<size_t>(N);
 
     // allocate memory on device
-//  auto dA_managed = rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Td) * size_A),
-//                                       rocblas_test::device_free};
-//  auto dB_managed = rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Td) * size_B),
-//                                       rocblas_test::device_free};
-//  auto dC_managed = rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Td) * size_C),
-//                                       rocblas_test::device_free};
-//  auto dD_managed = rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Td) * size_D),
-//                                       rocblas_test::device_free};
-//  auto d_alpha_Tc_managed =
-//      rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Tc)), rocblas_test::device_free};
-//  auto d_beta_Tc_managed =
-//      rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Tc)), rocblas_test::device_free};
-//  Td* dA         = (Td*)dA_managed.get();
-//  Td* dB         = (Td*)dB_managed.get();
-//  Td* dC         = (Td*)dC_managed.get();
-//  Td* dD         = (Td*)dD_managed.get();
-//  Tc* d_alpha_Tc = (Tc*)d_alpha_Tc_managed.get();
-//  Tc* d_beta_Tc  = (Tc*)d_beta_Tc_managed.get();
+    //  auto dA_managed = rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Td) * size_A),
+    //                                       rocblas_test::device_free};
+    //  auto dB_managed = rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Td) * size_B),
+    //                                       rocblas_test::device_free};
+    //  auto dC_managed = rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Td) * size_C),
+    //                                       rocblas_test::device_free};
+    //  auto dD_managed = rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Td) * size_D),
+    //                                       rocblas_test::device_free};
+    //  auto d_alpha_Tc_managed =
+    //      rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Tc)), rocblas_test::device_free};
+    //  auto d_beta_Tc_managed =
+    //      rocblas_unique_ptr{rocblas_test::device_malloc(sizeof(Tc)), rocblas_test::device_free};
+    //  Td* dA         = (Td*)dA_managed.get();
+    //  Td* dB         = (Td*)dB_managed.get();
+    //  Td* dC         = (Td*)dC_managed.get();
+    //  Td* dD         = (Td*)dD_managed.get();
+    //  Tc* d_alpha_Tc = (Tc*)d_alpha_Tc_managed.get();
+    //  Tc* d_beta_Tc  = (Tc*)d_beta_Tc_managed.get();
 
     Td *dA, *dB, *dC;
     Tc *d_alpha_Tc, *d_beta_Tc;
@@ -228,7 +228,6 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     //      std::cout << std::endl << "------------------------------------------------" <<
     //      std::endl;
 
-
     // CPU BLAS
 
     cblas_gemm<Td>(transA,
@@ -304,9 +303,9 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
     int norm_check = argus.norm_check;
     int unit_check = argus.unit_check;
 
-    if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F &&
-       c_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F &&
-       compute_type == HIPBLAS_R_16F)
+    if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
+       && c_type == HIPBLAS_R_16F
+       && compute_type == HIPBLAS_R_16F)
     {
         status = testing_gemm_ex_template<hipblasHalf, hipblasHalf>(transA,
                                                                     transB,
@@ -325,53 +324,32 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                                     c_type,
                                                                     compute_type);
     }
-    else if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F &&
-            c_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F &&
-            compute_type == HIPBLAS_R_32F)
+    else if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
+            && c_type == HIPBLAS_R_16F
+            && compute_type == HIPBLAS_R_32F)
     {
         status = testing_gemm_ex_template<hipblasHalf, float>(transA,
-                                                             transB,
-                                                             M,
-                                                             N,
-                                                             K,
-                                                             alpha,
-                                                             lda,
-                                                             ldb,
-                                                             beta,
-                                                             ldc,
-                                                             norm_check,
-                                                             unit_check,
-                                                             a_type,
-                                                             b_type,
-                                                             c_type,
-                                                             compute_type);
+                                                              transB,
+                                                              M,
+                                                              N,
+                                                              K,
+                                                              alpha,
+                                                              lda,
+                                                              ldb,
+                                                              beta,
+                                                              ldc,
+                                                              norm_check,
+                                                              unit_check,
+                                                              a_type,
+                                                              b_type,
+                                                              c_type,
+                                                              compute_type);
     }
-    else if(a_type == HIPBLAS_R_32F && b_type == HIPBLAS_R_32F &&
-            c_type == HIPBLAS_R_32F && c_type == HIPBLAS_R_32F &&
-            compute_type == HIPBLAS_R_32F)
+    else if(a_type == HIPBLAS_R_32F && b_type == HIPBLAS_R_32F && c_type == HIPBLAS_R_32F
+            && c_type == HIPBLAS_R_32F
+            && compute_type == HIPBLAS_R_32F)
     {
         status = testing_gemm_ex_template<float, float>(transA,
-                                                      transB,
-                                                      M,
-                                                      N,
-                                                      K,
-                                                      alpha,
-                                                      lda,
-                                                      ldb,
-                                                      beta,
-                                                      ldc,
-                                                      norm_check,
-                                                      unit_check,
-                                                      a_type,
-                                                      b_type,
-                                                      c_type,
-                                                      compute_type);
-    }
-    else if(a_type == HIPBLAS_R_64F && b_type == HIPBLAS_R_64F &&
-            c_type == HIPBLAS_R_64F && c_type == HIPBLAS_R_64F &&
-            compute_type == HIPBLAS_R_64F)
-    {
-        status = testing_gemm_ex_template<double, double>(transA,
                                                         transB,
                                                         M,
                                                         N,
@@ -387,6 +365,27 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                         b_type,
                                                         c_type,
                                                         compute_type);
+    }
+    else if(a_type == HIPBLAS_R_64F && b_type == HIPBLAS_R_64F && c_type == HIPBLAS_R_64F
+            && c_type == HIPBLAS_R_64F
+            && compute_type == HIPBLAS_R_64F)
+    {
+        status = testing_gemm_ex_template<double, double>(transA,
+                                                          transB,
+                                                          M,
+                                                          N,
+                                                          K,
+                                                          alpha,
+                                                          lda,
+                                                          ldb,
+                                                          beta,
+                                                          ldc,
+                                                          norm_check,
+                                                          unit_check,
+                                                          a_type,
+                                                          b_type,
+                                                          c_type,
+                                                          compute_type);
     }
     else
     {

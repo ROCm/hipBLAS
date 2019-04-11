@@ -3,9 +3,9 @@
  *
  * ************************************************************************ */
 
+#include "hipblas.h"
 #include <gtest/gtest.h>
 #include <stdexcept>
-#include "hipblas.h"
 //#include "utility.h"
 
 using namespace std;
@@ -22,26 +22,26 @@ README: This file contains testers to verify the correctness of
      BLAS set-get_pointer_mode:
 =================================================================== */
 
-TEST(hipblas_set_pointer,hipblas_get_pointer)
+TEST(hipblas_set_pointer, hipblas_get_pointer)
 {
-    hipblasStatus_t status    = HIPBLAS_STATUS_SUCCESS;
-    hipblasPointerMode_t mode = HIPBLAS_POINTER_MODE_DEVICE;
+    hipblasStatus_t      status = HIPBLAS_STATUS_SUCCESS;
+    hipblasPointerMode_t mode   = HIPBLAS_POINTER_MODE_DEVICE;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
-    status = hipblasSetPointerMode( handle, HIPBLAS_POINTER_MODE_DEVICE);
+    status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
     EXPECT_EQ(status, HIPBLAS_STATUS_SUCCESS);
 
-    status = hipblasGetPointerMode( handle, &mode);
+    status = hipblasGetPointerMode(handle, &mode);
     EXPECT_EQ(status, HIPBLAS_STATUS_SUCCESS);
 
     EXPECT_EQ(HIPBLAS_POINTER_MODE_DEVICE, mode);
 
-    status = hipblasSetPointerMode( handle, HIPBLAS_POINTER_MODE_HOST);
+    status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
     EXPECT_EQ(status, HIPBLAS_STATUS_SUCCESS);
 
-    status = hipblasGetPointerMode( handle, &mode);
+    status = hipblasGetPointerMode(handle, &mode);
     EXPECT_EQ(status, HIPBLAS_STATUS_SUCCESS);
 
     EXPECT_EQ(HIPBLAS_POINTER_MODE_HOST, mode);

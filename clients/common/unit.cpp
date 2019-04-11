@@ -3,20 +3,20 @@
  *
  * ************************************************************************ */
 
-#include "hipblas.h"
 #include "unit.h"
+#include "hipblas.h"
 #include "utility.h"
 
-/* ========================================Gtest Unit Check ==================================================== */
+/* ========================================Gtest Unit Check
+ * ==================================================== */
 
-
-    /*! \brief Template: gtest unit compare two matrices float/double/complex */
-    //Do not put a wrapper over ASSERT_FLOAT_EQ, sincer assert exit the current function NOT the test case
-    // a wrapper will cause the loop keep going
+/*! \brief Template: gtest unit compare two matrices float/double/complex */
+// Do not put a wrapper over ASSERT_FLOAT_EQ, sincer assert exit the current function NOT the test
+// case
+// a wrapper will cause the loop keep going
 
 template <>
-void unit_check_general(
-    int M, int N, int lda, hipblasHalf* hCPU, hipblasHalf* hGPU)
+void unit_check_general(int M, int N, int lda, hipblasHalf* hCPU, hipblasHalf* hGPU)
 {
 #pragma unroll
     for(int j = 0; j < N; j++)
@@ -33,33 +33,37 @@ void unit_check_general(
     }
 }
 
-
-
-    template<>
-    void unit_check_general(int M, int N, int lda, float *hCPU, float *hGPU){
-        #pragma unroll
-        for(int j=0; j<N; j++){
-            #pragma unroll
-            for(int i=0;i<M;i++){
+template <>
+void unit_check_general(int M, int N, int lda, float* hCPU, float* hGPU)
+{
+#pragma unroll
+    for(int j = 0; j < N; j++)
+    {
+#pragma unroll
+        for(int i = 0; i < M; i++)
+        {
 #ifdef GOOGLE_TEST
-                ASSERT_FLOAT_EQ(hCPU[i+j*lda], hGPU[i+j*lda]);
+            ASSERT_FLOAT_EQ(hCPU[i + j * lda], hGPU[i + j * lda]);
 #endif
-            }
         }
     }
+}
 
-    template<>
-    void unit_check_general(int M, int N, int lda, double *hCPU, double *hGPU){
-        #pragma unroll  
-        for(int j=0; j<N; j++){
-            #pragma unroll
-            for(int i=0;i<M;i++){
+template <>
+void unit_check_general(int M, int N, int lda, double* hCPU, double* hGPU)
+{
+#pragma unroll
+    for(int j = 0; j < N; j++)
+    {
+#pragma unroll
+        for(int i = 0; i < M; i++)
+        {
 #ifdef GOOGLE_TEST
-                ASSERT_DOUBLE_EQ(hCPU[i+j*lda], hGPU[i+j*lda]);
+            ASSERT_DOUBLE_EQ(hCPU[i + j * lda], hGPU[i + j * lda]);
 #endif
-            }
         }
     }
+}
 
 //    template<>
 //    void unit_check_general(int M, int N, int lda, hipComplex *hCPU, hipComplex *hGPU){
@@ -76,7 +80,8 @@ void unit_check_general(
 //    }
 
 //    template<>
-//    void unit_check_general(int M, int N, int lda, hipDoubleComplex *hCPU, hipDoubleComplex *hGPU){
+//    void unit_check_general(int M, int N, int lda, hipDoubleComplex *hCPU, hipDoubleComplex
+//    *hGPU){
 //        #pragma unroll
 //        for(int j=0; j<N; j++){
 //            #pragma unroll
@@ -89,58 +94,60 @@ void unit_check_general(
 //        }
 //    }
 
-    template<>
-    void unit_check_general(int M, int N, int lda, int *hCPU, int *hGPU){
-        #pragma unroll
-        for(int j=0; j<N; j++){
-            #pragma unroll
-            for(int i=0;i<M;i++){
+template <>
+void unit_check_general(int M, int N, int lda, int* hCPU, int* hGPU)
+{
+#pragma unroll
+    for(int j = 0; j < N; j++)
+    {
+#pragma unroll
+        for(int i = 0; i < M; i++)
+        {
 #ifdef GOOGLE_TEST
-                ASSERT_EQ(hCPU[i+j*lda], hGPU[i+j*lda]);
+            ASSERT_EQ(hCPU[i + j * lda], hGPU[i + j * lda]);
 #endif
-            }
         }
     }
+}
 
-/* ========================================Gtest Unit Check TRSM ==================================================== */
+/* ========================================Gtest Unit Check TRSM
+ * ==================================================== */
 
-    /*! \brief Template: determine trsm error tolerance: 1e-5 and 1e-12 respectively for float/double precision */
+/*! \brief Template: determine trsm error tolerance: 1e-5 and 1e-12 respectively for float/double
+ * precision */
 
-    template<>
-    float get_trsm_tolerance(){
-        return 5*1e-5;
-    }
+template <>
+float get_trsm_tolerance()
+{
+    return 5 * 1e-5;
+}
 
-    template<>
-    double get_trsm_tolerance(){
-        return 1e-12;
-    }
+template <>
+double get_trsm_tolerance()
+{
+    return 1e-12;
+}
 
-    /*! \brief Template: gtest unit compare two matrices float/double/complex */
-    //Do not put a wrapper over ASSERT_FLOAT_EQ, sincer assert exit the current function NOT the test case
-    // a wrapper will cause the loop keep going
+/*! \brief Template: gtest unit compare two matrices float/double/complex */
+// Do not put a wrapper over ASSERT_FLOAT_EQ, sincer assert exit the current function NOT the test
+// case
+// a wrapper will cause the loop keep going
 
-    //trsm has division, must use near to suppress the false failure
-    template<>
-    void unit_check_trsm(int M, int N, int lda, double hGPU, float tolerance){
+// trsm has division, must use near to suppress the false failure
+template <>
+void unit_check_trsm(int M, int N, int lda, double hGPU, float tolerance)
+{
 
 #ifdef GOOGLE_TEST
-        ASSERT_LE(hGPU, tolerance);
+    ASSERT_LE(hGPU, tolerance);
 #endif
-    }
+}
 
-    template<>
-    void unit_check_trsm(int M, int N, int lda, double hGPU, double tolerance){
+template <>
+void unit_check_trsm(int M, int N, int lda, double hGPU, double tolerance)
+{
 
 #ifdef GOOGLE_TEST
-        ASSERT_LE(hGPU, tolerance);
+    ASSERT_LE(hGPU, tolerance);
 #endif
-    }
-
-
-
-
-
-
-
-
+}

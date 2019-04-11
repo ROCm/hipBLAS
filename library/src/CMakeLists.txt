@@ -45,7 +45,7 @@ target_compile_features( hipblas PRIVATE cxx_static_assert cxx_nullptr cxx_auto_
 # Build hipblas from source on AMD platform
 if( NOT CUDA_FOUND )
   if( NOT TARGET rocblas )
-    find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm/rocblas )
+    find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocblas )
   endif( )
 
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_HCC__ )
