@@ -26,12 +26,12 @@ properties([
 ////////////////////////////////////////////////////////////////////////
 import java.nio.file.Path;
 
-rocBLASCI:
+hipBLASCI:
 {
 
     def hipblas = new rocProject('hipblas')
     // customize for project
-    hipblas.paths.build_command = './install.sh -c'
+    hipblas.paths.build_command = './install.sh -cd -p /opt/rocm/rocblas/lib/cmake'
 
     // Define test architectures, optional rocm version argument is available
     def nodes = new dockerNodes(['gfx900', 'gfx906'], hipblas)
@@ -63,7 +63,7 @@ rocBLASCI:
           command = """#!/usr/bin/env bash
                 set -x
                 cd ${project.paths.project_build_prefix}/build/release/clients/staging
-                LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes --gtest_filter=*nightly*-*known_bug* #--gtest_filter=*nightly*
+                LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
             """
         }
         else
@@ -72,7 +72,7 @@ rocBLASCI:
                 set -x
                 cd ${project.paths.project_build_prefix}/build/release/clients/staging
                 LD_LIBRARY_PATH=/opt/rocm/hcc/lib ./example-sscal
-                LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes  --gtest_filter=*quick*:*pre_checkin*-*known_bug* #--gtest_filter=*checkin*
+                LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
             """
         }
 

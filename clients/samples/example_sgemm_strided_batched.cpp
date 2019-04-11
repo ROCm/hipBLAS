@@ -2,39 +2,52 @@
  * Copyright 2016 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <vector>
-#include <limits>
-#include <iostream>
 #include "hipblas.h"
+#include <iostream>
+#include <limits>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
 using namespace std;
 
 #ifndef CHECK_HIP_ERROR
-#define CHECK_HIP_ERROR(error) \
-if (error != hipSuccess) { \
-    fprintf(stderr, "Hip error: '%s'(%d) at %s:%d\n", hipGetErrorString(error), error,__FILE__, __LINE__); \
-    exit(EXIT_FAILURE);\
-}
+#define CHECK_HIP_ERROR(error)                    \
+    if(error != hipSuccess)                       \
+    {                                             \
+        fprintf(stderr,                           \
+                "Hip error: '%s'(%d) at %s:%d\n", \
+                hipGetErrorString(error),         \
+                error,                            \
+                __FILE__,                         \
+                __LINE__);                        \
+        exit(EXIT_FAILURE);                       \
+    }
 #endif
 
 #ifndef CHECK_HIPBLAS_ERROR
-#define CHECK_HIPBLAS_ERROR(error) \
-if (error != HIPBLAS_STATUS_SUCCESS) { \
-    fprintf(stderr, "rocBLAS error: "); \
-    if(error == HIPBLAS_STATUS_NOT_INITIALIZED)fprintf(stderr, "HIPBLAS_STATUS_NOT_INITIALIZED"); \
-    if(error == HIPBLAS_STATUS_ALLOC_FAILED)fprintf(stderr, "HIPBLAS_STATUS_ALLOC_FAILED"); \
-    if(error == HIPBLAS_STATUS_INVALID_VALUE)fprintf(stderr, "HIPBLAS_STATUS_INVALID_VALUE"); \
-    if(error == HIPBLAS_STATUS_MAPPING_ERROR)fprintf(stderr, "HIPBLAS_STATUS_MAPPING_ERROR"); \
-    if(error == HIPBLAS_STATUS_EXECUTION_FAILED)fprintf(stderr, "HIPBLAS_STATUS_EXECUTION_FAILED"); \
-    if(error == HIPBLAS_STATUS_INTERNAL_ERROR)fprintf(stderr, "HIPBLAS_STATUS_INTERNAL_ERROR"); \
-    if(error == HIPBLAS_STATUS_NOT_SUPPORTED)fprintf(stderr, "HIPBLAS_STATUS_NOT_SUPPORTED"); \
-    fprintf(stderr, "\n"); \
-    exit(EXIT_FAILURE); \
-}
+#define CHECK_HIPBLAS_ERROR(error)                              \
+    if(error != HIPBLAS_STATUS_SUCCESS)                         \
+    {                                                           \
+        fprintf(stderr, "rocBLAS error: ");                     \
+        if(error == HIPBLAS_STATUS_NOT_INITIALIZED)             \
+            fprintf(stderr, "HIPBLAS_STATUS_NOT_INITIALIZED");  \
+        if(error == HIPBLAS_STATUS_ALLOC_FAILED)                \
+            fprintf(stderr, "HIPBLAS_STATUS_ALLOC_FAILED");     \
+        if(error == HIPBLAS_STATUS_INVALID_VALUE)               \
+            fprintf(stderr, "HIPBLAS_STATUS_INVALID_VALUE");    \
+        if(error == HIPBLAS_STATUS_MAPPING_ERROR)               \
+            fprintf(stderr, "HIPBLAS_STATUS_MAPPING_ERROR");    \
+        if(error == HIPBLAS_STATUS_EXECUTION_FAILED)            \
+            fprintf(stderr, "HIPBLAS_STATUS_EXECUTION_FAILED"); \
+        if(error == HIPBLAS_STATUS_INTERNAL_ERROR)              \
+            fprintf(stderr, "HIPBLAS_STATUS_INTERNAL_ERROR");   \
+        if(error == HIPBLAS_STATUS_NOT_SUPPORTED)               \
+            fprintf(stderr, "HIPBLAS_STATUS_NOT_SUPPORTED");    \
+        fprintf(stderr, "\n");                                  \
+        exit(EXIT_FAILURE);                                     \
+    }
 #endif
-
 
 #define DIM1 127
 #define DIM2 128
@@ -42,19 +55,31 @@ if (error != HIPBLAS_STATUS_SUCCESS) { \
 #define BATCH_COUNT 10
 
 template <typename T>
-void mat_mat_mult(T alpha, T beta, int M, int N, int K, T* A, int As1, int As2,
-                           T* B, int Bs1, int Bs2, T* C, int Cs1, int Cs2) 
+void mat_mat_mult(T   alpha,
+                  T   beta,
+                  int M,
+                  int N,
+                  int K,
+                  T*  A,
+                  int As1,
+                  int As2,
+                  T*  B,
+                  int Bs1,
+                  int Bs2,
+                  T*  C,
+                  int Cs1,
+                  int Cs2)
 {
-    for(int i1=0; i1<M; i1++) 
+    for(int i1 = 0; i1 < M; i1++)
     {
-        for(int i2=0; i2<N; i2++) 
+        for(int i2 = 0; i2 < N; i2++)
         {
             T t = 0.0;
-            for(int i3=0; i3<K; i3++)
+            for(int i3 = 0; i3 < K; i3++)
             {
-                t +=  A[i1 * As1 + i3 * As2] * B[i3 * Bs1 + i2 * Bs2];
+                t += A[i1 * As1 + i3 * As2] * B[i3 * Bs1 + i2 * Bs2];
             }
-            C[i1*Cs1 +i2*Cs2] = beta * C[i1*Cs1+i2*Cs2] + alpha * t ;
+            C[i1 * Cs1 + i2 * Cs2] = beta * C[i1 * Cs1 + i2 * Cs2] + alpha * t;
         }
     }
 }
@@ -62,63 +87,78 @@ void mat_mat_mult(T alpha, T beta, int M, int N, int K, T* A, int As1, int As2,
 int main()
 {
     hipblasOperation_t transa = HIPBLAS_OP_N, transb = HIPBLAS_OP_T;
-    float alpha = 1.1, beta = 0.9;
+    float              alpha = 1.1, beta = 0.9;
 
     int m = DIM1, n = DIM2, k = DIM3, batch_count = BATCH_COUNT;
     int lda, ldb, ldc, bsa, bsb, bsc;
     int a_stride_1, a_stride_2, b_stride_1, b_stride_2;
     std::cout << "sgemm_strided_batched example" << std::endl;
-    if (transa == HIPBLAS_OP_N)
+    if(transa == HIPBLAS_OP_N)
     {
-        lda = m;
-        bsa = k * lda;
-        a_stride_1 = 1; a_stride_2 = lda;
+        lda        = m;
+        bsa        = k * lda;
+        a_stride_1 = 1;
+        a_stride_2 = lda;
         std::cout << "N";
     }
     else
     {
-        lda = k;
-        bsa = m * lda;
-        a_stride_1 = lda; a_stride_2 = 1;
+        lda        = k;
+        bsa        = m * lda;
+        a_stride_1 = lda;
+        a_stride_2 = 1;
         std::cout << "T";
     }
-    if (transb == HIPBLAS_OP_N)
+    if(transb == HIPBLAS_OP_N)
     {
-        ldb = k;
-        bsb = n * ldb;
-        b_stride_1 = 1; b_stride_2 = ldb;
+        ldb        = k;
+        bsb        = n * ldb;
+        b_stride_1 = 1;
+        b_stride_2 = ldb;
         std::cout << "N: ";
     }
     else
     {
-        ldb = n;
-        bsb = k * ldb;
-        b_stride_1 = ldb; b_stride_2 = 1;
+        ldb        = n;
+        bsb        = k * ldb;
+        b_stride_1 = ldb;
+        b_stride_2 = 1;
         std::cout << "T: ";
     }
     ldc = m;
     bsc = n * ldc;
 
-    std::cout << "M, N, K, lda, bsa, ldb, bsb, ldc, bsc = " << m << ", " << n << ", " << k << ", " << lda << ", " << bsa << ", " << ldb << ", " << bsb << ", " << ldc << ", " << bsc << std::endl;
+    std::cout << "M, N, K, lda, bsa, ldb, bsb, ldc, bsc = " << m << ", " << n << ", " << k << ", "
+              << lda << ", " << bsa << ", " << ldb << ", " << bsb << ", " << ldc << ", " << bsc
+              << std::endl;
 
     int size_a = bsa * batch_count;
     int size_b = bsb * batch_count;
     int size_c = bsc * batch_count;
 
-    //Naming: da is in GPU (device) memory. ha is in CPU (host) memory
+    // Naming: da is in GPU (device) memory. ha is in CPU (host) memory
     vector<float> ha(size_a);
     vector<float> hb(size_b);
     vector<float> hc(size_c);
     vector<float> hc_gold(size_c);
 
-    //initial data on host
+    // initial data on host
     srand(1);
-    for( int i = 0; i < size_a; ++i ) { ha[i] = rand() % 17; }
-    for( int i = 0; i < size_b; ++i ) { hb[i] = rand() % 17; }
-    for( int i = 0; i < size_c; ++i ) { hc[i] = rand() % 17; }
+    for(int i = 0; i < size_a; ++i)
+    {
+        ha[i] = rand() % 17;
+    }
+    for(int i = 0; i < size_b; ++i)
+    {
+        hb[i] = rand() % 17;
+    }
+    for(int i = 0; i < size_c; ++i)
+    {
+        hc[i] = rand() % 17;
+    }
     hc_gold = hc;
 
-    //allocate memory on device
+    // allocate memory on device
     float *da, *db, *dc;
     CHECK_HIP_ERROR(hipMalloc(&da, size_a * sizeof(float)));
     CHECK_HIP_ERROR(hipMalloc(&db, size_b * sizeof(float)));
@@ -131,37 +171,62 @@ int main()
 
     hipblasHandle_t handle;
     CHECK_HIPBLAS_ERROR(hipblasCreate(&handle));
-    
-    CHECK_HIPBLAS_ERROR(hipblasSgemmStridedBatched(handle, transa, transb, m, n, k, &alpha, 
-                da, lda, bsa, 
-                db, ldb, bsb, &beta, 
-                dc, ldc, bsc, batch_count));
+
+    CHECK_HIPBLAS_ERROR(hipblasSgemmStridedBatched(handle,
+                                                   transa,
+                                                   transb,
+                                                   m,
+                                                   n,
+                                                   k,
+                                                   &alpha,
+                                                   da,
+                                                   lda,
+                                                   bsa,
+                                                   db,
+                                                   ldb,
+                                                   bsb,
+                                                   &beta,
+                                                   dc,
+                                                   ldc,
+                                                   bsc,
+                                                   batch_count));
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hc.data(), dc, sizeof(float) * size_c, hipMemcpyDeviceToHost));
 
     // calculate golden or correct result
-    for (int i = 0; i < batch_count; i++)
+    for(int i = 0; i < batch_count; i++)
     {
-        float *a_ptr = &ha[i * bsa];
-        float *b_ptr = &hb[i * bsb];
-        float *c_ptr = &hc_gold[i * bsc];
-        mat_mat_mult<float>(alpha, beta, m, n, k, 
-                a_ptr, a_stride_1, a_stride_2, 
-                b_ptr, b_stride_1, b_stride_2, 
-                c_ptr, 1, ldc);
+        float* a_ptr = &ha[i * bsa];
+        float* b_ptr = &hb[i * bsb];
+        float* c_ptr = &hc_gold[i * bsc];
+        mat_mat_mult<float>(alpha,
+                            beta,
+                            m,
+                            n,
+                            k,
+                            a_ptr,
+                            a_stride_1,
+                            a_stride_2,
+                            b_ptr,
+                            b_stride_1,
+                            b_stride_2,
+                            c_ptr,
+                            1,
+                            ldc);
     }
 
     float max_relative_error = numeric_limits<float>::min();
-    for (int i = 0; i < size_c; i++)
+    for(int i = 0; i < size_c; i++)
     {
         float relative_error = (hc_gold[i] - hc[i]) / hc_gold[i];
-        relative_error = relative_error > 0 ? relative_error : -relative_error;
-        max_relative_error = relative_error < max_relative_error ? max_relative_error : relative_error;
+        relative_error       = relative_error > 0 ? relative_error : -relative_error;
+        max_relative_error
+            = relative_error < max_relative_error ? max_relative_error : relative_error;
     }
-    float eps = numeric_limits<float>::epsilon();
+    float eps       = numeric_limits<float>::epsilon();
     float tolerance = 10;
-    if (max_relative_error != max_relative_error || max_relative_error > eps * tolerance)
+    if(max_relative_error != max_relative_error || max_relative_error > eps * tolerance)
     {
         std::cout << "FAIL: max_relative_error = " << max_relative_error << std::endl;
     }
