@@ -5,7 +5,7 @@
 # - run this script in master branch 
 # - after running this script merge master into develop 
 
-OLD_HIPBLAS_VERSION="12.3.0"
-NEW_HIPBLAS_VERSION="13.3.0"
+OLD_HIPBLAS_VERSION="12.4.0"
+NEW_HIPBLAS_VERSION="13.4.0"
 
 sed -i "s/${OLD_HIPBLAS_VERSION}/${NEW_HIPBLAS_VERSION}/g" CMakeLists.txt
