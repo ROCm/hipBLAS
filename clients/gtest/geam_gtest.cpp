@@ -78,9 +78,9 @@ Arguments setup_geam_arguments(geam_tuple tup)
     // see the comments about matrix_size_range above
     arg.M   = matrix_size[0];
     arg.N   = matrix_size[1];
-    arg.lda = matrix_size[3];
-    arg.ldb = matrix_size[4];
-    arg.ldc = matrix_size[5];
+    arg.lda = matrix_size[2];
+    arg.ldb = matrix_size[3];
+    arg.ldc = matrix_size[4];
 
     // the first element of alpha_beta_range is always alpha, and the second is always beta
     arg.alpha = alpha_beta[0];
