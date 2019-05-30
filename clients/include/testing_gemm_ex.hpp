@@ -244,16 +244,16 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
                    hC_gold.data(),
                    ldc);
 
-//      std::cout << std::endl << "---gold---gold---gold---------------------" << std::endl;
-//      if(is_same<Td, hipblasHalf>::value)
-//      {
-//          for(int i = 0; i < size_D; i++){ std::cout << half_to_float(hD_gold[i]) << "  "; }
-//      }
-//      else
-//      {
-//          for(int i = 0; i < size_D; i++){ std::cout << hD_gold[i] << "  "; }
-//      }
-//      std::cout << std::endl << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+    //      std::cout << std::endl << "---gold---gold---gold---------------------" << std::endl;
+    //      if(is_same<Td, hipblasHalf>::value)
+    //      {
+    //          for(int i = 0; i < size_D; i++){ std::cout << half_to_float(hD_gold[i]) << "  "; }
+    //      }
+    //      else
+    //      {
+    //          for(int i = 0; i < size_D; i++){ std::cout << hD_gold[i] << "  "; }
+    //      }
+    //      std::cout << std::endl << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
 
 #ifndef NDEBUG
 // print_matrix(hC_gold, hC, min(M, 3), min(N, 3), ldc);
@@ -304,8 +304,7 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
     int unit_check = argus.unit_check;
 
     if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
-       && c_type == HIPBLAS_R_16F
-       && compute_type == HIPBLAS_R_16F)
+       && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_16F)
     {
         status = testing_gemm_ex_template<hipblasHalf, hipblasHalf>(transA,
                                                                     transB,
@@ -325,8 +324,7 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                                     compute_type);
     }
     else if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
-            && c_type == HIPBLAS_R_16F
-            && compute_type == HIPBLAS_R_32F)
+            && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_32F)
     {
         status = testing_gemm_ex_template<hipblasHalf, float>(transA,
                                                               transB,
@@ -346,8 +344,7 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                               compute_type);
     }
     else if(a_type == HIPBLAS_R_32F && b_type == HIPBLAS_R_32F && c_type == HIPBLAS_R_32F
-            && c_type == HIPBLAS_R_32F
-            && compute_type == HIPBLAS_R_32F)
+            && c_type == HIPBLAS_R_32F && compute_type == HIPBLAS_R_32F)
     {
         status = testing_gemm_ex_template<float, float>(transA,
                                                         transB,
@@ -367,8 +364,7 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                         compute_type);
     }
     else if(a_type == HIPBLAS_R_64F && b_type == HIPBLAS_R_64F && c_type == HIPBLAS_R_64F
-            && c_type == HIPBLAS_R_64F
-            && compute_type == HIPBLAS_R_64F)
+            && c_type == HIPBLAS_R_64F && compute_type == HIPBLAS_R_64F)
     {
         status = testing_gemm_ex_template<double, double>(transA,
                                                           transB,

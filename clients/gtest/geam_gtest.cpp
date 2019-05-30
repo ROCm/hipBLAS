@@ -9,10 +9,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
@@ -41,7 +41,10 @@ const vector<vector<int>> matrix_size_range = {
 // vector of vector, each pair is a {alpha, beta};
 // add/delete this list in pairs, like {2.0, 4.0}
 const vector<vector<double>> alpha_beta_range = {
-    {1.4, 0.0}, {3.1, 0.3}, {0.0, 1.3}, {0.0, 0.0},
+    {1.4, 0.0},
+    {3.1, 0.3},
+    {0.0, 1.3},
+    {0.0, 0.0},
 };
 
 // vector of vector, each pair is a {transA, transB};
@@ -97,18 +100,10 @@ Arguments setup_geam_arguments(geam_tuple tup)
 class geam_gtest : public ::TestWithParam<geam_tuple>
 {
 protected:
-    geam_gtest()
-    {
-    }
-    virtual ~geam_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    geam_gtest() {}
+    virtual ~geam_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(geam_gtest, geam_gtest_float)

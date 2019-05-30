@@ -88,15 +88,15 @@ hipblasStatus_t testing_geam(Arguments argus)
 
     // allocate memory on device
     auto dA_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * A_size), hipblas::device_free};
+        = hipblas_unique_ptr {hipblas::device_malloc(sizeof(T) * A_size), hipblas::device_free};
     auto dB_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * B_size), hipblas::device_free};
+        = hipblas_unique_ptr {hipblas::device_malloc(sizeof(T) * B_size), hipblas::device_free};
     auto dC_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * C_size), hipblas::device_free};
+        = hipblas_unique_ptr {hipblas::device_malloc(sizeof(T) * C_size), hipblas::device_free};
     auto d_alpha_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
+        = hipblas_unique_ptr {hipblas::device_malloc(sizeof(T)), hipblas::device_free};
     auto d_beta_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
+        = hipblas_unique_ptr {hipblas::device_malloc(sizeof(T)), hipblas::device_free};
     T* dA      = (T*)dA_managed.get();
     T* dB      = (T*)dB_managed.get();
     T* dC      = (T*)dC_managed.get();
