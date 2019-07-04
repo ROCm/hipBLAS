@@ -15,6 +15,7 @@ function display_help()
   echo "    [-c|--clients] build library clients too (combines with -i & -d)"
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [--cuda] build library for cuda backend"
+  echo"     [--hip-clang] build library for hip-clang"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
 }
 
@@ -191,6 +192,7 @@ install_prefix=hipblas-install
 build_clients=false
 build_cuda=false
 build_release=true
+build_hip_clang=false
 cmake_prefix_path=/opt/rocm
 
 # #################################################
@@ -200,7 +202,7 @@ cmake_prefix_path=/opt/rocm
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,cuda,cmakepp: --options hicdgp: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,hip-clang,cuda,cmakepp: --options hicdgp: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -233,6 +235,9 @@ while true; do
         shift ;;
     --cuda)
         build_cuda=true
+        shift ;;
+    --hip-clang)
+        build_hip_clang=true
         shift ;;
     -p|--cmakepp)
         cmake_prefix_path=${2}
