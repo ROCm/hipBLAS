@@ -316,6 +316,13 @@ pushd .
     cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
   fi
 
+  # hip-clang
+  if [[ "${build_hip_clang}" == true ]]; then
+    cmake_client_options="${cmake_client_options} -DCMAKE_CXX_COMPILER=/opt/rocm/bin/hipcc"
+  else
+    cmake_client_options="${cmake_client_options} -DCMAKE_CXX_COMPILER=/opt/rocm/bin/hcc"
+  fi
+
   # Build library
   ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" ../..
   make -j$(nproc)
