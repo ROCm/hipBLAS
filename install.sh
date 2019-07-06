@@ -15,7 +15,7 @@ function display_help()
   echo "    [-c|--clients] build library clients too (combines with -i & -d)"
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [--cuda] build library for cuda backend"
-  echo"     [--hip-clang] build library for hip-clang"
+  echo "    [--hip-clang] build library for hip-clang"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
 }
 
