@@ -33,6 +33,7 @@ RUN yum install -y \
     libcxx-devel \
     boost-devel \
     numactl-libs \
+    rocblas \
     rpm-build \ 
     deltarpm
 
