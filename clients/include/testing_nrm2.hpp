@@ -76,8 +76,7 @@ hipblasStatus_t testing_nrm2(Arguments argus)
     status_4 = hipblasNrm2<T1, T2>(handle, N, dx, incx, &rocblas_result_1);
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
-       || (status_3 != HIPBLAS_STATUS_SUCCESS)
-       || (status_4 != HIPBLAS_STATUS_SUCCESS))
+       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
     {
         CHECK_HIP_ERROR(hipFree(dx));
         CHECK_HIP_ERROR(hipFree(d_rocblas_result));
