@@ -25,12 +25,12 @@
 extern "C" {
 #endif
 
-float slange_(char* norm_type, int* m, int* n, float* A, int* lda, float* work);
+float  slange_(char* norm_type, int* m, int* n, float* A, int* lda, float* work);
 double dlange_(char* norm_type, int* m, int* n, double* A, int* lda, double* work);
 //  float  clange_(char* norm_type, int* m, int* n, hipComplex* A, int* lda, float* work);
 //  double zlange_(char* norm_type, int* m, int* n, hipDoubleComplex* A, int* lda, double* work);
 
-float slansy_(char* norm_type, char* uplo, int* n, float* A, int* lda, float* work);
+float  slansy_(char* norm_type, char* uplo, int* n, float* A, int* lda, float* work);
 double dlansy_(char* norm_type, char* uplo, int* n, double* A, int* lda, double* work);
 //  float  clanhe_(char* norm_type, char* uplo, int* n, hipComplex* A, int* lda, float* work);
 //  double zlanhe_(char* norm_type, char* uplo, int* n, hipDoubleComplex* A, int* lda, double*

@@ -10,10 +10,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
@@ -105,18 +105,10 @@ Arguments setup_ger_arguments(ger_tuple tup)
 class blas2_ger_gtest : public ::TestWithParam<ger_tuple>
 {
 protected:
-    blas2_ger_gtest()
-    {
-    }
-    virtual ~blas2_ger_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    blas2_ger_gtest() {}
+    virtual ~blas2_ger_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(blas2_ger_gtest, float)
