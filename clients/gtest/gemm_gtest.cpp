@@ -10,10 +10,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
@@ -97,18 +97,10 @@ Arguments setup_gemm_arguments(gemm_tuple tup)
 class gemm_gtest : public ::TestWithParam<gemm_tuple>
 {
 protected:
-    gemm_gtest()
-    {
-    }
-    virtual ~gemm_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    gemm_gtest() {}
+    virtual ~gemm_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(gemm_gtest, gemm_gtest_float)

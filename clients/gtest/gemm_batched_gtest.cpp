@@ -10,10 +10,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 /*
@@ -59,7 +59,8 @@ const vector<vector<int>> matrix_size_range = {
 // vector of vector, each pair is a {alpha, beta};
 // add/delete this list in pairs, like {2.0, 4.0}
 const vector<vector<double>> alpha_beta_range = {
-    {1.0, 0.0}, {-1.0, -1.0},
+    {1.0, 0.0},
+    {-1.0, -1.0},
 };
 
 // vector of vector, each pair is a {transA, transB};
@@ -123,18 +124,10 @@ Arguments setup_gemm_batched_arguments(gemm_batched_tuple tup)
 class gemm_batched_gtest : public ::TestWithParam<gemm_batched_tuple>
 {
 protected:
-    gemm_batched_gtest()
-    {
-    }
-    virtual ~gemm_batched_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    gemm_batched_gtest() {}
+    virtual ~gemm_batched_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(gemm_batched_gtest, float)

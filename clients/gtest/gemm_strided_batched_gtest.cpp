@@ -10,10 +10,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
@@ -51,7 +51,8 @@ const vector<vector<int>> matrix_size_range = {
 // vector of vector, each pair is a {alpha, beta};
 // add/delete this list in pairs, like {2.0, 4.0}
 const vector<vector<double>> alpha_beta_range = {
-    {1.0, 0.0}, {-1.0, -1.0},
+    {1.0, 0.0},
+    {-1.0, -1.0},
 };
 
 // vector of vector, each pair is a {transA, transB};
@@ -116,18 +117,10 @@ Arguments setup_gemm_strided_batched_arguments(gemm_strided_batched_tuple tup)
 class gemm_strided_batched_gtest : public ::TestWithParam<gemm_strided_batched_tuple>
 {
 protected:
-    gemm_strided_batched_gtest()
-    {
-    }
-    virtual ~gemm_strided_batched_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    gemm_strided_batched_gtest() {}
+    virtual ~gemm_strided_batched_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(gemm_strided_batched_gtest, float)

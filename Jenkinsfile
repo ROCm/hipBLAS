@@ -29,12 +29,12 @@ import java.nio.file.Path;
 hipBLASCI:
 {
 
-    def hipblas = new rocProject('hipblas')
+    def hipblas = new rocProject('hipBLAS')
     // customize for project
     hipblas.paths.build_command = './install.sh -cd -p /opt/rocm/rocblas/lib/cmake'
 
     // Define test architectures, optional rocm version argument is available
-    def nodes = new dockerNodes(['gfx900', 'gfx906'], hipblas)
+    def nodes = new dockerNodes(['gfx900 && ubuntu', 'gfx906 && ubuntu', 'gfx900 && centos7', 'gfx906 && centos7', 'gfx900 && ubuntu && hip-clang', 'gfx906 && ubuntu && hip-clang'], hipblas)
 
     boolean formatCheck = true
 
@@ -43,12 +43,23 @@ hipBLASCI:
         platform, project->
 
         project.paths.construct_build_prefix()
-        def command = """#!/usr/bin/env bash
-                  set -x
-                  cd ${project.paths.project_build_prefix}
-                  LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=${project.compiler.compiler_path} ${project.paths.build_command}
-                """
-
+        
+        if(platform.jenkinsLabel.contains('hip-clang'))
+        {
+            command = """#!/usr/bin/env bash
+                    set -x
+                    cd ${project.paths.project_build_prefix}
+                    LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=/opt/rocm/bin/hipcc ${project.paths.build_command} --hip-clang
+                    """
+        }
+        else
+        {
+            command = """#!/usr/bin/env bash
+                    set -x
+                    cd ${project.paths.project_build_prefix}
+                    LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=${project.compiler.compiler_path} ${project.paths.build_command}
+                    """
+        }
         platform.runCommand(this, command)
     }
 
@@ -58,22 +69,45 @@ hipBLASCI:
 
         def command
 
-        if(auxiliary.isJobStartedByTimer())
+        if(platform.jenkinsLabel.contains('centos'))
         {
-          command = """#!/usr/bin/env bash
-                set -x
-                cd ${project.paths.project_build_prefix}/build/release/clients/staging
-                LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
-            """
+            if(auxiliary.isJobStartedByTimer())
+            {
+                command = """#!/usr/bin/env bash
+                        set -x
+                        cd ${project.paths.project_build_prefix}/build/release/clients/staging
+                        LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG sudo ./hipblas-test --gtest_output=xml --gtest_color=yes
+                        """
+            }
+            else
+            {
+                command = """#!/usr/bin/env bash
+                        set -x
+                        cd ${project.paths.project_build_prefix}/build/release/clients/staging
+                        LD_LIBRARY_PATH=/opt/rocm/hcc/lib sudo ./example-sscal
+                        LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG sudo ./hipblas-test --gtest_output=xml --gtest_color=yes
+                        """
+            }
         }
         else
         {
-          command = """#!/usr/bin/env bash
-                set -x
-                cd ${project.paths.project_build_prefix}/build/release/clients/staging
-                LD_LIBRARY_PATH=/opt/rocm/hcc/lib ./example-sscal
-                LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
-            """
+            if(auxiliary.isJobStartedByTimer())
+            {
+                command = """#!/usr/bin/env bash
+                        set -x
+                        cd ${project.paths.project_build_prefix}/build/release/clients/staging
+                        LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
+                        """
+            }
+            else
+            {
+                command = """#!/usr/bin/env bash
+                        set -x
+                        cd ${project.paths.project_build_prefix}/build/release/clients/staging
+                        LD_LIBRARY_PATH=/opt/rocm/hcc/lib ./example-sscal
+                        LD_LIBRARY_PATH=/opt/rocm/hcc/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
+                        """
+            }
         }
 
         platform.runCommand(this, command)
@@ -84,17 +118,40 @@ hipBLASCI:
     {
         platform, project->
 
-        def command = """
-                      set -x
-                      cd ${project.paths.project_build_prefix}/build/release
-                      make package
-                      rm -rf package && mkdir -p package
-                      mv *.deb package/
-                      dpkg -c package/*.deb
-                      """
+        def command 
 
-        platform.runCommand(this, command)
-        platform.archiveArtifacts(this, """${project.paths.project_build_prefix}/build/release/package/*.deb""")
+        if(platform.jenkinsLabel.contains('centos'))
+        {
+            command = """
+                    set -x
+                    cd ${project.paths.project_build_prefix}/build/release
+                    make package
+                    rm -rf package && mkdir -p package
+                    mv *.rpm package/
+                    rpm -qlp package/*.rpm
+                """
+
+            platform.runCommand(this, command)
+            platform.archiveArtifacts(this, """${project.paths.project_build_prefix}/build/release/package/*.rpm""")        
+        }
+        else if(platform.jenkinsLabel.contains('hip-clang'))
+        {
+            packageCommand = null
+        }
+        else
+        {
+            command = """
+                    set -x
+                    cd ${project.paths.project_build_prefix}/build/release
+                    make package
+                    rm -rf package && mkdir -p package
+                    mv *.deb package/
+                    dpkg -c package/*.deb
+                    """
+
+            platform.runCommand(this, command)
+            platform.archiveArtifacts(this, """${project.paths.project_build_prefix}/build/release/package/*.deb""")
+        }
     }
 
     buildProject(hipblas, formatCheck, nodes.dockerArray, compileCommand, testCommand, packageCommand)
