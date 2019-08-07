@@ -13,8 +13,7 @@
                     TMP_STATUS_FOR_CHECK,                         \
                     __FILE__,                                     \
                     __LINE__);                                    \
-        \
-}                                                      \
+        }                                                         \
     }
 
 namespace hipblas

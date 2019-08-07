@@ -14,10 +14,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
@@ -65,7 +65,8 @@ vector<vector<double>> alpha_beta_range = {{1.0, 0.0}, {2.0, -1.0}};
 // incx , incy must > 0, otherwise there is no real computation taking place,
 // but throw a message, which will still be detected by gtest
 vector<vector<int>> incx_incy_range = {
-    {1, 1}, {-1, -1},
+    {1, 1},
+    {-1, -1},
 };
 
 /* ===============Google Unit Test==================================================== */
@@ -77,18 +78,10 @@ vector<vector<int>> incx_incy_range = {
 class blas1_gtest : public ::TestWithParam<blas1_tuple>
 {
 protected:
-    blas1_gtest()
-    {
-    }
-    virtual ~blas1_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    blas1_gtest() {}
+    virtual ~blas1_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 Arguments setup_blas1_arguments(blas1_tuple tup)

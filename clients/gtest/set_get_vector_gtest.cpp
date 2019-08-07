@@ -10,10 +10,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
@@ -93,18 +93,10 @@ Arguments setup_set_get_vector_arguments(set_get_vector_tuple tup)
 class set_vector_get_vector_gtest : public ::TestWithParam<set_get_vector_tuple>
 {
 protected:
-    set_vector_get_vector_gtest()
-    {
-    }
-    virtual ~set_vector_get_vector_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    set_vector_get_vector_gtest() {}
+    virtual ~set_vector_get_vector_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 // TEST_P(set_vector_get_vector_gtest, set_get_vector_float)
