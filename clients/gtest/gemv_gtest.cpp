@@ -10,10 +10,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
@@ -60,13 +60,18 @@ const vector<vector<int>> incx_incy_range = {
 // vector of vector, each pair is a {alpha, beta};
 // add/delete this list in pairs, like {2.0, 4.0}
 const vector<vector<double>> alpha_beta_range = {
-    {1.0, 0.0}, {-1.0, -1.0}, {2.0, 1.0}, {0.0, 1.0},
+    {1.0, 0.0},
+    {-1.0, -1.0},
+    {2.0, 1.0},
+    {0.0, 1.0},
 };
 
 // for single/double precision, 'C'(conjTranspose) will downgraded to 'T' (transpose) internally in
 // sgemv/dgemv,
 const vector<char> transA_range = {
-    'N', 'T', 'C',
+    'N',
+    'T',
+    'C',
 };
 
 /* ===============Google Unit Test==================================================== */
@@ -118,18 +123,10 @@ Arguments setup_gemv_arguments(gemv_tuple tup)
 class gemv_gtest : public ::TestWithParam<gemv_tuple>
 {
 protected:
-    gemv_gtest()
-    {
-    }
-    virtual ~gemv_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    gemv_gtest() {}
+    virtual ~gemv_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(gemv_gtest, gemv_gtest_float)

@@ -10,10 +10,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
@@ -65,7 +65,9 @@ const vector<double> alpha_range = {1.0, -5.0};
 // Each letter is capitalizied, e.g. do not use 'l', but use 'L' instead.
 
 const vector<vector<char>> side_uplo_transA_diag_range = {
-    {'L', 'L', 'N', 'N'}, {'R', 'L', 'N', 'N'}, {'L', 'U', 'C', 'N'},
+    {'L', 'L', 'N', 'N'},
+    {'R', 'L', 'N', 'N'},
+    {'L', 'U', 'C', 'N'},
 };
 
 // has all the 16 options
@@ -134,18 +136,10 @@ Arguments setup_trsm_arguments(trsm_tuple tup)
 class trsm_gtest : public ::TestWithParam<trsm_tuple>
 {
 protected:
-    trsm_gtest()
-    {
-    }
-    virtual ~trsm_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    trsm_gtest() {}
+    virtual ~trsm_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(trsm_gtest, trsm_gtest_float)

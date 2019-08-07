@@ -12,10 +12,10 @@
 #include <tuple>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
@@ -103,18 +103,10 @@ Arguments setup_set_get_matrix_arguments(set_get_matrix_tuple tup)
 class set_matrix_get_matrix_gtest : public ::TestWithParam<set_get_matrix_tuple>
 {
 protected:
-    set_matrix_get_matrix_gtest()
-    {
-    }
-    virtual ~set_matrix_get_matrix_gtest()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    set_matrix_get_matrix_gtest() {}
+    virtual ~set_matrix_get_matrix_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(set_matrix_get_matrix_gtest, float)

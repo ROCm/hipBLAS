@@ -188,8 +188,7 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     T** dC2_array_dev = NULL;
 
     if((!hA_array) || (!hB_array) || (!hC_array) || (!hC_copy_array) || (!dA_array) || (!dB_array)
-       || (!dC1_array)
-       || (!dC2_array))
+       || (!dC1_array) || (!dC2_array))
     {
         CLEANUP();
         hipblasDestroy(handle);
@@ -207,9 +206,7 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     err_beta  = hipMalloc(&d_beta, sizeof(T));
 
     if((err_A != hipSuccess) || (err_C_1 != hipSuccess) || (err_alpha != hipSuccess)
-       || (err_B != hipSuccess)
-       || (err_C_2 != hipSuccess)
-       || (err_beta != hipSuccess))
+       || (err_B != hipSuccess) || (err_C_2 != hipSuccess) || (err_beta != hipSuccess))
     {
         CLEANUP();
         hipblasDestroy(handle);
@@ -274,9 +271,7 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         err_beta  = hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice);
 
         if((err_A != hipSuccess) || (err_C_1 != hipSuccess) || (err_alpha != hipSuccess)
-           || (err_B != hipSuccess)
-           || (err_C_2 != hipSuccess)
-           || (err_beta != hipSuccess))
+           || (err_B != hipSuccess) || (err_C_2 != hipSuccess) || (err_beta != hipSuccess))
         {
             CLEANUP();
             hipblasDestroy(handle);

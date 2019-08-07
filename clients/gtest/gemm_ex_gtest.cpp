@@ -9,10 +9,10 @@
 #include <stdexcept>
 #include <vector>
 
+using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using ::testing::Combine;
 using namespace std;
 
 /* =====================================================================
@@ -273,18 +273,10 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
 class parameterized_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
 {
 protected:
-    parameterized_gemm_ex()
-    {
-    }
-    virtual ~parameterized_gemm_ex()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    parameterized_gemm_ex() {}
+    virtual ~parameterized_gemm_ex() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(parameterized_gemm_ex, standard)
@@ -319,18 +311,10 @@ TEST_P(parameterized_gemm_ex, standard)
 class parameterized_chunk_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
 {
 protected:
-    parameterized_chunk_gemm_ex()
-    {
-    }
-    virtual ~parameterized_chunk_gemm_ex()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    parameterized_chunk_gemm_ex() {}
+    virtual ~parameterized_chunk_gemm_ex() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(parameterized_chunk_gemm_ex, float)
@@ -365,18 +349,10 @@ TEST_P(parameterized_chunk_gemm_ex, float)
 class parameterized_half_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
 {
 protected:
-    parameterized_half_gemm_ex()
-    {
-    }
-    virtual ~parameterized_half_gemm_ex()
-    {
-    }
-    virtual void SetUp()
-    {
-    }
-    virtual void TearDown()
-    {
-    }
+    parameterized_half_gemm_ex() {}
+    virtual ~parameterized_half_gemm_ex() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 // TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
