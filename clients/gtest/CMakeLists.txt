@@ -90,8 +90,13 @@ if( NOT CUDA_FOUND )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_HCC__ )
 
   get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
-  get_target_property( HCC_AM_LOCATION hcc::hc_am IMPORTED_LOCATION_RELEASE )
-  target_link_libraries( hipblas-test PRIVATE ${HIP_HCC_LOCATION} ${HCC_AM_LOCATION} )
+
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
+    get_target_property( HCC_AM_LOCATION hcc::hc_am IMPORTED_LOCATION_RELEASE )
+    target_link_libraries( hipblas-test PRIVATE ${HIP_HCC_LOCATION} ${HCC_AM_LOCATION} )
+  else( )
+    target_link_libraries( hipblas-test PRIVATE ${HIP_HCC_LOCATION} )
+  endif()
 
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
