@@ -49,7 +49,7 @@ hipBLASCI:
             command = """#!/usr/bin/env bash
                     set -x
                     cd ${project.paths.project_build_prefix}
-                    LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=/opt/rocm/bin/hipcc ${project.paths.build_command} --hip-clang
+                    LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=/usr/bin/g++ ${project.paths.build_command} --hip-clang
                     """
         }
         else
@@ -57,7 +57,7 @@ hipBLASCI:
             command = """#!/usr/bin/env bash
                     set -x
                     cd ${project.paths.project_build_prefix}
-                    LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=${project.compiler.compiler_path} ${project.paths.build_command}
+                    LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=/usr/bin/g++ ${project.paths.build_command}
                     """
         }
         platform.runCommand(this, command)
