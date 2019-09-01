@@ -31,7 +31,7 @@ hipBLASCI:
 
     def hipblas = new rocProject('hipBLAS')
     // customize for project
-    hipblas.paths.build_command = './install.sh -cd -p /opt/rocm/rocblas/lib/cmake'
+    hipblas.paths.build_command = './install.sh -cd -p /opt/rocm/lib/cmake'
 
     // Define test architectures, optional rocm version argument is available
     def nodes = new dockerNodes(['gfx900 && ubuntu', 'gfx906 && ubuntu', 'gfx900 && centos7', 'gfx906 && centos7'], hipblas)
@@ -49,7 +49,7 @@ hipBLASCI:
             command = """#!/usr/bin/env bash
                     set -x
                     cd ${project.paths.project_build_prefix}
-                    LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=/usr/bin/g++ ${project.paths.build_command} --hip-clang
+                    LD_LIBRARY_PATH=/opt/rocm/lib CXX=g++ ${project.paths.build_command} --hip-clang
                     """
         }
         else
@@ -57,7 +57,7 @@ hipBLASCI:
             command = """#!/usr/bin/env bash
                     set -x
                     cd ${project.paths.project_build_prefix}
-                    LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=/usr/bin/g++ ${project.paths.build_command}
+                    LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=g++ ${project.paths.build_command}
                     """
         }
         platform.runCommand(this, command)
