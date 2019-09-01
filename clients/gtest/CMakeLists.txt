@@ -82,6 +82,7 @@ target_include_directories( hipblas-test
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+    /opt/rocm/hsa/include
 )
 
 target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} )
@@ -97,7 +98,6 @@ if( NOT CUDA_FOUND )
     # Remove following when hcc is fixed; hcc emits following spurious warning
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
     target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument -mf16c)
-    target_include_directories( hipblas-test PRIVATE /opt/rocm/hsa/include)
 
   elseif( CMAKE_COMPILER_IS_GNUCXX )
     # GCC needs specific flag to turn on f16c intrinsics
