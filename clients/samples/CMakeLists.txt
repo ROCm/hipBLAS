@@ -24,6 +24,7 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
   target_include_directories( ${exe}
     SYSTEM PRIVATE
       $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+      /opt/rocm/hsa/include
   )
 
   # Try to test for specific compiler features if cmake version is recent enough
@@ -37,14 +38,12 @@ if( NOT CUDA_FOUND )
   target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_HCC__ )
 
   get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
-  get_target_property( HCC_AM_LOCATION hcc::hc_am IMPORTED_LOCATION_RELEASE )
-  target_link_libraries( ${exe} PRIVATE ${HIP_HCC_LOCATION} ${HCC_AM_LOCATION} )
+  target_link_libraries( ${exe} PRIVATE ${HIP_HCC_LOCATION} )
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
     # Remove following when hcc is fixed; hcc emits following spurious warning
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
     target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument )
-    target_include_directories( ${exe} PRIVATE /opt/rocm/hsa/include)
   endif( )
 else( )
   target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_NVCC__ )
