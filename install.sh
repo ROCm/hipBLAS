@@ -29,10 +29,10 @@ supported_distro( )
   fi
 
   case "${ID}" in
-    ubuntu|centos|rhel|fedora)
+    ubuntu|centos|rhel|fedora|sles)
         true
         ;;
-    *)  printf "This script is currently supported on Ubuntu, CentOS, RHEL and Fedora\n"
+    *)  printf "This script is currently supported on Ubuntu, SLES, CentOS, RHEL and Fedora\n"
         exit 2
         ;;
   esac
@@ -105,6 +105,7 @@ install_packages( )
   local library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" "hip_hcc" )
   local library_dependencies_centos=( "epel-release" "make" "cmake3" "hip_hcc" "gcc-c++" "rpm-build" )
   local library_dependencies_fedora=( "make" "cmake" "hip_hcc" "gcc-c++" "libcxx-devel" "rpm-build" )
+  local library_dependencies_sles=( "make" "cmake" "gcc-c++" "libcxxtools9" "rpm-build" )
 
   if [[ "${build_cuda}" == true ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
@@ -115,11 +116,13 @@ install_packages( )
     library_dependencies_ubuntu+=( "hcc" "rocblas" )
     library_dependencies_centos+=( "hcc" "rocblas" )
     library_dependencies_fedora+=( "hcc" "rocblas" )
+    library_dependencies_sles+=( "hcc" "rocblas" )
   fi
 
   local client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
   local client_dependencies_centos=( "gcc-gfortran" "boost-devel" )
   local client_dependencies_fedora=( "gcc-gfortran" "boost-devel" )
+  local client_dependencies_sles=( "libboost_program_options1_66_0-devel" "pkg-config" "dpkg" )
 
   case "${ID}" in
     ubuntu)
@@ -150,11 +153,32 @@ install_packages( )
         install_dnf_packages "${client_dependencies_fedora[@]}"
       fi
       ;;
+
+    sles)
+#     elevate_if_not_root zypper -y update
+      install_zypper_packages "${library_dependencies_sles[@]}"
+
+      if [[ "${build_clients}" == true ]]; then
+        install_zypper_packages "${client_dependencies_sles[@]}"
+      fi
+      ;;    
     *)
-      echo "This script is currently supported on Ubuntu, CentOS, RHEL and Fedora"
+      echo "This script is currently supported on Ubuntu, SLES, CentOS, RHEL and Fedora"
       exit 2
       ;;
   esac
+}
+
+# Take an array of packages as input, and install those packages with 'zypper' if they are not already installed
+install_zypper_packages( )
+{
+  package_dependencies=("$@")
+  for package in "${package_dependencies[@]}"; do
+    if [[ $(rpm -q ${package} &> /dev/null; echo $? ) -ne 0 ]]; then
+      printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
+      elevate_if_not_root zypper -n --no-gpg-checks install ${package}
+    fi
+  done
 }
 
 # #################################################
@@ -331,6 +355,9 @@ pushd .
       ;;
       fedora)
         elevate_if_not_root dnf install hipblas-*.rpm
+      ;;
+      sles)
+        elevate_if_not_root zypper -n --no-gpg-checks install hipblas-*.rpm
       ;;
     esac
 
