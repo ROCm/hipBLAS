@@ -53,44 +53,46 @@ hipblasStatus_t
         return hipblasZscal(handle, n, alpha, x, incx);
     }
 */
+#include <iostream>
+//swap
+template<>
+hipblasStatus_t
+hipblasSwap<float>(hipblasHandle_t handle, int n,
+                   float *x, int incx,
+                   float *y, int incy)
+{
+    return hipblasSswap(handle, n, x, incx, y, incy);
+}
+
+template<>
+hipblasStatus_t
+hipblasSwap<double>(hipblasHandle_t handle, int n,
+                    double *x, int incx,
+                    double *y, int incy)
+{
+    return hipblasDswap(handle, n, x, incx, y, incy);
+}
+
 /*
-    //swap
-    template<>
-    hipblasStatus_t
-    hipblasSwap<float>(    hipblasHandle_t handle, int n,
-                            float *x, int incx,
-                            float *y, int incy)
-    {
-        return hipblasSwap(handle, n, x, incx, y, incy);
-    }
+template<>
+hipblasStatus_t
+hipblasSwap<hipComplex>(    hipblasHandle_t handle, int n,
+                        hipComplex *x, int incx,
+                        hipComplex *y, int incy)
+{
+    return hipblasCswap(handle, n, x, incx, y, incy);
+}
 
-    template<>
-    hipblasStatus_t
-    hipblasSwap<double>(   hipblasHandle_t handle, int n,
-                            double *x, int incx,
-                            double *y, int incy)
-    {
-        return hipblasDswap(handle, n, x, incx, y, incy);
-    }
-
-    template<>
-    hipblasStatus_t
-    hipblasSwap<hipComplex>(    hipblasHandle_t handle, int n,
-                            hipComplex *x, int incx,
-                            hipComplex *y, int incy)
-    {
-        return hipblasCswap(handle, n, x, incx, y, incy);
-    }
-
-    template<>
-    hipblasStatus_t
-    hipblasSwap<hipDoubleComplex>(    hipblasHandle_t handle, int n,
-                            hipDoubleComplex *x, int incx,
-                            hipDoubleComplex *y, int incy)
-    {
-        return hipblasZswap(handle, n, x, incx, y, incy);
-    }
+template<>
+hipblasStatus_t
+hipblasSwap<hipDoubleComplex>(    hipblasHandle_t handle, int n,
+                        hipDoubleComplex *x, int incx,
+                        hipDoubleComplex *y, int incy)
+{
+    return hipblasZswap(handle, n, x, incx, y, incy);
+}
 */
+
 // copy
 template <>
 hipblasStatus_t
