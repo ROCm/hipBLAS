@@ -316,6 +316,44 @@ hipblasStatus_t
         return hipblasDzamax(handle, n, x, incx, result);
     }
 */
+
+// amin
+template <>
+hipblasStatus_t
+    hipblasIamin<float>(hipblasHandle_t handle, int n, const float* x, int incx, int* result)
+{
+    return hipblasIsamin(handle, n, x, incx, result);
+}
+
+template <>
+hipblasStatus_t
+    hipblasIamin<double>(hipblasHandle_t handle, int n, const double* x, int incx, int* result)
+{
+    return hipblasIdamin(handle, n, x, incx, result);
+}
+
+/*
+    template<>
+    hipblasStatus_t
+    hipblasAmin<hipComplex>(hipblasHandle_t handle,
+        int n,
+        const hipComplex *x, int incx,
+        int *result){
+
+        return hipblasScamin(handle, n, x, incx, result);
+    }
+
+    template<>
+    hipblasStatus_t
+    hipblasAmin<hipDoubleComplex>(hipblasHandle_t handle,
+        int n,
+        const hipDoubleComplex *x, int incx,
+        int *result){
+
+        return hipblasDzamin(handle, n, x, incx, result);
+    }
+*/
+
 /*
  * ===========================================================================
  *    level 2 BLAS
