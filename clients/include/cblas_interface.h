@@ -63,6 +63,15 @@ template <typename T>
 void cblas_ger(int m, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
 
 template <typename T>
+void cblas_syr(hipblasFillMode_t uplo,
+               int               n,
+               T                 alpha,
+               T*                x,
+               int               incx,
+               T*                A,
+               int               lda);
+
+template <typename T>
 void cblas_hemv(
     hipblasFillMode_t uplo, int n, T alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
 

@@ -386,6 +386,32 @@ hipblasStatus_t hipblasGer<double>(hipblasHandle_t handle,
     return hipblasDger(handle, m, n, alpha, x, incx, y, incy, A, lda);
 }
 
+template <>
+hipblasStatus_t hipblasSyr<float>(hipblasHandle_t   handle,
+                                  hipblasFillMode_t uplo,
+                                  int               n,
+                                  const float*      alpha,
+                                  const float*      x,
+                                  int               incx,
+                                  float*            A,
+                                  int               lda)
+{
+    return hipblasSsyr(handle, uplo, n, alpha, x, incx, A, lda);
+}
+
+template <>
+hipblasStatus_t hipblasSyr<double>(hipblasHandle_t   handle,
+                                   hipblasFillMode_t uplo,
+                                   int               n,
+                                   const double*     alpha,
+                                   const double*     x,
+                                   int               incx,
+                                   double*           A,
+                                   int               lda)
+{
+    return hipblasDsyr(handle, uplo, n, alpha, x, incx, A, lda);
+}
+
 /*
  * ===========================================================================
  *    level 3 BLAS

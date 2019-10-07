@@ -574,6 +574,30 @@ hipblasStatus_t hipblasSgerBatched(hipblasHandle_t handle,
         cublasSger((cublasHandle_t)handle, m, n, alpha, x, incx, y, incy, A, lda));
 }
 
+hipblasStatus_t hipblasSsyr(hipblasHandle_t   handle,
+                            hipblasFillMode_t uplo,
+                            int               n,
+                            const float*      alpha,
+                            const float*      x,
+                            int               incx,
+                            float*            A,
+                            int               lda)
+{
+    return hipCUBLASStatusToHIPStatus(cublasSsyr((cublasHandle_t)handle, uplo, n, alpha, x, incx, A, lda));
+}
+
+hipblasStatus_t hipblasDsyr(hipblasHandle_t   handle,
+                            hipblasFillMode_t uplo,
+                            int               n,
+                            const double*     alpha,
+                            const double*     x,
+                            int               incx,
+                            double*           A,
+                            int               lda);
+{
+    return hipCUBLASStatusToHIPStatus(cublasDsyr((cublasHandle_t)handle, uplo, n, alpha, x, incx, A, lda));
+}
+
 hipblasStatus_t hipblasStrsm(hipblasHandle_t    handle,
                              hipblasSideMode_t  side,
                              hipblasFillMode_t  uplo,

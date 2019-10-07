@@ -66,6 +66,16 @@ hipblasStatus_t hipblasGer(hipblasHandle_t handle,
                            int             lda);
 
 template <typename T>
+hipblasStatus_t hipblasSyr(hipblasHandle_t   handle,
+                           hipblasFillMode_t uplo,
+                           int               n,
+                           const T*          alpha,
+                           const T*          x,
+                           int               incx,
+                           T*                A,
+                           int               lda);
+
+template <typename T>
 hipblasStatus_t hipblasGemv(hipblasHandle_t    handle,
                             hipblasOperation_t transA,
                             int                m,

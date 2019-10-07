@@ -638,6 +638,30 @@ float *x, int incx, const float *y, int incy, float *A, int lda, int batchCount)
 HIPBLAS_STATUS_NOT_SUPPORTED;}
 */
 
+hipblasStatus_t hipblasSsyr(hipblasHandle_t   handle,
+                            hipblasFillMode_t uplo,
+                            int               n,
+                            const float*      alpha,
+                            const float*      x,
+                            int               incx,
+                            float*            A,
+                            int               lda)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ssyr((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, A, lda));
+}
+
+hipblasStatus_t hipblasDsyr(hipblasHandle_t   handle,
+                            hipblasFillMode_t uplo,
+                            int               n,
+                            const double*     alpha,
+                            const double*     x,
+                            int               incx,
+                            double*           A,
+                            int               lda)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dsyr((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, A, lda));
+}
+
 //------------------------------------------------------------------------------------------------------------
 
 hipblasStatus_t hipblasStrsm(hipblasHandle_t    handle,
