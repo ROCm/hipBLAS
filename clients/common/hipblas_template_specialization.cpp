@@ -42,6 +42,30 @@ hipblasStatus_t hipblasAxpy<double>(hipblasHandle_t handle,
     return hipblasDaxpy(handle, n, alpha, x, incx, y, incy);
 }
 
+template <>
+hipblasStatus_t hipblasAxpy<hipComplex>(hipblasHandle_t   handle,
+                                        int               n,
+                                        const hipComplex* alpha,
+                                        const hipComplex* x,
+                                        int               incx,
+                                        hipComplex*       y,
+                                        int               incy)
+{
+    return hipblasCaxpy(handle, n, alpha, x, incx, y, incy);
+}
+
+template <>
+hipblasStatus_t hipblasAxpy<hipDoubleComplex>(hipblasHandle_t         handle,
+                                              int                     n,
+                                              const hipDoubleComplex* alpha,
+                                              const hipDoubleComplex* x,
+                                              int                     incx,
+                                              hipDoubleComplex*       y,
+                                              int                     incy)
+{
+    return hipblasZaxpy(handle, n, alpha, x, incx, y, incy);
+}
+
 // scal
 template <>
 hipblasStatus_t

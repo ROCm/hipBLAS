@@ -65,34 +65,38 @@ void unit_check_general(int M, int N, int lda, double* hCPU, double* hGPU)
     }
 }
 
-//    template<>
-//    void unit_check_general(int M, int N, int lda, hipComplex *hCPU, hipComplex *hGPU){
-//        #pragma unroll
-//        for(int j=0; j<N; j++){
-//            #pragma unroll
-//            for(int i=0;i<M;i++){
-//#ifdef GOOGLE_TEST
-//                ASSERT_FLOAT_EQ(hCPU[i+j*lda].x, hGPU[i+j*lda].x);
-//                ASSERT_FLOAT_EQ(hCPU[i+j*lda].y, hGPU[i+j*lda].y);
-//#endif
-//            }
-//        }
-//    }
+template<>
+void unit_check_general(int M, int N, int lda, hipComplex *hCPU, hipComplex *hGPU){
+#pragma unroll
+    for(int j=0; j<N; j++)
+    {
+        #pragma unroll
+        for(int i=0;i<M;i++)
+        {
+#ifdef GOOGLE_TEST
+            ASSERT_FLOAT_EQ(hCPU[i+j*lda].x, hGPU[i+j*lda].x);
+            ASSERT_FLOAT_EQ(hCPU[i+j*lda].y, hGPU[i+j*lda].y);
+#endif
+        }
+    }
+}
 
-//    template<>
-//    void unit_check_general(int M, int N, int lda, hipDoubleComplex *hCPU, hipDoubleComplex
-//    *hGPU){
-//        #pragma unroll
-//        for(int j=0; j<N; j++){
-//            #pragma unroll
-//            for(int i=0;i<M;i++){
-//#ifdef GOOGLE_TEST
-//                ASSERT_DOUBLE_EQ(hCPU[i+j*lda].x, hGPU[i+j*lda].x);
-//                ASSERT_DOUBLE_EQ(hCPU[i+j*lda].y, hGPU[i+j*lda].y);
-//#endif
-//            }
-//        }
-//    }
+template<>
+void unit_check_general(int M, int N, int lda, hipDoubleComplex *hCPU, hipDoubleComplex
+*hGPU){
+#pragma unroll
+    for(int j=0; j<N; j++)
+    {
+        #pragma unroll
+        for(int i=0;i<M;i++)
+        {
+#ifdef GOOGLE_TEST
+            ASSERT_DOUBLE_EQ(hCPU[i+j*lda].x, hGPU[i+j*lda].x);
+            ASSERT_DOUBLE_EQ(hCPU[i+j*lda].y, hGPU[i+j*lda].y);
+#endif
+        }
+    }
+}
 
 template <>
 void unit_check_general(int M, int N, int lda, int* hCPU, int* hGPU)

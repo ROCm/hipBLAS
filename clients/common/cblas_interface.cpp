@@ -62,6 +62,28 @@ void cblas_axpy<double>(int           n,
     cblas_daxpy(n, alpha, x, incx, y, incy);
 }
 
+template <>
+void cblas_axpy<hipComplex>(int               n,
+                            const hipComplex  alpha,
+                            const hipComplex* x,
+                            int               incx,
+                            hipComplex*       y,
+                            int               incy)
+{
+    cblas_caxpy(n, &alpha, x, incx, y, incy);
+}
+
+template <>
+void cblas_axpy<hipDoubleComplex>(int                     n,
+                                  const hipDoubleComplex  alpha,
+                                  const hipDoubleComplex* x,
+                                  int                     incx,
+                                  hipDoubleComplex*       y,
+                                  int                     incy)
+{
+    cblas_zaxpy(n, &alpha, x, incx, y, incy);
+}
+
 // scal
 template <>
 void cblas_scal<float>(int n, const float alpha, float* x, int incx)
@@ -223,17 +245,19 @@ void cblas_asum<double, double>(int n, const double* x, int incx, double* result
 }
 
  template<>
- void cblas_asum<hipComplex, float>( int n,
-                         const hipComplex *x, int incx,
-                         float *result)
+ void cblas_asum<hipComplex, float>(int n,
+                                    const hipComplex *x,
+                                    int incx,
+                                    float *result)
  {
      *result = cblas_scasum(n, x, incx);
  }
 
  template<>
- void cblas_asum<hipDoubleComplex, double>( int n,
-                         const hipDoubleComplex *x, int incx,
-                         double *result)
+ void cblas_asum<hipDoubleComplex, double>(int n,
+                                           const hipDoubleComplex *x,
+                                           int incx,
+                                           double *result)
  {
      *result = cblas_dzasum(n, x, incx);
  }

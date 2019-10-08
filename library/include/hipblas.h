@@ -209,6 +209,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDaxpy(hipblasHandle_t handle,
                                             double*         y,
                                             int             incy);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpy(hipblasHandle_t   handle,
+                                            int               n,
+                                            const hipComplex* alpha,
+                                            const hipComplex* x,
+                                            int               incx,
+                                            hipComplex*        y,
+                                            int               incy);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpy(hipblasHandle_t         handle,
+                                            int                     n,
+                                            const hipDoubleComplex* alpha,
+                                            const hipDoubleComplex* x,
+                                            int                     incx,
+                                            hipDoubleComplex*       y,
+                                            int                     incy);
+
 /* not implemented
 HIPBLAS_EXPORT hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t handle, int n, const float
 *alpha, const float *x, int incx,  float *y, int incy, int batchCount);
