@@ -386,6 +386,7 @@ hipblasStatus_t hipblasGer<double>(hipblasHandle_t handle,
     return hipblasDger(handle, m, n, alpha, x, incx, y, incy, A, lda);
 }
 
+// syr
 template <>
 hipblasStatus_t hipblasSyr<float>(hipblasHandle_t   handle,
                                   hipblasFillMode_t uplo,
@@ -411,6 +412,36 @@ hipblasStatus_t hipblasSyr<double>(hipblasHandle_t   handle,
 {
     return hipblasDsyr(handle, uplo, n, alpha, x, incx, A, lda);
 }
+
+// trsv
+template <>
+hipblasStatus_t hipblasTrsv<float>(hipblasHandle_t    handle,
+                                   hipblasFillMode_t  uplo,
+                                   hipblasOperation_t transA,
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   const float*       A,
+                                   int                lda,
+                                   float*             x,
+                                   int                incx)
+{
+    return hipblasStrsv(handle, uplo, transA, diag, m, A, lda, x, incx);
+}
+
+template <>
+hipblasStatus_t hipblasTrsv<double>(hipblasHandle_t    handle,
+                                    hipblasFillMode_t  uplo,
+                                    hipblasOperation_t transA,
+                                    hipblasDiagType_t  diag,
+                                    int                m,
+                                    const double*      A,
+                                    int                lda,
+                                    double*            x,
+                                    int                incx)
+{
+    return hipblasDtrsv(handle, uplo, transA, diag, m, A, lda, x, incx);
+}
+
 
 /*
  * ===========================================================================
