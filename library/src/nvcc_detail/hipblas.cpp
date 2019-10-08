@@ -358,6 +358,42 @@ hipblasStatus_t hipblasSaxpy(
         cublasSaxpy((cublasHandle_t)handle, n, alpha, x, incx, y, incy));
 }
 
+hipblasStatus_t hipblasDaxpy(hipblasHandle_t handle,
+                             int             n,
+                             const double*   alpha,
+                             const double*   x,
+                             int             incx,
+                             double*         y,
+                             int             incy)
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasDaxpy((cublasHandle_t)handle, n, alpha, x, incx, y, incy));
+}
+
+hipblasStatus_t hipblasCaxpy(hipblasHandle_t   handle,
+                             int               n,
+                             const hipComplex* alpha,
+                             const hipComplex* x,
+                             int               incx,
+                             hipComplex*       y,
+                             int               incy)
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasCaxpy((rocblas_handle)handle, n, (cuComplex*)alpha, (cuComplex*)x, incx, (cuComplex*)y, incy));
+}
+
+hipblasStatus_t hipblasZaxpy(hipblasHandle_t          handle,
+                             int                     n,
+                             const hipDoubleComplex* alpha,
+                             const hipDoubleComplex* x,
+                             int                     incx,
+                             hipDoubleComplex*       y,
+                             int                     incy)
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasZaxpy((cublasHandle_t)handle, n, (cuDoubleComplex*)alpha, (cuDoubleComplex*)x, incx, (cuDoubleComplex*)y, incy));
+}
+
 hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t handle,
                                     int             n,
                                     const float*    alpha,
@@ -370,6 +406,20 @@ hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t handle,
     // TODO warn user that function was demoted to ignore batch
     return hipCUBLASStatusToHIPStatus(
         cublasSaxpy((cublasHandle_t)handle, n, alpha, x, incx, y, incy));
+}
+
+hipblasStatus_t hipblasDaxpyBatched(hipblasHandle_t handle,
+                                    int             n,
+                                    const double*   alpha,
+                                    const double*   x,
+                                    int             incx,
+                                    double*         y,
+                                    int             incy,
+                                    int             batchCount)
+{
+    // TODO warn user that function was demoted to ignore batch
+    return hipCUBLASStatusToHIPStatus(
+        cublasDaxpy((cublasHandle_t)handle, n, alpha, x, incx, y, incy));
 }
 
 hipblasStatus_t
@@ -782,18 +832,6 @@ hipblasStatus_t hipblasDgemv(hipblasHandle_t    handle,
                                                   beta,
                                                   y,
                                                   incy));
-}
-
-hipblasStatus_t hipblasDaxpy(hipblasHandle_t handle,
-                             int             n,
-                             const double*   alpha,
-                             const double*   x,
-                             int             incx,
-                             double*         y,
-                             int             incy)
-{
-    return hipCUBLASStatusToHIPStatus(
-        cublasDaxpy((cublasHandle_t)handle, n, alpha, x, incx, y, incy));
 }
 
 hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t    handle,

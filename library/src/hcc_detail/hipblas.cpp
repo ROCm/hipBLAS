@@ -432,6 +432,7 @@ hipblasStatus_t  hipblasDasumBatched(hipblasHandle_t handle, int n, double *x, i
 *result, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
 */
 
+// axpy
 hipblasStatus_t hipblasSaxpy(
     hipblasHandle_t handle, int n, const float* alpha, const float* x, int incx, float* y, int incy)
 {
@@ -449,6 +450,30 @@ hipblasStatus_t hipblasDaxpy(hipblasHandle_t handle,
 {
     return rocBLASStatusToHIPStatus(
         rocblas_daxpy((rocblas_handle)handle, n, alpha, x, incx, y, incy));
+}
+
+hipblasStatus_t hipblasCaxpy(hipblasHandle_t   handle,
+                             int               n,
+                             const hipComplex* alpha,
+                             const hipComplex* x,
+                             int               incx,
+                             hipComplex*       y,
+                             int               incy)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_caxpy((rocblas_handle)handle, n, (rocblas_float_complex*)alpha, (rocblas_float_complex*)x, incx, (rocblas_float_complex*)y, incy));
+}
+
+hipblasStatus_t hipblasZaxpy(hipblasHandle_t          handle,
+                             int                     n,
+                             const hipDoubleComplex* alpha,
+                             const hipDoubleComplex* x,
+                             int                     incx,
+                             hipDoubleComplex*       y,
+                             int                     incy)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_zaxpy((rocblas_handle)handle, n, (rocblas_double_complex*)alpha, (rocblas_double_complex*)x, incx, (rocblas_double_complex*)y, incy));
 }
 
 /* not implemented
