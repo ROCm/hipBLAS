@@ -16,6 +16,32 @@
  *    level 1 BLAS
  * ===========================================================================
  */
+
+// axpy
+template <>
+hipblasStatus_t hipblasAxpy<float>(hipblasHandle_t handle,
+                                   int             n,
+                                   const float*    alpha,
+                                   const float*    x,
+                                   int             incx,
+                                   float*          y,
+                                   int             incy)
+{
+    return hipblasSaxpy(handle, n, alpha, x, incx, y, incy);
+}
+
+template <>
+hipblasStatus_t hipblasAxpy<double>(hipblasHandle_t handle,
+                                    int             n,
+                                    const double*   alpha,
+                                    const double*   x,
+                                    int             incx,
+                                    double*         y,
+                                    int             incy)
+{
+    return hipblasDaxpy(handle, n, alpha, x, incx, y, incy);
+}
+
 // scal
 template <>
 hipblasStatus_t
