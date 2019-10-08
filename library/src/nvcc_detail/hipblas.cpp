@@ -314,6 +314,7 @@ hipblasStatus_t hipblasIdamax(hipblasHandle_t handle, int n, const double* x, in
     return hipCUBLASStatusToHIPStatus(cublasIdamax((cublasHandle_t)handle, n, x, incx, result));
 }
 
+// asum
 hipblasStatus_t hipblasSasum(hipblasHandle_t handle, int n, const float* x, int incx, float* result)
 {
     return hipCUBLASStatusToHIPStatus(cublasSasum((cublasHandle_t)handle, n, x, incx, result));
@@ -325,6 +326,17 @@ hipblasStatus_t
     return hipCUBLASStatusToHIPStatus(cublasDasum((cublasHandle_t)handle, n, x, incx, result));
 }
 
+hipblasStatus_t hipblasScasum(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result)
+{
+    return hipCUBLASStatusToHIPStatus(cublasScasum((cublasHandle_t)handle, n, (cuComplex*)x, incx, result));
+}
+
+hipblasStatus_t hipblasDzasum(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDzasum((cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, result));
+}
+
+// asum_batched
 hipblasStatus_t hipblasSasumBatched(
     hipblasHandle_t handle, int n, float* x, int incx, float* result, int batchCount)
 {

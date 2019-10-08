@@ -82,7 +82,7 @@ hipblasStatus_t testing_asum(Arguments argus)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_2 = hipblasAsum<T1, T2>(handle, N, dx, incx, &rocblas_result);
+        status_2 = hipblasAsum<T1, T2>(handle, N, hx.data(), incx, &rocblas_result);
     }
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
@@ -92,13 +92,12 @@ hipblasStatus_t testing_asum(Arguments argus)
         hipblasDestroy(handle);
         if(status_1 != HIPBLAS_STATUS_SUCCESS)
             return status_1;
-        if(status_2 != HIPBLAS_STATUS_SUCCESS)
-            return status_2;
+        return status_2;
     }
 
     if(device_pointer)
         CHECK_HIP_ERROR(
-            hipMemcpy(&rocblas_result, d_rocblas_result, sizeof(T1), hipMemcpyDeviceToHost));
+            hipMemcpy(&rocblas_result, d_rocblas_result, sizeof(T2), hipMemcpyDeviceToHost));
 
     if(argus.unit_check)
     {
@@ -117,7 +116,6 @@ hipblasStatus_t testing_asum(Arguments argus)
     } // end of if unit/norm check
 
     //  BLAS_1_RESULT_PRINT
-
     CHECK_HIP_ERROR(hipFree(dx));
     CHECK_HIP_ERROR(hipFree(d_rocblas_result));
     hipblasDestroy(handle);

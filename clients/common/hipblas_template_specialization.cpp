@@ -186,17 +186,28 @@ hipblasStatus_t hipblasAsum<double, double>(
 
     return hipblasDasum(handle, n, x, incx, result);
 }
-/*
-    template<>
-    hipblasStatus_t
-    hipblasAsum<hipComplex, float>(hipblasHandle_t handle,
-        int n,
-        const hipComplex *x, int incx,
-        float *result){
 
-        return hipblasScasum(handle, n, x, incx, result);
-    }
-*/
+template<>
+hipblasStatus_t
+hipblasAsum<hipComplex, float>(hipblasHandle_t handle,
+                               int n,
+                               const hipComplex *x, int incx,
+                               float *result)
+{
+
+    return hipblasScasum(handle, n, x, incx, result);
+}
+
+template<>
+hipblasStatus_t
+hipblasAsum<hipDoubleComplex, double>(hipblasHandle_t handle,
+                                      int n,
+                                      const hipDoubleComplex *x, int incx,
+                                      double *result)
+{
+
+    return hipblasDzasum(handle, n, x, incx, result);
+}
 
 // nrm2
 template <>

@@ -21,6 +21,30 @@ typedef void* hipblasHandle_t;
 
 typedef uint16_t hipblasHalf;
 
+template<typename T>
+struct hip_complex_number
+{
+    T x, y;
+
+    template <typename U>
+    hip_complex_number(U a, U b) : x(a), y(b) { }
+    template <typename U>
+    hip_complex_number(U a) : x(a), y(0) { }
+    hip_complex_number() : x(0), y(0) { }
+};
+
+typedef hip_complex_number<float> hipComplex;
+typedef hip_complex_number<double> hipDoubleComplex;
+
+// typedef struct
+// {
+//     float x, y;
+// } hipComplex;
+// typedef struct
+// {
+//     double x, y;
+// } hipDoubleComplex;
+
 enum hipblasStatus_t
 {
     HIPBLAS_STATUS_SUCCESS           = 0, // Function succeeds
@@ -148,11 +172,18 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasIdamax(hipblasHandle_t handle, int n, const double* x, int incx, int* result);
 
+// asum
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSasum(hipblasHandle_t handle, int n, const float* x, int incx, float* result);
 
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDasum(hipblasHandle_t handle, int n, const double* x, int incx, double* result);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasScasum(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasDzasum(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
 
 /* not implemented
 HIPBLAS_EXPORT hipblasStatus_t  hipblasSasumBatched(hipblasHandle_t handle, int n, float *x, int

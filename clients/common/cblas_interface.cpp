@@ -198,21 +198,21 @@ void cblas_asum<double, double>(int n, const double* x, int incx, double* result
     *result = cblas_dasum(n, x, incx);
 }
 
-//  template<>
-//  void cblas_asum<hipComplex, float>( int n,
-//                          const hipComplex *x, int incx,
-//                          float *result)
-//  {
-//      *result = cblas_scasum(n, x, incx);
-//  }
+ template<>
+ void cblas_asum<hipComplex, float>( int n,
+                         const hipComplex *x, int incx,
+                         float *result)
+ {
+     *result = cblas_scasum(n, x, incx);
+ }
 
-//  template<>
-//  void cblas_asum<hipDoubleComplex, double>( int n,
-//                          const hipDoubleComplex *x, int incx,
-//                          double *result)
-//  {
-//      *result = cblas_dzasum(n, x, incx);
-//  }
+ template<>
+ void cblas_asum<hipDoubleComplex, double>( int n,
+                         const hipDoubleComplex *x, int incx,
+                         double *result)
+ {
+     *result = cblas_dzasum(n, x, incx);
+ }
 
 // amax
 template <>
