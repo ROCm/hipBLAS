@@ -93,7 +93,6 @@ if( NOT CUDA_FOUND )
   get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
   target_link_libraries( hipblas-test PRIVATE ${HIP_HCC_LOCATION} )
 
-
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
     # Remove following when hcc is fixed; hcc emits following spurious warning
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
