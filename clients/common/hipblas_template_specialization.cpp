@@ -473,6 +473,40 @@ hipblasStatus_t hipblasGemv<double>(hipblasHandle_t    handle,
 }
 
 template <>
+hipblasStatus_t hipblasGemv<hipComplex>(hipblasHandle_t    handle,
+                                        hipblasOperation_t transA,
+                                        int                m,
+                                        int                n,
+                                        const hipComplex*  alpha,
+                                        const hipComplex*  A,
+                                        int                lda,
+                                        const hipComplex*  x,
+                                        int                incx,
+                                        const hipComplex*  beta,
+                                        hipComplex*        y,
+                                        int                incy)
+{
+    return hipblasCgemv(handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
+}
+
+template <>
+hipblasStatus_t hipblasGemv<hipDoubleComplex>(hipblasHandle_t         handle,
+                                              hipblasOperation_t      transA,
+                                              int                     m,
+                                              int                     n,
+                                              const hipDoubleComplex* alpha,
+                                              const hipDoubleComplex* A,
+                                              int                     lda,
+                                              const hipDoubleComplex* x,
+                                              int                    incx,
+                                              const hipDoubleComplex* beta,
+                                              hipDoubleComplex*       y,
+                                              int                     incy)
+{
+    return hipblasZgemv(handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
+}
+
+template <>
 hipblasStatus_t hipblasGer<float>(hipblasHandle_t handle,
                                   int             m,
                                   int             n,

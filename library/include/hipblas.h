@@ -389,6 +389,32 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemv(hipblasHandle_t    handle,
                                             double*            y,
                                             int                incy);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemv(hipblasHandle_t    handle,
+                                            hipblasOperation_t trans,
+                                            int                m,
+                                            int                n,
+                                            const hipComplex*  alpha,
+                                            const hipComplex*  A,
+                                            int                lda,
+                                            const hipComplex*  x,
+                                            int                incx,
+                                            const hipComplex*  beta,
+                                            hipComplex*        y,
+                                            int                incy);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemv(hipblasHandle_t         handle,
+                                            hipblasOperation_t      trans,
+                                            int                     m,
+                                            int                     n,
+                                            const hipDoubleComplex* alpha,
+                                            const hipDoubleComplex* A,
+                                            int                     lda,
+                                            const hipDoubleComplex* x,
+                                            int                     incx,
+                                            const hipDoubleComplex* beta,
+                                            hipDoubleComplex*       y,
+                                            int                     incy);
+
 /* not implemented
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemvBatched(hipblasHandle_t handle, hipblasOperation_t trans,
 int m, int n, const float *alpha, float *A, int lda,

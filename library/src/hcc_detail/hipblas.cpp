@@ -735,6 +735,60 @@ hipblasStatus_t hipblasDgemv(hipblasHandle_t    handle,
                                                   incy));
 }
 
+hipblasStatus_t hipblasCgemv(hipblasHandle_t    handle,
+                             hipblasOperation_t trans,
+                             int                m,
+                             int                n,
+                             const hipComplex*  alpha,
+                             const hipComplex*  A,
+                             int                lda,
+                             const hipComplex*  x,
+                             int                incx,
+                             const hipComplex*  beta,
+                             hipComplex*        y,
+                             int                incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cgemv((rocblas_handle)handle,
+                                                  hipOperationToHCCOperation(trans),
+                                                  m,
+                                                  n,
+                                                  (rocblas_float_complex*)alpha,
+                                                  (rocblas_float_complex*)A,
+                                                  lda,
+                                                  (rocblas_float_complex*)x,
+                                                  incx,
+                                                  (rocblas_float_complex*)beta,
+                                                  (rocblas_float_complex*)y,
+                                                  incy));
+}
+
+hipblasStatus_t hipblasZgemv(hipblasHandle_t         handle,
+                             hipblasOperation_t      trans,
+                             int                     m,
+                             int                     n,
+                             const hipDoubleComplex* alpha,
+                             const hipDoubleComplex* A,
+                             int                     lda,
+                             const hipDoubleComplex* x,
+                             int                     incx,
+                             const hipDoubleComplex* beta,
+                             hipDoubleComplex*        y,
+                             int                     incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zgemv((rocblas_handle)handle,
+                                                  hipOperationToHCCOperation(trans),
+                                                  m,
+                                                  n,
+                                                  (rocblas_double_complex*)alpha,
+                                                  (rocblas_double_complex*)A,
+                                                  lda,
+                                                  (rocblas_double_complex*)x,
+                                                  incx,
+                                                  (rocblas_double_complex*)beta,
+                                                  (rocblas_double_complex*)y,
+                                                  incy));
+}
+
 /* not implemented
 hipblasStatus_t hipblasSgemvBatched(hipblasHandle_t handle, hipblasOperation_t trans, int m, int n,
 const float *alpha, float *A, int lda,

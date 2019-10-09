@@ -364,6 +364,7 @@ void cblas_iamax<hipDoubleComplex>(int n, const hipDoubleComplex* x, int incx, i
  * ===========================================================================
  */
 
+// gemv
 template <>
 void cblas_gemv<float>(hipblasOperation_t transA,
                        int                m,
@@ -398,28 +399,41 @@ void cblas_gemv<double>(hipblasOperation_t transA,
         CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
 }
 
-//  template<>
-//  void cblas_gemv<hipComplex>(hipblasOperation_t transA, int m, int n,
-//                          hipComplex alpha,
-//                          hipComplex *A, int lda,
-//                          hipComplex *x, int incx,
-//                          hipComplex beta, hipComplex *y, int incy)
-//  {
-//      cblas_cgemv(CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, &alpha, A, lda, x, incx, &beta, y,
-//      incy);
-//  }
+template <>
+void cblas_gemv<hipComplex>(hipblasOperation_t transA,
+                            int                m,
+                            int                n,
+                            hipComplex         alpha,
+                            hipComplex*        A,
+                            int                lda,
+                            hipComplex*        x,
+                            int                incx,
+                            hipComplex         beta,
+                            hipComplex*        y,
+                            int                incy)
+{
+    cblas_cgemv(
+        CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, &alpha, A, lda, x, incx, &beta, y, incy);
+}
 
-//  template<>
-//  void cblas_gemv<hipDoubleComplex>(hipblasOperation_t transA, int m, int n,
-//                          hipDoubleComplex alpha,
-//                          hipDoubleComplex *A, int lda,
-//                          hipDoubleComplex *x, int incx,
-//                          hipDoubleComplex beta, hipDoubleComplex *y, int incy)
-//  {
-//      cblas_zgemv(CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, &alpha, A, lda, x, incx, &beta, y,
-//      incy);
-//  }
+template <>
+void cblas_gemv<hipDoubleComplex>(hipblasOperation_t transA,
+                            int                m,
+                            int                n,
+                            hipDoubleComplex   alpha,
+                            hipDoubleComplex*  A,
+                            int                lda,
+                            hipDoubleComplex*  x,
+                            int                incx,
+                            hipDoubleComplex   beta,
+                            hipDoubleComplex*  y,
+                            int                incy)
+{
+    cblas_zgemv(
+        CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, &alpha, A, lda, x, incx, &beta, y, incy);
+}
 
+// symv
 template <>
 void cblas_symv<float>(hipblasFillMode_t uplo,
                        int               n,
