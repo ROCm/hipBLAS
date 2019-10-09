@@ -71,7 +71,6 @@ template <>
 hipblasStatus_t
     hipblasScal<float>(hipblasHandle_t handle, int n, const float* alpha, float* x, int incx)
 {
-
     return hipblasSscal(handle, n, alpha, x, incx);
 }
 
@@ -79,30 +78,37 @@ template <>
 hipblasStatus_t
     hipblasScal<double>(hipblasHandle_t handle, int n, const double* alpha, double* x, int incx)
 {
-
     return hipblasDscal(handle, n, alpha, x, incx);
 }
-/*
-    template<>
-    hipblasStatus_t
-    hipblasScal<hipComplex>(hipblasHandle_t handle,
-        int n,
-        const hipComplex *alpha,
-        hipComplex *x, int incx){
 
-        return hipblasCscal(handle, n, alpha, x, incx);
-    }
+template <>
+hipblasStatus_t
+    hipblasScal<hipComplex>(hipblasHandle_t handle, int n, const hipComplex* alpha, hipComplex* x, int incx)
+{
+    return hipblasCscal(handle, n, alpha, x, incx);
+}
 
-    template<>
-    hipblasStatus_t
-    hipblasScal<hipDoubleComplex>(hipblasHandle_t handle,
-        int n,
-        const hipDoubleComplex *alpha,
-        hipDoubleComplex *x, int incx){
+template <>
+hipblasStatus_t
+    hipblasScal<hipComplex, float>(hipblasHandle_t handle, int n, const float* alpha, hipComplex* x, int incx)
+{
+    return hipblasCsscal(handle, n, alpha, x, incx);
+}
 
-        return hipblasZscal(handle, n, alpha, x, incx);
-    }
-*/
+template <>
+hipblasStatus_t
+    hipblasScal<hipDoubleComplex>(hipblasHandle_t handle, int n, const hipDoubleComplex* alpha, hipDoubleComplex* x, int incx)
+{
+    return hipblasZscal(handle, n, alpha, x, incx);
+}
+
+template <>
+hipblasStatus_t
+    hipblasScal<hipDoubleComplex, double>(hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx)
+{
+    return hipblasZdscal(handle, n, alpha, x, incx);
+}
+
 /*
     //swap
     template<>

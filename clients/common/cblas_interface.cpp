@@ -97,6 +97,30 @@ void cblas_scal<double>(int n, const double alpha, double* x, int incx)
     cblas_dscal(n, alpha, x, incx);
 }
 
+template <>
+void cblas_scal<hipComplex>(int n, const hipComplex alpha, hipComplex* x, int incx)
+{
+    cblas_cscal(n, &alpha, x, incx);
+}
+
+template <>
+void cblas_scal<hipComplex, float>(int n, const float alpha, hipComplex* x, int incx)
+{
+    cblas_csscal(n, alpha, x, incx);
+}
+
+template <>
+void cblas_scal<hipDoubleComplex>(int n, const hipDoubleComplex alpha, hipDoubleComplex* x, int incx)
+{
+    cblas_zscal(n, &alpha, x, incx);
+}
+
+template <>
+void cblas_scal<hipDoubleComplex, double>(int n, const double alpha, hipDoubleComplex* x, int incx)
+{
+    cblas_zdscal(n, alpha, x, incx);
+}
+
 //  template<>
 //  void cblas_scal<hipComplex>( int n,
 //                          const hipComplex alpha,

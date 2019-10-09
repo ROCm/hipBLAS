@@ -335,6 +335,18 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDscal(hipblasHandle_t handle, int n, const double* alpha, double* x, int incx);
 
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasCscal(hipblasHandle_t handle, int n, const hipComplex* alpha, hipComplex* x, int incx);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasCsscal(hipblasHandle_t handle, int n, const float* alpha, hipComplex* x, int incx);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasZscal(hipblasHandle_t handle, int n, const hipDoubleComplex* alpha, hipDoubleComplex* x, int incx);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasZdscal(hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx);
+
 /* not implemented, requires complex support
 hipblasStatus_t  hipblasCscal(hipblasHandle_t handle, int n, const hipComplex *alpha,  hipComplex
 *x, int incx);

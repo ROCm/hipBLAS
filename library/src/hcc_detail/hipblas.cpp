@@ -639,6 +639,26 @@ hipblasStatus_t
     return rocBLASStatusToHIPStatus(rocblas_dscal((rocblas_handle)handle, n, alpha, x, incx));
 }
 
+hipblasStatus_t hipblasCscal(hipblasHandle_t handle, int n, const hipComplex* alpha, hipComplex* x, int incx)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cscal((rocblas_handle)handle, n, (rocblas_float_complex*)alpha, (rocblas_float_complex*)x, incx));
+}
+
+hipblasStatus_t hipblasCsscal(hipblasHandle_t handle, int n, const float* alpha, hipComplex* x, int incx)
+{
+    return rocBLASStatusToHIPStatus(rocblas_csscal((rocblas_handle)handle, n, alpha, (rocblas_float_complex*)x, incx));
+}
+
+hipblasStatus_t hipblasZscal(hipblasHandle_t handle, int n, const hipDoubleComplex* alpha, hipDoubleComplex* x, int incx)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zscal((rocblas_handle)handle, n, (rocblas_double_complex*)alpha, (rocblas_double_complex*)x, incx));
+}
+
+hipblasStatus_t hipblasZdscal(hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zdscal((rocblas_handle)handle, n, alpha, (rocblas_double_complex*)x, incx));
+}
+
 /*   complex not implemented
 hipblasStatus_t  hipblasCscal(hipblasHandle_t handle, int n, const hipComplex *alpha,  hipComplex
 *x, int incx){
