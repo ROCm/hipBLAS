@@ -215,21 +215,17 @@ void cblas_nrm2<double, double>(int n, const double* x, int incx, double* result
     *result = cblas_dnrm2(n, x, incx);
 }
 
-//  template<>
-//  void cblas_nrm2<hipComplex, float>( int n,
-//                          const hipComplex *x, int incx,
-//                          float *result)
-//  {
-//      *result = cblas_scnrm2(n, x, incx);
-//  }
+template <>
+void cblas_nrm2<hipComplex, float>(int n, const hipComplex* x, int incx, float* result)
+{
+    *result = cblas_scnrm2(n, x, incx);
+}
 
-//  template<>
-//  void cblas_nrm2<hipDoubleComplex, double>( int n,
-//                          const hipDoubleComplex *x, int incx,
-//                          double *result)
-//  {
-//      *result = cblas_dznrm2(n, x, incx);
-//  }
+template <>
+void cblas_nrm2<hipDoubleComplex, double>(int n, const hipDoubleComplex* x, int incx, double* result)
+{
+    *result = cblas_dznrm2(n, x, incx);
+}
 
 // asum
 template <>

@@ -543,6 +543,7 @@ hipblasStatus_t hipblasDdotBatched (hipblasHandle_t handle, int n, const double 
 double *y, int incy, double *result, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
 */
 
+// nrm2
 hipblasStatus_t hipblasSnrm2(hipblasHandle_t handle, int n, const float* x, int incx, float* result)
 {
     return rocBLASStatusToHIPStatus(rocblas_snrm2((rocblas_handle)handle, n, x, incx, result));
@@ -554,6 +555,17 @@ hipblasStatus_t
     return rocBLASStatusToHIPStatus(rocblas_dnrm2((rocblas_handle)handle, n, x, incx, result));
 }
 
+hipblasStatus_t hipblasScnrm2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_scnrm2((rocblas_handle)handle, n, (rocblas_float_complex*)x, incx, result));
+}
+
+hipblasStatus_t hipblasDznrm2(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dznrm2((rocblas_handle)handle, n, (rocblas_double_complex*)x, incx, result));
+}
+
+// scal
 hipblasStatus_t hipblasSscal(hipblasHandle_t handle, int n, const float* alpha, float* x, int incx)
 {
     return rocBLASStatusToHIPStatus(rocblas_sscal((rocblas_handle)handle, n, alpha, x, incx));

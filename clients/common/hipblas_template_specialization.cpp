@@ -275,27 +275,22 @@ hipblasStatus_t hipblasNrm2<double, double>(
 
     return hipblasDnrm2(handle, n, x, incx, result);
 }
-/*
-    template<>
-    hipblasStatus_t
-    hipblasNrm2<hipComplex, float>(hipblasHandle_t handle,
-        int n,
-        const hipComplex *x, int incx,
-        float *result){
 
-        return hipblasScnrm2(handle, n, x, incx, result);
-    }
+template <>
+hipblasStatus_t hipblasNrm2<hipComplex, float>(
+    hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result)
+{
 
-    template<>
-    hipblasStatus_t
-    hipblasNrm2<hipDoubleComplex, double>(hipblasHandle_t handle,
-        int n,
-        const hipDoubleComplex *x, int incx,
-        double *result){
+    return hipblasScnrm2(handle, n, x, incx, result);
+}
 
-        return hipblasDznrm2(handle, n, x, incx, result);
-    }
-*/
+template <>
+hipblasStatus_t hipblasNrm2<hipDoubleComplex, double>(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result)
+{
+
+    return hipblasDznrm2(handle, n, x, incx, result);
+}
 
 /*
     //amin
