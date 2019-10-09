@@ -37,6 +37,10 @@ template <typename T>
 hipblasStatus_t hipblasDot(
     hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
 
+template <typename T>
+hipblasStatus_t hipblasDotc(
+    hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
+
 template <typename T1, typename T2>
 hipblasStatus_t hipblasAsum(hipblasHandle_t handle, int n, const T1* x, int incx, T2* result);
 

@@ -274,6 +274,39 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdot(hipblasHandle_t handle,
                                            int             incy,
                                            double*         result);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasCdotc(hipblasHandle_t   handle,
+                                            int               n,
+                                            const hipComplex* x,
+                                            int               incx,
+                                            const hipComplex* y,
+                                            int               incy,
+                                            hipComplex*       result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCdotu(hipblasHandle_t   handle,
+                                            int               n,
+                                            const hipComplex* x,
+                                            int               incx,
+                                            const hipComplex* y,
+                                            int               incy,
+                                            hipComplex*       result);
+ 
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdotc(hipblasHandle_t         handle,
+                                            int                     n,
+                                            const hipDoubleComplex* x,
+                                            int                     incx,
+                                            const hipDoubleComplex* y,
+                                            int                     incy,
+                                            hipDoubleComplex*       result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdotu(hipblasHandle_t         handle,
+                                            int                     n,
+                                            const hipDoubleComplex* x,
+                                            int                     incx,
+                                            const hipDoubleComplex* y,
+                                            int                     incy,
+                                            hipDoubleComplex*       result);
+
+
 /*
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdotBatched (hipblasHandle_t handle, int n, const float *x,
 int incx, const float *y, int incy, float *result, int batchCount);

@@ -213,27 +213,54 @@ hipblasStatus_t hipblasDot<double>(hipblasHandle_t handle,
 {
     return hipblasDdot(handle, n, x, incx, y, incy, result);
 }
-/*
-    template<>
-    hipblasStatus_t
-    hipblasDot<hipComplex>(    hipblasHandle_t handle, int n,
-                            const hipComplex *x, int incx,
-                            const hipComplex *y, int incy,
-                            hipComplex *result)
-    {
-        return hipblasCdotu(handle, n, x, incx, y, incy, result);
-    }
 
-    template<>
-    hipblasStatus_t
-    hipblasDot<hipDoubleComplex>(    hipblasHandle_t handle, int n,
-                            const hipDoubleComplex *x, int incx,
-                            const hipDoubleComplex *y, int incy,
-                            hipDoubleComplex *result)
-    {
-        return hipblasZdotu(handle, n, x, incx, y, incy, result);
-    }
-*/
+template <>
+hipblasStatus_t hipblasDot<hipComplex>(hipblasHandle_t   handle,
+                                       int               n,
+                                       const hipComplex* x,
+                                       int               incx,
+                                       const hipComplex* y,
+                                       int               incy,
+                                       hipComplex*       result)
+{
+    return hipblasCdotu(handle, n, x, incx, y, incy, result);
+}
+
+template <>
+hipblasStatus_t hipblasDot<hipDoubleComplex>(hipblasHandle_t         handle,
+                                             int                     n,
+                                             const hipDoubleComplex* x,
+                                             int                     incx,
+                                             const hipDoubleComplex* y,
+                                             int                     incy,
+                                             hipDoubleComplex*       result)
+{
+    return hipblasZdotu(handle, n, x, incx, y, incy, result);
+}
+
+template <>
+hipblasStatus_t hipblasDotc<hipComplex>(hipblasHandle_t   handle,
+                                        int               n,
+                                        const hipComplex* x,
+                                        int               incx,
+                                        const hipComplex* y,
+                                        int               incy,
+                                        hipComplex*       result)
+{
+    return hipblasCdotc(handle, n, x, incx, y, incy, result);
+}
+
+template <>
+hipblasStatus_t hipblasDotc<hipDoubleComplex>(hipblasHandle_t         handle,
+                                              int                     n,
+                                              const hipDoubleComplex* x,
+                                              int                     incx,
+                                              const hipDoubleComplex* y,
+                                              int                     incy,
+                                              hipDoubleComplex*       result)
+{
+    return hipblasZdotc(handle, n, x, incx, y, incy, result);
+}
 
 // asum
 template <>

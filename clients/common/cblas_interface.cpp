@@ -196,6 +196,30 @@ void cblas_dot<double>(int n, const double* x, int incx, const double* y, int in
     *result = cblas_ddot(n, x, incx, y, incy);
 }
 
+template <>
+void cblas_dot<hipComplex>(int n, const hipComplex* x, int incx, const hipComplex* y, int incy, hipComplex* result)
+{
+    cblas_cdotu_sub(n, x, incx, y, incy, result);
+}
+
+template <>
+void cblas_dot<hipDoubleComplex>(int n, const hipDoubleComplex* x, int incx, const hipDoubleComplex* y, int incy, hipDoubleComplex* result)
+{
+    cblas_zdotu_sub(n, x, incx, y, incy, result);
+}
+
+template <>
+void cblas_dotc<hipComplex>(int n, const hipComplex* x, int incx, const hipComplex* y, int incy, hipComplex* result)
+{
+    cblas_cdotc_sub(n, x, incx, y, incy, result);
+}
+
+template <>
+void cblas_dotc<hipDoubleComplex>(int n, const hipDoubleComplex* x, int incx, const hipDoubleComplex* y, int incy, hipDoubleComplex* result)
+{
+    cblas_zdotc_sub(n, x, incx, y, incy, result);
+}
+
 //  template<>
 //  void cblas_dot<hipComplex>( int n,
 //                          const hipComplex *x, int incx,

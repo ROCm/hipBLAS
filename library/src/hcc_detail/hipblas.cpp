@@ -549,6 +549,54 @@ hipblasStatus_t hipblasDdot(hipblasHandle_t handle,
         rocblas_ddot((rocblas_handle)handle, n, x, incx, y, incy, result));
 }
 
+hipblasStatus_t hipblasCdotc(hipblasHandle_t   handle,
+                             int               n,
+                             const hipComplex* x,
+                             int               incx,
+                             const hipComplex* y,
+                             int               incy,
+                             hipComplex*       result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_cdotc((rocblas_handle)handle, n, (rocblas_float_complex*)x, incx, (rocblas_float_complex*)y, incy, (rocblas_float_complex*)result));
+}
+
+hipblasStatus_t hipblasCdotu(hipblasHandle_t   handle,
+                             int               n,
+                             const hipComplex* x,
+                             int               incx,
+                             const hipComplex* y,
+                             int               incy,
+                             hipComplex*       result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_cdotu((rocblas_handle)handle, n, (rocblas_float_complex*)x, incx, (rocblas_float_complex*)y, incy, (rocblas_float_complex*)result));
+}
+
+hipblasStatus_t hipblasZdotc(hipblasHandle_t         handle,
+                             int                     n,
+                             const hipDoubleComplex* x,
+                             int                     incx,
+                             const hipDoubleComplex* y,
+                             int                     incy,
+                             hipDoubleComplex*       result)
+{ 
+    return rocBLASStatusToHIPStatus(
+        rocblas_zdotc((rocblas_handle)handle, n, (rocblas_double_complex*)x, incx, (rocblas_double_complex*)y, incy, (rocblas_double_complex*)result));
+}
+
+hipblasStatus_t hipblasZdotu(hipblasHandle_t         handle,
+                             int                     n,
+                             const hipDoubleComplex* x,
+                             int                     incx,
+                             const hipDoubleComplex* y,
+                             int                     incy,
+                             hipDoubleComplex*       result)
+{ 
+    return rocBLASStatusToHIPStatus(
+        rocblas_zdotu((rocblas_handle)handle, n, (rocblas_double_complex*)x, incx, (rocblas_double_complex*)y, incy, (rocblas_double_complex*)result));
+}
+
 /* not implemented
 hipblasStatus_t hipblasSdotBatched (hipblasHandle_t handle, int n, const float *x, int incx, const
 float *y, int incy, float *result, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
