@@ -19,13 +19,8 @@
 
 // axpy
 template <>
-hipblasStatus_t hipblasAxpy<float>(hipblasHandle_t handle,
-                                   int             n,
-                                   const float*    alpha,
-                                   const float*    x,
-                                   int             incx,
-                                   float*          y,
-                                   int             incy)
+hipblasStatus_t hipblasAxpy<float>(
+    hipblasHandle_t handle, int n, const float* alpha, const float* x, int incx, float* y, int incy)
 {
     return hipblasSaxpy(handle, n, alpha, x, incx, y, incy);
 }

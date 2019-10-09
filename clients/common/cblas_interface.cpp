@@ -41,23 +41,13 @@ void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
 
 // axpy
 template <>
-void cblas_axpy<float>(int          n,
-                       const float  alpha,
-                       const float* x,
-                       int          incx,
-                       float*       y,
-                       int          incy)
+void cblas_axpy<float>(int n, const float alpha, const float* x, int incx, float* y, int incy)
 {
     cblas_saxpy(n, alpha, x, incx, y, incy);
 }
 
 template <>
-void cblas_axpy<double>(int           n,
-                        const double  alpha,
-                        const double* x,
-                        int           incx,
-                        double*       y,
-                        int           incy)
+void cblas_axpy<double>(int n, const double alpha, const double* x, int incx, double* y, int incy)
 {
     cblas_daxpy(n, alpha, x, incx, y, incy);
 }
