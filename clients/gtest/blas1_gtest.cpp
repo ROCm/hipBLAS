@@ -341,6 +341,34 @@ TEST_P(blas1_gtest, amax_double)
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
+TEST_P(blas1_gtest, amax_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_blas1_arguments(GetParam());
+
+    hipblasStatus_t status = testing_amax<hipComplex>(arg);
+
+    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
+TEST_P(blas1_gtest, amax_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_blas1_arguments(GetParam());
+
+    hipblasStatus_t status = testing_amax<hipDoubleComplex>(arg);
+
+    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
 // Values is for a single item; ValuesIn is for an array
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,

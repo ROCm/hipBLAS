@@ -402,6 +402,16 @@ hipblasStatus_t hipblasIdamax(hipblasHandle_t handle, int n, const double* x, in
     return rocBLASStatusToHIPStatus(rocblas_idamax((rocblas_handle)handle, n, x, incx, result));
 }
 
+hipblasStatus_t hipblasIcamax(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_icamax((rocblas_handle)handle, n, (rocblas_float_complex*)x, incx, result));
+}
+
+hipblasStatus_t hipblasIzamax(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_izamax((rocblas_handle)handle, n, (rocblas_double_complex*)x, incx, result));
+}
+
 // asum
 hipblasStatus_t hipblasSasum(hipblasHandle_t handle, int n, const float* x, int incx, float* result)
 {

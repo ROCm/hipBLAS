@@ -304,6 +304,7 @@ hipblasStatus_t hipblasDgeam(hipblasHandle_t    handle,
                                                   ldc));
 }
 
+// amax
 hipblasStatus_t hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int* result)
 {
     return hipCUBLASStatusToHIPStatus(cublasIsamax((cublasHandle_t)handle, n, x, incx, result));
@@ -312,6 +313,16 @@ hipblasStatus_t hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int
 hipblasStatus_t hipblasIdamax(hipblasHandle_t handle, int n, const double* x, int incx, int* result)
 {
     return hipCUBLASStatusToHIPStatus(cublasIdamax((cublasHandle_t)handle, n, x, incx, result));
+}
+
+hipblasStatus_t hipblasIcamax(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result)
+{
+    return hipCUBLASStatusToHIPStatus(cublasIcamax((cublasHandle_t)handle, n, (cuComplex*)x, incx, result));
+}
+
+hipblasStatus_t hipblasIzamax(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result)
+{
+    return hipCUBLASStatusToHIPStatus(cublasIzamax((cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, result));
 }
 
 // asum

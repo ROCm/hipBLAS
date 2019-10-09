@@ -275,6 +275,18 @@ void cblas_iamax<double>(int n, const double* x, int incx, int* result)
     *result = (int)cblas_idamax(n, x, incx);
 }
 
+template <>
+void cblas_iamax<hipComplex>(int n, const hipComplex* x, int incx, int* result)
+{
+    *result = (int)cblas_icamax(n, x, incx);
+}
+
+template <>
+void cblas_iamax<hipDoubleComplex>(int n, const hipDoubleComplex* x, int incx, int* result)
+{
+    *result = (int)cblas_izamax(n, x, incx);
+}
+
 //  template<>
 //  void cblas_iamax<hipComplex>( int n,
 //                          const hipComplex *x, int incx,

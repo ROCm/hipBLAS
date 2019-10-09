@@ -354,6 +354,20 @@ hipblasStatus_t
     return hipblasIdamax(handle, n, x, incx, result);
 }
 
+template <>
+hipblasStatus_t
+    hipblasIamax<hipComplex>(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result)
+{
+    return hipblasIcamax(handle, n, x, incx, result);
+}
+
+template <>
+hipblasStatus_t
+    hipblasIamax<hipDoubleComplex>(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result)
+{
+    return hipblasIzamax(handle, n, x, incx, result);
+}
+
 /*
     template<>
     hipblasStatus_t

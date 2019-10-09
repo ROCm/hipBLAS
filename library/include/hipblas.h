@@ -172,6 +172,12 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasIdamax(hipblasHandle_t handle, int n, const double* x, int incx, int* result);
 
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasIcamax(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasIzamax(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result);
+
 // asum
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSasum(hipblasHandle_t handle, int n, const float* x, int incx, float* result);
