@@ -491,6 +491,7 @@ hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t handle, int n, const float *
 *x, int incx,  float *y, int incy, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
 */
 
+// copy
 hipblasStatus_t
     hipblasScopy(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy)
 {
@@ -503,6 +504,18 @@ hipblasStatus_t
     return rocBLASStatusToHIPStatus(rocblas_dcopy((rocblas_handle)handle, n, x, incx, y, incy));
 }
 
+hipblasStatus_t
+    hipblasCcopy(hipblasHandle_t handle, int n, const hipComplex* x, int incx, hipComplex* y, int incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ccopy((rocblas_handle)handle, n, (rocblas_float_complex*)x, incx, (rocblas_float_complex*)y, incy));
+}
+
+hipblasStatus_t
+    hipblasZcopy(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zcopy((rocblas_handle)handle, n, (rocblas_double_complex*)x, incx, (rocblas_double_complex*)y, incy));
+}
+
 /* not implemented
 hipblasStatus_t hipblasScopyBatched(hipblasHandle_t handle, int n, const float *x, int incx, float
 *y, int incy, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
@@ -511,6 +524,7 @@ hipblasStatus_t hipblasDcopyBatched(hipblasHandle_t handle, int n, const double 
 *y, int incy, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
 */
 
+// dot
 hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
                             int             n,
                             const float*    x,

@@ -185,6 +185,24 @@ TEST_P(blas1_gtest, copy_float)
     }
 }
 
+TEST_P(blas1_gtest, copy_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_copy<hipComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
+}
+
 TEST_P(blas1_gtest, scal_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple

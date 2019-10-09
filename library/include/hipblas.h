@@ -236,11 +236,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t handle, int n
 *alpha, const float *x, int incx,  float *y, int incy, int batchCount);
 */
 
+// copy
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasScopy(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy);
 
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDcopy(hipblasHandle_t handle, int n, const double* x, int incx, double* y, int incy);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasCcopy(hipblasHandle_t handle, int n, const hipComplex* x, int incx, hipComplex* y, int incy);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasZcopy(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy);
 
 /* not implemented
 HIPBLAS_EXPORT hipblasStatus_t hipblasScopyBatched(hipblasHandle_t handle, int n, const float *x,
@@ -250,6 +257,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDcopyBatched(hipblasHandle_t handle, int n
 int incx, double *y, int incy, int batchCount);
 */
 
+// dot
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
                                            int             n,
                                            const float*    x,

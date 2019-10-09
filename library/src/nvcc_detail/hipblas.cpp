@@ -433,6 +433,7 @@ hipblasStatus_t hipblasDaxpyBatched(hipblasHandle_t handle,
         cublasDaxpy((cublasHandle_t)handle, n, alpha, x, incx, y, incy));
 }
 
+// copy
 hipblasStatus_t
     hipblasScopy(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy)
 {
@@ -443,6 +444,18 @@ hipblasStatus_t
     hipblasDcopy(hipblasHandle_t handle, int n, const double* x, int incx, double* y, int incy)
 {
     return hipCUBLASStatusToHIPStatus(cublasDcopy((cublasHandle_t)handle, n, x, incx, y, incy));
+}
+
+hipblasStatus_t
+    hipblasCcopy(hipblasHandle_t handle, int n, const hipComplex* x, int incx, hipComplex* y, int incy)
+{
+    return hipCUBLASStatusToHIPStatus(cublasCcopy((rocblas_handle)handle, n, (cuComplex*)x, incx, (cuComplex*)y, incy));
+}
+
+hipblasStatus_t
+    hipblasZcopy(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
+{
+    return hipCUBLASStatusToHIPStatus(cublasZcopy((rocblas_handle)handle, n, (cuDoubleComplex*)x, incx, (cuDoubleComplex*)y, incy));
 }
 
 hipblasStatus_t hipblasScopyBatched(
@@ -459,6 +472,7 @@ hipblasStatus_t hipblasDcopyBatched(
     return hipCUBLASStatusToHIPStatus(cublasDcopy((cublasHandle_t)handle, n, x, incx, y, incy));
 }
 
+// dot
 hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
                             int             n,
                             const float*    x,

@@ -126,6 +126,18 @@ void cblas_copy<double>(int n, double* x, int incx, double* y, int incy)
     cblas_dcopy(n, x, incx, y, incy);
 }
 
+template <>
+void cblas_copy<hipComplex>(int n, hipComplex* x, int incx, hipComplex* y, int incy)
+{
+    cblas_ccopy(n, x, incx, y, incy);
+}
+
+template <>
+void cblas_copy<hipDoubleComplex>(int n, hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
+{
+    cblas_zcopy(n, x, incx, y, incy);
+}
+
 //  template<>
 //  void cblas_copy<hipComplex>( int n,
 //                          hipComplex *x, int incx,
