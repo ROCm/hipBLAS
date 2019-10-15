@@ -21,19 +21,31 @@ typedef void* hipblasHandle_t;
 
 typedef uint16_t hipblasHalf;
 
-template<typename T>
+template <typename T>
 struct hip_complex_number
 {
     T x, y;
 
     template <typename U>
-    hip_complex_number(U a, U b) : x(a), y(b) { }
+    hip_complex_number(U a, U b)
+        : x(a)
+        , y(b)
+    {
+    }
     template <typename U>
-    hip_complex_number(U a) : x(a), y(0) { }
-    hip_complex_number() : x(0), y(0) { }
+    hip_complex_number(U a)
+        : x(a)
+        , y(0)
+    {
+    }
+    hip_complex_number()
+        : x(0)
+        , y(0)
+    {
+    }
 };
 
-typedef hip_complex_number<float> hipComplex;
+typedef hip_complex_number<float>  hipComplex;
 typedef hip_complex_number<double> hipDoubleComplex;
 
 // typedef struct
@@ -187,6 +199,13 @@ HIPBLAS_EXPORT hipblasStatus_t
     hipblasIdamin(hipblasHandle_t handle, int n, const double* x, int incx, int* result);
 
 HIPBLAS_EXPORT hipblasStatus_t
+    hipblasIcamin(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasIzamin(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result);
+
+// asum
+HIPBLAS_EXPORT hipblasStatus_t
     hipblasSasum(hipblasHandle_t handle, int n, const float* x, int incx, float* result);
 
 HIPBLAS_EXPORT hipblasStatus_t
@@ -195,8 +214,8 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasScasum(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasDzasum(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
+HIPBLAS_EXPORT hipblasStatus_t hipblasDzasum(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
 
 /* not implemented
 HIPBLAS_EXPORT hipblasStatus_t  hipblasSasumBatched(hipblasHandle_t handle, int n, float *x, int
@@ -227,7 +246,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpy(hipblasHandle_t   handle,
                                             const hipComplex* alpha,
                                             const hipComplex* x,
                                             int               incx,
-                                            hipComplex*        y,
+                                            hipComplex*       y,
                                             int               incy);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpy(hipblasHandle_t         handle,
@@ -250,11 +269,15 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDcopy(hipblasHandle_t handle, int n, const double* x, int incx, double* y, int incy);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasCcopy(hipblasHandle_t handle, int n, const hipComplex* x, int incx, hipComplex* y, int incy);
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy(
+    hipblasHandle_t handle, int n, const hipComplex* x, int incx, hipComplex* y, int incy);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasZcopy(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy);
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy(hipblasHandle_t         handle,
+                                            int                     n,
+                                            const hipDoubleComplex* x,
+                                            int                     incx,
+                                            hipDoubleComplex*       y,
+                                            int                     incy);
 
 /* not implemented
 HIPBLAS_EXPORT hipblasStatus_t hipblasScopyBatched(hipblasHandle_t handle, int n, const float *x,
@@ -296,7 +319,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdotu(hipblasHandle_t   handle,
                                             const hipComplex* y,
                                             int               incy,
                                             hipComplex*       result);
- 
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdotc(hipblasHandle_t         handle,
                                             int                     n,
                                             const hipDoubleComplex* x,
@@ -312,7 +335,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotu(hipblasHandle_t         handle,
                                             const hipDoubleComplex* y,
                                             int                     incy,
                                             hipDoubleComplex*       result);
-
 
 /*
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdotBatched (hipblasHandle_t handle, int n, const float *x,
@@ -378,8 +400,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrot(hipblasHandle_t         handle,
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasScnrm2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasDznrm2(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
+HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
 
 // scal
 HIPBLAS_EXPORT hipblasStatus_t
@@ -394,11 +416,11 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasCsscal(hipblasHandle_t handle, int n, const float* alpha, hipComplex* x, int incx);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasZscal(hipblasHandle_t handle, int n, const hipDoubleComplex* alpha, hipDoubleComplex* x, int incx);
+HIPBLAS_EXPORT hipblasStatus_t hipblasZscal(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* alpha, hipDoubleComplex* x, int incx);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasZdscal(hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx);
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdscal(
+    hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx);
 
 /* not implemented, requires complex support
 hipblasStatus_t  hipblasCscal(hipblasHandle_t handle, int n, const hipComplex *alpha,  hipComplex
@@ -416,19 +438,11 @@ HIPBLAS_EXPORT hipblasStatus_t  hipblasDscalBatched(hipblasHandle_t handle, int 
 *alpha,  double *x, int incx, int batchCount);
 */
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasSswap(hipblasHandle_t handle,
-                                            int             n,
-                                            float*          x,
-                                            int             incx,
-                                            float*          y,
-                                            int             incy);
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasSswap(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDswap(hipblasHandle_t handle,
-                                            int             n,
-                                            double*         x,
-                                            int             incx,
-                                            double*         y,
-                                            int             incy);
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasDswap(hipblasHandle_t handle, int n, double* x, int incx, double* y, int incy);
 
 // HIPBLAS_EXPORT hipblasStatus_t hipblasCswap(hipblasHandle_t handle,
 //                                             int             n,

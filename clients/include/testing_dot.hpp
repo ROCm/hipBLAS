@@ -89,14 +89,16 @@ hipblasStatus_t testing_dot(Arguments argus)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-        status_2 = (CONJ ? hipblasDotc<T> : hipblasDot<T>)(handle, N, dx, incx, dy, incy, d_rocblas_result);
+        status_2 = (CONJ ? hipblasDotc<T>
+                         : hipblasDot<T>)(handle, N, dx, incx, dy, incy, d_rocblas_result);
     }
     else
     {
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_2 = (CONJ ? hipblasDotc<T> : hipblasDot<T>)(handle, N, dx, incx, dy, incy, &rocblas_result);
+        status_2 = (CONJ ? hipblasDotc<T>
+                         : hipblasDot<T>)(handle, N, dx, incx, dy, incy, &rocblas_result);
     }
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))

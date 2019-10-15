@@ -258,7 +258,7 @@ TEST_P(blas1_gtest, scal_float_complex_float)
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_scal<hipComplex, float>(arg);
 
-        // if not success, then the input argument is problematic, so detect the error message
+    // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.N < 0)
@@ -529,6 +529,26 @@ TEST_P(blas1_gtest, amin_double)
     // Arguments arg = setup_blas1_arguments(GetParam());
 
     // hipblasStatus_t status = testing_amin<double>(arg);
+
+    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
+TEST_P(blas1_gtest, amin_float_complex)
+{
+    // TODO: min is broken in rocblas currently (fixed in 2.10?)
+    // Arguments arg = setup_blas1_arguments(GetParam());
+
+    // hipblasStatus_t status = testing_amin<hipComplex>(arg);
+
+    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
+TEST_P(blas1_gtest, amin_double_complex)
+{
+    // TODO: min is broken in rocblas currently (fixed in 2.10?)
+    // Arguments arg = setup_blas1_arguments(GetParam());
+
+    // hipblasStatus_t status = testing_amin<hipDoubleComplex>(arg);
 
     // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
