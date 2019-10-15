@@ -8,8 +8,10 @@
 #include "testing_copy.hpp"
 #include "testing_dot.hpp"
 #include "testing_iamax.hpp"
+#include "testing_iamin.hpp"
 #include "testing_nrm2.hpp"
 #include "testing_scal.hpp"
+#include "testing_swap.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -74,7 +76,7 @@ vector<vector<int>> incx_incy_range = {
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
-     BLAS-1: scal, dot, nrm2, asum, amax, axpy, copy
+     BLAS-1: scal, dot, nrm2, asum, amax, amin, axpy, copy, swap
 =================================================================== */
 
 class blas1_gtest : public ::TestWithParam<blas1_tuple>
@@ -255,6 +257,25 @@ TEST_P(blas1_gtest, scal_float_complex_float)
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_scal<hipComplex, float>(arg);
+
+        // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
+}
+
+TEST_P(blas1_gtest, swap_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_swap<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -485,16 +506,31 @@ TEST_P(blas1_gtest, amax_float_complex)
 
 TEST_P(blas1_gtest, amax_double_complex)
 {
-    // GetParam return a tuple. Tee setup routine unpack the tuple
-    // and initializes arg(Arguments) which will be passed to testing routine
-    // The Arguments data struture have physical meaning associated.
-    // while the tuple is non-intuitive.
-
     Arguments arg = setup_blas1_arguments(GetParam());
 
     hipblasStatus_t status = testing_amax<hipDoubleComplex>(arg);
 
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
+TEST_P(blas1_gtest, amin_float)
+{
+    // TODO: min is broken in rocblas currently (fixed in 2.10?)
+    // Arguments arg = setup_blas1_arguments(GetParam());
+
+    // hipblasStatus_t status = testing_amin<float>(arg);
+
+    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
+TEST_P(blas1_gtest, amin_double)
+{
+    // TODO: min is broken in rocblas currently (fixed in 2.10?)
+    // Arguments arg = setup_blas1_arguments(GetParam());
+
+    // hipblasStatus_t status = testing_amin<double>(arg);
+
+    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
 // Values is for a single item; ValuesIn is for an array

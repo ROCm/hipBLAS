@@ -51,7 +51,7 @@ template <typename T>
 hipblasStatus_t hipblasIamax(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
 
 template <typename T>
-hipblasStatus_t hipblasAmin(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
+hipblasStatus_t hipblasIamin(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
 
 template <typename T>
 hipblasStatus_t hipblasAxpy(
