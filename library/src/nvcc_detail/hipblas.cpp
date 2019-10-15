@@ -508,22 +508,13 @@ hipblasStatus_t hipblasDscalBatched(
     return hipCUBLASStatusToHIPStatus(cublasDscal((cublasHandle_t)handle, n, alpha, x, incx));
 }
 
-hipblasStatus_t hipblasSswap(hipblasHandle_t handle,
-                             int             n,
-                             float*          x,
-                             int             incx,
-                             float*          y,
-                             int             incy)
+hipblasStatus_t hipblasSswap(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy)
 {
     return hipCUBLASStatusToHIPStatus(cublasSswap((cublasHandle_t)handle, n, x, incx, y, incy));
 }
 
-hipblasStatus_t hipblasDswap(hipblasHandle_t handle,
-                             int             n,
-                             double*         x,
-                             int             incx,
-                             double*         y,
-                             int             incy)
+hipblasStatus_t
+    hipblasDswap(hipblasHandle_t handle, int n, double* x, int incx, double* y, int incy)
 {
     return hipCUBLASStatusToHIPStatus(cublasDswap((cublasHandle_t)handle, n, x, incx, y, incy));
 }

@@ -62,13 +62,6 @@ hipblasStatus_t testing_amin(Arguments argus)
         // Initial Data on CPU
         srand(1);
         hipblas_init<T>(hx, 1, N, incx);
-        std::cout << "\n";
-        // std::cout << "incx: " << incx <<"\n";
-        for(int i = 0; i < 20; i++)
-        {
-            std::cout << "hx[" << i << "] = " << hx[i] << ",";
-        }
-        std::cout << "\n";
 
         // copy data from CPU to device, does not work for incx != 1
         CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));

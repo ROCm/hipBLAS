@@ -404,12 +404,12 @@ hipblasStatus_t hipblasIdamax(hipblasHandle_t handle, int n, const double* x, in
 }
 
 // MIN
-hipblasStatus_t hipblasIsamin(hipblasHandle_t handle, int n,  const float* x, int incx, int* result)
+hipblasStatus_t hipblasIsamin(hipblasHandle_t handle, int n, const float* x, int incx, int* result)
 {
     return rocBLASStatusToHIPStatus(rocblas_isamin((rocblas_handle)handle, n, x, incx, result));
 }
 
-hipblasStatus_t hipblasIdamin(hipblasHandle_t handle, int n,  const double* x, int incx, int* result)
+hipblasStatus_t hipblasIdamin(hipblasHandle_t handle, int n, const double* x, int incx, int* result)
 {
     return rocBLASStatusToHIPStatus(rocblas_idamin((rocblas_handle)handle, n, x, incx, result));
 }
@@ -617,22 +617,13 @@ hipblasStatus_t  hipblasDscalBatched(hipblasHandle_t handle, int n, const double
 int incx, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
 */
 
-hipblasStatus_t hipblasSswap(hipblasHandle_t handle,
-                             int             n,
-                             float*          x,
-                             int             incx,
-                             float*          y,
-                             int             incy)
+hipblasStatus_t hipblasSswap(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy)
 {
     return rocBLASStatusToHIPStatus(rocblas_sswap((rocblas_handle)handle, n, x, incx, y, incy));
 }
 
-hipblasStatus_t hipblasDswap(hipblasHandle_t handle,
-                             int             n,
-                             double*         x,
-                             int             incx,
-                             double*         y,
-                             int             incy)
+hipblasStatus_t
+    hipblasDswap(hipblasHandle_t handle, int n, double* x, int incx, double* y, int incy)
 {
     return rocBLASStatusToHIPStatus(rocblas_dswap((rocblas_handle)handle, n, x, incx, y, incy));
 }

@@ -301,19 +301,11 @@ HIPBLAS_EXPORT hipblasStatus_t  hipblasDscalBatched(hipblasHandle_t handle, int 
 *alpha,  double *x, int incx, int batchCount);
 */
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasSswap(hipblasHandle_t handle,
-                                            int             n,
-                                            float*          x,
-                                            int             incx,
-                                            float*          y,
-                                            int             incy);
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasSswap(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDswap(hipblasHandle_t handle,
-                                            int             n,
-                                            double*         x,
-                                            int             incx,
-                                            double*         y,
-                                            int             incy);
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasDswap(hipblasHandle_t handle, int n, double* x, int incx, double* y, int incy);
 
 // HIPBLAS_EXPORT hipblasStatus_t hipblasCswap(hipblasHandle_t handle,
 //                                             int             n,

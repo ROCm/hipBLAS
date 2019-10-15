@@ -55,7 +55,7 @@ hipblasStatus_t testing_swap(Arguments argus)
     vector<T> hx_cpu(sizeX);
     vector<T> hy_cpu(sizeY);
 
-    T *dx, *dy;
+    T * dx, *dy;
     int device_pointer = 1;
 
     double gpu_time_used, cpu_time_used;

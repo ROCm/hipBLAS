@@ -53,22 +53,18 @@ hipblasStatus_t
         return hipblasZscal(handle, n, alpha, x, incx);
     }
 */
-#include <iostream>
+
 //swap
-template<>
+template <>
 hipblasStatus_t
-hipblasSwap<float>(hipblasHandle_t handle, int n,
-                   float *x, int incx,
-                   float *y, int incy)
+    hipblasSwap<float>(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy)
 {
     return hipblasSswap(handle, n, x, incx, y, incy);
 }
 
-template<>
+template <>
 hipblasStatus_t
-hipblasSwap<double>(hipblasHandle_t handle, int n,
-                    double *x, int incx,
-                    double *y, int incy)
+    hipblasSwap<double>(hipblasHandle_t handle, int n, double* x, int incx, double* y, int incy)
 {
     return hipblasDswap(handle, n, x, incx, y, incy);
 }
