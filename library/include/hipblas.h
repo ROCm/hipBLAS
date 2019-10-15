@@ -422,14 +422,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZscal(
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdscal(
     hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx);
 
-/* not implemented, requires complex support
-hipblasStatus_t  hipblasCscal(hipblasHandle_t handle, int n, const hipComplex *alpha,  hipComplex
-*x, int incx);
-
-hipblasStatus_t  hipblasZscal(hipblasHandle_t handle, int n, const hipDoubleComplex *alpha,
-hipDoubleComplex *x, int incx);
-*/
-
 /* not implemented
 HIPBLAS_EXPORT hipblasStatus_t  hipblasSscalBatched(hipblasHandle_t handle, int n, const float
 *alpha,  float *x, int incx, int batchCount);
@@ -438,26 +430,20 @@ HIPBLAS_EXPORT hipblasStatus_t  hipblasDscalBatched(hipblasHandle_t handle, int 
 *alpha,  double *x, int incx, int batchCount);
 */
 
+// swap
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSswap(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy);
 
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDswap(hipblasHandle_t handle, int n, double* x, int incx, double* y, int incy);
 
-// HIPBLAS_EXPORT hipblasStatus_t hipblasCswap(hipblasHandle_t handle,
-//                                             int             n,
-//                                             hipComplex*     x,
-//                                             int             incx,
-//                                             hipComplex*          y,
-//                                             int             incy);
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasCswap(hipblasHandle_t handle, int n, hipComplex* x, int incx, hipComplex* y, int incy);
 
-// HIPBLAS_EXPORT hipblasStatus_t hipblasZswap(hipblasHandle_t   handle,
-//                                             int               n,
-//                                             hipDoubleComplex* x,
-//                                             int               incx,
-//                                             hipDoubleComplex* y,
-//                                             int               incy);
+HIPBLAS_EXPORT hipblasStatus_t hipblasZswap(
+    hipblasHandle_t handle, int n, hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy);
 
+// gemv
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemv(hipblasHandle_t    handle,
                                             hipblasOperation_t trans,
                                             int                m,

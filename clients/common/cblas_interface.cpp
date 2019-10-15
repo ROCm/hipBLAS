@@ -181,21 +181,18 @@ void cblas_swap<double>(int n, double* x, int incx, double* y, int incy)
     cblas_dswap(n, x, incx, y, incy);
 }
 
-//  template<>
-//  void cblas_swap<hipComplex>( int n,
-//                          hipComplex *x, int incx,
-//                          hipComplex *y, int incy)
-//  {
-//      cblas_cswap(n, x, incx, y, incy);
-//  }
+template <>
+void cblas_swap<hipComplex>(int n, hipComplex* x, int incx, hipComplex* y, int incy)
+{
+    cblas_cswap(n, x, incx, y, incy);
+}
 
-//  template<>
-//  void cblas_swap<hipDoubleComplex>( int n,
-//                          hipDoubleComplex *x, int incx,
-//                          hipDoubleComplex *y, int incy)
-//  {
-//      cblas_zswap(n, x, incx, y, incy);
-//  }
+template <>
+void cblas_swap<hipDoubleComplex>(
+    int n, hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
+{
+    cblas_zswap(n, x, incx, y, incy);
+}
 
 // dot
 template <>

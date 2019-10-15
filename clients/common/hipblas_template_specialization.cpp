@@ -119,25 +119,19 @@ hipblasStatus_t
     return hipblasDswap(handle, n, x, incx, y, incy);
 }
 
-/*
-template<>
-hipblasStatus_t
-hipblasSwap<hipComplex>(    hipblasHandle_t handle, int n,
-                        hipComplex *x, int incx,
-                        hipComplex *y, int incy)
+template <>
+hipblasStatus_t hipblasSwap<hipComplex>(
+    hipblasHandle_t handle, int n, hipComplex* x, int incx, hipComplex* y, int incy)
 {
     return hipblasCswap(handle, n, x, incx, y, incy);
 }
 
-template<>
-hipblasStatus_t
-hipblasSwap<hipDoubleComplex>(    hipblasHandle_t handle, int n,
-                        hipDoubleComplex *x, int incx,
-                        hipDoubleComplex *y, int incy)
+template <>
+hipblasStatus_t hipblasSwap<hipDoubleComplex>(
+    hipblasHandle_t handle, int n, hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
 {
     return hipblasZswap(handle, n, x, incx, y, incy);
 }
-*/
 
 // copy
 template <>

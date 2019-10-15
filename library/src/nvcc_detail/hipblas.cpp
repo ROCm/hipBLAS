@@ -730,6 +730,7 @@ hipblasStatus_t hipblasDscalBatched(
     return hipCUBLASStatusToHIPStatus(cublasDscal((cublasHandle_t)handle, n, alpha, x, incx));
 }
 
+// swap
 hipblasStatus_t hipblasSswap(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy)
 {
     return hipCUBLASStatusToHIPStatus(cublasSswap((cublasHandle_t)handle, n, x, incx, y, incy));
@@ -741,28 +742,21 @@ hipblasStatus_t
     return hipCUBLASStatusToHIPStatus(cublasDswap((cublasHandle_t)handle, n, x, incx, y, incy));
 }
 
-/*
-hipblasStatus_t hipblasCswap(hipblasHandle_t handle,
-                             int             n,
-                             hipComplex*     x,
-                             int             incx,
-                             hipComplex*          y,
-                             int             incy)
+hipblasStatus_t
+    hipblasCswap(hipblasHandle_t handle, int n, hipComplex* x, int incx, hipComplex* y, int incy)
 {
-    return hipCUBLASStatusToHIPStatus(cublasCswap((cublasHandle_t)handle, n, x, incx, y, incy));
+    return hipCUBLASStatusToHIPStatus(
+        cublasSswap((cublasHandle_t)handle, n, (cuComplex*)x, incx, (cuComplex*)y, incy));
 }
 
-hipblasStatus_t hipblasZswap(hipblasHandle_t handle,
-                             int             n,
-                             hipDoubleComplex*         x,
-                             int             incx,
-                             hipDoubleComplex*         y,
-                             int             incy)
+hipblasStatus_t hipblasZswap(
+    hipblasHandle_t handle, int n, hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
 {
-    return hipCUBLASStatusToHIPStatus(cublasZswap((cublasHandle_t)handle, n, x, incx, y, incy));
+    return hipCUBLASStatusToHIPStatus(cublasDswap(
+        (cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, (cuDoubleComplex*)y, incy));
 }
-*/
 
+// gemv
 hipblasStatus_t hipblasSgemv(hipblasHandle_t    handle,
                              hipblasOperation_t trans,
                              int                m,
