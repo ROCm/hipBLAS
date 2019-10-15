@@ -4,6 +4,8 @@
  * ************************************************************************ */
 
 #include "testing_asum.hpp"
+#include "testing_axpy.hpp"
+#include "testing_copy.hpp"
 #include "testing_dot.hpp"
 #include "testing_iamax.hpp"
 #include "testing_iamin.hpp"
@@ -74,7 +76,7 @@ vector<vector<int>> incx_incy_range = {
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
-     BLAS-1: scal, dot, nrm2, asum, amax, amin, swap
+     BLAS-1: scal, dot, nrm2, asum, amax, amin, axpy, copy, swap
 =================================================================== */
 
 class blas1_gtest : public ::TestWithParam<blas1_tuple>
@@ -111,6 +113,42 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
         = 0; // disable timing data print out. Not supposed to collect performance data in gtest
 
     return arg;
+}
+
+TEST_P(blas1_gtest, axpy_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_axpy<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
+}
+
+TEST_P(blas1_gtest, copy_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_copy<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
 }
 
 TEST_P(blas1_gtest, scal_float)
