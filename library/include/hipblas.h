@@ -351,33 +351,32 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDnrm2(hipblasHandle_t handle, int n, const double* x, int incx, double* result);
 
-/*
 HIPBLAS_EXPORT hipblasStatus_t
-    hipBlasScnrm2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
+    hipblasScnrm2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipBlasDznrm2(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
-*/
-
-// HIPBLAS_EXPORT hipblasStatus_t hipblasSrot(hipblasHandle_t handle,
-//                                            int             n,
-//                                            float*          x,
-//                                            int             incx,
-//                                            float*          y,
-//                                            int             incy,
-//                                            const float*    c,
-//                                            const float*    s);
-
-// HIPBLAS_EXPORT hipblasStatus_t hipblasDrot(hipblasHandle_t handle,
-//                                            int             n,
-//                                            double*         x,
-//                                            int             incx,
-//                                            double*         y,
-//                                            int             incy,
-//                                            const double*   c,
-//                                            const double*   s);
+HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
 
 /*
+// rot
+HIPBLAS_EXPORT hipblasStatus_t hipblasSrot(hipblasHandle_t handle,
+                                           int             n,
+                                           float*          x,
+                                           int             incx,
+                                           float*          y,
+                                           int             incy,
+                                           const float*    c,
+                                           const float*    s);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDrot(hipblasHandle_t handle,
+                                           int             n,
+                                           double*         x,
+                                           int             incx,
+                                           double*         y,
+                                           int             incy,
+                                           const double*   c,
+                                           const double*   s);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasCrot(hipblasHandle_t   handle,
                                            int               n,
                                            hipComplex*       x,
@@ -396,12 +395,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrot(hipblasHandle_t         handle,
                                            const hipDoubleComplex* c,
                                            const hipDoubleComplex* s);
 */
-
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasScnrm2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2(
-    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
 
 // scal
 HIPBLAS_EXPORT hipblasStatus_t
