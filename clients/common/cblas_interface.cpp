@@ -373,39 +373,29 @@ void cblas_ger<double>(
 
 // syr
 template <>
-void cblas_syr<float>(hipblasFillMode_t uplo,
-                      int               n,
-                      float             alpha,
-                      float*            x,
-                      int               incx,
-                      float*            A,
-                      int               lda)
+void cblas_syr<float>(
+    hipblasFillMode_t uplo, int n, float alpha, float* x, int incx, float* A, int lda)
 {
     cblas_ssyr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
 }
 
 template <>
-void cblas_syr<double>(hipblasFillMode_t uplo,
-                       int               n,
-                       double            alpha,
-                       double*           x,
-                       int               incx,
-                       double*           A,
-                       int               lda)
+void cblas_syr<double>(
+    hipblasFillMode_t uplo, int n, double alpha, double* x, int incx, double* A, int lda)
 {
     cblas_dsyr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
 }
 
 // trmv
 template <>
-void cblas_trmv(hipblasFillMode_t      uplo,
-                       hipblasOperation_t transA,
-                       hipblasDiagType_t  diag,
-                       int       m,
-                       const float*      A,
-                       int       lda,
-                       float*            x,
-                       int       incx)
+void cblas_trmv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                m,
+                const float*       A,
+                int                lda,
+                float*             x,
+                int                incx)
 {
     cblas_strmv(CblasColMajor,
                 CBLAS_UPLO(uplo),
@@ -419,14 +409,14 @@ void cblas_trmv(hipblasFillMode_t      uplo,
 }
 
 template <>
-void cblas_trmv(hipblasFillMode_t      uplo,
-                       hipblasOperation_t transA,
-                       hipblasDiagType_t  diag,
-                       int       m,
-                       const double*     A,
-                       int       lda,
-                       double*           x,
-                       int       incx)
+void cblas_trmv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                m,
+                const double*      A,
+                int                lda,
+                double*            x,
+                int                incx)
 {
     cblas_dtrmv(CblasColMajor,
                 CBLAS_UPLO(uplo),
@@ -481,14 +471,14 @@ void cblas_trsv<float>(hipblasHandle_t    handle,
 
 template <>
 void cblas_trsv<double>(hipblasHandle_t    handle,
-                       hipblasFillMode_t  uplo,
-                       hipblasOperation_t transA,
-                       hipblasDiagType_t  diag,
-                       int                m,
-                       const double*      A,
-                       int                lda,
-                       double*            x,
-                       int                incx)
+                        hipblasFillMode_t  uplo,
+                        hipblasOperation_t transA,
+                        hipblasDiagType_t  diag,
+                        int                m,
+                        const double*      A,
+                        int                lda,
+                        double*            x,
+                        int                incx)
 {
     cblas_dtrsv(CblasColMajor,
                 CBLAS_UPLO(uplo),

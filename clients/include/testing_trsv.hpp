@@ -25,19 +25,19 @@ hipblasStatus_t testing_trsv(Arguments argus)
     constexpr T eps      = std::numeric_limits<T>::epsilon();
     constexpr T eps_mult = 40; // arbitrary
 
-    int M                     = argus.M;
-    int incx                  = argus.incx;
-    int lda                   = argus.lda;
-    char char_uplo            = argus.uplo_option;
-    char char_diag            = argus.diag_option;
-    char char_transA          = argus.transA_option;
-    hipblasFillMode_t uplo    = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t diag    = char2hipblas_diagonal(char_diag);
-    hipblasOperation_t transA = char2hipblas_operation(char_transA);
+    int                M           = argus.M;
+    int                incx        = argus.incx;
+    int                lda         = argus.lda;
+    char               char_uplo   = argus.uplo_option;
+    char               char_diag   = argus.diag_option;
+    char               char_transA = argus.transA_option;
+    hipblasFillMode_t  uplo        = char2hipblas_fill(char_uplo);
+    hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
+    hipblasOperation_t transA      = char2hipblas_operation(char_transA);
 
     int abs_incx = incx < 0 ? -incx : incx;
-    int size_A = lda * M;
-    int size_x = abs_incx * M;
+    int size_A   = lda * M;
+    int size_x   = abs_incx * M;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -78,8 +78,6 @@ hipblasStatus_t testing_trsv(Arguments argus)
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
-
-    
 
     // Initial Data on CPU
     srand(1);
@@ -138,9 +136,9 @@ hipblasStatus_t testing_trsv(Arguments argus)
 
     // Calculate hb = hA*hx;
     cblas_trmv<T>(uplo, transA, diag, M, hA.data(), lda, hb.data(), incx);
-    cpu_x_or_b    = hb; // cpuXorB <- B
-    hx_or_b_1     = hb;
-    hx_or_b_2     = hb;
+    cpu_x_or_b = hb; // cpuXorB <- B
+    hx_or_b_1  = hb;
+    hx_or_b_2  = hb;
 
     // copy data from CPU to device
     hipMemcpy(dA, hA.data(), sizeof(T) * size_A, hipMemcpyHostToDevice);
@@ -178,7 +176,8 @@ hipblasStatus_t testing_trsv(Arguments argus)
             for(int i = 0; i < M; i++)
             {
                 if(hx[i * abs_incx] != 0)
-                    error += std::abs((hx[i * abs_incx] - hx_or_b_1[i * abs_incx]) / hx[i * abs_incx]);
+                    error += std::abs((hx[i * abs_incx] - hx_or_b_1[i * abs_incx])
+                                      / hx[i * abs_incx]);
                 else
                     error += std::abs(hx_or_b_1[i * abs_incx]);
             }

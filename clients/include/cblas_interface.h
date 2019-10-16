@@ -14,7 +14,6 @@
  * not part of the GPU library
 */
 
-
 /*
  * ===========================================================================
  *    level 1 BLAS
@@ -64,13 +63,7 @@ template <typename T>
 void cblas_ger(int m, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
 
 template <typename T>
-void cblas_syr(hipblasFillMode_t uplo,
-               int               n,
-               T                 alpha,
-               T*                x,
-               int               incx,
-               T*                A,
-               int               lda);
+void cblas_syr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* A, int lda);
 
 // potrf
 template <typename T>
@@ -78,14 +71,14 @@ int cblas_potrf(char uplo, int m, T* A, int lda);
 
 // trmv
 template <typename T>
-void cblas_trmv(hipblasFillMode_t      uplo,
+void cblas_trmv(hipblasFillMode_t  uplo,
                 hipblasOperation_t transA,
                 hipblasDiagType_t  diag,
-                int       m,
-                const T*          A,
-                int       lda,
-                T*                x,
-                int       incx);
+                int                m,
+                const T*           A,
+                int                lda,
+                T*                 x,
+                int                incx);
 
 // trsv
 template <typename T>

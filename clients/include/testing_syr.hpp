@@ -22,16 +22,16 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_syr(Arguments argus)
 {
-    int M                  = argus.M;
-    int N                  = argus.N;
-    int incx               = argus.incx;
-    int lda                = argus.lda;
-    char char_uplo = argus.uplo_option;
-    hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
+    int               M         = argus.M;
+    int               N         = argus.N;
+    int               incx      = argus.incx;
+    int               lda       = argus.lda;
+    char              char_uplo = argus.uplo_option;
+    hipblasFillMode_t uplo      = char2hipblas_fill(char_uplo);
 
     int abs_incx = incx < 0 ? -incx : incx;
-    int A_size = lda * N;
-    int x_size = abs_incx * N;
+    int A_size   = lda * N;
+    int x_size   = abs_incx * N;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

@@ -442,7 +442,6 @@ hipblasStatus_t hipblasTrsv<double>(hipblasHandle_t    handle,
     return hipblasDtrsv(handle, uplo, transA, diag, m, A, lda, x, incx);
 }
 
-
 /*
  * ===========================================================================
  *    level 3 BLAS

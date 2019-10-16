@@ -648,7 +648,8 @@ hipblasStatus_t hipblasSsyr(hipblasHandle_t   handle,
                             float*            A,
                             int               lda)
 {
-    return rocBLASStatusToHIPStatus(rocblas_ssyr((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, A, lda));
+    return rocBLASStatusToHIPStatus(
+        rocblas_ssyr((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, A, lda));
 }
 
 hipblasStatus_t hipblasDsyr(hipblasHandle_t   handle,
@@ -660,7 +661,8 @@ hipblasStatus_t hipblasDsyr(hipblasHandle_t   handle,
                             double*           A,
                             int               lda)
 {
-    return rocBLASStatusToHIPStatus(rocblas_dsyr((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, A, lda));
+    return rocBLASStatusToHIPStatus(
+        rocblas_dsyr((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, A, lda));
 }
 
 // trsv
