@@ -584,7 +584,7 @@ hipblasStatus_t hipblasSsyr(hipblasHandle_t   handle,
                             float*            A,
                             int               lda)
 {
-    return hipCUBLASStatusToHIPStatus(cublasSsyr((cublasHandle_t)handle, uplo, n, alpha, x, incx, A, lda));
+    return hipCUBLASStatusToHIPStatus(cublasSsyr((cublasHandle_t)handle, hipFillToCudaFill(uplo), n, alpha, x, incx, A, lda));
 }
 
 hipblasStatus_t hipblasDsyr(hipblasHandle_t   handle,
@@ -594,9 +594,9 @@ hipblasStatus_t hipblasDsyr(hipblasHandle_t   handle,
                             const double*     x,
                             int               incx,
                             double*           A,
-                            int               lda);
+                            int               lda)
 {
-    return hipCUBLASStatusToHIPStatus(cublasDsyr((cublasHandle_t)handle, uplo, n, alpha, x, incx, A, lda));
+    return hipCUBLASStatusToHIPStatus(cublasDsyr((cublasHandle_t)handle, hipFillToCudaFill(uplo), n, alpha, x, incx, A, lda));
 }
 
 // trsv
