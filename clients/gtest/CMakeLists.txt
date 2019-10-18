@@ -43,6 +43,7 @@ set(hipblas_test_source
   set_get_matrix_gtest.cpp
   blas1_gtest.cpp
   gemv_gtest.cpp
+  gemv_strided_batched_gtest.cpp
   ger_gtest.cpp
   gemm_gtest.cpp
   gemm_ex_gtest.cpp

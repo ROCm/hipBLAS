@@ -124,10 +124,10 @@ Arguments setup_gemm_batched_arguments(gemm_batched_tuple tup)
 class gemm_batched_gtest : public ::TestWithParam<gemm_batched_tuple>
 {
 protected:
-    gemm_batched_gtest() {}
-    virtual ~gemm_batched_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+    gemm_batched_gtest() { }
+    virtual ~gemm_batched_gtest() { }
+    virtual void SetUp() { }
+    virtual void TearDown() { }
 };
 
 TEST_P(gemm_batched_gtest, float)

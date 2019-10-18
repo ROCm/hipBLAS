@@ -123,10 +123,10 @@ Arguments setup_gemv_arguments(gemv_tuple tup)
 class gemv_gtest : public ::TestWithParam<gemv_tuple>
 {
 protected:
-    gemv_gtest() {}
-    virtual ~gemv_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+    gemv_gtest() { }
+    virtual ~gemv_gtest() { }
+    virtual void SetUp() { }
+    virtual void TearDown() { }
 };
 
 TEST_P(gemv_gtest, gemv_gtest_float)

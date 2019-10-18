@@ -103,10 +103,10 @@ Arguments setup_set_get_matrix_arguments(set_get_matrix_tuple tup)
 class set_matrix_get_matrix_gtest : public ::TestWithParam<set_get_matrix_tuple>
 {
 protected:
-    set_matrix_get_matrix_gtest() {}
-    virtual ~set_matrix_get_matrix_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+    set_matrix_get_matrix_gtest() { }
+    virtual ~set_matrix_get_matrix_gtest() { }
+    virtual void SetUp() { }
+    virtual void TearDown() { }
 };
 
 TEST_P(set_matrix_get_matrix_gtest, float)

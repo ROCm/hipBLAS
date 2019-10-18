@@ -15,54 +15,61 @@
 // case
 // a wrapper will cause the loop keep going
 
+#ifndef GOOGLE_TEST
+#define UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, UNIT_ASSERT_EQ)
+#define UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, UNIT_ASSERT_EQ)
+#else
+#define UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, UNIT_ASSERT_EQ)      \
+    do                                                                               \
+    {                                                                                \
+        for(size_t k = 0; k < batch_count; k++)                                      \
+            for(size_t j = 0; j < N; j++)                                            \
+                for(size_t i = 0; i < M; i++)                                        \
+                    if(hipblas_isnan(hCPU[i + j * lda + k * strideA]))               \
+                    {                                                                \
+                        ASSERT_TRUE(hipblas_isnan(hGPU[i + j * lda + k * strideA])); \
+                    }                                                                \
+                    else                                                             \
+                    {                                                                \
+                        UNIT_ASSERT_EQ(hCPU[i + j * lda + k * strideA],              \
+                                       hGPU[i + j * lda + k * strideA]);             \
+                    }                                                                \
+    } while(0)
+#define UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, UNIT_ASSERT_EQ)            \
+    do                                                                              \
+    {                                                                               \
+        for(size_t k = 0; k < batch_count; k++)                                     \
+            for(size_t j = 0; j < N; j++)                                           \
+                for(size_t i = 0; i < M; i++)                                       \
+                    if(hipblas_isnan(hCPU[k][i + j * lda]))                         \
+                    {                                                               \
+                        ASSERT_TRUE(hipblas_isnan(hGPU[k][i + j * lda]));           \
+                    }                                                               \
+                    else                                                            \
+                    {                                                               \
+                        UNIT_ASSERT_EQ(hCPU[k][i + j * lda], hGPU[k][i + j * lda]); \
+                    }                                                               \
+    } while(0)
+#endif
+
+#define ASSERT_HALF_EQ(a, b) ASSERT_FLOAT_EQ(half_to_float(a), half_to_float(b))
+
 template <>
 void unit_check_general(int M, int N, int lda, hipblasHalf* hCPU, hipblasHalf* hGPU)
 {
-#pragma unroll
-    for(int j = 0; j < N; j++)
-    {
-#pragma unroll
-        for(int i = 0; i < M; i++)
-        {
-#ifdef GOOGLE_TEST
-            float cpu_float = half_to_float(hCPU[i + j * lda]);
-            float gpu_float = half_to_float(hGPU[i + j * lda]);
-            ASSERT_FLOAT_EQ(cpu_float, gpu_float);
-#endif
-        }
-    }
+    UNIT_CHECK(M, N, 1, lda, 0, hCPU, hGPU, ASSERT_HALF_EQ);
 }
 
 template <>
 void unit_check_general(int M, int N, int lda, float* hCPU, float* hGPU)
 {
-#pragma unroll
-    for(int j = 0; j < N; j++)
-    {
-#pragma unroll
-        for(int i = 0; i < M; i++)
-        {
-#ifdef GOOGLE_TEST
-            ASSERT_FLOAT_EQ(hCPU[i + j * lda], hGPU[i + j * lda]);
-#endif
-        }
-    }
+    UNIT_CHECK(M, N, 1, lda, 0, hCPU, hGPU, ASSERT_FLOAT_EQ);
 }
 
 template <>
 void unit_check_general(int M, int N, int lda, double* hCPU, double* hGPU)
 {
-#pragma unroll
-    for(int j = 0; j < N; j++)
-    {
-#pragma unroll
-        for(int i = 0; i < M; i++)
-        {
-#ifdef GOOGLE_TEST
-            ASSERT_DOUBLE_EQ(hCPU[i + j * lda], hGPU[i + j * lda]);
-#endif
-        }
-    }
+    UNIT_CHECK(M, N, 1, lda, 0, hCPU, hGPU, ASSERT_DOUBLE_EQ);
 }
 
 //    template<>
@@ -97,17 +104,61 @@ void unit_check_general(int M, int N, int lda, double* hCPU, double* hGPU)
 template <>
 void unit_check_general(int M, int N, int lda, int* hCPU, int* hGPU)
 {
-#pragma unroll
-    for(int j = 0; j < N; j++)
-    {
-#pragma unroll
-        for(int i = 0; i < M; i++)
-        {
-#ifdef GOOGLE_TEST
-            ASSERT_EQ(hCPU[i + j * lda], hGPU[i + j * lda]);
-#endif
-        }
-    }
+    UNIT_CHECK(M, N, 1, lda, 0, hCPU, hGPU, ASSERT_EQ);
+}
+
+// batched checks
+template <>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, hipblasHalf** hCPU, hipblasHalf** hGPU)
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_HALF_EQ);
+}
+
+template <>
+void unit_check_general(int M, int N, int batch_count, int lda, float** hCPU, float** hGPU)
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_FLOAT_EQ);
+}
+
+template <>
+void unit_check_general(int M, int N, int batch_count, int lda, double** hCPU, double** hGPU)
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_DOUBLE_EQ);
+}
+
+template <>
+void unit_check_general(int M, int N, int batch_count, int lda, int** hCPU, int** hGPU)
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_EQ);
+}
+
+// strided_batched checks
+template <>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, int strideA, hipblasHalf* hCPU, hipblasHalf* hGPU)
+{
+    UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_HALF_EQ);
+}
+
+template <>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, int strideA, float* hCPU, float* hGPU)
+{
+    UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_FLOAT_EQ);
+}
+
+template <>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, int strideA, double* hCPU, double* hGPU)
+{
+    UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_DOUBLE_EQ);
+}
+
+template <>
+void unit_check_general(int M, int N, int batch_count, int lda, int strideA, int* hCPU, int* hGPU)
+{
+    UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_EQ);
 }
 
 /* ========================================Gtest Unit Check TRSM

@@ -249,6 +249,7 @@ HIPBLAS_EXPORT hipblasStatus_t  hipblasDscalBatched(hipblasHandle_t handle, int 
 *alpha,  double *x, int incx, int batchCount);
 */
 
+// gemv
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemv(hipblasHandle_t    handle,
                                             hipblasOperation_t trans,
                                             int                m,
@@ -274,6 +275,70 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemv(hipblasHandle_t    handle,
                                             const double*      beta,
                                             double*            y,
                                             int                incy);
+
+// gemv_batched
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgemvBatched(hipblasHandle_t    handle,
+                                                   hipblasOperation_t trans,
+                                                   int                m,
+                                                   int                n,
+                                                   const float*       alpha,
+                                                   const float* const A[],
+                                                   int                lda,
+                                                   const float* const x[],
+                                                   int                incx,
+                                                   const float*       beta,
+                                                   float* const       y[],
+                                                   int                incy,
+                                                   int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgemvBatched(hipblasHandle_t     handle,
+                                                   hipblasOperation_t  trans,
+                                                   int                 m,
+                                                   int                 n,
+                                                   const double*       alpha,
+                                                   const double* const A[],
+                                                   int                 lda,
+                                                   const double* const x[],
+                                                   int                 incx,
+                                                   const double*       beta,
+                                                   double* const       y[],
+                                                   int                 incy,
+                                                   int                 batchCount);
+
+// gemv_strided_batched
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgemvStridedBatched(hipblasHandle_t    handle,
+                                                          hipblasOperation_t trans,
+                                                          int                m,
+                                                          int                n,
+                                                          const float*       alpha,
+                                                          const float*       A,
+                                                          int                lda,
+                                                          int                strideA,
+                                                          const float*       x,
+                                                          int                incx,
+                                                          int                stridex,
+                                                          const float*       beta,
+                                                          float*             y,
+                                                          int                incy,
+                                                          int                stridey,
+                                                          int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgemvStridedBatched(hipblasHandle_t    handle,
+                                                          hipblasOperation_t trans,
+                                                          int                m,
+                                                          int                n,
+                                                          const double*      alpha,
+                                                          const double*      A,
+                                                          int                lda,
+                                                          int                strideA,
+                                                          const double*      x,
+                                                          int                incx,
+                                                          int                stridex,
+                                                          const double*      beta,
+                                                          double*            y,
+                                                          int                stridey,
+                                                          int                incy,
+                                                          int                batchCount);
 
 /* not implemented
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemvBatched(hipblasHandle_t handle, hipblasOperation_t trans,

@@ -93,10 +93,10 @@ Arguments setup_set_get_vector_arguments(set_get_vector_tuple tup)
 class set_vector_get_vector_gtest : public ::TestWithParam<set_get_vector_tuple>
 {
 protected:
-    set_vector_get_vector_gtest() {}
-    virtual ~set_vector_get_vector_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+    set_vector_get_vector_gtest() { }
+    virtual ~set_vector_get_vector_gtest() { }
+    virtual void SetUp() { }
+    virtual void TearDown() { }
 };
 
 // TEST_P(set_vector_get_vector_gtest, set_get_vector_float)

@@ -34,6 +34,12 @@ template <typename T>
 void unit_check_general(int M, int N, int lda, T* hCPU, T* hGPU);
 
 template <typename T>
+void unit_check_general(int M, int N, int batch_count, int lda, int stride_A, T* hCPU, T* hGPU);
+
+template <typename T>
+void unit_check_general(int M, int N, int batch_count, int lda, T** hCPU, T** hGPU);
+
+template <typename T>
 void unit_check_trsm(int M, int N, int lda, double hGPU, T tolerance);
 
 template <typename T>

@@ -136,10 +136,10 @@ Arguments setup_trsm_arguments(trsm_tuple tup)
 class trsm_gtest : public ::TestWithParam<trsm_tuple>
 {
 protected:
-    trsm_gtest() {}
-    virtual ~trsm_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+    trsm_gtest() { }
+    virtual ~trsm_gtest() { }
+    virtual void SetUp() { }
+    virtual void TearDown() { }
 };
 
 TEST_P(trsm_gtest, trsm_gtest_float)

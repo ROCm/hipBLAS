@@ -7,6 +7,7 @@
 #define _TESTING_UTILITY_H_
 
 #include "hipblas.h"
+#include <cmath>
 #include <immintrin.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,6 +50,25 @@ using namespace std;
         }                                         \
         cout << endl;                             \
     }
+
+// Return true if value is NaN
+template <typename T>
+inline bool hipblas_isnan(T)
+{
+    return false;
+}
+inline bool hipblas_isnan(double arg)
+{
+    return std::isnan(arg);
+}
+inline bool hipblas_isnan(float arg)
+{
+    return std::isnan(arg);
+}
+inline bool hipblas_isnan(hipblasHalf arg)
+{
+    return (~arg & 0x7c00) == 0 && (arg & 0x3ff) != 0;
+}
 
 // Helper routine to convert floats into their half equivalent; uses F16C instructions
 inline hipblasHalf float_to_half(float val)
@@ -112,13 +132,16 @@ inline hipblasHalf random_generator_negative<hipblasHalf>()
 // for vector x (M=1, N=lengthX, lda=incx);
 // for complex number, the real/imag part would be initialized with the same value
 template <typename T>
-void hipblas_init(vector<T>& A, int M, int N, int lda)
+void hipblas_init(vector<T>& A, int M, int N, int lda, int stride = 0, int batch_count = 0)
 {
-    for(int i = 0; i < M; ++i)
+    for(int b = 0; b < batch_count; b++)
     {
-        for(int j = 0; j < N; ++j)
+        for(int i = 0; i < M; ++i)
         {
-            A[i + j * lda] = random_generator<T>();
+            for(int j = 0; j < N; ++j)
+            {
+                A[i + j * lda + b * stride] = random_generator<T>();
+            }
         }
     }
 };
@@ -179,13 +202,16 @@ void hipblas_init_alternating_sign(vector<T>& A, int M, int N, int lda, int stri
 };
 
 template <typename T>
-void hipblas_init(T* A, int M, int N, int lda)
+void hipblas_init(T* A, int M, int N, int lda, int stride = 0, int batch_count = 1)
 {
-    for(int i = 0; i < M; ++i)
+    for(int b = 0; b < batch_count; b++)
     {
-        for(int j = 0; j < N; ++j)
+        for(int i = 0; i < M; ++i)
         {
-            A[i + j * lda] = random_generator<T>();
+            for(int j = 0; j < N; ++j)
+            {
+                A[i + j * lda + b * stride] = random_generator<T>();
+            }
         }
     }
 };
@@ -320,6 +346,8 @@ public:
     int incy = 1;
     int incd = 1;
 
+    double stride_scale = 0.0;
+
     int start = 1024;
     int end   = 10240;
     int step  = 1000;
@@ -353,6 +381,8 @@ public:
         incx = rhs.incx;
         incy = rhs.incy;
         incd = rhs.incd;
+
+        stride_scale = rhs.stride_scale;
 
         start = rhs.start;
         end   = rhs.end;

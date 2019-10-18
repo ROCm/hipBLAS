@@ -88,10 +88,10 @@ Arguments setup_trtri_arguments(trtri_tuple tup)
 class trtri_gtest : public ::TestWithParam<trtri_tuple>
 {
 protected:
-    trtri_gtest() {}
-    virtual ~trtri_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+    trtri_gtest() { }
+    virtual ~trtri_gtest() { }
+    virtual void SetUp() { }
+    virtual void TearDown() { }
 };
 
 TEST_P(trtri_gtest, trtri_float)
