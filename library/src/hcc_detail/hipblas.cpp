@@ -1180,12 +1180,12 @@ extern "C" hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t    handle,
                                                int                n,
                                                int                k,
                                                const float*       alpha,
-                                               const float*       A[],
+                                               const float* const A[],
                                                int                lda,
-                                               const float*       B[],
+                                               const float* const B[],
                                                int                ldb,
                                                const float*       beta,
-                                               float*             C[],
+                                               float* const       C[],
                                                int                ldc,
                                                int                batchCount)
 {
@@ -1193,21 +1193,21 @@ extern "C" hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t    handle,
         handle, transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
 }
 
-extern "C" hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t    handle,
-                                               hipblasOperation_t transa,
-                                               hipblasOperation_t transb,
-                                               int                m,
-                                               int                n,
-                                               int                k,
-                                               const double*      alpha,
-                                               const double*      A[],
-                                               int                lda,
-                                               const double*      B[],
-                                               int                ldb,
-                                               const double*      beta,
-                                               double*            C[],
-                                               int                ldc,
-                                               int                batchCount)
+extern "C" hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t     handle,
+                                               hipblasOperation_t  transa,
+                                               hipblasOperation_t  transb,
+                                               int                 m,
+                                               int                 n,
+                                               int                 k,
+                                               const double*       alpha,
+                                               const double* const A[],
+                                               int                 lda,
+                                               const double* const B[],
+                                               int                 ldb,
+                                               const double*       beta,
+                                               double* const       C[],
+                                               int                 ldc,
+                                               int                 batchCount)
 {
     return hipblasGemmBatched_template<double>(
         handle, transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
