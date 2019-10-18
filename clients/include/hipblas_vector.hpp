@@ -5,12 +5,12 @@
 #ifndef HIPBLAS_VECTOR_H_
 #define HIPBLAS_VECTOR_H_
 
-#include "utility.h"
 #include "hipblas.h"
+#include "utility.h"
 #include <cinttypes>
 #include <cstdio>
-#include <locale.h>
 #include <gtest/gtest.h>
+#include <locale.h>
 #include <vector>
 
 /* ============================================================================================ */
@@ -206,6 +206,5 @@ struct host_vector : std::vector<T>
         return this->data();
     }
 };
-
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "unit.h"
 #include "hipblas.h"
+#include "hipblas_vector.hpp"
 #include "utility.h"
 
 /* ========================================Gtest Unit Check
@@ -131,6 +132,39 @@ template <>
 void unit_check_general(int M, int N, int batch_count, int lda, int** hCPU, int** hGPU)
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_EQ);
+}
+
+// batched checks for host_vector[]s
+template <>
+void unit_check_general(int                      M,
+                        int                      N,
+                        int                      batch_count,
+                        int                      lda,
+                        host_vector<hipblasHalf> hCPU[],
+                        host_vector<hipblasHalf> hGPU[])
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_HALF_EQ);
+}
+
+template <>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, host_vector<int> hCPU[], host_vector<int> hGPU[])
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_EQ);
+}
+
+template <>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, host_vector<float> hCPU[], host_vector<float> hGPU[])
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_FLOAT_EQ);
+}
+
+template <>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, host_vector<double> hCPU[], host_vector<double> hGPU[])
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_DOUBLE_EQ);
 }
 
 // strided_batched checks

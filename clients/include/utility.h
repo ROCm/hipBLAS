@@ -111,7 +111,7 @@ class hipblas_nan_rng
         static_assert(sizeof(UINT_T) == sizeof(T), "Type sizes do not match");
         union u_t
         {
-            u_t() {}
+            u_t() { }
             UINT_T u;
             T      fp;
         } x;

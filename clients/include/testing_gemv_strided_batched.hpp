@@ -69,12 +69,14 @@ hipblasStatus_t testing_gemvStridedBatched(Arguments argus)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    vector<T> hA(A_size);
-    vector<T> hx(X_size);
-    vector<T> hy(Y_size);
-    vector<T> hz(Y_size);
+    host_vector<T> hA(A_size);
+    host_vector<T> hx(X_size);
+    host_vector<T> hy(Y_size);
+    host_vector<T> hz(Y_size);
 
-    T *dA, *dx, *dy;
+    device_vector<T> dA(A_size);
+    device_vector<T> dx(X_size);
+    device_vector<T> dy(Y_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
@@ -84,13 +86,7 @@ hipblasStatus_t testing_gemvStridedBatched(Arguments argus)
     T beta  = (T)argus.beta;
 
     hipblasHandle_t handle;
-
     hipblasCreate(&handle);
-
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dA, A_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dx, X_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dy, Y_size * sizeof(T)));
 
     // Initial Data on CPU
     srand(1);
@@ -130,9 +126,6 @@ hipblasStatus_t testing_gemvStridedBatched(Arguments argus)
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
-            CHECK_HIP_ERROR(hipFree(dA));
-            CHECK_HIP_ERROR(hipFree(dx));
-            CHECK_HIP_ERROR(hipFree(dy));
             hipblasDestroy(handle);
             return status;
         }
@@ -166,13 +159,10 @@ hipblasStatus_t testing_gemvStridedBatched(Arguments argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, y_els, batch_count, incy, stride_y, hz.data(), hy.data());
+            unit_check_general<T>(1, y_els, batch_count, incy, stride_y, hz, hy);
         }
     }
 
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dx));
-    CHECK_HIP_ERROR(hipFree(dy));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
