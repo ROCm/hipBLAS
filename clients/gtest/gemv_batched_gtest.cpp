@@ -3,7 +3,7 @@
  *
  * ************************************************************************ */
 
-#include "testing_gemv_strided_batched.hpp"
+#include "testing_gemv_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -18,7 +18,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<int>, double, vector<double>, char, int> gemv_tuple;
+typedef std::tuple<vector<int>, vector<int>, vector<double>, char, int> gemv_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -55,14 +55,6 @@ const vector<vector<int>> matrix_size_range = {
 const vector<vector<int>> incx_incy_range = {
     {1, 1}, {0, -1}, {2, 1},
     //              {10, 100},
-};
-
-// a vector of single double values. This value will be multiplied by
-// appropriate dimensions to get the stride between vectors and matrices
-const vector<double> stride_scale_range = {
-    1,
-    1.5,
-    2,
 };
 
 // vector of vector, each pair is a {alpha, beta};
@@ -106,12 +98,11 @@ const vector<int> batch_count_range = {
 Arguments setup_gemv_arguments(gemv_tuple tup)
 {
 
-    vector<int>    matrix_size  = std::get<0>(tup);
-    vector<int>    incx_incy    = std::get<1>(tup);
-    double         stride_scale = std::get<2>(tup);
-    vector<double> alpha_beta   = std::get<3>(tup);
-    char           transA       = std::get<4>(tup);
-    int            batch_count  = std::get<5>(tup);
+    vector<int>    matrix_size = std::get<0>(tup);
+    vector<int>    incx_incy   = std::get<1>(tup);
+    vector<double> alpha_beta  = std::get<2>(tup);
+    char           transA      = std::get<3>(tup);
+    int            batch_count = std::get<4>(tup);
 
     Arguments arg;
 
@@ -124,9 +115,7 @@ Arguments setup_gemv_arguments(gemv_tuple tup)
     arg.incx = incx_incy[0];
     arg.incy = incx_incy[1];
 
-    // see the comments about stride_scale above
-    arg.stride_scale = stride_scale;
-    arg.batch_count  = batch_count;
+    arg.batch_count = batch_count;
 
     // the first element of alpha_beta_range is always alpha, and the second is always beta
     arg.alpha = alpha_beta[0];
@@ -139,25 +128,24 @@ Arguments setup_gemv_arguments(gemv_tuple tup)
     return arg;
 }
 
-class gemv_gtest_strided_batched : public ::TestWithParam<gemv_tuple>
+class gemv_gtest_batched : public ::TestWithParam<gemv_tuple>
 {
 protected:
-    gemv_gtest_strided_batched() { }
-    virtual ~gemv_gtest_strided_batched() { }
+    gemv_gtest_batched() { }
+    virtual ~gemv_gtest_batched() { }
     virtual void SetUp() { }
     virtual void TearDown() { }
 };
 
-TEST_P(gemv_gtest_strided_batched, gemv_gtest_float)
+TEST_P(gemv_gtest_batched, gemv_gtest_float)
 {
     Arguments arg = setup_gemv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_gemvStridedBatched<float>(arg);
+    hipblasStatus_t status = testing_gemvBatched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-
         if(arg.M < 0 || arg.N < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
@@ -184,13 +172,12 @@ TEST_P(gemv_gtest_strided_batched, gemv_gtest_float)
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
-// The combinations are  { {M, N, lda}, {incx,incy} {stride_scale}, {alpha, beta}, {transA}, {batch_count} }
+// The combinations are  { {M, N, lda}, {incx,incy} {alpha, beta}, {transA}, {batch_count} }
 
-INSTANTIATE_TEST_CASE_P(hipblasGemvStridedBatched,
-                        gemv_gtest_strided_batched,
+INSTANTIATE_TEST_CASE_P(hipblasGemvBatched,
+                        gemv_gtest_batched,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(incx_incy_range),
-                                ValuesIn(stride_scale_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_range),
                                 ValuesIn(batch_count_range)));

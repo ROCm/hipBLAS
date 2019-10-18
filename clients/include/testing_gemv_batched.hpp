@@ -19,6 +19,50 @@ using namespace std;
 
 /* ============================================================================================ */
 
+#define CLEANUP()                            \
+    do                                       \
+    {                                        \
+        for(int b = 0; b < batch_count; b++) \
+        {                                    \
+            if(bA_array[b])                  \
+                hipFree(bA_array[b]);        \
+            if(bx_array[b])                  \
+                hipFree(bx_array[b]);        \
+            if(by_array[b])                  \
+                hipFree(by_array[b]);        \
+                                             \
+            if(hA_array[b])                  \
+                free(hA_array[b]);           \
+            if(hx_array[b])                  \
+                free(hx_array[b]);           \
+            if(hy_array[b])                  \
+                free(hy_array[b]);           \
+        }                                    \
+                                             \
+        if(hA_array)                         \
+            free(hA_array);                  \
+        if(hx_array)                         \
+            free(hx_array);                  \
+        if(hy_array)                         \
+            free(hy_array);                  \
+        if(hz_array)                         \
+            free(hz_array);                  \
+                                             \
+        if(bA_array)                         \
+            free(bA_array);                  \
+        if(bx_array)                         \
+            free(bx_array);                  \
+        if(by_array)                         \
+            free(by_array);                  \
+                                             \
+        if(dA_array)                         \
+            hipFree(dA_array);               \
+        if(dx_array)                         \
+            hipFree(dx_array);               \
+        if(dy_array)                         \
+            hipFree(dy_array);               \
+    } while(0)
+
 template <typename T>
 hipblasStatus_t testing_gemvBatched(Arguments argus)
 {
@@ -32,6 +76,8 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
     int A_size = lda * N;
     int X_size;
     int Y_size;
+    int X_els;
+    int Y_els;
 
     int batch_count = argus.batch_count;
 
@@ -39,20 +85,23 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
     // transA = HIPBLAS_OP_T;
     if(transA == HIPBLAS_OP_N)
     {
-        X_size = N;
-        Y_size = M;
+        X_els = N;
+        Y_els = M;
     }
     else
     {
-        X_size = M;
-        Y_size = N;
+        X_els = M;
+        Y_els = N;
     }
+    X_size = X_els * incx;
+    Y_size = Y_els * incy;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < 0 || incx <= 0 || incy <= 0 || batch_count < 0) // TODO: batch_count <= 0?
+    if(M < 0 || N < 0 || lda < 0 || incx <= 0 || incy <= 0
+       || batch_count < 0) // TODO: batch_count <= 0?
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
@@ -71,10 +120,6 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
     T** hx_array = (T**)malloc(batch_count * sizeof(T*));
     T** hy_array = (T**)malloc(batch_count * sizeof(T*));
     T** hz_array = (T**)malloc(batch_count * sizeof(T*));
-    // vector<T> hA(A_size);
-    // vector<T> hx(X_size * incx);
-    // vector<T> hy(Y_size * incy);
-    // vector<T> hz(Y_size * incy);
 
     // malloc arrays of pointers-to-device on host (device_batch_pointer in rocBlas)
     T** bA_array = (T**)malloc(batch_count * sizeof(T*));
@@ -86,11 +131,11 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
     T** dA_array = nullptr;
     T** dx_array = nullptr;
     T** dy_array = nullptr;
-    // T** dz_array = nullptr;
 
-    if((!hA_array) || (!hx_array) || (!hy_array) || (!hz_array) || (!bA_array) || (!bx_array) || (!by_array))
+    if((!hA_array) || (!hx_array) || (!hy_array) || (!hz_array) || (!bA_array) || (!bx_array)
+       || (!by_array))
     {
-        // hipFree(stuff); // TODO
+        CLEANUP();
         hipblasDestroy(handle);
         std::cerr << "malloc error\n";
         return HIPBLAS_STATUS_ALLOC_FAILED;
@@ -104,7 +149,7 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
 
     if(err_A != hipSuccess || err_x != hipSuccess || err_y != hipSuccess)
     {
-        // hipFree(stuff); // TODO
+        CLEANUP();
         hipblasDestroy(handle);
         std::cerr << "hipMalloc error\n";
         return HIPBLAS_STATUS_ALLOC_FAILED;
@@ -118,56 +163,94 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
         hA_array[b] = (T*)malloc(A_size * sizeof(T));
         hx_array[b] = (T*)malloc(X_size * sizeof(T));
         hy_array[b] = (T*)malloc(Y_size * sizeof(T));
-    
-        if(!hA_array[b] || !hx_array[b] || !hy_array[b])
+        hz_array[b] = (T*)malloc(Y_size * sizeof(T));
+
+        if(!hA_array[b] || !hx_array[b] || !hy_array[b] || !hz_array[b])
         {
-            // hipFree(stuff); // TODO
+            CLEANUP();
             hipblasDestroy(handle);
             std::cerr << "hX_array[i] malloc error\n";
             return HIPBLAS_STATUS_ALLOC_FAILED;
         }
 
         // malloc matrices on device
-        err_A = hipMalloc((void**)&dA_array[b], A_size * sizeof(T));
-        err_x = hipMalloc((void**)&dx_array[b], X_size * sizeof(T));
-        err_y = hipMalloc((void**)&dy_array[b], Y_size * sizeof(T));
+        err_A = hipMalloc((void**)&bA_array[b], A_size * sizeof(T));
+        err_x = hipMalloc((void**)&bx_array[b], X_size * sizeof(T));
+        err_y = hipMalloc((void**)&by_array[b], Y_size * sizeof(T));
 
-        
+        if(err_A != hipSuccess || err_x != hipSuccess || err_y != hipSuccess)
+        {
+            CLEANUP();
+            hipblasDestroy(handle);
+            std::cerr << "bx_array[i] hipMalloc error\n";
+            return HIPBLAS_STATUS_ALLOC_FAILED;
+        }
 
-        hipblas_init<T>(hA, M, N, lda);
-        hipblas_init<T>(hx, 1, X_size, incx);
-        hipblas_init<T>(hy, 1, Y_size, incy);
+        // initialize matrices on host
+        srand(1);
+        hipblas_init<T>(hA_array[b], M, N, lda);
+        hipblas_init<T>(hx_array[b], 1, X_els, incx);
+        hipblas_init<T>(hy_array[b], 1, Y_els, incy);
+
+        err_A = hipMemcpy(bA_array[b], hA_array[b], sizeof(T) * A_size, hipMemcpyHostToDevice);
+        err_x = hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * X_size, hipMemcpyHostToDevice);
+        err_y = hipMemcpy(by_array[b], hy_array[b], sizeof(T) * Y_size, hipMemcpyHostToDevice);
+
+        // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
+        hz_array[b] = hy_array[b];
+
+        if(err_A != hipSuccess || err_x != hipSuccess || err_y != hipSuccess)
+        {
+            CLEANUP();
+            hipblasDestroy(handle);
+            std::cerr << "bX_array[i] hipMemcpy error\n";
+            return HIPBLAS_STATUS_MAPPING_ERROR;
+        }
     }
 
-    // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
-    hz = hy;
-
-    // copy data from CPU to device
-    hipMemcpy(dA, hA.data(), sizeof(T) * lda * N, hipMemcpyHostToDevice);
-    hipMemcpy(dx, hx.data(), sizeof(T) * X_size * incx, hipMemcpyHostToDevice);
-    hipMemcpy(dy, hy.data(), sizeof(T) * Y_size * incy, hipMemcpyHostToDevice);
+    err_A = hipMemcpy(dA_array, bA_array, batch_count * sizeof(T*), hipMemcpyHostToDevice);
+    err_x = hipMemcpy(dx_array, bx_array, batch_count * sizeof(T*), hipMemcpyHostToDevice);
+    err_y = hipMemcpy(dy_array, by_array, batch_count * sizeof(T*), hipMemcpyHostToDevice);
+    if(err_A != hipSuccess || err_x != hipSuccess || err_y != hipSuccess)
+    {
+        CLEANUP();
+        hipblasDestroy(handle);
+        std::cerr << "dX_array[i] hipMemcpy error\n";
+        return HIPBLAS_STATUS_MAPPING_ERROR;
+    }
 
     /* =====================================================================
            ROCBLAS
     =================================================================== */
     for(int iter = 0; iter < 1; iter++)
     {
-
-        status = hipblasGemv<T>(
-            handle, transA, M, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy);
+        status = hipblasGemvBatched<T>(handle,
+                                       transA,
+                                       M,
+                                       N,
+                                       (T*)&alpha,
+                                       dA_array,
+                                       lda,
+                                       dx_array,
+                                       incx,
+                                       (T*)&beta,
+                                       dy_array,
+                                       incy,
+                                       batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
-            CHECK_HIP_ERROR(hipFree(dA));
-            CHECK_HIP_ERROR(hipFree(dx));
-            CHECK_HIP_ERROR(hipFree(dy));
+            CLEANUP();
             hipblasDestroy(handle);
             return status;
         }
     }
 
     // copy output from device to CPU
-    hipMemcpy(hy.data(), dy, sizeof(T) * Y_size * incy, hipMemcpyDeviceToHost);
+    for(int b = 0; b < batch_count; b++)
+    {
+        hipMemcpy(hy_array[b], by_array[b], sizeof(T) * Y_size, hipMemcpyDeviceToHost);
+    }
 
     if(argus.unit_check)
     {
@@ -175,19 +258,21 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
            CPU BLAS
         =================================================================== */
 
-        cblas_gemv<T>(transA, M, N, alpha, hA.data(), lda, hx.data(), incx, beta, hz.data(), incy);
+        for(int b = 0; b < batch_count; b++)
+        {
+            cblas_gemv<T>(
+                transA, M, N, alpha, hA_array[b], lda, hx_array[b], incx, beta, hz_array[b], incy);
+        }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, Y_size, incy, hz.data(), hy.data());
+            unit_check_general<T>(1, Y_size, batch_count, incy, hz_array, hy_array);
         }
     }
 
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dx));
-    CHECK_HIP_ERROR(hipFree(dy));
+    CLEANUP();
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
