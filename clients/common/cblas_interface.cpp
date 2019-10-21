@@ -38,6 +38,20 @@ void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
  *    level 1 BLAS
  * ===========================================================================
  */
+
+// axpy
+template <>
+void cblas_axpy<float>(int n, const float alpha, const float* x, int incx, float* y, int incy)
+{
+    cblas_saxpy(n, alpha, x, incx, y, incy);
+}
+
+template <>
+void cblas_axpy<double>(int n, const double alpha, const double* x, int incx, double* y, int incy)
+{
+    cblas_daxpy(n, alpha, x, incx, y, incy);
+}
+
 // scal
 template <>
 void cblas_scal<float>(int n, const float alpha, float* x, int incx)
@@ -242,6 +256,59 @@ void cblas_iamax<double>(int n, const double* x, int incx, int* result)
 //  {
 //      *result = (int)cblas_izamax(n, x, incx);
 //  }
+
+// amin
+
+// amin is not implemented in cblas, make local version
+template <typename T>
+int cblas_iamin_helper(int N, const T* X, int incx)
+{
+    int minpos = -1;
+    if(N > 0 && incx > 0)
+    {
+        auto min = X[0] < 0 ? -X[0] : X[0];
+        minpos   = 0;
+        for(size_t i = 1; i < N; ++i)
+        {
+            auto a = X[i * incx] < 0 ? -X[i * incx] : X[i * incx];
+            if(a < min)
+            {
+                min    = a;
+                minpos = i;
+            }
+        }
+    }
+    return minpos;
+}
+
+template <>
+void cblas_iamin<float>(int n, const float* x, int incx, int* result)
+{
+    *result = (int)cblas_iamin_helper(n, x, incx);
+}
+
+template <>
+void cblas_iamin<double>(int n, const double* x, int incx, int* result)
+{
+    *result = (int)cblas_iamin_helper(n, x, incx);
+}
+
+//  template<>
+//  void cblas_iamin<hipComplex>( int n,
+//                          const hipComplex *x, int incx,
+//                          int *result)
+//  {
+//      *result = (int)cblas_icamin(n, x, incx);
+//  }
+
+//  template<>
+//  void cblas_iamin<hipDoubleComplex>( int n,
+//                          const hipDoubleComplex *x, int incx,
+//                          int *result)
+//  {
+//      *result = (int)cblas_izamin(n, x, incx);
+//  }
+
 /*
  * ===========================================================================
  *    level 2 BLAS

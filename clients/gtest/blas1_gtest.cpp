@@ -4,10 +4,14 @@
  * ************************************************************************ */
 
 #include "testing_asum.hpp"
+#include "testing_axpy.hpp"
+#include "testing_copy.hpp"
 #include "testing_dot.hpp"
 #include "testing_iamax.hpp"
+#include "testing_iamin.hpp"
 #include "testing_nrm2.hpp"
 #include "testing_scal.hpp"
+#include "testing_swap.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -72,7 +76,7 @@ vector<vector<int>> incx_incy_range = {
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
-     BLAS-1: scal, dot, nrm2, asum, amax
+     BLAS-1: scal, dot, nrm2, asum, amax, amin, axpy, copy, swap
 =================================================================== */
 
 class blas1_gtest : public ::TestWithParam<blas1_tuple>
@@ -111,6 +115,42 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
     return arg;
 }
 
+TEST_P(blas1_gtest, axpy_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_axpy<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
+}
+
+TEST_P(blas1_gtest, copy_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_copy<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
+}
+
 TEST_P(blas1_gtest, scal_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -119,6 +159,24 @@ TEST_P(blas1_gtest, scal_float)
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_scal<float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+    }
+}
+
+TEST_P(blas1_gtest, swap_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_swap<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -229,6 +287,38 @@ TEST_P(blas1_gtest, amax_double)
     hipblasStatus_t status = testing_amax<double>(arg);
 
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
+TEST_P(blas1_gtest, amin_float)
+{
+    // TODO: min is broken in rocblas currently (fixed in 2.10?)
+
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    // Arguments arg = setup_blas1_arguments(GetParam());
+
+    // hipblasStatus_t status = testing_amin<float>(arg);
+
+    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
+TEST_P(blas1_gtest, amin_double)
+{
+    // TODO: min is broken in rocblas currently (fixed in 2.10?)
+
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    // Arguments arg = setup_blas1_arguments(GetParam());
+
+    // hipblasStatus_t status = testing_amin<double>(arg);
+
+    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
 // Values is for a single item; ValuesIn is for an array
