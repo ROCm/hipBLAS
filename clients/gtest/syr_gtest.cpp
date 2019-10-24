@@ -138,6 +138,10 @@ TEST_P(blas2_syr_gtest, float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -170,6 +174,10 @@ TEST_P(blas2_syr_gtest, double)
         else if(arg.incy <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }

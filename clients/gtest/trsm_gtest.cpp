@@ -169,6 +169,10 @@ TEST_P(trsm_gtest, trsm_gtest_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -198,6 +202,10 @@ TEST_P(trsm_gtest, trsm_gtest_double)
         else if(arg.ldb < arg.M)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }

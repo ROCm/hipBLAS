@@ -305,6 +305,10 @@ TEST_P(parameterized_gemm_ex, standard)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -342,6 +346,10 @@ TEST_P(parameterized_chunk_gemm_ex, float)
         else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
