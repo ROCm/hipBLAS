@@ -57,11 +57,15 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < 0 || incx <= 0 || incy <= 0
-       || batch_count < 0) // TODO: batch_count <= 0?
+    if(M < 0 || N < 0 || lda < 0 || incx <= 0 || incy <= 0 || batch_count < 0)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+    else if(batch_count == 0)
+    {
+        return HIPBLAS_STATUS_SUCCESS;
+    }
+
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
@@ -154,6 +158,7 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
+            // here in cuda
             hipblasDestroy(handle);
             return status;
         }

@@ -198,6 +198,11 @@ TEST_P(gemv_gtest_batched, gemv_gtest_float_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+        }
     }
 }
 

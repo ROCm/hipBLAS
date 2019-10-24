@@ -126,6 +126,7 @@ hipblasStatus_t testing_gemvStridedBatched(Arguments argus)
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
+            // here in cuda
             hipblasDestroy(handle);
             return status;
         }
