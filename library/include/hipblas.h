@@ -48,15 +48,6 @@ struct hip_complex_number
 typedef hip_complex_number<float>  hipComplex;
 typedef hip_complex_number<double> hipDoubleComplex;
 
-// typedef struct
-// {
-//     float x, y;
-// } hipComplex;
-// typedef struct
-// {
-//     double x, y;
-// } hipDoubleComplex;
-
 enum hipblasStatus_t
 {
     HIPBLAS_STATUS_SUCCESS           = 0, // Function succeeds
@@ -333,7 +324,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotu(hipblasHandle_t         handle,
                                             int                     incy,
                                             hipDoubleComplex*       result);
 
-
 // HIPBLAS_EXPORT hipblasStatus_t hipblasSdotBatched (hipblasHandle_t handle, int n, const float *x,
 // int incx, const float *y, int incy, float *result, int batchCount);
 
@@ -347,11 +337,11 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDnrm2(hipblasHandle_t handle, int n, const double* x, int incx, double* result);
 
-// HIPBLAS_EXPORT hipblasStatus_t
-//     hipBlasScnrm2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasScnrm2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
 
-// HIPBLAS_EXPORT hipblasStatus_t
-//     hipBlasDznrm2(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
+HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
 
 // HIPBLAS_EXPORT hipblasStatus_t hipblasSrot(hipblasHandle_t handle,
 //                                            int             n,
@@ -389,51 +379,6 @@ HIPBLAS_EXPORT hipblasStatus_t
 //                                            const hipDoubleComplex* c,
 //                                            const hipDoubleComplex* s);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasScnrm2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2(
-    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
-
-/*
-// rot
-HIPBLAS_EXPORT hipblasStatus_t hipblasSrot(hipblasHandle_t handle,
-                                           int             n,
-                                           float*          x,
-                                           int             incx,
-                                           float*          y,
-                                           int             incy,
-                                           const float*    c,
-                                           const float*    s);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasDrot(hipblasHandle_t handle,
-                                           int             n,
-                                           double*         x,
-                                           int             incx,
-                                           double*         y,
-                                           int             incy,
-                                           const double*   c,
-                                           const double*   s);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasCrot(hipblasHandle_t   handle,
-                                           int               n,
-                                           hipComplex*       x,
-                                           int               incx,
-                                           hipComplex*       y,
-                                           int               incy,
-                                           const hipComplex* c,
-                                           const hipComplex* s);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasZrot(hipblasHandle_t         handle,
-                                           int                     n,
-                                           hipDoubleComplex*       x,
-                                           int                     incx,
-                                           hipDoubleComplex*       y,
-                                           int                     incy,
-                                           const hipDoubleComplex* c,
-                                           const hipDoubleComplex* s);
-*/
-
 // scal
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSscal(hipblasHandle_t handle, int n, const float* alpha, float* x, int incx);
@@ -459,26 +404,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdscal(
 
 // HIPBLAS_EXPORT hipblasStatus_t  hipblasDscalBatched(hipblasHandle_t handle, int n, const double
 // *alpha,  double *x, int incx, int batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasSswap(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy);
-
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasDswap(hipblasHandle_t handle, int n, double* x, int incx, double* y, int incy);
-
-// HIPBLAS_EXPORT hipblasStatus_t hipblasCswap(hipblasHandle_t handle,
-//                                             int             n,
-//                                             hipComplex*     x,
-//                                             int             incx,
-//                                             hipComplex*          y,
-//                                             int             incy);
-
-// HIPBLAS_EXPORT hipblasStatus_t hipblasZswap(hipblasHandle_t   handle,
-//                                             int               n,
-//                                             hipDoubleComplex* x,
-//                                             int               incx,
-//                                             hipDoubleComplex* y,
-//                                             int               incy);
 
 // swap
 HIPBLAS_EXPORT hipblasStatus_t
@@ -551,7 +476,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgemv(hipblasHandle_t         handle,
 // int m, int n, const float *alpha, float *A, int lda,
 //                            float *x, int incx,  const float *beta,  float *y, int incy, int
 // batchCount);
-
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSger(hipblasHandle_t handle,
                                            int             m,

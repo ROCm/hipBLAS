@@ -166,25 +166,6 @@ hipblasStatus_t hipblasCopy<hipDoubleComplex>(hipblasHandle_t         handle,
     return hipblasZcopy(handle, n, x, incx, y, incy);
 }
 
-/*
-    template<>
-    hipblasStatus_t
-    hipblasCopy<hipComplex>(    hipblasHandle_t handle, int n,
-                            const hipComplex *x, int incx,
-                            hipComplex *y, int incy)
-    {
-        return hipblasCcopy(handle, n, x, incx, y, incy);
-    }
-
-    template<>
-    hipblasStatus_t
-    hipblasCopy<hipDoubleComplex>(    hipblasHandle_t handle, int n,
-                            const hipDoubleComplex *x, int incx,
-                            hipDoubleComplex *y, int incy)
-    {
-        return hipblasZcopy(handle, n, x, incx, y, incy);
-    }
-*/
 // dot
 template <>
 hipblasStatus_t hipblasDot<float>(hipblasHandle_t handle,

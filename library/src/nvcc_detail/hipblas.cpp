@@ -746,13 +746,13 @@ hipblasStatus_t
     hipblasCswap(hipblasHandle_t handle, int n, hipComplex* x, int incx, hipComplex* y, int incy)
 {
     return hipCUBLASStatusToHIPStatus(
-        cublasSswap((cublasHandle_t)handle, n, (cuComplex*)x, incx, (cuComplex*)y, incy));
+        cublasCswap((cublasHandle_t)handle, n, (cuComplex*)x, incx, (cuComplex*)y, incy));
 }
 
 hipblasStatus_t hipblasZswap(
     hipblasHandle_t handle, int n, hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
 {
-    return hipCUBLASStatusToHIPStatus(cublasDswap(
+    return hipCUBLASStatusToHIPStatus(cublasZswap(
         (cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, (cuDoubleComplex*)y, incy));
 }
 

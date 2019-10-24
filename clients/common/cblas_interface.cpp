@@ -7,6 +7,7 @@
 #include "cblas.h"
 #include "hipblas.h"
 #include "utility.h"
+#include <cmath>
 #include <memory>
 #include <typeinfo>
 
@@ -113,22 +114,6 @@ void cblas_scal<hipDoubleComplex, double>(int n, const double alpha, hipDoubleCo
     cblas_zdscal(n, alpha, x, incx);
 }
 
-//  template<>
-//  void cblas_scal<hipComplex>( int n,
-//                          const hipComplex alpha,
-//                          hipComplex *x, int incx)
-//  {
-//      cblas_cscal(n, &alpha, x, incx);
-//  }
-
-//  template<>
-//  void cblas_scal<hipDoubleComplex>( int n,
-//                          const hipDoubleComplex alpha,
-//                          hipDoubleComplex *x, int incx)
-//  {
-//      cblas_zscal(n, &alpha, x, incx);
-//  }
-
 // copy
 template <>
 void cblas_copy<float>(int n, float* x, int incx, float* y, int incy)
@@ -154,22 +139,6 @@ void cblas_copy<hipDoubleComplex>(
 {
     cblas_zcopy(n, x, incx, y, incy);
 }
-
-//  template<>
-//  void cblas_copy<hipComplex>( int n,
-//                          hipComplex *x, int incx,
-//                          hipComplex *y, int incy)
-//  {
-//      cblas_ccopy(n, x, incx, y, incy);
-//  }
-
-//  template<>
-//  void cblas_copy<hipDoubleComplex>( int n,
-//                          hipDoubleComplex *x, int incx,
-//                          hipDoubleComplex *y, int incy)
-//  {
-//      cblas_zcopy(n, x, incx, y, incy);
-//  }
 
 // swap
 template <>
@@ -245,24 +214,6 @@ void cblas_dotc<hipDoubleComplex>(int                     n,
 {
     cblas_zdotc_sub(n, x, incx, y, incy, result);
 }
-
-//  template<>
-//  void cblas_dot<hipComplex>( int n,
-//                          const hipComplex *x, int incx,
-//                          const hipComplex *y, int incy,
-//                          hipComplex *result)
-//  {
-//      cblas_cdotu_sub(n, x, incx, y, incy, result);
-//  }
-
-//  template<>
-//  void cblas_dot<hipDoubleComplex>( int n,
-//                          const hipDoubleComplex *x, int incx,
-//                          const hipDoubleComplex *y, int incy,
-//                          hipDoubleComplex *result)
-//  {
-//      cblas_zdotu_sub(n, x, incx, y, incy, result);
-//  }
 
 // nrm2
 template <>
@@ -346,7 +297,6 @@ void cblas_iamax<hipDoubleComplex>(int n, const hipDoubleComplex* x, int incx, i
 }
 
 // amin
-#include <cmath>
 // amin is not implemented in cblas, make local version
 template <typename T>
 double abs_helper(T val)
