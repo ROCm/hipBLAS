@@ -825,7 +825,7 @@ hipblasStatus_t hipblasCgemv(hipblasHandle_t    handle,
                              int                incy)
 {
     return hipCUBLASStatusToHIPStatus(cublasCgemv((cublasHandle_t)handle,
-                                                  hipOperationToHCCOperation(trans),
+                                                  hipOperationToCudaOperation(trans),
                                                   m,
                                                   n,
                                                   (cuComplex*)alpha,
@@ -852,7 +852,7 @@ hipblasStatus_t hipblasZgemv(hipblasHandle_t         handle,
                              int                     incy)
 {
     return hipCUBLASStatusToHIPStatus(cublasZgemv((cublasHandle_t)handle,
-                                                  hipOperationToHCCOperation(trans),
+                                                  hipOperationToCudaOperation(trans),
                                                   m,
                                                   n,
                                                   (cuDoubleComplex*)alpha,
