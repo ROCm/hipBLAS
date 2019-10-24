@@ -208,7 +208,7 @@ inline hipblasHalf random_generator_negative<hipblasHalf>()
 // for vector x (M=1, N=lengthX, lda=incx);
 // for complex number, the real/imag part would be initialized with the same value
 template <typename T>
-void hipblas_init(vector<T>& A, int M, int N, int lda, int stride = 0, int batch_count = 0)
+void hipblas_init(vector<T>& A, int M, int N, int lda, int stride = 0, int batch_count = 1)
 {
     for(int b = 0; b < batch_count; b++)
     {
