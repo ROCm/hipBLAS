@@ -98,7 +98,7 @@ hipblasStatus_t testing_asum(Arguments argus)
 
     if(device_pointer)
         CHECK_HIP_ERROR(
-            hipMemcpy(&rocblas_result, d_rocblas_result, sizeof(T1), hipMemcpyDeviceToHost));
+            hipMemcpy(&rocblas_result, d_rocblas_result, sizeof(T2), hipMemcpyDeviceToHost));
 
     if(argus.unit_check)
     {
@@ -117,7 +117,6 @@ hipblasStatus_t testing_asum(Arguments argus)
     } // end of if unit/norm check
 
     //  BLAS_1_RESULT_PRINT
-
     CHECK_HIP_ERROR(hipFree(dx));
     CHECK_HIP_ERROR(hipFree(d_rocblas_result));
     hipblasDestroy(handle);

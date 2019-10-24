@@ -169,6 +169,22 @@ inline hipblasHalf random_generator<hipblasHalf>()
         static_cast<float>((rand() % 3 + 1))); // generate a integer number in range [1,2,3]
 };
 
+// for hipComplex, generate 2 floats
+/*! \brief  generate two random numbers in range [1,2,3,4,5,6,7,8,9,10] */
+template <>
+inline hipComplex random_generator<hipComplex>()
+{
+    return hipComplex(rand() % 10 + 1, rand() % 10 + 1);
+}
+
+// for hipDoubleComplex, generate 2 doubles
+/*! \brief  generate two random numbers in range [1,2,3,4,5,6,7,8,9,10] */
+template <>
+inline hipDoubleComplex random_generator<hipDoubleComplex>()
+{
+    return hipDoubleComplex(rand() % 10 + 1, rand() % 10 + 1);
+}
+
 /*! \brief  generate a random number in range [-1,-2,-3,-4,-5,-6,-7,-8,-9,-10] */
 template <typename T>
 T random_generator_negative()
