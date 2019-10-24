@@ -61,4 +61,12 @@ void unit_check_nrm2(T cpu_result, T gpu_result, T tolerance)
 #endif
 }
 
+template <typename T>
+void unit_check_trsv(double max_error, int M, T forward_tolerance, T eps)
+{
+#ifdef GOOGLE_TEST
+    ASSERT_LE(max_error, forward_tolerance * eps * M);
+#endif
+}
+
 #endif

@@ -29,6 +29,9 @@ void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
 //  void    cgetrf_(int* m, int* n, hipComplex* A, int* lda, int* ipiv, int *info);
 //  void    zgetrf_(int* m, int* n, hipDoubleComplex* A, int* lda, int* ipiv, int *info);
 
+void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
+void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
+
 #ifdef __cplusplus
 }
 #endif
@@ -433,6 +436,126 @@ void cblas_ger<double>(
     int m, int n, double alpha, double* x, int incx, double* y, int incy, double* A, int lda)
 {
     cblas_dger(CblasColMajor, m, n, alpha, x, incx, y, incy, A, lda);
+}
+
+// syr
+template <>
+void cblas_syr<float>(
+    hipblasFillMode_t uplo, int n, float alpha, float* x, int incx, float* A, int lda)
+{
+    cblas_ssyr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
+}
+
+template <>
+void cblas_syr<double>(
+    hipblasFillMode_t uplo, int n, double alpha, double* x, int incx, double* A, int lda)
+{
+    cblas_dsyr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
+}
+
+// trmv
+template <>
+void cblas_trmv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                m,
+                const float*       A,
+                int                lda,
+                float*             x,
+                int                incx)
+{
+    cblas_strmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+template <>
+void cblas_trmv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                m,
+                const double*      A,
+                int                lda,
+                double*            x,
+                int                incx)
+{
+    cblas_dtrmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+// potrf
+template <>
+int cblas_potrf(char uplo, int m, float* A, int lda)
+{
+    int info;
+    spotrf_(&uplo, &m, A, &lda, &info);
+    return info;
+}
+
+template <>
+int cblas_potrf(char uplo, int m, double* A, int lda)
+{
+    int info;
+    dpotrf_(&uplo, &m, A, &lda, &info);
+    return info;
+}
+
+// trsv
+template <>
+void cblas_trsv<float>(hipblasHandle_t    handle,
+                       hipblasFillMode_t  uplo,
+                       hipblasOperation_t transA,
+                       hipblasDiagType_t  diag,
+                       int                m,
+                       const float*       A,
+                       int                lda,
+                       float*             x,
+                       int                incx)
+{
+    cblas_strsv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+template <>
+void cblas_trsv<double>(hipblasHandle_t    handle,
+                        hipblasFillMode_t  uplo,
+                        hipblasOperation_t transA,
+                        hipblasDiagType_t  diag,
+                        int                m,
+                        const double*      A,
+                        int                lda,
+                        double*            x,
+                        int                incx)
+{
+    cblas_dtrsv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 /*
