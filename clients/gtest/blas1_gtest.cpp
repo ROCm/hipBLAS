@@ -82,10 +82,10 @@ vector<vector<int>> incx_incy_range = {
 class blas1_gtest : public ::TestWithParam<blas1_tuple>
 {
 protected:
-    blas1_gtest() { }
-    virtual ~blas1_gtest() { }
-    virtual void SetUp() { }
-    virtual void TearDown() { }
+    blas1_gtest() {}
+    virtual ~blas1_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 Arguments setup_blas1_arguments(blas1_tuple tup)

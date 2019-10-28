@@ -100,10 +100,10 @@ Arguments setup_geam_arguments(geam_tuple tup)
 class geam_gtest : public ::TestWithParam<geam_tuple>
 {
 protected:
-    geam_gtest() { }
-    virtual ~geam_gtest() { }
-    virtual void SetUp() { }
-    virtual void TearDown() { }
+    geam_gtest() {}
+    virtual ~geam_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(geam_gtest, geam_gtest_float)

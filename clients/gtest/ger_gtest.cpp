@@ -105,10 +105,10 @@ Arguments setup_ger_arguments(ger_tuple tup)
 class blas2_ger_gtest : public ::TestWithParam<ger_tuple>
 {
 protected:
-    blas2_ger_gtest() { }
-    virtual ~blas2_ger_gtest() { }
-    virtual void SetUp() { }
-    virtual void TearDown() { }
+    blas2_ger_gtest() {}
+    virtual ~blas2_ger_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(blas2_ger_gtest, float)

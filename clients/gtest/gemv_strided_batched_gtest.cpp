@@ -142,10 +142,10 @@ Arguments setup_gemv_arguments(gemv_tuple tup)
 class gemv_gtest_strided_batched : public ::TestWithParam<gemv_tuple>
 {
 protected:
-    gemv_gtest_strided_batched() { }
-    virtual ~gemv_gtest_strided_batched() { }
-    virtual void SetUp() { }
-    virtual void TearDown() { }
+    gemv_gtest_strided_batched() {}
+    virtual ~gemv_gtest_strided_batched() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
 TEST_P(gemv_gtest_strided_batched, gemv_gtest_float)
