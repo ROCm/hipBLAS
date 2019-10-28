@@ -70,6 +70,14 @@ inline bool hipblas_isnan(hipblasHalf arg)
 {
     return (~arg & 0x7c00) == 0 && (arg & 0x3ff) != 0;
 }
+inline bool hipblas_isnan(hipComplex arg)
+{
+    return std::isnan(arg.x) || std::isnan(arg.y);
+}
+inline bool hipblas_isnan(hipDoubleComplex arg)
+{
+    return std::isnan(arg.x) || std::isnan(arg.y);
+}
 
 // Helper routine to convert floats into their half equivalent; uses F16C instructions
 inline hipblasHalf float_to_half(float val)
