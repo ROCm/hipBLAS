@@ -22,8 +22,8 @@
 
 template <typename T>
 void cblas_axpy(int n, const T alpha, const T* x, int incx, T* y, int incy);
-template <typename T>
-void cblas_scal(int n, const T alpha, T* x, int incx);
+template <typename T, typename U = T>
+void cblas_scal(int n, const U alpha, T* x, int incx);
 template <typename T>
 void cblas_copy(int n, T* x, int incx, T* y, int incy);
 template <typename T>
@@ -31,6 +31,9 @@ void cblas_swap(int n, T* x, int incx, T* y, int incy);
 
 template <typename T>
 void cblas_dot(int n, const T* x, int incx, const T* y, int incy, T* result);
+
+template <typename T>
+void cblas_dotc(int n, const T* x, int incx, const T* y, int incy, T* result);
 
 template <typename T1, typename T2>
 void cblas_nrm2(int n, const T1* x, int incx, T2* result);
