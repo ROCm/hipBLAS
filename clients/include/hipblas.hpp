@@ -24,8 +24,8 @@
  *   Lower case for vector, e.g. vector x, y    GEMV (y = A*x)
  * ===========================================================================
  */
-template <typename T>
-hipblasStatus_t hipblasScal(hipblasHandle_t handle, int n, const T* alpha, T* x, int incx);
+template <typename T, typename U = T>
+hipblasStatus_t hipblasScal(hipblasHandle_t handle, int n, const U* alpha, T* x, int incx);
 
 template <typename T>
 hipblasStatus_t hipblasCopy(hipblasHandle_t handle, int n, const T* x, int incx, T* y, int incy);
@@ -35,6 +35,10 @@ hipblasStatus_t hipblasSwap(hipblasHandle_t handle, int n, T* x, int incx, T* y,
 
 template <typename T>
 hipblasStatus_t hipblasDot(
+    hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
+
+template <typename T>
+hipblasStatus_t hipblasDotc(
     hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
 
 template <typename T1, typename T2>
