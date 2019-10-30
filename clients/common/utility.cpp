@@ -7,6 +7,9 @@
 #include "hipblas.h"
 #include <sys/time.h>
 
+hipblas_rng_t hipblas_rng(69069);
+hipblas_rng_t hipblas_seed(hipblas_rng);
+
 template <>
 char type2char<float>()
 {

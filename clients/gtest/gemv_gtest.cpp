@@ -160,6 +160,10 @@ TEST_P(gemv_gtest, gemv_gtest_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -193,6 +197,10 @@ TEST_P(gemv_gtest, gemv_gtest_float_complex)
         else if(arg.incy <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }

@@ -8,6 +8,7 @@
 #define _UNIT_H
 
 #include "hipblas.h"
+#include "hipblas_vector.hpp"
 
 #ifdef GOOGLE_TEST
 #include "gtest/gtest.h"
@@ -32,6 +33,16 @@
 // a wrapper will cause the loop keep going
 template <typename T>
 void unit_check_general(int M, int N, int lda, T* hCPU, T* hGPU);
+
+template <typename T>
+void unit_check_general(int M, int N, int batch_count, int lda, int stride_A, T* hCPU, T* hGPU);
+
+template <typename T>
+void unit_check_general(int M, int N, int batch_count, int lda, T** hCPU, T** hGPU);
+
+template <typename T>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, host_vector<T> hCPU[], host_vector<T> hGPU[]);
 
 template <typename T>
 void unit_check_trsm(int M, int N, int lda, double hGPU, T tolerance);

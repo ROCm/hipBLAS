@@ -130,6 +130,10 @@ TEST_P(blas1_gtest, axpy_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -147,6 +151,10 @@ TEST_P(blas1_gtest, axpy_float_complex)
         else if(arg.incx < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -166,6 +174,10 @@ TEST_P(blas1_gtest, axpy_double_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -184,6 +196,10 @@ TEST_P(blas1_gtest, copy_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -201,6 +217,10 @@ TEST_P(blas1_gtest, copy_float_complex)
         else if(arg.incx < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -224,6 +244,10 @@ TEST_P(blas1_gtest, scal_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -245,6 +269,10 @@ TEST_P(blas1_gtest, scal_float_complex)
         else if(arg.incx < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -269,6 +297,10 @@ TEST_P(blas1_gtest, scal_float_complex_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -287,6 +319,10 @@ TEST_P(blas1_gtest, swap_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -304,6 +340,10 @@ TEST_P(blas1_gtest, swap_float_complex)
         else if(arg.incx < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -331,6 +371,10 @@ TEST_P(blas1_gtest, dot_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -352,6 +396,10 @@ TEST_P(blas1_gtest, dotu_float_complex)
         else if(arg.incy < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -375,6 +423,10 @@ TEST_P(blas1_gtest, dotc_float_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -396,6 +448,10 @@ TEST_P(blas1_gtest, nrm2_float)
         else if(arg.incx < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -419,6 +475,10 @@ TEST_P(blas1_gtest, nrm2_float_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -441,6 +501,10 @@ TEST_P(blas1_gtest, asum_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -459,6 +523,10 @@ TEST_P(blas1_gtest, asum_float_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -476,6 +544,10 @@ TEST_P(blas1_gtest, asum_double_complex)
         else if(arg.incx < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
