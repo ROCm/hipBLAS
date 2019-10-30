@@ -7,7 +7,9 @@
 #define _TESTING_UTILITY_H_
 
 #include "hipblas.h"
+#include <cmath>
 #include <immintrin.h>
+#include <random>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -50,6 +52,33 @@ using namespace std;
         cout << endl;                             \
     }
 
+// Return true if value is NaN
+template <typename T>
+inline bool hipblas_isnan(T)
+{
+    return false;
+}
+inline bool hipblas_isnan(double arg)
+{
+    return std::isnan(arg);
+}
+inline bool hipblas_isnan(float arg)
+{
+    return std::isnan(arg);
+}
+inline bool hipblas_isnan(hipblasHalf arg)
+{
+    return (~arg & 0x7c00) == 0 && (arg & 0x3ff) != 0;
+}
+inline bool hipblas_isnan(hipComplex arg)
+{
+    return std::isnan(arg.x) || std::isnan(arg.y);
+}
+inline bool hipblas_isnan(hipDoubleComplex arg)
+{
+    return std::isnan(arg.x) || std::isnan(arg.y);
+}
+
 // Helper routine to convert floats into their half equivalent; uses F16C instructions
 inline hipblasHalf float_to_half(float val)
 {
@@ -68,6 +97,65 @@ inline float half_to_float(hipblasHalf val)
     // return static_cast<hipblasHalf>(_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(val), 0)));
     return _cvtsh_ss(val);
 }
+
+/* ============================================================================================ */
+/*! \brief  Random number generator which generates NaN values */
+
+using hipblas_rng_t = std::mt19937;
+extern hipblas_rng_t hipblas_rng, hipblas_seed;
+
+// Reset the seed (mainly to ensure repeatability of failures in a given suite)
+inline void hipblas_seedrand()
+{
+    hipblas_rng = hipblas_seed;
+}
+
+class hipblas_nan_rng
+{
+    // Generate random NaN values
+    template <typename T, typename UINT_T, int SIG, int EXP>
+    static T random_nan_data()
+    {
+        static_assert(sizeof(UINT_T) == sizeof(T), "Type sizes do not match");
+        union u_t
+        {
+            u_t() {}
+            UINT_T u;
+            T      fp;
+        } x;
+        do
+            x.u = std::uniform_int_distribution<UINT_T>{}(hipblas_rng);
+        while(!(x.u & (((UINT_T)1 << SIG) - 1))); // Reject Inf (mantissa == 0)
+        x.u |= (((UINT_T)1 << EXP) - 1) << SIG; // Exponent = all 1's
+        return x.fp; // NaN with random bits
+    }
+
+public:
+    // Random integer
+    template <typename T, typename std::enable_if<std::is_integral<T>{}, int>::type = 0>
+    explicit operator T()
+    {
+        return std::uniform_int_distribution<T>{}(hipblas_rng);
+    }
+
+    // Random NaN double
+    explicit operator double()
+    {
+        return random_nan_data<double, uint64_t, 52, 11>();
+    }
+
+    // Random NaN float
+    explicit operator float()
+    {
+        return random_nan_data<float, uint32_t, 23, 8>();
+    }
+
+    // Random NaN half (non-template hipblasHalf takes precedence over integer template above)
+    explicit operator hipblasHalf()
+    {
+        return random_nan_data<hipblasHalf, uint16_t, 10, 5>();
+    }
+};
 
 /* ============================================================================================ */
 /* generate random number :*/
@@ -128,13 +216,31 @@ inline hipblasHalf random_generator_negative<hipblasHalf>()
 // for vector x (M=1, N=lengthX, lda=incx);
 // for complex number, the real/imag part would be initialized with the same value
 template <typename T>
-void hipblas_init(vector<T>& A, int M, int N, int lda)
+void hipblas_init(vector<T>& A, int M, int N, int lda, int stride = 0, int batch_count = 1)
 {
-    for(int i = 0; i < M; ++i)
+    for(int b = 0; b < batch_count; b++)
     {
-        for(int j = 0; j < N; ++j)
+        for(int i = 0; i < M; ++i)
         {
-            A[i + j * lda] = random_generator<T>();
+            for(int j = 0; j < N; ++j)
+            {
+                A[i + j * lda + b * stride] = random_generator<T>();
+            }
+        }
+    }
+};
+
+template <typename T>
+void hipblas_init(T* A, int M, int N, int lda, int stride = 0, int batch_count = 1)
+{
+    for(int b = 0; b < batch_count; b++)
+    {
+        for(int i = 0; i < M; ++i)
+        {
+            for(int j = 0; j < N; ++j)
+            {
+                A[i + j * lda + b * stride] = random_generator<T>();
+            }
         }
     }
 };
@@ -194,18 +300,6 @@ void hipblas_init_alternating_sign(vector<T>& A, int M, int N, int lda, int stri
     }
 };
 
-template <typename T>
-void hipblas_init(T* A, int M, int N, int lda)
-{
-    for(int i = 0; i < M; ++i)
-    {
-        for(int j = 0; j < N; ++j)
-        {
-            A[i + j * lda] = random_generator<T>();
-        }
-    }
-};
-
 /*! \brief  symmetric matrix initialization: */
 // for real matrix only
 template <typename T>
@@ -236,6 +330,26 @@ void hipblas_init_hermitian(vector<T>& A, int N, int lda)
         }
     }
 };
+
+/* ============================================================================================ */
+/*! \brief  Initialize an array with random data, with NaN where appropriate */
+
+template <typename T>
+inline void hipblas_init_nan(T* A, size_t N)
+{
+    for(size_t i = 0; i < N; ++i)
+        A[i] = T(hipblas_nan_rng());
+}
+
+template <typename T>
+inline void hipblass_init_nan(
+    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+        for(size_t i = 0; i < M; ++i)
+            for(size_t j = 0; j < N; ++j)
+                A[i + j * lda + i_batch * stride] = T(hipblas_nan_rng());
+}
 
 /* ============================================================================================ */
 /*! \brief  turn float -> 's', double -> 'd', hipblas_float_complex -> 'c', hipblas_double_complex
@@ -336,6 +450,8 @@ public:
     int incy = 1;
     int incd = 1;
 
+    double stride_scale = 0.0;
+
     int start = 1024;
     int end   = 10240;
     int step  = 1000;
@@ -369,6 +485,8 @@ public:
         incx = rhs.incx;
         incy = rhs.incy;
         incd = rhs.incd;
+
+        stride_scale = rhs.stride_scale;
 
         start = rhs.start;
         end   = rhs.end;

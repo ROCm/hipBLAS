@@ -369,6 +369,7 @@ hipblasStatus_t hipblasIamin<hipDoubleComplex>(
  * ===========================================================================
  */
 
+// gemv
 template <>
 hipblasStatus_t hipblasGemv<float>(hipblasHandle_t    handle,
                                    hipblasOperation_t transA,
@@ -437,6 +438,229 @@ hipblasStatus_t hipblasGemv<hipDoubleComplex>(hipblasHandle_t         handle,
     return hipblasZgemv(handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
 }
 
+// gemv_batched
+template <>
+hipblasStatus_t hipblasGemvBatched<float>(hipblasHandle_t    handle,
+                                          hipblasOperation_t transA,
+                                          int                m,
+                                          int                n,
+                                          const float*       alpha,
+                                          const float* const A[],
+                                          int                lda,
+                                          const float* const x[],
+                                          int                incx,
+                                          const float*       beta,
+                                          float* const       y[],
+                                          int                incy,
+                                          int                batch_count)
+{
+    return hipblasSgemvBatched(
+        handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy, batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasGemvBatched<double>(hipblasHandle_t     handle,
+                                           hipblasOperation_t  transA,
+                                           int                 m,
+                                           int                 n,
+                                           const double*       alpha,
+                                           const double* const A[],
+                                           int                 lda,
+                                           const double* const x[],
+                                           int                 incx,
+                                           const double*       beta,
+                                           double* const       y[],
+                                           int                 incy,
+                                           int                 batch_count)
+{
+    return hipblasDgemvBatched(
+        handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy, batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasGemvBatched<hipComplex>(hipblasHandle_t         handle,
+                                               hipblasOperation_t      transA,
+                                               int                     m,
+                                               int                     n,
+                                               const hipComplex*       alpha,
+                                               const hipComplex* const A[],
+                                               int                     lda,
+                                               const hipComplex* const x[],
+                                               int                     incx,
+                                               const hipComplex*       beta,
+                                               hipComplex* const       y[],
+                                               int                     incy,
+                                               int                     batch_count)
+{
+    return hipblasCgemvBatched(
+        handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy, batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasGemvBatched<hipDoubleComplex>(hipblasHandle_t               handle,
+                                                     hipblasOperation_t            transA,
+                                                     int                           m,
+                                                     int                           n,
+                                                     const hipDoubleComplex*       alpha,
+                                                     const hipDoubleComplex* const A[],
+                                                     int                           lda,
+                                                     const hipDoubleComplex* const x[],
+                                                     int                           incx,
+                                                     const hipDoubleComplex*       beta,
+                                                     hipDoubleComplex* const       y[],
+                                                     int                           incy,
+                                                     int                           batch_count)
+{
+    return hipblasZgemvBatched(
+        handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy, batch_count);
+}
+
+// gemv_strided_batched
+template <>
+hipblasStatus_t hipblasGemvStridedBatched<float>(hipblasHandle_t    handle,
+                                                 hipblasOperation_t transA,
+                                                 int                m,
+                                                 int                n,
+                                                 const float*       alpha,
+                                                 const float*       A,
+                                                 int                lda,
+                                                 int                strideA,
+                                                 const float*       x,
+                                                 int                incx,
+                                                 int                stridex,
+                                                 const float*       beta,
+                                                 float*             y,
+                                                 int                incy,
+                                                 int                stridey,
+                                                 int                batch_count)
+{
+    return hipblasSgemvStridedBatched(handle,
+                                      transA,
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      x,
+                                      incx,
+                                      stridex,
+                                      beta,
+                                      y,
+                                      incy,
+                                      stridey,
+                                      batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasGemvStridedBatched<double>(hipblasHandle_t    handle,
+                                                  hipblasOperation_t transA,
+                                                  int                m,
+                                                  int                n,
+                                                  const double*      alpha,
+                                                  const double*      A,
+                                                  int                lda,
+                                                  int                strideA,
+                                                  const double*      x,
+                                                  int                incx,
+                                                  int                stridex,
+                                                  const double*      beta,
+                                                  double*            y,
+                                                  int                incy,
+                                                  int                stridey,
+                                                  int                batch_count)
+{
+    return hipblasDgemvStridedBatched(handle,
+                                      transA,
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      x,
+                                      incx,
+                                      stridex,
+                                      beta,
+                                      y,
+                                      incy,
+                                      stridey,
+                                      batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasGemvStridedBatched<hipComplex>(hipblasHandle_t    handle,
+                                                      hipblasOperation_t transA,
+                                                      int                m,
+                                                      int                n,
+                                                      const hipComplex*  alpha,
+                                                      const hipComplex*  A,
+                                                      int                lda,
+                                                      int                strideA,
+                                                      const hipComplex*  x,
+                                                      int                incx,
+                                                      int                stridex,
+                                                      const hipComplex*  beta,
+                                                      hipComplex*        y,
+                                                      int                incy,
+                                                      int                stridey,
+                                                      int                batch_count)
+{
+    return hipblasCgemvStridedBatched(handle,
+                                      transA,
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      x,
+                                      incx,
+                                      stridex,
+                                      beta,
+                                      y,
+                                      incy,
+                                      stridey,
+                                      batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasGemvStridedBatched<hipDoubleComplex>(hipblasHandle_t         handle,
+                                                            hipblasOperation_t      transA,
+                                                            int                     m,
+                                                            int                     n,
+                                                            const hipDoubleComplex* alpha,
+                                                            const hipDoubleComplex* A,
+                                                            int                     lda,
+                                                            int                     strideA,
+                                                            const hipDoubleComplex* x,
+                                                            int                     incx,
+                                                            int                     stridex,
+                                                            const hipDoubleComplex* beta,
+                                                            hipDoubleComplex*       y,
+                                                            int                     incy,
+                                                            int                     stridey,
+                                                            int                     batch_count)
+{
+    return hipblasZgemvStridedBatched(handle,
+                                      transA,
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      x,
+                                      incx,
+                                      stridex,
+                                      beta,
+                                      y,
+                                      incy,
+                                      stridey,
+                                      batch_count);
+}
+
+// ger
 template <>
 hipblasStatus_t hipblasGer<float>(hipblasHandle_t handle,
                                   int             m,
@@ -711,12 +935,12 @@ hipblasStatus_t hipblasGemmBatched<float>(hipblasHandle_t    handle,
                                           int                n,
                                           int                k,
                                           const float*       alpha,
-                                          const float*       A[],
+                                          const float* const A[],
                                           int                lda,
-                                          const float*       B[],
+                                          const float* const B[],
                                           int                ldb,
                                           const float*       beta,
-                                          float*             C[],
+                                          float* const       C[],
                                           int                ldc,
                                           int                batch_count)
 {
@@ -725,21 +949,21 @@ hipblasStatus_t hipblasGemmBatched<float>(hipblasHandle_t    handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemmBatched<double>(hipblasHandle_t    handle,
-                                           hipblasOperation_t transA,
-                                           hipblasOperation_t transB,
-                                           int                m,
-                                           int                n,
-                                           int                k,
-                                           const double*      alpha,
-                                           const double*      A[],
-                                           int                lda,
-                                           const double*      B[],
-                                           int                ldb,
-                                           const double*      beta,
-                                           double*            C[],
-                                           int                ldc,
-                                           int                batch_count)
+hipblasStatus_t hipblasGemmBatched<double>(hipblasHandle_t     handle,
+                                           hipblasOperation_t  transA,
+                                           hipblasOperation_t  transB,
+                                           int                 m,
+                                           int                 n,
+                                           int                 k,
+                                           const double*       alpha,
+                                           const double* const A[],
+                                           int                 lda,
+                                           const double* const B[],
+                                           int                 ldb,
+                                           const double*       beta,
+                                           double* const       C[],
+                                           int                 ldc,
+                                           int                 batch_count)
 {
     return hipblasDgemmBatched(
         handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
