@@ -98,22 +98,22 @@ enum hipblasSideMode_t
 
 enum hipblasDatatype_t
 {
-    HIPBLAS_R_16F  = 150, /**< 16 bit floating point, real */
-    HIPBLAS_R_32F  = 151, /**< 32 bit floating point, real */
-    HIPBLAS_R_64F  = 152, /**< 64 bit floating point, real */
-    HIPBLAS_C_16F  = 153, /**< 16 bit floating point, complex */
-    HIPBLAS_C_32F  = 154, /**< 32 bit floating point, complex */
-    HIPBLAS_C_64F  = 155, /**< 64 bit floating point, complex */
-    HIPBLAS_R_8I   = 160, /**<  8 bit signed integer, real */
-    HIPBLAS_R_8U   = 161, /**<  8 bit unsigned integer, real */
-    HIPBLAS_R_32I  = 162, /**< 32 bit signed integer, real */
-    HIPBLAS_R_32U  = 163, /**< 32 bit unsigned integer, real */
-    HIPBLAS_C_8I   = 164, /**<  8 bit signed integer, complex */
-    HIPBLAS_C_8U   = 165, /**<  8 bit unsigned integer, complex */
-    HIPBLAS_C_32I  = 166, /**< 32 bit signed integer, complex */
-    HIPBLAS_C_32U  = 167, /**< 32 bit unsigned integer, complex */
-    HIPBLAS_R_16B  = 168, /**< 16 bit bfloat, real */
-    HIPBLAS_C_16B  = 169, /**< 16 bit bfloat, complex */
+    HIPBLAS_R_16F = 150, /**< 16 bit floating point, real */
+    HIPBLAS_R_32F = 151, /**< 32 bit floating point, real */
+    HIPBLAS_R_64F = 152, /**< 64 bit floating point, real */
+    HIPBLAS_C_16F = 153, /**< 16 bit floating point, complex */
+    HIPBLAS_C_32F = 154, /**< 32 bit floating point, complex */
+    HIPBLAS_C_64F = 155, /**< 64 bit floating point, complex */
+    HIPBLAS_R_8I  = 160, /**<  8 bit signed integer, real */
+    HIPBLAS_R_8U  = 161, /**<  8 bit unsigned integer, real */
+    HIPBLAS_R_32I = 162, /**< 32 bit signed integer, real */
+    HIPBLAS_R_32U = 163, /**< 32 bit unsigned integer, real */
+    HIPBLAS_C_8I  = 164, /**<  8 bit signed integer, complex */
+    HIPBLAS_C_8U  = 165, /**<  8 bit unsigned integer, complex */
+    HIPBLAS_C_32I = 166, /**< 32 bit signed integer, complex */
+    HIPBLAS_C_32U = 167, /**< 32 bit unsigned integer, complex */
+    HIPBLAS_R_16B = 168, /**< 16 bit bfloat, real */
+    HIPBLAS_C_16B = 169, /**< 16 bit bfloat, complex */
 };
 
 enum hipblasGemmAlgo_t
