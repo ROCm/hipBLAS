@@ -27,6 +27,12 @@
 template <typename T, typename U = T>
 hipblasStatus_t hipblasScal(hipblasHandle_t handle, int n, const U* alpha, T* x, int incx);
 
+template <typename T, typename U = T>
+hipblasStatus_t hipblasScalBatched(hipblasHandle_t handle, int n, const U* alpha, T* const x[], int incx, int batch_count);
+
+template <typename T, typename U = T>
+hipblasStatus_t hipblasScalStridedBatched(hipblasHandle_t handle, int n, const U* alpha, T* x, int incx, int stridex, int batch_count);
+
 template <typename T>
 hipblasStatus_t hipblasCopy(hipblasHandle_t handle, int n, const T* x, int incx, T* y, int incy);
 

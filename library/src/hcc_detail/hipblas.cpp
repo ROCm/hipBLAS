@@ -801,13 +801,133 @@ hipblasStatus_t
         rocblas_zdscal((rocblas_handle)handle, n, alpha, (rocblas_double_complex*)x, incx));
 }
 
-/* not implemented
-hipblasStatus_t  hipblasSscalBatched(hipblasHandle_t handle, int n, const float *alpha,  float *x,
-int incx, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
+// scal_batched
+hipblasStatus_t  hipblasSscalBatched(hipblasHandle_t handle, int n, const float *alpha, float* const x[], int incx, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_sscal_batched((rocblas_handle)handle,
+                                                          n,
+                                                          alpha,
+                                                          x,
+                                                          incx,
+                                                          batchCount));
+}
 
-hipblasStatus_t  hipblasDscalBatched(hipblasHandle_t handle, int n, const double *alpha,  double *x,
-int incx, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
-*/
+hipblasStatus_t  hipblasDscalBatched(hipblasHandle_t handle, int n, const double *alpha, double* const x[], int incx, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dscal_batched((rocblas_handle)handle,
+                                                          n,
+                                                          alpha,
+                                                          x,
+                                                          incx,
+                                                          batchCount));
+}
+
+hipblasStatus_t  hipblasCscalBatched(hipblasHandle_t handle, int n, const hipComplex *alpha, hipComplex* const x[], int incx, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cscal_batched((rocblas_handle)handle,
+                                                          n,
+                                                          (rocblas_float_complex*)alpha,
+                                                          (rocblas_float_complex*const*)x,
+                                                          incx,
+                                                          batchCount));
+}
+
+hipblasStatus_t  hipblasZscalBatched(hipblasHandle_t handle, int n, const hipDoubleComplex *alpha, hipDoubleComplex* const x[], int incx, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zscal_batched((rocblas_handle)handle,
+                                                          n,
+                                                          (rocblas_double_complex*)alpha,
+                                                          (rocblas_double_complex*const*)x,
+                                                          incx,
+                                                          batchCount));
+}
+
+hipblasStatus_t  hipblasCsscalBatched(hipblasHandle_t handle, int n, const float *alpha, hipComplex* const x[], int incx, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_csscal_batched((rocblas_handle)handle,
+                                                          n,
+                                                          alpha,
+                                                          (rocblas_float_complex*const*)x,
+                                                          incx,
+                                                          batchCount));
+}
+
+hipblasStatus_t  hipblasZdscalBatched(hipblasHandle_t handle, int n, const double *alpha, hipDoubleComplex* const x[], int incx, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zdscal_batched((rocblas_handle)handle,
+                                                          n,
+                                                          alpha,
+                                                          (rocblas_double_complex*const*)x,
+                                                          incx,
+                                                          batchCount));
+}
+
+// scal_strided_batched
+hipblasStatus_t  hipblasSscalStridedBatched(hipblasHandle_t handle, int n, const float *alpha, float* x, int incx, int stridex, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_sscal_strided_batched((rocblas_handle)handle,
+                                                          n,
+                                                          alpha,
+                                                          x,
+                                                          incx,
+                                                          stridex,
+                                                          batchCount));
+}
+
+hipblasStatus_t  hipblasDscalStridedBatched(hipblasHandle_t handle, int n, const double *alpha, double* x, int incx, int stridex, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dscal_strided_batched((rocblas_handle)handle,
+                                                          n,
+                                                          alpha,
+                                                          x,
+                                                          incx,
+                                                          stridex,
+                                                          batchCount));
+}
+
+hipblasStatus_t  hipblasCscalStridedBatched(hipblasHandle_t handle, int n, const hipComplex *alpha, hipComplex* x, int incx, int stridex, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cscal_strided_batched((rocblas_handle)handle,
+                                                          n,
+                                                          (rocblas_float_complex*)alpha,
+                                                          (rocblas_float_complex*)x,
+                                                          incx,
+                                                          stridex,
+                                                          batchCount));
+}
+
+hipblasStatus_t  hipblasZscalStridedBatched(hipblasHandle_t handle, int n, const hipDoubleComplex *alpha, hipDoubleComplex* x, int incx, int stridex, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zscal_strided_batched((rocblas_handle)handle,
+                                                          n,
+                                                          (rocblas_double_complex*)alpha,
+                                                          (rocblas_double_complex*)x,
+                                                          incx,
+                                                          stridex,
+                                                          batchCount));
+}
+
+hipblasStatus_t  hipblasCsscalStridedBatched(hipblasHandle_t handle, int n, const float *alpha, hipComplex* x, int incx, int stridex, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_csscal_strided_batched((rocblas_handle)handle,
+                                                          n,
+                                                          alpha,
+                                                          (rocblas_float_complex*)x,
+                                                          incx,
+                                                          stridex,
+                                                          batchCount));
+}
+
+hipblasStatus_t  hipblasZdscalStridedBatched(hipblasHandle_t handle, int n, const double *alpha, hipDoubleComplex* x, int incx, int stridex, int batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zdscal_strided_batched((rocblas_handle)handle,
+                                                          n,
+                                                          alpha,
+                                                          (rocblas_double_complex*)x,
+                                                          incx,
+                                                          stridex,
+                                                          batchCount));
+}
 
 // swap
 hipblasStatus_t hipblasSswap(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy)
