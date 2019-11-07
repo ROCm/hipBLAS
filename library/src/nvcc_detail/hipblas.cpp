@@ -732,25 +732,25 @@ hipblasStatus_t hipblasDscalBatched(
 }
 
 hipblasStatus_t hipblasCscalBatched(
-    hipblasHandle_t handle, int n, const cuComplex* alpha, cuComplex* const x[], int incx, int batchCount)
+    hipblasHandle_t handle, int n, const hipComplex* alpha, hipComplex* const x[], int incx, int batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 hipblasStatus_t hipblasZscalBatched(
-    hipblasHandle_t handle, int n, const cuDoubleComplex* alpha, cuDoubleComplex* const x[], int incx, int batchCount)
+    hipblasHandle_t handle, int n, const hipDoubleComplex* alpha, hipDoubleComplex* const x[], int incx, int batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 hipblasStatus_t hipblasCsscalBatched(
-    hipblasHandle_t handle, int n, const float* alpha, cuComplex* const x[], int incx, int batchCount)
+    hipblasHandle_t handle, int n, const float* alpha, hipComplex* const x[], int incx, int batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 hipblasStatus_t hipblasZdscalBatched(
-    hipblasHandle_t handle, int n, const double* alpha, cuDoubleComplex* const x[], int incx, int batchCount)
+    hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* const x[], int incx, int batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -766,22 +766,22 @@ hipblasStatus_t hipblasDscalStridedBatched(hipblasHandle_t handle, int n, const 
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t handle, int n, const cuComplex* alpha, cuComplex* x, int incx, int stridex, int batchCount);
+hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t handle, int n, const hipComplex* alpha, hipComplex* x, int incx, int stridex, int batchCount);
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t handle, int n, const cuDoubleComplex* alpha, cuDoubleComplex* x, int incx, int stridex, int batchCount);
+hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t handle, int n, const hipDoubleComplex* alpha, hipDoubleComplex* x, int incx, int stridex, int batchCount);
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t handle, int n, const float* alpha, cuComplex* x, int incx, int stridex, int batchCount);
+hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t handle, int n, const float* alpha, hipComplex* x, int incx, int stridex, int batchCount);
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t handle, int n, const double* alpha, cuDoubleComplex* x, int incx, int stridex, int batchCount);
+hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx, int stridex, int batchCount);
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
