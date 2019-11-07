@@ -776,12 +776,12 @@ hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t handle, int n, const 
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t handle, int n, const float* alpha, hipComplex* x, int incx, int stridex, int batchCount)
+hipblasStatus_t hipblasCsscalStridedBatched(hipblasHandle_t handle, int n, const float* alpha, hipComplex* x, int incx, int stridex, int batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx, int stridex, int batchCount)
+hipblasStatus_t hipblasZdscalStridedBatched(hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx, int stridex, int batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
