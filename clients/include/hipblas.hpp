@@ -53,6 +53,22 @@ template <typename T>
 hipblasStatus_t hipblasDotc(
     hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
 
+template <typename T>
+hipblasStatus_t hipblasDotBatched(
+    hipblasHandle_t handle, int n, const T* const x[], int incx, const T* const y[], int incy, int batch_count, T* result);
+
+template <typename T>
+hipblasStatus_t hipblasDotcBatched(
+    hipblasHandle_t handle, int n, const T* const x[], int incx, const T* const y[], int incy, int batch_count, T* result);
+
+template <typename T>
+hipblasStatus_t hipblasDotStridedBatched(
+    hipblasHandle_t handle, int n, const T* x, int incx, int stridex, const T* y, int incy, int stridey, int batch_count, T* result);
+
+template <typename T>
+hipblasStatus_t hipblasDotcStridedBatched(
+    hipblasHandle_t handle, int n, const T* x, int incx, int stridex, const T* y, int incy, int stridey, int batch_count, T* result);
+
 template <typename T1, typename T2>
 hipblasStatus_t hipblasAsum(hipblasHandle_t handle, int n, const T1* x, int incx, T2* result);
 
