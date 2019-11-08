@@ -252,6 +252,64 @@ hipblasStatus_t hipblasCopy<hipDoubleComplex>(hipblasHandle_t         handle,
     return hipblasZcopy(handle, n, x, incx, y, incy);
 }
 
+// copy_batched
+template <>
+hipblasStatus_t
+    hipblasCopyBatched<float>(hipblasHandle_t handle, int n, const float* const x[], int incx, float* const y[], int incy, int batch_count)
+{
+    return hipblasScopyBatched(handle, n, x, incx, y, incy, batch_count);
+}
+
+template <>
+hipblasStatus_t
+    hipblasCopyBatched<double>(hipblasHandle_t handle, int n, const double* const x[], int incx, double* const y[], int incy, int batch_count)
+{
+    return hipblasDcopyBatched(handle, n, x, incx, y, incy, batch_count);
+}
+
+template <>
+hipblasStatus_t
+    hipblasCopyBatched<hipComplex>(hipblasHandle_t handle, int n, const hipComplex* const x[], int incx, hipComplex* const y[], int incy, int batch_count)
+{
+    return hipblasCcopyBatched(handle, n, x, incx, y, incy, batch_count);
+}
+
+template <>
+hipblasStatus_t
+    hipblasCopyBatched<hipDoubleComplex>(hipblasHandle_t handle, int n, const hipDoubleComplex* const x[], int incx, hipDoubleComplex* const y[], int incy, int batch_count)
+{
+    return hipblasZcopyBatched(handle, n, x, incx, y, incy, batch_count);
+}
+
+// copy_strided_batched
+template <>
+hipblasStatus_t
+    hipblasCopyStridedBatched<float>(hipblasHandle_t handle, int n, const float* x, int incx, int stridex, float* y, int incy, int stridey, int batch_count)
+{
+    return hipblasScopyStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
+}
+
+template <>
+hipblasStatus_t
+    hipblasCopyStridedBatched<double>(hipblasHandle_t handle, int n, const double* x, int incx, int stridex, double* y, int incy, int stridey, int batch_count)
+{
+    return hipblasDcopyStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
+}
+
+template <>
+hipblasStatus_t
+    hipblasCopyStridedBatched<hipComplex>(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int stridex, hipComplex* y, int incy, int stridey, int batch_count)
+{
+    return hipblasCcopyStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
+}
+
+template <>
+hipblasStatus_t
+    hipblasCopyStridedBatched<hipDoubleComplex>(hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int stridex, hipDoubleComplex* y, int incy, int stridey, int batch_count)
+{
+    return hipblasZcopyStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
+}
+
 // dot
 template <>
 hipblasStatus_t hipblasDot<float>(hipblasHandle_t handle,
