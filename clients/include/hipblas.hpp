@@ -46,6 +46,12 @@ template <typename T>
 hipblasStatus_t hipblasSwap(hipblasHandle_t handle, int n, T* x, int incx, T* y, int incy);
 
 template <typename T>
+hipblasStatus_t hipblasSwapBatched(hipblasHandle_t handle, int n, T* x[], int incx, T* y[], int incy, int batch_count);
+
+template <typename T>
+hipblasStatus_t hipblasSwapStridedBatched(hipblasHandle_t handle, int n, T* x, int incx, int stridex, T* y, int incy, int stridey, int batch_count);
+
+template <typename T>
 hipblasStatus_t hipblasDot(
     hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
 
