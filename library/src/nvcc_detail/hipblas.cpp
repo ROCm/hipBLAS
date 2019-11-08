@@ -635,32 +635,165 @@ hipblasStatus_t hipblasZdotu(hipblasHandle_t         handle,
                                                   (cuDoubleComplex*)result));
 }
 
-hipblasStatus_t hipblasSdotBatched(hipblasHandle_t handle,
-                                   int             n,
-                                   const float*    x,
-                                   int             incx,
-                                   const float*    y,
-                                   int             incy,
-                                   float*          result,
-                                   int             batchCount)
+// dot_batched
+hipblasStatus_t hipblasSdotBatched(hipblasHandle_t    handle,
+                                   int                n,
+                                   const float* const x[],
+                                   int                incx,
+                                   const float* const y[],
+                                   int                incy,
+                                   int                batchCount,
+                                   float*             result)
 {
-    // TODO warn user that function was demoted to ignore batch
-    return hipCUBLASStatusToHIPStatus(
-        cublasSdot((cublasHandle_t)handle, n, x, incx, y, incy, result));
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    // // TODO warn user that function was demoted to ignore batch
+    // return hipCUBLASStatusToHIPStatus(
+    //     cublasSdot((cublasHandle_t)handle, n, x, incx, y, incy, result));
 }
 
-hipblasStatus_t hipblasDdotBatched(hipblasHandle_t handle,
-                                   int             n,
-                                   const double*   x,
-                                   int             incx,
-                                   const double*   y,
-                                   int             incy,
-                                   double*         result,
-                                   int             batchCount)
+hipblasStatus_t hipblasDdotBatched(hipblasHandle_t     handle,
+                                   int                 n,
+                                   const double* const x[],
+                                   int                 incx,
+                                   const double* const y[],
+                                   int                 incy,
+                                   int                 batchCount,
+                                   double*             result)
 {
-    // TODO warn user that function was demoted to ignore batch
-    return hipCUBLASStatusToHIPStatus(
-        cublasDdot((cublasHandle_t)handle, n, x, incx, y, incy, result));
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCdotcBatched(hipblasHandle_t        handle,
+                                   int                     n,
+                                   const hipComplex* const x[],
+                                   int                     incx,
+                                   const hipComplex* const y[],
+                                   int                     incy,
+                                   int                     batchCount,
+                                   hipComplex*             result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCdotuBatched(hipblasHandle_t        handle,
+                                   int                     n,
+                                   const hipComplex* const x[],
+                                   int                     incx,
+                                   const hipComplex* const y[],
+                                   int                     incy,
+                                   int                     batchCount,
+                                   hipComplex*             result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZdotcBatched(hipblasHandle_t              handle,
+                                   int                           n,
+                                   const hipDoubleComplex* const x[],
+                                   int                           incx,
+                                   const hipDoubleComplex* const y[],
+                                   int                           incy,
+                                   int                           batchCount,
+                                   hipDoubleComplex*             result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t              handle,
+                                   int                           n,
+                                   const hipDoubleComplex* const x[],
+                                   int                           incx,
+                                   const hipDoubleComplex* const y[],
+                                   int                           incy,
+                                   int                           batchCount,
+                                   hipDoubleComplex*             result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// dot_strided_batched
+hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,
+                                          int             n,
+                                          const float*    x,
+                                          int             incx,
+                                          int             stridex,
+                                          const float*    y,
+                                          int             incy,
+                                          int             stridey,
+                                          int             batchCount,
+                                          float*          result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDdotStridedBatched(hipblasHandle_t handle,
+                                          int             n,
+                                          const double*   x,
+                                          int             incx,
+                                          int             stridex,
+                                          const double*   y,
+                                          int             incy,
+                                          int             stridey,
+                                          int             batchCount,
+                                          double*         result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCdotcStridedBatched(hipblasHandle_t   handle,
+                                           int               n,
+                                           const hipComplex* x,
+                                           int               incx,
+                                           int               stridex,
+                                           const hipComplex* y,
+                                           int               incy,
+                                           int               stridey,
+                                           int               batchCount,
+                                           hipComplex*       result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCdotuStridedBatched(hipblasHandle_t   handle,
+                                           int               n,
+                                           const hipComplex* x,
+                                           int               incx,
+                                           int               stridex,
+                                           const hipComplex* y,
+                                           int               incy,
+                                           int               stridey,
+                                           int               batchCount,
+                                           hipComplex*       result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t         handle,
+                                           int                     n,
+                                           const hipDoubleComplex* x,
+                                           int                     incx,
+                                           int                     stridex,
+                                           const hipDoubleComplex* y,
+                                           int                     incy,
+                                           int                     stridey,
+                                           int                     batchCount,
+                                           hipDoubleComplex*       result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZdotuStridedBatched(hipblasHandle_t         handle,
+                                           int                     n,
+                                           const hipDoubleComplex* x,
+                                           int                     incx,
+                                           int                     stridex,
+                                           const hipDoubleComplex* y,
+                                           int                     incy,
+                                           int                     stridey,
+                                           int                     batchCount,
+                                           hipDoubleComplex*       result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 // nrm2

@@ -773,13 +773,175 @@ hipblasStatus_t hipblasZdotu(hipblasHandle_t         handle,
                                                   (rocblas_double_complex*)result));
 }
 
-/* not implemented
-hipblasStatus_t hipblasSdotBatched (hipblasHandle_t handle, int n, const float *x, int incx, const
-float *y, int incy, float *result, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
+// dot_batched
+hipblasStatus_t hipblasSdotBatched(hipblasHandle_t    handle,
+                                   int                n,
+                                   const float* const x[],
+                                   int                incx,
+                                   const float* const y[],
+                                   int                incy,
+                                   int                batch_count,
+                                   float*             result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_sdot_batched((rocblas_handle)handle, n, x, incx, y, incy, batch_count, result));
+}
 
-hipblasStatus_t hipblasDdotBatched (hipblasHandle_t handle, int n, const double *x, int incx, const
-double *y, int incy, double *result, int batchCount){return HIPBLAS_STATUS_NOT_SUPPORTED;}
-*/
+hipblasStatus_t hipblasDdotBatched(hipblasHandle_t     handle,
+                                   int                 n,
+                                   const double* const x[],
+                                   int                 incx,
+                                   const double* const y[],
+                                   int                 incy,
+                                   int                 batch_count,
+                                   double*             result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_ddot_batched((rocblas_handle)handle, n, x, incx, y, incy, batch_count, result));
+}
+
+hipblasStatus_t hipblasCdotcBatched(hipblasHandle_t        handle,
+                                   int                     n,
+                                   const hipComplex* const x[],
+                                   int                     incx,
+                                   const hipComplex* const y[],
+                                   int                     incy,
+                                   int                     batch_count,
+                                   hipComplex*             result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_cdotc_batched((rocblas_handle)handle, n, (rocblas_float_complex**)x, incx, (rocblas_float_complex**)y, incy, batch_count, (rocblas_float_complex*)result));
+}
+
+hipblasStatus_t hipblasCdotuBatched(hipblasHandle_t        handle,
+                                   int                     n,
+                                   const hipComplex* const x[],
+                                   int                     incx,
+                                   const hipComplex* const y[],
+                                   int                     incy,
+                                   int                     batch_count,
+                                   hipComplex*             result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_cdotu_batched((rocblas_handle)handle, n, (rocblas_float_complex**)x, incx, (rocblas_float_complex**)y, incy, batch_count, (rocblas_float_complex*)result));
+}
+
+hipblasStatus_t hipblasZdotcBatched(hipblasHandle_t              handle,
+                                   int                           n,
+                                   const hipDoubleComplex* const x[],
+                                   int                           incx,
+                                   const hipDoubleComplex* const y[],
+                                   int                           incy,
+                                   int                           batch_count,
+                                   hipDoubleComplex*             result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_zdotc_batched((rocblas_handle)handle, n, (rocblas_double_complex**)x, incx, (rocblas_double_complex**)y, incy, batch_count, (rocblas_double_complex*)result));
+}
+
+hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t              handle,
+                                   int                           n,
+                                   const hipDoubleComplex* const x[],
+                                   int                           incx,
+                                   const hipDoubleComplex* const y[],
+                                   int                           incy,
+                                   int                           batch_count,
+                                   hipDoubleComplex*             result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_zdotu_batched((rocblas_handle)handle, n, (rocblas_double_complex**)x, incx, (rocblas_double_complex**)y, incy, batch_count, (rocblas_double_complex*)result));
+}
+
+// dot_strided_batched
+hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,
+                                          int             n,
+                                          const float*    x,
+                                          int             incx,
+                                          int             stridex,
+                                          const float*    y,
+                                          int             incy,
+                                          int             stridey,
+                                          int             batch_count,
+                                          float*          result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_sdot_strided_batched((rocblas_handle)handle, n, x, incx, stridex, y, incy, stridey, batch_count, result));
+}
+
+hipblasStatus_t hipblasDdotStridedBatched(hipblasHandle_t handle,
+                                          int             n,
+                                          const double*   x,
+                                          int             incx,
+                                          int             stridex,
+                                          const double*   y,
+                                          int             incy,
+                                          int             stridey,
+                                          int             batch_count,
+                                          double*         result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_ddot_strided_batched((rocblas_handle)handle, n, x, incx, stridex, y, incy, stridey, batch_count, result));
+}
+
+hipblasStatus_t hipblasCdotcStridedBatched(hipblasHandle_t  handle,
+                                          int               n,
+                                          const hipComplex* x,
+                                          int               incx,
+                                          int               stridex,
+                                          const hipComplex* y,
+                                          int               incy,
+                                          int               stridey,
+                                          int               batch_count,
+                                          hipComplex*       result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_cdotc_strided_batched((rocblas_handle)handle, n, (rocblas_float_complex*)x, incx, stridex, (rocblas_float_complex*)y, incy, stridey, batch_count, (rocblas_float_complex*)result));
+}
+
+hipblasStatus_t hipblasCdotuStridedBatched(hipblasHandle_t  handle,
+                                          int               n,
+                                          const hipComplex* x,
+                                          int               incx,
+                                          int               stridex,
+                                          const hipComplex* y,
+                                          int               incy,
+                                          int               stridey,
+                                          int               batch_count,
+                                          hipComplex*       result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_cdotu_strided_batched((rocblas_handle)handle, n, (rocblas_float_complex*)x, incx, stridex, (rocblas_float_complex*)y, incy, stridey, batch_count, (rocblas_float_complex*)result));
+}
+
+hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t        handle,
+                                          int                     n,
+                                          const hipDoubleComplex* x,
+                                          int                     incx,
+                                          int                     stridex,
+                                          const hipDoubleComplex* y,
+                                          int                     incy,
+                                          int                     stridey,
+                                          int                     batch_count,
+                                          hipDoubleComplex*       result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_zdotc_strided_batched((rocblas_handle)handle, n, (rocblas_double_complex*)x, incx, stridex, (rocblas_double_complex*)y, incy, stridey, batch_count, (rocblas_double_complex*)result));
+}
+
+hipblasStatus_t hipblasZdotuStridedBatched(hipblasHandle_t        handle,
+                                          int                     n,
+                                          const hipDoubleComplex* x,
+                                          int                     incx,
+                                          int                     stridex,
+                                          const hipDoubleComplex* y,
+                                          int                     incy,
+                                          int                     stridey,
+                                          int                     batch_count,
+                                          hipDoubleComplex*       result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_zdotu_strided_batched((rocblas_handle)handle, n, (rocblas_double_complex*)x, incx, stridex, (rocblas_double_complex*)y, incy, stridey, batch_count, (rocblas_double_complex*)result));
+}
 
 // nrm2
 hipblasStatus_t hipblasSnrm2(hipblasHandle_t handle, int n, const float* x, int incx, float* result)
