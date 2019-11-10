@@ -644,6 +644,72 @@ hipblasStatus_t hipblasAsum<hipDoubleComplex, double>(
     return hipblasDzasum(handle, n, x, incx, result);
 }
 
+// asum_batched
+template <>
+hipblasStatus_t hipblasAsumBatched<float, float>(
+    hipblasHandle_t handle, int n, const float* const x[], int incx, int batch_count, float* result)
+{
+
+    return hipblasSasumBatched(handle, n, x, incx, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasAsumBatched<double, double>(
+    hipblasHandle_t handle, int n, const double* const x[], int incx, int batch_count, double* result)
+{
+
+    return hipblasDasumBatched(handle, n, x, incx, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasAsumBatched<hipComplex, float>(
+    hipblasHandle_t handle, int n, const hipComplex* const x[], int incx, int batch_count, float* result)
+{
+
+    return hipblasScasumBatched(handle, n, x, incx, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasAsumBatched<hipDoubleComplex, double>(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* const x[], int incx, int batch_count, double* result)
+{
+
+    return hipblasDzasumBatched(handle, n, x, incx, batch_count, result);
+}
+
+// asum_strided_batched
+template <>
+hipblasStatus_t hipblasAsumStridedBatched<float, float>(
+    hipblasHandle_t handle, int n, const float* x, int incx, int stridex, int batch_count, float* result)
+{
+
+    return hipblasSasumStridedBatched(handle, n, x, incx, stridex, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasAsumStridedBatched<double, double>(
+    hipblasHandle_t handle, int n, const double* x, int incx, int stridex, int batch_count, double* result)
+{
+
+    return hipblasDasumStridedBatched(handle, n, x, incx, stridex, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasAsumStridedBatched<hipComplex, float>(
+    hipblasHandle_t handle, int n, const hipComplex* x, int incx, int stridex, int batch_count, float* result)
+{
+
+    return hipblasScasumStridedBatched(handle, n, x, incx, stridex, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasAsumStridedBatched<hipDoubleComplex, double>(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int stridex, int batch_count, double* result)
+{
+
+    return hipblasDzasumStridedBatched(handle, n, x, incx, stridex, batch_count, result);
+}
+
 // nrm2
 template <>
 hipblasStatus_t hipblasNrm2<float, float>(
