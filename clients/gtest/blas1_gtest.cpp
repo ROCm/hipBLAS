@@ -4,6 +4,8 @@
  * ************************************************************************ */
 
 #include "testing_asum.hpp"
+#include "testing_asum_batched.hpp"
+#include "testing_asum_strided_batched.hpp"
 #include "testing_axpy.hpp"
 #include "testing_copy.hpp"
 #include "testing_copy_batched.hpp"
@@ -1094,6 +1096,7 @@ TEST_P(blas1_gtest, nrm2_float_complex)
     }
 }
 
+// asum
 TEST_P(blas1_gtest, asum_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -1164,6 +1167,165 @@ TEST_P(blas1_gtest, asum_double_complex)
     }
 }
 
+// asum_batched
+TEST_P(blas1_gtest, asum_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_asum_batched<float, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, asum_batched_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_asum_batched<hipComplex, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, asum_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_asum_batched<hipDoubleComplex, double>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// asum_strided_batched
+TEST_P(blas1_gtest, asum_strided_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_asum_strided_batched<float, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// TEST_P(blas1_gtest, asum_strided_batched_float_complex)
+// {
+//     Arguments       arg    = setup_blas1_arguments(GetParam());
+//     hipblasStatus_t status = testing_asum_strided_batched<hipComplex, float>(arg);
+//     // if not success, then the input argument is problematic, so detect the error message
+//     if(status != HIPBLAS_STATUS_SUCCESS)
+//     {
+//         if(arg.N < 0)
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+//         }
+//         else if(arg.incx < 0)
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+//         }
+//         else if(arg.batch_count < 0)
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+//         }
+//         else
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+//         }
+//     }
+// }
+
+// TEST_P(blas1_gtest, asum_strided_batched_double_complex)
+// {
+//     Arguments       arg    = setup_blas1_arguments(GetParam());
+//     hipblasStatus_t status = testing_asum_strided_batched<hipDoubleComplex, double>(arg);
+//     // if not success, then the input argument is problematic, so detect the error message
+//     if(status != HIPBLAS_STATUS_SUCCESS)
+//     {
+//         if(arg.N < 0)
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+//         }
+//         else if(arg.incx < 0)
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+//         }
+//         else if(arg.batch_count < 0)
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+//         }
+//         else
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+//         }
+//     }
+// }
+
+// amax
 TEST_P(blas1_gtest, amax_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
