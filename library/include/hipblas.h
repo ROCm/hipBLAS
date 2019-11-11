@@ -1038,6 +1038,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsm(hipblasHandle_t    handle,
                                             double*            B,
                                             int                ldb);
 
+// gemm
+HIPBLAS_EXPORT hipblasStatus_t hipblasHgemm(hipblasHandle_t    handle,
+                                            hipblasOperation_t transa,
+                                            hipblasOperation_t transb,
+                                            int                m,
+                                            int                n,
+                                            int                k,
+                                            const hipblasHalf* alpha,
+                                            const hipblasHalf* A,
+                                            int                lda,
+                                            const hipblasHalf* B,
+                                            int                ldb,
+                                            const hipblasHalf* beta,
+                                            hipblasHalf*       C,
+                                            int                ldc);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemm(hipblasHandle_t    handle,
                                             hipblasOperation_t transa,
                                             hipblasOperation_t transb,
@@ -1068,6 +1084,37 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemm(hipblasHandle_t    handle,
                                             double*            C,
                                             int                ldc);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemm(hipblasHandle_t    handle,
+                                            hipblasOperation_t transa,
+                                            hipblasOperation_t transb,
+                                            int                m,
+                                            int                n,
+                                            int                k,
+                                            const hipComplex*  alpha,
+                                            const hipComplex*  A,
+                                            int                lda,
+                                            const hipComplex*  B,
+                                            int                ldb,
+                                            const hipComplex*  beta,
+                                            hipComplex*        C,
+                                            int                ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemm(hipblasHandle_t         handle,
+                                            hipblasOperation_t      transa,
+                                            hipblasOperation_t      transb,
+                                            int                     m,
+                                            int                     n,
+                                            int                     k,
+                                            const hipDoubleComplex* alpha,
+                                            const hipDoubleComplex* A,
+                                            int                     lda,
+                                            const hipDoubleComplex* B,
+                                            int                     ldb,
+                                            const hipDoubleComplex* beta,
+                                            hipDoubleComplex*       C,
+                                            int                     ldc);
+
+// gemm batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t    handle,
                                                    hipblasOperation_t transa,
                                                    hipblasOperation_t transb,
@@ -1100,53 +1147,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t     handle,
                                                    int                 ldc,
                                                    int                 batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
-                                             hipblasOperation_t trans_a,
-                                             hipblasOperation_t trans_b,
-                                             int                m,
-                                             int                n,
-                                             int                k,
-                                             const void*        alpha,
-                                             const void*        a,
-                                             hipblasDatatype_t  a_type,
-                                             int                lda,
-                                             const void*        b,
-                                             hipblasDatatype_t  b_type,
-                                             int                ldb,
-                                             const void*        beta,
-                                             void*              c,
-                                             hipblasDatatype_t  c_type,
-                                             int                ldc,
-                                             hipblasDatatype_t  compute_type,
-                                             hipblasGemmAlgo_t  algo);
-
-// not implemented, requires complex support
-// hipblasStatus_t hipblasCgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t
-// transb,
-//                            int m, int n, int k,  const hipComplex *alpha, const hipComplex *A, int
-// lda, const hipComplex *B, int ldb, const hipComplex *beta, hipComplex *C, int ldc);
-
-// hipblasStatus_t hipblasZgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t
-// transb,
-//                            int m, int n, int k,  const hipDoubleComplex *alpha, const
-// hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, const hipDoubleComplex *beta,
-// hipDoubleComplex *C, int ldc);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasHgemm(hipblasHandle_t    handle,
-                                            hipblasOperation_t transa,
-                                            hipblasOperation_t transb,
-                                            int                m,
-                                            int                n,
-                                            int                k,
-                                            const hipblasHalf* alpha,
-                                            const hipblasHalf* A,
-                                            int                lda,
-                                            const hipblasHalf* B,
-                                            int                ldb,
-                                            const hipblasHalf* beta,
-                                            hipblasHalf*       C,
-                                            int                ldc);
-
+// gemm_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasOperation_t transa,
                                                           hipblasOperation_t transb,
@@ -1184,6 +1185,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t    han
                                                           int                ldc,
                                                           long long          bsc,
                                                           int                batchCount);
+
+// gemmex
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
+                                             hipblasOperation_t trans_a,
+                                             hipblasOperation_t trans_b,
+                                             int                m,
+                                             int                n,
+                                             int                k,
+                                             const void*        alpha,
+                                             const void*        a,
+                                             hipblasDatatype_t  a_type,
+                                             int                lda,
+                                             const void*        b,
+                                             hipblasDatatype_t  b_type,
+                                             int                ldb,
+                                             const void*        beta,
+                                             void*              c,
+                                             hipblasDatatype_t  c_type,
+                                             int                ldc,
+                                             hipblasDatatype_t  compute_type,
+                                             hipblasGemmAlgo_t  algo);
 
 #ifdef __cplusplus
 }

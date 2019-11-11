@@ -1697,48 +1697,7 @@ hipblasStatus_t hipblasDtrsm(hipblasHandle_t    handle,
                                                   ldb));
 }
 
-hipblasStatus_t hipblasSgemm(hipblasHandle_t    handle,
-                             hipblasOperation_t transa,
-                             hipblasOperation_t transb,
-                             int                m,
-                             int                n,
-                             int                k,
-                             const float*       alpha,
-                             const float*       A,
-                             int                lda,
-                             const float*       B,
-                             int                ldb,
-                             const float*       beta,
-                             float*             C,
-                             int                ldc)
-{
-    return hipCUBLASStatusToHIPStatus(cublasSgemm((cublasHandle_t)handle,
-                                                  hipOperationToCudaOperation(transa),
-                                                  hipOperationToCudaOperation(transb),
-                                                  m,
-                                                  n,
-                                                  k,
-                                                  alpha,
-                                                  A,
-                                                  lda,
-                                                  B,
-                                                  ldb,
-                                                  beta,
-                                                  C,
-                                                  ldc));
-}
-
-/*   complex not supported in hcc
-hipblasStatus_t hipblasCgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t
-transb,
-                           int m, int n, int k,  const hipComplex *alpha, hipComplex *A, int lda,
-hipComplex *B, int ldb, const hipComplex *beta, hipComplex *C, int ldc){
-  return hipCUBLASStatusToHIPStatus(cublasCgemm((cublasHandle_t) handle,
-hipOperationToCudaOperation(transa),  hipOperationToCudaOperation(transb), m,  n,  k, alpha, A,
-lda, B,  ldb, beta, C,  ldc));
-}
-*/
-
+// gemm
 hipblasStatus_t hipblasHgemm(hipblasHandle_t    handle,
                              hipblasOperation_t transa,
                              hipblasOperation_t transb,
@@ -1770,18 +1729,36 @@ hipblasStatus_t hipblasHgemm(hipblasHandle_t    handle,
                                                   ldc));
 }
 
-/*  complex not supported in hcc
-hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa,
-hipblasOperation_t transb,
-                           int m, int n, int k,  const hipComplex *alpha, const hipComplex *A[], int
-lda, const hipComplex *B[], int ldb, const hipComplex *beta, hipComplex *C[], int ldc, int
-batchCount){
-
-  return hipCUBLASStatusToHIPStatus(cublasCgemmBatched((cublasHandle_t) handle,
-hipOperationToCudaOperation(transa),  hipOperationToCudaOperation(transb), m,  n,  k, alpha, A,
-lda, B,  ldb, beta, C,  ldc, batchCount));
+hipblasStatus_t hipblasSgemm(hipblasHandle_t    handle,
+                             hipblasOperation_t transa,
+                             hipblasOperation_t transb,
+                             int                m,
+                             int                n,
+                             int                k,
+                             const float*       alpha,
+                             const float*       A,
+                             int                lda,
+                             const float*       B,
+                             int                ldb,
+                             const float*       beta,
+                             float*             C,
+                             int                ldc)
+{
+    return hipCUBLASStatusToHIPStatus(cublasSgemm((cublasHandle_t)handle,
+                                                  hipOperationToCudaOperation(transa),
+                                                  hipOperationToCudaOperation(transb),
+                                                  m,
+                                                  n,
+                                                  k,
+                                                  alpha,
+                                                  A,
+                                                  lda,
+                                                  B,
+                                                  ldb,
+                                                  beta,
+                                                  C,
+                                                  ldc));
 }
-*/
 
 hipblasStatus_t hipblasDgemm(hipblasHandle_t    handle,
                              hipblasOperation_t transa,
@@ -1814,6 +1791,162 @@ hipblasStatus_t hipblasDgemm(hipblasHandle_t    handle,
                                                   ldc));
 }
 
+hipblasStatus_t hipblasCgemm(hipblasHandle_t    handle,
+                             hipblasOperation_t transa,
+                             hipblasOperation_t transb,
+                             int                m,
+                             int                n,
+                             int                k,
+                             const hipComplex*  alpha,
+                             const hipComplex*  A,
+                             int                lda,
+                             const hipComplex*  B,
+                             int                ldb,
+                             const hipComplex*  beta,
+                             hipComplex*        C,
+                             int                ldc)
+{
+    return hipCUBLASStatusToHIPStatus(cublasCgemm((cublasHandle_t)handle,
+                                                  hipOperationToCudaOperation(transa),
+                                                  hipOperationToCudaOperation(transb),
+                                                  m,
+                                                  n,
+                                                  k,
+                                                  (cuComplex*)alpha,
+                                                  (cuComplex*)A,
+                                                  lda,
+                                                  (cuComplex*)B,
+                                                  ldb,
+                                                  (cuComplex*)beta,
+                                                  (cuComplex*)C,
+                                                  ldc));
+}
+
+hipblasStatus_t hipblasZgemm(hipblasHandle_t    handle,
+                             hipblasOperation_t transa,
+                             hipblasOperation_t transb,
+                             int                m,
+                             int                n,
+                             int                k,
+                             const hipComplex*  alpha,
+                             const hipComplex*  A,
+                             int                lda,
+                             const hipComplex*  B,
+                             int                ldb,
+                             const hipComplex*  beta,
+                             hipComplex*        C,
+                             int                ldc)
+{
+    return hipCUBLASStatusToHIPStatus(cublasZgemm((cublasHandle_t)handle,
+                                                  hipOperationToCudaOperation(transa),
+                                                  hipOperationToCudaOperation(transb),
+                                                  m,
+                                                  n,
+                                                  k,
+                                                  (cuDoubleComplex*)alpha,
+                                                  (cuDoubleComplex*)A,
+                                                  lda,
+                                                  (cuDoubleComplex*)B,
+                                                  ldb,
+                                                  (cuDoubleComplex*)beta,
+                                                  (cuDoubleComplex*)C,
+                                                  ldc));
+}
+
+/*   complex not supported in hcc
+hipblasStatus_t hipblasCgemm(hipblasHandle_t handle,  hipblasOperation_t transa, hipblasOperation_t
+transb,
+                           int m, int n, int k,  const hipComplex *alpha, hipComplex *A, int lda,
+hipComplex *B, int ldb, const hipComplex *beta, hipComplex *C, int ldc){
+  return hipCUBLASStatusToHIPStatus(cublasCgemm((cublasHandle_t) handle,
+hipOperationToCudaOperation(transa),  hipOperationToCudaOperation(transb), m,  n,  k, alpha, A,
+lda, B,  ldb, beta, C,  ldc));
+}
+*/
+
+
+
+/*  complex not supported in hcc
+hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t handle,  hipblasOperation_t transa,
+hipblasOperation_t transb,
+                           int m, int n, int k,  const hipComplex *alpha, const hipComplex *A[], int
+lda, const hipComplex *B[], int ldb, const hipComplex *beta, hipComplex *C[], int ldc, int
+batchCount){
+
+  return hipCUBLASStatusToHIPStatus(cublasCgemmBatched((cublasHandle_t) handle,
+hipOperationToCudaOperation(transa),  hipOperationToCudaOperation(transb), m,  n,  k, alpha, A,
+lda, B,  ldb, beta, C,  ldc, batchCount));
+}
+*/
+
+// gemm_batched
+hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t    handle,
+                                    hipblasOperation_t transa,
+                                    hipblasOperation_t transb,
+                                    int                m,
+                                    int                n,
+                                    int                k,
+                                    const float*       alpha,
+                                    const float* const A[],
+                                    int                lda,
+                                    const float* const B[],
+                                    int                ldb,
+                                    const float*       beta,
+                                    float* const       C[],
+                                    int                ldc,
+                                    int                batchCount)
+{
+    return hipCUBLASStatusToHIPStatus(cublasSgemmBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(transa),
+                                                         hipOperationToCudaOperation(transb),
+                                                         m,
+                                                         n,
+                                                         k,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         B,
+                                                         ldb,
+                                                         beta,
+                                                         C,
+                                                         ldc,
+                                                         batchCount));
+}
+
+hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t     handle,
+                                    hipblasOperation_t  transa,
+                                    hipblasOperation_t  transb,
+                                    int                 m,
+                                    int                 n,
+                                    int                 k,
+                                    const double*       alpha,
+                                    const double* const A[],
+                                    int                 lda,
+                                    const double* const B[],
+                                    int                 ldb,
+                                    const double*       beta,
+                                    double* const       C[],
+                                    int                 ldc,
+                                    int                 batchCount)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDgemmBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(transa),
+                                                         hipOperationToCudaOperation(transb),
+                                                         m,
+                                                         n,
+                                                         k,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         B,
+                                                         ldb,
+                                                         beta,
+                                                         C,
+                                                         ldc,
+                                                         batchCount));
+}
+
+// gemm_strided_batched
 hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t    handle,
                                            hipblasOperation_t transa,
                                            hipblasOperation_t transb,
@@ -1892,71 +2025,6 @@ hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t    handle,
                                                                 batchCount));
 }
 
-hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t    handle,
-                                    hipblasOperation_t transa,
-                                    hipblasOperation_t transb,
-                                    int                m,
-                                    int                n,
-                                    int                k,
-                                    const float*       alpha,
-                                    const float* const A[],
-                                    int                lda,
-                                    const float* const B[],
-                                    int                ldb,
-                                    const float*       beta,
-                                    float* const       C[],
-                                    int                ldc,
-                                    int                batchCount)
-{
-    return hipCUBLASStatusToHIPStatus(cublasSgemmBatched((cublasHandle_t)handle,
-                                                         hipOperationToCudaOperation(transa),
-                                                         hipOperationToCudaOperation(transb),
-                                                         m,
-                                                         n,
-                                                         k,
-                                                         alpha,
-                                                         A,
-                                                         lda,
-                                                         B,
-                                                         ldb,
-                                                         beta,
-                                                         C,
-                                                         ldc,
-                                                         batchCount));
-}
-
-hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t     handle,
-                                    hipblasOperation_t  transa,
-                                    hipblasOperation_t  transb,
-                                    int                 m,
-                                    int                 n,
-                                    int                 k,
-                                    const double*       alpha,
-                                    const double* const A[],
-                                    int                 lda,
-                                    const double* const B[],
-                                    int                 ldb,
-                                    const double*       beta,
-                                    double* const       C[],
-                                    int                 ldc,
-                                    int                 batchCount)
-{
-    return hipCUBLASStatusToHIPStatus(cublasDgemmBatched((cublasHandle_t)handle,
-                                                         hipOperationToCudaOperation(transa),
-                                                         hipOperationToCudaOperation(transb),
-                                                         m,
-                                                         n,
-                                                         k,
-                                                         alpha,
-                                                         A,
-                                                         lda,
-                                                         B,
-                                                         ldb,
-                                                         beta,
-                                                         C,
-                                                         ldc,
-                                                         batchCount));
-}
 
 #ifdef __cplusplus
 }
