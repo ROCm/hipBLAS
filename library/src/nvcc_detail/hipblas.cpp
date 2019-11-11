@@ -1446,21 +1446,72 @@ hipblasStatus_t hipblasDger(hipblasHandle_t handle,
         cublasDger((cublasHandle_t)handle, m, n, alpha, x, incx, y, incy, A, lda));
 }
 
-hipblasStatus_t hipblasSgerBatched(hipblasHandle_t handle,
-                                   int             m,
-                                   int             n,
-                                   const float*    alpha,
-                                   const float*    x,
-                                   int             incx,
-                                   const float*    y,
-                                   int             incy,
-                                   float*          A,
-                                   int             lda,
-                                   int             batchCount)
+// ger_batched
+hipblasStatus_t hipblasSgerBatched(hipblasHandle_t    handle,
+                                   int                m,
+                                   int                n,
+                                   const float*       alpha,
+                                   const float* const x[],
+                                   int                incx,
+                                   const float* const y[],
+                                   int                incy,
+                                   float* const       A[],
+                                   int                lda,
+                                   int                batchCount)
 {
-    // TODO warn user that function was demoted to ignore batch
-    return hipCUBLASStatusToHIPStatus(
-        cublasSger((cublasHandle_t)handle, m, n, alpha, x, incx, y, incy, A, lda));
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDgerBatched(hipblasHandle_t     handle,
+                                   int                 m,
+                                   int                 n,
+                                   const double*       alpha,
+                                   const double* const x[],
+                                   int                 incx,
+                                   const double* const y[],
+                                   int                 incy,
+                                   double* const       A[],
+                                   int                 lda,
+                                   int                 batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// ger_strided_batched
+hipblasStatus_t hipblasSgerStridedBatched(hipblasHandle_t handle,
+                                          int             m,
+                                          int             n,
+                                          const float*    alpha,
+                                          const float*    x,
+                                          int             incx,
+                                          int             stridex,
+                                          const float*    y,
+                                          int             incy,
+                                          int             stridey,
+                                          float*          A,
+                                          int             lda,
+                                          int             strideA,
+                                          int             batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDgerStridedBatched(hipblasHandle_t  handle,
+                                          int              m,
+                                          int              n,
+                                          const double*    alpha,
+                                          const double*    x,
+                                          int              incx,
+                                          int              stridex,
+                                          const double*    y,
+                                          int              incy,
+                                          int              stridey,
+                                          double*          A,
+                                          int              lda,
+                                          int              strideA,
+                                          int              batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 // syr
