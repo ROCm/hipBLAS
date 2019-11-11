@@ -78,17 +78,19 @@ hipblasStatus_t testing_asum_strided_batched(Arguments argus)
     if(device_pointer)
     {
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_2 = hipblasAsumStridedBatched<T1, T2>(handle, N, dx, incx, stridex, batch_count, d_rocblas_result);
+        status_2 = hipblasAsumStridedBatched<T1, T2>(
+            handle, N, dx, incx, stridex, batch_count, d_rocblas_result);
     }
 
     if(host_pointer)
     {
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        status_4 = hipblasAsumStridedBatched<T1, T2>(handle, N, dx, incx, stridex, batch_count, rocblas_result1);
+        status_4 = hipblasAsumStridedBatched<T1, T2>(
+            handle, N, dx, incx, stridex, batch_count, rocblas_result1);
     }
 
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS) ||
-       (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
+    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
+       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
     {
         hipblasDestroy(handle);
         if(status_1 != HIPBLAS_STATUS_SUCCESS)
@@ -102,8 +104,8 @@ hipblasStatus_t testing_asum_strided_batched(Arguments argus)
     }
 
     if(device_pointer)
-        CHECK_HIP_ERROR(
-            hipMemcpy(rocblas_result2, d_rocblas_result, sizeof(T2) * batch_count, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(
+            rocblas_result2, d_rocblas_result, sizeof(T2) * batch_count, hipMemcpyDeviceToHost));
 
     if(argus.unit_check)
     {

@@ -22,12 +22,12 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_syr_batched(Arguments argus)
 {
-    int               M          = argus.M;
-    int               N          = argus.N;
-    int               incx       = argus.incx;
-    int               lda        = argus.lda;
-    char              char_uplo  = argus.uplo_option;
-    hipblasFillMode_t uplo       = char2hipblas_fill(char_uplo);
+    int               M           = argus.M;
+    int               N           = argus.N;
+    int               incx        = argus.incx;
+    int               lda         = argus.lda;
+    char              char_uplo   = argus.uplo_option;
+    hipblasFillMode_t uplo        = char2hipblas_fill(char_uplo);
     int               batch_count = argus.batch_count;
 
     int abs_incx = incx < 0 ? -incx : incx;

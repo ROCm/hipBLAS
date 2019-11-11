@@ -21,11 +21,11 @@ using namespace std;
 template <typename T, bool CONJ = false>
 hipblasStatus_t testing_dot_strided_batched(Arguments argus)
 {
-    int N               = argus.N;
-    int incx            = argus.incx;
-    int incy            = argus.incy;
+    int    N            = argus.N;
+    int    incx         = argus.incx;
+    int    incy         = argus.incy;
     double stride_scale = argus.stride_scale;
-    int batch_count     = argus.batch_count;
+    int    batch_count  = argus.batch_count;
 
     int stridex = N * incx * stride_scale;
     int stridey = N * incy * stride_scale;
@@ -62,7 +62,7 @@ hipblasStatus_t testing_dot_strided_batched(Arguments argus)
     int device_pointer = 1;
 
     // TODO: Change to 1 when rocBLAS is fixed.
-    int host_pointer   = 0;
+    int host_pointer = 0;
 
     double gpu_time_used, cpu_time_used;
     double rocblas_error;
@@ -88,8 +88,17 @@ hipblasStatus_t testing_dot_strided_batched(Arguments argus)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-        status_2 = (CONJ ? hipblasDotcStridedBatched<T>
-                         : hipblasDotStridedBatched<T>)(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, d_rocblas_result);
+        status_2
+            = (CONJ ? hipblasDotcStridedBatched<T> : hipblasDotStridedBatched<T>)(handle,
+                                                                                  N,
+                                                                                  dx,
+                                                                                  incx,
+                                                                                  stridex,
+                                                                                  dy,
+                                                                                  incy,
+                                                                                  stridey,
+                                                                                  batch_count,
+                                                                                  d_rocblas_result);
     }
     if(host_pointer)
     {
@@ -97,11 +106,20 @@ hipblasStatus_t testing_dot_strided_batched(Arguments argus)
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
         status_4 = (CONJ ? hipblasDotcStridedBatched<T>
-                         : hipblasDotStridedBatched<T>)(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, h_rocblas_result2);
+                         : hipblasDotStridedBatched<T>)(handle,
+                                                        N,
+                                                        dx,
+                                                        incx,
+                                                        stridex,
+                                                        dy,
+                                                        incy,
+                                                        stridey,
+                                                        batch_count,
+                                                        h_rocblas_result2);
     }
 
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS) ||
-       (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
+    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
+       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
     {
         hipblasDestroy(handle);
         if(status_1 != HIPBLAS_STATUS_SUCCESS)
@@ -115,8 +133,8 @@ hipblasStatus_t testing_dot_strided_batched(Arguments argus)
     }
 
     if(device_pointer)
-        CHECK_HIP_ERROR(
-            hipMemcpy(h_rocblas_result1, d_rocblas_result, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(
+            h_rocblas_result1, d_rocblas_result, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
 
     if(argus.unit_check || argus.norm_check)
     {
@@ -125,7 +143,12 @@ hipblasStatus_t testing_dot_strided_batched(Arguments argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            (CONJ ? cblas_dotc<T> : cblas_dot<T>)(N, hx.data() + b * stridex, incx, hy.data() + b * stridey, incy, &h_cpu_result[b]);
+            (CONJ ? cblas_dotc<T> : cblas_dot<T>)(N,
+                                                  hx.data() + b * stridex,
+                                                  incx,
+                                                  hy.data() + b * stridey,
+                                                  incy,
+                                                  &h_cpu_result[b]);
         }
 
         if(argus.unit_check)

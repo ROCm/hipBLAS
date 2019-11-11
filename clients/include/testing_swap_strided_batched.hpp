@@ -21,11 +21,11 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_swap_strided_batched(Arguments argus)
 {
-    int N               = argus.N;
-    int incx            = argus.incx;
-    int incy            = argus.incy;
+    int    N            = argus.N;
+    int    incx         = argus.incx;
+    int    incy         = argus.incy;
     double stride_scale = argus.stride_scale;
-    int batch_count     = argus.batch_count;
+    int    batch_count  = argus.batch_count;
 
     int stridex = N * incx * stride_scale;
     int stridey = N * incy * stride_scale;
@@ -72,7 +72,8 @@ hipblasStatus_t testing_swap_strided_batched(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasSwapStridedBatched<T>(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count);
+    status = hipblasSwapStridedBatched<T>(
+        handle, N, dx, incx, stridex, dy, incy, stridey, batch_count);
 
     if((status != HIPBLAS_STATUS_SUCCESS))
     {
