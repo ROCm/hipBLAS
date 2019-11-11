@@ -86,16 +86,18 @@ inline hipblasHalf float_to_half(float val)
     // );
     const int          zero = 0;
     short unsigned int a;
-    a = _cvtss_sh(val, zero);
+    // a = _cvtss_sh(val, zero);
     //  return _cvtss_sh(val, zero);
-    return a;
+    // return a;
+    return 0;
 }
 
 // Helper routine to convert halfs into their floats equivalent; uses F16C instructions
 inline float half_to_float(hipblasHalf val)
 {
     // return static_cast<hipblasHalf>(_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(val), 0)));
-    return _cvtsh_ss(val);
+    // return _cvtsh_ss(val);
+    return 0.0f;
 }
 
 /* ============================================================================================ */
