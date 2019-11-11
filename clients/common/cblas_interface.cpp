@@ -757,44 +757,68 @@ void cblas_gemm<double>(hipblasOperation_t transA,
                 ldc);
 }
 
- template<>
- void cblas_gemm<hipComplex>(hipblasOperation_t transA,
-                             hipblasOperation_t transB,
-                             int m,
-                             int n,
-                             int k,
-                             hipComplex alpha,
-                             hipComplex *A,
-                             int lda,
-                             hipComplex *B,
-                             int ldb,
-                             hipComplex beta,
-                             hipComplex *C,
-                             int ldc)
- {
-     //just directly cast, since transA, transB are integers in the enum
-     cblas_cgemm(CblasColMajor, (CBLAS_TRANSPOSE)transA, (CBLAS_TRANSPOSE)transB, m, n, k,
-     &alpha, A, lda, B, ldb, &beta, C, ldc);
- }
+template <>
+void cblas_gemm<hipComplex>(hipblasOperation_t transA,
+                            hipblasOperation_t transB,
+                            int                m,
+                            int                n,
+                            int                k,
+                            hipComplex         alpha,
+                            hipComplex*        A,
+                            int                lda,
+                            hipComplex*        B,
+                            int                ldb,
+                            hipComplex         beta,
+                            hipComplex*        C,
+                            int                ldc)
+{
+    //just directly cast, since transA, transB are integers in the enum
+    cblas_cgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
+}
 
- template<>
- void cblas_gemm<hipDoubleComplex>(hipblasOperation_t transA,
-                                   hipblasOperation_t transB,
-                                   int m,
-                                   int n,
-                                   int k,
-                                   hipDoubleComplex alpha,
-                                   hipDoubleComplex *A,
-                                   int lda,
-                                   hipDoubleComplex *B,
-                                   int ldb,
-                                   hipDoubleComplex beta,
-                                   hipDoubleComplex *C,
-                                   int ldc)
- {
-     cblas_zgemm(CblasColMajor, (CBLAS_TRANSPOSE)transA, (CBLAS_TRANSPOSE)transB, m, n, k,
-     &alpha, A, lda, B, ldb, &beta, C, ldc);
- }
+template <>
+void cblas_gemm<hipDoubleComplex>(hipblasOperation_t transA,
+                                  hipblasOperation_t transB,
+                                  int                m,
+                                  int                n,
+                                  int                k,
+                                  hipDoubleComplex   alpha,
+                                  hipDoubleComplex*  A,
+                                  int                lda,
+                                  hipDoubleComplex*  B,
+                                  int                ldb,
+                                  hipDoubleComplex   beta,
+                                  hipDoubleComplex*  C,
+                                  int                ldc)
+{
+    cblas_zgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
+}
 
 // trsm
 template <>

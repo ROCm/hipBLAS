@@ -22,13 +22,13 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_ger_strided_batched(Arguments argus)
 {
-    int M               = argus.M;
-    int N               = argus.N;
-    int incx            = argus.incx;
-    int incy            = argus.incy;
-    int lda             = argus.lda;
+    int    M            = argus.M;
+    int    N            = argus.N;
+    int    incx         = argus.incx;
+    int    incy         = argus.incy;
+    int    lda          = argus.lda;
     double stride_scale = argus.stride_scale;
-    int batch_count     = argus.batch_count;
+    int    batch_count  = argus.batch_count;
 
     int stride_A = lda * N * stride_scale;
     int stride_x = M * incx * stride_scale;
@@ -94,7 +94,20 @@ hipblasStatus_t testing_ger_strided_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status = hipblasGerStridedBatched<T>(handle, M, N, (T*)&alpha, dx, incx, stride_x, dy, incy, stride_y, dA, lda, stride_A, batch_count);
+        status = hipblasGerStridedBatched<T>(handle,
+                                             M,
+                                             N,
+                                             (T*)&alpha,
+                                             dx,
+                                             incx,
+                                             stride_x,
+                                             dy,
+                                             incy,
+                                             stride_y,
+                                             dA,
+                                             lda,
+                                             stride_A,
+                                             batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

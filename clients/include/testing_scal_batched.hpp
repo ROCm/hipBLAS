@@ -38,8 +38,8 @@ hipblasStatus_t testing_scal_batched(Arguments argus)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
-    U   alpha = argus.alpha;
+    int    sizeX = N * incx;
+    U      alpha = argus.alpha;
     double gpu_time_used, cpu_time_used;
     double rocblas_error = 0.0;
 
@@ -73,7 +73,8 @@ hipblasStatus_t testing_scal_batched(Arguments argus)
         hipblas_init<T>(hx_array[b], 1, N, incx);
         hz_array[b] = hx_array[b];
 
-        CHECK_HIP_ERROR(hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * sizeX, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(
+            hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * sizeX, hipMemcpyHostToDevice));
     }
 
     CHECK_HIP_ERROR(hipMemcpy(dx_array, bx_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
@@ -91,7 +92,8 @@ hipblasStatus_t testing_scal_batched(Arguments argus)
     // copy output from device to CPU
     for(int b = 0; b < batch_count; b++)
     {
-        CHECK_HIP_ERROR(hipMemcpy(hx_array[b], bx_array[b], sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hx_array[b], bx_array[b], sizeof(T) * sizeX, hipMemcpyDeviceToHost));
     }
 
     if(argus.unit_check)

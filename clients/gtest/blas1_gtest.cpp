@@ -85,9 +85,9 @@ vector<vector<int>> incx_incy_range = {
     {-1, -1},
 };
 
-double stride_scale_range[] = { 1.0, 2.5 };
+double stride_scale_range[] = {1.0, 2.5};
 
-int batch_count_range[] = { -1, 0, 1, 2, 10 };
+int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 /* ===============Google Unit Test==================================================== */
 

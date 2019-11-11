@@ -89,7 +89,8 @@ hipblasStatus_t testing_syr_strided_batched(Arguments argus)
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasSyrStridedBatched<T>(handle, uplo, N, (T*)&alpha, dx, incx, stridex, dA, lda, strideA, batch_count);
+        status = hipblasSyrStridedBatched<T>(
+            handle, uplo, N, (T*)&alpha, dx, incx, stridex, dA, lda, strideA, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
@@ -108,7 +109,8 @@ hipblasStatus_t testing_syr_strided_batched(Arguments argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_syr<T>(uplo, N, alpha, hx.data() + b * stridex, incx, hA_cpu.data() + b * strideA, lda);
+            cblas_syr<T>(
+                uplo, N, alpha, hx.data() + b * stridex, incx, hA_cpu.data() + b * strideA, lda);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

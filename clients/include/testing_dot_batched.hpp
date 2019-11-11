@@ -68,10 +68,11 @@ hipblasStatus_t testing_dot_batched(Arguments argus)
     int device_pointer = 1;
 
     // TODO: change to 1 when rocBLAS is fixed.
-    int host_pointer   = 0;
+    int host_pointer = 0;
 
     int last = batch_count - 1;
-    if(!dx_array || !dy_array || !d_rocblas_result || (!bx_array[last] && sizeX) || (!by_array[last] && sizeY))
+    if(!dx_array || !dy_array || !d_rocblas_result || (!bx_array[last] && sizeX)
+       || (!by_array[last] && sizeY))
     {
         hipblasDestroy(handle);
         return HIPBLAS_STATUS_ALLOC_FAILED;
@@ -81,15 +82,17 @@ hipblasStatus_t testing_dot_batched(Arguments argus)
     srand(1);
     for(int b = 0; b < batch_count; b++)
     {
-        hx_array[b]          = host_vector<T>(sizeX);
-        hy_array[b]          = host_vector<T>(sizeY);
+        hx_array[b] = host_vector<T>(sizeX);
+        hy_array[b] = host_vector<T>(sizeY);
 
         srand(1);
         hipblas_init<T>(hx_array[b], 1, N, incx);
         hipblas_init<T>(hy_array[b], 1, N, incy);
 
-        CHECK_HIP_ERROR(hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * sizeX, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(hipMemcpy(by_array[b], hy_array[b], sizeof(T) * sizeY, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(
+            hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * sizeX, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(
+            hipMemcpy(by_array[b], hy_array[b], sizeof(T) * sizeY, hipMemcpyHostToDevice));
     }
     CHECK_HIP_ERROR(hipMemcpy(dx_array, bx_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy_array, by_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
@@ -103,20 +106,32 @@ hipblasStatus_t testing_dot_batched(Arguments argus)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-        status_2 = (CONJ ? hipblasDotcBatched<T>
-                         : hipblasDotBatched<T>)(handle, N, dx_array, incx, dy_array, incy, batch_count, d_rocblas_result);
+        status_2 = (CONJ ? hipblasDotcBatched<T> : hipblasDotBatched<T>)(handle,
+                                                                         N,
+                                                                         dx_array,
+                                                                         incx,
+                                                                         dy_array,
+                                                                         incy,
+                                                                         batch_count,
+                                                                         d_rocblas_result);
     }
     if(host_pointer)
     {
 
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_3 = (CONJ ? hipblasDotcBatched<T>
-                         : hipblasDotBatched<T>)(handle, N, dx_array, incx, dy_array, incy, batch_count, h_rocblas_result2);
+        status_3 = (CONJ ? hipblasDotcBatched<T> : hipblasDotBatched<T>)(handle,
+                                                                         N,
+                                                                         dx_array,
+                                                                         incx,
+                                                                         dy_array,
+                                                                         incy,
+                                                                         batch_count,
+                                                                         h_rocblas_result2);
     }
 
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS) ||
-       (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
+    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
+       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
     {
         hipblasDestroy(handle);
         if(status_1 != HIPBLAS_STATUS_SUCCESS)
@@ -130,8 +145,8 @@ hipblasStatus_t testing_dot_batched(Arguments argus)
     }
 
     if(device_pointer)
-        CHECK_HIP_ERROR(
-            hipMemcpy(h_rocblas_result1, d_rocblas_result, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(
+            h_rocblas_result1, d_rocblas_result, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
 
     if(argus.unit_check || argus.norm_check)
     {
@@ -140,7 +155,8 @@ hipblasStatus_t testing_dot_batched(Arguments argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            (CONJ ? cblas_dotc<T> : cblas_dot<T>)(N, hx_array[b], incx, hy_array[b], incy, &(h_cpu_result[b]));
+            (CONJ ? cblas_dotc<T>
+                  : cblas_dot<T>)(N, hx_array[b], incx, hy_array[b], incy, &(h_cpu_result[b]));
         }
 
         if(argus.unit_check)

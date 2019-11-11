@@ -62,8 +62,8 @@ const vector<vector<int>> incx_incy_range = {
 // add/delete single values, like {2.0}
 const vector<double> alpha_range = {-0.5, 2.0, 0.0};
 
-const vector<double> stride_scale_range = { 1.0, 2.5 };
-const vector<int>    batch_count_range  = { -1, 0, 1, 2, 10 };
+const vector<double> stride_scale_range = {1.0, 2.5};
+const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
 
 /* ===============Google Unit Test==================================================== */
 

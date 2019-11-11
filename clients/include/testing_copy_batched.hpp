@@ -41,7 +41,7 @@ hipblasStatus_t testing_copy_batched(Arguments argus)
 
     int sizeX = N * incx;
     int sizeY = N * incy;
-    
+
     double gpu_time_used, cpu_time_used;
     double rocblas_error = 0.0;
 
@@ -82,8 +82,10 @@ hipblasStatus_t testing_copy_batched(Arguments argus)
         hx_cpu_array[b] = hx_array[b];
         hy_cpu_array[b] = hy_array[b];
 
-        CHECK_HIP_ERROR(hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * sizeX, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(hipMemcpy(by_array[b], hy_array[b], sizeof(T) * sizeY, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(
+            hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * sizeX, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(
+            hipMemcpy(by_array[b], hy_array[b], sizeof(T) * sizeY, hipMemcpyHostToDevice));
     }
     CHECK_HIP_ERROR(hipMemcpy(dx_array, bx_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy_array, by_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
@@ -101,8 +103,10 @@ hipblasStatus_t testing_copy_batched(Arguments argus)
     // copy output from device to CPU
     for(int b = 0; b < batch_count; b++)
     {
-        CHECK_HIP_ERROR(hipMemcpy(hx_array[b], by_array[b], sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(hy_array[b], by_array[b], sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hx_array[b], by_array[b], sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hy_array[b], by_array[b], sizeof(T) * sizeY, hipMemcpyDeviceToHost));
     }
 
     if(argus.unit_check)

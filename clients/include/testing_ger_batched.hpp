@@ -109,7 +109,8 @@ hipblasStatus_t testing_ger_batched(Arguments argus)
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasGerBatched<T>(handle, M, N, (T*)&alpha, dx, incx, dy, incy, dA, lda, batch_count);
+        status = hipblasGerBatched<T>(
+            handle, M, N, (T*)&alpha, dx, incx, dy, incy, dA, lda, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

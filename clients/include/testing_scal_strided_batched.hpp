@@ -28,9 +28,9 @@ hipblasStatus_t testing_scal_strided_batched(Arguments argus)
     int    batch_count  = argus.batch_count;
 
     int stridex = N * incx * stride_scale;
-    int sizeX = stridex * batch_count;
+    int sizeX   = stridex * batch_count;
 
-    U   alpha = argus.alpha;
+    U alpha = argus.alpha;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -52,7 +52,6 @@ hipblasStatus_t testing_scal_strided_batched(Arguments argus)
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
-
 
     // Initial Data on CPU
     srand(1);
