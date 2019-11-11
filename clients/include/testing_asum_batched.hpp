@@ -59,21 +59,22 @@ hipblasStatus_t testing_asum_batched(Arguments argus)
     device_vector<T2>         d_rocblas_result(batch_count);
 
     int device_pointer = 1;
-    int host_pointer = 1;    
+    int host_pointer   = 1;
 
     // Initial Data on CPU
     srand(1);
     for(int b = 0; b < batch_count; b++)
     {
         hx_array[b] = host_vector<T1>(sizeX);
-    
+
         srand(1);
         hipblas_init<T1>(hx_array[b], 1, N, incx);
 
-        CHECK_HIP_ERROR(hipMemcpy(bx_array[b], hx_array[b], sizeof(T1) * sizeX, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(
+            hipMemcpy(bx_array[b], hx_array[b], sizeof(T1) * sizeX, hipMemcpyHostToDevice));
     }
-    CHECK_HIP_ERROR(hipMemcpy(dx_array, bx_array, sizeof(T1*) * batch_count, hipMemcpyHostToDevice));
-
+    CHECK_HIP_ERROR(
+        hipMemcpy(dx_array, bx_array, sizeof(T1*) * batch_count, hipMemcpyHostToDevice));
 
     /* =====================================================================
          ROCBLAS
@@ -82,16 +83,19 @@ hipblasStatus_t testing_asum_batched(Arguments argus)
     if(device_pointer)
     {
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_2 = hipblasAsumBatched<T1, T2>(handle, N, dx_array, incx, batch_count, d_rocblas_result);
+        status_2
+            = hipblasAsumBatched<T1, T2>(handle, N, dx_array, incx, batch_count, d_rocblas_result);
     }
     if(host_pointer)
     {
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        status_4 = hipblasAsumBatched<T1, T2>(handle, N, dx_array, incx, batch_count, h_rocblas_result1);
+        status_4
+            = hipblasAsumBatched<T1, T2>(handle, N, dx_array, incx, batch_count, h_rocblas_result1);
     }
 
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS ||
-       (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS)))
+    if((status_1 != HIPBLAS_STATUS_SUCCESS)
+       || (status_2 != HIPBLAS_STATUS_SUCCESS || (status_3 != HIPBLAS_STATUS_SUCCESS)
+           || (status_4 != HIPBLAS_STATUS_SUCCESS)))
     {
         hipblasDestroy(handle);
         if(status_1 != HIPBLAS_STATUS_SUCCESS)
@@ -105,8 +109,8 @@ hipblasStatus_t testing_asum_batched(Arguments argus)
     }
 
     if(device_pointer)
-        CHECK_HIP_ERROR(
-            hipMemcpy(h_rocblas_result2, d_rocblas_result, sizeof(T2) * batch_count, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(
+            h_rocblas_result2, d_rocblas_result, sizeof(T2) * batch_count, hipMemcpyDeviceToHost));
 
     if(argus.unit_check)
     {
