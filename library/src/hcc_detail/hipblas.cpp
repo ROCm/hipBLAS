@@ -1866,6 +1866,68 @@ hipblasStatus_t hipblasDsyr(hipblasHandle_t   handle,
         rocblas_dsyr((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, A, lda));
 }
 
+// syr_batched
+hipblasStatus_t hipblasSsyrBatched(hipblasHandle_t    handle,
+                                   hipblasFillMode_t  uplo,
+                                   int                n,
+                                   const float*       alpha,
+                                   const float* const x[],
+                                   int                incx,
+                                   float* const       A[],
+                                   int                lda,
+                                   int                batchCount)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_ssyr_batched((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, A, lda, batchCount));
+}
+
+hipblasStatus_t hipblasDsyrBatched(hipblasHandle_t     handle,
+                                   hipblasFillMode_t   uplo,
+                                   int                 n,
+                                   const double*       alpha,
+                                   const double* const x[],
+                                   int                 incx,
+                                   double* const       A[],
+                                   int                 lda,
+                                   int                 batchCount)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_dsyr_batched((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, A, lda, batchCount));
+}
+
+// syr_strided_batched
+hipblasStatus_t hipblasSsyrStridedBatched(hipblasHandle_t   handle,
+                                          hipblasFillMode_t uplo,
+                                          int               n,
+                                          const float*      alpha,
+                                          const float*      x,
+                                          int               incx,
+                                          int               stridex,
+                                          float*            A,
+                                          int               lda,
+                                          int               strideA,
+                                          int               batchCount)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_ssyr_strided_batched((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, stridex, A, lda, strideA, batchCount));
+}
+
+hipblasStatus_t hipblasDsyrStridedBatched(hipblasHandle_t   handle,
+                                         hipblasFillMode_t uplo,
+                                         int               n,
+                                         const double*     alpha,
+                                         const double*     x,
+                                         int               incx,
+                                         int               stridex,
+                                         double*           A,
+                                         int               lda,
+                                         int               strideA,
+                                         int               batchCount)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_dsyr_strided_batched((rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, x, incx, stridex, A, lda, strideA, batchCount));
+}
+
 // trsv
 hipblasStatus_t hipblasStrsv(hipblasHandle_t    handle,
                              hipblasFillMode_t  uplo,
