@@ -1541,6 +1541,64 @@ hipblasStatus_t hipblasDsyr(hipblasHandle_t   handle,
         cublasDsyr((cublasHandle_t)handle, hipFillToCudaFill(uplo), n, alpha, x, incx, A, lda));
 }
 
+// syr_batched
+hipblasStatus_t hipblasSsyrBatched(hipblasHandle_t    handle,
+                                   hipblasFillMode_t  uplo,
+                                   int                n,
+                                   const float*       alpha,
+                                   const float* const x[],
+                                   int                incx,
+                                   float* const       A[],
+                                   int                lda,
+                                   int                batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDsyrBatched(hipblasHandle_t     handle,
+                                   hipblasFillMode_t   uplo,
+                                   int                 n,
+                                   const double*       alpha,
+                                   const double* const x[],
+                                   int                 incx,
+                                   double* const       A[],
+                                   int                 lda,
+                                   int                 batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// syr_strided_batched
+hipblasStatus_t hipblasSsyrStridedBatched(hipblasHandle_t   handle,
+                                          hipblasFillMode_t uplo,
+                                          int               n,
+                                          const float*      alpha,
+                                          const float*      x,
+                                          int               incx,
+                                          int               stridex,
+                                          float*            A,
+                                          int               lda,
+                                          int               strideA,
+                                          int               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDsyrStridedBatched(hipblasHandle_t   handle,
+                                         hipblasFillMode_t uplo,
+                                         int               n,
+                                         const double*     alpha,
+                                         const double*     x,
+                                         int               incx,
+                                         int               stridex,
+                                         double*           A,
+                                         int               lda,
+                                         int               strideA,
+                                         int               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
 // trsv
 hipblasStatus_t hipblasStrsv(hipblasHandle_t    handle,
                              hipblasFillMode_t  uplo,

@@ -1300,6 +1300,68 @@ hipblasStatus_t hipblasSyr<double>(hipblasHandle_t   handle,
     return hipblasDsyr(handle, uplo, n, alpha, x, incx, A, lda);
 }
 
+// syr_batched
+template <>
+hipblasStatus_t hipblasSyrBatched<float>(hipblasHandle_t    handle,
+                                         hipblasFillMode_t  uplo,
+                                         int                n,
+                                         const float*       alpha,
+                                         const float* const x[],
+                                         int                incx,
+                                         float* const       A[],
+                                         int                lda,
+                                         int                batch_count)
+{
+    return hipblasSsyrBatched(handle, uplo, n, alpha, x, incx, A, lda, batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasSyrBatched<double>(hipblasHandle_t     handle,
+                                          hipblasFillMode_t   uplo,
+                                          int                 n,
+                                          const double*       alpha,
+                                          const double* const x[],
+                                          int                 incx,
+                                          double* const       A[],
+                                          int                 lda,
+                                          int                 batch_count)
+{
+    return hipblasDsyrBatched(handle, uplo, n, alpha, x, incx, A, lda, batch_count);
+}
+
+// syr_strided_batched
+template <>
+hipblasStatus_t hipblasSyrStridedBatched<float>(hipblasHandle_t   handle,
+                                                hipblasFillMode_t uplo,
+                                                int               n,
+                                                const float*      alpha,
+                                                const float*      x,
+                                                int               incx,
+                                                int               stridex,
+                                                float*            A,
+                                                int               lda,
+                                                int               strideA,
+                                                int               batch_count)
+{
+    return hipblasSsyrStridedBatched(handle, uplo, n, alpha, x, incx, stridex, A, lda, strideA, batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasSyrStridedBatched<double>(hipblasHandle_t    handle,
+                                                 hipblasFillMode_t  uplo,
+                                                 int                n,
+                                                 const double*      alpha,
+                                                 const double*      x,
+                                                 int                incx,
+                                                 int                stridex,
+                                                 double*            A,
+                                                 int                lda,
+                                                 int                strideA,
+                                                 int                batch_count)
+{
+    return hipblasDsyrStridedBatched(handle, uplo, n, alpha, x, incx, stridex, A, lda, strideA, batch_count);
+}
+
 // trsv
 template <>
 hipblasStatus_t hipblasTrsv<float>(hipblasHandle_t    handle,

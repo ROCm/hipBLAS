@@ -121,24 +121,6 @@ protected:
     virtual void TearDown() {}
 };
 
-class blas2_ger_batched_gtest : public ::TestWithParam<ger_tuple>
-{
-protected:
-    blas2_ger_batched_gtest() {}
-    virtual ~blas2_ger_batched_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
-};
-
-class blas2_ger_strided_batched_gtest : public ::TestWithParam<ger_tuple>
-{
-protected:
-    blas2_ger_strided_batched_gtest() {}
-    virtual ~blas2_ger_strided_batched_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
-};
-
 // ger
 TEST_P(blas2_ger_gtest, ger_gtest_float)
 {
