@@ -869,10 +869,63 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDger(hipblasHandle_t handle,
                                            double*         A,
                                            int             lda);
 
-// not implemented
-// HIPBLAS_EXPORT hipblasStatus_t  hipblasSgerBatched(hipblasHandle_t handle, int m, int n, const float
-// *alpha, const float *x, int incx, const float *y, int incy, float *A, int lda, int batchCount);
+// ger_batched
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgerBatched(hipblasHandle_t    handle,
+                                                  int                m,
+                                                  int                n,
+                                                  const float*       alpha,
+                                                  const float* const x[],
+                                                  int                incx,
+                                                  const float* const y[],
+                                                  int                incy,
+                                                  float* const       A[],
+                                                  int                lda,
+                                                  int                batchCount);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgerBatched(hipblasHandle_t     handle,
+                                                  int                 m,
+                                                  int                 n,
+                                                  const double*       alpha,
+                                                  const double* const x[],
+                                                  int                 incx,
+                                                  const double* const y[],
+                                                  int                 incy,
+                                                  double* const       A[],
+                                                  int                 lda,
+                                                  int                 batchCount);
+
+// ger_strided_batched
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgerStridedBatched(hipblasHandle_t handle,
+                                                         int             m,
+                                                         int             n,
+                                                         const float*    alpha,
+                                                         const float*    x,
+                                                         int             incx,
+                                                         int             stridex,
+                                                         const float*    y,
+                                                         int             incy,
+                                                         int             stridey,
+                                                         float*          A,
+                                                         int             lda,
+                                                         int             strideA,
+                                                         int             batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgerStridedBatched(hipblasHandle_t handle,
+                                                         int             m,
+                                                         int             n,
+                                                         const double*   alpha,
+                                                         const double*   x,
+                                                         int             incx,
+                                                         int             stridex,
+                                                         const double*   y,
+                                                         int             incy,
+                                                         int             stridey,
+                                                         double*         A,
+                                                         int             lda,
+                                                         int             strideA,
+                                                         int             batchCount);
+
+// syr
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyr(hipblasHandle_t   handle,
                                            hipblasFillMode_t uplo,
                                            int               n,
