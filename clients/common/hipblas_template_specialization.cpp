@@ -1449,6 +1449,7 @@ hipblasStatus_t hipblasTrsv<double>(hipblasHandle_t    handle,
     }
 */
 
+// gemm
 template <>
 hipblasStatus_t hipblasGemm<float>(hipblasHandle_t    handle,
                                    hipblasOperation_t transA,
@@ -1487,6 +1488,88 @@ hipblasStatus_t hipblasGemm<double>(hipblasHandle_t    handle,
     return hipblasDgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 }
 
+template <>
+hipblasStatus_t hipblasGemm<hipComplex>(hipblasHandle_t    handle,
+                                        hipblasOperation_t transA,
+                                        hipblasOperation_t transB,
+                                        int                m,
+                                        int                n,
+                                        int                k,
+                                        const hipComplex*  alpha,
+                                        const hipComplex*  A,
+                                        int                lda,
+                                        const hipComplex*  B,
+                                        int                ldb,
+                                        const hipComplex*  beta,
+                                        hipComplex*        C,
+                                        int                ldc)
+{
+    return hipblasCgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+
+template <>
+hipblasStatus_t hipblasGemm<hipDoubleComplex>(hipblasHandle_t         handle,
+                                              hipblasOperation_t      transA,
+                                              hipblasOperation_t      transB,
+                                              int                     m,
+                                              int                     n,
+                                              int                     k,
+                                              const hipDoubleComplex* alpha,
+                                              const hipDoubleComplex* A,
+                                              int                     lda,
+                                              const hipDoubleComplex* B,
+                                              int                     ldb,
+                                              const hipDoubleComplex* beta,
+                                              hipDoubleComplex*       C,
+                                              int                     ldc)
+{
+    return hipblasZgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+
+// gemm_batched
+template <>
+hipblasStatus_t hipblasGemmBatched<float>(hipblasHandle_t    handle,
+                                          hipblasOperation_t transA,
+                                          hipblasOperation_t transB,
+                                          int                m,
+                                          int                n,
+                                          int                k,
+                                          const float*       alpha,
+                                          const float* const A[],
+                                          int                lda,
+                                          const float* const B[],
+                                          int                ldb,
+                                          const float*       beta,
+                                          float* const       C[],
+                                          int                ldc,
+                                          int                batch_count)
+{
+    return hipblasSgemmBatched(
+        handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasGemmBatched<double>(hipblasHandle_t     handle,
+                                           hipblasOperation_t  transA,
+                                           hipblasOperation_t  transB,
+                                           int                 m,
+                                           int                 n,
+                                           int                 k,
+                                           const double*       alpha,
+                                           const double* const A[],
+                                           int                 lda,
+                                           const double* const B[],
+                                           int                 ldb,
+                                           const double*       beta,
+                                           double* const       C[],
+                                           int                 ldc,
+                                           int                 batch_count)
+{
+    return hipblasDgemmBatched(
+        handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
+}
+
+// gemm_strided_batched
 template <>
 hipblasStatus_t hipblasGemmStridedBatched<float>(hipblasHandle_t    handle,
                                                  hipblasOperation_t transA,
@@ -1569,48 +1652,7 @@ hipblasStatus_t hipblasGemmStridedBatched<double>(hipblasHandle_t    handle,
                                       batch_count);
 }
 
-template <>
-hipblasStatus_t hipblasGemmBatched<float>(hipblasHandle_t    handle,
-                                          hipblasOperation_t transA,
-                                          hipblasOperation_t transB,
-                                          int                m,
-                                          int                n,
-                                          int                k,
-                                          const float*       alpha,
-                                          const float* const A[],
-                                          int                lda,
-                                          const float* const B[],
-                                          int                ldb,
-                                          const float*       beta,
-                                          float* const       C[],
-                                          int                ldc,
-                                          int                batch_count)
-{
-    return hipblasSgemmBatched(
-        handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
-}
-
-template <>
-hipblasStatus_t hipblasGemmBatched<double>(hipblasHandle_t     handle,
-                                           hipblasOperation_t  transA,
-                                           hipblasOperation_t  transB,
-                                           int                 m,
-                                           int                 n,
-                                           int                 k,
-                                           const double*       alpha,
-                                           const double* const A[],
-                                           int                 lda,
-                                           const double* const B[],
-                                           int                 ldb,
-                                           const double*       beta,
-                                           double* const       C[],
-                                           int                 ldc,
-                                           int                 batch_count)
-{
-    return hipblasDgemmBatched(
-        handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
-}
-
+// trsm
 template <>
 hipblasStatus_t hipblasTrsm<float>(hipblasHandle_t    handle,
                                    hipblasSideMode_t  side,
@@ -1645,6 +1687,7 @@ hipblasStatus_t hipblasTrsm<double>(hipblasHandle_t    handle,
     return hipblasDtrsm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
 }
 
+// geam
 template <>
 hipblasStatus_t hipblasGeam<float>(hipblasHandle_t    handle,
                                    hipblasOperation_t transA,
