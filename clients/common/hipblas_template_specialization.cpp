@@ -743,6 +743,72 @@ hipblasStatus_t hipblasNrm2<hipDoubleComplex, double>(
     return hipblasDznrm2(handle, n, x, incx, result);
 }
 
+// nrm2_batched
+template <>
+hipblasStatus_t hipblasNrm2Batched<float, float>(
+    hipblasHandle_t handle, int n, const float* const x[], int incx, int batch_count, float* result)
+{
+
+    return hipblasSnrm2Batched(handle, n, x, incx, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasNrm2Batched<double, double>(
+    hipblasHandle_t handle, int n, const double* const x[], int incx, int batch_count, double* result)
+{
+
+    return hipblasDnrm2Batched(handle, n, x, incx, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasNrm2Batched<hipComplex, float>(
+    hipblasHandle_t handle, int n, const hipComplex* const x[], int incx, int batch_count, float* result)
+{
+
+    return hipblasScnrm2Batched(handle, n, x, incx, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasNrm2Batched<hipDoubleComplex, double>(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* const x[], int incx, int batch_count, double* result)
+{
+
+    return hipblasDznrm2Batched(handle, n, x, incx, batch_count, result);
+}
+
+// nrm2_strided_batched
+template <>
+hipblasStatus_t hipblasNrm2StridedBatched<float, float>(
+    hipblasHandle_t handle, int n, const float* x, int incx, int stridex, int batch_count, float* result)
+{
+
+    return hipblasSnrm2StridedBatched(handle, n, x, incx, stridex, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasNrm2StridedBatched<double, double>(
+    hipblasHandle_t handle, int n, const double* x, int incx, int stridex, int batch_count, double* result)
+{
+
+    return hipblasDnrm2StridedBatched(handle, n, x, incx, stridex, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasNrm2StridedBatched<hipComplex, float>(
+    hipblasHandle_t handle, int n, const hipComplex* x, int incx, int stridex, int batch_count, float* result)
+{
+
+    return hipblasScnrm2StridedBatched(handle, n, x, incx, stridex, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasNrm2StridedBatched<hipDoubleComplex, double>(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int stridex, int batch_count, double* result)
+{
+
+    return hipblasDznrm2StridedBatched(handle, n, x, incx, stridex, batch_count, result);
+}
+
 // amax
 template <>
 hipblasStatus_t

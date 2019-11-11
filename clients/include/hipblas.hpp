@@ -87,6 +87,12 @@ hipblasStatus_t hipblasAsumStridedBatched(hipblasHandle_t handle, int n, const T
 template <typename T1, typename T2>
 hipblasStatus_t hipblasNrm2(hipblasHandle_t handle, int n, const T1* x, int incx, T2* result);
 
+template <typename T1, typename T2>
+hipblasStatus_t hipblasNrm2Batched(hipblasHandle_t handle, int n, const T1* const x[], int incx, int batch_count, T2* result);
+
+template <typename T1, typename T2>
+hipblasStatus_t hipblasNrm2StridedBatched(hipblasHandle_t handle, int n, const T1* x, int incx, int stridex, int batch_count, T2* result);
+
 template <typename T>
 hipblasStatus_t hipblasIamax(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
 
