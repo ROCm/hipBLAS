@@ -2220,7 +2220,7 @@ hipblasStatus_t hipblasZgemmBatched(hipblasHandle_t               handle,
                                     int                           ldc,
                                     int                           batchCount)
 {
-    return hipCUBLASStatusToHIPStatus(cublasZgemmBatched((cublasHandle_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasCgemmBatched((cublasHandle_t)handle,
                                                          hipOperationToCudaOperation(transa),
                                                          hipOperationToCudaOperation(transb),
                                                          m,
@@ -2257,7 +2257,7 @@ hipblasStatus_t hipblasHgemmStridedBatched(hipblasHandle_t    handle,
                                            long long          bsc,
                                            int                batchCount)
 {
-    return hipCUBLASStatusToHIPStatus(cublasHgemmStridedBatched((cublasHandle_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasSgemmStridedBatched((cublasHandle_t)handle,
                                                                 hipOperationToCudaOperation(transa),
                                                                 hipOperationToCudaOperation(transb),
                                                                 m,
@@ -2394,7 +2394,7 @@ hipblasStatus_t hipblasCgemmStridedBatched(hipblasHandle_t    handle,
                                                                 batchCount));
 }
 
-hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t         handle,
+hipblasStatus_t hipblasCgemmStridedBatched(hipblasHandle_t         handle,
                                            hipblasOperation_t      transa,
                                            hipblasOperation_t      transb,
                                            int                     m,
@@ -2413,7 +2413,7 @@ hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t         handle,
                                            long long               bsc,
                                            int                     batchCount)
 {
-    return hipCUBLASStatusToHIPStatus(cublasZgemmStridedBatched((cublasHandle_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasCgemmStridedBatched((cublasHandle_t)handle,
                                                                 hipOperationToCudaOperation(transa),
                                                                 hipOperationToCudaOperation(transb),
                                                                 m,
