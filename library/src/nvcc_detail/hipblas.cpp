@@ -465,8 +465,13 @@ hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t         handle,
 }
 
 // axpy
-hipblasStatus_t hipblasHaxpy(
-    hipblasHandle_t handle, int n, const hipblasHalf* alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
+hipblasStatus_t hipblasHaxpy(hipblasHandle_t    handle,
+                             int                n,
+                             const hipblasHalf* alpha,
+                             const hipblasHalf* x,
+                             int                incx,
+                             hipblasHalf*       y,
+                             int                incy)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -688,6 +693,17 @@ hipblasStatus_t hipblasHdot(hipblasHandle_t    handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+hipblasStatus_t hipblasBfdot(hipblasHandle_t        handle,
+                             int                    n,
+                             const hipblasBfloat16* x,
+                             int                    incx,
+                             const hipblasBfloat16* y,
+                             int                    incy,
+                             hipblasBfloat16*       result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
 hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
                             int             n,
                             const float*    x,
@@ -798,6 +814,18 @@ hipblasStatus_t hipblasHdotBatched(hipblasHandle_t          handle,
     //     cublasSdot((cublasHandle_t)handle, n, x, incx, y, incy, result));
 }
 
+hipblasStatus_t hipblasBfdotBatched(hipblasHandle_t              handle,
+                                    int                          n,
+                                    const hipblasBfloat16* const x[],
+                                    int                          incx,
+                                    const hipblasBfloat16* const y[],
+                                    int                          incy,
+                                    int                          batchCount,
+                                    hipblasBfloat16*             result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
 hipblasStatus_t hipblasSdotBatched(hipblasHandle_t    handle,
                                    int                n,
                                    const float* const x[],
@@ -884,6 +912,20 @@ hipblasStatus_t hipblasHdotStridedBatched(hipblasHandle_t    handle,
                                           int                stridey,
                                           int                batchCount,
                                           hipblasHalf*       result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasBfdotStridedBatched(hipblasHandle_t        handle,
+                                           int                    n,
+                                           const hipblasBfloat16* x,
+                                           int                    incx,
+                                           int                    stridex,
+                                           const hipblasBfloat16* y,
+                                           int                    incy,
+                                           int                    stridey,
+                                           int                    batchCount,
+                                           hipblasBfloat16*       result)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }

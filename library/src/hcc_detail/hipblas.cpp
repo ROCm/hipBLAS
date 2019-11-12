@@ -559,11 +559,21 @@ hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t         handle,
 }
 
 // axpy
-hipblasStatus_t hipblasHaxpy(
-    hipblasHandle_t handle, int n, const hipblasHalf* alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
+hipblasStatus_t hipblasHaxpy(hipblasHandle_t    handle,
+                             int                n,
+                             const hipblasHalf* alpha,
+                             const hipblasHalf* x,
+                             int                incx,
+                             hipblasHalf*       y,
+                             int                incy)
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_haxpy((rocblas_handle)handle, n, (rocblas_half*)alpha, (rocblas_half*)x, incx, (rocblas_half*)y, incy));
+    return rocBLASStatusToHIPStatus(rocblas_haxpy((rocblas_handle)handle,
+                                                  n,
+                                                  (rocblas_half*)alpha,
+                                                  (rocblas_half*)x,
+                                                  incx,
+                                                  (rocblas_half*)y,
+                                                  incy));
 }
 
 hipblasStatus_t hipblasSaxpy(
@@ -802,8 +812,30 @@ hipblasStatus_t hipblasHdot(hipblasHandle_t    handle,
                             int                incy,
                             hipblasHalf*       result)
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_hdot((rocblas_handle)handle, n, (rocblas_half*)x, incx, (rocblas_half*)y, incy, (rocblas_half*)result));
+    return rocBLASStatusToHIPStatus(rocblas_hdot((rocblas_handle)handle,
+                                                 n,
+                                                 (rocblas_half*)x,
+                                                 incx,
+                                                 (rocblas_half*)y,
+                                                 incy,
+                                                 (rocblas_half*)result));
+}
+
+hipblasStatus_t hipblasBfdot(hipblasHandle_t        handle,
+                             int                    n,
+                             const hipblasBfloat16* x,
+                             int                    incx,
+                             const hipblasBfloat16* y,
+                             int                    incy,
+                             hipblasBfloat16*       result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_bfdot((rocblas_handle)handle,
+                                                  n,
+                                                  (rocblas_bfloat16*)x,
+                                                  incx,
+                                                  (rocblas_bfloat16*)y,
+                                                  incy,
+                                                  (rocblas_bfloat16*)result));
 }
 
 hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
@@ -908,8 +940,33 @@ hipblasStatus_t hipblasHdotBatched(hipblasHandle_t          handle,
                                    int                      batch_count,
                                    hipblasHalf*             result)
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_hdot_batched((rocblas_handle)handle, n, (rocblas_half*const*)x, incx, (rocblas_half*const*)y, incy, batch_count, (rocblas_half*)result));
+    return rocBLASStatusToHIPStatus(rocblas_hdot_batched((rocblas_handle)handle,
+                                                         n,
+                                                         (rocblas_half* const*)x,
+                                                         incx,
+                                                         (rocblas_half* const*)y,
+                                                         incy,
+                                                         batch_count,
+                                                         (rocblas_half*)result));
+}
+
+hipblasStatus_t hipblasBfdotBatched(hipblasHandle_t              handle,
+                                    int                          n,
+                                    const hipblasBfloat16* const x[],
+                                    int                          incx,
+                                    const hipblasBfloat16* const y[],
+                                    int                          incy,
+                                    int                          batch_count,
+                                    hipblasBfloat16*             result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_bfdot_batched((rocblas_handle)handle,
+                                                          n,
+                                                          (rocblas_bfloat16* const*)x,
+                                                          incx,
+                                                          (rocblas_bfloat16* const*)y,
+                                                          incy,
+                                                          batch_count,
+                                                          (rocblas_bfloat16*)result));
 }
 
 hipblasStatus_t hipblasSdotBatched(hipblasHandle_t    handle,
@@ -1026,8 +1083,39 @@ hipblasStatus_t hipblasHdotStridedBatched(hipblasHandle_t    handle,
                                           int                batch_count,
                                           hipblasHalf*       result)
 {
-    return rocBLASStatusToHIPStatus(rocblas_hdot_strided_batched(
-        (rocblas_handle)handle, n, (rocblas_half*)x, incx, stridex, (rocblas_half*)y, incy, stridey, batch_count, (rocblas_half*)result));
+    return rocBLASStatusToHIPStatus(rocblas_hdot_strided_batched((rocblas_handle)handle,
+                                                                 n,
+                                                                 (rocblas_half*)x,
+                                                                 incx,
+                                                                 stridex,
+                                                                 (rocblas_half*)y,
+                                                                 incy,
+                                                                 stridey,
+                                                                 batch_count,
+                                                                 (rocblas_half*)result));
+}
+
+hipblasStatus_t hipblasBfdotStridedBatched(hipblasHandle_t        handle,
+                                           int                    n,
+                                           const hipblasBfloat16* x,
+                                           int                    incx,
+                                           int                    stridex,
+                                           const hipblasBfloat16* y,
+                                           int                    incy,
+                                           int                    stridey,
+                                           int                    batch_count,
+                                           hipblasBfloat16*       result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_bfdot_strided_batched((rocblas_handle)handle,
+                                                                  n,
+                                                                  (rocblas_bfloat16*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_bfloat16*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batch_count,
+                                                                  (rocblas_bfloat16*)result));
 }
 
 hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,

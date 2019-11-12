@@ -21,6 +21,11 @@ typedef void* hipblasHandle_t;
 
 typedef uint16_t hipblasHalf;
 
+struct hipblasBfloat16
+{
+    uint16_t data;
+};
+
 template <typename T>
 struct hip_complex_number
 {
@@ -421,6 +426,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasHdot(hipblasHandle_t    handle,
                                            int                incy,
                                            hipblasHalf*       result);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasBfdot(hipblasHandle_t        handle,
+                                            int                    n,
+                                            const hipblasBfloat16* x,
+                                            int                    incx,
+                                            const hipblasBfloat16* y,
+                                            int                    incy,
+                                            hipblasBfloat16*       result);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
                                            int             n,
                                            const float*    x,
@@ -478,6 +491,15 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasHdotBatched(hipblasHandle_t          handl
                                                   int                      incy,
                                                   int                      batch_count,
                                                   hipblasHalf*             result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasBfdotBatched(hipblasHandle_t              handle,
+                                                   int                          n,
+                                                   const hipblasBfloat16* const x[],
+                                                   int                          incx,
+                                                   const hipblasBfloat16* const y[],
+                                                   int                          incy,
+                                                   int                          batch_count,
+                                                   hipblasBfloat16*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdotBatched(hipblasHandle_t    handle,
                                                   int                n,
@@ -544,6 +566,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasHdotStridedBatched(hipblasHandle_t    hand
                                                          int                stridey,
                                                          int                batch_count,
                                                          hipblasHalf*       result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasBfdotStridedBatched(hipblasHandle_t        handle,
+                                                          int                    n,
+                                                          const hipblasBfloat16* x,
+                                                          int                    incx,
+                                                          int                    stridex,
+                                                          const hipblasBfloat16* y,
+                                                          int                    incy,
+                                                          int                    stridey,
+                                                          int                    batch_count,
+                                                          hipblasBfloat16*       result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,
                                                          int             n,

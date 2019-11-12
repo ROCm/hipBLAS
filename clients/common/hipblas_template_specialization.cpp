@@ -19,8 +19,13 @@
 
 // axpy
 template <>
-hipblasStatus_t hipblasAxpy<hipblasHalf>(
-    hipblasHandle_t handle, int n, const hipblasHalf* alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
+hipblasStatus_t hipblasAxpy<hipblasHalf>(hipblasHandle_t    handle,
+                                         int                n,
+                                         const hipblasHalf* alpha,
+                                         const hipblasHalf* x,
+                                         int                incx,
+                                         hipblasHalf*       y,
+                                         int                incy)
 {
     return hipblasHaxpy(handle, n, alpha, x, incx, y, incy);
 }
@@ -513,15 +518,27 @@ hipblasStatus_t hipblasCopyStridedBatched<hipDoubleComplex>(hipblasHandle_t     
 
 // dot
 template <>
-hipblasStatus_t hipblasDot<hipblasHalf>(hipblasHandle_t handle,
-                                        int             n,
-                                        const hipblasHalf*    x,
-                                        int             incx,
-                                        const hipblasHalf*    y,
-                                        int             incy,
-                                        hipblasHalf*          result)
+hipblasStatus_t hipblasDot<hipblasHalf>(hipblasHandle_t    handle,
+                                        int                n,
+                                        const hipblasHalf* x,
+                                        int                incx,
+                                        const hipblasHalf* y,
+                                        int                incy,
+                                        hipblasHalf*       result)
 {
     return hipblasHdot(handle, n, x, incx, y, incy, result);
+}
+
+template <>
+hipblasStatus_t hipblasDot<hipblasBfloat16>(hipblasHandle_t        handle,
+                                            int                    n,
+                                            const hipblasBfloat16* x,
+                                            int                    incx,
+                                            const hipblasBfloat16* y,
+                                            int                    incy,
+                                            hipblasBfloat16*       result)
+{
+    return hipblasBfdot(handle, n, x, incx, y, incy, result);
 }
 
 template <>
@@ -608,6 +625,19 @@ hipblasStatus_t hipblasDotBatched<hipblasHalf>(hipblasHandle_t          handle,
                                                hipblasHalf*             result)
 {
     return hipblasHdotBatched(handle, n, x, incx, y, incy, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasDotBatched<hipblasBfloat16>(hipblasHandle_t              handle,
+                                                   int                          n,
+                                                   const hipblasBfloat16* const x[],
+                                                   int                          incx,
+                                                   const hipblasBfloat16* const y[],
+                                                   int                          incy,
+                                                   int                          batch_count,
+                                                   hipblasBfloat16*             result)
+{
+    return hipblasBfdotBatched(handle, n, x, incx, y, incy, batch_count, result);
 }
 
 template <>
@@ -702,6 +732,22 @@ hipblasStatus_t hipblasDotStridedBatched<hipblasHalf>(hipblasHandle_t    handle,
                                                       hipblasHalf*       result)
 {
     return hipblasHdotStridedBatched(
+        handle, n, x, incx, stridex, y, incy, stridey, batch_count, result);
+}
+
+template <>
+hipblasStatus_t hipblasDotStridedBatched<hipblasBfloat16>(hipblasHandle_t        handle,
+                                                          int                    n,
+                                                          const hipblasBfloat16* x,
+                                                          int                    incx,
+                                                          int                    stridex,
+                                                          const hipblasBfloat16* y,
+                                                          int                    incy,
+                                                          int                    stridey,
+                                                          int                    batch_count,
+                                                          hipblasBfloat16*       result)
+{
+    return hipblasBfdotStridedBatched(
         handle, n, x, incx, stridex, y, incy, stridey, batch_count, result);
 }
 
