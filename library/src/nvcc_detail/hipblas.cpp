@@ -1192,14 +1192,8 @@ hipblasStatus_t hipblasZdrot(hipblasHandle_t   handle,
                              const double*     c,
                              const double*     s)
 {
-    return hipCUBLASStatusToHIPStatus(cublasZdrot((cublasHandle_t)handle,
-                                                  n,
-                                                  (cuDoubleComplex*)x,
-                                                  incx,
-                                                  (cuDoubleComplex*)y,
-                                                  incy,
-                                                  c,
-                                                  s));
+    return hipCUBLASStatusToHIPStatus(cublasZdrot(
+        (cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, (cuDoubleComplex*)y, incy, c, s));
 }
 
 // rot_batched
