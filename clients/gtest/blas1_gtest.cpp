@@ -136,6 +136,28 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
     return arg;
 }
 
+TEST_P(blas1_gtest, axpy_half)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_axpy<hipblasHalf>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 TEST_P(blas1_gtest, axpy_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
@@ -781,10 +803,6 @@ TEST_P(blas1_gtest, dot_half)
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
 
-    // Quick fix to avoid half precision tests failing from overflow.
-    if(arg.N > 1024)
-        return;
-
     hipblasStatus_t status = testing_dot<hipblasHalf>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -898,10 +916,6 @@ TEST_P(blas1_gtest, dot_batched_half)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-
-    // Quick fix to avoid half precision tests failing from overflow.
-    if(arg.N > 1024)
-        return;
 
     hipblasStatus_t status = testing_dot_batched<hipblasHalf>(arg);
     // if not success, then the input argument is problematic, so detect the error message
@@ -1032,10 +1046,6 @@ TEST_P(blas1_gtest, dot_strided_batched_half)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-
-    // Quick fix to avoid half precision tests failing from overflow.
-    if(arg.N > 1024)
-        return;
 
     hipblasStatus_t status = testing_dot_strided_batched<hipblasHalf>(arg);
     // if not success, then the input argument is problematic, so detect the error message
