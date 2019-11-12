@@ -476,51 +476,6 @@ hipblasStatus_t hipblasHaxpy(hipblasHandle_t    handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-// asum_strided_batched
-hipblasStatus_t hipblasSasumStridedBatched(hipblasHandle_t handle,
-                                           int             n,
-                                           const float*    x,
-                                           int             incx,
-                                           int             stridex,
-                                           int             batchCount,
-                                           float*          result)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasDasumStridedBatched(hipblasHandle_t handle,
-                                           int             n,
-                                           const double*   x,
-                                           int             incx,
-                                           int             stridex,
-                                           int             batchCount,
-                                           double*         result)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t   handle,
-                                            int               n,
-                                            const hipComplex* x,
-                                            int               incx,
-                                            int               stridex,
-                                            int               batchCount,
-                                            float*            result)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t         handle,
-                                            int                     n,
-                                            const hipDoubleComplex* x,
-                                            int                     incx,
-                                            int                     stridex,
-                                            int                     batchCount,
-                                            double*                 result)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
 // axpy
 hipblasStatus_t hipblasSaxpy(
     hipblasHandle_t handle, int n, const float* alpha, const float* x, int incx, float* y, int incy)
@@ -748,18 +703,6 @@ hipblasStatus_t hipblasBfdot(hipblasHandle_t        handle,
                              hipblasBfloat16*       result)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
-                            int             n,
-                            const float*    x,
-                            int             incx,
-                            const float*    y,
-                            int             incy,
-                            float*          result)
-{
-    return hipCUBLASStatusToHIPStatus(
-        cublasSdot((cublasHandle_t)handle, n, x, incx, y, incy, result));
 }
 
 hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
