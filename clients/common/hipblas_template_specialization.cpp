@@ -506,6 +506,18 @@ hipblasStatus_t hipblasCopyStridedBatched<hipDoubleComplex>(hipblasHandle_t     
 
 // dot
 template <>
+hipblasStatus_t hipblasDot<hipblasHalf>(hipblasHandle_t handle,
+                                        int             n,
+                                        const hipblasHalf*    x,
+                                        int             incx,
+                                        const hipblasHalf*    y,
+                                        int             incy,
+                                        hipblasHalf*          result)
+{
+    return hipblasHdot(handle, n, x, incx, y, incy, result);
+}
+
+template <>
 hipblasStatus_t hipblasDot<float>(hipblasHandle_t handle,
                                   int             n,
                                   const float*    x,
@@ -578,6 +590,19 @@ hipblasStatus_t hipblasDotc<hipDoubleComplex>(hipblasHandle_t         handle,
 }
 
 // dot_batched
+template <>
+hipblasStatus_t hipblasDotBatched<hipblasHalf>(hipblasHandle_t          handle,
+                                               int                      n,
+                                               const hipblasHalf* const x[],
+                                               int                      incx,
+                                               const hipblasHalf* const y[],
+                                               int                      incy,
+                                               int                      batch_count,
+                                               hipblasHalf*             result)
+{
+    return hipblasHdotBatched(handle, n, x, incx, y, incy, batch_count, result);
+}
+
 template <>
 hipblasStatus_t hipblasDotBatched<float>(hipblasHandle_t    handle,
                                          int                n,
@@ -657,6 +682,22 @@ hipblasStatus_t hipblasDotcBatched<hipDoubleComplex>(hipblasHandle_t            
 }
 
 // dot_strided_batched
+template <>
+hipblasStatus_t hipblasDotStridedBatched<hipblasHalf>(hipblasHandle_t    handle,
+                                                      int                n,
+                                                      const hipblasHalf* x,
+                                                      int                incx,
+                                                      int                stridex,
+                                                      const hipblasHalf* y,
+                                                      int                incy,
+                                                      int                stridey,
+                                                      int                batch_count,
+                                                      hipblasHalf*       result)
+{
+    return hipblasHdotStridedBatched(
+        handle, n, x, incx, stridex, y, incy, stridey, batch_count, result);
+}
+
 template <>
 hipblasStatus_t hipblasDotStridedBatched<float>(hipblasHandle_t handle,
                                                 int             n,
