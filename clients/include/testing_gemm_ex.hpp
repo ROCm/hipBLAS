@@ -193,24 +193,24 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(Td) * size_C, hipMemcpyHostToDevice));
 
     status = hipblasGemmEx(handle,
-                            transA,
-                            transB,
-                            M,
-                            N,
-                            K,
-                            &h_alpha_Tc,
-                            dA,
-                            a_type,
-                            lda,
-                            dB,
-                            b_type,
-                            ldb,
-                            &h_beta_Tc,
-                            dC,
-                            c_type,
-                            ldc,
-                            compute_type,
-                            algo);
+                           transA,
+                           transB,
+                           M,
+                           N,
+                           K,
+                           &h_alpha_Tc,
+                           dA,
+                           a_type,
+                           lda,
+                           dB,
+                           b_type,
+                           ldb,
+                           &h_beta_Tc,
+                           dC,
+                           c_type,
+                           ldc,
+                           compute_type,
+                           algo);
 
     CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(Td) * size_C, hipMemcpyDeviceToHost));
 
@@ -231,18 +231,18 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     // CPU BLAS
 
     cblas_gemm<Td>(transA,
-                    transB,
-                    M,
-                    N,
-                    K,
-                    h_alpha_Td,
-                    hA.data(),
-                    lda,
-                    hB.data(),
-                    ldb,
-                    h_beta_Td,
-                    hC_gold.data(),
-                    ldc);
+                   transB,
+                   M,
+                   N,
+                   K,
+                   h_alpha_Td,
+                   hA.data(),
+                   lda,
+                   hB.data(),
+                   ldb,
+                   h_beta_Td,
+                   hC_gold.data(),
+                   ldc);
 
     //      std::cout << std::endl << "---gold---gold---gold---------------------" << std::endl;
     //      if(is_same<Td, hipblasHalf>::value)
