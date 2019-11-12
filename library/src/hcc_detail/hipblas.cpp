@@ -787,6 +787,18 @@ hipblasStatus_t hipblasZcopyStridedBatched(hipblasHandle_t         handle,
 }
 
 // dot
+hipblasStatus_t hipblasHdot(hipblasHandle_t    handle,
+                            int                n,
+                            const hipblasHalf* x,
+                            int                incx,
+                            const hipblasHalf* y,
+                            int                incy,
+                            hipblasHalf*       result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_hdot((rocblas_handle)handle, n, (rocblas_half*)x, incx, (rocblas_half*)y, incy, (rocblas_half*)result));
+}
+
 hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
                             int             n,
                             const float*    x,
@@ -880,6 +892,19 @@ hipblasStatus_t hipblasZdotu(hipblasHandle_t         handle,
 }
 
 // dot_batched
+hipblasStatus_t hipblasHdotBatched(hipblasHandle_t          handle,
+                                   int                      n,
+                                   const hipblasHalf* const x[],
+                                   int                      incx,
+                                   const hipblasHalf* const y[],
+                                   int                      incy,
+                                   int                      batch_count,
+                                   hipblasHalf*             result)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_hdot_batched((rocblas_handle)handle, n, (rocblas_half*const*)x, incx, (rocblas_half*const*)y, incy, batch_count, (rocblas_half*)result));
+}
+
 hipblasStatus_t hipblasSdotBatched(hipblasHandle_t    handle,
                                    int                n,
                                    const float* const x[],
@@ -983,6 +1008,21 @@ hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t               handle,
 }
 
 // dot_strided_batched
+hipblasStatus_t hipblasHdotStridedBatched(hipblasHandle_t    handle,
+                                          int                n,
+                                          const hipblasHalf* x,
+                                          int                incx,
+                                          int                stridex,
+                                          const hipblasHalf* y,
+                                          int                incy,
+                                          int                stridey,
+                                          int                batch_count,
+                                          hipblasHalf*       result)
+{
+    return rocBLASStatusToHIPStatus(rocblas_hdot_strided_batched(
+        (rocblas_handle)handle, n, (rocblas_half*)x, incx, stridex, (rocblas_half*)y, incy, stridey, batch_count, (rocblas_half*)result));
+}
+
 hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,
                                           int             n,
                                           const float*    x,

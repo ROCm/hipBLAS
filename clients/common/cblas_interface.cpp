@@ -165,8 +165,29 @@ void cblas_swap<hipDoubleComplex>(
 {
     cblas_zswap(n, x, incx, y, incy);
 }
-
+#include <iostream>
 // dot
+template <>
+void cblas_dot<hipblasHalf>(int                 n,
+                            const hipblasHalf*  x,
+                            int                 incx,
+                            const hipblasHalf*  y,
+                            int                 incy,
+                            hipblasHalf*        result)
+{
+    size_t abs_incx = incx >= 0 ? incx : -incx;
+    size_t abs_incy = incy >= 0 ? incy : -incy;
+    vector<float> x_float(n * abs_incx);
+    vector<float> y_float(n * abs_incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
+    }
+    *result = float_to_half(cblas_sdot(n, x_float.data(), incx, y_float.data(), incy));
+}
+
 template <>
 void cblas_dot<float>(int n, const float* x, int incx, const float* y, int incy, float* result)
 {
