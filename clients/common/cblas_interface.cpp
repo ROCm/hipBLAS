@@ -45,6 +45,33 @@ void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
 
 // axpy
 template <>
+void cblas_axpy<hipblasHalf>(int                 n,
+                             const hipblasHalf   alpha,
+                             const hipblasHalf*  x,
+                             int                 incx,
+                             hipblasHalf*        y,
+                             int                 incy)
+{
+    size_t abs_incx = incx >= 0 ? incx : -incx;
+    size_t abs_incy = incy >= 0 ? incy : -incy;
+    vector<float> x_float(n * abs_incx);
+    vector<float> y_float(n * abs_incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
+    }
+
+    cblas_saxpy(n, half_to_float(alpha), x_float.data(), incx, y_float.data(), incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        y[i * abs_incx] = float_to_half(y_float[i * abs_incx]);
+    }
+}
+
+template <>
 void cblas_axpy<float>(int n, const float alpha, const float* x, int incx, float* y, int incy)
 {
     cblas_saxpy(n, alpha, x, incx, y, incy);

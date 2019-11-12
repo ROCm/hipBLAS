@@ -559,6 +559,13 @@ hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t         handle,
 }
 
 // axpy
+hipblasStatus_t hipblasHaxpy(
+    hipblasHandle_t handle, int n, const hipblasHalf* alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_haxpy((rocblas_handle)handle, n, (rocblas_half*)alpha, (rocblas_half*)x, incx, (rocblas_half*)y, incy));
+}
+
 hipblasStatus_t hipblasSaxpy(
     hipblasHandle_t handle, int n, const float* alpha, const float* x, int incx, float* y, int incy)
 {

@@ -70,7 +70,7 @@ hipblasStatus_t testing_dot(Arguments argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx);
+    hipblas_init_alternating_sign<T>(hx, 1, N, incx);
     hipblas_init<T>(hy, 1, N, incy);
 
     // copy data from CPU to device, does not work for incx != 1

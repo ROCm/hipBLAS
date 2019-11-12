@@ -209,6 +209,22 @@ inline hipblasHalf random_generator_negative<hipblasHalf>()
     return float_to_half(-static_cast<float>((rand() % 3 + 1)));
 };
 
+// for complex, generate two values, convert both to negative
+/*! \brief  generate a random real value in range [-1, -10] and random
+*           imaginary value in range [-1, -10]
+*/
+template <>
+inline hipComplex random_generator_negative<hipComplex>()
+{
+    hipComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+}
+
+template <>
+inline hipDoubleComplex random_generator_negative<hipDoubleComplex>()
+{
+    hipDoubleComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+}
+
 /* ============================================================================================ */
 
 /* ============================================================================================ */

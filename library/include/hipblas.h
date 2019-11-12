@@ -277,6 +277,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t      
                                                            double*                 result);
 
 // axpy
+HIPBLAS_EXPORT hipblasStatus_t hipblasHaxpy(hipblasHandle_t    handle,
+                                            int                n,
+                                            const hipblasHalf* alpha,
+                                            const hipblasHalf* x,
+                                            int                incx,
+                                            hipblasHalf*       y,
+                                            int                incy);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasSaxpy(hipblasHandle_t handle,
                                             int             n,
                                             const float*    alpha,

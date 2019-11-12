@@ -19,6 +19,13 @@
 
 // axpy
 template <>
+hipblasStatus_t hipblasAxpy<hipblasHalf>(
+    hipblasHandle_t handle, int n, const hipblasHalf* alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
+{
+    return hipblasHaxpy(handle, n, alpha, x, incx, y, incy);
+}
+
+template <>
 hipblasStatus_t hipblasAxpy<float>(
     hipblasHandle_t handle, int n, const float* alpha, const float* x, int incx, float* y, int incy)
 {

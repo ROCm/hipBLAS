@@ -86,7 +86,7 @@ hipblasStatus_t testing_dot_batched(Arguments argus)
         hy_array[b] = host_vector<T>(sizeY);
 
         srand(1);
-        hipblas_init<T>(hx_array[b], 1, N, incx);
+        hipblas_init_alternating_sign<T>(hx_array[b], 1, N, incx);
         hipblas_init<T>(hy_array[b], 1, N, incy);
 
         CHECK_HIP_ERROR(
