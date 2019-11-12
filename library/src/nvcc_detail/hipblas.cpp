@@ -1194,9 +1194,9 @@ hipblasStatus_t hipblasZdrot(hipblasHandle_t   handle,
 {
     return hipCUBLASStatusToHIPStatus(cublasZdrot((cublasHandle_t)handle,
                                                   n,
-                                                  (rocblas_double_complex*)x,
+                                                  (cuDoubleComplex*)x,
                                                   incx,
-                                                  (rocblas_double_complex*)y,
+                                                  (cuDoubleComplex*)y,
                                                   incy,
                                                   c,
                                                   s));
@@ -1503,14 +1503,14 @@ hipblasStatus_t hipblasSrotm(
     hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy, const float* param)
 {
     return hipCUBLASStatusToHIPStatus(
-        rocblas_srotm((cublasHandle_t)handle, n, x, incx, y, incy, param));
+        cublasSrotm((cublasHandle_t)handle, n, x, incx, y, incy, param));
 }
 
 hipblasStatus_t hipblasDrotm(
     hipblasHandle_t handle, int n, double* x, int incx, double* y, int incy, const double* param)
 {
     return hipCUBLASStatusToHIPStatus(
-        rocblas_drotm((cublasHandle_t)handle, n, x, incx, y, incy, param));
+        cublasDrotm((cublasHandle_t)handle, n, x, incx, y, incy, param));
 }
 
 // rotm_batched
