@@ -188,7 +188,7 @@ void cblas_swap<hipDoubleComplex>(
 {
     cblas_zswap(n, x, incx, y, incy);
 }
-#include <iostream>
+
 // dot
 template <>
 void cblas_dot<hipblasHalf>(
