@@ -18,98 +18,86 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_copy(Arguments argus)
+template <typename T, typename U = T>
+hipblasStatus_t testing_scal_strided_batched(Arguments argus)
 {
-    int N    = argus.N;
-    int incx = argus.incx;
-    int incy = argus.incy;
+
+    int    N            = argus.N;
+    int    incx         = argus.incx;
+    double stride_scale = argus.stride_scale;
+    int    batch_count  = argus.batch_count;
+
+    int stridex = N * incx * stride_scale;
+    int sizeX   = stridex * batch_count;
+
+    U alpha = argus.alpha;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0)
+    if(N < 0 || incx < 0 || batch_count < 0)
     {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
-    else if(incx < 0)
-    {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
-    }
-
-    int sizeX = N * incx;
-    int sizeY = N * incy;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    vector<T> hx(sizeX);
-    vector<T> hy(sizeY);
-    vector<T> hx_cpu(sizeX);
-    vector<T> hy_cpu(sizeY);
-    T*        dx;
-    T*        dy;
+    host_vector<T> hx(sizeX);
+    host_vector<T> hz(sizeX);
+
+    device_vector<T> dx(sizeX);
 
     double gpu_time_used, cpu_time_used;
     double rocblas_error = 0.0;
 
     hipblasHandle_t handle;
-
     hipblasCreate(&handle);
-
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dx, sizeX * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dy, sizeY * sizeof(T)));
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx);
-    hipblas_init<T>(hy, 1, N, incy);
+    hipblas_init<T>(hx, 1, N, incx, stridex, batch_count);
 
-    hx_cpu = hx;
-    hy_cpu = hy;
+    // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
+    hz = hx;
 
+    // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasCopy<T>(handle, N, dx, incx, dy, incy);
+    status = hipblasScalStridedBatched<T, U>(handle, N, &alpha, dx, incx, stridex, batch_count);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        CHECK_HIP_ERROR(hipFree(dx));
-        CHECK_HIP_ERROR(hipFree(dy));
         hipblasDestroy(handle);
         return status;
     }
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
 
     if(argus.unit_check)
     {
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_copy<T>(N, hx_cpu.data(), incx, hy_cpu.data(), incy);
+        for(int b = 0; b < batch_count; b++)
+        {
+            cblas_scal<T, U>(N, alpha, hz.data() + b * stridex, incx);
+        }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, incx, hx_cpu.data(), hx.data());
-            unit_check_general<T>(1, N, incy, hy_cpu.data(), hy.data());
+            unit_check_general<T>(1, N, batch_count, incx, stridex, hz, hx);
         }
 
     } // end of if unit check
 
     //  BLAS_1_RESULT_PRINT
 
-    CHECK_HIP_ERROR(hipFree(dx));
-    CHECK_HIP_ERROR(hipFree(dy));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
