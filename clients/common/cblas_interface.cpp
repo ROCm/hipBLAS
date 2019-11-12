@@ -45,15 +45,11 @@ void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
 
 // axpy
 template <>
-void cblas_axpy<hipblasHalf>(int                 n,
-                             const hipblasHalf   alpha,
-                             const hipblasHalf*  x,
-                             int                 incx,
-                             hipblasHalf*        y,
-                             int                 incy)
+void cblas_axpy<hipblasHalf>(
+    int n, const hipblasHalf alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
 {
-    size_t abs_incx = incx >= 0 ? incx : -incx;
-    size_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t        abs_incx = incx >= 0 ? incx : -incx;
+    size_t        abs_incy = incy >= 0 ? incy : -incy;
     vector<float> x_float(n * abs_incx);
     vector<float> y_float(n * abs_incy);
 
@@ -195,15 +191,11 @@ void cblas_swap<hipDoubleComplex>(
 #include <iostream>
 // dot
 template <>
-void cblas_dot<hipblasHalf>(int                 n,
-                            const hipblasHalf*  x,
-                            int                 incx,
-                            const hipblasHalf*  y,
-                            int                 incy,
-                            hipblasHalf*        result)
+void cblas_dot<hipblasHalf>(
+    int n, const hipblasHalf* x, int incx, const hipblasHalf* y, int incy, hipblasHalf* result)
 {
-    size_t abs_incx = incx >= 0 ? incx : -incx;
-    size_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t        abs_incx = incx >= 0 ? incx : -incx;
+    size_t        abs_incy = incy >= 0 ? incy : -incy;
     vector<float> x_float(n * abs_incx);
     vector<float> y_float(n * abs_incy);
 
@@ -213,6 +205,27 @@ void cblas_dot<hipblasHalf>(int                 n,
         y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
     }
     *result = float_to_half(cblas_sdot(n, x_float.data(), incx, y_float.data(), incy));
+}
+
+template <>
+void cblas_dot<hipblasBfloat16>(int                    n,
+                                const hipblasBfloat16* x,
+                                int                    incx,
+                                const hipblasBfloat16* y,
+                                int                    incy,
+                                hipblasBfloat16*       result)
+{
+    size_t        abs_incx = incx >= 0 ? incx : -incx;
+    size_t        abs_incy = incy >= 0 ? incy : -incy;
+    vector<float> x_float(n * abs_incx);
+    vector<float> y_float(n * abs_incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = bfloat16_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = bfloat16_to_float(y[i * abs_incy]);
+    }
+    *result = float_to_bfloat16(cblas_sdot(n, x_float.data(), incx, y_float.data(), incy));
 }
 
 template <>

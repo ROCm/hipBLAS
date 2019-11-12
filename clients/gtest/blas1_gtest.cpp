@@ -801,9 +801,40 @@ TEST_P(blas1_gtest, dot_half)
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
-    Arguments       arg    = setup_blas1_arguments(GetParam());
+    Arguments arg = setup_blas1_arguments(GetParam());
 
     hipblasStatus_t status = testing_dot<hipblasHalf>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas1_gtest, dot_bfloat16)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments arg = setup_blas1_arguments(GetParam());
+
+    hipblasStatus_t status = testing_dot<hipblasBfloat16>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -915,9 +946,44 @@ TEST_P(blas1_gtest, dot_batched_half)
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
-    Arguments       arg    = setup_blas1_arguments(GetParam());
+    Arguments arg = setup_blas1_arguments(GetParam());
 
     hipblasStatus_t status = testing_dot_batched<hipblasHalf>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, dot_batched_bfloat16)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments arg = setup_blas1_arguments(GetParam());
+
+    hipblasStatus_t status = testing_dot_batched<hipblasBfloat16>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1045,9 +1111,44 @@ TEST_P(blas1_gtest, dot_strided_batched_half)
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
-    Arguments       arg    = setup_blas1_arguments(GetParam());
+    Arguments arg = setup_blas1_arguments(GetParam());
 
     hipblasStatus_t status = testing_dot_strided_batched<hipblasHalf>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, dot_strided_batched_bfloat16)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments arg = setup_blas1_arguments(GetParam());
+
+    hipblasStatus_t status = testing_dot_strided_batched<hipblasBfloat16>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
