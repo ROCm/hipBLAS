@@ -38,6 +38,18 @@ void cblas_dotc(int n, const T* x, int incx, const T* y, int incy, T* result);
 template <typename T1, typename T2>
 void cblas_nrm2(int n, const T1* x, int incx, T2* result);
 
+template <typename T1, typename T2 = T1, typename T3 = T1>
+void cblas_rot(int n, T1* x, int incx, T1* y, int incy, T2 c, T3 s);
+
+template <typename T1, typename T2 = T1>
+void cblas_rotg(T1* a, T1* b, T2* c, T1* s);
+
+template <typename T1>
+void cblas_rotm(int n, T1* x, int incx, T1* y, int incy, T1* param);
+
+template <typename T1>
+void cblas_rotmg(T1* d1, T1* d2, T1* x1, T1* y1, T1* param);
+
 template <typename T1, typename T2>
 void cblas_asum(int n, const T1* x, int incx, T2* result);
 
