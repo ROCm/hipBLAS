@@ -150,6 +150,110 @@ template <typename T1, typename T2>
 hipblasStatus_t hipblasNrm2StridedBatched(
     hipblasHandle_t handle, int n, const T1* x, int incx, int stridex, int batch_count, T2* result);
 
+template <typename T1, typename T2, typename T3 = T1>
+hipblasStatus_t hipblasRot(
+    hipblasHandle_t handle, int n, T1* x, int incx, T1* y, int incy, const T2* c, const T3* s);
+
+template <typename T1, typename T2 = T1, typename T3 = T1>
+hipblasStatus_t hipblasRotBatched(hipblasHandle_t handle,
+                                  int             n,
+                                  T1* const       x[],
+                                  int             incx,
+                                  T1* const       y[],
+                                  int             incy,
+                                  const T2*       c,
+                                  const T3*       s,
+                                  int             batch_count);
+
+template <typename T1, typename T2 = T1, typename T3 = T1>
+hipblasStatus_t hipblasRotStridedBatched(hipblasHandle_t handle,
+                                         int             n,
+                                         T1*             x,
+                                         int             incx,
+                                         int             stridex,
+                                         T1*             y,
+                                         int             incy,
+                                         int             stridey,
+                                         const T2*       c,
+                                         const T3*       s,
+                                         int             batch_count);
+
+template <typename T1, typename T2 = T1>
+hipblasStatus_t hipblasRotg(hipblasHandle_t handle, T1* a, T1* b, T2* c, T1* s);
+
+template <typename T1, typename T2 = T1>
+hipblasStatus_t hipblasRotgBatched(hipblasHandle_t handle,
+                                   T1* const       a[],
+                                   T1* const       b[],
+                                   T2* const       c[],
+                                   T1* const       s[],
+                                   int             batch_count);
+
+template <typename T1, typename T2 = T1>
+hipblasStatus_t hipblasRotgStridedBatched(hipblasHandle_t handle,
+                                          T1*             a,
+                                          int             stridea,
+                                          T1*             b,
+                                          int             strideb,
+                                          T2*             c,
+                                          int             stridec,
+                                          T1*             s,
+                                          int             strides,
+                                          int             batch_count);
+
+template <typename T>
+hipblasStatus_t
+    hipblasRotm(hipblasHandle_t handle, int n, T* x, int incx, T* y, int incy, const T* param);
+
+template <typename T>
+hipblasStatus_t hipblasRotmBatched(hipblasHandle_t handle,
+                                   int             n,
+                                   T* const        x[],
+                                   int             incx,
+                                   T* const        y[],
+                                   int             incy,
+                                   const T* const  param[],
+                                   int             batch_count);
+
+template <typename T>
+hipblasStatus_t hipblasRotmStridedBatched(hipblasHandle_t handle,
+                                          int             n,
+                                          T*              x,
+                                          int             incx,
+                                          int             stridex,
+                                          T*              y,
+                                          int             incy,
+                                          int             stridey,
+                                          const T*        param,
+                                          int             strideparam,
+                                          int             batch_count);
+
+template <typename T>
+hipblasStatus_t hipblasRotmg(hipblasHandle_t handle, T* d1, T* d2, T* x1, const T* y1, T* param);
+
+template <typename T>
+hipblasStatus_t hipblasRotmgBatched(hipblasHandle_t handle,
+                                    T* const        d1[],
+                                    T* const        d2[],
+                                    T* const        x1[],
+                                    const T* const  y1[],
+                                    T* const        param[],
+                                    int             batch_count);
+
+template <typename T>
+hipblasStatus_t hipblasRotmgStridedBatched(hipblasHandle_t handle,
+                                           T*              d1,
+                                           int             stride_d1,
+                                           T*              d2,
+                                           int             stride_d2,
+                                           T*              x1,
+                                           int             stride_x1,
+                                           const T*        y1,
+                                           int             stride_y1,
+                                           T*              param,
+                                           int             strideparam,
+                                           int             batch_count);
+
 template <typename T>
 hipblasStatus_t hipblasIamax(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
 

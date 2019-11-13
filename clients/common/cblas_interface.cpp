@@ -304,6 +304,101 @@ void cblas_nrm2<hipDoubleComplex, double>(int                     n,
     *result = cblas_dznrm2(n, x, incx);
 }
 
+///////////////////
+// rot functions //
+///////////////////
+// LAPACK fortran library functionality
+extern "C" {
+void crot_(const int*        n,
+           hipComplex*       cx,
+           const int*        incx,
+           hipComplex*       cy,
+           const int*        incy,
+           const float*      c,
+           const hipComplex* s);
+void csrot_(const int*   n,
+            hipComplex*  cx,
+            const int*   incx,
+            hipComplex*  cy,
+            const int*   incy,
+            const float* c,
+            const float* s);
+
+void crotg_(hipComplex* a, hipComplex* b, float* c, hipComplex* s);
+}
+
+// rot
+template <>
+void cblas_rot<float>(int n, float* x, int incx, float* y, int incy, float c, float s)
+{
+    cblas_srot(n, x, incx, y, incy, c, s);
+}
+
+template <>
+void cblas_rot<double>(int n, double* x, int incx, double* y, int incy, double c, double s)
+{
+    cblas_drot(n, x, incx, y, incy, c, s);
+}
+
+template <>
+void cblas_rot<hipComplex, float>(
+    int n, hipComplex* x, int incx, hipComplex* y, int incy, float c, hipComplex s)
+{
+    crot_(&n, x, &incx, y, &incx, &c, &s);
+}
+
+template <>
+void cblas_rot<hipComplex, float, float>(
+    int n, hipComplex* x, int incx, hipComplex* y, int incy, float c, float s)
+{
+    csrot_(&n, x, &incx, y, &incx, &c, &s);
+}
+
+// rotg
+template <>
+void cblas_rotg<float>(float* a, float* b, float* c, float* s)
+{
+    cblas_srotg(a, b, c, s);
+}
+
+template <>
+void cblas_rotg<double>(double* a, double* b, double* c, double* s)
+{
+    cblas_drotg(a, b, c, s);
+}
+
+template <>
+void cblas_rotg<hipComplex, float>(hipComplex* a, hipComplex* b, float* c, hipComplex* s)
+{
+    crotg_(a, b, c, s);
+}
+
+// rotm
+template <>
+void cblas_rotm<float>(int n, float* x, int incx, float* y, int incy, float* param)
+{
+    cblas_srotm(n, x, incx, y, incy, param);
+}
+
+template <>
+void cblas_rotm<double>(int n, double* x, int incx, double* y, int incy, double* param)
+{
+    cblas_drotm(n, x, incx, y, incy, param);
+}
+
+// rotmg
+template <>
+void cblas_rotmg<float>(float* d1, float* d2, float* x1, float* y1, float* param)
+{
+    cblas_srotmg(d1, d2, x1, *y1, param);
+}
+
+template <>
+void cblas_rotmg<double>(double* d1, double* d2, double* x1, double* y1, double* param)
+{
+    cblas_drotmg(d1, d2, x1, *y1, param);
+}
+
 // asum
 template <>
 void cblas_asum<float, float>(int n, const float* x, int incx, float* result)
