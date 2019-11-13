@@ -9,8 +9,8 @@
 
 #include "cblas_interface.h"
 #include "hipblas.hpp"
+#include "near.h"
 #include "norm.h"
-#include "unit.h"
 #include "utility.h"
 #include <complex.h>
 
@@ -32,6 +32,8 @@ hipblasStatus_t testing_rotm(Arguments arg)
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
+
+    const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || incy <= 0)
@@ -81,8 +83,8 @@ hipblasStatus_t testing_rotm(Arguments arg)
                 CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
                 if(arg.unit_check)
                 {
-                    // unit_check_general<T>(1, N, incx, cx, rx);
-                    // unit_check_general<T>(1, N, incy, cy, ry);
+                    near_check_general(1, N, incx, cx.data(), rx.data(), rel_error);
+                    near_check_general(1, N, incy, cy.data(), ry.data(), rel_error);
                 }
             }
 
@@ -99,8 +101,8 @@ hipblasStatus_t testing_rotm(Arguments arg)
                 CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
                 if(arg.unit_check)
                 {
-                    // unit_check_general<T>(1, N, incx, cx, rx);
-                    // unit_check_general<T>(1, N, incy, cy, ry);
+                    near_check_general(1, N, incx, cx.data(), rx.data(), rel_error);
+                    near_check_general(1, N, incy, cy.data(), ry.data(), rel_error);
                 }
             }
         }
