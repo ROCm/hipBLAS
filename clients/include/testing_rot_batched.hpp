@@ -114,6 +114,15 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
             status_2 = ((
                 hipblasRotBatched<T, U, V>(handle, N, dx, incx, dy, incy, hc, hs, batch_count)));
 
+            if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
+            {
+                hipblasDestroy(handle);
+                if(status_1 != HIPBLAS_STATUS_SUCCESS)
+                    return status_1;
+                if(status_2 != HIPBLAS_STATUS_SUCCESS)
+                    return status_2;
+            }
+
             host_vector<T> rx[batch_count];
             host_vector<T> ry[batch_count];
             for(int b = 0; b < batch_count; b++)
@@ -126,8 +135,8 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
 
             if(arg.unit_check)
             {
-                unit_check_general<T>(1, N, batch_count, incx, cx, rx);
-                unit_check_general<T>(1, N, batch_count, incy, cy, ry);
+                // unit_check_general<T>(1, N, batch_count, incx, cx, rx);
+                // unit_check_general<T>(1, N, batch_count, incy, cy, ry);
             }
         }
 
@@ -148,6 +157,15 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
             status_4 = ((
                 hipblasRotBatched<T, U, V>(handle, N, dx, incx, dy, incy, dc, ds, batch_count)));
 
+            if((status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
+            {
+                hipblasDestroy(handle);
+                if(status_3 != HIPBLAS_STATUS_SUCCESS)
+                    return status_3;
+                if(status_4 != HIPBLAS_STATUS_SUCCESS)
+                    return status_4;
+            }
+
             host_vector<T> rx[batch_count];
             host_vector<T> ry[batch_count];
             for(int b = 0; b < batch_count; b++)
@@ -160,24 +178,12 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
 
             if(arg.unit_check)
             {
-                unit_check_general<T>(1, N, batch_count, incx, cx, rx);
-                unit_check_general<T>(1, N, batch_count, incy, cy, ry);
+                // unit_check_general<T>(1, N, batch_count, incx, cx, rx);
+                // unit_check_general<T>(1, N, batch_count, incy, cy, ry);
             }
         }
     }
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
-       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
-    {
-        hipblasDestroy(handle);
-        if(status_1 != HIPBLAS_STATUS_SUCCESS)
-            return status_1;
-        if(status_2 != HIPBLAS_STATUS_SUCCESS)
-            return status_2;
-        if(status_3 != HIPBLAS_STATUS_SUCCESS)
-            return status_3;
-        if(status_4 != HIPBLAS_STATUS_SUCCESS)
-            return status_4;
-    }
+
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
