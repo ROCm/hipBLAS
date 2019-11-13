@@ -1468,22 +1468,7 @@ TEST_P(blas1_gtest, rot_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
-        }
+        EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
 
@@ -1498,22 +1483,7 @@ TEST_P(blas1_gtest, rot_float_complex)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
-        }
+        EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
 
@@ -1528,22 +1498,7 @@ TEST_P(blas1_gtest, rot_float_complex_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
-        }
+        EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
 
@@ -1559,15 +1514,7 @@ TEST_P(blas1_gtest, rot_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1589,15 +1536,7 @@ TEST_P(blas1_gtest, rot_batched_float_complex)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1619,15 +1558,7 @@ TEST_P(blas1_gtest, rot_batched_float_complex_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1650,15 +1581,7 @@ TEST_P(blas1_gtest, rot_strided_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1680,15 +1603,7 @@ TEST_P(blas1_gtest, rot_strided_batched_float_complex)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1710,15 +1625,7 @@ TEST_P(blas1_gtest, rot_strided_batched_float_complex_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1737,22 +1644,7 @@ TEST_P(blas1_gtest, rotg_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
-        }
+        EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
     }
 }
 
@@ -1763,22 +1655,7 @@ TEST_P(blas1_gtest, rotg_float_complex)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
-        }
+        EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
     }
 }
 
@@ -1790,15 +1667,7 @@ TEST_P(blas1_gtest, rotg_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1816,15 +1685,7 @@ TEST_P(blas1_gtest, rotg_batched_float_complex)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1843,15 +1704,7 @@ TEST_P(blas1_gtest, rotg_strided_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1869,15 +1722,7 @@ TEST_P(blas1_gtest, rotg_strided_batched_float_complex)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1896,22 +1741,7 @@ TEST_P(blas1_gtest, rotm_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
-        }
+        EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
     }
 }
 
@@ -1923,15 +1753,7 @@ TEST_P(blas1_gtest, rotm_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1950,15 +1772,7 @@ TEST_P(blas1_gtest, rotm_strided_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -1977,22 +1791,7 @@ TEST_P(blas1_gtest, rotmg_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
-        }
+        EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
     }
 }
 
@@ -2004,15 +1803,7 @@ TEST_P(blas1_gtest, rotmg_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -2031,15 +1822,7 @@ TEST_P(blas1_gtest, rotmg_strided_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incx < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
