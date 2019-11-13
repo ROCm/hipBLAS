@@ -98,6 +98,37 @@ inline float half_to_float(hipblasHalf val)
     return _cvtsh_ss(val);
 }
 
+// zero extend lower 16 bits of bfloat16 to convert to IEEE float
+inline float bfloat16_to_float(hipblasBfloat16 val)
+{
+    union
+    {
+        uint32_t int32;
+        float    fp32;
+    } u = {uint32_t(val.data) << 16};
+    return u.fp32;
+}
+
+inline hipblasBfloat16 float_to_bfloat16(float f)
+{
+    hipblasBfloat16 rv;
+    union
+    {
+        float    fp32;
+        uint32_t int32;
+    } u = {f};
+    if(~u.int32 & 0x7f800000)
+    {
+        u.int32 += 0x7fff + ((u.int32 >> 16) & 1); // Round to nearest, round to even
+    }
+    else if(u.int32 & 0xffff)
+    {
+        u.int32 |= 0x10000; // Preserve signaling NaN
+    }
+    rv.data = uint16_t(u.int32 >> 16);
+    return rv;
+}
+
 /* ============================================================================================ */
 /*! \brief  Random number generator which generates NaN values */
 
@@ -155,6 +186,12 @@ public:
     {
         return random_nan_data<hipblasHalf, uint16_t, 10, 5>();
     }
+
+    // Random NaN bfloat16
+    explicit operator hipblasBfloat16()
+    {
+        return random_nan_data<hipblasBfloat16, uint16_t, 7, 8>();
+    }
 };
 
 /* ============================================================================================ */
@@ -174,8 +211,16 @@ template <>
 inline hipblasHalf random_generator<hipblasHalf>()
 {
     return float_to_half(
-        static_cast<float>((rand() % 3 + 1))); // generate a integer number in range [1,2,3]
+        static_cast<float>((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
 };
+
+// for hipblasBfloat16, generate float, and convert to hipblasBfloat16
+template <>
+inline hipblasBfloat16 random_generator<hipblasBfloat16>()
+{
+    return float_to_bfloat16(
+        static_cast<float>((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
+}
 
 // for hipComplex, generate 2 floats
 /*! \brief  generate two random numbers in range [1,2,3,4,5,6,7,8,9,10] */
@@ -208,6 +253,30 @@ inline hipblasHalf random_generator_negative<hipblasHalf>()
 {
     return float_to_half(-static_cast<float>((rand() % 3 + 1)));
 };
+
+// for hipblasBfloat16, generate float, and convert to hipblasBfloat16
+/*! \brief  generate a random number in range [-1,-2,-3] */
+template <>
+inline hipblasBfloat16 random_generator_negative<hipblasBfloat16>()
+{
+    return float_to_bfloat16(-static_cast<float>((rand() % 3 + 1)));
+};
+
+// for complex, generate two values, convert both to negative
+/*! \brief  generate a random real value in range [-1, -10] and random
+*           imaginary value in range [-1, -10]
+*/
+template <>
+inline hipComplex random_generator_negative<hipComplex>()
+{
+    hipComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+}
+
+template <>
+inline hipDoubleComplex random_generator_negative<hipDoubleComplex>()
+{
+    hipDoubleComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+}
 
 /* ============================================================================================ */
 
