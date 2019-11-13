@@ -1644,7 +1644,7 @@ TEST_P(blas1_gtest, rotg_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
 
@@ -1655,7 +1655,7 @@ TEST_P(blas1_gtest, rotg_float_complex)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
 
@@ -1741,7 +1741,7 @@ TEST_P(blas1_gtest, rotm_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
 
@@ -1791,7 +1791,7 @@ TEST_P(blas1_gtest, rotmg_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
 
