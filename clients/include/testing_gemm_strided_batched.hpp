@@ -91,12 +91,9 @@ hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
     vector<T> hC(C_size);
     vector<T> hC_copy(C_size);
 
-    T *dA, *dB, *dC;
-
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dA, A_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dB, B_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dC, C_size * sizeof(T)));
+    device_vector<T> dA(A_size);
+    device_vector<T> dB(B_size);
+    device_vector<T> dC(C_size);
 
     // Initial Data on CPU
     srand(1);
@@ -171,10 +168,6 @@ hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
         }
 
     } // end of if unit/norm check
-
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dB));
-    CHECK_HIP_ERROR(hipFree(dC));
 
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;

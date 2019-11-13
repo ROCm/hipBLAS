@@ -121,6 +121,10 @@ TEST_P(trtri_gtest, trtri_float)
         {
             EXPECT_EQ(hipblasStatus_t_not_implemented, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 
@@ -154,6 +158,10 @@ TEST_P(trtri_gtest, trtri_batched_float)
         else if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }

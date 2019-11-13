@@ -43,7 +43,11 @@ set(hipblas_test_source
   set_get_matrix_gtest.cpp
   blas1_gtest.cpp
   gemv_gtest.cpp
+  gemv_batched_gtest.cpp
+  gemv_strided_batched_gtest.cpp
   ger_gtest.cpp
+  syr_gtest.cpp
+  trsv_gtest.cpp
   gemm_gtest.cpp
   gemm_ex_gtest.cpp
   gemm_strided_batched_gtest.cpp
@@ -58,6 +62,7 @@ set( hipblas_benchmark_common
   ../common/flops.cpp
   ../common/norm.cpp
   ../common/unit.cpp
+  ../common/near.cpp
   ../common/arg_check.cpp
   ../common/hipblas_template_specialization.cpp
 )

@@ -143,6 +143,10 @@ TEST_P(set_matrix_get_matrix_gtest, float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
     }
 }
 

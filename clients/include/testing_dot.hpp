@@ -18,10 +18,9 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T>
+template <typename T, bool CONJ = false>
 hipblasStatus_t testing_dot(Arguments argus)
 {
-
     int N    = argus.N;
     int incx = argus.incx;
     int incy = argus.incy;
@@ -71,7 +70,7 @@ hipblasStatus_t testing_dot(Arguments argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx);
+    hipblas_init_alternating_sign<T>(hx, 1, N, incx);
     hipblas_init<T>(hy, 1, N, incy);
 
     // copy data from CPU to device, does not work for incx != 1
@@ -90,14 +89,16 @@ hipblasStatus_t testing_dot(Arguments argus)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-        status_2 = hipblasDot<T>(handle, N, dx, incx, dy, incy, d_rocblas_result);
+        status_2 = (CONJ ? hipblasDotc<T>
+                         : hipblasDot<T>)(handle, N, dx, incx, dy, incy, d_rocblas_result);
     }
     else
     {
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_2 = hipblasDot<T>(handle, N, dx, incx, dy, incy, &rocblas_result);
+        status_2 = (CONJ ? hipblasDotc<T>
+                         : hipblasDot<T>)(handle, N, dx, incx, dy, incy, &rocblas_result);
     }
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
@@ -122,7 +123,7 @@ hipblasStatus_t testing_dot(Arguments argus)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_dot<T>(N, hx.data(), incx, hy.data(), incy, &cpu_result);
+        (CONJ ? cblas_dotc<T> : cblas_dot<T>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
 
         if(argus.unit_check)
         {
@@ -138,4 +139,10 @@ hipblasStatus_t testing_dot(Arguments argus)
     CHECK_HIP_ERROR(hipFree(d_rocblas_result));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+hipblasStatus_t testing_dotc(Arguments argus)
+{
+    return testing_dot<T, true>(argus);
 }
