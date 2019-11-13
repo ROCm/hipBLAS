@@ -9,8 +9,8 @@
 
 #include "cblas_interface.h"
 #include "hipblas.hpp"
+#include "near.h"
 #include "norm.h"
-#include "unit.h"
 #include "utility.h"
 #include <complex.h>
 
@@ -34,13 +34,17 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
+    const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
+
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || incy <= 0 || batch_count == 0)
     {
+        hipblasDestroy(handle);
         return HIPBLAS_STATUS_SUCCESS;
     }
     if(batch_count < 0)
     {
+        hipblasDestroy(handle);
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
@@ -135,8 +139,8 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
 
             if(arg.unit_check)
             {
-                // unit_check_general<T>(1, N, batch_count, incx, cx, rx);
-                // unit_check_general<T>(1, N, batch_count, incy, cy, ry);
+                near_check_general(1, N, batch_count, incx, cx, rx, rel_error);
+                near_check_general(1, N, batch_count, incy, cy, ry, rel_error);
             }
         }
 
@@ -178,8 +182,8 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
 
             if(arg.unit_check)
             {
-                // unit_check_general<T>(1, N, batch_count, incx, cx, rx);
-                // unit_check_general<T>(1, N, batch_count, incy, cy, ry);
+                near_check_general(1, N, batch_count, incx, cx, rx, rel_error);
+                near_check_general(1, N, batch_count, incy, cy, ry, rel_error);
             }
         }
     }

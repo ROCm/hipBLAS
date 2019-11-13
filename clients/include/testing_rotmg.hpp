@@ -9,8 +9,8 @@
 
 #include "cblas_interface.h"
 #include "hipblas.hpp"
+#include "near.h"
 #include "norm.h"
-#include "unit.h"
 #include "utility.h"
 #include <complex.h>
 
@@ -30,6 +30,8 @@ hipblasStatus_t testing_rotmg(Arguments arg)
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
+    const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
+
     // Initial data on CPU
     srand(1);
     hipblas_init<T>(params, 1, 9, 1);
@@ -46,7 +48,7 @@ hipblasStatus_t testing_rotmg(Arguments arg)
             handle, &hparams[0], &hparams[1], &hparams[2], &hparams[3], &hparams[4]));
 
         if(arg.unit_check)
-            unit_check_general<T>(1, 9, 1, cparams, hparams);
+            near_check_general(1, 9, 1, cparams.data(), hparams.data(), rel_error);
     }
 
     // Test device
@@ -60,7 +62,7 @@ hipblasStatus_t testing_rotmg(Arguments arg)
         CHECK_HIP_ERROR(hipMemcpy(hparams, dparams, 9 * sizeof(T), hipMemcpyDeviceToHost));
 
         if(arg.unit_check)
-            unit_check_general<T>(1, 9, 1, cparams, hparams);
+            near_check_general(1, 9, 1, cparams.data(), hparams.data(), rel_error);
     }
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)

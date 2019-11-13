@@ -9,8 +9,8 @@
 
 #include "cblas_interface.h"
 #include "hipblas.hpp"
+#include "near.h"
 #include "norm.h"
-#include "unit.h"
 #include "utility.h"
 #include <complex.h>
 
@@ -28,6 +28,8 @@ hipblasStatus_t testing_rotg(Arguments arg)
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
+
+    const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
     host_vector<T> a(1);
     host_vector<T> b(1);
@@ -59,10 +61,10 @@ hipblasStatus_t testing_rotg(Arguments arg)
 
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, 1, 1, ca, ha);
-            unit_check_general<T>(1, 1, 1, cb, hb);
-            unit_check_general<U>(1, 1, 1, cc, hc);
-            unit_check_general<T>(1, 1, 1, cs, hs);
+            near_check_general(1, 1, 1, ca.data(), ha.data(), rel_error);
+            near_check_general(1, 1, 1, cb.data(), hb.data(), rel_error);
+            near_check_general(1, 1, 1, cc.data(), hc.data(), rel_error);
+            near_check_general(1, 1, 1, cs.data(), hs.data(), rel_error);
         }
     }
 
@@ -89,10 +91,10 @@ hipblasStatus_t testing_rotg(Arguments arg)
 
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, 1, 1, ca, ha);
-            unit_check_general<T>(1, 1, 1, cb, hb);
-            unit_check_general<U>(1, 1, 1, cc, hc);
-            unit_check_general<T>(1, 1, 1, cs, hs);
+            near_check_general(1, 1, 1, ca.data(), ha.data(), rel_error);
+            near_check_general(1, 1, 1, cb.data(), hb.data(), rel_error);
+            near_check_general(1, 1, 1, cc.data(), hc.data(), rel_error);
+            near_check_general(1, 1, 1, cs.data(), hs.data(), rel_error);
         }
     }
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)

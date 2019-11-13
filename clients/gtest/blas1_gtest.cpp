@@ -20,9 +20,16 @@
 #include "testing_nrm2_strided_batched.hpp"
 #include "testing_rot.hpp"
 #include "testing_rot_batched.hpp"
+#include "testing_rot_strided_batched.hpp"
 #include "testing_rotg.hpp"
+#include "testing_rotg_batched.hpp"
+#include "testing_rotg_strided_batched.hpp"
 #include "testing_rotm.hpp"
+#include "testing_rotm_batched.hpp"
+#include "testing_rotm_strided_batched.hpp"
 #include "testing_rotmg.hpp"
+#include "testing_rotmg_batched.hpp"
+#include "testing_rotmg_strided_batched.hpp"
 #include "testing_scal.hpp"
 #include "testing_scal_batched.hpp"
 #include "testing_scal_strided_batched.hpp"
@@ -1631,6 +1638,97 @@ TEST_P(blas1_gtest, rot_batched_float_complex_float)
     }
 }
 
+// rot_strided_batched
+TEST_P(blas1_gtest, rot_strided_batched_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rot_strided_batched<float, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, rot_strided_batched_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rot_strided_batched<hipComplex, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, rot_strided_batched_float_complex_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rot_strided_batched<hipComplex, float, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
 // rotg
 TEST_P(blas1_gtest, rotg_float)
 {
@@ -1684,6 +1782,112 @@ TEST_P(blas1_gtest, rotg_float_complex)
     }
 }
 
+// rotg_batched
+TEST_P(blas1_gtest, rotg_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotg_batched<float, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, rotg_batched_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotg_batched<hipComplex, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// rotg_strided_batched
+TEST_P(blas1_gtest, rotg_strided_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotg_strided_batched<float, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, rotg_strided_batched_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotg_strided_batched<hipComplex, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
 // rotm
 TEST_P(blas1_gtest, rotm_float)
 {
@@ -1711,11 +1915,119 @@ TEST_P(blas1_gtest, rotm_float)
     }
 }
 
+// rotm_batched
+TEST_P(blas1_gtest, rotm_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotm_batched<float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// rotm_strided_batched
+TEST_P(blas1_gtest, rotm_strided_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotm_strided_batched<float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
 // rotmg
 TEST_P(blas1_gtest, rotmg_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_rotmg<float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// rotmg_batched
+TEST_P(blas1_gtest, rotmg_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotmg_batched<float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// rotmg_strided_batched
+TEST_P(blas1_gtest, rotmg_strided_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotmg_strided_batched<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
