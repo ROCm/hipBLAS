@@ -4,6 +4,8 @@
  * ************************************************************************ */
 
 #include "testing_syr.hpp"
+#include "testing_syr_batched.hpp"
+#include "testing_syr_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -18,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<int>, double> syr_tuple;
+typedef std::tuple<vector<int>, vector<int>, double, double, int> syr_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -60,6 +62,9 @@ const vector<vector<int>> incx_incy_range = {
 // add/delete single values, like {2.0}
 const vector<double> alpha_range = {-0.5, 2.0, 0.0};
 
+const vector<double> stride_scale_range = {1.0, 2.5};
+const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -78,9 +83,11 @@ const vector<double> alpha_range = {-0.5, 2.0, 0.0};
 
 Arguments setup_syr_arguments(syr_tuple tup)
 {
-    vector<int> matrix_size = std::get<0>(tup);
-    vector<int> incx        = std::get<1>(tup);
-    double      alpha       = std::get<2>(tup);
+    vector<int> matrix_size  = std::get<0>(tup);
+    vector<int> incx         = std::get<1>(tup);
+    double      alpha        = std::get<2>(tup);
+    double      stride_scale = std::get<3>(tup);
+    int         batch_count  = std::get<4>(tup);
 
     Arguments arg;
 
@@ -96,6 +103,9 @@ Arguments setup_syr_arguments(syr_tuple tup)
 
     arg.timing = 0;
 
+    arg.stride_scale = stride_scale;
+    arg.batch_count  = batch_count;
+
     return arg;
 }
 
@@ -108,7 +118,8 @@ protected:
     virtual void TearDown() {}
 };
 
-TEST_P(blas2_syr_gtest, float)
+// syr
+TEST_P(blas2_syr_gtest, syr_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -145,7 +156,7 @@ TEST_P(blas2_syr_gtest, float)
     }
 }
 
-TEST_P(blas2_syr_gtest, double)
+TEST_P(blas2_syr_gtest, syr_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -182,6 +193,172 @@ TEST_P(blas2_syr_gtest, double)
     }
 }
 
+// syr_batched
+TEST_P(blas2_syr_gtest, syr_batched_gtest_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_syr_arguments(GetParam());
+
+    hipblasStatus_t status = testing_syr_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas2_syr_gtest, syr_batched_gtest_double)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_syr_arguments(GetParam());
+
+    hipblasStatus_t status = testing_syr_batched<double>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// syr_strided_batched
+TEST_P(blas2_syr_gtest, syr_strided_batched_gtest_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_syr_arguments(GetParam());
+
+    hipblasStatus_t status = testing_syr_strided_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas2_syr_gtest, syr_strided_batched_gtest_double)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_syr_arguments(GetParam());
+
+    hipblasStatus_t status = testing_syr_strided_batched<double>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
@@ -191,4 +368,6 @@ INSTANTIATE_TEST_CASE_P(hipblasSyr,
                         blas2_syr_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(incx_incy_range),
-                                ValuesIn(alpha_range)));
+                                ValuesIn(alpha_range),
+                                ValuesIn(stride_scale_range),
+                                ValuesIn(batch_count_range)));

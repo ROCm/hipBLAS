@@ -54,6 +54,8 @@
 #endif
 
 #define ASSERT_HALF_EQ(a, b) ASSERT_FLOAT_EQ(half_to_float(a), half_to_float(b))
+#define ASSERT_BFLOAT16_EQ(a, b) ASSERT_FLOAT_EQ(bfloat16_to_float(a), bfloat16_to_float(b))
+
 #define ASSERT_FLOAT_COMPLEX_EQ(a, b) \
     do                                \
     {                                 \
@@ -72,6 +74,12 @@ template <>
 void unit_check_general(int M, int N, int lda, hipblasHalf* hCPU, hipblasHalf* hGPU)
 {
     UNIT_CHECK(M, N, 1, lda, 0, hCPU, hGPU, ASSERT_HALF_EQ);
+}
+
+template <>
+void unit_check_general(int M, int N, int lda, hipblasBfloat16* hCPU, hipblasBfloat16* hGPU)
+{
+    UNIT_CHECK(M, N, 1, lda, 0, hCPU, hGPU, ASSERT_BFLOAT16_EQ);
 }
 
 template <>
@@ -135,6 +143,13 @@ void unit_check_general(
 }
 
 template <>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, hipblasBfloat16** hCPU, hipblasBfloat16** hGPU)
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_BFLOAT16_EQ);
+}
+
+template <>
 void unit_check_general(int M, int N, int batch_count, int lda, float** hCPU, float** hGPU)
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_FLOAT_EQ);
@@ -176,6 +191,17 @@ void unit_check_general(int                      M,
                         host_vector<hipblasHalf> hGPU[])
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_HALF_EQ);
+}
+
+template <>
+void unit_check_general(int                          M,
+                        int                          N,
+                        int                          batch_count,
+                        int                          lda,
+                        host_vector<hipblasBfloat16> hCPU[],
+                        host_vector<hipblasBfloat16> hGPU[])
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_BFLOAT16_EQ);
 }
 
 template <>
@@ -227,6 +253,18 @@ void unit_check_general(
     int M, int N, int batch_count, int lda, int strideA, hipblasHalf* hCPU, hipblasHalf* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_HALF_EQ);
+}
+
+template <>
+void unit_check_general(int              M,
+                        int              N,
+                        int              batch_count,
+                        int              lda,
+                        int              strideA,
+                        hipblasBfloat16* hCPU,
+                        hipblasBfloat16* hGPU)
+{
+    UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_BFLOAT16_EQ);
 }
 
 template <>

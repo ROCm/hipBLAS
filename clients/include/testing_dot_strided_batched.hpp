@@ -72,7 +72,7 @@ hipblasStatus_t testing_dot_strided_batched(Arguments argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx, stridex, batch_count);
+    hipblas_init_alternating_sign<T>(hx, 1, N, incx, stridex, batch_count);
     hipblas_init<T>(hy, 1, N, incy, stridey, batch_count);
 
     // copy data from CPU to device, does not work for incx != 1
