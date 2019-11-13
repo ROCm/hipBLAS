@@ -18,7 +18,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T>
+template <typename T, typename U = T>
 hipblasStatus_t testing_scal(Arguments argus)
 {
 
@@ -41,7 +41,7 @@ hipblasStatus_t testing_scal(Arguments argus)
     }
 
     int sizeX = N * incx;
-    T   alpha = argus.alpha;
+    U   alpha = argus.alpha;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     vector<T> hx(sizeX);
@@ -71,7 +71,7 @@ hipblasStatus_t testing_scal(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasScal<T>(handle, N, &alpha, dx, incx);
+    status = hipblasScal<T, U>(handle, N, &alpha, dx, incx);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         CHECK_HIP_ERROR(hipFree(dx));
@@ -88,7 +88,7 @@ hipblasStatus_t testing_scal(Arguments argus)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_scal<T>(N, alpha, hz.data(), incx);
+        cblas_scal<T, U>(N, alpha, hz.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
