@@ -29,7 +29,7 @@ supported_distro( )
   fi
 
   case "${ID}" in
-    ubuntu|centos|rhel|fedora|sles)
+    ubuntu|centos|rhel|fedora|sles|opensuse-leap)
         true
         ;;
     *)  printf "This script is currently supported on Ubuntu, SLES, CentOS, RHEL and Fedora\n"
@@ -154,7 +154,7 @@ install_packages( )
       fi
       ;;
 
-    sles)
+    sles|opensuse-leap)
 #     elevate_if_not_root zypper -y update
       install_zypper_packages "${library_dependencies_sles[@]}"
 
@@ -356,7 +356,7 @@ pushd .
       fedora)
         elevate_if_not_root dnf install hipblas-*.rpm
       ;;
-      sles)
+      sles|opensuse-leap)
         elevate_if_not_root zypper -n --no-gpg-checks install hipblas-*.rpm
       ;;
     esac
