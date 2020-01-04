@@ -22,13 +22,13 @@ extern "C" {
 
 void strtri_(char* uplo, char* diag, int* n, float* A, int* lda, int* info);
 void dtrtri_(char* uplo, char* diag, int* n, double* A, int* lda, int* info);
-//  void    ctrtri_(char* uplo, char* diag, int* n, hipComplex* A,  int* lda, int *info);
-//  void    ztrtri_(char* uplo, char* diag, int* n, hipDoubleComplex* A, int* lda, int *info);
+//  void    ctrtri_(char* uplo, char* diag, int* n, hipblasComplex* A,  int* lda, int *info);
+//  void    ztrtri_(char* uplo, char* diag, int* n, hipblasDoubleComplex* A, int* lda, int *info);
 
 void sgetrf_(int* m, int* n, float* A, int* lda, int* ipiv, int* info);
 void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
-//  void    cgetrf_(int* m, int* n, hipComplex* A, int* lda, int* ipiv, int *info);
-//  void    zgetrf_(int* m, int* n, hipDoubleComplex* A, int* lda, int* ipiv, int *info);
+//  void    cgetrf_(int* m, int* n, hipblasComplex* A, int* lda, int* ipiv, int *info);
+//  void    zgetrf_(int* m, int* n, hipblasDoubleComplex* A, int* lda, int* ipiv, int *info);
 
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
@@ -80,18 +80,18 @@ void cblas_axpy<double>(int n, const double alpha, const double* x, int incx, do
 }
 
 template <>
-void cblas_axpy<hipComplex>(
-    int n, const hipComplex alpha, const hipComplex* x, int incx, hipComplex* y, int incy)
+void cblas_axpy<hipblasComplex>(
+    int n, const hipblasComplex alpha, const hipblasComplex* x, int incx, hipblasComplex* y, int incy)
 {
     cblas_caxpy(n, &alpha, x, incx, y, incy);
 }
 
 template <>
-void cblas_axpy<hipDoubleComplex>(int                     n,
-                                  const hipDoubleComplex  alpha,
-                                  const hipDoubleComplex* x,
+void cblas_axpy<hipblasDoubleComplex>(int                     n,
+                                  const hipblasDoubleComplex  alpha,
+                                  const hipblasDoubleComplex* x,
                                   int                     incx,
-                                  hipDoubleComplex*       y,
+                                  hipblasDoubleComplex*       y,
                                   int                     incy)
 {
     cblas_zaxpy(n, &alpha, x, incx, y, incy);
@@ -111,28 +111,28 @@ void cblas_scal<double>(int n, const double alpha, double* x, int incx)
 }
 
 template <>
-void cblas_scal<hipComplex>(int n, const hipComplex alpha, hipComplex* x, int incx)
+void cblas_scal<hipblasComplex>(int n, const hipblasComplex alpha, hipblasComplex* x, int incx)
 {
     cblas_cscal(n, &alpha, x, incx);
 }
 
 template <>
-void cblas_scal<hipComplex, float>(int n, const float alpha, hipComplex* x, int incx)
+void cblas_scal<hipblasComplex, float>(int n, const float alpha, hipblasComplex* x, int incx)
 {
     cblas_csscal(n, alpha, x, incx);
 }
 
 template <>
-void cblas_scal<hipDoubleComplex>(int                    n,
-                                  const hipDoubleComplex alpha,
-                                  hipDoubleComplex*      x,
+void cblas_scal<hipblasDoubleComplex>(int                    n,
+                                  const hipblasDoubleComplex alpha,
+                                  hipblasDoubleComplex*      x,
                                   int                    incx)
 {
     cblas_zscal(n, &alpha, x, incx);
 }
 
 template <>
-void cblas_scal<hipDoubleComplex, double>(int n, const double alpha, hipDoubleComplex* x, int incx)
+void cblas_scal<hipblasDoubleComplex, double>(int n, const double alpha, hipblasDoubleComplex* x, int incx)
 {
     cblas_zdscal(n, alpha, x, incx);
 }
@@ -151,14 +151,14 @@ void cblas_copy<double>(int n, double* x, int incx, double* y, int incy)
 }
 
 template <>
-void cblas_copy<hipComplex>(int n, hipComplex* x, int incx, hipComplex* y, int incy)
+void cblas_copy<hipblasComplex>(int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy)
 {
     cblas_ccopy(n, x, incx, y, incy);
 }
 
 template <>
-void cblas_copy<hipDoubleComplex>(
-    int n, hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
+void cblas_copy<hipblasDoubleComplex>(
+    int n, hipblasDoubleComplex* x, int incx, hipblasDoubleComplex* y, int incy)
 {
     cblas_zcopy(n, x, incx, y, incy);
 }
@@ -177,14 +177,14 @@ void cblas_swap<double>(int n, double* x, int incx, double* y, int incy)
 }
 
 template <>
-void cblas_swap<hipComplex>(int n, hipComplex* x, int incx, hipComplex* y, int incy)
+void cblas_swap<hipblasComplex>(int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy)
 {
     cblas_cswap(n, x, incx, y, incy);
 }
 
 template <>
-void cblas_swap<hipDoubleComplex>(
-    int n, hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
+void cblas_swap<hipblasDoubleComplex>(
+    int n, hipblasDoubleComplex* x, int incx, hipblasDoubleComplex* y, int incy)
 {
     cblas_zswap(n, x, incx, y, incy);
 }
@@ -241,37 +241,37 @@ void cblas_dot<double>(int n, const double* x, int incx, const double* y, int in
 }
 
 template <>
-void cblas_dot<hipComplex>(
-    int n, const hipComplex* x, int incx, const hipComplex* y, int incy, hipComplex* result)
+void cblas_dot<hipblasComplex>(
+    int n, const hipblasComplex* x, int incx, const hipblasComplex* y, int incy, hipblasComplex* result)
 {
     cblas_cdotu_sub(n, x, incx, y, incy, result);
 }
 
 template <>
-void cblas_dot<hipDoubleComplex>(int                     n,
-                                 const hipDoubleComplex* x,
+void cblas_dot<hipblasDoubleComplex>(int                     n,
+                                 const hipblasDoubleComplex* x,
                                  int                     incx,
-                                 const hipDoubleComplex* y,
+                                 const hipblasDoubleComplex* y,
                                  int                     incy,
-                                 hipDoubleComplex*       result)
+                                 hipblasDoubleComplex*       result)
 {
     cblas_zdotu_sub(n, x, incx, y, incy, result);
 }
 
 template <>
-void cblas_dotc<hipComplex>(
-    int n, const hipComplex* x, int incx, const hipComplex* y, int incy, hipComplex* result)
+void cblas_dotc<hipblasComplex>(
+    int n, const hipblasComplex* x, int incx, const hipblasComplex* y, int incy, hipblasComplex* result)
 {
     cblas_cdotc_sub(n, x, incx, y, incy, result);
 }
 
 template <>
-void cblas_dotc<hipDoubleComplex>(int                     n,
-                                  const hipDoubleComplex* x,
+void cblas_dotc<hipblasDoubleComplex>(int                     n,
+                                  const hipblasDoubleComplex* x,
                                   int                     incx,
-                                  const hipDoubleComplex* y,
+                                  const hipblasDoubleComplex* y,
                                   int                     incy,
-                                  hipDoubleComplex*       result)
+                                  hipblasDoubleComplex*       result)
 {
     cblas_zdotc_sub(n, x, incx, y, incy, result);
 }
@@ -290,14 +290,14 @@ void cblas_nrm2<double, double>(int n, const double* x, int incx, double* result
 }
 
 template <>
-void cblas_nrm2<hipComplex, float>(int n, const hipComplex* x, int incx, float* result)
+void cblas_nrm2<hipblasComplex, float>(int n, const hipblasComplex* x, int incx, float* result)
 {
     *result = cblas_scnrm2(n, x, incx);
 }
 
 template <>
-void cblas_nrm2<hipDoubleComplex, double>(int                     n,
-                                          const hipDoubleComplex* x,
+void cblas_nrm2<hipblasDoubleComplex, double>(int                     n,
+                                          const hipblasDoubleComplex* x,
                                           int                     incx,
                                           double*                 result)
 {
@@ -310,21 +310,21 @@ void cblas_nrm2<hipDoubleComplex, double>(int                     n,
 // LAPACK fortran library functionality
 extern "C" {
 void crot_(const int*        n,
-           hipComplex*       cx,
+           hipblasComplex*       cx,
            const int*        incx,
-           hipComplex*       cy,
+           hipblasComplex*       cy,
            const int*        incy,
            const float*      c,
-           const hipComplex* s);
+           const hipblasComplex* s);
 void csrot_(const int*   n,
-            hipComplex*  cx,
+            hipblasComplex*  cx,
             const int*   incx,
-            hipComplex*  cy,
+            hipblasComplex*  cy,
             const int*   incy,
             const float* c,
             const float* s);
 
-void crotg_(hipComplex* a, hipComplex* b, float* c, hipComplex* s);
+void crotg_(hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s);
 }
 
 // rot
@@ -341,15 +341,15 @@ void cblas_rot<double>(int n, double* x, int incx, double* y, int incy, double c
 }
 
 template <>
-void cblas_rot<hipComplex, float>(
-    int n, hipComplex* x, int incx, hipComplex* y, int incy, float c, hipComplex s)
+void cblas_rot<hipblasComplex, float>(
+    int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy, float c, hipblasComplex s)
 {
     crot_(&n, x, &incx, y, &incx, &c, &s);
 }
 
 template <>
-void cblas_rot<hipComplex, float, float>(
-    int n, hipComplex* x, int incx, hipComplex* y, int incy, float c, float s)
+void cblas_rot<hipblasComplex, float, float>(
+    int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy, float c, float s)
 {
     csrot_(&n, x, &incx, y, &incx, &c, &s);
 }
@@ -368,7 +368,7 @@ void cblas_rotg<double>(double* a, double* b, double* c, double* s)
 }
 
 template <>
-void cblas_rotg<hipComplex, float>(hipComplex* a, hipComplex* b, float* c, hipComplex* s)
+void cblas_rotg<hipblasComplex, float>(hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s)
 {
     crotg_(a, b, c, s);
 }
@@ -413,14 +413,14 @@ void cblas_asum<double, double>(int n, const double* x, int incx, double* result
 }
 
 template <>
-void cblas_asum<hipComplex, float>(int n, const hipComplex* x, int incx, float* result)
+void cblas_asum<hipblasComplex, float>(int n, const hipblasComplex* x, int incx, float* result)
 {
     *result = cblas_scasum(n, x, incx);
 }
 
 template <>
-void cblas_asum<hipDoubleComplex, double>(int                     n,
-                                          const hipDoubleComplex* x,
+void cblas_asum<hipblasDoubleComplex, double>(int                     n,
+                                          const hipblasDoubleComplex* x,
                                           int                     incx,
                                           double*                 result)
 {
@@ -441,13 +441,13 @@ void cblas_iamax<double>(int n, const double* x, int incx, int* result)
 }
 
 template <>
-void cblas_iamax<hipComplex>(int n, const hipComplex* x, int incx, int* result)
+void cblas_iamax<hipblasComplex>(int n, const hipblasComplex* x, int incx, int* result)
 {
     *result = (int)cblas_icamax(n, x, incx);
 }
 
 template <>
-void cblas_iamax<hipDoubleComplex>(int n, const hipDoubleComplex* x, int incx, int* result)
+void cblas_iamax<hipblasDoubleComplex>(int n, const hipblasDoubleComplex* x, int incx, int* result)
 {
     *result = (int)cblas_izamax(n, x, incx);
 }
@@ -461,13 +461,13 @@ double abs_helper(T val)
 }
 
 template <>
-double abs_helper(hipComplex val)
+double abs_helper(hipblasComplex val)
 {
     return std::abs(val.x) + std::abs(val.y);
 }
 
 template <>
-double abs_helper(hipDoubleComplex val)
+double abs_helper(hipblasDoubleComplex val)
 {
     return std::abs(val.x) + std::abs(val.y);
 }
@@ -506,13 +506,13 @@ void cblas_iamin<double>(int n, const double* x, int incx, int* result)
 }
 
 template <>
-void cblas_iamin<hipComplex>(int n, const hipComplex* x, int incx, int* result)
+void cblas_iamin<hipblasComplex>(int n, const hipblasComplex* x, int incx, int* result)
 {
     *result = (int)cblas_iamin_helper(n, x, incx);
 }
 
 template <>
-void cblas_iamin<hipDoubleComplex>(int n, const hipDoubleComplex* x, int incx, int* result)
+void cblas_iamin<hipblasDoubleComplex>(int n, const hipblasDoubleComplex* x, int incx, int* result)
 {
     *result = (int)cblas_iamin_helper(n, x, incx);
 }
@@ -559,16 +559,16 @@ void cblas_gemv<double>(hipblasOperation_t transA,
 }
 
 template <>
-void cblas_gemv<hipComplex>(hipblasOperation_t transA,
+void cblas_gemv<hipblasComplex>(hipblasOperation_t transA,
                             int                m,
                             int                n,
-                            hipComplex         alpha,
-                            hipComplex*        A,
+                            hipblasComplex         alpha,
+                            hipblasComplex*        A,
                             int                lda,
-                            hipComplex*        x,
+                            hipblasComplex*        x,
                             int                incx,
-                            hipComplex         beta,
-                            hipComplex*        y,
+                            hipblasComplex         beta,
+                            hipblasComplex*        y,
                             int                incy)
 {
     cblas_cgemv(
@@ -576,16 +576,16 @@ void cblas_gemv<hipComplex>(hipblasOperation_t transA,
 }
 
 template <>
-void cblas_gemv<hipDoubleComplex>(hipblasOperation_t transA,
+void cblas_gemv<hipblasDoubleComplex>(hipblasOperation_t transA,
                                   int                m,
                                   int                n,
-                                  hipDoubleComplex   alpha,
-                                  hipDoubleComplex*  A,
+                                  hipblasDoubleComplex   alpha,
+                                  hipblasDoubleComplex*  A,
                                   int                lda,
-                                  hipDoubleComplex*  x,
+                                  hipblasDoubleComplex*  x,
                                   int                incx,
-                                  hipDoubleComplex   beta,
-                                  hipDoubleComplex*  y,
+                                  hipblasDoubleComplex   beta,
+                                  hipblasDoubleComplex*  y,
                                   int                incy)
 {
     cblas_zgemv(
@@ -624,21 +624,21 @@ void cblas_symv<double>(hipblasFillMode_t uplo,
 }
 
 //  template<>
-//  void cblas_hemv<hipComplex>(hipblasFillMode_t uplo, int n,
-//                          hipComplex alpha,
-//                          hipComplex *A, int lda,
-//                          hipComplex *x, int incx,
-//                          hipComplex beta, hipComplex *y, int incy)
+//  void cblas_hemv<hipblasComplex>(hipblasFillMode_t uplo, int n,
+//                          hipblasComplex alpha,
+//                          hipblasComplex *A, int lda,
+//                          hipblasComplex *x, int incx,
+//                          hipblasComplex beta, hipblasComplex *y, int incy)
 //  {
 //      cblas_chemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
 //  }
 
 //  template<>
-//  void cblas_hemv<hipDoubleComplex>(hipblasFillMode_t uplo, int n,
-//                          hipDoubleComplex alpha,
-//                          hipDoubleComplex *A, int lda,
-//                          hipDoubleComplex *x, int incx,
-//                          hipDoubleComplex beta, hipDoubleComplex *y, int incy)
+//  void cblas_hemv<hipblasDoubleComplex>(hipblasFillMode_t uplo, int n,
+//                          hipblasDoubleComplex alpha,
+//                          hipblasDoubleComplex *A, int lda,
+//                          hipblasDoubleComplex *x, int incx,
+//                          hipblasDoubleComplex beta, hipblasDoubleComplex *y, int incy)
 //  {
 //      cblas_zhemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
 //  }
@@ -914,18 +914,18 @@ void cblas_gemm<double>(hipblasOperation_t transA,
 }
 
 template <>
-void cblas_gemm<hipComplex>(hipblasOperation_t transA,
+void cblas_gemm<hipblasComplex>(hipblasOperation_t transA,
                             hipblasOperation_t transB,
                             int                m,
                             int                n,
                             int                k,
-                            hipComplex         alpha,
-                            hipComplex*        A,
+                            hipblasComplex         alpha,
+                            hipblasComplex*        A,
                             int                lda,
-                            hipComplex*        B,
+                            hipblasComplex*        B,
                             int                ldb,
-                            hipComplex         beta,
-                            hipComplex*        C,
+                            hipblasComplex         beta,
+                            hipblasComplex*        C,
                             int                ldc)
 {
     //just directly cast, since transA, transB are integers in the enum
@@ -946,18 +946,18 @@ void cblas_gemm<hipComplex>(hipblasOperation_t transA,
 }
 
 template <>
-void cblas_gemm<hipDoubleComplex>(hipblasOperation_t transA,
+void cblas_gemm<hipblasDoubleComplex>(hipblasOperation_t transA,
                                   hipblasOperation_t transB,
                                   int                m,
                                   int                n,
                                   int                k,
-                                  hipDoubleComplex   alpha,
-                                  hipDoubleComplex*  A,
+                                  hipblasDoubleComplex   alpha,
+                                  hipblasDoubleComplex*  A,
                                   int                lda,
-                                  hipDoubleComplex*  B,
+                                  hipblasDoubleComplex*  B,
                                   int                ldb,
-                                  hipDoubleComplex   beta,
-                                  hipDoubleComplex*  C,
+                                  hipblasDoubleComplex   beta,
+                                  hipblasDoubleComplex*  C,
                                   int                ldc)
 {
     cblas_zgemm(CblasColMajor,
@@ -1034,12 +1034,12 @@ void cblas_trsm<double>(hipblasSideMode_t  side,
 }
 
 //  template<>
-//  void cblas_trsm<hipComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
+//  void cblas_trsm<hipblasComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
 //                          hipblasOperation_t transA, hipblasDiagType_t diag,
 //                          int m, int n,
-//                          hipComplex alpha,
-//                          const hipComplex *A, int lda,
-//                          hipComplex *B, int ldb)
+//                          hipblasComplex alpha,
+//                          const hipblasComplex *A, int lda,
+//                          hipblasComplex *B, int ldb)
 //  {
 //      //just directly cast, since transA, transB are integers in the enum
 //      cblas_ctrsm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
@@ -1047,12 +1047,12 @@ void cblas_trsm<double>(hipblasSideMode_t  side,
 //  }
 
 //  template<>
-//  void cblas_trsm<hipDoubleComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
+//  void cblas_trsm<hipblasDoubleComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
 //                          hipblasOperation_t transA, hipblasDiagType_t diag,
 //                          int m, int n,
-//                          hipDoubleComplex alpha,
-//                          const hipDoubleComplex *A, int lda,
-//                          hipDoubleComplex *B, int ldb)
+//                          hipblasDoubleComplex alpha,
+//                          const hipblasDoubleComplex *A, int lda,
+//                          hipblasDoubleComplex *B, int ldb)
 //  {
 //      //just directly cast, since transA, transB are integers in the enum
 //      cblas_ztrsm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
@@ -1138,12 +1138,12 @@ void cblas_trmm<double>(hipblasSideMode_t  side,
 }
 
 //  template<>
-//  void cblas_trmm<hipComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
+//  void cblas_trmm<hipblasComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
 //                          hipblasOperation_t transA, hipblasDiagType_t diag,
 //                          int m, int n,
-//                          hipComplex alpha,
-//                          const hipComplex *A, int lda,
-//                          hipComplex *B, int ldb)
+//                          hipblasComplex alpha,
+//                          const hipblasComplex *A, int lda,
+//                          hipblasComplex *B, int ldb)
 //  {
 //      //just directly cast, since transA, transB are integers in the enum
 //      cblas_ctrmm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
@@ -1151,12 +1151,12 @@ void cblas_trmm<double>(hipblasSideMode_t  side,
 //  }
 
 //  template<>
-//  void cblas_trmm<hipDoubleComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
+//  void cblas_trmm<hipblasDoubleComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
 //                          hipblasOperation_t transA, hipblasDiagType_t diag,
 //                          int m, int n,
-//                          hipDoubleComplex alpha,
-//                          const hipDoubleComplex *A, int lda,
-//                          hipDoubleComplex *B, int ldb)
+//                          hipblasDoubleComplex alpha,
+//                          const hipblasDoubleComplex *A, int lda,
+//                          hipblasDoubleComplex *B, int ldb)
 //  {
 //      //just directly cast, since transA, transB are integers in the enum
 //      cblas_ztrmm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
@@ -1181,9 +1181,9 @@ int cblas_getrf<double>(int m, int n, double* A, int lda, int* ipiv)
 }
 
 // template<>
-// int cblas_getrf<hipComplex>(int m,
+// int cblas_getrf<hipblasComplex>(int m,
 //                         int n,
-//                         hipComplex *A, int lda,
+//                         hipblasComplex *A, int lda,
 //                         int *ipiv)
 // {
 //     int info;
@@ -1192,9 +1192,9 @@ int cblas_getrf<double>(int m, int n, double* A, int lda, int* ipiv)
 // }
 
 // template<>
-// int cblas_getrf<hipDoubleComplex>(int m,
+// int cblas_getrf<hipblasDoubleComplex>(int m,
 //                         int n,
-//                         hipDoubleComplex *A, int lda,
+//                         hipblasDoubleComplex *A, int lda,
 //                         int *ipiv)
 // {
 //     int info;

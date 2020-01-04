@@ -79,7 +79,7 @@ void near_check_general(
 }
 
 template <>
-void near_check_general(int M, int N, int lda, hipComplex* hCPU, hipComplex* hGPU, double abs_error)
+void near_check_general(int M, int N, int lda, hipblasComplex* hCPU, hipblasComplex* hGPU, double abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
@@ -87,7 +87,7 @@ void near_check_general(int M, int N, int lda, hipComplex* hCPU, hipComplex* hGP
 
 template <>
 void near_check_general(
-    int M, int N, int lda, hipDoubleComplex* hCPU, hipDoubleComplex* hGPU, double abs_error)
+    int M, int N, int lda, hipblasDoubleComplex* hCPU, hipblasDoubleComplex* hGPU, double abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
@@ -132,8 +132,8 @@ void near_check_general(int         M,
                         int         batch_count,
                         int         lda,
                         int         strideA,
-                        hipComplex* hCPU,
-                        hipComplex* hGPU,
+                        hipblasComplex* hCPU,
+                        hipblasComplex* hGPU,
                         double      abs_error)
 {
     abs_error *= sqrthalf;
@@ -146,8 +146,8 @@ void near_check_general(int               M,
                         int               batch_count,
                         int               lda,
                         int               strideA,
-                        hipDoubleComplex* hCPU,
-                        hipDoubleComplex* hGPU,
+                        hipblasDoubleComplex* hCPU,
+                        hipblasDoubleComplex* hGPU,
                         double            abs_error)
 {
     abs_error *= sqrthalf;
@@ -195,8 +195,8 @@ void near_check_general(int                     M,
                         int                     N,
                         int                     batch_count,
                         int                     lda,
-                        host_vector<hipComplex> hCPU[],
-                        host_vector<hipComplex> hGPU[],
+                        host_vector<hipblasComplex> hCPU[],
+                        host_vector<hipblasComplex> hGPU[],
                         double                  abs_error)
 {
     abs_error *= sqrthalf;
@@ -208,8 +208,8 @@ void near_check_general(int                           M,
                         int                           N,
                         int                           batch_count,
                         int                           lda,
-                        host_vector<hipDoubleComplex> hCPU[],
-                        host_vector<hipDoubleComplex> hGPU[],
+                        host_vector<hipblasDoubleComplex> hCPU[],
+                        host_vector<hipblasDoubleComplex> hGPU[],
                         double                        abs_error)
 {
     abs_error *= sqrthalf;
