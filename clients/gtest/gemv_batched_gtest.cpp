@@ -173,7 +173,7 @@ TEST_P(gemv_gtest_batched, gemv_gtest_float_complex)
 {
     Arguments arg = setup_gemv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_gemvBatched<hipComplex>(arg);
+    hipblasStatus_t status = testing_gemvBatched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
