@@ -23,12 +23,12 @@ char type2char<double>()
 }
 
 //  template<>
-//  char type2char<hipComplex>(){
+//  char type2char<hipblasComplex>(){
 //      return 'c';
 //  }
 
 //  template<>
-//  char type2char<hipDoubleComplex>(){
+//  char type2char<hipblasDoubleComplex>(){
 //      return 'z';
 //  }
 

@@ -95,7 +95,7 @@ void unit_check_general(int M, int N, int lda, double* hCPU, double* hGPU)
 }
 
 template <>
-void unit_check_general(int M, int N, int lda, hipComplex* hCPU, hipComplex* hGPU)
+void unit_check_general(int M, int N, int lda, hipblasComplex* hCPU, hipblasComplex* hGPU)
 {
 #pragma unroll
     for(int j = 0; j < N; j++)
@@ -112,7 +112,7 @@ void unit_check_general(int M, int N, int lda, hipComplex* hCPU, hipComplex* hGP
 }
 
 template <>
-void unit_check_general(int M, int N, int lda, hipDoubleComplex* hCPU, hipDoubleComplex* hGPU)
+void unit_check_general(int M, int N, int lda, hipblasDoubleComplex* hCPU, hipblasDoubleComplex* hGPU)
 {
 #pragma unroll
     for(int j = 0; j < N; j++)
@@ -169,14 +169,14 @@ void unit_check_general(int M, int N, int batch_count, int lda, int** hCPU, int*
 
 template <>
 void unit_check_general(
-    int M, int N, int batch_count, int lda, hipComplex** hCPU, hipComplex** hGPU)
+    int M, int N, int batch_count, int lda, hipblasComplex** hCPU, hipblasComplex** hGPU)
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_FLOAT_COMPLEX_EQ);
 }
 
 template <>
 void unit_check_general(
-    int M, int N, int batch_count, int lda, hipDoubleComplex** hCPU, hipDoubleComplex** hGPU)
+    int M, int N, int batch_count, int lda, hipblasDoubleComplex** hCPU, hipblasDoubleComplex** hGPU)
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_DOUBLE_COMPLEX_EQ);
 }
@@ -230,8 +230,8 @@ void unit_check_general(int                     M,
                         int                     N,
                         int                     batch_count,
                         int                     lda,
-                        host_vector<hipComplex> hCPU[],
-                        host_vector<hipComplex> hGPU[])
+                        host_vector<hipblasComplex> hCPU[],
+                        host_vector<hipblasComplex> hGPU[])
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_FLOAT_COMPLEX_EQ);
 }
@@ -241,8 +241,8 @@ void unit_check_general(int                           M,
                         int                           N,
                         int                           batch_count,
                         int                           lda,
-                        host_vector<hipDoubleComplex> hCPU[],
-                        host_vector<hipDoubleComplex> hGPU[])
+                        host_vector<hipblasDoubleComplex> hCPU[],
+                        host_vector<hipblasDoubleComplex> hGPU[])
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_DOUBLE_COMPLEX_EQ);
 }
@@ -283,7 +283,7 @@ void unit_check_general(
 
 template <>
 void unit_check_general(
-    int M, int N, int batch_count, int lda, int strideA, hipComplex* hCPU, hipComplex* hGPU)
+    int M, int N, int batch_count, int lda, int strideA, hipblasComplex* hCPU, hipblasComplex* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_FLOAT_COMPLEX_EQ);
 }
@@ -294,8 +294,8 @@ void unit_check_general(int               M,
                         int               batch_count,
                         int               lda,
                         int               strideA,
-                        hipDoubleComplex* hCPU,
-                        hipDoubleComplex* hGPU)
+                        hipblasDoubleComplex* hCPU,
+                        hipblasDoubleComplex* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_DOUBLE_COMPLEX_EQ);
 }
