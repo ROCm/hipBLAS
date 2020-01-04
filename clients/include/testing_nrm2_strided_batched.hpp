@@ -23,9 +23,9 @@ using namespace std;
 template <typename T>
 constexpr double nrm2_strided_batched_tolerance_multiplier = 100;
 template <>
-constexpr double nrm2_strided_batched_tolerance_multiplier<hipComplex> = 110;
+constexpr double nrm2_strided_batched_tolerance_multiplier<hipblasComplex> = 110;
 template <>
-constexpr double nrm2_strided_batched_tolerance_multiplier<hipDoubleComplex> = 110;
+constexpr double nrm2_strided_batched_tolerance_multiplier<hipblasDoubleComplex> = 110;
 
 template <typename T1, typename T2>
 hipblasStatus_t testing_nrm2_strided_batched(Arguments argus)

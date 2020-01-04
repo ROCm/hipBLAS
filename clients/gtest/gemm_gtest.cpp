@@ -188,7 +188,7 @@ TEST_P(gemm_gtest, gemm_gtest_float_complex)
 
     Arguments arg = setup_gemm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_gemm<hipComplex>(arg);
+    hipblasStatus_t status = testing_gemm<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -226,7 +226,7 @@ TEST_P(gemm_gtest, gemm_gtest_double_complex)
 
     Arguments arg = setup_gemm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_gemm<hipDoubleComplex>(arg);
+    hipblasStatus_t status = testing_gemm<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
