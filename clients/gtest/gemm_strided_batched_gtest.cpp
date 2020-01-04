@@ -205,7 +205,7 @@ TEST_P(gemm_strided_batched_gtest, double)
     }
 }
 
-TEST_P(gemm_strided_batched_gtest, hipComplex)
+TEST_P(gemm_strided_batched_gtest, hipblasComplex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -214,7 +214,7 @@ TEST_P(gemm_strided_batched_gtest, hipComplex)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<hipComplex>(arg);
+    hipblasStatus_t status = testing_GemmStridedBatched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -246,7 +246,7 @@ TEST_P(gemm_strided_batched_gtest, hipComplex)
     }
 }
 
-TEST_P(gemm_strided_batched_gtest, hipDoubleComplex)
+TEST_P(gemm_strided_batched_gtest, hipblasDoubleComplex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -255,7 +255,7 @@ TEST_P(gemm_strided_batched_gtest, hipDoubleComplex)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<hipDoubleComplex>(arg);
+    hipblasStatus_t status = testing_GemmStridedBatched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
