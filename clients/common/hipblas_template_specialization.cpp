@@ -50,24 +50,24 @@ hipblasStatus_t hipblasAxpy<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasAxpy<hipComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasAxpy<hipblasComplex>(hipblasHandle_t   handle,
                                         int               n,
-                                        const hipComplex* alpha,
-                                        const hipComplex* x,
+                                        const hipblasComplex* alpha,
+                                        const hipblasComplex* x,
                                         int               incx,
-                                        hipComplex*       y,
+                                        hipblasComplex*       y,
                                         int               incy)
 {
     return hipblasCaxpy(handle, n, alpha, x, incx, y, incy);
 }
 
 template <>
-hipblasStatus_t hipblasAxpy<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasAxpy<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                               int                     n,
-                                              const hipDoubleComplex* alpha,
-                                              const hipDoubleComplex* x,
+                                              const hipblasDoubleComplex* alpha,
+                                              const hipblasDoubleComplex* x,
                                               int                     incx,
-                                              hipDoubleComplex*       y,
+                                              hipblasDoubleComplex*       y,
                                               int                     incy)
 {
     return hipblasZaxpy(handle, n, alpha, x, incx, y, incy);
@@ -89,29 +89,29 @@ hipblasStatus_t
 }
 
 template <>
-hipblasStatus_t hipblasScal<hipComplex>(
-    hipblasHandle_t handle, int n, const hipComplex* alpha, hipComplex* x, int incx)
+hipblasStatus_t hipblasScal<hipblasComplex>(
+    hipblasHandle_t handle, int n, const hipblasComplex* alpha, hipblasComplex* x, int incx)
 {
     return hipblasCscal(handle, n, alpha, x, incx);
 }
 
 template <>
-hipblasStatus_t hipblasScal<hipComplex, float>(
-    hipblasHandle_t handle, int n, const float* alpha, hipComplex* x, int incx)
+hipblasStatus_t hipblasScal<hipblasComplex, float>(
+    hipblasHandle_t handle, int n, const float* alpha, hipblasComplex* x, int incx)
 {
     return hipblasCsscal(handle, n, alpha, x, incx);
 }
 
 template <>
-hipblasStatus_t hipblasScal<hipDoubleComplex>(
-    hipblasHandle_t handle, int n, const hipDoubleComplex* alpha, hipDoubleComplex* x, int incx)
+hipblasStatus_t hipblasScal<hipblasDoubleComplex>(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* alpha, hipblasDoubleComplex* x, int incx)
 {
     return hipblasZscal(handle, n, alpha, x, incx);
 }
 
 template <>
-hipblasStatus_t hipblasScal<hipDoubleComplex, double>(
-    hipblasHandle_t handle, int n, const double* alpha, hipDoubleComplex* x, int incx)
+hipblasStatus_t hipblasScal<hipblasDoubleComplex, double>(
+    hipblasHandle_t handle, int n, const double* alpha, hipblasDoubleComplex* x, int incx)
 {
     return hipblasZdscal(handle, n, alpha, x, incx);
 }
@@ -136,10 +136,10 @@ hipblasStatus_t hipblasScalBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasScalBatched<hipComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasScalBatched<hipblasComplex>(hipblasHandle_t   handle,
                                                int               n,
-                                               const hipComplex* alpha,
-                                               hipComplex* const x[],
+                                               const hipblasComplex* alpha,
+                                               hipblasComplex* const x[],
                                                int               incx,
                                                int               batch_count)
 {
@@ -147,10 +147,10 @@ hipblasStatus_t hipblasScalBatched<hipComplex>(hipblasHandle_t   handle,
 }
 
 template <>
-hipblasStatus_t hipblasScalBatched<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasScalBatched<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                                      int                     n,
-                                                     const hipDoubleComplex* alpha,
-                                                     hipDoubleComplex* const x[],
+                                                     const hipblasDoubleComplex* alpha,
+                                                     hipblasDoubleComplex* const x[],
                                                      int                     incx,
                                                      int                     batch_count)
 {
@@ -158,10 +158,10 @@ hipblasStatus_t hipblasScalBatched<hipDoubleComplex>(hipblasHandle_t         han
 }
 
 template <>
-hipblasStatus_t hipblasScalBatched<hipComplex, float>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasScalBatched<hipblasComplex, float>(hipblasHandle_t   handle,
                                                       int               n,
                                                       const float*      alpha,
-                                                      hipComplex* const x[],
+                                                      hipblasComplex* const x[],
                                                       int               incx,
                                                       int               batch_count)
 {
@@ -169,10 +169,10 @@ hipblasStatus_t hipblasScalBatched<hipComplex, float>(hipblasHandle_t   handle,
 }
 
 template <>
-hipblasStatus_t hipblasScalBatched<hipDoubleComplex, double>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasScalBatched<hipblasDoubleComplex, double>(hipblasHandle_t         handle,
                                                              int                     n,
                                                              const double*           alpha,
-                                                             hipDoubleComplex* const x[],
+                                                             hipblasDoubleComplex* const x[],
                                                              int                     incx,
                                                              int                     batch_count)
 {
@@ -205,10 +205,10 @@ hipblasStatus_t hipblasScalStridedBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasScalStridedBatched<hipComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasScalStridedBatched<hipblasComplex>(hipblasHandle_t   handle,
                                                       int               n,
-                                                      const hipComplex* alpha,
-                                                      hipComplex*       x,
+                                                      const hipblasComplex* alpha,
+                                                      hipblasComplex*       x,
                                                       int               incx,
                                                       int               stridex,
                                                       int               batch_count)
@@ -217,10 +217,10 @@ hipblasStatus_t hipblasScalStridedBatched<hipComplex>(hipblasHandle_t   handle,
 }
 
 template <>
-hipblasStatus_t hipblasScalStridedBatched<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasScalStridedBatched<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                                             int                     n,
-                                                            const hipDoubleComplex* alpha,
-                                                            hipDoubleComplex*       x,
+                                                            const hipblasDoubleComplex* alpha,
+                                                            hipblasDoubleComplex*       x,
                                                             int                     incx,
                                                             int                     stridex,
                                                             int                     batch_count)
@@ -229,10 +229,10 @@ hipblasStatus_t hipblasScalStridedBatched<hipDoubleComplex>(hipblasHandle_t     
 }
 
 template <>
-hipblasStatus_t hipblasScalStridedBatched<hipComplex, float>(hipblasHandle_t handle,
+hipblasStatus_t hipblasScalStridedBatched<hipblasComplex, float>(hipblasHandle_t handle,
                                                              int             n,
                                                              const float*    alpha,
-                                                             hipComplex*     x,
+                                                             hipblasComplex*     x,
                                                              int             incx,
                                                              int             stridex,
                                                              int             batch_count)
@@ -241,10 +241,10 @@ hipblasStatus_t hipblasScalStridedBatched<hipComplex, float>(hipblasHandle_t han
 }
 
 template <>
-hipblasStatus_t hipblasScalStridedBatched<hipDoubleComplex, double>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasScalStridedBatched<hipblasDoubleComplex, double>(hipblasHandle_t   handle,
                                                                     int               n,
                                                                     const double*     alpha,
-                                                                    hipDoubleComplex* x,
+                                                                    hipblasDoubleComplex* x,
                                                                     int               incx,
                                                                     int               stridex,
                                                                     int               batch_count)
@@ -268,15 +268,15 @@ hipblasStatus_t
 }
 
 template <>
-hipblasStatus_t hipblasSwap<hipComplex>(
-    hipblasHandle_t handle, int n, hipComplex* x, int incx, hipComplex* y, int incy)
+hipblasStatus_t hipblasSwap<hipblasComplex>(
+    hipblasHandle_t handle, int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy)
 {
     return hipblasCswap(handle, n, x, incx, y, incy);
 }
 
 template <>
-hipblasStatus_t hipblasSwap<hipDoubleComplex>(
-    hipblasHandle_t handle, int n, hipDoubleComplex* x, int incx, hipDoubleComplex* y, int incy)
+hipblasStatus_t hipblasSwap<hipblasDoubleComplex>(
+    hipblasHandle_t handle, int n, hipblasDoubleComplex* x, int incx, hipblasDoubleComplex* y, int incy)
 {
     return hipblasZswap(handle, n, x, incx, y, incy);
 }
@@ -297,11 +297,11 @@ hipblasStatus_t hipblasSwapBatched<double>(
 }
 
 template <>
-hipblasStatus_t hipblasSwapBatched<hipComplex>(hipblasHandle_t handle,
+hipblasStatus_t hipblasSwapBatched<hipblasComplex>(hipblasHandle_t handle,
                                                int             n,
-                                               hipComplex*     x[],
+                                               hipblasComplex*     x[],
                                                int             incx,
-                                               hipComplex*     y[],
+                                               hipblasComplex*     y[],
                                                int             incy,
                                                int             batch_count)
 {
@@ -309,11 +309,11 @@ hipblasStatus_t hipblasSwapBatched<hipComplex>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasSwapBatched<hipDoubleComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasSwapBatched<hipblasDoubleComplex>(hipblasHandle_t   handle,
                                                      int               n,
-                                                     hipDoubleComplex* x[],
+                                                     hipblasDoubleComplex* x[],
                                                      int               incx,
-                                                     hipDoubleComplex* y[],
+                                                     hipblasDoubleComplex* y[],
                                                      int               incy,
                                                      int               batch_count)
 {
@@ -350,12 +350,12 @@ hipblasStatus_t hipblasSwapStridedBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasSwapStridedBatched<hipComplex>(hipblasHandle_t handle,
+hipblasStatus_t hipblasSwapStridedBatched<hipblasComplex>(hipblasHandle_t handle,
                                                       int             n,
-                                                      hipComplex*     x,
+                                                      hipblasComplex*     x,
                                                       int             incx,
                                                       int             stridex,
-                                                      hipComplex*     y,
+                                                      hipblasComplex*     y,
                                                       int             incy,
                                                       int             stridey,
                                                       int             batch_count)
@@ -364,12 +364,12 @@ hipblasStatus_t hipblasSwapStridedBatched<hipComplex>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasSwapStridedBatched<hipDoubleComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasSwapStridedBatched<hipblasDoubleComplex>(hipblasHandle_t   handle,
                                                             int               n,
-                                                            hipDoubleComplex* x,
+                                                            hipblasDoubleComplex* x,
                                                             int               incx,
                                                             int               stridex,
-                                                            hipDoubleComplex* y,
+                                                            hipblasDoubleComplex* y,
                                                             int               incy,
                                                             int               stridey,
                                                             int               batch_count)
@@ -393,18 +393,18 @@ hipblasStatus_t hipblasCopy<double>(
 }
 
 template <>
-hipblasStatus_t hipblasCopy<hipComplex>(
-    hipblasHandle_t handle, int n, const hipComplex* x, int incx, hipComplex* y, int incy)
+hipblasStatus_t hipblasCopy<hipblasComplex>(
+    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, hipblasComplex* y, int incy)
 {
     return hipblasCcopy(handle, n, x, incx, y, incy);
 }
 
 template <>
-hipblasStatus_t hipblasCopy<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasCopy<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                               int                     n,
-                                              const hipDoubleComplex* x,
+                                              const hipblasDoubleComplex* x,
                                               int                     incx,
-                                              hipDoubleComplex*       y,
+                                              hipblasDoubleComplex*       y,
                                               int                     incy)
 {
     return hipblasZcopy(handle, n, x, incx, y, incy);
@@ -436,11 +436,11 @@ hipblasStatus_t hipblasCopyBatched<double>(hipblasHandle_t     handle,
 }
 
 template <>
-hipblasStatus_t hipblasCopyBatched<hipComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasCopyBatched<hipblasComplex>(hipblasHandle_t         handle,
                                                int                     n,
-                                               const hipComplex* const x[],
+                                               const hipblasComplex* const x[],
                                                int                     incx,
-                                               hipComplex* const       y[],
+                                               hipblasComplex* const       y[],
                                                int                     incy,
                                                int                     batch_count)
 {
@@ -448,11 +448,11 @@ hipblasStatus_t hipblasCopyBatched<hipComplex>(hipblasHandle_t         handle,
 }
 
 template <>
-hipblasStatus_t hipblasCopyBatched<hipDoubleComplex>(hipblasHandle_t               handle,
+hipblasStatus_t hipblasCopyBatched<hipblasDoubleComplex>(hipblasHandle_t               handle,
                                                      int                           n,
-                                                     const hipDoubleComplex* const x[],
+                                                     const hipblasDoubleComplex* const x[],
                                                      int                           incx,
-                                                     hipDoubleComplex* const       y[],
+                                                     hipblasDoubleComplex* const       y[],
                                                      int                           incy,
                                                      int                           batch_count)
 {
@@ -489,12 +489,12 @@ hipblasStatus_t hipblasCopyStridedBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasCopyStridedBatched<hipComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasCopyStridedBatched<hipblasComplex>(hipblasHandle_t   handle,
                                                       int               n,
-                                                      const hipComplex* x,
+                                                      const hipblasComplex* x,
                                                       int               incx,
                                                       int               stridex,
-                                                      hipComplex*       y,
+                                                      hipblasComplex*       y,
                                                       int               incy,
                                                       int               stridey,
                                                       int               batch_count)
@@ -503,12 +503,12 @@ hipblasStatus_t hipblasCopyStridedBatched<hipComplex>(hipblasHandle_t   handle,
 }
 
 template <>
-hipblasStatus_t hipblasCopyStridedBatched<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasCopyStridedBatched<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                                             int                     n,
-                                                            const hipDoubleComplex* x,
+                                                            const hipblasDoubleComplex* x,
                                                             int                     incx,
                                                             int                     stridex,
-                                                            hipDoubleComplex*       y,
+                                                            hipblasDoubleComplex*       y,
                                                             int                     incy,
                                                             int                     stridey,
                                                             int                     batch_count)
@@ -566,49 +566,49 @@ hipblasStatus_t hipblasDot<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasDot<hipComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasDot<hipblasComplex>(hipblasHandle_t   handle,
                                        int               n,
-                                       const hipComplex* x,
+                                       const hipblasComplex* x,
                                        int               incx,
-                                       const hipComplex* y,
+                                       const hipblasComplex* y,
                                        int               incy,
-                                       hipComplex*       result)
+                                       hipblasComplex*       result)
 {
     return hipblasCdotu(handle, n, x, incx, y, incy, result);
 }
 
 template <>
-hipblasStatus_t hipblasDot<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasDot<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                              int                     n,
-                                             const hipDoubleComplex* x,
+                                             const hipblasDoubleComplex* x,
                                              int                     incx,
-                                             const hipDoubleComplex* y,
+                                             const hipblasDoubleComplex* y,
                                              int                     incy,
-                                             hipDoubleComplex*       result)
+                                             hipblasDoubleComplex*       result)
 {
     return hipblasZdotu(handle, n, x, incx, y, incy, result);
 }
 
 template <>
-hipblasStatus_t hipblasDotc<hipComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasDotc<hipblasComplex>(hipblasHandle_t   handle,
                                         int               n,
-                                        const hipComplex* x,
+                                        const hipblasComplex* x,
                                         int               incx,
-                                        const hipComplex* y,
+                                        const hipblasComplex* y,
                                         int               incy,
-                                        hipComplex*       result)
+                                        hipblasComplex*       result)
 {
     return hipblasCdotc(handle, n, x, incx, y, incy, result);
 }
 
 template <>
-hipblasStatus_t hipblasDotc<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasDotc<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                               int                     n,
-                                              const hipDoubleComplex* x,
+                                              const hipblasDoubleComplex* x,
                                               int                     incx,
-                                              const hipDoubleComplex* y,
+                                              const hipblasDoubleComplex* y,
                                               int                     incy,
-                                              hipDoubleComplex*       result)
+                                              hipblasDoubleComplex*       result)
 {
     return hipblasZdotc(handle, n, x, incx, y, incy, result);
 }
@@ -667,53 +667,53 @@ hipblasStatus_t hipblasDotBatched<double>(hipblasHandle_t     handle,
 }
 
 template <>
-hipblasStatus_t hipblasDotBatched<hipComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasDotBatched<hipblasComplex>(hipblasHandle_t         handle,
                                               int                     n,
-                                              const hipComplex* const x[],
+                                              const hipblasComplex* const x[],
                                               int                     incx,
-                                              const hipComplex* const y[],
+                                              const hipblasComplex* const y[],
                                               int                     incy,
                                               int                     batch_count,
-                                              hipComplex*             result)
+                                              hipblasComplex*             result)
 {
     return hipblasCdotuBatched(handle, n, x, incx, y, incy, batch_count, result);
 }
 
 template <>
-hipblasStatus_t hipblasDotcBatched<hipComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasDotcBatched<hipblasComplex>(hipblasHandle_t         handle,
                                                int                     n,
-                                               const hipComplex* const x[],
+                                               const hipblasComplex* const x[],
                                                int                     incx,
-                                               const hipComplex* const y[],
+                                               const hipblasComplex* const y[],
                                                int                     incy,
                                                int                     batch_count,
-                                               hipComplex*             result)
+                                               hipblasComplex*             result)
 {
     return hipblasCdotcBatched(handle, n, x, incx, y, incy, batch_count, result);
 }
 
 template <>
-hipblasStatus_t hipblasDotBatched<hipDoubleComplex>(hipblasHandle_t               handle,
+hipblasStatus_t hipblasDotBatched<hipblasDoubleComplex>(hipblasHandle_t               handle,
                                                     int                           n,
-                                                    const hipDoubleComplex* const x[],
+                                                    const hipblasDoubleComplex* const x[],
                                                     int                           incx,
-                                                    const hipDoubleComplex* const y[],
+                                                    const hipblasDoubleComplex* const y[],
                                                     int                           incy,
                                                     int                           batch_count,
-                                                    hipDoubleComplex*             result)
+                                                    hipblasDoubleComplex*             result)
 {
     return hipblasZdotuBatched(handle, n, x, incx, y, incy, batch_count, result);
 }
 
 template <>
-hipblasStatus_t hipblasDotcBatched<hipDoubleComplex>(hipblasHandle_t               handle,
+hipblasStatus_t hipblasDotcBatched<hipblasDoubleComplex>(hipblasHandle_t               handle,
                                                      int                           n,
-                                                     const hipDoubleComplex* const x[],
+                                                     const hipblasDoubleComplex* const x[],
                                                      int                           incx,
-                                                     const hipDoubleComplex* const y[],
+                                                     const hipblasDoubleComplex* const y[],
                                                      int                           incy,
                                                      int                           batch_count,
-                                                     hipDoubleComplex*             result)
+                                                     hipblasDoubleComplex*             result)
 {
     return hipblasZdotcBatched(handle, n, x, incx, y, incy, batch_count, result);
 }
@@ -784,64 +784,64 @@ hipblasStatus_t hipblasDotStridedBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasDotStridedBatched<hipComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasDotStridedBatched<hipblasComplex>(hipblasHandle_t   handle,
                                                      int               n,
-                                                     const hipComplex* x,
+                                                     const hipblasComplex* x,
                                                      int               incx,
                                                      int               stridex,
-                                                     const hipComplex* y,
+                                                     const hipblasComplex* y,
                                                      int               incy,
                                                      int               stridey,
                                                      int               batch_count,
-                                                     hipComplex*       result)
+                                                     hipblasComplex*       result)
 {
     return hipblasCdotuStridedBatched(
         handle, n, x, incx, stridex, y, incy, stridey, batch_count, result);
 }
 
 template <>
-hipblasStatus_t hipblasDotcStridedBatched<hipComplex>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasDotcStridedBatched<hipblasComplex>(hipblasHandle_t   handle,
                                                       int               n,
-                                                      const hipComplex* x,
+                                                      const hipblasComplex* x,
                                                       int               incx,
                                                       int               stridex,
-                                                      const hipComplex* y,
+                                                      const hipblasComplex* y,
                                                       int               incy,
                                                       int               stridey,
                                                       int               batch_count,
-                                                      hipComplex*       result)
+                                                      hipblasComplex*       result)
 {
     return hipblasCdotcStridedBatched(
         handle, n, x, incx, stridex, y, incy, stridey, batch_count, result);
 }
 
 template <>
-hipblasStatus_t hipblasDotStridedBatched<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasDotStridedBatched<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                                            int                     n,
-                                                           const hipDoubleComplex* x,
+                                                           const hipblasDoubleComplex* x,
                                                            int                     incx,
                                                            int                     stridex,
-                                                           const hipDoubleComplex* y,
+                                                           const hipblasDoubleComplex* y,
                                                            int                     incy,
                                                            int                     stridey,
                                                            int                     batch_count,
-                                                           hipDoubleComplex*       result)
+                                                           hipblasDoubleComplex*       result)
 {
     return hipblasZdotuStridedBatched(
         handle, n, x, incx, stridex, y, incy, stridey, batch_count, result);
 }
 
 template <>
-hipblasStatus_t hipblasDotcStridedBatched<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasDotcStridedBatched<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                                             int                     n,
-                                                            const hipDoubleComplex* x,
+                                                            const hipblasDoubleComplex* x,
                                                             int                     incx,
                                                             int                     stridex,
-                                                            const hipDoubleComplex* y,
+                                                            const hipblasDoubleComplex* y,
                                                             int                     incy,
                                                             int                     stridey,
                                                             int                     batch_count,
-                                                            hipDoubleComplex*       result)
+                                                            hipblasDoubleComplex*       result)
 {
     return hipblasZdotcStridedBatched(
         handle, n, x, incx, stridex, y, incy, stridey, batch_count, result);
@@ -865,16 +865,16 @@ hipblasStatus_t hipblasAsum<double, double>(
 }
 
 template <>
-hipblasStatus_t hipblasAsum<hipComplex, float>(
-    hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result)
+hipblasStatus_t hipblasAsum<hipblasComplex, float>(
+    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, float* result)
 {
 
     return hipblasScasum(handle, n, x, incx, result);
 }
 
 template <>
-hipblasStatus_t hipblasAsum<hipDoubleComplex, double>(
-    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result)
+hipblasStatus_t hipblasAsum<hipblasDoubleComplex, double>(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, double* result)
 {
 
     return hipblasDzasum(handle, n, x, incx, result);
@@ -902,9 +902,9 @@ hipblasStatus_t hipblasAsumBatched<double, double>(hipblasHandle_t     handle,
 }
 
 template <>
-hipblasStatus_t hipblasAsumBatched<hipComplex, float>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasAsumBatched<hipblasComplex, float>(hipblasHandle_t         handle,
                                                       int                     n,
-                                                      const hipComplex* const x[],
+                                                      const hipblasComplex* const x[],
                                                       int                     incx,
                                                       int                     batch_count,
                                                       float*                  result)
@@ -914,9 +914,9 @@ hipblasStatus_t hipblasAsumBatched<hipComplex, float>(hipblasHandle_t         ha
 }
 
 template <>
-hipblasStatus_t hipblasAsumBatched<hipDoubleComplex, double>(hipblasHandle_t               handle,
+hipblasStatus_t hipblasAsumBatched<hipblasDoubleComplex, double>(hipblasHandle_t               handle,
                                                              int                           n,
-                                                             const hipDoubleComplex* const x[],
+                                                             const hipblasDoubleComplex* const x[],
                                                              int                           incx,
                                                              int     batch_count,
                                                              double* result)
@@ -953,9 +953,9 @@ hipblasStatus_t hipblasAsumStridedBatched<double, double>(hipblasHandle_t handle
 }
 
 template <>
-hipblasStatus_t hipblasAsumStridedBatched<hipComplex, float>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasAsumStridedBatched<hipblasComplex, float>(hipblasHandle_t   handle,
                                                              int               n,
-                                                             const hipComplex* x,
+                                                             const hipblasComplex* x,
                                                              int               incx,
                                                              int               stridex,
                                                              int               batch_count,
@@ -966,9 +966,9 @@ hipblasStatus_t hipblasAsumStridedBatched<hipComplex, float>(hipblasHandle_t   h
 }
 
 template <>
-hipblasStatus_t hipblasAsumStridedBatched<hipDoubleComplex, double>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasAsumStridedBatched<hipblasDoubleComplex, double>(hipblasHandle_t         handle,
                                                                     int                     n,
-                                                                    const hipDoubleComplex* x,
+                                                                    const hipblasDoubleComplex* x,
                                                                     int                     incx,
                                                                     int                     stridex,
                                                                     int     batch_count,
@@ -996,16 +996,16 @@ hipblasStatus_t hipblasNrm2<double, double>(
 }
 
 template <>
-hipblasStatus_t hipblasNrm2<hipComplex, float>(
-    hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result)
+hipblasStatus_t hipblasNrm2<hipblasComplex, float>(
+    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, float* result)
 {
 
     return hipblasScnrm2(handle, n, x, incx, result);
 }
 
 template <>
-hipblasStatus_t hipblasNrm2<hipDoubleComplex, double>(
-    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result)
+hipblasStatus_t hipblasNrm2<hipblasDoubleComplex, double>(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, double* result)
 {
 
     return hipblasDznrm2(handle, n, x, incx, result);
@@ -1033,9 +1033,9 @@ hipblasStatus_t hipblasNrm2Batched<double, double>(hipblasHandle_t     handle,
 }
 
 template <>
-hipblasStatus_t hipblasNrm2Batched<hipComplex, float>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasNrm2Batched<hipblasComplex, float>(hipblasHandle_t         handle,
                                                       int                     n,
-                                                      const hipComplex* const x[],
+                                                      const hipblasComplex* const x[],
                                                       int                     incx,
                                                       int                     batch_count,
                                                       float*                  result)
@@ -1045,9 +1045,9 @@ hipblasStatus_t hipblasNrm2Batched<hipComplex, float>(hipblasHandle_t         ha
 }
 
 template <>
-hipblasStatus_t hipblasNrm2Batched<hipDoubleComplex, double>(hipblasHandle_t               handle,
+hipblasStatus_t hipblasNrm2Batched<hipblasDoubleComplex, double>(hipblasHandle_t               handle,
                                                              int                           n,
-                                                             const hipDoubleComplex* const x[],
+                                                             const hipblasDoubleComplex* const x[],
                                                              int                           incx,
                                                              int     batch_count,
                                                              double* result)
@@ -1084,9 +1084,9 @@ hipblasStatus_t hipblasNrm2StridedBatched<double, double>(hipblasHandle_t handle
 }
 
 template <>
-hipblasStatus_t hipblasNrm2StridedBatched<hipComplex, float>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasNrm2StridedBatched<hipblasComplex, float>(hipblasHandle_t   handle,
                                                              int               n,
-                                                             const hipComplex* x,
+                                                             const hipblasComplex* x,
                                                              int               incx,
                                                              int               stridex,
                                                              int               batch_count,
@@ -1097,9 +1097,9 @@ hipblasStatus_t hipblasNrm2StridedBatched<hipComplex, float>(hipblasHandle_t   h
 }
 
 template <>
-hipblasStatus_t hipblasNrm2StridedBatched<hipDoubleComplex, double>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasNrm2StridedBatched<hipblasDoubleComplex, double>(hipblasHandle_t         handle,
                                                                     int                     n,
-                                                                    const hipDoubleComplex* x,
+                                                                    const hipblasDoubleComplex* x,
                                                                     int                     incx,
                                                                     int                     stridex,
                                                                     int     batch_count,
@@ -1137,24 +1137,24 @@ hipblasStatus_t hipblasRot<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasRot<hipComplex, float>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasRot<hipblasComplex, float>(hipblasHandle_t   handle,
                                               int               n,
-                                              hipComplex*       x,
+                                              hipblasComplex*       x,
                                               int               incx,
-                                              hipComplex*       y,
+                                              hipblasComplex*       y,
                                               int               incy,
                                               const float*      c,
-                                              const hipComplex* s)
+                                              const hipblasComplex* s)
 {
     return hipblasCrot(handle, n, x, incx, y, incy, c, s);
 }
 
 template <>
-hipblasStatus_t hipblasRot<hipComplex, float, float>(hipblasHandle_t handle,
+hipblasStatus_t hipblasRot<hipblasComplex, float, float>(hipblasHandle_t handle,
                                                      int             n,
-                                                     hipComplex*     x,
+                                                     hipblasComplex*     x,
                                                      int             incx,
-                                                     hipComplex*     y,
+                                                     hipblasComplex*     y,
                                                      int             incy,
                                                      const float*    c,
                                                      const float*    s)
@@ -1163,24 +1163,24 @@ hipblasStatus_t hipblasRot<hipComplex, float, float>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasRot<hipDoubleComplex, double>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasRot<hipblasDoubleComplex, double>(hipblasHandle_t         handle,
                                                      int                     n,
-                                                     hipDoubleComplex*       x,
+                                                     hipblasDoubleComplex*       x,
                                                      int                     incx,
-                                                     hipDoubleComplex*       y,
+                                                     hipblasDoubleComplex*       y,
                                                      int                     incy,
                                                      const double*           c,
-                                                     const hipDoubleComplex* s)
+                                                     const hipblasDoubleComplex* s)
 {
     return hipblasZrot(handle, n, x, incx, y, incy, c, s);
 }
 
 template <>
-hipblasStatus_t hipblasRot<hipDoubleComplex, double, double>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasRot<hipblasDoubleComplex, double, double>(hipblasHandle_t   handle,
                                                              int               n,
-                                                             hipDoubleComplex* x,
+                                                             hipblasDoubleComplex* x,
                                                              int               incx,
-                                                             hipDoubleComplex* y,
+                                                             hipblasDoubleComplex* y,
                                                              int               incy,
                                                              const double*     c,
                                                              const double*     s)
@@ -1218,25 +1218,25 @@ hipblasStatus_t hipblasRotBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasRotBatched<hipComplex, float>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasRotBatched<hipblasComplex, float>(hipblasHandle_t   handle,
                                                      int               n,
-                                                     hipComplex* const x[],
+                                                     hipblasComplex* const x[],
                                                      int               incx,
-                                                     hipComplex* const y[],
+                                                     hipblasComplex* const y[],
                                                      int               incy,
                                                      const float*      c,
-                                                     const hipComplex* s,
+                                                     const hipblasComplex* s,
                                                      int               batch_count)
 {
     return hipblasCrotBatched(handle, n, x, incx, y, incy, c, s, batch_count);
 }
 
 template <>
-hipblasStatus_t hipblasRotBatched<hipComplex, float, float>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasRotBatched<hipblasComplex, float, float>(hipblasHandle_t   handle,
                                                             int               n,
-                                                            hipComplex* const x[],
+                                                            hipblasComplex* const x[],
                                                             int               incx,
-                                                            hipComplex* const y[],
+                                                            hipblasComplex* const y[],
                                                             int               incy,
                                                             const float*      c,
                                                             const float*      s,
@@ -1246,25 +1246,25 @@ hipblasStatus_t hipblasRotBatched<hipComplex, float, float>(hipblasHandle_t   ha
 }
 
 template <>
-hipblasStatus_t hipblasRotBatched<hipDoubleComplex, double>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasRotBatched<hipblasDoubleComplex, double>(hipblasHandle_t         handle,
                                                             int                     n,
-                                                            hipDoubleComplex* const x[],
+                                                            hipblasDoubleComplex* const x[],
                                                             int                     incx,
-                                                            hipDoubleComplex* const y[],
+                                                            hipblasDoubleComplex* const y[],
                                                             int                     incy,
                                                             const double*           c,
-                                                            const hipDoubleComplex* s,
+                                                            const hipblasDoubleComplex* s,
                                                             int                     batch_count)
 {
     return hipblasZrotBatched(handle, n, x, incx, y, incy, c, s, batch_count);
 }
 
 template <>
-hipblasStatus_t hipblasRotBatched<hipDoubleComplex, double, double>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasRotBatched<hipblasDoubleComplex, double, double>(hipblasHandle_t         handle,
                                                                     int                     n,
-                                                                    hipDoubleComplex* const x[],
+                                                                    hipblasDoubleComplex* const x[],
                                                                     int                     incx,
-                                                                    hipDoubleComplex* const y[],
+                                                                    hipblasDoubleComplex* const y[],
                                                                     int                     incy,
                                                                     const double*           c,
                                                                     const double*           s,
@@ -1309,16 +1309,16 @@ hipblasStatus_t hipblasRotStridedBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasRotStridedBatched<hipComplex, float>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasRotStridedBatched<hipblasComplex, float>(hipblasHandle_t   handle,
                                                             int               n,
-                                                            hipComplex*       x,
+                                                            hipblasComplex*       x,
                                                             int               incx,
                                                             int               stridex,
-                                                            hipComplex*       y,
+                                                            hipblasComplex*       y,
                                                             int               incy,
                                                             int               stridey,
                                                             const float*      c,
-                                                            const hipComplex* s,
+                                                            const hipblasComplex* s,
                                                             int               batch_count)
 {
     return hipblasCrotStridedBatched(
@@ -1326,12 +1326,12 @@ hipblasStatus_t hipblasRotStridedBatched<hipComplex, float>(hipblasHandle_t   ha
 }
 
 template <>
-hipblasStatus_t hipblasRotStridedBatched<hipComplex, float, float>(hipblasHandle_t handle,
+hipblasStatus_t hipblasRotStridedBatched<hipblasComplex, float, float>(hipblasHandle_t handle,
                                                                    int             n,
-                                                                   hipComplex*     x,
+                                                                   hipblasComplex*     x,
                                                                    int             incx,
                                                                    int             stridex,
-                                                                   hipComplex*     y,
+                                                                   hipblasComplex*     y,
                                                                    int             incy,
                                                                    int             stridey,
                                                                    const float*    c,
@@ -1343,16 +1343,16 @@ hipblasStatus_t hipblasRotStridedBatched<hipComplex, float, float>(hipblasHandle
 }
 
 template <>
-hipblasStatus_t hipblasRotStridedBatched<hipDoubleComplex, double>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasRotStridedBatched<hipblasDoubleComplex, double>(hipblasHandle_t         handle,
                                                                    int                     n,
-                                                                   hipDoubleComplex*       x,
+                                                                   hipblasDoubleComplex*       x,
                                                                    int                     incx,
                                                                    int                     stridex,
-                                                                   hipDoubleComplex*       y,
+                                                                   hipblasDoubleComplex*       y,
                                                                    int                     incy,
                                                                    int                     stridey,
                                                                    const double*           c,
-                                                                   const hipDoubleComplex* s,
+                                                                   const hipblasDoubleComplex* s,
                                                                    int batch_count)
 {
     return hipblasZrotStridedBatched(
@@ -1360,12 +1360,12 @@ hipblasStatus_t hipblasRotStridedBatched<hipDoubleComplex, double>(hipblasHandle
 }
 
 template <>
-hipblasStatus_t hipblasRotStridedBatched<hipDoubleComplex, double, double>(hipblasHandle_t   handle,
+hipblasStatus_t hipblasRotStridedBatched<hipblasDoubleComplex, double, double>(hipblasHandle_t   handle,
                                                                            int               n,
-                                                                           hipDoubleComplex* x,
+                                                                           hipblasDoubleComplex* x,
                                                                            int               incx,
                                                                            int stridex,
-                                                                           hipDoubleComplex* y,
+                                                                           hipblasDoubleComplex* y,
                                                                            int               incy,
                                                                            int           stridey,
                                                                            const double* c,
@@ -1391,18 +1391,18 @@ hipblasStatus_t
 }
 
 template <>
-hipblasStatus_t hipblasRotg<hipComplex, float>(
-    hipblasHandle_t handle, hipComplex* a, hipComplex* b, float* c, hipComplex* s)
+hipblasStatus_t hipblasRotg<hipblasComplex, float>(
+    hipblasHandle_t handle, hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s)
 {
     return hipblasCrotg(handle, a, b, c, s);
 }
 
 template <>
-hipblasStatus_t hipblasRotg<hipDoubleComplex, double>(hipblasHandle_t   handle,
-                                                      hipDoubleComplex* a,
-                                                      hipDoubleComplex* b,
+hipblasStatus_t hipblasRotg<hipblasDoubleComplex, double>(hipblasHandle_t   handle,
+                                                      hipblasDoubleComplex* a,
+                                                      hipblasDoubleComplex* b,
                                                       double*           c,
-                                                      hipDoubleComplex* s)
+                                                      hipblasDoubleComplex* s)
 {
     return hipblasZrotg(handle, a, b, c, s);
 }
@@ -1431,22 +1431,22 @@ hipblasStatus_t hipblasRotgBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasRotgBatched<hipComplex, float>(hipblasHandle_t   handle,
-                                                      hipComplex* const a[],
-                                                      hipComplex* const b[],
+hipblasStatus_t hipblasRotgBatched<hipblasComplex, float>(hipblasHandle_t   handle,
+                                                      hipblasComplex* const a[],
+                                                      hipblasComplex* const b[],
                                                       float* const      c[],
-                                                      hipComplex* const s[],
+                                                      hipblasComplex* const s[],
                                                       int               batch_count)
 {
     return hipblasCrotgBatched(handle, a, b, c, s, batch_count);
 }
 
 template <>
-hipblasStatus_t hipblasRotgBatched<hipDoubleComplex, double>(hipblasHandle_t         handle,
-                                                             hipDoubleComplex* const a[],
-                                                             hipDoubleComplex* const b[],
+hipblasStatus_t hipblasRotgBatched<hipblasDoubleComplex, double>(hipblasHandle_t         handle,
+                                                             hipblasDoubleComplex* const a[],
+                                                             hipblasDoubleComplex* const b[],
                                                              double* const           c[],
-                                                             hipDoubleComplex* const s[],
+                                                             hipblasDoubleComplex* const s[],
                                                              int                     batch_count)
 {
     return hipblasZrotgBatched(handle, a, b, c, s, batch_count);
@@ -1486,14 +1486,14 @@ hipblasStatus_t hipblasRotgStridedBatched<double>(hipblasHandle_t handle,
 }
 
 template <>
-hipblasStatus_t hipblasRotgStridedBatched<hipComplex, float>(hipblasHandle_t handle,
-                                                             hipComplex*     a,
+hipblasStatus_t hipblasRotgStridedBatched<hipblasComplex, float>(hipblasHandle_t handle,
+                                                             hipblasComplex*     a,
                                                              int             stridea,
-                                                             hipComplex*     b,
+                                                             hipblasComplex*     b,
                                                              int             strideb,
                                                              float*          c,
                                                              int             stridec,
-                                                             hipComplex*     s,
+                                                             hipblasComplex*     s,
                                                              int             strides,
                                                              int             batch_count)
 {
@@ -1502,14 +1502,14 @@ hipblasStatus_t hipblasRotgStridedBatched<hipComplex, float>(hipblasHandle_t han
 }
 
 template <>
-hipblasStatus_t hipblasRotgStridedBatched<hipDoubleComplex, double>(hipblasHandle_t   handle,
-                                                                    hipDoubleComplex* a,
+hipblasStatus_t hipblasRotgStridedBatched<hipblasDoubleComplex, double>(hipblasHandle_t   handle,
+                                                                    hipblasDoubleComplex* a,
                                                                     int               stridea,
-                                                                    hipDoubleComplex* b,
+                                                                    hipblasDoubleComplex* b,
                                                                     int               strideb,
                                                                     double*           c,
                                                                     int               stridec,
-                                                                    hipDoubleComplex* s,
+                                                                    hipblasDoubleComplex* s,
                                                                     int               strides,
                                                                     int               batch_count)
 {
@@ -1707,15 +1707,15 @@ hipblasStatus_t
 }
 
 template <>
-hipblasStatus_t hipblasIamax<hipComplex>(
-    hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result)
+hipblasStatus_t hipblasIamax<hipblasComplex>(
+    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result)
 {
     return hipblasIcamax(handle, n, x, incx, result);
 }
 
 template <>
-hipblasStatus_t hipblasIamax<hipDoubleComplex>(
-    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result)
+hipblasStatus_t hipblasIamax<hipblasDoubleComplex>(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result)
 {
     return hipblasIzamax(handle, n, x, incx, result);
 }
@@ -1736,15 +1736,15 @@ hipblasStatus_t
 }
 
 template <>
-hipblasStatus_t hipblasIamin<hipComplex>(
-    hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result)
+hipblasStatus_t hipblasIamin<hipblasComplex>(
+    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result)
 {
     return hipblasIcamin(handle, n, x, incx, result);
 }
 
 template <>
-hipblasStatus_t hipblasIamin<hipDoubleComplex>(
-    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result)
+hipblasStatus_t hipblasIamin<hipblasDoubleComplex>(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result)
 {
     return hipblasIzamin(handle, n, x, incx, result);
 }
@@ -1791,34 +1791,34 @@ hipblasStatus_t hipblasGemv<double>(hipblasHandle_t    handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemv<hipComplex>(hipblasHandle_t    handle,
+hipblasStatus_t hipblasGemv<hipblasComplex>(hipblasHandle_t    handle,
                                         hipblasOperation_t transA,
                                         int                m,
                                         int                n,
-                                        const hipComplex*  alpha,
-                                        const hipComplex*  A,
+                                        const hipblasComplex*  alpha,
+                                        const hipblasComplex*  A,
                                         int                lda,
-                                        const hipComplex*  x,
+                                        const hipblasComplex*  x,
                                         int                incx,
-                                        const hipComplex*  beta,
-                                        hipComplex*        y,
+                                        const hipblasComplex*  beta,
+                                        hipblasComplex*        y,
                                         int                incy)
 {
     return hipblasCgemv(handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
 }
 
 template <>
-hipblasStatus_t hipblasGemv<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasGemv<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                               hipblasOperation_t      transA,
                                               int                     m,
                                               int                     n,
-                                              const hipDoubleComplex* alpha,
-                                              const hipDoubleComplex* A,
+                                              const hipblasDoubleComplex* alpha,
+                                              const hipblasDoubleComplex* A,
                                               int                     lda,
-                                              const hipDoubleComplex* x,
+                                              const hipblasDoubleComplex* x,
                                               int                     incx,
-                                              const hipDoubleComplex* beta,
-                                              hipDoubleComplex*       y,
+                                              const hipblasDoubleComplex* beta,
+                                              hipblasDoubleComplex*       y,
                                               int                     incy)
 {
     return hipblasZgemv(handle, transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
@@ -1864,17 +1864,17 @@ hipblasStatus_t hipblasGemvBatched<double>(hipblasHandle_t     handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemvBatched<hipComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasGemvBatched<hipblasComplex>(hipblasHandle_t         handle,
                                                hipblasOperation_t      transA,
                                                int                     m,
                                                int                     n,
-                                               const hipComplex*       alpha,
-                                               const hipComplex* const A[],
+                                               const hipblasComplex*       alpha,
+                                               const hipblasComplex* const A[],
                                                int                     lda,
-                                               const hipComplex* const x[],
+                                               const hipblasComplex* const x[],
                                                int                     incx,
-                                               const hipComplex*       beta,
-                                               hipComplex* const       y[],
+                                               const hipblasComplex*       beta,
+                                               hipblasComplex* const       y[],
                                                int                     incy,
                                                int                     batch_count)
 {
@@ -1883,17 +1883,17 @@ hipblasStatus_t hipblasGemvBatched<hipComplex>(hipblasHandle_t         handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemvBatched<hipDoubleComplex>(hipblasHandle_t               handle,
+hipblasStatus_t hipblasGemvBatched<hipblasDoubleComplex>(hipblasHandle_t               handle,
                                                      hipblasOperation_t            transA,
                                                      int                           m,
                                                      int                           n,
-                                                     const hipDoubleComplex*       alpha,
-                                                     const hipDoubleComplex* const A[],
+                                                     const hipblasDoubleComplex*       alpha,
+                                                     const hipblasDoubleComplex* const A[],
                                                      int                           lda,
-                                                     const hipDoubleComplex* const x[],
+                                                     const hipblasDoubleComplex* const x[],
                                                      int                           incx,
-                                                     const hipDoubleComplex*       beta,
-                                                     hipDoubleComplex* const       y[],
+                                                     const hipblasDoubleComplex*       beta,
+                                                     hipblasDoubleComplex* const       y[],
                                                      int                           incy,
                                                      int                           batch_count)
 {
@@ -1975,19 +1975,19 @@ hipblasStatus_t hipblasGemvStridedBatched<double>(hipblasHandle_t    handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemvStridedBatched<hipComplex>(hipblasHandle_t    handle,
+hipblasStatus_t hipblasGemvStridedBatched<hipblasComplex>(hipblasHandle_t    handle,
                                                       hipblasOperation_t transA,
                                                       int                m,
                                                       int                n,
-                                                      const hipComplex*  alpha,
-                                                      const hipComplex*  A,
+                                                      const hipblasComplex*  alpha,
+                                                      const hipblasComplex*  A,
                                                       int                lda,
                                                       int                strideA,
-                                                      const hipComplex*  x,
+                                                      const hipblasComplex*  x,
                                                       int                incx,
                                                       int                stridex,
-                                                      const hipComplex*  beta,
-                                                      hipComplex*        y,
+                                                      const hipblasComplex*  beta,
+                                                      hipblasComplex*        y,
                                                       int                incy,
                                                       int                stridey,
                                                       int                batch_count)
@@ -2011,19 +2011,19 @@ hipblasStatus_t hipblasGemvStridedBatched<hipComplex>(hipblasHandle_t    handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemvStridedBatched<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasGemvStridedBatched<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                                             hipblasOperation_t      transA,
                                                             int                     m,
                                                             int                     n,
-                                                            const hipDoubleComplex* alpha,
-                                                            const hipDoubleComplex* A,
+                                                            const hipblasDoubleComplex* alpha,
+                                                            const hipblasDoubleComplex* A,
                                                             int                     lda,
                                                             int                     strideA,
-                                                            const hipDoubleComplex* x,
+                                                            const hipblasDoubleComplex* x,
                                                             int                     incx,
                                                             int                     stridex,
-                                                            const hipDoubleComplex* beta,
-                                                            hipDoubleComplex*       y,
+                                                            const hipblasDoubleComplex* beta,
+                                                            hipblasDoubleComplex*       y,
                                                             int                     incy,
                                                             int                     stridey,
                                                             int                     batch_count)
@@ -2394,38 +2394,38 @@ hipblasStatus_t hipblasGemm<double>(hipblasHandle_t    handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemm<hipComplex>(hipblasHandle_t    handle,
+hipblasStatus_t hipblasGemm<hipblasComplex>(hipblasHandle_t    handle,
                                         hipblasOperation_t transA,
                                         hipblasOperation_t transB,
                                         int                m,
                                         int                n,
                                         int                k,
-                                        const hipComplex*  alpha,
-                                        const hipComplex*  A,
+                                        const hipblasComplex*  alpha,
+                                        const hipblasComplex*  A,
                                         int                lda,
-                                        const hipComplex*  B,
+                                        const hipblasComplex*  B,
                                         int                ldb,
-                                        const hipComplex*  beta,
-                                        hipComplex*        C,
+                                        const hipblasComplex*  beta,
+                                        hipblasComplex*        C,
                                         int                ldc)
 {
     return hipblasCgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 }
 
 template <>
-hipblasStatus_t hipblasGemm<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasGemm<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                               hipblasOperation_t      transA,
                                               hipblasOperation_t      transB,
                                               int                     m,
                                               int                     n,
                                               int                     k,
-                                              const hipDoubleComplex* alpha,
-                                              const hipDoubleComplex* A,
+                                              const hipblasDoubleComplex* alpha,
+                                              const hipblasDoubleComplex* A,
                                               int                     lda,
-                                              const hipDoubleComplex* B,
+                                              const hipblasDoubleComplex* B,
                                               int                     ldb,
-                                              const hipDoubleComplex* beta,
-                                              hipDoubleComplex*       C,
+                                              const hipblasDoubleComplex* beta,
+                                              hipblasDoubleComplex*       C,
                                               int                     ldc)
 {
     return hipblasZgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
@@ -2496,19 +2496,19 @@ hipblasStatus_t hipblasGemmBatched<double>(hipblasHandle_t     handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemmBatched<hipComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasGemmBatched<hipblasComplex>(hipblasHandle_t         handle,
                                                hipblasOperation_t      transA,
                                                hipblasOperation_t      transB,
                                                int                     m,
                                                int                     n,
                                                int                     k,
-                                               const hipComplex*       alpha,
-                                               const hipComplex* const A[],
+                                               const hipblasComplex*       alpha,
+                                               const hipblasComplex* const A[],
                                                int                     lda,
-                                               const hipComplex* const B[],
+                                               const hipblasComplex* const B[],
                                                int                     ldb,
-                                               const hipComplex*       beta,
-                                               hipComplex* const       C[],
+                                               const hipblasComplex*       beta,
+                                               hipblasComplex* const       C[],
                                                int                     ldc,
                                                int                     batch_count)
 {
@@ -2517,19 +2517,19 @@ hipblasStatus_t hipblasGemmBatched<hipComplex>(hipblasHandle_t         handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemmBatched<hipDoubleComplex>(hipblasHandle_t               handle,
+hipblasStatus_t hipblasGemmBatched<hipblasDoubleComplex>(hipblasHandle_t               handle,
                                                      hipblasOperation_t            transA,
                                                      hipblasOperation_t            transB,
                                                      int                           m,
                                                      int                           n,
                                                      int                           k,
-                                                     const hipDoubleComplex*       alpha,
-                                                     const hipDoubleComplex* const A[],
+                                                     const hipblasDoubleComplex*       alpha,
+                                                     const hipblasDoubleComplex* const A[],
                                                      int                           lda,
-                                                     const hipDoubleComplex* const B[],
+                                                     const hipblasDoubleComplex* const B[],
                                                      int                           ldb,
-                                                     const hipDoubleComplex*       beta,
-                                                     hipDoubleComplex* const       C[],
+                                                     const hipblasDoubleComplex*       beta,
+                                                     hipblasDoubleComplex* const       C[],
                                                      int                           ldc,
                                                      int                           batch_count)
 {
@@ -2662,21 +2662,21 @@ hipblasStatus_t hipblasGemmStridedBatched<double>(hipblasHandle_t    handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemmStridedBatched<hipComplex>(hipblasHandle_t    handle,
+hipblasStatus_t hipblasGemmStridedBatched<hipblasComplex>(hipblasHandle_t    handle,
                                                       hipblasOperation_t transA,
                                                       hipblasOperation_t transB,
                                                       int                m,
                                                       int                n,
                                                       int                k,
-                                                      const hipComplex*  alpha,
-                                                      const hipComplex*  A,
+                                                      const hipblasComplex*  alpha,
+                                                      const hipblasComplex*  A,
                                                       int                lda,
                                                       int                bsa,
-                                                      const hipComplex*  B,
+                                                      const hipblasComplex*  B,
                                                       int                ldb,
                                                       int                bsb,
-                                                      const hipComplex*  beta,
-                                                      hipComplex*        C,
+                                                      const hipblasComplex*  beta,
+                                                      hipblasComplex*        C,
                                                       int                ldc,
                                                       int                bsc,
                                                       int                batch_count)
@@ -2703,21 +2703,21 @@ hipblasStatus_t hipblasGemmStridedBatched<hipComplex>(hipblasHandle_t    handle,
 }
 
 template <>
-hipblasStatus_t hipblasGemmStridedBatched<hipDoubleComplex>(hipblasHandle_t         handle,
+hipblasStatus_t hipblasGemmStridedBatched<hipblasDoubleComplex>(hipblasHandle_t         handle,
                                                             hipblasOperation_t      transA,
                                                             hipblasOperation_t      transB,
                                                             int                     m,
                                                             int                     n,
                                                             int                     k,
-                                                            const hipDoubleComplex* alpha,
-                                                            const hipDoubleComplex* A,
+                                                            const hipblasDoubleComplex* alpha,
+                                                            const hipblasDoubleComplex* A,
                                                             int                     lda,
                                                             int                     bsa,
-                                                            const hipDoubleComplex* B,
+                                                            const hipblasDoubleComplex* B,
                                                             int                     ldb,
                                                             int                     bsb,
-                                                            const hipDoubleComplex* beta,
-                                                            hipDoubleComplex*       C,
+                                                            const hipblasDoubleComplex* beta,
+                                                            hipblasDoubleComplex*       C,
                                                             int                     ldc,
                                                             int                     bsc,
                                                             int                     batch_count)
