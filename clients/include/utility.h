@@ -70,11 +70,11 @@ inline bool hipblas_isnan(hipblasHalf arg)
 {
     return (~arg & 0x7c00) == 0 && (arg & 0x3ff) != 0;
 }
-inline bool hipblas_isnan(hipComplex arg)
+inline bool hipblas_isnan(hipblasComplex arg)
 {
     return std::isnan(arg.x) || std::isnan(arg.y);
 }
-inline bool hipblas_isnan(hipDoubleComplex arg)
+inline bool hipblas_isnan(hipblasDoubleComplex arg)
 {
     return std::isnan(arg.x) || std::isnan(arg.y);
 }
@@ -222,20 +222,20 @@ inline hipblasBfloat16 random_generator<hipblasBfloat16>()
         static_cast<float>((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
 }
 
-// for hipComplex, generate 2 floats
+// for hipblasComplex, generate 2 floats
 /*! \brief  generate two random numbers in range [1,2,3,4,5,6,7,8,9,10] */
 template <>
-inline hipComplex random_generator<hipComplex>()
+inline hipblasComplex random_generator<hipblasComplex>()
 {
-    return hipComplex(rand() % 10 + 1, rand() % 10 + 1);
+    return hipblasComplex(rand() % 10 + 1, rand() % 10 + 1);
 }
 
-// for hipDoubleComplex, generate 2 doubles
+// for hipblasDoubleComplex, generate 2 doubles
 /*! \brief  generate two random numbers in range [1,2,3,4,5,6,7,8,9,10] */
 template <>
-inline hipDoubleComplex random_generator<hipDoubleComplex>()
+inline hipblasDoubleComplex random_generator<hipblasDoubleComplex>()
 {
-    return hipDoubleComplex(rand() % 10 + 1, rand() % 10 + 1);
+    return hipblasDoubleComplex(rand() % 10 + 1, rand() % 10 + 1);
 }
 
 /*! \brief  generate a random number in range [-1,-2,-3,-4,-5,-6,-7,-8,-9,-10] */
@@ -267,15 +267,15 @@ inline hipblasBfloat16 random_generator_negative<hipblasBfloat16>()
 *           imaginary value in range [-1, -10]
 */
 template <>
-inline hipComplex random_generator_negative<hipComplex>()
+inline hipblasComplex random_generator_negative<hipblasComplex>()
 {
-    hipComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+    hipblasComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
 }
 
 template <>
-inline hipDoubleComplex random_generator_negative<hipDoubleComplex>()
+inline hipblasDoubleComplex random_generator_negative<hipblasDoubleComplex>()
 {
-    hipDoubleComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+    hipblasDoubleComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
 }
 
 /* ============================================================================================ */
