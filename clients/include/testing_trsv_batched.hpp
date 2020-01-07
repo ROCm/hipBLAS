@@ -44,7 +44,7 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || lda < 0 || incx == 0 || batch_count < 0)
+    if(M < 0 || lda < M || incx == 0 || batch_count < 0)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }

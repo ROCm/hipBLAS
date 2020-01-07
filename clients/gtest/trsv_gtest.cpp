@@ -199,7 +199,7 @@ TEST_P(blas2_trsv_gtest, trsv_batched_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx <= 0)
+        else if(arg.incx == 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -231,7 +231,7 @@ TEST_P(blas2_trsv_gtest, trsv_strided_batched_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx <= 0)
+        else if(arg.incx == 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
