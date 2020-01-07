@@ -258,7 +258,23 @@ template <typename T>
 hipblasStatus_t hipblasIamax(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
 
 template <typename T>
+hipblasStatus_t hipblasIamaxBatched(
+    hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
+
+template <typename T>
+hipblasStatus_t hipblasIamaxStridedBatched(
+    hipblasHandle_t handle, int n, const T* x, int incx, int stridex, int batch_count, int* result);
+
+template <typename T>
 hipblasStatus_t hipblasIamin(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
+
+template <typename T>
+hipblasStatus_t hipblasIaminBatched(
+    hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
+
+template <typename T>
+hipblasStatus_t hipblasIaminStridedBatched(
+    hipblasHandle_t handle, int n, const T* x, int incx, int stridex, int batch_count, int* result);
 
 template <typename T>
 hipblasStatus_t hipblasAxpy(
