@@ -281,6 +281,28 @@ hipblasStatus_t hipblasAxpy(
     hipblasHandle_t handle, int n, const T* alpha, const T* x, int incx, T* y, int incy);
 
 template <typename T>
+hipblasStatus_t hipblasAxpyBatched(hipblasHandle_t handle,
+                                   int             n,
+                                   const T*        alpha,
+                                   const T* const  x[],
+                                   int             incx,
+                                   T* const        y[],
+                                   int             incy,
+                                   int             batch_count);
+
+template <typename T>
+hipblasStatus_t hipblasAxpyStridedBatched(hipblasHandle_t handle,
+                                          int             n,
+                                          const T*        alpha,
+                                          const T*        x,
+                                          int             incx,
+                                          int             stridex,
+                                          T*              y,
+                                          int             incy,
+                                          int             stridey,
+                                          int             batch_count);
+
+template <typename T>
 hipblasStatus_t hipblasGer(hipblasHandle_t handle,
                            int             m,
                            int             n,

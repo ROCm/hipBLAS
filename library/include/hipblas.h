@@ -430,9 +430,107 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpy(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       y,
                                             int                         incy);
 
-// not implemented
-// HIPBLAS_EXPORT hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t handle, int n, const float
-// *alpha, const float *x, int incx,  float *y, int incy, int batchCount);
+// axpy_batched
+HIPBLAS_EXPORT hipblasStatus_t hipblasHaxpyBatched(hipblasHandle_t          handle,
+                                                   int                      n,
+                                                   const hipblasHalf*       alpha,
+                                                   const hipblasHalf* const x[],
+                                                   int                      incx,
+                                                   hipblasHalf* const       y[],
+                                                   int                      incy,
+                                                   int                      batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t    handle,
+                                                   int                n,
+                                                   const float*       alpha,
+                                                   const float* const x[],
+                                                   int                incx,
+                                                   float* const       y[],
+                                                   int                incy,
+                                                   int                batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDaxpyBatched(hipblasHandle_t     handle,
+                                                   int                 n,
+                                                   const double*       alpha,
+                                                   const double* const x[],
+                                                   int                 incx,
+                                                   double* const       y[],
+                                                   int                 incy,
+                                                   int                 batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpyBatched(hipblasHandle_t             handle,
+                                                   int                         n,
+                                                   const hipblasComplex*       alpha,
+                                                   const hipblasComplex* const x[],
+                                                   int                         incx,
+                                                   hipblasComplex* const       y[],
+                                                   int                         incy,
+                                                   int                         batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpyBatched(hipblasHandle_t                   handle,
+                                                   int                               n,
+                                                   const hipblasDoubleComplex*       alpha,
+                                                   const hipblasDoubleComplex* const x[],
+                                                   int                               incx,
+                                                   hipblasDoubleComplex* const       y[],
+                                                   int                               incy,
+                                                   int                               batch_count);
+
+// axpy_strided_batched
+HIPBLAS_EXPORT hipblasStatus_t hipblasHaxpyStridedBatched(hipblasHandle_t    handle,
+                                                          int                n,
+                                                          const hipblasHalf* alpha,
+                                                          const hipblasHalf* x,
+                                                          int                incx,
+                                                          int                stridex,
+                                                          hipblasHalf*       y,
+                                                          int                incy,
+                                                          int                stridey,
+                                                          int                batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSaxpyStridedBatched(hipblasHandle_t handle,
+                                                          int             n,
+                                                          const float*    alpha,
+                                                          const float*    x,
+                                                          int             incx,
+                                                          int             stridex,
+                                                          float*          y,
+                                                          int             incy,
+                                                          int             stridey,
+                                                          int             batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDaxpyStridedBatched(hipblasHandle_t handle,
+                                                          int             n,
+                                                          const double*   alpha,
+                                                          const double*   x,
+                                                          int             incx,
+                                                          int             stridex,
+                                                          double*         y,
+                                                          int             incy,
+                                                          int             stridey,
+                                                          int             batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpyStridedBatched(hipblasHandle_t       handle,
+                                                          int                   n,
+                                                          const hipblasComplex* alpha,
+                                                          const hipblasComplex* x,
+                                                          int                   incx,
+                                                          int                   stridex,
+                                                          hipblasComplex*       y,
+                                                          int                   incy,
+                                                          int                   stridey,
+                                                          int                   batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpyStridedBatched(hipblasHandle_t             handle,
+                                                          int                         n,
+                                                          const hipblasDoubleComplex* alpha,
+                                                          const hipblasDoubleComplex* x,
+                                                          int                         incx,
+                                                          int                         stridex,
+                                                          hipblasDoubleComplex*       y,
+                                                          int                         incy,
+                                                          int                         stridey,
+                                                          int                         batch_count);
 
 // copy
 HIPBLAS_EXPORT hipblasStatus_t

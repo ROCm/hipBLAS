@@ -19,28 +19,31 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_copy_batched(Arguments argus)
+hipblasStatus_t testing_axpy_batched(Arguments argus)
 {
     int N           = argus.N;
     int incx        = argus.incx;
     int incy        = argus.incy;
     int batch_count = argus.batch_count;
 
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status   = HIPBLAS_STATUS_SUCCESS;
+    int             abs_incx = incx < 0 ? -incx : incx;
+    int             abs_incy = incy < 0 ? -incy : incy;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0 || batch_count < 0)
+    if(N < 0 || !incx || !incy || batch_count < 0)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
-    else if(batch_count == 0)
+    if(!batch_count)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
-    int sizeY = N * incy;
+    int sizeX = N * abs_incx;
+    int sizeY = N * abs_incy;
+    T   alpha = argus.alpha;
 
     double gpu_time_used, cpu_time_used;
     double rocblas_error = 0.0;
@@ -67,6 +70,7 @@ hipblasStatus_t testing_copy_batched(Arguments argus)
         return HIPBLAS_STATUS_ALLOC_FAILED;
     }
 
+    // Initial Data on CPU
     srand(1);
     for(int b = 0; b < batch_count; b++)
     {
@@ -76,8 +80,8 @@ hipblasStatus_t testing_copy_batched(Arguments argus)
         hy_cpu_array[b] = host_vector<T>(sizeY);
 
         srand(1);
-        hipblas_init<T>(hx_array[b], 1, N, incx);
-        hipblas_init<T>(hy_array[b], 1, N, incy);
+        hipblas_init(hx_array[b], 1, N, abs_incx);
+        hipblas_init(hy_array[b], 1, N, abs_incy);
 
         hx_cpu_array[b] = hx_array[b];
         hy_cpu_array[b] = hy_array[b];
@@ -87,13 +91,13 @@ hipblasStatus_t testing_copy_batched(Arguments argus)
         CHECK_HIP_ERROR(
             hipMemcpy(by_array[b], hy_array[b], sizeof(T) * sizeY, hipMemcpyHostToDevice));
     }
-    CHECK_HIP_ERROR(hipMemcpy(dx_array, bx_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy_array, by_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx_array, bx_array, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy_array, by_array, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
 
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasCopyBatched<T>(handle, N, dx_array, incx, dy_array, incy, batch_count);
+    status = hipblasAxpyBatched<T>(handle, N, &alpha, dx_array, incx, dy_array, incy, batch_count);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         hipblasDestroy(handle);
@@ -116,15 +120,15 @@ hipblasStatus_t testing_copy_batched(Arguments argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_copy<T>(N, hx_cpu_array[b], incx, hy_cpu_array[b], incy);
+            cblas_axpy<T>(N, alpha, hx_cpu_array[b], incx, hy_cpu_array[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incx, hx_cpu_array, hx_array);
-            unit_check_general<T>(1, N, batch_count, incy, hy_cpu_array, hy_array);
+            unit_check_general<T>(1, N, batch_count, abs_incx, hx_cpu_array, hx_array);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu_array, hy_array);
         }
 
     } // end of if unit check
