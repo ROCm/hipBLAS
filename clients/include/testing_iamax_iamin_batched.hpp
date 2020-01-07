@@ -36,13 +36,17 @@ hipblasStatus_t testing_iamax_iamin_batched(const Arguments&                 arg
     hipblasCreate(&handle);
 
     // check to prevent undefined memory allocation error
-    if(batch_count <= 0)
+    if(batch_count == 0)
     {
         // quick return success or invalid value
         device_vector<T*, 0, T> dx_array(5);
         device_vector<int>      d_rocblas_result(1);
 
         status_1 = func(handle, N, dx_array, incx, batch_count, d_rocblas_result);
+    }
+    else if(batch_count < 0)
+    {
+        status_1 = HIPBLAS_STATUS_INVALID_VALUE;
     }
     else if(N < 1 || incx <= 0)
     {
