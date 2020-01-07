@@ -434,13 +434,13 @@ hipblasStatus_t hipblasIzamin(
 
 // amin_batched
 hipblasStatus_t hipblasIsaminBatched(
-    hipblasHandle_t handle, int n, const float* const x[], int incx, int batch_count int* result)
+    hipblasHandle_t handle, int n, const float* const x[], int incx, int batch_count, int* result)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 hipblasStatus_t hipblasIdaminBatched(
-    hipblasHandle_t handle, int n, const double* const x[], int incx, int batch_count int* result)
+    hipblasHandle_t handle, int n, const double* const x[], int incx, int batch_count, int* result)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -449,7 +449,7 @@ hipblasStatus_t hipblasIcaminBatched(hipblasHandle_t             handle,
                                      int                         n,
                                      const hipblasComplex* const x[],
                                      int                         incx,
-                                     int batch_count int* result)
+                                     int batch_count, int* result)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -458,7 +458,7 @@ hipblasStatus_t hipblasIzaminBatched(hipblasHandle_t                   handle,
                                      int                               n,
                                      const hipblasDoubleComplex* const x[],
                                      int                               incx,
-                                     int batch_count int* result)
+                                     int batch_count, int* result)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
