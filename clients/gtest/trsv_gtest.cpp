@@ -209,7 +209,7 @@ TEST_P(blas2_trsv_gtest, trsv_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -241,7 +241,7 @@ TEST_P(blas2_trsv_gtest, trsv_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
