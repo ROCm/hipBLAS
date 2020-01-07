@@ -4,6 +4,8 @@
  * ************************************************************************ */
 
 #include "testing_trsv.hpp"
+#include "testing_trsv_batched.hpp"
+#include "testing_trsv_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -18,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<int>, double> trsv_tuple;
+typedef std::tuple<vector<int>, vector<int>, double, double, int> trsv_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -60,6 +62,10 @@ const vector<vector<int>> incx_incy_range = {
 // add/delete single values, like {2.0}
 const vector<double> alpha_range = {0.0};
 
+const vector<double> stride_scale_range = {1.0, 2.5};
+
+const vector<int> batch_count_range = {-1, 0, 1, 2, 10};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -78,8 +84,10 @@ const vector<double> alpha_range = {0.0};
 
 Arguments setup_trsv_arguments(trsv_tuple tup)
 {
-    vector<int> matrix_size = std::get<0>(tup);
-    vector<int> incx        = std::get<1>(tup);
+    vector<int> matrix_size  = std::get<0>(tup);
+    vector<int> incx         = std::get<1>(tup);
+    double      stride_scale = std::get<3>(tup);
+    int         batch_count  = std::get<4>(tup);
 
     Arguments arg;
 
@@ -93,6 +101,9 @@ Arguments setup_trsv_arguments(trsv_tuple tup)
 
     arg.timing = 0;
 
+    arg.stride_scale = stride_scale;
+    arg.batch_count  = batch_count;
+
     return arg;
 }
 
@@ -105,7 +116,7 @@ protected:
     virtual void TearDown() {}
 };
 
-TEST_P(blas2_trsv_gtest, float)
+TEST_P(blas2_trsv_gtest, trsv_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -138,7 +149,7 @@ TEST_P(blas2_trsv_gtest, float)
     }
 }
 
-TEST_P(blas2_trsv_gtest, double)
+TEST_P(blas2_trsv_gtest, trsv_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -171,6 +182,70 @@ TEST_P(blas2_trsv_gtest, double)
     }
 }
 
+TEST_P(blas2_trsv_gtest, trsv_batched_float)
+{
+    Arguments arg = setup_trsv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trsv_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas2_trsv_gtest, trsv_strided_batched_float)
+{
+    Arguments arg = setup_trsv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trsv_strided_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
@@ -180,4 +255,6 @@ INSTANTIATE_TEST_CASE_P(hipblastrsv,
                         blas2_trsv_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(incx_incy_range),
-                                ValuesIn(alpha_range)));
+                                ValuesIn(alpha_range),
+                                ValuesIn(stride_scale_range),
+                                ValuesIn(batch_count_range)));

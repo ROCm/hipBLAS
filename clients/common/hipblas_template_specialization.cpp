@@ -2610,6 +2610,74 @@ hipblasStatus_t hipblasTrsv<double>(hipblasHandle_t    handle,
     return hipblasDtrsv(handle, uplo, transA, diag, m, A, lda, x, incx);
 }
 
+// trsv_batched
+template <>
+hipblasStatus_t hipblasTrsvBatched<float>(hipblasHandle_t    handle,
+                                          hipblasFillMode_t  uplo,
+                                          hipblasOperation_t transA,
+                                          hipblasDiagType_t  diag,
+                                          int                m,
+                                          const float* const A[],
+                                          int                lda,
+                                          float* const       x[],
+                                          int                incx,
+                                          int                batch_count)
+{
+    return hipblasStrsvBatched(handle, uplo, transA, diag, m, A, lda, x, incx, batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasTrsvBatched<double>(hipblasHandle_t     handle,
+                                           hipblasFillMode_t   uplo,
+                                           hipblasOperation_t  transA,
+                                           hipblasDiagType_t   diag,
+                                           int                 m,
+                                           const double* const A[],
+                                           int                 lda,
+                                           double* const       x[],
+                                           int                 incx,
+                                           int                 batch_count)
+{
+    return hipblasDtrsvBatched(handle, uplo, transA, diag, m, A, lda, x, incx, batch_count);
+}
+
+// trsv_strided_batched
+template <>
+hipblasStatus_t hipblasTrsvStridedBatched<float>(hipblasHandle_t    handle,
+                                                 hipblasFillMode_t  uplo,
+                                                 hipblasOperation_t transA,
+                                                 hipblasDiagType_t  diag,
+                                                 int                m,
+                                                 const float*       A,
+                                                 int                lda,
+                                                 int                strideA,
+                                                 float*             x,
+                                                 int                incx,
+                                                 int                stridex,
+                                                 int                batch_count)
+{
+    return hipblasStrsvStridedBatched(
+        handle, uplo, transA, diag, m, A, lda, strideA, x, incx, stridex, batch_count);
+}
+
+template <>
+hipblasStatus_t hipblasTrsvStridedBatched<double>(hipblasHandle_t    handle,
+                                                  hipblasFillMode_t  uplo,
+                                                  hipblasOperation_t transA,
+                                                  hipblasDiagType_t  diag,
+                                                  int                m,
+                                                  const double*      A,
+                                                  int                lda,
+                                                  int                strideA,
+                                                  double*            x,
+                                                  int                incx,
+                                                  int                stridex,
+                                                  int                batch_count)
+{
+    return hipblasDtrsvStridedBatched(
+        handle, uplo, transA, diag, m, A, lda, strideA, x, incx, stridex, batch_count);
+}
+
 /*
  * ===========================================================================
  *    level 3 BLAS

@@ -390,6 +390,35 @@ hipblasStatus_t hipblasTrsv(hipblasHandle_t    handle,
                             T*                 x,
                             int                incx);
 
+// trsv_batched
+template <typename T>
+hipblasStatus_t hipblasTrsvBatched(hipblasHandle_t    handle,
+                                   hipblasFillMode_t  uplo,
+                                   hipblasOperation_t transA,
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   const T* const     A[],
+                                   int                lda,
+                                   T* const           x[],
+                                   int                incx,
+                                   int                batch_count);
+
+// trsv_strided_batched
+template <typename T>
+hipblasStatus_t hipblasTrsvStridedBatched(hipblasHandle_t    handle,
+                                          hipblasFillMode_t  uplo,
+                                          hipblasOperation_t transA,
+                                          hipblasDiagType_t  diag,
+                                          int                m,
+                                          const T*           A,
+                                          int                lda,
+                                          int                strideA,
+                                          T*                 x,
+                                          int                incx,
+                                          int                stridex,
+                                          int                batch_count);
+
+// gemv
 template <typename T>
 hipblasStatus_t hipblasGemv(hipblasHandle_t    handle,
                             hipblasOperation_t transA,
