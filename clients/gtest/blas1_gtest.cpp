@@ -163,7 +163,7 @@ TEST_P(blas1_gtest, axpy_half)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -185,7 +185,7 @@ TEST_P(blas1_gtest, axpy_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -207,7 +207,7 @@ TEST_P(blas1_gtest, axpy_float_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -230,7 +230,7 @@ TEST_P(blas1_gtest, axpy_batched_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -256,7 +256,7 @@ TEST_P(blas1_gtest, axpy_batched_float_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -283,7 +283,7 @@ TEST_P(blas1_gtest, axpy_strided_batched_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -309,7 +309,7 @@ TEST_P(blas1_gtest, axpy_strided_batched_float_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
