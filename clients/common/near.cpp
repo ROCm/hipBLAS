@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -79,7 +79,8 @@ void near_check_general(
 }
 
 template <>
-void near_check_general(int M, int N, int lda, hipblasComplex* hCPU, hipblasComplex* hGPU, double abs_error)
+void near_check_general(
+    int M, int N, int lda, hipblasComplex* hCPU, hipblasComplex* hGPU, double abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
@@ -127,28 +128,28 @@ void near_check_general(int          M,
 }
 
 template <>
-void near_check_general(int         M,
-                        int         N,
-                        int         batch_count,
-                        int         lda,
-                        int         strideA,
+void near_check_general(int             M,
+                        int             N,
+                        int             batch_count,
+                        int             lda,
+                        int             strideA,
                         hipblasComplex* hCPU,
                         hipblasComplex* hGPU,
-                        double      abs_error)
+                        double          abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
 }
 
 template <>
-void near_check_general(int               M,
-                        int               N,
-                        int               batch_count,
-                        int               lda,
-                        int               strideA,
+void near_check_general(int                   M,
+                        int                   N,
+                        int                   batch_count,
+                        int                   lda,
+                        int                   strideA,
                         hipblasDoubleComplex* hCPU,
                         hipblasDoubleComplex* hGPU,
-                        double            abs_error)
+                        double                abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
@@ -191,26 +192,26 @@ void near_check_general(int                 M,
 }
 
 template <>
-void near_check_general(int                     M,
-                        int                     N,
-                        int                     batch_count,
-                        int                     lda,
+void near_check_general(int                         M,
+                        int                         N,
+                        int                         batch_count,
+                        int                         lda,
                         host_vector<hipblasComplex> hCPU[],
                         host_vector<hipblasComplex> hGPU[],
-                        double                  abs_error)
+                        double                      abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
 }
 
 template <>
-void near_check_general(int                           M,
-                        int                           N,
-                        int                           batch_count,
-                        int                           lda,
+void near_check_general(int                               M,
+                        int                               N,
+                        int                               batch_count,
+                        int                               lda,
                         host_vector<hipblasDoubleComplex> hCPU[],
                         host_vector<hipblasDoubleComplex> hGPU[],
-                        double                        abs_error)
+                        double                            abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
