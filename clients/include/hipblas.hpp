@@ -532,6 +532,21 @@ hipblasStatus_t hipblasGemmBatched(hipblasHandle_t    handle,
                                    int                ldc,
                                    int                batch_count);
 
+// trmm
+template <typename T>
+hipblasStatus_t hipblasTrmm(hipblasHandle_t    handle,
+                            hipblasSideMode_t  side,
+                            hipblasFillMode_t  uplo,
+                            hipblasOperation_t transA,
+                            hipblasDiagType_t  diag,
+                            int                m,
+                            int                n,
+                            const T*           alpha,
+                            const T*           A,
+                            int                lda,
+                            T*                 B,
+                            int                ldb);
+
 // trsm
 template <typename T>
 hipblasStatus_t hipblasTrsm(hipblasHandle_t    handle,

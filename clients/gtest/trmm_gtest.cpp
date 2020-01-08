@@ -3,9 +3,7 @@
  *
  * ************************************************************************ */
 
-#include "testing_trsm.hpp"
-#include "testing_trsm_batched.hpp"
-#include "testing_trsm_strided_batched.hpp"
+#include "testing_trmm.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -20,7 +18,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, double, vector<char>, double, int> trsm_tuple;
+typedef std::tuple<vector<int>, double, vector<char>, double, int> trmm_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -60,7 +58,7 @@ const vector<double> alpha_range = {1.0, -5.0};
 // uplo has two "Lower (L), Upper (U)"
 // transA has three ("Nontranspose (N), conjTranspose(C), transpose (T)")
 // for single/double precision, 'C'(conjTranspose) will downgraded to 'T' (transpose) automatically
-// in strsm/dtrsm,
+// in strmm/dtrmm,
 // so we use 'C'
 // Diag has two options ("Non-unit (N), Unit (U)")
 
@@ -92,14 +90,14 @@ const vector<vector<char>> full_side_uplo_transA_diag_range = {
     {'R', 'U', 'C', 'U'},
 };
 
-const vector<double> stride_scale_range = {2.5};
+const vector<double> stride_scale_range = {1};
 
-const vector<int> batch_count_range = {-1, 0, 1, 2};
+const vector<int> batch_count_range = {1};
 
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
-     BLAS-3 trsm:
+     BLAS-3 trmm:
 =================================================================== */
 
 /* ============================Setup Arguments======================================= */
@@ -112,7 +110,7 @@ const vector<int> batch_count_range = {-1, 0, 1, 2};
 // by std:tuple, you have unpack it with extreme care for each one by like "std::get<0>" which is
 // not intuitive and error-prone
 
-Arguments setup_trsm_arguments(trsm_tuple tup)
+Arguments setup_trmm_arguments(trmm_tuple tup)
 {
 
     vector<int>  matrix_size           = std::get<0>(tup);
@@ -144,25 +142,25 @@ Arguments setup_trsm_arguments(trsm_tuple tup)
     return arg;
 }
 
-class trsm_gtest : public ::TestWithParam<trsm_tuple>
+class trmm_gtest : public ::TestWithParam<trmm_tuple>
 {
 protected:
-    trsm_gtest() {}
-    virtual ~trsm_gtest() {}
+    trmm_gtest() {}
+    virtual ~trmm_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
-TEST_P(trsm_gtest, trsm_gtest_float)
+TEST_P(trmm_gtest, trmm_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_trsm_arguments(GetParam());
+    Arguments arg = setup_trmm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsm<float>(arg);
+    hipblasStatus_t status = testing_trmm<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -187,16 +185,16 @@ TEST_P(trsm_gtest, trsm_gtest_float)
     }
 }
 
-TEST_P(trsm_gtest, trsm_gtest_double)
+TEST_P(trmm_gtest, trmm_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_trsm_arguments(GetParam());
+    Arguments arg = setup_trmm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsm<double>(arg);
+    hipblasStatus_t status = testing_trmm<double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -217,69 +215,6 @@ TEST_P(trsm_gtest, trsm_gtest_double)
         else
         {
             EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
-        }
-    }
-}
-
-TEST_P(trsm_gtest, trsm_batched_gtest_float)
-{
-    // GetParam return a tuple. Tee setup routine unpack the tuple
-    // and initializes arg(Arguments) which will be passed to testing routine
-    // The Arguments data struture have physical meaning associated.
-    // while the tuple is non-intuitive.
-
-    Arguments arg = setup_trsm_arguments(GetParam());
-
-    hipblasStatus_t status = testing_trsm_batched<float>(arg);
-
-    // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M || arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.ldb < arg.M)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
-        }
-    }
-}
-
-TEST_P(trsm_gtest, trsm_strided_batched_gtest_float)
-{
-    // GetParam return a tuple. Tee setup routine unpack the tuple
-    // and initializes arg(Arguments) which will be passed to testing routine
-    // The Arguments data struture have physical meaning associated.
-    // while the tuple is non-intuitive.
-
-    Arguments arg = setup_trsm_arguments(GetParam());
-
-    hipblasStatus_t status = testing_trsm_strided_batched<float>(arg);
-
-    // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M || arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -293,8 +228,8 @@ TEST_P(trsm_gtest, trsm_strided_batched_gtest_float)
 // small
 // Testing order: side_uplo_transA_xx first, alpha_range second, full_matrix_size last
 // i.e fix the matrix size and alpha, test all the side_uplo_transA_xx first.
-INSTANTIATE_TEST_CASE_P(hipblasTrsm_matrix_size,
-                        trsm_gtest,
+INSTANTIATE_TEST_CASE_P(hipblastrmm_matrix_size,
+                        trmm_gtest,
                         Combine(ValuesIn(full_matrix_size_range),
                                 ValuesIn(alpha_range),
                                 ValuesIn(side_uplo_transA_diag_range),
@@ -303,8 +238,8 @@ INSTANTIATE_TEST_CASE_P(hipblasTrsm_matrix_size,
 
 // THis function mainly test the scope of  full_side_uplo_transA_diag_range,.the scope of
 // matrix_size_range is small
-INSTANTIATE_TEST_CASE_P(hipblasTrsm_scalar_transpose,
-                        trsm_gtest,
+INSTANTIATE_TEST_CASE_P(hipblastrmm_scalar_transpose,
+                        trmm_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(alpha_range),
                                 ValuesIn(full_side_uplo_transA_diag_range),
