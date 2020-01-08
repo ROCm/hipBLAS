@@ -2868,7 +2868,7 @@ hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t    handle,
                                     hipblasDiagType_t  diag,
                                     int                m,
                                     int                n,
-                                    const double       alpha,
+                                    const double*      alpha,
                                     double* const      A[],
                                     int                lda,
                                     double*            B[],
@@ -2876,18 +2876,18 @@ hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t    handle,
                                     int                batch_count)
 {
     return hipCUBLASStatusToHIPStatus(cublasDtrsmBatched((cublasHandle_t)handle,
-                                                          hipSideToCudaSide(side),
-                                                          hipFillToCudaFill(uplo),
-                                                          hipOperationToCudaOperation(transA),
-                                                          hipDiagonalToCudaDiagonal(diag),
-                                                          m,
-                                                          n,
-                                                          alpha,
-                                                          A,
-                                                          lda,
-                                                          B,
-                                                          ldb,
-                                                          batch_count));
+                                                         hipSideToCudaSide(side),
+                                                         hipFillToCudaFill(uplo),
+                                                         hipOperationToCudaOperation(transA),
+                                                         hipDiagonalToCudaDiagonal(diag),
+                                                         m,
+                                                         n,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         B,
+                                                         ldb,
+                                                         batch_count));
 }
 
 // trsm_strided_batched
@@ -2910,7 +2910,7 @@ hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    handle,
+hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
                                            hipblasSideMode_t  side,
                                            hipblasFillMode_t  uplo,
                                            hipblasOperation_t transA,

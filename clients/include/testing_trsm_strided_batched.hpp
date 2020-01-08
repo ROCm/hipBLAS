@@ -40,7 +40,7 @@ hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
     hipblasOperation_t transA = char2hipblas_operation(char_transA);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(char_diag);
 
-    int K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
+    int K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     int strideA = lda * K * stride_scale;
     int strideB = ldb * N * stride_scale;
@@ -81,7 +81,7 @@ hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
     {
         T* hAb = hA.data() + b * strideA;
         T* hBb = hB.data() + b * strideB;
-        
+
         // pad ountouched area into zero
         for(int i = K; i < lda; i++)
         {
@@ -119,10 +119,9 @@ hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
         }
 
         // Calculate hB = hA*hX;
-        cblas_trmm<T>(
-            side, uplo, transA, diag, M, N, 1.0 / alpha, (const T*)hAb, lda, hBb, ldb);
+        cblas_trmm<T>(side, uplo, transA, diag, M, N, 1.0 / alpha, (const T*)hAb, lda, hBb, ldb);
     }
-    hX = hB; // original solutions hX
+    hX      = hB; // original solutions hX
     hB_copy = hB;
 
     // copy data from CPU to device
@@ -133,7 +132,27 @@ hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasTrsmStridedBatched<T>(handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, strideA, dB, ldb, strideB, batch_count);
+    status = hipblasTrsmStridedBatched<T>(handle,
+                                          side,
+                                          uplo,
+                                          transA,
+                                          diag,
+                                          M,
+                                          N,
+                                          &alpha,
+                                          dA,
+                                          lda,
+                                          strideA,
+                                          dB,
+                                          ldb,
+                                          strideB,
+                                          batch_count);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hB.data(), dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
@@ -146,22 +165,31 @@ hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trsm<T>(
-                side, uplo, transA, diag, M, N, alpha, (const T*)hA.data() + b * strideA, lda, hB_copy.data() + b * strideB, ldb);
+            cblas_trsm<T>(side,
+                          uplo,
+                          transA,
+                          diag,
+                          M,
+                          N,
+                          alpha,
+                          (const T*)hA.data() + b * strideA,
+                          lda,
+                          hB_copy.data() + b * strideB,
+                          ldb);
         }
 
         // if enable norm check, norm check is invasive
         // any typeinfo(T) will not work here, because template deduction is matched in compilation
         // time
-        T eps = std::numeric_limits<T>::epsilon();
+        T      eps       = std::numeric_limits<T>::epsilon();
         double tolerance = eps * 40 * M;
 
         for(int b = 0; b < batch_count; b++)
         {
-            double error = norm_check_general<T>('F', M, N, ldb, hB_copy.data() + b * strideB, hB.data() + b * strideB);
+            double error = norm_check_general<T>(
+                'F', M, N, ldb, hB_copy.data() + b * strideB, hB.data() + b * strideB);
             unit_check_trsm(M, N, lda, error, tolerance);
         }
-            
     }
 
     hipblasDestroy(handle);

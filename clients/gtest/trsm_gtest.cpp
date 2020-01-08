@@ -269,16 +269,11 @@ TEST_P(trsm_gtest, trsm_strided_batched_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.ldb < arg.M)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

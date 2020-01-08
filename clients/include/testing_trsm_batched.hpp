@@ -127,8 +127,17 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
         hX[b] = hB[b]; // original solution hX
 
         // Calculate hB = hA*hX;
-        cblas_trmm<T>(
-            side, uplo, transA, diag, M, N, 1.0 / alpha, (const T*)hA[b].data(), lda, hB[b].data(), ldb);
+        cblas_trmm<T>(side,
+                      uplo,
+                      transA,
+                      diag,
+                      M,
+                      N,
+                      1.0 / alpha,
+                      (const T*)hA[b].data(),
+                      lda,
+                      hB[b].data(),
+                      ldb);
 
         hB_copy[b] = hB[b];
 
@@ -143,7 +152,8 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasTrsmBatched<T>(handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb, batch_count);
+    status = hipblasTrsmBatched<T>(
+        handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb, batch_count);
 
     // copy output from device to CPU
     for(int b = 0; b < batch_count; b++)
@@ -157,14 +167,23 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trsm<T>(
-                side, uplo, transA, diag, M, N, alpha, (const T*)hA[b].data(), lda, hB_copy[b].data(), ldb);
+            cblas_trsm<T>(side,
+                          uplo,
+                          transA,
+                          diag,
+                          M,
+                          N,
+                          alpha,
+                          (const T*)hA[b].data(),
+                          lda,
+                          hB_copy[b].data(),
+                          ldb);
         }
 
         // if enable norm check, norm check is invasive
         // any typeinfo(T) will not work here, because template deduction is matched in compilation
         // time
-        T eps = std::numeric_limits<T>::epsilon();
+        T      eps       = std::numeric_limits<T>::epsilon();
         double tolerance = eps * 40 * M;
 
         for(int b = 0; b < batch_count; b++)

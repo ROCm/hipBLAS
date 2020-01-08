@@ -3641,21 +3641,22 @@ hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    handle,
                                            int                strideB,
                                            int                batch_count)
 {
-    return rocBLASStatusToHIPStatus(rocblas_strsm_strided_batched((rocblas_handle)handle,
-                                                                  hipSideToHCCSide(side),
-                                                                  hipFillToHCCFill(uplo),
-                                                                  hipOperationToHCCOperation(transA),
-                                                                  hipDiagonalToHCCDiagonal(diag),
-                                                                  m,
-                                                                  n,
-                                                                  alpha,
-                                                                  A,
-                                                                  lda,
-                                                                  strideA,
-                                                                  B,
-                                                                  ldb,
-                                                                  strideB,
-                                                                  batch_count));
+    return rocBLASStatusToHIPStatus(
+        rocblas_strsm_strided_batched((rocblas_handle)handle,
+                                      hipSideToHCCSide(side),
+                                      hipFillToHCCFill(uplo),
+                                      hipOperationToHCCOperation(transA),
+                                      hipDiagonalToHCCDiagonal(diag),
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      B,
+                                      ldb,
+                                      strideB,
+                                      batch_count));
 }
 
 hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
@@ -3674,21 +3675,22 @@ hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
                                            int                strideB,
                                            int                batch_count)
 {
-    return rocBLASStatusToHIPStatus(rocblas_dtrsm_strided_batched((rocblas_handle)handle,
-                                                                  hipSideToHCCSide(side),
-                                                                  hipFillToHCCFill(uplo),
-                                                                  hipOperationToHCCOperation(transA),
-                                                                  hipDiagonalToHCCDiagonal(diag),
-                                                                  m,
-                                                                  n,
-                                                                  alpha,
-                                                                  A,
-                                                                  lda,
-                                                                  strideA,
-                                                                  B,
-                                                                  ldb,
-                                                                  strideB,
-                                                                  batch_count));
+    return rocBLASStatusToHIPStatus(
+        rocblas_dtrsm_strided_batched((rocblas_handle)handle,
+                                      hipSideToHCCSide(side),
+                                      hipFillToHCCFill(uplo),
+                                      hipOperationToHCCOperation(transA),
+                                      hipDiagonalToHCCDiagonal(diag),
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      B,
+                                      ldb,
+                                      strideB,
+                                      batch_count));
 }
 
 // gemm
