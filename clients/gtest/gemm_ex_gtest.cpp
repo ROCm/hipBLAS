@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "testing_gemm_ex.hpp"
@@ -32,9 +32,9 @@ typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipblasData
 // vector of vector, each vector is a {M, N, K, lda, ldb, ldc};
 // add/delete as a group
 const vector<vector<int>> small_matrix_size_range = {
-    { 1,  1,  1,  1,  1,  1}, 
-    { 1,  2,  3,  4,  5,  6}, 
-    { 7,  9, 15, 17, 18, 19}, 
+    { 1,  1,  1,  1,  1,  1},
+    { 1,  2,  3,  4,  5,  6},
+    { 7,  9, 15, 17, 18, 19},
     { 8,  1,  1,  8,  8,  8},
     { 2,  2,  2,  2,  2,  2},
     { 3,  3,  3,  3,  3,  3},
@@ -142,7 +142,7 @@ const vector<vector<int>> chunk_matrix_size_range = {
 
 // vector of vector, each vector is a {M, N, K, lda, ldb, ldc};
 const vector<vector<int>> NaN_matrix_size_range = {
-    {   5,    6,   7,    8,    9,   10}, 
+    {   5,    6,   7,    8,    9,   10},
     {4011, 4012, 111, 4013, 4014, 4015},
 };
 

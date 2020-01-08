@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Author: Kent Knox
+
+/bin/ln -fs ../../.githooks/pre-commit "$(dirname "$0")/.git/hooks/"
 
 
 # #################################################
@@ -161,7 +162,7 @@ install_packages( )
       if [[ "${build_clients}" == true ]]; then
         install_zypper_packages "${client_dependencies_sles[@]}"
       fi
-      ;;    
+      ;;
     *)
       echo "This script is currently supported on Ubuntu, SLES, CentOS, RHEL and Fedora"
       exit 2

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 //! HIP = Heterogeneous-compute Interface for Portability
@@ -194,8 +194,8 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasIcamax(hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasIzamax(hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result);
+HIPBLAS_EXPORT hipblasStatus_t hipblasIzamax(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result);
 
 // amin
 HIPBLAS_EXPORT hipblasStatus_t
@@ -207,8 +207,8 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasIcamin(hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasIzamin(hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result);
+HIPBLAS_EXPORT hipblasStatus_t hipblasIzamin(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result);
 
 // asum
 HIPBLAS_EXPORT hipblasStatus_t
@@ -234,19 +234,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDasumBatched(hipblasHandle_t     handle,
                                                    int                 batchCount,
                                                    double*             result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasScasumBatched(hipblasHandle_t         handle,
-                                                    int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasScasumBatched(hipblasHandle_t             handle,
+                                                    int                         n,
                                                     const hipblasComplex* const x[],
-                                                    int                     incx,
-                                                    int                     batchCount,
-                                                    float*                  result);
+                                                    int                         incx,
+                                                    int                         batchCount,
+                                                    float*                      result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched(hipblasHandle_t               handle,
-                                                    int                           n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched(hipblasHandle_t                   handle,
+                                                    int                               n,
                                                     const hipblasDoubleComplex* const x[],
-                                                    int                           incx,
-                                                    int                           batchCount,
-                                                    double*                       result);
+                                                    int                               incx,
+                                                    int                               batchCount,
+                                                    double*                           result);
 
 // asum_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSasumStridedBatched(hipblasHandle_t handle,
@@ -265,21 +265,21 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDasumStridedBatched(hipblasHandle_t handle
                                                           int             batchCount,
                                                           double*         result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t   handle,
-                                                           int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t       handle,
+                                                           int                   n,
                                                            const hipblasComplex* x,
-                                                           int               incx,
-                                                           int               stridex,
-                                                           int               batchCount,
-                                                           float*            result);
+                                                           int                   incx,
+                                                           int                   stridex,
+                                                           int                   batchCount,
+                                                           float*                result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t         handle,
-                                                           int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t             handle,
+                                                           int                         n,
                                                            const hipblasDoubleComplex* x,
-                                                           int                     incx,
-                                                           int                     stridex,
-                                                           int                     batchCount,
-                                                           double*                 result);
+                                                           int                         incx,
+                                                           int                         stridex,
+                                                           int                         batchCount,
+                                                           double*                     result);
 
 // axpy
 HIPBLAS_EXPORT hipblasStatus_t hipblasHaxpy(hipblasHandle_t    handle,
@@ -297,19 +297,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDasumBatched(hipblasHandle_t     handle,
                                                    int                 batchCount,
                                                    double*             result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasScasumBatched(hipblasHandle_t         handle,
-                                                    int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasScasumBatched(hipblasHandle_t             handle,
+                                                    int                         n,
                                                     const hipblasComplex* const x[],
-                                                    int                     incx,
-                                                    int                     batchCount,
-                                                    float*                  result);
+                                                    int                         incx,
+                                                    int                         batchCount,
+                                                    float*                      result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched(hipblasHandle_t               handle,
-                                                    int                           n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched(hipblasHandle_t                   handle,
+                                                    int                               n,
                                                     const hipblasDoubleComplex* const x[],
-                                                    int                           incx,
-                                                    int                           batchCount,
-                                                    double*                       result);
+                                                    int                               incx,
+                                                    int                               batchCount,
+                                                    double*                           result);
 
 // asum_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSasumStridedBatched(hipblasHandle_t handle,
@@ -328,21 +328,21 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDasumStridedBatched(hipblasHandle_t handle
                                                           int             batchCount,
                                                           double*         result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t   handle,
-                                                           int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t       handle,
+                                                           int                   n,
                                                            const hipblasComplex* x,
-                                                           int               incx,
-                                                           int               stridex,
-                                                           int               batchCount,
-                                                           float*            result);
+                                                           int                   incx,
+                                                           int                   stridex,
+                                                           int                   batchCount,
+                                                           float*                result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t         handle,
-                                                           int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t             handle,
+                                                           int                         n,
                                                            const hipblasDoubleComplex* x,
-                                                           int                     incx,
-                                                           int                     stridex,
-                                                           int                     batchCount,
-                                                           double*                 result);
+                                                           int                         incx,
+                                                           int                         stridex,
+                                                           int                         batchCount,
+                                                           double*                     result);
 
 // axpy
 HIPBLAS_EXPORT hipblasStatus_t hipblasSaxpy(hipblasHandle_t handle,
@@ -361,21 +361,21 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDaxpy(hipblasHandle_t handle,
                                             double*         y,
                                             int             incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpy(hipblasHandle_t   handle,
-                                            int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpy(hipblasHandle_t       handle,
+                                            int                   n,
                                             const hipblasComplex* alpha,
                                             const hipblasComplex* x,
-                                            int               incx,
+                                            int                   incx,
                                             hipblasComplex*       y,
-                                            int               incy);
+                                            int                   incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpy(hipblasHandle_t         handle,
-                                            int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpy(hipblasHandle_t             handle,
+                                            int                         n,
                                             const hipblasDoubleComplex* alpha,
                                             const hipblasDoubleComplex* x,
-                                            int                     incx,
+                                            int                         incx,
                                             hipblasDoubleComplex*       y,
-                                            int                     incy);
+                                            int                         incy);
 
 // not implemented
 // HIPBLAS_EXPORT hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t handle, int n, const float
@@ -391,12 +391,12 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy(
     hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, hipblasComplex* y, int incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy(hipblasHandle_t         handle,
-                                            int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy(hipblasHandle_t             handle,
+                                            int                         n,
                                             const hipblasDoubleComplex* x,
-                                            int                     incx,
+                                            int                         incx,
                                             hipblasDoubleComplex*       y,
-                                            int                     incy);
+                                            int                         incy);
 
 // copy_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasScopyBatched(hipblasHandle_t    handle,
@@ -415,21 +415,21 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDcopyBatched(hipblasHandle_t     handle,
                                                    int                 incy,
                                                    int                 batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyBatched(hipblasHandle_t         handle,
-                                                   int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyBatched(hipblasHandle_t             handle,
+                                                   int                         n,
                                                    const hipblasComplex* const x[],
-                                                   int                     incx,
+                                                   int                         incx,
                                                    hipblasComplex* const       y[],
-                                                   int                     incy,
-                                                   int                     batchCount);
+                                                   int                         incy,
+                                                   int                         batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyBatched(hipblasHandle_t               handle,
-                                                   int                           n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyBatched(hipblasHandle_t                   handle,
+                                                   int                               n,
                                                    const hipblasDoubleComplex* const x[],
-                                                   int                           incx,
+                                                   int                               incx,
                                                    hipblasDoubleComplex* const       y[],
-                                                   int                           incy,
-                                                   int                           batchCount);
+                                                   int                               incy,
+                                                   int                               batchCount);
 
 // copy_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasScopyStridedBatched(hipblasHandle_t handle,
@@ -452,25 +452,25 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDcopyStridedBatched(hipblasHandle_t handle
                                                           int             stridey,
                                                           int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyStridedBatched(hipblasHandle_t   handle,
-                                                          int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyStridedBatched(hipblasHandle_t       handle,
+                                                          int                   n,
                                                           const hipblasComplex* x,
-                                                          int               incx,
-                                                          int               stridex,
+                                                          int                   incx,
+                                                          int                   stridex,
                                                           hipblasComplex*       y,
-                                                          int               incy,
-                                                          int               stridey,
-                                                          int               batchCount);
+                                                          int                   incy,
+                                                          int                   stridey,
+                                                          int                   batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyStridedBatched(hipblasHandle_t         handle,
-                                                          int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyStridedBatched(hipblasHandle_t             handle,
+                                                          int                         n,
                                                           const hipblasDoubleComplex* x,
-                                                          int                     incx,
-                                                          int                     stridex,
+                                                          int                         incx,
+                                                          int                         stridex,
                                                           hipblasDoubleComplex*       y,
-                                                          int                     incy,
-                                                          int                     stridey,
-                                                          int                     batchCount);
+                                                          int                         incy,
+                                                          int                         stridey,
+                                                          int                         batchCount);
 
 // dot
 HIPBLAS_EXPORT hipblasStatus_t hipblasHdot(hipblasHandle_t    handle,
@@ -505,36 +505,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdot(hipblasHandle_t handle,
                                            int             incy,
                                            double*         result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCdotc(hipblasHandle_t   handle,
-                                            int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCdotc(hipblasHandle_t       handle,
+                                            int                   n,
                                             const hipblasComplex* x,
-                                            int               incx,
+                                            int                   incx,
                                             const hipblasComplex* y,
-                                            int               incy,
+                                            int                   incy,
                                             hipblasComplex*       result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCdotu(hipblasHandle_t   handle,
-                                            int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCdotu(hipblasHandle_t       handle,
+                                            int                   n,
                                             const hipblasComplex* x,
-                                            int               incx,
+                                            int                   incx,
                                             const hipblasComplex* y,
-                                            int               incy,
+                                            int                   incy,
                                             hipblasComplex*       result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdotc(hipblasHandle_t         handle,
-                                            int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdotc(hipblasHandle_t             handle,
+                                            int                         n,
                                             const hipblasDoubleComplex* x,
-                                            int                     incx,
+                                            int                         incx,
                                             const hipblasDoubleComplex* y,
-                                            int                     incy,
+                                            int                         incy,
                                             hipblasDoubleComplex*       result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdotu(hipblasHandle_t         handle,
-                                            int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdotu(hipblasHandle_t             handle,
+                                            int                         n,
                                             const hipblasDoubleComplex* x,
-                                            int                     incx,
+                                            int                         incx,
                                             const hipblasDoubleComplex* y,
-                                            int                     incy,
+                                            int                         incy,
                                             hipblasDoubleComplex*       result);
 
 // dot_batched
@@ -574,40 +574,40 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdotBatched(hipblasHandle_t     handle,
                                                   int                 batch_count,
                                                   double*             result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCdotcBatched(hipblasHandle_t         handle,
-                                                   int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCdotcBatched(hipblasHandle_t             handle,
+                                                   int                         n,
                                                    const hipblasComplex* const x[],
-                                                   int                     incx,
+                                                   int                         incx,
                                                    const hipblasComplex* const y[],
-                                                   int                     incy,
-                                                   int                     batch_count,
+                                                   int                         incy,
+                                                   int                         batch_count,
                                                    hipblasComplex*             result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCdotuBatched(hipblasHandle_t         handle,
-                                                   int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCdotuBatched(hipblasHandle_t             handle,
+                                                   int                         n,
                                                    const hipblasComplex* const x[],
-                                                   int                     incx,
+                                                   int                         incx,
                                                    const hipblasComplex* const y[],
-                                                   int                     incy,
-                                                   int                     batch_count,
+                                                   int                         incy,
+                                                   int                         batch_count,
                                                    hipblasComplex*             result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcBatched(hipblasHandle_t               handle,
-                                                   int                           n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcBatched(hipblasHandle_t                   handle,
+                                                   int                               n,
                                                    const hipblasDoubleComplex* const x[],
-                                                   int                           incx,
+                                                   int                               incx,
                                                    const hipblasDoubleComplex* const y[],
-                                                   int                           incy,
-                                                   int                           batch_count,
+                                                   int                               incy,
+                                                   int                               batch_count,
                                                    hipblasDoubleComplex*             result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t               handle,
-                                                   int                           n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t                   handle,
+                                                   int                               n,
                                                    const hipblasDoubleComplex* const x[],
-                                                   int                           incx,
+                                                   int                               incx,
                                                    const hipblasDoubleComplex* const y[],
-                                                   int                           incy,
-                                                   int                           batch_count,
+                                                   int                               incy,
+                                                   int                               batch_count,
                                                    hipblasDoubleComplex*             result);
 
 // dot_strided_batched
@@ -655,48 +655,48 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdotStridedBatched(hipblasHandle_t handle,
                                                          int             batch_count,
                                                          double*         result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCdotcStridedBatched(hipblasHandle_t   handle,
-                                                          int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCdotcStridedBatched(hipblasHandle_t       handle,
+                                                          int                   n,
                                                           const hipblasComplex* x,
-                                                          int               incx,
-                                                          int               stridex,
+                                                          int                   incx,
+                                                          int                   stridex,
                                                           const hipblasComplex* y,
-                                                          int               incy,
-                                                          int               stridey,
-                                                          int               batch_count,
+                                                          int                   incy,
+                                                          int                   stridey,
+                                                          int                   batch_count,
                                                           hipblasComplex*       result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCdotuStridedBatched(hipblasHandle_t   handle,
-                                                          int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCdotuStridedBatched(hipblasHandle_t       handle,
+                                                          int                   n,
                                                           const hipblasComplex* x,
-                                                          int               incx,
-                                                          int               stridex,
+                                                          int                   incx,
+                                                          int                   stridex,
                                                           const hipblasComplex* y,
-                                                          int               incy,
-                                                          int               stridey,
-                                                          int               batch_count,
+                                                          int                   incy,
+                                                          int                   stridey,
+                                                          int                   batch_count,
                                                           hipblasComplex*       result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t         handle,
-                                                          int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t             handle,
+                                                          int                         n,
                                                           const hipblasDoubleComplex* x,
-                                                          int                     incx,
-                                                          int                     stridex,
+                                                          int                         incx,
+                                                          int                         stridex,
                                                           const hipblasDoubleComplex* y,
-                                                          int                     incy,
-                                                          int                     stridey,
-                                                          int                     batch_count,
+                                                          int                         incy,
+                                                          int                         stridey,
+                                                          int                         batch_count,
                                                           hipblasDoubleComplex*       result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuStridedBatched(hipblasHandle_t         handle,
-                                                          int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuStridedBatched(hipblasHandle_t             handle,
+                                                          int                         n,
                                                           const hipblasDoubleComplex* x,
-                                                          int                     incx,
-                                                          int                     stridex,
+                                                          int                         incx,
+                                                          int                         stridex,
                                                           const hipblasDoubleComplex* y,
-                                                          int                     incy,
-                                                          int                     stridey,
-                                                          int                     batch_count,
+                                                          int                         incy,
+                                                          int                         stridey,
+                                                          int                         batch_count,
                                                           hipblasDoubleComplex*       result);
 
 // snrm2
@@ -723,19 +723,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDnrm2Batched(hipblasHandle_t     handle,
                                                    int                 batchCount,
                                                    double*             result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2Batched(hipblasHandle_t         handle,
-                                                    int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2Batched(hipblasHandle_t             handle,
+                                                    int                         n,
                                                     const hipblasComplex* const x[],
-                                                    int                     incx,
-                                                    int                     batchCount,
-                                                    float*                  result);
+                                                    int                         incx,
+                                                    int                         batchCount,
+                                                    float*                      result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2Batched(hipblasHandle_t               handle,
-                                                    int                           n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2Batched(hipblasHandle_t                   handle,
+                                                    int                               n,
                                                     const hipblasDoubleComplex* const x[],
-                                                    int                           incx,
-                                                    int                           batchCount,
-                                                    double*                       result);
+                                                    int                               incx,
+                                                    int                               batchCount,
+                                                    double*                           result);
 
 // nrm2_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSnrm2StridedBatched(hipblasHandle_t handle,
@@ -754,21 +754,21 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDnrm2StridedBatched(hipblasHandle_t handle
                                                           int             batchCount,
                                                           double*         result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t   handle,
-                                                           int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t       handle,
+                                                           int                   n,
                                                            const hipblasComplex* x,
-                                                           int               incx,
-                                                           int               stridex,
-                                                           int               batchCount,
-                                                           float*            result);
+                                                           int                   incx,
+                                                           int                   stridex,
+                                                           int                   batchCount,
+                                                           float*                result);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2StridedBatched(hipblasHandle_t         handle,
-                                                           int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2StridedBatched(hipblasHandle_t             handle,
+                                                           int                         n,
                                                            const hipblasDoubleComplex* x,
-                                                           int                     incx,
-                                                           int                     stridex,
-                                                           int                     batchCount,
-                                                           double*                 result);
+                                                           int                         incx,
+                                                           int                         stridex,
+                                                           int                         batchCount,
+                                                           double*                     result);
 
 // rot
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrot(hipblasHandle_t handle,
@@ -789,41 +789,41 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrot(hipblasHandle_t handle,
                                            const double*   c,
                                            const double*   s);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCrot(hipblasHandle_t   handle,
-                                           int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCrot(hipblasHandle_t       handle,
+                                           int                   n,
                                            hipblasComplex*       x,
-                                           int               incx,
+                                           int                   incx,
                                            hipblasComplex*       y,
-                                           int               incy,
-                                           const float*      c,
+                                           int                   incy,
+                                           const float*          c,
                                            const hipblasComplex* s);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCsrot(hipblasHandle_t handle,
                                             int             n,
-                                            hipblasComplex*     x,
+                                            hipblasComplex* x,
                                             int             incx,
-                                            hipblasComplex*     y,
+                                            hipblasComplex* y,
                                             int             incy,
                                             const float*    c,
                                             const float*    s);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZrot(hipblasHandle_t         handle,
-                                           int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZrot(hipblasHandle_t             handle,
+                                           int                         n,
                                            hipblasDoubleComplex*       x,
-                                           int                     incx,
+                                           int                         incx,
                                            hipblasDoubleComplex*       y,
-                                           int                     incy,
-                                           const double*           c,
+                                           int                         incy,
+                                           const double*               c,
                                            const hipblasDoubleComplex* s);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdrot(hipblasHandle_t   handle,
-                                            int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdrot(hipblasHandle_t       handle,
+                                            int                   n,
                                             hipblasDoubleComplex* x,
-                                            int               incx,
+                                            int                   incx,
                                             hipblasDoubleComplex* y,
-                                            int               incy,
-                                            const double*     c,
-                                            const double*     s);
+                                            int                   incy,
+                                            const double*         c,
+                                            const double*         s);
 
 // rot_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotBatched(hipblasHandle_t handle,
@@ -846,45 +846,45 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotBatched(hipblasHandle_t handle,
                                                   const double*   s,
                                                   int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCrotBatched(hipblasHandle_t   handle,
-                                                  int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCrotBatched(hipblasHandle_t       handle,
+                                                  int                   n,
                                                   hipblasComplex* const x[],
-                                                  int               incx,
+                                                  int                   incx,
                                                   hipblasComplex* const y[],
-                                                  int               incy,
-                                                  const float*      c,
+                                                  int                   incy,
+                                                  const float*          c,
                                                   const hipblasComplex* s,
-                                                  int               batchCount);
+                                                  int                   batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCsrotBatched(hipblasHandle_t   handle,
-                                                   int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCsrotBatched(hipblasHandle_t       handle,
+                                                   int                   n,
                                                    hipblasComplex* const x[],
-                                                   int               incx,
+                                                   int                   incx,
                                                    hipblasComplex* const y[],
-                                                   int               incy,
-                                                   const float*      c,
-                                                   const float*      s,
-                                                   int               batchCount);
+                                                   int                   incy,
+                                                   const float*          c,
+                                                   const float*          s,
+                                                   int                   batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZrotBatched(hipblasHandle_t         handle,
-                                                  int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZrotBatched(hipblasHandle_t             handle,
+                                                  int                         n,
                                                   hipblasDoubleComplex* const x[],
-                                                  int                     incx,
+                                                  int                         incx,
                                                   hipblasDoubleComplex* const y[],
-                                                  int                     incy,
-                                                  const double*           c,
+                                                  int                         incy,
+                                                  const double*               c,
                                                   const hipblasDoubleComplex* s,
-                                                  int                     batchCount);
+                                                  int                         batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdrotBatched(hipblasHandle_t         handle,
-                                                   int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdrotBatched(hipblasHandle_t             handle,
+                                                   int                         n,
                                                    hipblasDoubleComplex* const x[],
-                                                   int                     incx,
+                                                   int                         incx,
                                                    hipblasDoubleComplex* const y[],
-                                                   int                     incy,
-                                                   const double*           c,
-                                                   const double*           s,
-                                                   int                     batchCount);
+                                                   int                         incy,
+                                                   const double*               c,
+                                                   const double*               s,
+                                                   int                         batchCount);
 
 // rot_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotStridedBatched(hipblasHandle_t handle,
@@ -911,53 +911,53 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotStridedBatched(hipblasHandle_t handle,
                                                          const double*   s,
                                                          int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCrotStridedBatched(hipblasHandle_t   handle,
-                                                         int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCrotStridedBatched(hipblasHandle_t       handle,
+                                                         int                   n,
                                                          hipblasComplex*       x,
-                                                         int               incx,
-                                                         int               stridex,
+                                                         int                   incx,
+                                                         int                   stridex,
                                                          hipblasComplex*       y,
-                                                         int               incy,
-                                                         int               stridey,
-                                                         const float*      c,
+                                                         int                   incy,
+                                                         int                   stridey,
+                                                         const float*          c,
                                                          const hipblasComplex* s,
-                                                         int               batchCount);
+                                                         int                   batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCsrotStridedBatched(hipblasHandle_t handle,
                                                           int             n,
-                                                          hipblasComplex*     x,
+                                                          hipblasComplex* x,
                                                           int             incx,
                                                           int             stridex,
-                                                          hipblasComplex*     y,
+                                                          hipblasComplex* y,
                                                           int             incy,
                                                           int             stridey,
                                                           const float*    c,
                                                           const float*    s,
                                                           int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZrotStridedBatched(hipblasHandle_t         handle,
-                                                         int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZrotStridedBatched(hipblasHandle_t             handle,
+                                                         int                         n,
                                                          hipblasDoubleComplex*       x,
-                                                         int                     incx,
-                                                         int                     stridex,
+                                                         int                         incx,
+                                                         int                         stridex,
                                                          hipblasDoubleComplex*       y,
-                                                         int                     incy,
-                                                         int                     stridey,
-                                                         const double*           c,
+                                                         int                         incy,
+                                                         int                         stridey,
+                                                         const double*               c,
                                                          const hipblasDoubleComplex* s,
-                                                         int                     batchCount);
+                                                         int                         batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdrotStridedBatched(hipblasHandle_t   handle,
-                                                          int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdrotStridedBatched(hipblasHandle_t       handle,
+                                                          int                   n,
                                                           hipblasDoubleComplex* x,
-                                                          int               incx,
-                                                          int               stridex,
+                                                          int                   incx,
+                                                          int                   stridex,
                                                           hipblasDoubleComplex* y,
-                                                          int               incy,
-                                                          int               stridey,
-                                                          const double*     c,
-                                                          const double*     s,
-                                                          int               batchCount);
+                                                          int                   incy,
+                                                          int                   stridey,
+                                                          const double*         c,
+                                                          const double*         s,
+                                                          int                   batchCount);
 
 // rotg
 HIPBLAS_EXPORT hipblasStatus_t
@@ -966,13 +966,13 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDrotg(hipblasHandle_t handle, double* a, double* b, double* c, double* s);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasCrotg(hipblasHandle_t handle, hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s);
+HIPBLAS_EXPORT hipblasStatus_t hipblasCrotg(
+    hipblasHandle_t handle, hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZrotg(hipblasHandle_t   handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZrotg(hipblasHandle_t       handle,
                                             hipblasDoubleComplex* a,
                                             hipblasDoubleComplex* b,
-                                            double*           c,
+                                            double*               c,
                                             hipblasDoubleComplex* s);
 
 // rotg_batched
@@ -990,19 +990,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotgBatched(hipblasHandle_t handle,
                                                    double* const   s[],
                                                    int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCrotgBatched(hipblasHandle_t   handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCrotgBatched(hipblasHandle_t       handle,
                                                    hipblasComplex* const a[],
                                                    hipblasComplex* const b[],
-                                                   float* const      c[],
+                                                   float* const          c[],
                                                    hipblasComplex* const s[],
-                                                   int               batchCount);
+                                                   int                   batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZrotgBatched(hipblasHandle_t         handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZrotgBatched(hipblasHandle_t             handle,
                                                    hipblasDoubleComplex* const a[],
                                                    hipblasDoubleComplex* const b[],
-                                                   double* const           c[],
+                                                   double* const               c[],
                                                    hipblasDoubleComplex* const s[],
-                                                   int                     batchCount);
+                                                   int                         batchCount);
 
 // rotg_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotgStridedBatched(hipblasHandle_t handle,
@@ -1028,26 +1028,26 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotgStridedBatched(hipblasHandle_t handle
                                                           int             batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCrotgStridedBatched(hipblasHandle_t handle,
-                                                          hipblasComplex*     a,
+                                                          hipblasComplex* a,
                                                           int             stride_a,
-                                                          hipblasComplex*     b,
+                                                          hipblasComplex* b,
                                                           int             stride_b,
                                                           float*          c,
                                                           int             stride_c,
-                                                          hipblasComplex*     s,
+                                                          hipblasComplex* s,
                                                           int             stride_s,
                                                           int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZrotgStridedBatched(hipblasHandle_t   handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZrotgStridedBatched(hipblasHandle_t       handle,
                                                           hipblasDoubleComplex* a,
-                                                          int               stride_a,
+                                                          int                   stride_a,
                                                           hipblasDoubleComplex* b,
-                                                          int               stride_b,
-                                                          double*           c,
-                                                          int               stride_c,
+                                                          int                   stride_b,
+                                                          double*               c,
+                                                          int                   stride_c,
                                                           hipblasDoubleComplex* s,
-                                                          int               stride_s,
-                                                          int               batchCount);
+                                                          int                   stride_s,
+                                                          int                   batchCount);
 
 // rotm
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotm(
@@ -1158,14 +1158,17 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDscal(hipblasHandle_t handle, int n, const double* alpha, double* x, int incx);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasCscal(hipblasHandle_t handle, int n, const hipblasComplex* alpha, hipblasComplex* x, int incx);
+HIPBLAS_EXPORT hipblasStatus_t hipblasCscal(
+    hipblasHandle_t handle, int n, const hipblasComplex* alpha, hipblasComplex* x, int incx);
 
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasCsscal(hipblasHandle_t handle, int n, const float* alpha, hipblasComplex* x, int incx);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZscal(
-    hipblasHandle_t handle, int n, const hipblasDoubleComplex* alpha, hipblasDoubleComplex* x, int incx);
+HIPBLAS_EXPORT hipblasStatus_t hipblasZscal(hipblasHandle_t             handle,
+                                            int                         n,
+                                            const hipblasDoubleComplex* alpha,
+                                            hipblasDoubleComplex*       x,
+                                            int                         incx);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdscal(
     hipblasHandle_t handle, int n, const double* alpha, hipblasDoubleComplex* x, int incx);
@@ -1181,33 +1184,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDscalBatched(hipblasHandle_t handle,
                                                    int             incx,
                                                    int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCscalBatched(hipblasHandle_t   handle,
-                                                   int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCscalBatched(hipblasHandle_t       handle,
+                                                   int                   n,
                                                    const hipblasComplex* alpha,
                                                    hipblasComplex* const x[],
-                                                   int               incx,
-                                                   int               batchCount);
+                                                   int                   incx,
+                                                   int                   batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZscalBatched(hipblasHandle_t         handle,
-                                                   int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZscalBatched(hipblasHandle_t             handle,
+                                                   int                         n,
                                                    const hipblasDoubleComplex* alpha,
                                                    hipblasDoubleComplex* const x[],
-                                                   int                     incx,
-                                                   int                     batchCount);
+                                                   int                         incx,
+                                                   int                         batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCsscalBatched(hipblasHandle_t   handle,
-                                                    int               n,
-                                                    const float*      alpha,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCsscalBatched(hipblasHandle_t       handle,
+                                                    int                   n,
+                                                    const float*          alpha,
                                                     hipblasComplex* const x[],
-                                                    int               incx,
-                                                    int               batchCount);
+                                                    int                   incx,
+                                                    int                   batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalBatched(hipblasHandle_t         handle,
-                                                    int                     n,
-                                                    const double*           alpha,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalBatched(hipblasHandle_t             handle,
+                                                    int                         n,
+                                                    const double*               alpha,
                                                     hipblasDoubleComplex* const x[],
-                                                    int                     incx,
-                                                    int                     batchCount);
+                                                    int                         incx,
+                                                    int                         batchCount);
 
 // scal_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSscalStridedBatched(hipblasHandle_t handle,
@@ -1226,37 +1229,37 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDscalStridedBatched(hipblasHandle_t handle
                                                           int             stridex,
                                                           int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t   handle,
-                                                          int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t       handle,
+                                                          int                   n,
                                                           const hipblasComplex* alpha,
                                                           hipblasComplex*       x,
-                                                          int               incx,
-                                                          int               stridex,
-                                                          int               batchCount);
+                                                          int                   incx,
+                                                          int                   stridex,
+                                                          int                   batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t         handle,
-                                                          int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t             handle,
+                                                          int                         n,
                                                           const hipblasDoubleComplex* alpha,
                                                           hipblasDoubleComplex*       x,
-                                                          int                     incx,
-                                                          int                     stridex,
-                                                          int                     batchCount);
+                                                          int                         incx,
+                                                          int                         stridex,
+                                                          int                         batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCsscalStridedBatched(hipblasHandle_t handle,
                                                            int             n,
                                                            const float*    alpha,
-                                                           hipblasComplex*     x,
+                                                           hipblasComplex* x,
                                                            int             incx,
                                                            int             stridex,
                                                            int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalStridedBatched(hipblasHandle_t   handle,
-                                                           int               n,
-                                                           const double*     alpha,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalStridedBatched(hipblasHandle_t       handle,
+                                                           int                   n,
+                                                           const double*         alpha,
                                                            hipblasDoubleComplex* x,
-                                                           int               incx,
-                                                           int               stridex,
-                                                           int               batchCount);
+                                                           int                   incx,
+                                                           int                   stridex,
+                                                           int                   batchCount);
 
 // swap
 HIPBLAS_EXPORT hipblasStatus_t
@@ -1265,11 +1268,15 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasDswap(hipblasHandle_t handle, int n, double* x, int incx, double* y, int incy);
 
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasCswap(hipblasHandle_t handle, int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy);
+HIPBLAS_EXPORT hipblasStatus_t hipblasCswap(
+    hipblasHandle_t handle, int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZswap(
-    hipblasHandle_t handle, int n, hipblasDoubleComplex* x, int incx, hipblasDoubleComplex* y, int incy);
+HIPBLAS_EXPORT hipblasStatus_t hipblasZswap(hipblasHandle_t       handle,
+                                            int                   n,
+                                            hipblasDoubleComplex* x,
+                                            int                   incx,
+                                            hipblasDoubleComplex* y,
+                                            int                   incy);
 
 // swap_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSswapBatched(
@@ -1280,19 +1287,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDswapBatched(
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCswapBatched(hipblasHandle_t handle,
                                                    int             n,
-                                                   hipblasComplex*     x[],
+                                                   hipblasComplex* x[],
                                                    int             incx,
-                                                   hipblasComplex*     y[],
+                                                   hipblasComplex* y[],
                                                    int             incy,
                                                    int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZswapBatched(hipblasHandle_t   handle,
-                                                   int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZswapBatched(hipblasHandle_t       handle,
+                                                   int                   n,
                                                    hipblasDoubleComplex* x[],
-                                                   int               incx,
+                                                   int                   incx,
                                                    hipblasDoubleComplex* y[],
-                                                   int               incy,
-                                                   int               batchCount);
+                                                   int                   incy,
+                                                   int                   batchCount);
 
 // swap_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSswapStridedBatched(hipblasHandle_t handle,
@@ -1317,23 +1324,23 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDswapStridedBatched(hipblasHandle_t handle
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCswapStridedBatched(hipblasHandle_t handle,
                                                           int             n,
-                                                          hipblasComplex*     x,
+                                                          hipblasComplex* x,
                                                           int             incx,
                                                           int             stridex,
-                                                          hipblasComplex*     y,
+                                                          hipblasComplex* y,
                                                           int             incy,
                                                           int             stridey,
                                                           int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZswapStridedBatched(hipblasHandle_t   handle,
-                                                          int               n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZswapStridedBatched(hipblasHandle_t       handle,
+                                                          int                   n,
                                                           hipblasDoubleComplex* x,
-                                                          int               incx,
-                                                          int               stridex,
+                                                          int                   incx,
+                                                          int                   stridex,
                                                           hipblasDoubleComplex* y,
-                                                          int               incy,
-                                                          int               stridey,
-                                                          int               batchCount);
+                                                          int                   incy,
+                                                          int                   stridey,
+                                                          int                   batchCount);
 
 // gemv
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemv(hipblasHandle_t    handle,
@@ -1362,31 +1369,31 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemv(hipblasHandle_t    handle,
                                             double*            y,
                                             int                incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCgemv(hipblasHandle_t    handle,
-                                            hipblasOperation_t trans,
-                                            int                m,
-                                            int                n,
-                                            const hipblasComplex*  alpha,
-                                            const hipblasComplex*  A,
-                                            int                lda,
-                                            const hipblasComplex*  x,
-                                            int                incx,
-                                            const hipblasComplex*  beta,
-                                            hipblasComplex*        y,
-                                            int                incy);
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemv(hipblasHandle_t       handle,
+                                            hipblasOperation_t    trans,
+                                            int                   m,
+                                            int                   n,
+                                            const hipblasComplex* alpha,
+                                            const hipblasComplex* A,
+                                            int                   lda,
+                                            const hipblasComplex* x,
+                                            int                   incx,
+                                            const hipblasComplex* beta,
+                                            hipblasComplex*       y,
+                                            int                   incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZgemv(hipblasHandle_t         handle,
-                                            hipblasOperation_t      trans,
-                                            int                     m,
-                                            int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemv(hipblasHandle_t             handle,
+                                            hipblasOperation_t          trans,
+                                            int                         m,
+                                            int                         n,
                                             const hipblasDoubleComplex* alpha,
                                             const hipblasDoubleComplex* A,
-                                            int                     lda,
+                                            int                         lda,
                                             const hipblasDoubleComplex* x,
-                                            int                     incx,
+                                            int                         incx,
                                             const hipblasDoubleComplex* beta,
                                             hipblasDoubleComplex*       y,
-                                            int                     incy);
+                                            int                         incy);
 
 // gemv_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemvBatched(hipblasHandle_t    handle,
@@ -1417,33 +1424,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemvBatched(hipblasHandle_t     handle,
                                                    int                 incy,
                                                    int                 batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCgemvBatched(hipblasHandle_t         handle,
-                                                   hipblasOperation_t      trans,
-                                                   int                     m,
-                                                   int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemvBatched(hipblasHandle_t             handle,
+                                                   hipblasOperation_t          trans,
+                                                   int                         m,
+                                                   int                         n,
                                                    const hipblasComplex*       alpha,
                                                    const hipblasComplex* const A[],
-                                                   int                     lda,
+                                                   int                         lda,
                                                    const hipblasComplex* const x[],
-                                                   int                     incx,
+                                                   int                         incx,
                                                    const hipblasComplex*       beta,
                                                    hipblasComplex* const       y[],
-                                                   int                     incy,
-                                                   int                     batchCount);
+                                                   int                         incy,
+                                                   int                         batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t               handle,
-                                                   hipblasOperation_t            trans,
-                                                   int                           m,
-                                                   int                           n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
+                                                   hipblasOperation_t                trans,
+                                                   int                               m,
+                                                   int                               n,
                                                    const hipblasDoubleComplex*       alpha,
                                                    const hipblasDoubleComplex* const A[],
-                                                   int                           lda,
+                                                   int                               lda,
                                                    const hipblasDoubleComplex* const x[],
-                                                   int                           incx,
+                                                   int                               incx,
                                                    const hipblasDoubleComplex*       beta,
                                                    hipblasDoubleComplex* const       y[],
-                                                   int                           incy,
-                                                   int                           batchCount);
+                                                   int                               incy,
+                                                   int                               batchCount);
 
 // gemv_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgemvStridedBatched(hipblasHandle_t    handle,
@@ -1480,39 +1487,39 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemvStridedBatched(hipblasHandle_t    han
                                                           int                incy,
                                                           int                batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t    handle,
-                                                          hipblasOperation_t trans,
-                                                          int                m,
-                                                          int                n,
-                                                          const hipblasComplex*  alpha,
-                                                          const hipblasComplex*  A,
-                                                          int                lda,
-                                                          int                strideA,
-                                                          const hipblasComplex*  x,
-                                                          int                incx,
-                                                          int                stridex,
-                                                          const hipblasComplex*  beta,
-                                                          hipblasComplex*        y,
-                                                          int                incy,
-                                                          int                stridey,
-                                                          int                batchCount);
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t       handle,
+                                                          hipblasOperation_t    trans,
+                                                          int                   m,
+                                                          int                   n,
+                                                          const hipblasComplex* alpha,
+                                                          const hipblasComplex* A,
+                                                          int                   lda,
+                                                          int                   strideA,
+                                                          const hipblasComplex* x,
+                                                          int                   incx,
+                                                          int                   stridex,
+                                                          const hipblasComplex* beta,
+                                                          hipblasComplex*       y,
+                                                          int                   incy,
+                                                          int                   stridey,
+                                                          int                   batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t         handle,
-                                                          hipblasOperation_t      trans,
-                                                          int                     m,
-                                                          int                     n,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
+                                                          hipblasOperation_t          trans,
+                                                          int                         m,
+                                                          int                         n,
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
-                                                          int                     lda,
-                                                          int                     strideA,
+                                                          int                         lda,
+                                                          int                         strideA,
                                                           const hipblasDoubleComplex* x,
-                                                          int                     incx,
-                                                          int                     stridex,
+                                                          int                         incx,
+                                                          int                         stridex,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       y,
-                                                          int                     stridey,
-                                                          int                     incy,
-                                                          int                     batchCount);
+                                                          int                         stridey,
+                                                          int                         incy,
+                                                          int                         batchCount);
 
 // ger
 HIPBLAS_EXPORT hipblasStatus_t hipblasSger(hipblasHandle_t handle,
@@ -1752,35 +1759,35 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemm(hipblasHandle_t    handle,
                                             double*            C,
                                             int                ldc);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCgemm(hipblasHandle_t    handle,
-                                            hipblasOperation_t transa,
-                                            hipblasOperation_t transb,
-                                            int                m,
-                                            int                n,
-                                            int                k,
-                                            const hipblasComplex*  alpha,
-                                            const hipblasComplex*  A,
-                                            int                lda,
-                                            const hipblasComplex*  B,
-                                            int                ldb,
-                                            const hipblasComplex*  beta,
-                                            hipblasComplex*        C,
-                                            int                ldc);
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemm(hipblasHandle_t       handle,
+                                            hipblasOperation_t    transa,
+                                            hipblasOperation_t    transb,
+                                            int                   m,
+                                            int                   n,
+                                            int                   k,
+                                            const hipblasComplex* alpha,
+                                            const hipblasComplex* A,
+                                            int                   lda,
+                                            const hipblasComplex* B,
+                                            int                   ldb,
+                                            const hipblasComplex* beta,
+                                            hipblasComplex*       C,
+                                            int                   ldc);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZgemm(hipblasHandle_t         handle,
-                                            hipblasOperation_t      transa,
-                                            hipblasOperation_t      transb,
-                                            int                     m,
-                                            int                     n,
-                                            int                     k,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemm(hipblasHandle_t             handle,
+                                            hipblasOperation_t          transa,
+                                            hipblasOperation_t          transb,
+                                            int                         m,
+                                            int                         n,
+                                            int                         k,
                                             const hipblasDoubleComplex* alpha,
                                             const hipblasDoubleComplex* A,
-                                            int                     lda,
+                                            int                         lda,
                                             const hipblasDoubleComplex* B,
-                                            int                     ldb,
+                                            int                         ldb,
                                             const hipblasDoubleComplex* beta,
                                             hipblasDoubleComplex*       C,
-                                            int                     ldc);
+                                            int                         ldc);
 
 // gemm batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasHgemmBatched(hipblasHandle_t          handle,
@@ -1831,37 +1838,37 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t     handle,
                                                    int                 ldc,
                                                    int                 batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t         handle,
-                                                   hipblasOperation_t      transa,
-                                                   hipblasOperation_t      transb,
-                                                   int                     m,
-                                                   int                     n,
-                                                   int                     k,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t             handle,
+                                                   hipblasOperation_t          transa,
+                                                   hipblasOperation_t          transb,
+                                                   int                         m,
+                                                   int                         n,
+                                                   int                         k,
                                                    const hipblasComplex*       alpha,
                                                    const hipblasComplex* const A[],
-                                                   int                     lda,
+                                                   int                         lda,
                                                    const hipblasComplex* const B[],
-                                                   int                     ldb,
+                                                   int                         ldb,
                                                    const hipblasComplex*       beta,
                                                    hipblasComplex* const       C[],
-                                                   int                     ldc,
-                                                   int                     batchCount);
+                                                   int                         ldc,
+                                                   int                         batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZgemmBatched(hipblasHandle_t               handle,
-                                                   hipblasOperation_t            transa,
-                                                   hipblasOperation_t            transb,
-                                                   int                           m,
-                                                   int                           n,
-                                                   int                           k,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemmBatched(hipblasHandle_t                   handle,
+                                                   hipblasOperation_t                transa,
+                                                   hipblasOperation_t                transb,
+                                                   int                               m,
+                                                   int                               n,
+                                                   int                               k,
                                                    const hipblasDoubleComplex*       alpha,
                                                    const hipblasDoubleComplex* const A[],
-                                                   int                           lda,
+                                                   int                               lda,
                                                    const hipblasDoubleComplex* const B[],
-                                                   int                           ldb,
+                                                   int                               ldb,
                                                    const hipblasDoubleComplex*       beta,
                                                    hipblasDoubleComplex* const       C[],
-                                                   int                           ldc,
-                                                   int                           batchCount);
+                                                   int                               ldc,
+                                                   int                               batchCount);
 
 // gemm_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasHgemmStridedBatched(hipblasHandle_t    handle,
@@ -1921,43 +1928,43 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t    han
                                                           long long          bsc,
                                                           int                batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmStridedBatched(hipblasHandle_t    handle,
-                                                          hipblasOperation_t transa,
-                                                          hipblasOperation_t transb,
-                                                          int                m,
-                                                          int                n,
-                                                          int                k,
-                                                          const hipblasComplex*  alpha,
-                                                          const hipblasComplex*  A,
-                                                          int                lda,
-                                                          long long          bsa,
-                                                          const hipblasComplex*  B,
-                                                          int                ldb,
-                                                          long long          bsb,
-                                                          const hipblasComplex*  beta,
-                                                          hipblasComplex*        C,
-                                                          int                ldc,
-                                                          long long          bsc,
-                                                          int                batchCount);
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmStridedBatched(hipblasHandle_t       handle,
+                                                          hipblasOperation_t    transa,
+                                                          hipblasOperation_t    transb,
+                                                          int                   m,
+                                                          int                   n,
+                                                          int                   k,
+                                                          const hipblasComplex* alpha,
+                                                          const hipblasComplex* A,
+                                                          int                   lda,
+                                                          long long             bsa,
+                                                          const hipblasComplex* B,
+                                                          int                   ldb,
+                                                          long long             bsb,
+                                                          const hipblasComplex* beta,
+                                                          hipblasComplex*       C,
+                                                          int                   ldc,
+                                                          long long             bsc,
+                                                          int                   batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t         handle,
-                                                          hipblasOperation_t      transa,
-                                                          hipblasOperation_t      transb,
-                                                          int                     m,
-                                                          int                     n,
-                                                          int                     k,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t             handle,
+                                                          hipblasOperation_t          transa,
+                                                          hipblasOperation_t          transb,
+                                                          int                         m,
+                                                          int                         n,
+                                                          int                         k,
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
-                                                          int                     lda,
-                                                          long long               bsa,
+                                                          int                         lda,
+                                                          long long                   bsa,
                                                           const hipblasDoubleComplex* B,
-                                                          int                     ldb,
-                                                          long long               bsb,
+                                                          int                         ldb,
+                                                          long long                   bsb,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       C,
-                                                          int                     ldc,
-                                                          long long               bsc,
-                                                          int                     batchCount);
+                                                          int                         ldc,
+                                                          long long                   bsc,
+                                                          int                         batchCount);
 
 // gemmex
 HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
