@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2017 Advanced Micro Devices, Inc.
+# Copyright 2017-2020 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # Configure hipblas package to be used in another cmake project.
