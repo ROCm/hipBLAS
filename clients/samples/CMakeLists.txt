@@ -24,7 +24,7 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
   target_include_directories( ${exe}
     SYSTEM PRIVATE
       $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
-      /opt/rocm/hsa/include
+      ${ROCM_PATH}/hsa/include
   )
 
   # Try to test for specific compiler features if cmake version is recent enough
