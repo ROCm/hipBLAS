@@ -16,12 +16,10 @@
 
 using namespace std;
 
-template <typename T>
-using hipblas_iamax_iamin_t
-    = hipblasStatus_t (*)(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
+/* ============================================================================================ */
 
-template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
-hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_t<T> func)
+template <typename T>
+hipblasStatus_t testing_amax(Arguments argus)
 {
     int N    = argus.N;
     int incx = argus.incx;
@@ -45,7 +43,7 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
         CHECK_HIP_ERROR(hipMalloc(&dx, 100 * sizeof(T)));
         CHECK_HIP_ERROR(hipMalloc(&d_rocblas_result, sizeof(int)));
 
-        status_1 = func(handle, N, dx, incx, &rocblas_result1);
+        status_1 = hipblasIamax<T>(handle, N, dx, incx, &rocblas_result1);
 
         unit_check_general<int>(1, 1, 1, &zero, &rocblas_result1);
     }
@@ -76,7 +74,7 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
 
             status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-            status_1 = func(handle, N, dx, incx, d_rocblas_result);
+            status_1 = hipblasIamax<T>(handle, N, dx, incx, d_rocblas_result);
 
             CHECK_HIP_ERROR(
                 hipMemcpy(&rocblas_result1, d_rocblas_result, sizeof(int), hipMemcpyDeviceToHost));
@@ -86,7 +84,7 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
         {
             status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-            status_2 = func(handle, N, dx, incx, &rocblas_result2);
+            status_2 = hipblasIamax<T>(handle, N, dx, incx, &rocblas_result2);
         }
 
         if((status_1 == HIPBLAS_STATUS_SUCCESS) && (status_2 == HIPBLAS_STATUS_SUCCESS)
@@ -95,7 +93,7 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
             /* =====================================================================
                         CPU BLAS
             =================================================================== */
-            REFBLAS_FUNC(N, hx.data(), incx, &cpu_result);
+            cblas_iamax<T>(N, hx.data(), incx, &cpu_result);
             // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
             cpu_result += 1;
 
@@ -125,16 +123,4 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_amax(const Arguments& arg)
-{
-    return testing_iamax_iamin<T, cblas_iamax<T>>(arg, hipblasIamax<T>);
-}
-
-template <typename T>
-hipblasStatus_t testing_amin(const Arguments& arg)
-{
-    return testing_iamax_iamin<T, cblas_iamin<T>>(arg, hipblasIamin<T>);
 }
