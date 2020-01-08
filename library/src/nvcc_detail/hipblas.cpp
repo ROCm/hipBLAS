@@ -2790,18 +2790,23 @@ hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                              float*             B,
                              int                ldb)
 {
-    return rocBLASStatusToHIPStatus(cublasStrmm((rocblas_handle)handle,
-                                                hipSideToCudaSide(side),
-                                                hipFillToCudaFill(uplo),
-                                                hipOperationToCudaOperation(transA),
-                                                hipDiagonalToCudaDiagonal(diag),
-                                                m,
-                                                n,
-                                                alpha,
-                                                A,
-                                                lda,
-                                                B,
-                                                ldb));
+    // cuBLAS API for trmm is a bit different, you can pass in a third
+    // pointer to do out-of-place trmm. If you want the in-place behaviour
+    // you can pass in B as the third pointer, as seen here.
+    return hipCUBLASStatusToHIPStatus(cublasStrmm((cublasHandle_t)handle,
+                                                  hipSideToCudaSide(side),
+                                                  hipFillToCudaFill(uplo),
+                                                  hipOperationToCudaOperation(transA),
+                                                  hipDiagonalToCudaDiagonal(diag),
+                                                  m,
+                                                  n,
+                                                  alpha,
+                                                  A,
+                                                  lda,
+                                                  B,
+                                                  ldb,
+                                                  B,
+                                                  ldb));
 }
 
 hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
@@ -2817,18 +2822,20 @@ hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
                              double*            B,
                              int                ldb)
 {
-    return rocBLASStatusToHIPStatus(cublasDtrmm((rocblas_handle)handle,
-                                                hipSideToCudaSide(side),
-                                                hipFillToCudaFill(uplo),
-                                                hipOperationToCudaOperation(transA),
-                                                hipDiagonalToCudaDiagonal(diag),
-                                                m,
-                                                n,
-                                                alpha,
-                                                A,
-                                                lda,
-                                                B,
-                                                ldb));
+    return hipCUBLASStatusToHIPStatus(cublasDtrmm((cublasHandle_t)handle,
+                                                  hipSideToCudaSide(side),
+                                                  hipFillToCudaFill(uplo),
+                                                  hipOperationToCudaOperation(transA),
+                                                  hipDiagonalToCudaDiagonal(diag),
+                                                  m,
+                                                  n,
+                                                  alpha,
+                                                  A,
+                                                  lda,
+                                                  B,
+                                                  ldb,
+                                                  B,
+                                                  ldb));
 }
 
 // trsm
