@@ -532,6 +532,7 @@ hipblasStatus_t hipblasGemmBatched(hipblasHandle_t    handle,
                                    int                ldc,
                                    int                batch_count);
 
+// trsm
 template <typename T>
 hipblasStatus_t hipblasTrsm(hipblasHandle_t    handle,
                             hipblasSideMode_t  side,
@@ -546,6 +547,39 @@ hipblasStatus_t hipblasTrsm(hipblasHandle_t    handle,
                             T*                 B,
                             int                ldb);
 
+template <typename T>
+hipblasStatus_t hipblasTrsmBatched(hipblasHandle_t    handle,
+                                   hipblasSideMode_t  side,
+                                   hipblasFillMode_t  uplo,
+                                   hipblasOperation_t transA,
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   int                n,
+                                   const T*           alpha,
+                                   T* const           A[],
+                                   int                lda,
+                                   T*                 B[],
+                                   int                ldb,
+                                   int                batch_count);
+
+template <typename T>
+hipblasStatus_t hipblasTrsmStridedBatched(hipblasHandle_t    handle,
+                                          hipblasSideMode_t  side,
+                                          hipblasFillMode_t  uplo,
+                                          hipblasOperation_t transA,
+                                          hipblasDiagType_t  diag,
+                                          int                m,
+                                          int                n,
+                                          const T*           alpha,
+                                          T*                 A,
+                                          int                lda,
+                                          int                strideA,
+                                          T*                 B,
+                                          int                ldb,
+                                          int                strideB,
+                                          int                batch_count);
+
+// trtri
 template <typename T>
 hipblasStatus_t hipblasTrtri(hipblasHandle_t   handle,
                              hipblasFillMode_t uplo,

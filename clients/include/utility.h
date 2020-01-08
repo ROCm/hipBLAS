@@ -383,6 +383,23 @@ void hipblas_init_symmetric(vector<T>& A, int N, int lda)
     }
 };
 
+/*! \brief symmetric matrix initialization for strided_batched matricies: */
+template <typename T>
+void hipblas_init_symmetric(vector<T>& A, int N, int lda, int strideA, int batch_count)
+{
+    for(int b = 0; b < batch_count; b++)
+    {
+        int off = b * strideA;
+        for(int i = 0; i < N; ++i)
+        {
+            for(int j = 0; j <= i; ++j)
+            {
+                A[j + i * lda + off] = A[i + j * lda + off] = random_generator<T>();
+            }
+        }
+    }
+}
+
 /*! \brief  hermitian matrix initialization: */
 // for complex matrix only, the real/imag part would be initialized with the same value
 // except the diagonal elment must be real
