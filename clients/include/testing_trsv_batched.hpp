@@ -54,13 +54,13 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA[batch_count]; //(size_A);
-    host_vector<T> AAT[batch_count]; //(size_A);
-    host_vector<T> hb[batch_count]; //(size_x);
-    host_vector<T> hx[batch_count]; //(size_x);
-    host_vector<T> hx_or_b_1[batch_count]; //(size_x);
-    host_vector<T> hx_or_b_2[batch_count]; //(size_x);
-    host_vector<T> cpu_x_or_b[batch_count]; //size_x);
+    host_vector<T> hA[batch_count];
+    host_vector<T> AAT[batch_count];
+    host_vector<T> hb[batch_count];
+    host_vector<T> hx[batch_count];
+    host_vector<T> hx_or_b_1[batch_count];
+    host_vector<T> hx_or_b_2[batch_count];
+    host_vector<T> cpu_x_or_b[batch_count];
 
     device_batch_vector<T> bA(batch_count, size_A);
     device_batch_vector<T> bx_or_b(batch_count, size_x);
