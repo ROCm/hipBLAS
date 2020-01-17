@@ -1,11 +1,14 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
 #include "utility.h"
 #include "hipblas.h"
 #include <sys/time.h>
+
+hipblas_rng_t hipblas_rng(69069);
+hipblas_rng_t hipblas_seed(hipblas_rng);
 
 template <>
 char type2char<float>()
@@ -20,12 +23,12 @@ char type2char<double>()
 }
 
 //  template<>
-//  char type2char<hipComplex>(){
+//  char type2char<hipblasComplex>(){
 //      return 'c';
 //  }
 
 //  template<>
-//  char type2char<hipDoubleComplex>(){
+//  char type2char<hipblasDoubleComplex>(){
 //      return 'z';
 //  }
 

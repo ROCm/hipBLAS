@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016 Advanced Micro Devices, Inc.
+# Copyright 2016-2020 Advanced Micro Devices, Inc.
 # ########################################################################
 
 set( hipblas_samples_common ../common/utility.cpp )
@@ -24,7 +24,7 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
   target_include_directories( ${exe}
     SYSTEM PRIVATE
       $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
-      /opt/rocm/hsa/include
+      ${ROCM_PATH}/hsa/include
   )
 
   # Try to test for specific compiler features if cmake version is recent enough
@@ -36,29 +36,29 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
 
   if( NOT CUDA_FOUND )
     target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_HCC__ )
-  
+
     get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
     target_link_libraries( ${exe} PRIVATE ${HIP_HCC_LOCATION} )
-  
+
     if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
       # Remove following when hcc is fixed; hcc emits following spurious warning
       # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
       target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument -mf16c)
-      
+
     elseif( CMAKE_COMPILER_IS_GNUCXX )
       # GCC needs specific flag to turn on f16c intrinsics
       target_compile_options( ${exe} PRIVATE -mf16c )
-  
+
     endif( )
-  
+
   else( )
     target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_NVCC__ )
-  
+
     target_include_directories( ${exe}
       PRIVATE
         $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
     )
-  
+
     target_link_libraries( ${exe} PRIVATE ${CUDA_LIBRARIES} )
   endif( )
 

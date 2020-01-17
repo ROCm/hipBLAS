@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -129,6 +129,10 @@ TEST_P(set_vector_get_vector_gtest, float)
         else if(arg.incd <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }

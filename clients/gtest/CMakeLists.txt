@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016 Advanced Micro Devices, Inc.
+# Copyright 2016-2020 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # set( Boost_DEBUG ON )
@@ -44,7 +44,11 @@ set(hipblas_test_source
   set_get_matrix_gtest.cpp
   blas1_gtest.cpp
   gemv_gtest.cpp
+  gemv_batched_gtest.cpp
+  gemv_strided_batched_gtest.cpp
   ger_gtest.cpp
+  syr_gtest.cpp
+  trsv_gtest.cpp
   gemm_gtest.cpp
   gemm_ex_gtest.cpp
   gemm_strided_batched_gtest.cpp
@@ -59,6 +63,7 @@ set( hipblas_benchmark_common
   ../common/flops.cpp
   ../common/norm.cpp
   ../common/unit.cpp
+  ../common/near.cpp
   ../common/arg_check.cpp
   ../common/hipblas_template_specialization.cpp
 )
@@ -83,7 +88,7 @@ target_include_directories( hipblas-test
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
-    /opt/rocm/hsa/include
+    ${ROCM_PATH}/hsa/include
 )
 
 target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} )
