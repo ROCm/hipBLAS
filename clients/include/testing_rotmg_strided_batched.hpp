@@ -29,9 +29,6 @@ hipblasStatus_t testing_rotmg_strided_batched(Arguments arg)
     int    stride_y1    = stride_scale;
     int    stride_param = 5 * stride_scale;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
@@ -42,14 +39,15 @@ hipblasStatus_t testing_rotmg_strided_batched(Arguments arg)
     // check to prevent undefined memory allocation error
     if(batch_count == 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_SUCCESS;
     }
     else if(batch_count < 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     size_t size_d1    = batch_count * stride_d1;
     size_t size_d2    = batch_count * stride_d2;

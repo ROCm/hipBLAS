@@ -30,9 +30,6 @@ hipblasStatus_t testing_rotm(Arguments arg)
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
     // check to prevent undefined memory allocation error
@@ -40,6 +37,9 @@ hipblasStatus_t testing_rotm(Arguments arg)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     size_t size_x = N * size_t(incx);
     size_t size_y = N * size_t(incy);
