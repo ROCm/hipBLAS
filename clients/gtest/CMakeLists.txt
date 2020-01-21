@@ -35,6 +35,7 @@ if( NOT TARGET hipblas )
 endif( )
 
 find_package( GTest REQUIRED )
+include_directories(${GTEST_INCLUDE_DIRS})
 
 set(hipblas_test_source
   hipblas_gtest_main.cpp
