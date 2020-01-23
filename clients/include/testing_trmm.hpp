@@ -22,7 +22,6 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trmm(Arguments argus)
 {
-
     int M   = argus.M;
     int N   = argus.N;
     int lda = argus.lda;
@@ -34,10 +33,10 @@ hipblasStatus_t testing_trmm(Arguments argus)
     char char_diag   = argus.diag_option;
     T    alpha       = argus.alpha;
 
-    hipblasSideMode_t  side   = char2hipblasSideMode_t(char_side);
-    hipblasFillMode_t  uplo   = char2hipblasFillMode_t(char_uplo);
+    hipblasSideMode_t  side   = char2hipblas_side(char_side);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(char_uplo);
     hipblasOperation_t transA = char2hipblas_operation(char_transA);
-    hipblasDiagType_t  diag   = char2hipblasDiagType_t(char_diag);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(char_diag);
 
     int K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
     int A_size = lda * K;
@@ -46,30 +45,23 @@ hipblasStatus_t testing_trmm(Arguments argus)
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // check here to prevent undefined memory allocation error
-    if(M < 0 || N < 0 || lda < 0 || ldb < 0)
+    if(M < 0 || N < 0 || lda < K || ldb < M)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    vector<T> hA(A_size);
-    vector<T> hB(B_size);
-    vector<T> hC(B_size);
-    vector<T> hB_copy(B_size);
+    host_vector<T> hA(A_size);
+    host_vector<T> hB(B_size);
+    host_vector<T> hB_copy(B_size);
 
-    T *dA, *dB, *dC;
+    device_vector<T> dA(A_size);
+    device_vector<T> dB(B_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
-    double rocblas_error;
 
     hipblasHandle_t handle;
-
     hipblasCreate(&handle);
-
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dA, A_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dB, B_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dC, B_size * sizeof(T))); // dB and dC are exact the same size
 
     // Initial Data on CPU
     srand(1);
@@ -84,28 +76,16 @@ hipblasStatus_t testing_trmm(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    /*
-        status = hipblasTrmm<T>(handle,
-                side, uplo,
-                transA, diag,
-                M, N,
-                &alpha,
-                dA,lda,
-                dB,ldb,
-                dC,ldc);
-    */
+    status = hipblasTrmm<T>(handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        CHECK_HIP_ERROR(hipFree(dA));
-        CHECK_HIP_ERROR(hipFree(dB));
-        CHECK_HIP_ERROR(hipFree(dC));
         hipblasDestroy(handle);
         return status;
     }
 
     // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hB.data(), dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
 
     if(argus.unit_check)
     {
@@ -119,13 +99,10 @@ hipblasStatus_t testing_trmm(Arguments argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(M, N, ldb, hB_copy.data(), hC.data());
+            unit_check_general<T>(M, N, ldb, hB_copy.data(), hB.data());
         }
     }
 
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dB));
-    CHECK_HIP_ERROR(hipFree(dC));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

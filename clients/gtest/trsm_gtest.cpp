@@ -4,6 +4,8 @@
  * ************************************************************************ */
 
 #include "testing_trsm.hpp"
+#include "testing_trsm_batched.hpp"
+#include "testing_trsm_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -18,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, double, vector<char>> trsm_tuple;
+typedef std::tuple<vector<int>, double, vector<char>, double, int> trsm_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -90,6 +92,10 @@ const vector<vector<char>> full_side_uplo_transA_diag_range = {
     {'R', 'U', 'C', 'U'},
 };
 
+const vector<double> stride_scale_range = {2.5};
+
+const vector<int> batch_count_range = {-1, 0, 1, 2};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -112,6 +118,8 @@ Arguments setup_trsm_arguments(trsm_tuple tup)
     vector<int>  matrix_size           = std::get<0>(tup);
     double       alpha                 = std::get<1>(tup);
     vector<char> side_uplo_transA_diag = std::get<2>(tup);
+    double       stride_scale          = std::get<3>(tup);
+    int          batch_count           = std::get<4>(tup);
 
     Arguments arg;
 
@@ -129,6 +137,9 @@ Arguments setup_trsm_arguments(trsm_tuple tup)
     arg.diag_option   = side_uplo_transA_diag[3];
 
     arg.timing = 1;
+
+    arg.stride_scale = stride_scale;
+    arg.batch_count  = batch_count;
 
     return arg;
 }
@@ -210,6 +221,69 @@ TEST_P(trsm_gtest, trsm_gtest_double)
     }
 }
 
+TEST_P(trsm_gtest, trsm_batched_gtest_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trsm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trsm_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.ldb < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(trsm_gtest, trsm_strided_batched_gtest_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trsm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trsm_strided_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
@@ -223,7 +297,9 @@ INSTANTIATE_TEST_CASE_P(hipblasTrsm_matrix_size,
                         trsm_gtest,
                         Combine(ValuesIn(full_matrix_size_range),
                                 ValuesIn(alpha_range),
-                                ValuesIn(side_uplo_transA_diag_range)));
+                                ValuesIn(side_uplo_transA_diag_range),
+                                ValuesIn(stride_scale_range),
+                                ValuesIn(batch_count_range)));
 
 // THis function mainly test the scope of  full_side_uplo_transA_diag_range,.the scope of
 // matrix_size_range is small
@@ -231,4 +307,6 @@ INSTANTIATE_TEST_CASE_P(hipblasTrsm_scalar_transpose,
                         trsm_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(alpha_range),
-                                ValuesIn(full_side_uplo_transA_diag_range)));
+                                ValuesIn(full_side_uplo_transA_diag_range),
+                                ValuesIn(stride_scale_range),
+                                ValuesIn(batch_count_range)));
