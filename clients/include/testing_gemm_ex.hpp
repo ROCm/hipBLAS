@@ -93,10 +93,6 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
         return HIPBLAS_STATUS_NOT_SUPPORTED;
     }
 
-    hipblasHandle_t handle;
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-    hipblasCreate(&handle);
-
     int A_row = transA == HIPBLAS_OP_N ? M : K;
     int A_col = transA == HIPBLAS_OP_N ? K : M;
     int B_row = transB == HIPBLAS_OP_N ? K : N;
@@ -147,6 +143,10 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
         PRINT_IF_HIP_ERROR(hipErrorOutOfMemory);
         return HIPBLAS_STATUS_ALLOC_FAILED;
     }
+
+    hipblasHandle_t handle;
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    hipblasCreate(&handle);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
     vector<Td> hA(size_A);

@@ -35,22 +35,20 @@ hipblasStatus_t testing_rot_strided_batched(Arguments arg)
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || incy <= 0 || batch_count == 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_SUCCESS;
     }
     else if(batch_count < 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     size_t size_x = N * size_t(incx) + size_t(stride_x) * size_t(batch_count - 1);
     size_t size_y = N * size_t(incy) + size_t(stride_y) * size_t(batch_count - 1);

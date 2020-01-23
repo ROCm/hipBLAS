@@ -40,9 +40,6 @@ hipblasStatus_t testing_syr_batched(Arguments argus)
 
     T alpha = (T)argus.alpha;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
@@ -56,6 +53,9 @@ hipblasStatus_t testing_syr_batched(Arguments argus)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA[batch_count];

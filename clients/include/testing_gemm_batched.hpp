@@ -83,8 +83,6 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     hipblasStatus_t status   = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
 
     int A_row, A_col, B_row, B_col;
 
@@ -114,6 +112,9 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     int A_mat_size = A_col * lda;
     int B_mat_size = B_col * ldb;

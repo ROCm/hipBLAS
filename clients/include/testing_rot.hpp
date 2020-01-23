@@ -31,9 +31,6 @@ hipblasStatus_t testing_rot(Arguments arg)
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
     // check to prevent undefined memory allocation error
@@ -41,6 +38,9 @@ hipblasStatus_t testing_rot(Arguments arg)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     size_t size_x = N * size_t(incx);
     size_t size_y = N * size_t(incy);
@@ -125,5 +125,6 @@ hipblasStatus_t testing_rot(Arguments arg)
         if(status_4 != HIPBLAS_STATUS_SUCCESS)
             return status_4;
     }
+    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
