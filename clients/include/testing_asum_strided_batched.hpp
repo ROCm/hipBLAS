@@ -37,9 +37,6 @@ hipblasStatus_t testing_asum_strided_batched(Arguments argus)
     double gpu_time_used, cpu_time_used;
     double rocblas_error;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-
     // check to prevent undefined memory allocation error
     if(N < 0 || incx < 0 || batch_count < 0)
     {
@@ -50,6 +47,9 @@ hipblasStatus_t testing_asum_strided_batched(Arguments argus)
         // return early so we don't get invalid_value from rocblas because of bad result pointer
         return HIPBLAS_STATUS_SUCCESS;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T1> hx(sizeX);

@@ -23,9 +23,6 @@ hipblasStatus_t testing_rotmg_batched(Arguments arg)
 {
     int batch_count = arg.batch_count;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
@@ -36,14 +33,15 @@ hipblasStatus_t testing_rotmg_batched(Arguments arg)
     // check to prevent undefined memory allocation error
     if(batch_count == 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_SUCCESS;
     }
     else if(batch_count < 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     // Initial Data on CPU
     host_vector<T> hd1[batch_count];

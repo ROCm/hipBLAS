@@ -269,13 +269,13 @@ inline hipblasBfloat16 random_generator_negative<hipblasBfloat16>()
 template <>
 inline hipblasComplex random_generator_negative<hipblasComplex>()
 {
-    hipblasComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+    return hipblasComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
 }
 
 template <>
 inline hipblasDoubleComplex random_generator_negative<hipblasDoubleComplex>()
 {
-    hipblasDoubleComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+    return hipblasDoubleComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
 }
 
 /* ============================================================================================ */

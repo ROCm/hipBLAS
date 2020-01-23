@@ -31,22 +31,20 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || incy <= 0 || batch_count == 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_SUCCESS;
     }
     if(batch_count < 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     size_t size_x = N * size_t(incx);
     size_t size_y = N * size_t(incy);
