@@ -17,6 +17,7 @@ function display_help()
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [-r]--relocatable] create a package to support relocatable ROCm"
   echo "    [--cuda] build library for cuda backend"
+  echo "    [--hip-clang] build library with hip-clang"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
 }
 
@@ -104,9 +105,9 @@ install_packages( )
   fi
 
   # dependencies needed for library and clients to build
-  local library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" "rocm-dev" )
-  local library_dependencies_centos=( "epel-release" "make" "cmake3" "rocm-dev" "gcc-c++" "rpm-build" )
-  local library_dependencies_fedora=( "make" "cmake" "rocm-dev" "gcc-c++" "libcxx-devel" "rpm-build" )
+  local library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" )
+  local library_dependencies_centos=( "epel-release" "make" "cmake3" "gcc-c++" "rpm-build" )
+  local library_dependencies_fedora=( "make" "cmake" "gcc-c++" "libcxx-devel" "rpm-build" )
   local library_dependencies_sles=( "make" "cmake" "gcc-c++" "libcxxtools9" "rpm-build" )
 
   if [[ "${build_cuda}" == true ]]; then
@@ -114,15 +115,15 @@ install_packages( )
     library_dependencies_ubuntu+=( "cuda" )
     library_dependencies_centos+=( "" ) # how to install cuda on centos?
     library_dependencies_fedora+=( "" ) # how to install cuda on fedora?
-  else
-    library_dependencies_ubuntu+=( "hcc" "rocblas" )
-    library_dependencies_centos+=( "hcc" "rocblas" )
-    library_dependencies_fedora+=( "hcc" "rocblas" )
-    library_dependencies_sles+=( "hcc" "rocblas" )
+  elif [[ "${build_hip_clang}" == false ]]; then
+    library_dependencies_ubuntu+=( "rocm-dev" "rocblas" )
+    library_dependencies_centos+=( "rocm-dev" "rocblas" )
+    library_dependencies_fedora+=( "rocm-dev" "rocblas" )
+    library_dependencies_sles+=( "rocm-dev" "rocblas" )
   fi
 
   local client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
-  local client_dependencies_centos=( "gcc-gfortran" "boost-devel" )
+  local client_dependencies_centos=( "devtoolset-7-gcc-gfortran" "boost-devel" )
   local client_dependencies_fedora=( "gcc-gfortran" "boost-devel" )
   local client_dependencies_sles=( "libboost_program_options1_66_0-devel" "pkg-config" "dpkg" )
 
@@ -216,6 +217,7 @@ install_dependencies=false
 install_prefix=hipblas-install
 build_clients=false
 build_cuda=false
+build_hip_clang=false
 build_release=true
 build_relocatable=false
 cmake_prefix_path=/opt/rocm
@@ -228,7 +230,7 @@ rocm_path=/opt/rocm
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,cuda,cmakepp,relocatable: --options rhicdgp: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,hip-clang,cuda,cmakepp,relocatable: --options rhicdgp: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -261,6 +263,9 @@ while true; do
         shift ;;
     -g|--debug)
         build_release=false
+        shift ;;
+    --hip-clang)
+        build_hip_clang=true
         shift ;;
     --cuda)
         build_cuda=true
