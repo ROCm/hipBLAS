@@ -7,14 +7,17 @@
 #include "testing_asum_batched.hpp"
 #include "testing_asum_strided_batched.hpp"
 #include "testing_axpy.hpp"
+#include "testing_axpy_batched.hpp"
+#include "testing_axpy_strided_batched.hpp"
 #include "testing_copy.hpp"
 #include "testing_copy_batched.hpp"
 #include "testing_copy_strided_batched.hpp"
 #include "testing_dot.hpp"
 #include "testing_dot_batched.hpp"
 #include "testing_dot_strided_batched.hpp"
-#include "testing_iamax.hpp"
-#include "testing_iamin.hpp"
+#include "testing_iamax_iamin.hpp"
+#include "testing_iamax_iamin_batched.hpp"
+#include "testing_iamax_iamin_strided_batched.hpp"
 #include "testing_nrm2.hpp"
 #include "testing_nrm2_batched.hpp"
 #include "testing_nrm2_strided_batched.hpp"
@@ -148,6 +151,7 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
     return arg;
 }
 
+// axpy
 TEST_P(blas1_gtest, axpy_half)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
@@ -159,7 +163,7 @@ TEST_P(blas1_gtest, axpy_half)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -181,7 +185,7 @@ TEST_P(blas1_gtest, axpy_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -203,7 +207,7 @@ TEST_P(blas1_gtest, axpy_float_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -214,10 +218,11 @@ TEST_P(blas1_gtest, axpy_float_complex)
     }
 }
 
-TEST_P(blas1_gtest, axpy_double_complex)
+// axpy_batched
+TEST_P(blas1_gtest, axpy_batched_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_axpy<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_axpy_batched<float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -225,13 +230,96 @@ TEST_P(blas1_gtest, axpy_double_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx < 0)
+        else if(!arg.incx || !arg.incy)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, axpy_batched_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_axpy_batched<hipblasComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(!arg.incx || !arg.incy)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// axpy_strided_batched
+TEST_P(blas1_gtest, axpy_strided_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_axpy_strided_batched<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(!arg.incx || !arg.incy)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, axpy_strided_batched_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_axpy_strided_batched<hipblasComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(!arg.incx || !arg.incy)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -2077,20 +2165,6 @@ TEST_P(blas1_gtest, amax_float)
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
-TEST_P(blas1_gtest, amax_double)
-{
-    // GetParam return a tuple. Tee setup routine unpack the tuple
-    // and initializes arg(Arguments) which will be passed to testing routine
-    // The Arguments data struture have physical meaning associated.
-    // while the tuple is non-intuitive.
-
-    Arguments arg = setup_blas1_arguments(GetParam());
-
-    hipblasStatus_t status = testing_amax<double>(arg);
-
-    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
-}
-
 TEST_P(blas1_gtest, amax_float_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -2105,53 +2179,171 @@ TEST_P(blas1_gtest, amax_float_complex)
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
-TEST_P(blas1_gtest, amax_double_complex)
+// amax_batched
+TEST_P(blas1_gtest, amax_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amax_batched<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, amax_batched_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amax_batched<hipblasComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// amax_strided_batched
+TEST_P(blas1_gtest, amax_strided_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amax_strided_batched<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, amax_strided_batched_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amax_strided_batched<hipblasComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// amin
+TEST_P(blas1_gtest, amin_float)
 {
     Arguments arg = setup_blas1_arguments(GetParam());
 
-    hipblasStatus_t status = testing_amax<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_amin<float>(arg);
 
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
-TEST_P(blas1_gtest, amin_float)
-{
-    // TODO: min is broken in rocblas currently (fixed in 2.10?)
-    // Arguments arg = setup_blas1_arguments(GetParam());
-
-    // hipblasStatus_t status = testing_amin<float>(arg);
-
-    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
-}
-
-TEST_P(blas1_gtest, amin_double)
-{
-    // TODO: min is broken in rocblas currently (fixed in 2.10?)
-    // Arguments arg = setup_blas1_arguments(GetParam());
-
-    // hipblasStatus_t status = testing_amin<double>(arg);
-
-    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
-}
-
 TEST_P(blas1_gtest, amin_float_complex)
 {
-    // TODO: min is broken in rocblas currently (fixed in 2.10?)
-    // Arguments arg = setup_blas1_arguments(GetParam());
+    Arguments arg = setup_blas1_arguments(GetParam());
 
-    // hipblasStatus_t status = testing_amin<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_amin<hipblasComplex>(arg);
 
-    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
-TEST_P(blas1_gtest, amin_double_complex)
+// amin_batched
+TEST_P(blas1_gtest, amin_batched_float)
 {
-    // TODO: min is broken in rocblas currently (fixed in 2.10?)
-    // Arguments arg = setup_blas1_arguments(GetParam());
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amin_batched<float>(arg);
 
-    // hipblasStatus_t status = testing_amin<hipblasDoubleComplex>(arg);
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
 
-    // EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+TEST_P(blas1_gtest, amin_batched_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amin_batched<hipblasComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// amin_strided_batched
+TEST_P(blas1_gtest, amin_strided_batched_float)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amin_strided_batched<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_gtest, amin_strided_batched_float_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amin_strided_batched<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
 }
 
 // Values is for a single item; ValuesIn is for an array

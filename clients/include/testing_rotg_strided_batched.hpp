@@ -33,22 +33,20 @@ hipblasStatus_t testing_rotg_strided_batched(Arguments arg)
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
     // check to prevent undefined memory allocation error
     if(batch_count == 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_SUCCESS;
     }
     else if(batch_count < 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     size_t size_a = size_t(stride_a) * size_t(batch_count);
     size_t size_b = size_t(stride_b) * size_t(batch_count);

@@ -40,10 +40,6 @@ hipblasStatus_t testing_gemm(Arguments argus)
 
     int A_size, B_size, C_size, A_row, A_col, B_row, B_col;
 
-    hipblasHandle_t handle;
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-    hipblasCreate(&handle);
-
     if(transA == HIPBLAS_OP_N)
     {
         A_row = M;
@@ -75,6 +71,11 @@ hipblasStatus_t testing_gemm(Arguments argus)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+
+    hipblasHandle_t handle;
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    hipblasCreate(&handle);
+
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     vector<T> hA(A_size);
     vector<T> hB(B_size);
