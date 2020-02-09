@@ -16,6 +16,8 @@ function display_help()
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [-r]--relocatable] create a package to support relocatable ROCm"
   echo "    [--cuda] build library for cuda backend"
+  echo "    [--hip-clang] build library with hip-clang"
+  echo "    [--clang] use clang as the host compiler"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
 }
 
@@ -219,6 +221,7 @@ build_release=true
 build_relocatable=false
 cmake_prefix_path=/opt/rocm
 rocm_path=/opt/rocm
+compiler=g++
 
 # #################################################
 # Parameter parsing
@@ -227,7 +230,7 @@ rocm_path=/opt/rocm
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,cuda,cmakepp,relocatable: --options rhicdgp: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,hip-clang,clang,cuda,cmakepp,relocatable: --options rhicdgp: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -260,6 +263,12 @@ while true; do
         shift ;;
     -g|--debug)
         build_release=false
+        shift ;;
+    --hip-clang)
+        build_hip_clang=true
+        shift ;;
+    --clang)
+        compiler=clang++
         shift ;;
     --cuda)
         build_cuda=true
@@ -354,13 +363,13 @@ pushd .
 
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
-    CXX=g++ ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX=${rocm_path} \
+    CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX=${rocm_path} \
     -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;${cmake_prefix_path}" \
     -DCMAKE_SHARED_LINKER_FLAGS=${rocm_rpath} \
     -DROCM_DISABLE_LDCONFIG=ON \
     -DROCM_PATH=${rocm_path} ../..
   else
-    CXX=g++ ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
+    CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
   fi
   make -j$(nproc)
 
