@@ -105,7 +105,7 @@ if( NOT CUDA_FOUND )
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
     target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument -mf16c)
 
-  elseif( CMAKE_COMPILER_IS_GNUCXX )
+  else( )
     # GCC needs specific flag to turn on f16c intrinsics
     target_compile_options( hipblas-test PRIVATE -mf16c )
 
