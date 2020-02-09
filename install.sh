@@ -224,6 +224,7 @@ build_release=true
 build_relocatable=false
 cmake_prefix_path=/opt/rocm
 rocm_path=/opt/rocm
+compiler=g++
 
 # #################################################
 # Parameter parsing
@@ -372,13 +373,13 @@ pushd .
 
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
-    CXX=g++ ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX=${rocm_path} \
+    CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX=${rocm_path} \
     -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;${cmake_prefix_path}" \
     -DCMAKE_SHARED_LINKER_FLAGS=${rocm_rpath} \
     -DROCM_DISABLE_LDCONFIG=ON \
     -DROCM_PATH=${rocm_path} ../..
   else
-    CXX=g++ ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
+    CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
   fi
   make -j$(nproc)
 
