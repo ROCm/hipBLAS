@@ -3159,7 +3159,7 @@ hipblasStatus_t hipblasTrmm<float>(hipblasHandle_t    handle,
                                    float*             B,
                                    int                ldb)
 {
-    hipblasStrmm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
+    return hipblasStrmm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
 }
 
 template <>
@@ -3176,7 +3176,7 @@ hipblasStatus_t hipblasTrmm<double>(hipblasHandle_t    handle,
                                     double*            B,
                                     int                ldb)
 {
-    hipblasDtrmm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
+    return hipblasDtrmm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
 }
 
 // trsm
