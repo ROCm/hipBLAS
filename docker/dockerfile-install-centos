@@ -8,7 +8,7 @@ LABEL maintainer="andrew.chapman@amd.com"
 COPY *.rpm /tmp/
 
 # Install the rpm package, and print out contents of expected changed locations
-RUN yum -y update && yum install -y --nogpgcheck\
+RUN yum -y update && yum install -y\
     /tmp/hipblas-*.rpm \
   && rm -f /tmp/*.rpm \
   && yum -y clean all \
