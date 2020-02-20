@@ -4,23 +4,17 @@
 def runCompileCommand(platform, project, jobName)
 {
     project.paths.construct_build_prefix()
-        
-    if(jobName.contains('hipclang'))
-    {
-        command = """#!/usr/bin/env bash
+
+    def devtoolset = platform.jenkinsLabel.contains('centos') ? 'export PATH=/opt/rh/devtoolset-7/root/usr/bin:$PATH' : ''
+    def hipclang = jobName.contains('hipclang') ? '--hip-clang' : ''
+
+    command = """#!/usr/bin/env bash
                 set -x
                 cd ${project.paths.project_build_prefix}
-                LD_LIBRARY_PATH=/opt/rocm/lib CXX=g++ ${project.paths.build_command} --hip-clang
+                ${devtoolset}
+                LD_LIBRARY_PATH=/opt/rocm/lib CXX=g++ ${project.paths.build_command} ${hipclang}
                 """
-    }
-    else
-    {
-        command = """#!/usr/bin/env bash
-                set -x
-                cd ${project.paths.project_build_prefix}
-                LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=g++ ${project.paths.build_command}
-                """
-    }
+                
     platform.runCommand(this, command)
 }
 
