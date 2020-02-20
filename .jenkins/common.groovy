@@ -14,7 +14,7 @@ def runCompileCommand(platform, project, jobName)
                 ${devtoolset}
                 LD_LIBRARY_PATH=/opt/rocm/lib CXX=g++ ${project.paths.build_command} ${hipclang}
                 """
-                
+
     platform.runCommand(this, command)
 }
 
@@ -62,10 +62,6 @@ def runPackageCommand(platform, project, jobName)
 
         platform.runCommand(this, command)
         platform.archiveArtifacts(this, """${project.paths.project_build_prefix}/build/release/package/*.rpm""")        
-    }
-    else if(jobName.contains('hipclang'))
-    {
-        packageCommand = null
     }
     else
     {
