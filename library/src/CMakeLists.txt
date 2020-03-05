@@ -50,8 +50,8 @@ if( NOT CUDA_FOUND )
 
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_HCC__ )
 
-  get_target_property( HIPHCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
-  target_link_libraries( hipblas PRIVATE roc::rocblas ${HIPHCC_LOCATION} )
+  get_target_property( HIPLOCATION hip::device IMPORTED_LOCATION_RELEASE )
+  target_link_libraries( hipblas PRIVATE roc::rocblas ${HIPLOCATION} )
 
   # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
