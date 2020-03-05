@@ -1,0 +1,399 @@
+[32mCreating project build directory in: [33m./build[0m
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Ign:1 http://dl.google.com/linux/chrome/deb stable InRelease
+Hit:2 http://repo.radeon.com/rocm/apt/debian xenial InRelease
+Hit:3 http://dl.google.com/linux/chrome/deb stable Release
+Hit:4 http://ca.archive.ubuntu.com/ubuntu xenial InRelease
+Hit:6 http://security.ubuntu.com/ubuntu xenial-security InRelease
+Hit:7 http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial InRelease
+Get:8 http://ca.archive.ubuntu.com/ubuntu xenial-updates InRelease [109 kB]
+Hit:9 https://download.docker.com/linux/ubuntu xenial InRelease
+Get:10 http://ca.archive.ubuntu.com/ubuntu xenial-backports InRelease [107 kB]
+Fetched 216 kB in 1s (161 kB/s)
+Reading package lists...
+Building dependency tree...
+Reading state information...
+66 packages can be upgraded. Run 'apt list --upgradable' to see them.
+~/hipBLAS ~/hipBLAS
+[32mBuilding [33mgoogletest & lapack[32m from source; installing into [33m/usr/local[0m
+-- Configuring gtest external dependency
+-- ExternalGmock using ( 25 ) cores to build with
+-- Configuring lapack external dependency
+-- The Fortran compiler identification is GNU 5.4.0
+-- Check for working Fortran compiler: /usr/bin/f95
+-- Check for working Fortran compiler: /usr/bin/f95  -- works
+-- Detecting Fortran compiler ABI info
+-- Detecting Fortran compiler ABI info - done
+-- Checking whether /usr/bin/f95 supports Fortran 90
+-- Checking whether /usr/bin/f95 supports Fortran 90 -- yes
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/apremach/hipBLAS/build/deps
+Scanning dependencies of target googletest
+Scanning dependencies of target lapack
+[  6%] Creating directories for 'lapack'
+[ 12%] Creating directories for 'googletest'
+[ 18%] Performing download step (git clone) for 'googletest'
+[ 25%] Performing download step (git clone) for 'lapack'
+Cloning into 'googletest'...
+Cloning into 'lapack'...
+Note: checking out 'release-1.8.0'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ec44c6c... Merge pull request #821 from mazong1123/master
+[ 31%] No patch step for 'googletest'
+[ 37%] Performing update step for 'googletest'
+[ 43%] Performing configure step for 'googletest'
+-- The C compiler identification is GNU 5.4.0
+-- The CXX compiler identification is GNU 5.4.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found PythonInterp: /usr/bin/python (found version "2.7.12") 
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Looking for pthread_create
+-- Looking for pthread_create - not found
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/apremach/hipBLAS/build/deps/gtest/src/googletest-build
+[ 50%] Performing build step for 'googletest'
+-- googletest build command succeeded.  See also /home/apremach/hipBLAS/build/deps/gtest/src/googletest-stamp/googletest-build-*.log
+[ 56%] No install step for 'googletest'
+[ 62%] Completed 'googletest'
+[ 62%] Built target googletest
+Switched to a new branch 'lapack-3.7.1'
+Branch lapack-3.7.1 set up to track remote branch lapack-3.7.1 from origin.
+[ 75%] Performing update step for 'lapack'
+[ 75%] No patch step for 'lapack'
+Current branch lapack-3.7.1 is up to date.
+[ 81%] Performing configure step for 'lapack'
+-- Setting build type to 'Release' as none was specified.
+-- The Fortran compiler identification is GNU 5.4.0
+-- The C compiler identification is GNU 5.4.0
+-- Check for working Fortran compiler: /usr/bin/f95
+-- Check for working Fortran compiler: /usr/bin/f95  -- works
+-- Detecting Fortran compiler ABI info
+-- Detecting Fortran compiler ABI info - done
+-- Checking whether /usr/bin/f95 supports Fortran 90
+-- Checking whether /usr/bin/f95 supports Fortran 90 -- yes
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Looking for Python greater than 2.6 - 
+-- Found PythonInterp: /usr/bin/python2.7 (found suitable version "2.7.12", minimum required is "2.7") 
+-- Using Python version 2.7.12
+-- Reducing RELEASE optimization level to O2
+-- Looking for Fortran NONE - found
+-- Looking for Fortran INT_CPU_TIME - found
+-- Looking for Fortran EXT_ETIME - not found
+-- Looking for Fortran EXT_ETIME_ - not found
+-- Looking for Fortran INT_ETIME - found
+-- --> Will use second_INT_ETIME.f and dsecnd_INT_ETIME.f as timing function.
+-- Build tests: OFF
+-- Build deprecated routines: OFF
+-- Build single precision real: ON
+-- Build double precision real: ON
+-- Build single precision complex: ON
+-- Build double precision complex: ON
+-- Using supplied NETLIB BLAS implementation
+-- CBLAS enable
+-- Detecting Fortran/C Interface
+-- Detecting Fortran/C Interface - Found GLOBAL and MODULE mangling
+-- Verifying Fortran/C Compiler Compatibility
+-- Verifying Fortran/C Compiler Compatibility - Success
+-- Using supplied NETLIB LAPACK implementation
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/apremach/hipBLAS/build/deps/lapack/src/lapack-build
+[ 87%] Performing build step for 'lapack'
+-- lapack build command succeeded.  See also /home/apremach/hipBLAS/build/deps/lapack/src/lapack-stamp/lapack-build-*.log
+[ 93%] No install step for 'lapack'
+[100%] Completed 'lapack'
+[100%] Built target lapack
+[  6%] Performing update step for 'lapack'
+Current branch lapack-3.7.1 is up to date.
+[ 12%] Performing configure step for 'lapack'
+-- Looking for Python greater than 2.6 - 
+-- Using Python version 2.7.12
+-- Looking for Fortran NONE - found
+-- Looking for Fortran INT_CPU_TIME - found
+-- Looking for Fortran EXT_ETIME - not found
+-- Looking for Fortran EXT_ETIME_ - not found
+-- Looking for Fortran INT_ETIME - found
+-- --> Will use second_INT_ETIME.f and dsecnd_INT_ETIME.f as timing function.
+-- Build tests: OFF
+-- Build deprecated routines: OFF
+-- Build single precision real: ON
+-- Build double precision real: ON
+-- Build single precision complex: ON
+-- Build double precision complex: ON
+-- Using supplied NETLIB BLAS implementation
+-- CBLAS enable
+-- Using supplied NETLIB LAPACK implementation
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/apremach/hipBLAS/build/deps/lapack/src/lapack-build
+[ 18%] Performing build step for 'lapack'
+-- lapack build command succeeded.  See also /home/apremach/hipBLAS/build/deps/lapack/src/lapack-stamp/lapack-build-*.log
+[ 25%] No install step for 'lapack'
+[ 31%] Completed 'lapack'
+[ 50%] Built target lapack
+[ 56%] Performing update step for 'googletest'
+[ 62%] Performing configure step for 'googletest'
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/apremach/hipBLAS/build/deps/gtest/src/googletest-build
+[ 68%] Performing build step for 'googletest'
+-- googletest build command succeeded.  See also /home/apremach/hipBLAS/build/deps/gtest/src/googletest-stamp/googletest-build-*.log
+[ 75%] No install step for 'googletest'
+[ 81%] Completed 'googletest'
+[100%] Built target googletest
+Scanning dependencies of target install
+[ 27%] Built target gmock
+[ 63%] Built target gmock_main
+[ 81%] Built target gtest
+[100%] Built target gtest_main
+Install the project...
+-- Install configuration: ""
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/libgmock.a
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/libgmock_main.a
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal/custom
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal/custom/gmock-generated-actions.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal/custom/gmock-generated-actions.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal/custom/gmock-matchers.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal/custom/gmock-port.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal/gmock-generated-internal-utils.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal/gmock-generated-internal-utils.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal/gmock-internal-utils.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/internal/gmock-port.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-actions.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-cardinalities.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-generated-actions.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-generated-actions.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-generated-function-mockers.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-generated-function-mockers.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-generated-matchers.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-generated-matchers.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-generated-nice-strict.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-generated-nice-strict.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-matchers.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-more-actions.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-more-matchers.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock-spec-builders.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gmock/gmock.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/libgtest.a
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/libgtest_main.a
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/custom
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/custom/gtest-port.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/custom/gtest-printers.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/custom/gtest.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-death-test-internal.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-filepath.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-internal.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-linked_ptr.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-param-util-generated.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-param-util-generated.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-param-util.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-port-arch.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-port.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-string.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-tuple.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-tuple.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-type-util.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/internal/gtest-type-util.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest-death-test.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest-message.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest-param-test.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest-param-test.h.pump
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest-printers.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest-spi.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest-test-part.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest-typed-test.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest_pred_impl.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/gtest/gtest_prod.h
+[  7%] Built target blas
+[ 14%] Built target cblas
+[100%] Built target lapack
+Install the project...
+-- Install configuration: "Release"
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/cmake/lapack-3.7.1/lapack-targets.cmake
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/cmake/lapack-3.7.1/lapack-targets-release.cmake
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/pkgconfig/lapack.pc
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/cmake/lapack-3.7.1/lapack-config.cmake
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/cmake/lapack-3.7.1/lapack-config-version.cmake
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/pkgconfig/blas.pc
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/libblas.a
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/cblas.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/cblas_f77.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/cblas_test.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/include/cblas_mangling.h
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/cmake/cblas-3.7.1/cblas-targets.cmake
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/cmake/cblas-3.7.1/cblas-targets-release.cmake
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/pkgconfig/cblas.pc
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/cmake/cblas-3.7.1/cblas-config.cmake
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/cmake/cblas-3.7.1/cblas-config-version.cmake
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/libcblas.a
+-- Installing: /home/apremach/hipBLAS/build/deps/deps-install/lib/liblapack.a
+[100%] Built target install
+~/hipBLAS
+~/hipBLAS ~/hipBLAS
+-- The CXX compiler identification is Clang 10.0.0
+-- Check for working CXX compiler: /opt/rocm/hcc/bin/clang++
+-- Check for working CXX compiler: /opt/rocm/hcc/bin/clang++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.1") 
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR - Success
+-- Boost version: 1.58.0
+-- Found the following Boost libraries:
+--   program_options
+-- The Fortran compiler identification is GNU 5.4.0
+-- Check for working Fortran compiler: /usr/bin/f95
+-- Check for working Fortran compiler: /usr/bin/f95  -- works
+-- Detecting Fortran compiler ABI info
+-- Detecting Fortran compiler ABI info - done
+-- Checking whether /usr/bin/f95 supports Fortran 90
+-- Checking whether /usr/bin/f95 supports Fortran 90 -- yes
+-- Found GTest: /home/apremach/hipBLAS/build/deps/deps-install/lib/libgtest.a  
+-- Looking for C++ include pthread.h
+-- Looking for C++ include pthread.h - found
+-- Looking for pthread_create
+-- Looking for pthread_create - not found
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE  
+-- Check if compiler accepts -pthread
+-- Check if compiler accepts -pthread - yes
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/apremach/hipBLAS/build/release
+Scanning dependencies of target hipblas
+[  2%] Building CXX object library/src/CMakeFiles/hipblas.dir/hcc_detail/hipblas.cpp.o
+/home/apremach/hipBLAS/library/src/hcc_detail/hipblas.cpp:4366:37: warning: rocblas_gemm_ex: The workspace_size and workspace arguments are obsolete, and will be ignored [-W#pragma-messages]
+    return rocBLASStatusToHIPStatus(rocblas_gemm_ex((rocblas_handle)handle,
+                                    ^
+/opt/rocm/include/rocblas-functions.h:5217:25: note: expanded from macro 'rocblas_gemm_ex'
+                        ROCBLAS_VA_OPT_PRAGMA(GCC warning "rocblas_gemm_ex: The workspace_size and workspace arguments are obsolete, and will be ignored", __VA_ARGS__) \
+                        ^
+/opt/rocm/include/rocblas-functions.h:48:5: note: expanded from macro 'ROCBLAS_VA_OPT_PRAGMA'
+    ROCBLAS_VA_OPT_PRAGMA_IMPL(pragma, ROCBLAS_VA_OPT_COUNT(__VA_ARGS__))
+    ^
+/opt/rocm/include/rocblas-functions.h:46:51: note: expanded from macro 'ROCBLAS_VA_OPT_PRAGMA_IMPL'
+#define ROCBLAS_VA_OPT_PRAGMA_IMPL(pragma, count) ROCBLAS_VA_OPT_PRAGMA_IMPL2(pragma, count)
+                                                  ^
+note: (skipping 1 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+<scratch space>:63:1: note: expanded from here
+ROCBLAS_VA_OPT_PRAGMA_SELECTN
+^
+/opt/rocm/include/rocblas-functions.h:44:52: note: expanded from macro 'ROCBLAS_VA_OPT_PRAGMA_SELECTN'
+#define ROCBLAS_VA_OPT_PRAGMA_SELECTN(pragma, ...) _Pragma(#pragma)
+                                                   ^
+<scratch space>:65:6: note: expanded from here
+ GCC warning "rocblas_gemm_ex: The workspace_size and workspace arguments are obsolete, and will be ignored"
+     ^
+1 warning generated.
+[  5%] Linking CXX shared library libhipblas.so
+[  5%] Built target hipblas
+Scanning dependencies of target example-sgemm-strided-batched
+Scanning dependencies of target example-sscal
+Scanning dependencies of target example-sgemm
+[  7%] Building CXX object clients/samples/CMakeFiles/example-sgemm-strided-batched.dir/example_sgemm_strided_batched.cpp.o
+[ 10%] Building CXX object clients/samples/CMakeFiles/example-sgemm-strided-batched.dir/__/common/utility.cpp.o
+[ 13%] Building CXX object clients/samples/CMakeFiles/example-sgemm.dir/example_sgemm.cpp.o
+[ 15%] Building CXX object clients/samples/CMakeFiles/example-sscal.dir/example_sscal.cpp.o
+[ 18%] Building CXX object clients/samples/CMakeFiles/example-sscal.dir/__/common/utility.cpp.o
+[ 21%] Building CXX object clients/samples/CMakeFiles/example-sgemm.dir/__/common/utility.cpp.o
+Scanning dependencies of target hipblas-test
+[ 23%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/hipblas_gtest_main.cpp.o
+[ 26%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/set_get_matrix_gtest.cpp.o
+[ 28%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/ger_gtest.cpp.o
+[ 34%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/gemv_strided_batched_gtest.cpp.o
+[ 52%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/gemm_gtest.cpp.o
+[ 52%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/trsm_gtest.cpp.o
+[ 52%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/syr_gtest.cpp.o
+[ 52%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/gemm_ex_gtest.cpp.o
+[ 52%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/blas1_gtest.cpp.o
+[ 52%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/set_get_pointer_mode_gtest.cpp.o
+[ 52%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/gemv_gtest.cpp.o
+[ 52%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/set_get_vector_gtest.cpp.o
+[ 55%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/gemv_batched_gtest.cpp.o
+[ 57%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/trsv_gtest.cpp.o
+[ 60%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/gemm_batched_gtest.cpp.o
+[ 63%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/geam_gtest.cpp.o
+[ 65%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/trmm_gtest.cpp.o
+[ 68%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/gemm_strided_batched_gtest.cpp.o
+[ 71%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/__/common/utility.cpp.o
+[ 73%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/__/common/cblas_interface.cpp.o
+[ 76%] Linking CXX executable ../staging/example-sgemm-strided-batched
+[ 78%] Linking CXX executable ../staging/example-sgemm
+[ 81%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/__/common/flops.cpp.o
+[ 84%] Linking CXX executable ../staging/example-sscal
+[ 84%] Built target example-sgemm-strided-batched
+[ 86%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/__/common/norm.cpp.o
+[ 86%] Built target example-sgemm
+[ 89%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/__/common/unit.cpp.o
+[ 89%] Built target example-sscal
+[ 92%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/__/common/near.cpp.o
+[ 94%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/__/common/arg_check.cpp.o
+[ 97%] Building CXX object clients/gtest/CMakeFiles/hipblas-test.dir/__/common/hipblas_template_specialization.cpp.o
+/home/apremach/hipBLAS/clients/common/hipblas_template_specialization.cpp:3163:1: warning: control reaches end of non-void function [-Wreturn-type]
+}
+^
+/home/apremach/hipBLAS/clients/common/hipblas_template_specialization.cpp:3180:1: warning: control reaches end of non-void function [-Wreturn-type]
+}
+^
+2 warnings generated.
+/home/apremach/hipBLAS/clients/common/unit.cpp:98:6: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+void unit_check_general(int M, int N, int lda, hipblasComplex* hCPU, hipblasComplex* hGPU)
+     ^
+/home/apremach/hipBLAS/clients/common/unit.cpp:98:6: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+/home/apremach/hipBLAS/clients/common/unit.cpp:115:6: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+void unit_check_general(
+     ^
+/home/apremach/hipBLAS/clients/common/unit.cpp:115:6: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+4 warnings generated.
+[100%] Linking CXX executable ../staging/hipblas-test
+[100%] Built target hipblas-test
+~/hipBLAS
