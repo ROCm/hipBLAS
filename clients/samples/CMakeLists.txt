@@ -37,8 +37,7 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
   if( NOT CUDA_FOUND )
     target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_HCC__ )
 
-    get_target_property( HIP_LOCATION hip::device IMPORTED_LOCATION_RELEASE )
-    target_link_libraries( ${exe} PRIVATE ${HIP_LOCATION} )
+    target_link_libraries( ${exe} PRIVATE hip::device )
 
     if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
       # Remove following when hcc is fixed; hcc emits following spurious warning
