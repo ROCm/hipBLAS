@@ -60,6 +60,21 @@ template <typename T>
 void cblas_iamin(int n, const T* x, int incx, int* result);
 
 template <typename T>
+void cblas_gbmv(hipblasOperation_t transA,
+                int                m,
+                int                n,
+                int                kl,
+                int                ku,
+                T                  alpha,
+                T*                 A,
+                int                lda,
+                T*                 x,
+                int                incx,
+                T                  beta,
+                T*                 y,
+                int                incy);
+
+template <typename T>
 void cblas_gemv(hipblasOperation_t transA,
                 int                m,
                 int                n,

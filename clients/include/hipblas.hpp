@@ -418,6 +418,60 @@ hipblasStatus_t hipblasTrsvStridedBatched(hipblasHandle_t    handle,
                                           int                stridex,
                                           int                batch_count);
 
+// gbmv
+template <typename T>
+hipblasStatus_t hipblasGbmv(hipblasHandle_t    handle,
+                            hipblasOperation_t transA,
+                            int                m,
+                            int                n,
+                            int                kl,
+                            int                ku,
+                            const T*           alpha,
+                            const T*           A,
+                            int                lda,
+                            const T*           x,
+                            int                incx,
+                            const T*           beta,
+                            T*                 y,
+                            int                incy);
+
+template <typename T>
+hipblasStatus_t hipblasGbmvBatched(hipblasHandle_t    handle,
+                                   hipblasOperation_t transA,
+                                   int                m,
+                                   int                n,
+                                   int                kl,
+                                   int                ku,
+                                   const T*           alpha,
+                                   const T* const     A[],
+                                   int                lda,
+                                   const T* const     x[],
+                                   int                incx,
+                                   const T*           beta,
+                                   T* const           y[],
+                                   int                incy,
+                                   int                batch_count);
+
+template <typename T>
+hipblasStatus_t hipblasGbmvStridedBatched(hipblasHandle_t    handle,
+                                          hipblasOperation_t transA,
+                                          int                m,
+                                          int                n,
+                                          int                kl,
+                                          int                ku,
+                                          const T*           alpha,
+                                          const T*           A,
+                                          int                lda,
+                                          int                stride_a,
+                                          const T*           x,
+                                          int                incx,
+                                          int                stride_x,
+                                          const T*           beta,
+                                          T*                 y,
+                                          int                incy,
+                                          int                stride_y,
+                                          int                batch_count);
+
 // gemv
 template <typename T>
 hipblasStatus_t hipblasGemv(hipblasHandle_t    handle,
