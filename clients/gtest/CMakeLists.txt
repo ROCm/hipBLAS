@@ -104,8 +104,9 @@ if( NOT CUDA_FOUND )
 
   if ( LIBAMDHIP64_LIBRARY )
     target_link_libraries( hipblas-test PRIVATE hip::amdhip64 )
-  else( )
-    target_link_libraries( hipblas-test PRIVATE hip::hip_hcc )
+  else ( )
+    get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
+    target_link_libraries( hipblas-test PRIVATE ${HIP_HCC_LOCATION} )
   endif( )
 
   if( CMAKE_COMPILER_IS_GNUCXX )

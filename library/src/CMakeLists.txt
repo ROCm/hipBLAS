@@ -56,13 +56,15 @@ if( NOT CUDA_FOUND )
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
     target_compile_options( hipblas PRIVATE -Wno-unused-command-line-argument )
+    target_link_libraries( hipblas PRIVATE hip::hip_hcc )
   endif( )
 
   if ( LIBAMDHIP64_LIBRARY )
     target_link_libraries( hipblas PRIVATE hip::amdhip64 )
   else ( )
-    target_link_libraries( hipblas PRIVATE hip::hip_hcc )
-  endif()
+    get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
+    target_link_libraries( hipblas PRIVATE ${HIP_HCC_LOCATION} )
+  endif( )
 else( )
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
 
