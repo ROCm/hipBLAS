@@ -97,19 +97,19 @@ target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LI
 if( NOT CUDA_FOUND )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_HCC__ )
 
-  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
-    # Remove following when hcc is fixed; hcc emits following spurious warning
-    # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-    target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument -mf16c)
-    if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$")
-      target_link_libraries( hipblas-test PRIVATE hip::hip_hcc )
-    else( )
-      target_link_libraries( hipblas-test PRIVATE hip::hip_vdi )
-    endif( )
+
+  # Remove following when hcc is fixed; hcc emits following spurious warning
+  # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
+  target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument -mf16c)
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$")
+    target_link_libraries( hipblas-test PRIVATE hip::hip_hcc )
   else( )
+    target_link_libraries( hipblas-test PRIVATE hip::amdhip64 )
+  endif( )
+
+  if( CMAKE_COMPILER_IS_GNUCXX )
     # GCC needs specific flag to turn on f16c intrinsics
     target_compile_options( hipblas-test PRIVATE -mf16c )
-
   endif( )
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
