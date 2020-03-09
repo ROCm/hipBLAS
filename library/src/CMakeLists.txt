@@ -50,13 +50,20 @@ if( NOT CUDA_FOUND )
 
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_HCC__ )
 
-  get_target_property( HIPHCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
-  target_link_libraries( hipblas PRIVATE roc::rocblas ${HIPHCC_LOCATION} )
+  target_link_libraries( hipblas PRIVATE roc::rocblas )
 
   # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
     target_compile_options( hipblas PRIVATE -Wno-unused-command-line-argument )
+    target_link_libraries( hipblas PRIVATE hip::hip_hcc )
+  endif( )
+
+  if ( LIBAMDHIP64_LIBRARY )
+    target_link_libraries( hipblas PRIVATE hip::amdhip64 )
+  else ( )
+    get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
+    target_link_libraries( hipblas PRIVATE ${HIP_HCC_LOCATION} )
   endif( )
 else( )
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
