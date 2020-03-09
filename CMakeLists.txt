@@ -71,6 +71,13 @@ endif( )
 # Hip headers required of all clients; clients use hip to allocate device memory
 find_package( hip REQUIRED CONFIG PATHS /opt/rocm )
 
+# Look for libamdhip64
+find_library(
+  LIBAMDHIP64_LIBRARY
+  NAMES libamdhip64.so
+  HINTS "${CMAKE_PREFIX_PATH}/lib" )
+message("amdhip64: ${LIBAMDHIP64_LIBRARY}")
+
 # Quietly look for CUDA, but if not found it's not an error
 # The presense of hip is not sufficient to determine if we want a rocm or cuda backend
 option(TRY_CUDA "Look for CUDA and use that as a backend if found" ON)
