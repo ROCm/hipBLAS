@@ -101,10 +101,11 @@ if( NOT CUDA_FOUND )
   # Remove following when hcc is fixed; hcc emits following spurious warning
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
   target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument -mf16c)
-  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$")
-    target_link_libraries( hipblas-test PRIVATE hip::hip_hcc )
-  else( )
+
+  if ( LIBAMDHIP64_LIBRARY )
     target_link_libraries( hipblas-test PRIVATE hip::amdhip64 )
+  else( )
+    target_link_libraries( hipblas-test PRIVATE hip::hip_hcc )
   endif( )
 
   if( CMAKE_COMPILER_IS_GNUCXX )

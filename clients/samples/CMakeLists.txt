@@ -41,10 +41,10 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
     # Remove following when hcc is fixed; hcc emits following spurious warning
     # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
     target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument -mf16c)
-    if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$")
-      target_link_libraries( ${exe} PRIVATE hip::hip_hcc )
-    else( )
+    if ( LIBAMDHIP64_LIBRARY )
       target_link_libraries( ${exe} PRIVATE hip::amdhip64 )
+    else( )
+      target_link_libraries( ${exe} PRIVATE hip::hip_hcc )
     endif( )
   if( CMAKE_COMPILER_IS_GNUCXX )
     # GCC needs specific flag to turn on f16c intrinsics
