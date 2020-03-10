@@ -3166,7 +3166,7 @@ hipblasStatus_t hipblasZtbmv(hipblasHandle_t             handle,
                              hipblasDoubleComplex*       x,
                              int                         incx)
 {
-    return hipCUBLASStatusToHIPStatus(cublasCtbmv((cublasHandle_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasZtbmv((cublasHandle_t)handle,
                                                   hipFillToCudaFill(uplo),
                                                   hipOperationToCudaOperation(transA),
                                                   hipDiagonalToCudaDiagonal(diag),
@@ -3372,7 +3372,7 @@ hipblasStatus_t hipblasCtrmv(hipblasHandle_t       handle,
                                                   incx));
 }
 
-hipblasStatus_t hipblasCtrmv(hipblasHandle_t             handle,
+hipblasStatus_t hipblasZtrmv(hipblasHandle_t             handle,
                              hipblasFillMode_t           uplo,
                              hipblasOperation_t          transA,
                              hipblasDiagType_t           diag,
@@ -3382,7 +3382,7 @@ hipblasStatus_t hipblasCtrmv(hipblasHandle_t             handle,
                              hipblasDoubleComplex*       x,
                              int                         incx)
 {
-    return hipCUBLASStatusToHIPStatus(cublasCtrmv((cublasHandle_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasZtrmv((cublasHandle_t)handle,
                                                   hipFillToCudaFill(uplo),
                                                   hipOperationToCudaOperation(transA),
                                                   hipDiagonalToCudaDiagonal(diag),
