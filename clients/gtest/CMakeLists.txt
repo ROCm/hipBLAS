@@ -54,6 +54,7 @@ set(hipblas_test_source
   hemv_batched_gtest.cpp
   hemv_strided_batched_gtest.cpp
   syr_gtest.cpp
+  trmv_gtest.cpp
   trsv_gtest.cpp
   gemm_gtest.cpp
   gemm_ex_gtest.cpp
