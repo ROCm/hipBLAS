@@ -106,6 +106,18 @@ void cblas_syr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* A, int
 template <typename T>
 int cblas_potrf(char uplo, int m, T* A, int lda);
 
+// tbmv
+template <typename T>
+void cblas_tbmv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                m,
+                int                k,
+                const T*           A,
+                int                lda,
+                T*                 x,
+                int                incx);
+
 // trmv
 template <typename T>
 void cblas_trmv(hipblasFillMode_t  uplo,
