@@ -179,7 +179,7 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
         return CUDA_C_64F;
 
     default:
-        throw "Non existant DataType";
+        throw "Non existent DataType";
     }
 }
 
@@ -192,7 +192,7 @@ cublasGemmAlgo_t HIPGemmAlgoToCudaGemmAlgo(hipblasGemmAlgo_t algo)
         return CUBLAS_GEMM_DEFAULT;
 
     default:
-        throw "Non existant GemmAlgo";
+        throw "Non existent GemmAlgo";
     }
 }
 
