@@ -60,6 +60,21 @@ template <typename T>
 void cblas_iamin(int n, const T* x, int incx, int* result);
 
 template <typename T>
+void cblas_gbmv(hipblasOperation_t transA,
+                int                m,
+                int                n,
+                int                kl,
+                int                ku,
+                T                  alpha,
+                T*                 A,
+                int                lda,
+                T*                 x,
+                int                incx,
+                T                  beta,
+                T*                 y,
+                int                incy);
+
+template <typename T>
 void cblas_gemv(hipblasOperation_t transA,
                 int                m,
                 int                n,
@@ -79,12 +94,29 @@ void cblas_symv(
 template <typename T>
 void cblas_ger(int m, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
 
+// hemv
+template <typename T>
+void cblas_hemv(
+    hipblasFillMode_t uplo, int n, T alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
+
 template <typename T>
 void cblas_syr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* A, int lda);
 
 // potrf
 template <typename T>
 int cblas_potrf(char uplo, int m, T* A, int lda);
+
+// tbmv
+template <typename T>
+void cblas_tbmv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                m,
+                int                k,
+                const T*           A,
+                int                lda,
+                T*                 x,
+                int                incx);
 
 // trmv
 template <typename T>

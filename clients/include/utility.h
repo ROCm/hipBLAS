@@ -516,9 +516,11 @@ hipblasSideMode_t char2hipblas_side(char value);
 class Arguments
 {
 public:
-    int M = 128;
-    int N = 128;
-    int K = 128;
+    int M  = 128;
+    int N  = 128;
+    int K  = 128;
+    int KL = 128;
+    int KU = 128;
 
     int rows = 128;
     int cols = 128;
@@ -560,9 +562,11 @@ public:
 
     Arguments& operator=(const Arguments& rhs)
     {
-        M = rhs.M;
-        N = rhs.N;
-        K = rhs.K;
+        M  = rhs.M;
+        N  = rhs.N;
+        K  = rhs.K;
+        KL = rhs.KL;
+        KU = rhs.KU;
 
         lda = rhs.lda;
         ldb = rhs.ldb;

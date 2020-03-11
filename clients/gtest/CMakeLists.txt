@@ -43,11 +43,19 @@ set(hipblas_test_source
   set_get_vector_gtest.cpp
   set_get_matrix_gtest.cpp
   blas1_gtest.cpp
+  gbmv_gtest.cpp
+  gbmv_batched_gtest.cpp
+  gbmv_strided_batched_gtest.cpp
   gemv_gtest.cpp
   gemv_batched_gtest.cpp
   gemv_strided_batched_gtest.cpp
   ger_gtest.cpp
+  hemv_gtest.cpp
+  hemv_batched_gtest.cpp
+  hemv_strided_batched_gtest.cpp
   syr_gtest.cpp
+  tbmv_gtest.cpp
+  trmv_gtest.cpp
   trsv_gtest.cpp
   gemm_gtest.cpp
   gemm_ex_gtest.cpp
