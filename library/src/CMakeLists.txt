@@ -47,10 +47,13 @@ if( NOT CUDA_FOUND )
   if( NOT TARGET rocblas )
     find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocblas )
   endif( )
+  if( NOT TARGET rocsolver )
+    find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver )
+  endif( )
 
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_HCC__ )
 
-  target_link_libraries( hipblas PRIVATE roc::rocblas )
+  target_link_libraries( hipblas PRIVATE roc::rocblas roc::rocsolver )
 
   # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
