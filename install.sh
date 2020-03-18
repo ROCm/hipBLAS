@@ -18,8 +18,9 @@ function display_help()
   echo "    [-r]--relocatable] create a package to support relocatable ROCm"
   echo "    [--cuda] build library for cuda backend"
   echo "    [--hip-clang] build library with hip-clang"
-  echo "    [--clang] use clang as the host compiler"
+  echo "    [--compiler] specify host compiler"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
+  echo "    [--custom-target] link against custom target (e.g. host, device)"
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
@@ -232,7 +233,7 @@ compiler=g++
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,hip-clang,clang,cuda,cmakepp,relocatable: --options rhicdgp: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,hip-clang,compiler:,cuda,cmakepp,relocatable:,custom-target: --options rhicdgp: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -269,14 +270,17 @@ while true; do
     --hip-clang)
         build_hip_clang=true
         shift ;;
-    --clang)
-        compiler=clang++
-        shift ;;
+    --compiler)
+        compiler=${2}
+        shift 2 ;;
     --cuda)
         build_cuda=true
         shift ;;
     -p|--cmakepp)
         cmake_prefix_path=${2}
+        shift 2 ;;
+    --custom-target)
+        custom_taget=${2}
         shift 2 ;;
     --prefix)
         install_prefix=${2}
@@ -361,6 +365,10 @@ pushd .
   # clients
   if [[ "${build_clients}" == true ]]; then
     cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
+  fi
+
+  if [[ -z ${custom_target+foo} ]]; then
+    cmake_common_options="${cmake_common_options} -DTARGET=${custom_target}"
   fi
 
   # Build library
