@@ -36,16 +36,16 @@ hipblasStatus_t testing_getrf(Arguments argus)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    vector<T>   hA(A_size, 0);
-    vector<T>   hA1(A_size, 0);
-    vector<int> hIpiv(Ipiv_size, 0);
-    vector<int> hIpiv1(Ipiv_size, 0);
-    int         hInfo;
-    int         hInfo1;
+    host_vector<T>   hA(A_size);
+    host_vector<T>   hA1(A_size);
+    host_vector<int> hIpiv(Ipiv_size);
+    host_vector<int> hIpiv1(Ipiv_size);
+    host_vector<int> hInfo(1);
+    host_vector<int> hInfo1(1);
 
-    T*   dA;
-    int* dIpiv;
-    int* dInfo;
+    device_vector<T>   dA(A_size);
+    device_vector<int> dIpiv(Ipiv_size);
+    device_vector<int> dInfo(1);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -53,11 +53,6 @@ hipblasStatus_t testing_getrf(Arguments argus)
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
-
-    // Allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dA, A_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dIpiv, Ipiv_size * sizeof(int)));
-    CHECK_HIP_ERROR(hipMalloc(&dInfo, sizeof(int)));
 
     // Initial hA on CPU
     srand(1);
@@ -78,7 +73,7 @@ hipblasStatus_t testing_getrf(Arguments argus)
     CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(
         hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(&hInfo1, dInfo, sizeof(int), hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hInfo1.data(), dInfo, sizeof(int), hipMemcpyDeviceToHost));
 
     if(argus.unit_check)
     {
@@ -86,7 +81,7 @@ hipblasStatus_t testing_getrf(Arguments argus)
            CPU LAPACK
         =================================================================== */
 
-        hInfo = cblas_getrf(M, N, hA.data(), lda, hIpiv.data());
+        hInfo[0] = cblas_getrf(M, N, hA.data(), lda, hIpiv.data());
 
         if(argus.unit_check)
         {
@@ -94,9 +89,6 @@ hipblasStatus_t testing_getrf(Arguments argus)
         }
     }
 
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dIpiv));
-    CHECK_HIP_ERROR(hipFree(dInfo));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

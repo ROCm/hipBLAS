@@ -65,8 +65,14 @@ set(hipblas_test_source
   # trsm_gtest.cpp
   # trmm_gtest.cpp
   getrf_gtest.cpp
+  getrf_batched_gtest.cpp
+  getrf_strided_batched_gtest.cpp
   getrs_gtest.cpp
+  getrs_batched_gtest.cpp
+  getrs_strided_batched_gtest.cpp
   geqrf_gtest.cpp
+  geqrf_batched_gtest.cpp
+  geqrf_strided_batched_gtest.cpp
 )
 
 set( hipblas_benchmark_common

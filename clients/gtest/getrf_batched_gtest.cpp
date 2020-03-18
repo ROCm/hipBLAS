@@ -3,7 +3,7 @@
  *
  * ************************************************************************ */
 
-#include "testing_getrf.hpp"
+#include "testing_getrf_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -16,7 +16,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 using namespace std;
 
-typedef std::tuple<vector<int>, double, int> getrf_tuple;
+typedef std::tuple<vector<int>, double, int> getrf_batched_tuple;
 
 const vector<vector<int>> matrix_size_range = {{-1, -1, 1, 1},
                                                {10, 10, 10, 10},
@@ -26,9 +26,9 @@ const vector<vector<int>> matrix_size_range = {{-1, -1, 1, 1},
 
 const vector<double> stride_scale_range = {2.5};
 
-const vector<int> batch_count_range = {1};
+const vector<int> batch_count_range = {-1, 0, 1, 2};
 
-Arguments setup_getrf_arguments(getrf_tuple tup)
+Arguments setup_getrf_batched_arguments(getrf_batched_tuple tup)
 {
     vector<int> matrix_size  = std::get<0>(tup);
     double      stride_scale = std::get<1>(tup);
@@ -47,27 +47,27 @@ Arguments setup_getrf_arguments(getrf_tuple tup)
     return arg;
 }
 
-class getrf_gtest : public ::TestWithParam<getrf_tuple>
+class getrf_batched_gtest : public ::TestWithParam<getrf_batched_tuple>
 {
 protected:
-    getrf_gtest() {}
-    virtual ~getrf_gtest() {}
+    getrf_batched_gtest() {}
+    virtual ~getrf_batched_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
-TEST_P(getrf_gtest, getrf_gtest_float)
+TEST_P(getrf_batched_gtest, getrf_batched_gtest_float)
 {
     // GetParam returns a tuple. The setup routine unpacks the tuple
     // and initializes arg(Arguments), which will be passed to testing routine.
 
-    Arguments arg = setup_getrf_arguments(GetParam());
+    Arguments arg = setup_getrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf<float>(arg);
+    hipblasStatus_t status = testing_getrf_batched<float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M)
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -78,18 +78,18 @@ TEST_P(getrf_gtest, getrf_gtest_float)
     }
 }
 
-TEST_P(getrf_gtest, getrf_gtest_double)
+TEST_P(getrf_batched_gtest, getrf_batched_gtest_double)
 {
     // GetParam returns a tuple. The setup routine unpacks the tuple
     // and initializes arg(Arguments), which will be passed to testing routine.
 
-    Arguments arg = setup_getrf_arguments(GetParam());
+    Arguments arg = setup_getrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf<double>(arg);
+    hipblasStatus_t status = testing_getrf_batched<double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M)
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -105,8 +105,8 @@ TEST_P(getrf_gtest, getrf_gtest_double)
 // ValuesIn takes each element (a vector), combines them, and feeds them to test_p
 // The combinations are  { {M, N, lda, ldb}, stride_scale, batch_count }
 
-INSTANTIATE_TEST_CASE_P(hipblasGetrf,
-                        getrf_gtest,
+INSTANTIATE_TEST_CASE_P(hipblasGetrfBatched,
+                        getrf_batched_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(stride_scale_range),
                                 ValuesIn(batch_count_range)));
