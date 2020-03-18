@@ -37,7 +37,6 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
   if( NOT CUDA_FOUND )
     target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_HCC__ )
 
-
   # Remove following when hcc is fixed; hcc emits following spurious warning
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
   target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument -mf16c)
