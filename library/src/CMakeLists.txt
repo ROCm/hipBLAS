@@ -48,7 +48,7 @@ if( NOT CUDA_FOUND )
     find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocblas )
   endif( )
   if( NOT TARGET rocsolver )
-    find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver )
+    find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
   endif( )
 
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_HCC__ )
