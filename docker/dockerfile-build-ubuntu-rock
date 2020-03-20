@@ -5,6 +5,7 @@ FROM ${base_image}
 LABEL maintainer="hipblas-maintainer@amd.com"
 
 ARG user_uid
+ARG library_dependencies="rocBLAS"
 
 # Install dependent packages
 # Dependencies:
@@ -13,6 +14,7 @@ ARG user_uid
 # * hipblas-test: gfortran, googletest
 # * hipblas-bench: libboost-program-options-dev
 # * libhsakmt.so: libnuma1
+
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     rock-dkms \
     sudo \
@@ -26,7 +28,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     gfortran \
     libboost-program-options-dev \
     libnuma1 \
-    rocblas \
+    ${library_dependencies} \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
