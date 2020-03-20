@@ -69,21 +69,30 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
     hipblasOperation_t op = HIPBLAS_OP_N;
     for(int b = 0; b < batch_count; b++)
     {
-        T* hAb = hA.data() + b * strideA;
-        T* hXb = hX.data() + b * strideB;
-        T* hBb = hB.data() + b * strideB;
+        T*   hAb    = hA.data() + b * strideA;
+        T*   hXb    = hX.data() + b * strideB;
+        T*   hBb    = hB.data() + b * strideB;
+        int* hIpivb = hIpiv.data() + b * strideP;
 
         hipblas_init<T>(hAb, N, N, lda);
         hipblas_init<T>(hXb, N, 1, ldb);
 
         // Calculate hB = hA*hX;
         cblas_gemm<T>(op, op, N, 1, N, 1, hAb, lda, hXb, ldb, 0, hBb, ldb);
+
+        // LU factorize hA on CPU
+        int info = cblas_getrf(N, N, hAb, lda, hIpivb);
+        if(info != 0)
+        {
+            cerr << "LU decomposition failed" << endl;
+            return HIPBLAS_STATUS_SUCCESS;
+        }
     }
 
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), B_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(int)));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 
     /* =====================================================================
            HIPBLAS

@@ -64,10 +64,18 @@ hipblasStatus_t testing_getrs(Arguments argus)
     hipblasOperation_t op = HIPBLAS_OP_N;
     cblas_gemm<T>(op, op, N, 1, N, 1, hA.data(), lda, hX.data(), ldb, 0, hB.data(), ldb);
 
+    // LU factorize hA on CPU
+    int info = cblas_getrf(N, N, hA.data(), lda, hIpiv.data());
+    if(info != 0)
+    {
+        cerr << "LU decomposition failed" << endl;
+        return HIPBLAS_STATUS_SUCCESS;
+    }
+
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), B_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(int)));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 
     /* =====================================================================
            HIPBLAS

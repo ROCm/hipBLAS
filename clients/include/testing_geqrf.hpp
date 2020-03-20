@@ -75,12 +75,13 @@ hipblasStatus_t testing_geqrf(Arguments argus)
            CPU LAPACK
         =================================================================== */
 
-        // cblas_geqrf(M, N, hA.data(), lda, hIpiv.data());
+        host_vector<T> work(N);
+        cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), N);
 
-        // if(argus.unit_check)
-        // {
-        //     unit_check_general<T>(M, N, lda, hA.data(), hA1.data());
-        // }
+        if(argus.unit_check)
+        {
+            unit_check_general<T>(M, N, lda, hA.data(), hA1.data());
+        }
     }
 
     hipblasDestroy(handle);

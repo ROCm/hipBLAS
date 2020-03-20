@@ -81,6 +81,14 @@ hipblasStatus_t testing_getrs_batched(Arguments argus)
         cblas_gemm<T>(
             op, op, N, 1, N, 1, hA[b].data(), lda, hX[b].data(), ldb, 0, hB[b].data(), ldb);
 
+        // LU factorize hA on CPU
+        int info = cblas_getrf(N, N, hA[b].data(), lda, hIpiv.data() + b * strideP);
+        if(info != 0)
+        {
+            cerr << "LU decomposition failed" << endl;
+            return HIPBLAS_STATUS_SUCCESS;
+        }
+
         // Copy data from CPU to device
         CHECK_HIP_ERROR(hipMemcpy(bA[b], hA[b].data(), A_size * sizeof(T), hipMemcpyHostToDevice));
         CHECK_HIP_ERROR(hipMemcpy(bB[b], hB[b].data(), B_size * sizeof(T), hipMemcpyHostToDevice));
@@ -89,7 +97,7 @@ hipblasStatus_t testing_getrs_batched(Arguments argus)
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, bA, batch_count * sizeof(T*), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, bB, batch_count * sizeof(T*), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(int)));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 
     /* =====================================================================
            HIPBLAS
