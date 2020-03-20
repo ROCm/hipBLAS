@@ -52,6 +52,7 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
     host_vector<T>   hB1(B_size);
     host_vector<int> hIpiv(Ipiv_size);
     host_vector<int> hIpiv1(Ipiv_size);
+    int              info;
 
     device_vector<T>   dA(A_size);
     device_vector<T>   dB(B_size);
@@ -77,11 +78,23 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
         hipblas_init<T>(hAb, N, N, lda);
         hipblas_init<T>(hXb, N, 1, ldb);
 
+        // Put hA entries into range [0, 1], make diagonally dominant
+        for(int i = 0; i < N; i++)
+        {
+            for(int j = 0; j < N; j++)
+            {
+                hAb[i + j * lda] = (hAb[i + j * lda] - 1.0) / 10.0;
+
+                if(i == j)
+                    hAb[i + j * lda] *= 100;
+            }
+        }
+
         // Calculate hB = hA*hX;
         cblas_gemm<T>(op, op, N, 1, N, 1, hAb, lda, hXb, ldb, 0, hBb, ldb);
 
-        // LU factorize hA on CPU
-        int info = cblas_getrf(N, N, hAb, lda, hIpivb);
+        // LU factorize hA on the CPU
+        info = cblas_getrf<T>(N, N, hAb, lda, hIpivb);
         if(info != 0)
         {
             cerr << "LU decomposition failed" << endl;
@@ -99,7 +112,13 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
     =================================================================== */
 
     status = hipblasGetrsStridedBatched<T>(
-        handle, op, N, 1, dA, lda, strideA, dIpiv, strideP, dB, ldb, strideB, batch_count);
+        handle, op, N, 1, dA, lda, strideA, dIpiv, strideP, dB, ldb, strideB, &info, batch_count);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hB1.data(), dB, B_size * sizeof(T), hipMemcpyDeviceToHost));

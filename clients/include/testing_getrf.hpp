@@ -20,7 +20,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_getrf(Arguments argus)
 {
-    int M   = argus.M;
+    int M   = argus.N;
     int N   = argus.N;
     int lda = argus.lda;
 
@@ -67,7 +67,13 @@ hipblasStatus_t testing_getrf(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasGetrf<T>(handle, M, N, dA, lda, dIpiv, dInfo);
+    status = hipblasGetrf<T>(handle, N, dA, lda, dIpiv, dInfo);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // Copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));

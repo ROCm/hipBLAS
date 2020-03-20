@@ -48,6 +48,7 @@ hipblasStatus_t testing_geqrf_strided_batched(Arguments argus)
     host_vector<T> hA1(A_size);
     host_vector<T> hIpiv(Ipiv_size);
     host_vector<T> hIpiv1(Ipiv_size);
+    int            info;
 
     device_vector<T> dA(A_size);
     device_vector<T> dIpiv(Ipiv_size);
@@ -77,7 +78,13 @@ hipblasStatus_t testing_geqrf_strided_batched(Arguments argus)
     =================================================================== */
 
     status = hipblasGeqrfStridedBatched<T>(
-        handle, M, N, dA, lda, strideA, dIpiv, strideP, batch_count);
+        handle, M, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // Copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));

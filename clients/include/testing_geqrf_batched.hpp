@@ -25,9 +25,8 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
     int lda         = argus.lda;
     int batch_count = argus.batch_count;
 
-    int strideP   = min(M, N);
     int A_size    = lda * N;
-    int Ipiv_size = strideP * batch_count;
+    int Ipiv_size = min(M, N);
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -44,13 +43,15 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA[batch_count];
     host_vector<T> hA1[batch_count];
-    host_vector<T> hIpiv(Ipiv_size);
-    host_vector<T> hIpiv1(Ipiv_size);
+    host_vector<T> hIpiv[batch_count];
+    host_vector<T> hIpiv1[batch_count];
+    int            info;
 
     device_batch_vector<T> bA(batch_count, A_size);
+    device_batch_vector<T> bIpiv(batch_count, Ipiv_size);
 
     device_vector<T*, 0, T> dA(batch_count);
-    device_vector<T>        dIpiv(Ipiv_size);
+    device_vector<T*, 0, T> dIpiv(batch_count);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -63,28 +64,41 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
     srand(1);
     for(int b = 0; b < batch_count; b++)
     {
-        hA[b]  = host_vector<T>(A_size);
-        hA1[b] = host_vector<T>(A_size);
+        hA[b]     = host_vector<T>(A_size);
+        hA1[b]    = host_vector<T>(A_size);
+        hIpiv[b]  = host_vector<T>(Ipiv_size);
+        hIpiv1[b] = host_vector<T>(Ipiv_size);
 
         hipblas_init<T>(hA[b], M, N, lda);
 
         // Copy data from CPU to device
         CHECK_HIP_ERROR(hipMemcpy(bA[b], hA[b].data(), A_size * sizeof(T), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(
+            hipMemcpy(bIpiv[b], hIpiv[b].data(), Ipiv_size * sizeof(T), hipMemcpyHostToDevice));
     }
 
     CHECK_HIP_ERROR(hipMemcpy(dA, bA, batch_count * sizeof(T*), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(T)));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, bIpiv, batch_count * sizeof(T*), hipMemcpyHostToDevice));
 
     /* =====================================================================
            HIPBLAS
     =================================================================== */
 
-    status = hipblasGeqrfBatched<T>(handle, M, N, dA, lda, dIpiv, strideP, batch_count);
+    status = hipblasGeqrfBatched<T>(handle, M, N, dA, lda, dIpiv, &info, batch_count);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // Copy output from device to CPU
     for(int b = 0; b < batch_count; b++)
+    {
         CHECK_HIP_ERROR(hipMemcpy(hA1[b].data(), bA[b], A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hIpiv1[b].data(), bIpiv[b], Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
+    }
 
     if(argus.unit_check)
     {
@@ -95,7 +109,7 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
         host_vector<T> work(N);
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_geqrf(M, N, hA[b].data(), lda, hIpiv.data() + b * strideP, work.data(), N);
+            cblas_geqrf(M, N, hA[b].data(), lda, hIpiv[b].data(), work.data(), N);
 
             if(argus.unit_check)
             {

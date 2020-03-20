@@ -5,6 +5,7 @@
 #include "limits.h"
 #include "rocblas.h"
 #include "rocsolver.h"
+#include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -4947,38 +4948,27 @@ hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
 
 // getrf
 hipblasStatus_t hipblasSgetrf(
-    hipblasHandle_t handle, const int m, const int n, float* A, const int lda, int* ipiv, int* info)
+    hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
 {
     return rocBLASStatusToHIPStatus(
-        rocsolver_sgetrf((rocblas_handle)handle, m, n, A, lda, ipiv, info));
+        rocsolver_sgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info));
 }
 
-hipblasStatus_t hipblasDgetrf(hipblasHandle_t handle,
-                              const int       m,
-                              const int       n,
-                              double*         A,
-                              const int       lda,
-                              int*            ipiv,
-                              int*            info)
+hipblasStatus_t hipblasDgetrf(
+    hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info)
 {
     return rocBLASStatusToHIPStatus(
-        rocsolver_dgetrf((rocblas_handle)handle, m, n, A, lda, ipiv, info));
+        rocsolver_dgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info));
 }
 
-hipblasStatus_t hipblasCgetrf(hipblasHandle_t handle,
-                              const int       m,
-                              const int       n,
-                              hipblasComplex* A,
-                              const int       lda,
-                              int*            ipiv,
-                              int*            info)
+hipblasStatus_t hipblasCgetrf(
+    hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info)
 {
     return rocBLASStatusToHIPStatus(
-        rocsolver_cgetrf((rocblas_handle)handle, m, n, (rocblas_float_complex*)A, lda, ipiv, info));
+        rocsolver_cgetrf((rocblas_handle)handle, n, n, (rocblas_float_complex*)A, lda, ipiv, info));
 }
 
 hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
-                              const int             m,
                               const int             n,
                               hipblasDoubleComplex* A,
                               const int             lda,
@@ -4986,83 +4976,60 @@ hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
                               int*                  info)
 {
     return rocBLASStatusToHIPStatus(rocsolver_zgetrf(
-        (rocblas_handle)handle, m, n, (rocblas_double_complex*)A, lda, ipiv, info));
+        (rocblas_handle)handle, n, n, (rocblas_double_complex*)A, lda, ipiv, info));
 }
 
 // getrf_batched
 hipblasStatus_t hipblasSgetrfBatched(hipblasHandle_t handle,
-                                     const int       m,
                                      const int       n,
                                      float* const    A[],
                                      const int       lda,
                                      int*            ipiv,
-                                     const int       strideP,
                                      int*            info,
                                      const int       batchCount)
 {
-    return rocBLASStatusToHIPStatus(rocsolver_sgetrf_batched(
-        (rocblas_handle)handle, m, n, A, lda, ipiv, strideP, info, batchCount));
+    return rocBLASStatusToHIPStatus(
+        rocsolver_sgetrf_batched((rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batchCount));
 }
 
 hipblasStatus_t hipblasDgetrfBatched(hipblasHandle_t handle,
-                                     const int       m,
                                      const int       n,
                                      double* const   A[],
                                      const int       lda,
                                      int*            ipiv,
-                                     const int       strideP,
                                      int*            info,
                                      const int       batchCount)
 {
-    return rocBLASStatusToHIPStatus(rocsolver_dgetrf_batched(
-        (rocblas_handle)handle, m, n, A, lda, ipiv, strideP, info, batchCount));
+    return rocBLASStatusToHIPStatus(
+        rocsolver_dgetrf_batched((rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batchCount));
 }
 
 hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle,
-                                     const int             m,
                                      const int             n,
                                      hipblasComplex* const A[],
                                      const int             lda,
                                      int*                  ipiv,
-                                     const int             strideP,
                                      int*                  info,
                                      const int             batchCount)
 {
-    return rocBLASStatusToHIPStatus(rocsolver_cgetrf_batched((rocblas_handle)handle,
-                                                             m,
-                                                             n,
-                                                             (rocblas_float_complex**)A,
-                                                             lda,
-                                                             ipiv,
-                                                             strideP,
-                                                             info,
-                                                             batchCount));
+    return rocBLASStatusToHIPStatus(rocsolver_cgetrf_batched(
+        (rocblas_handle)handle, n, n, (rocblas_float_complex**)A, lda, ipiv, n, info, batchCount));
 }
 
 hipblasStatus_t hipblasZgetrfBatched(hipblasHandle_t             handle,
-                                     const int                   m,
                                      const int                   n,
                                      hipblasDoubleComplex* const A[],
                                      const int                   lda,
                                      int*                        ipiv,
-                                     const int                   strideP,
                                      int*                        info,
                                      const int                   batchCount)
 {
-    return rocBLASStatusToHIPStatus(rocsolver_zgetrf_batched((rocblas_handle)handle,
-                                                             m,
-                                                             n,
-                                                             (rocblas_double_complex**)A,
-                                                             lda,
-                                                             ipiv,
-                                                             strideP,
-                                                             info,
-                                                             batchCount));
+    return rocBLASStatusToHIPStatus(rocsolver_zgetrf_batched(
+        (rocblas_handle)handle, n, n, (rocblas_double_complex**)A, lda, ipiv, n, info, batchCount));
 }
 
 // getrf_strided_batched
 hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t handle,
-                                            const int       m,
                                             const int       n,
                                             float*          A,
                                             const int       lda,
@@ -5073,11 +5040,10 @@ hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t handle,
                                             const int       batchCount)
 {
     return rocBLASStatusToHIPStatus(rocsolver_sgetrf_strided_batched(
-        (rocblas_handle)handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount));
+        (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batchCount));
 }
 
 hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t handle,
-                                            const int       m,
                                             const int       n,
                                             double*         A,
                                             const int       lda,
@@ -5088,11 +5054,10 @@ hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t handle,
                                             const int       batchCount)
 {
     return rocBLASStatusToHIPStatus(rocsolver_dgetrf_strided_batched(
-        (rocblas_handle)handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount));
+        (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batchCount));
 }
 
 hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t handle,
-                                            const int       m,
                                             const int       n,
                                             hipblasComplex* A,
                                             const int       lda,
@@ -5103,7 +5068,7 @@ hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t handle,
                                             const int       batchCount)
 {
     return rocBLASStatusToHIPStatus(rocsolver_cgetrf_strided_batched((rocblas_handle)handle,
-                                                                     m,
+                                                                     n,
                                                                      n,
                                                                      (rocblas_float_complex*)A,
                                                                      lda,
@@ -5115,7 +5080,6 @@ hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t handle,
 }
 
 hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
-                                            const int             m,
                                             const int             n,
                                             hipblasDoubleComplex* A,
                                             const int             lda,
@@ -5126,7 +5090,7 @@ hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
                                             const int             batchCount)
 {
     return rocBLASStatusToHIPStatus(rocsolver_zgetrf_strided_batched((rocblas_handle)handle,
-                                                                     m,
+                                                                     n,
                                                                      n,
                                                                      (rocblas_double_complex*)A,
                                                                      lda,
@@ -5146,8 +5110,28 @@ hipblasStatus_t hipblasSgetrs(hipblasHandle_t          handle,
                               const int                lda,
                               const int*               ipiv,
                               float*                   B,
-                              const int                ldb)
+                              const int                ldb,
+                              int*                     info)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < std::max(1, n))
+        *info = -8;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_sgetrs(
         (rocblas_handle)handle, hipOperationToHCCOperation(trans), n, nrhs, A, lda, ipiv, B, ldb));
 }
@@ -5160,8 +5144,28 @@ hipblasStatus_t hipblasDgetrs(hipblasHandle_t          handle,
                               const int                lda,
                               const int*               ipiv,
                               double*                  B,
-                              const int                ldb)
+                              const int                ldb,
+                              int*                     info)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < std::max(1, n))
+        *info = -8;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_dgetrs(
         (rocblas_handle)handle, hipOperationToHCCOperation(trans), n, nrhs, A, lda, ipiv, B, ldb));
 }
@@ -5174,8 +5178,28 @@ hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
                               const int                lda,
                               const int*               ipiv,
                               hipblasComplex*          B,
-                              const int                ldb)
+                              const int                ldb,
+                              int*                     info)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < std::max(1, n))
+        *info = -8;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_cgetrs((rocblas_handle)handle,
                                                      hipOperationToHCCOperation(trans),
                                                      n,
@@ -5195,8 +5219,28 @@ hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
                               const int                lda,
                               const int*               ipiv,
                               hipblasDoubleComplex*    B,
-                              const int                ldb)
+                              const int                ldb,
+                              int*                     info)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < std::max(1, n))
+        *info = -8;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_zgetrs((rocblas_handle)handle,
                                                      hipOperationToHCCOperation(trans),
                                                      n,
@@ -5216,11 +5260,32 @@ hipblasStatus_t hipblasSgetrsBatched(hipblasHandle_t          handle,
                                      float* const             A[],
                                      const int                lda,
                                      const int*               ipiv,
-                                     const int                strideP,
                                      float* const             B[],
                                      const int                ldb,
+                                     int*                     info,
                                      const int                batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < std::max(1, n))
+        *info = -8;
+    else if(batchCount < 0)
+        *info = -10;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_sgetrs_batched((rocblas_handle)handle,
                                                              hipOperationToHCCOperation(trans),
                                                              n,
@@ -5228,7 +5293,7 @@ hipblasStatus_t hipblasSgetrsBatched(hipblasHandle_t          handle,
                                                              A,
                                                              lda,
                                                              ipiv,
-                                                             strideP,
+                                                             n,
                                                              B,
                                                              ldb,
                                                              batchCount));
@@ -5241,11 +5306,32 @@ hipblasStatus_t hipblasDgetrsBatched(hipblasHandle_t          handle,
                                      double* const            A[],
                                      const int                lda,
                                      const int*               ipiv,
-                                     const int                strideP,
                                      double* const            B[],
                                      const int                ldb,
+                                     int*                     info,
                                      const int                batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < std::max(1, n))
+        *info = -8;
+    else if(batchCount < 0)
+        *info = -10;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_dgetrs_batched((rocblas_handle)handle,
                                                              hipOperationToHCCOperation(trans),
                                                              n,
@@ -5253,7 +5339,7 @@ hipblasStatus_t hipblasDgetrsBatched(hipblasHandle_t          handle,
                                                              A,
                                                              lda,
                                                              ipiv,
-                                                             strideP,
+                                                             n,
                                                              B,
                                                              ldb,
                                                              batchCount));
@@ -5266,11 +5352,32 @@ hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          handle,
                                      hipblasComplex* const    A[],
                                      const int                lda,
                                      const int*               ipiv,
-                                     const int                strideP,
                                      hipblasComplex* const    B[],
                                      const int                ldb,
+                                     int*                     info,
                                      const int                batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < std::max(1, n))
+        *info = -8;
+    else if(batchCount < 0)
+        *info = -10;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_cgetrs_batched((rocblas_handle)handle,
                                                              hipOperationToHCCOperation(trans),
                                                              n,
@@ -5278,7 +5385,7 @@ hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          handle,
                                                              (rocblas_float_complex**)A,
                                                              lda,
                                                              ipiv,
-                                                             strideP,
+                                                             n,
                                                              (rocblas_float_complex**)B,
                                                              ldb,
                                                              batchCount));
@@ -5291,11 +5398,32 @@ hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             handle,
                                      hipblasDoubleComplex* const A[],
                                      const int                   lda,
                                      const int*                  ipiv,
-                                     const int                   strideP,
                                      hipblasDoubleComplex* const B[],
                                      const int                   ldb,
+                                     int*                        info,
                                      const int                   batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < std::max(1, n))
+        *info = -8;
+    else if(batchCount < 0)
+        *info = -10;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_zgetrs_batched((rocblas_handle)handle,
                                                              hipOperationToHCCOperation(trans),
                                                              n,
@@ -5303,7 +5431,7 @@ hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             handle,
                                                              (rocblas_double_complex**)A,
                                                              lda,
                                                              ipiv,
-                                                             strideP,
+                                                             n,
                                                              (rocblas_double_complex**)B,
                                                              ldb,
                                                              batchCount));
@@ -5322,8 +5450,30 @@ hipblasStatus_t hipblasSgetrsStridedBatched(hipblasHandle_t          handle,
                                             float*                   B,
                                             const int                ldb,
                                             const int                strideB,
+                                            int*                     info,
                                             const int                batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -7;
+    else if(B == NULL)
+        *info = -9;
+    else if(ldb < std::max(1, n))
+        *info = -10;
+    else if(batchCount < 0)
+        *info = -13;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(
         rocsolver_sgetrs_strided_batched((rocblas_handle)handle,
                                          hipOperationToHCCOperation(trans),
@@ -5352,8 +5502,30 @@ hipblasStatus_t hipblasDgetrsStridedBatched(hipblasHandle_t          handle,
                                             double*                  B,
                                             const int                ldb,
                                             const int                strideB,
+                                            int*                     info,
                                             const int                batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -7;
+    else if(B == NULL)
+        *info = -9;
+    else if(ldb < std::max(1, n))
+        *info = -10;
+    else if(batchCount < 0)
+        *info = -13;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(
         rocsolver_dgetrs_strided_batched((rocblas_handle)handle,
                                          hipOperationToHCCOperation(trans),
@@ -5382,8 +5554,30 @@ hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t          handle,
                                             hipblasComplex*          B,
                                             const int                ldb,
                                             const int                strideB,
+                                            int*                     info,
                                             const int                batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -7;
+    else if(B == NULL)
+        *info = -9;
+    else if(ldb < std::max(1, n))
+        *info = -10;
+    else if(batchCount < 0)
+        *info = -13;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(
         rocsolver_cgetrs_strided_batched((rocblas_handle)handle,
                                          hipOperationToHCCOperation(trans),
@@ -5412,8 +5606,30 @@ hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
                                             hipblasDoubleComplex*    B,
                                             const int                ldb,
                                             const int                strideB,
+                                            int*                     info,
                                             const int                batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(n < 0)
+        *info = -2;
+    else if(nrhs < 0)
+        *info = -3;
+    else if(A == NULL)
+        *info = -4;
+    else if(lda < std::max(1, n))
+        *info = -5;
+    else if(ipiv == NULL)
+        *info = -7;
+    else if(B == NULL)
+        *info = -9;
+    else if(ldb < std::max(1, n))
+        *info = -10;
+    else if(batchCount < 0)
+        *info = -13;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(
         rocsolver_zgetrs_strided_batched((rocblas_handle)handle,
                                          hipOperationToHCCOperation(trans),
@@ -5431,16 +5647,56 @@ hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
 }
 
 // geqrf
-hipblasStatus_t hipblasSgeqrf(
-    hipblasHandle_t handle, const int m, const int n, float* A, const int lda, float* ipiv)
+hipblasStatus_t hipblasSgeqrf(hipblasHandle_t handle,
+                              const int       m,
+                              const int       n,
+                              float*          A,
+                              const int       lda,
+                              float*          tau,
+                              int*            info)
 {
-    return rocBLASStatusToHIPStatus(rocsolver_sgeqrf((rocblas_handle)handle, m, n, A, lda, ipiv));
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -5;
+    else
+        *info = 0;
+
+    return rocBLASStatusToHIPStatus(rocsolver_sgeqrf((rocblas_handle)handle, m, n, A, lda, tau));
 }
 
-hipblasStatus_t hipblasDgeqrf(
-    hipblasHandle_t handle, const int m, const int n, double* A, const int lda, double* ipiv)
+hipblasStatus_t hipblasDgeqrf(hipblasHandle_t handle,
+                              const int       m,
+                              const int       n,
+                              double*         A,
+                              const int       lda,
+                              double*         tau,
+                              int*            info)
 {
-    return rocBLASStatusToHIPStatus(rocsolver_dgeqrf((rocblas_handle)handle, m, n, A, lda, ipiv));
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -5;
+    else
+        *info = 0;
+
+    return rocBLASStatusToHIPStatus(rocsolver_dgeqrf((rocblas_handle)handle, m, n, A, lda, tau));
 }
 
 hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
@@ -5448,8 +5704,30 @@ hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
                               const int       n,
                               hipblasComplex* A,
                               const int       lda,
-                              hipblasComplex* ipiv)
+                              hipblasComplex* tau,
+                              int*            info)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -5;
+    else
+        *info = 0;
+
+    // return rocBLASStatusToHIPStatus(rocsolver_cgeqrf((rocblas_handle)handle,
+    //                                                  m,
+    //                                                  n,
+    //                                                  (rocblas_float_complex*)A,
+    //                                                  lda,
+    //                                                  (rocblas_float_complex*)tau));
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
@@ -5458,8 +5736,30 @@ hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
                               const int             n,
                               hipblasDoubleComplex* A,
                               const int             lda,
-                              hipblasDoubleComplex* ipiv)
+                              hipblasDoubleComplex* tau,
+                              int*                  info)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -5;
+    else
+        *info = 0;
+
+    // return rocBLASStatusToHIPStatus(rocsolver_zgeqrf((rocblas_handle)handle,
+    //                                                  m,
+    //                                                  n,
+    //                                                  (rocblas_double_complex*)A,
+    //                                                  lda,
+    //                                                  (rocblas_double_complex*)tau));
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
@@ -5469,12 +5769,50 @@ hipblasStatus_t hipblasSgeqrfBatched(hipblasHandle_t handle,
                                      const int       n,
                                      float* const    A[],
                                      const int       lda,
-                                     float*          ipiv,
-                                     const int       strideP,
+                                     float* const    tau[],
+                                     int*            info,
                                      const int       batchCount)
 {
-    return rocBLASStatusToHIPStatus(
-        rocsolver_sgeqrf_batched((rocblas_handle)handle, m, n, A, lda, ipiv, strideP, batchCount));
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -5;
+    else if(batchCount < 0)
+        *info = -7;
+    else
+        *info = 0;
+
+    int    perArray = std::min(m, n);
+    float* ipiv     = NULL;
+    if(perArray > 0)
+        hipMalloc(&ipiv, batchCount * perArray * sizeof(float));
+
+    rocsolver_status status = rocsolver_sgeqrf_batched(
+        (rocblas_handle)handle, m, n, A, lda, ipiv, perArray, batchCount);
+
+    if(status == rocblas_status_success)
+    {
+        // TO DO: Copy ipiv into tau using a fast kernel call
+        float* hTau[batchCount];
+        hipMemcpy(hTau, tau, sizeof(float*) * batchCount, hipMemcpyDeviceToHost);
+
+        for(int b = 0; b < batchCount; b++)
+            hipMemcpy(
+                hTau[b], ipiv + b * perArray, sizeof(float) * perArray, hipMemcpyDeviceToDevice);
+    }
+
+    if(perArray > 0)
+        hipFree(ipiv);
+
+    return rocBLASStatusToHIPStatus(status);
 }
 
 hipblasStatus_t hipblasDgeqrfBatched(hipblasHandle_t handle,
@@ -5482,12 +5820,50 @@ hipblasStatus_t hipblasDgeqrfBatched(hipblasHandle_t handle,
                                      const int       n,
                                      double* const   A[],
                                      const int       lda,
-                                     double*         ipiv,
-                                     const int       strideP,
+                                     double* const   tau[],
+                                     int*            info,
                                      const int       batchCount)
 {
-    return rocBLASStatusToHIPStatus(
-        rocsolver_dgeqrf_batched((rocblas_handle)handle, m, n, A, lda, ipiv, strideP, batchCount));
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -5;
+    else if(batchCount < 0)
+        *info = -7;
+    else
+        *info = 0;
+
+    int     perArray = std::min(m, n);
+    double* ipiv     = NULL;
+    if(perArray > 0)
+        hipMalloc(&ipiv, batchCount * perArray * sizeof(double));
+
+    rocsolver_status status = rocsolver_dgeqrf_batched(
+        (rocblas_handle)handle, m, n, A, lda, ipiv, perArray, batchCount);
+
+    if(status == rocblas_status_success)
+    {
+        // TO DO: Copy ipiv into tau using a fast kernel call
+        double* hTau[batchCount];
+        hipMemcpy(hTau, tau, sizeof(double*) * batchCount, hipMemcpyDeviceToHost);
+
+        for(int b = 0; b < batchCount; b++)
+            hipMemcpy(
+                hTau[b], ipiv + b * perArray, sizeof(double) * perArray, hipMemcpyDeviceToDevice);
+    }
+
+    if(perArray > 0)
+        hipFree(ipiv);
+
+    return rocBLASStatusToHIPStatus(status);
 }
 
 hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle,
@@ -5495,10 +5871,56 @@ hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle,
                                      const int             n,
                                      hipblasComplex* const A[],
                                      const int             lda,
-                                     hipblasComplex*       ipiv,
-                                     const int             strideP,
+                                     hipblasComplex* const tau[],
+                                     int*                  info,
                                      const int             batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -5;
+    else if(batchCount < 0)
+        *info = -7;
+    else
+        *info = 0;
+
+    // int perArray = std::min(m, n);
+    // rocblas_float_complex* ipiv = NULL;
+    // if (perArray > 0)
+    //     hipMalloc(&ipiv, batchCount * perArray * sizeof(rocblas_float_complex));
+
+    // rocsolver_status status = rocsolver_cgeqrf_batched((rocblas_handle)handle,
+    //                                                    m,
+    //                                                    n,
+    //                                                    (rocblas_float_complex**)A,
+    //                                                    lda,
+    //                                                    (rocblas_float_complex*)ipiv,
+    //                                                    perArray,
+    //                                                    batchCount);
+
+    // if (status == rocblas_status_success)
+    // {
+    //     // TO DO: Copy ipiv into tau using a fast kernel call
+    //     rocblas_float_complex* hTau[batchCount];
+    //     hipMemcpy(hTau, tau, sizeof(rocblas_float_complex*) * batchCount, hipMemcpyDeviceToHost);
+
+    //     for(int b = 0; b < batchCount; b++)
+    //         hipMemcpy(hTau[b], ipiv + b * perArray, sizeof(rocblas_float_complex) * perArray, hipMemcpyDeviceToDevice);
+    // }
+
+    // if (perArray >  0)
+    //     hipFree(ipiv);
+
+    // return rocBLASStatusToHIPStatus(status);
+
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
@@ -5507,10 +5929,56 @@ hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             handle,
                                      const int                   n,
                                      hipblasDoubleComplex* const A[],
                                      const int                   lda,
-                                     hipblasDoubleComplex*       ipiv,
-                                     const int                   strideP,
+                                     hipblasDoubleComplex* const tau[],
+                                     int*                        info,
                                      const int                   batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -5;
+    else if(batchCount < 0)
+        *info = -7;
+    else
+        *info = 0;
+
+    // int perArray = std::min(m, n);
+    // rocblas_double_complex* ipiv = NULL;
+    // if (perArray > 0)
+    //     hipMalloc(&ipiv, batchCount * perArray * sizeof(rocblas_double_complex));
+
+    // rocsolver_status status = rocsolver_zgeqrf_batched((rocblas_handle)handle,
+    //                                                    m,
+    //                                                    n,
+    //                                                    (rocblas_double_complex**)A,
+    //                                                    lda,
+    //                                                    (rocblas_double_complex*)ipiv,
+    //                                                    perArray,
+    //                                                    batchCount);
+
+    // if (status == rocblas_status_success)
+    // {
+    //     // TO DO: Copy ipiv into tau using a fast kernel call
+    //     rocblas_double_complex* hTau[batchCount];
+    //     hipMemcpy(hTau, tau, sizeof(rocblas_double_complex*) * batchCount, hipMemcpyDeviceToHost);
+
+    //     for(int b = 0; b < batchCount; b++)
+    //         hipMemcpy(hTau[b], ipiv + b * perArray, sizeof(rocblas_double_complex) * perArray, hipMemcpyDeviceToDevice);
+    // }
+
+    // if (perArray >  0)
+    //     hipFree(ipiv);
+
+    // return rocBLASStatusToHIPStatus(status);
+
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
@@ -5521,12 +5989,30 @@ hipblasStatus_t hipblasSgeqrfStridedBatched(hipblasHandle_t handle,
                                             float*          A,
                                             const int       lda,
                                             const int       strideA,
-                                            float*          ipiv,
-                                            const int       strideP,
+                                            float*          tau,
+                                            const int       strideT,
+                                            int*            info,
                                             const int       batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -6;
+    else if(batchCount < 0)
+        *info = -9;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_sgeqrf_strided_batched(
-        (rocblas_handle)handle, m, n, A, lda, strideA, ipiv, strideP, batchCount));
+        (rocblas_handle)handle, m, n, A, lda, strideA, tau, strideT, batchCount));
 }
 
 hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t handle,
@@ -5535,12 +6021,30 @@ hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t handle,
                                             double*         A,
                                             const int       lda,
                                             const int       strideA,
-                                            double*         ipiv,
-                                            const int       strideP,
+                                            double*         tau,
+                                            const int       strideT,
+                                            int*            info,
                                             const int       batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -6;
+    else if(batchCount < 0)
+        *info = -9;
+    else
+        *info = 0;
+
     return rocBLASStatusToHIPStatus(rocsolver_dgeqrf_strided_batched(
-        (rocblas_handle)handle, m, n, A, lda, strideA, ipiv, strideP, batchCount));
+        (rocblas_handle)handle, m, n, A, lda, strideA, tau, strideT, batchCount));
 }
 
 hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t handle,
@@ -5549,10 +6053,37 @@ hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t handle,
                                             hipblasComplex* A,
                                             const int       lda,
                                             const int       strideA,
-                                            hipblasComplex* ipiv,
-                                            const int       strideP,
+                                            hipblasComplex* tau,
+                                            const int       strideT,
+                                            int*            info,
                                             const int       batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -6;
+    else if(batchCount < 0)
+        *info = -9;
+    else
+        *info = 0;
+
+    // return rocBLASStatusToHIPStatus(rocsolver_cgeqrf_strided_batched((rocblas_handle)handle,
+    //                                                                  m,
+    //                                                                  n,
+    //                                                                  (rocblas_float_complex*)A,
+    //                                                                  lda,
+    //                                                                  strideA,
+    //                                                                  (rocblas_float_complex*)tau,
+    //                                                                  strideT,
+    //                                                                  batchCount));
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
@@ -5562,10 +6093,37 @@ hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
                                             hipblasDoubleComplex* A,
                                             const int             lda,
                                             const int             strideA,
-                                            hipblasDoubleComplex* ipiv,
-                                            const int             strideP,
+                                            hipblasDoubleComplex* tau,
+                                            const int             strideT,
+                                            int*                  info,
                                             const int             batchCount)
 {
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -1;
+    else if(n < 0)
+        *info = -2;
+    else if(A == NULL)
+        *info = -3;
+    else if(lda < std::max(1, m))
+        *info = -4;
+    else if(tau == NULL)
+        *info = -6;
+    else if(batchCount < 0)
+        *info = -9;
+    else
+        *info = 0;
+
+    // return rocBLASStatusToHIPStatus(rocsolver_zgeqrf_strided_batched((rocblas_handle)handle,
+    //                                                                  m,
+    //                                                                  n,
+    //                                                                  (rocblas_double_complex*)A,
+    //                                                                  lda,
+    //                                                                  strideA,
+    //                                                                  (rocblas_double_complex*)tau,
+    //                                                                  strideT,
+    //                                                                  batchCount));
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 

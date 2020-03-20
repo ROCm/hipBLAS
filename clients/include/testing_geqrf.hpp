@@ -40,6 +40,7 @@ hipblasStatus_t testing_geqrf(Arguments argus)
     host_vector<T> hA1(A_size);
     host_vector<T> hIpiv(Ipiv_size);
     host_vector<T> hIpiv1(Ipiv_size);
+    int            info;
 
     device_vector<T> dA(A_size);
     device_vector<T> dIpiv(Ipiv_size);
@@ -63,7 +64,13 @@ hipblasStatus_t testing_geqrf(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasGeqrf<T>(handle, M, N, dA, lda, dIpiv);
+    status = hipblasGeqrf<T>(handle, M, N, dA, lda, dIpiv, &info);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // Copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));

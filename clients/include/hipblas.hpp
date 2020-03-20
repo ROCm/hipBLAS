@@ -774,23 +774,20 @@ hipblasStatus_t hipblasTrsmStridedBatched(hipblasHandle_t    handle,
 
 // getrf
 template <typename T>
-hipblasStatus_t hipblasGetrf(
-    hipblasHandle_t handle, const int m, const int n, T* A, const int lda, int* ipiv, int* info);
+hipblasStatus_t
+    hipblasGetrf(hipblasHandle_t handle, const int n, T* A, const int lda, int* ipiv, int* info);
 
 template <typename T>
 hipblasStatus_t hipblasGetrfBatched(hipblasHandle_t handle,
-                                    const int       m,
                                     const int       n,
                                     T* const        A[],
                                     const int       lda,
                                     int*            ipiv,
-                                    const int       strideP,
                                     int*            info,
                                     const int       batchCount);
 
 template <typename T>
 hipblasStatus_t hipblasGetrfStridedBatched(hipblasHandle_t handle,
-                                           const int       m,
                                            const int       n,
                                            T*              A,
                                            const int       lda,
@@ -810,7 +807,8 @@ hipblasStatus_t hipblasGetrs(hipblasHandle_t          handle,
                              const int                lda,
                              const int*               ipiv,
                              T*                       B,
-                             const int                ldb);
+                             const int                ldb,
+                             int*                     info);
 
 template <typename T>
 hipblasStatus_t hipblasGetrsBatched(hipblasHandle_t          handle,
@@ -820,9 +818,9 @@ hipblasStatus_t hipblasGetrsBatched(hipblasHandle_t          handle,
                                     T* const                 A[],
                                     const int                lda,
                                     const int*               ipiv,
-                                    const int                strideP,
                                     T* const                 B[],
                                     const int                ldb,
+                                    int*                     info,
                                     const int                batchCount);
 
 template <typename T>
@@ -838,12 +836,13 @@ hipblasStatus_t hipblasGetrsStridedBatched(hipblasHandle_t          handle,
                                            T*                       B,
                                            const int                ldb,
                                            const int                strideB,
+                                           int*                     info,
                                            const int                batchCount);
 
 // geqrf
 template <typename T>
-hipblasStatus_t
-    hipblasGeqrf(hipblasHandle_t handle, const int m, const int n, T* A, const int lda, T* ipiv);
+hipblasStatus_t hipblasGeqrf(
+    hipblasHandle_t handle, const int m, const int n, T* A, const int lda, T* ipiv, int* info);
 
 template <typename T>
 hipblasStatus_t hipblasGeqrfBatched(hipblasHandle_t handle,
@@ -851,8 +850,8 @@ hipblasStatus_t hipblasGeqrfBatched(hipblasHandle_t handle,
                                     const int       n,
                                     T* const        A[],
                                     const int       lda,
-                                    T*              ipiv,
-                                    const int       strideP,
+                                    T* const        ipiv[],
+                                    int*            info,
                                     const int       batchCount);
 
 template <typename T>
@@ -864,6 +863,7 @@ hipblasStatus_t hipblasGeqrfStridedBatched(hipblasHandle_t handle,
                                            const int       strideA,
                                            T*              ipiv,
                                            const int       strideP,
+                                           int*            info,
                                            const int       batchCount);
 
 // trtri

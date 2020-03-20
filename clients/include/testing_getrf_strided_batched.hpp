@@ -20,7 +20,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_getrf_strided_batched(Arguments argus)
 {
-    int    M            = argus.M;
+    int    M            = argus.N;
     int    N            = argus.N;
     int    lda          = argus.lda;
     int    batch_count  = argus.batch_count;
@@ -81,7 +81,13 @@ hipblasStatus_t testing_getrf_strided_batched(Arguments argus)
     =================================================================== */
 
     status = hipblasGetrfStridedBatched<T>(
-        handle, M, N, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count);
+        handle, N, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // Copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
