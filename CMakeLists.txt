@@ -63,13 +63,13 @@ option( BUILD_VERBOSE "Output additional build information" OFF )
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
 # Find HCC/HIP dependencies
-if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
-  message( STATUS "Building with ROCm tools" )
-  find_package( hcc REQUIRED CONFIG PATHS /opt/rocm )
-endif( )
+#if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
+#  message( STATUS "Building with ROCm tools" )
+#  find_package( hcc REQUIRED CONFIG PATHS /opt/rocm )
+#endif( )
 
 # Hip headers required of all clients; clients use hip to allocate device memory
-find_package( hip REQUIRED CONFIG PATHS /opt/rocm )
+find_package( HIP REQUIRED )
 
 # Look for libamdhip64
 find_library(
