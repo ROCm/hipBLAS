@@ -368,7 +368,7 @@ pushd .
   fi
 
   if [[ -z ${custom_target+foo} ]]; then
-    cmake_common_options="${cmake_common_options} -DTARGET=${custom_target}"
+    cmake_common_options="${cmake_common_options} -DCUSTOM_TARGET=${custom_target}"
   fi
 
   # Build library
