@@ -367,7 +367,7 @@ pushd .
     cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
   fi
 
-  if [[ -z ${custom_target+foo} ]]; then
+  if [[ ${custom_target+foo} ]]; then
     cmake_common_options="${cmake_common_options} -DCUSTOM_TARGET=${custom_target}"
   fi
 
