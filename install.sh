@@ -280,7 +280,7 @@ while true; do
         cmake_prefix_path=${2}
         shift 2 ;;
     --custom-target)
-        custom_taget=${2}
+        custom_target=${2}
         shift 2 ;;
     --prefix)
         install_prefix=${2}
@@ -367,8 +367,8 @@ pushd .
     cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
   fi
 
-  if [[ -z ${custom_target+foo} ]]; then
-    cmake_common_options="${cmake_common_options} -DTARGET=${custom_target}"
+  if [[ ${custom_target+foo} ]]; then
+    cmake_common_options="${cmake_common_options} -DCUSTOM_TARGET=${custom_target}"
   fi
 
   # Build library
