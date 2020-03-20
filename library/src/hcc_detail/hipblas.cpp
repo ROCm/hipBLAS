@@ -178,7 +178,7 @@ rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
         return rocblas_datatype_f64_c;
 
     default:
-        throw "Non existant DataType";
+        throw "Non existent DataType";
     }
 }
 
@@ -205,7 +205,7 @@ hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
         return HIPBLAS_C_64F;
 
     default:
-        throw "Non existant DataType";
+        throw "Non existent DataType";
     }
 }
 
@@ -217,7 +217,7 @@ rocblas_gemm_algo HIPGemmAlgoToRocblasGemmAlgo(hipblasGemmAlgo_t algo)
         return rocblas_gemm_algo_standard;
 
     default:
-        throw "Non existant GemmAlgo";
+        throw "Non existent GemmAlgo";
     }
 }
 
@@ -229,7 +229,7 @@ hipblasGemmAlgo_t RocblasGemmAlgoToHIPGemmAlgo(rocblas_gemm_algo algo)
         return HIPBLAS_GEMM_DEFAULT;
 
     default:
-        throw "Non existant GemmAlgo";
+        throw "Non existent GemmAlgo";
     }
 }
 
