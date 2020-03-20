@@ -280,7 +280,7 @@ while true; do
         cmake_prefix_path=${2}
         shift 2 ;;
     --custom-target)
-        custom_taget=${2}
+        custom_target=${2}
         shift 2 ;;
     --prefix)
         install_prefix=${2}
