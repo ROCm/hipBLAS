@@ -143,7 +143,11 @@ hipblasStatus_t testing_getrs_batched(Arguments argus)
 
             if(argus.unit_check)
             {
-                unit_check_general<T>(N, 1, ldb, hB[b].data(), hB1[b].data());
+                T      eps       = std::numeric_limits<T>::epsilon();
+                double tolerance = N * eps * 50;
+
+                double e = norm_check_general<T>('M', N, 1, ldb, hB[b].data(), hB1[b].data());
+                unit_check_error(e, tolerance);
             }
         }
     }

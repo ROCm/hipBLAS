@@ -18,11 +18,8 @@ using namespace std;
 
 typedef std::tuple<vector<int>, double, int> geqrf_tuple;
 
-const vector<vector<int>> matrix_size_range = {{-1, -1, 1, 1},
-                                               {10, 10, 10, 10},
-                                               {10, 10, 20, 100},
-                                               {600, 500, 600, 600},
-                                               {1024, 1024, 1024, 1024}};
+const vector<vector<int>> matrix_size_range
+    = {{-1, -1, 1, 1}, {10, 10, 10, 10}, {10, 10, 20, 100}, {600, 500, 600, 600}};
 
 const vector<double> stride_scale_range = {2.5};
 
@@ -73,7 +70,7 @@ TEST_P(geqrf_gtest, geqrf_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -95,7 +92,7 @@ TEST_P(geqrf_gtest, geqrf_gtest_double)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }

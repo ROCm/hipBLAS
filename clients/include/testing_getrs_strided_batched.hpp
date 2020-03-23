@@ -144,7 +144,12 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
 
             if(argus.unit_check)
             {
-                unit_check_general<T>(N, 1, ldb, hB.data() + b * strideB, hB1.data() + b * strideB);
+                T      eps       = std::numeric_limits<T>::epsilon();
+                double tolerance = N * eps * 50;
+
+                double e = norm_check_general<T>(
+                    'M', N, 1, ldb, hB.data() + b * strideB, hB1.data() + b * strideB);
+                unit_check_error(e, tolerance);
             }
         }
     }

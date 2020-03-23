@@ -115,9 +115,18 @@ hipblasStatus_t testing_getrs(Arguments argus)
 
         cblas_getrs('N', N, 1, hA.data(), lda, hIpiv.data(), hB.data(), ldb);
 
+        // for(int i = 0; i < N; i++)
+        //     //cerr << hX[i] << ' ' << hB[i] << ' ' << hB1[i] << endl;
+        //     cerr << hB[i] - hB1[i] << ' ';
+        // cerr << endl;
+
         if(argus.unit_check)
         {
-            unit_check_general<T>(N, 1, ldb, hB.data(), hB1.data());
+            T      eps       = std::numeric_limits<T>::epsilon();
+            double tolerance = N * eps * 50;
+
+            double e = norm_check_general<T>('M', N, 1, ldb, hB.data(), hB1.data());
+            unit_check_error(e, tolerance);
         }
     }
 

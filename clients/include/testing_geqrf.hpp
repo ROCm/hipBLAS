@@ -82,12 +82,26 @@ hipblasStatus_t testing_geqrf(Arguments argus)
            CPU LAPACK
         =================================================================== */
 
-        host_vector<T> work(N);
-        cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), N);
+        // Workspace query
+        host_vector<T> work(1);
+        cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
+        int lwork = (int)work[0];
+
+        // Perform factorization
+        work = host_vector<T>(lwork);
+        cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), lwork);
 
         if(argus.unit_check)
         {
-            unit_check_general<T>(M, N, lda, hA.data(), hA1.data());
+            T      eps       = std::numeric_limits<T>::epsilon();
+            double tolerance = eps * 1000;
+
+            double e1 = norm_check_general<T>('M', M, N, lda, hA.data(), hA1.data());
+            unit_check_error(e1, tolerance);
+
+            double e2
+                = norm_check_general<T>('M', min(M, N), 1, min(M, N), hIpiv.data(), hIpiv1.data());
+            unit_check_error(e2, tolerance);
         }
     }
 

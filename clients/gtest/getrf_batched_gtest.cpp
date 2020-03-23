@@ -67,7 +67,7 @@ TEST_P(getrf_batched_gtest, getrf_batched_gtest_float)
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.batch_count < 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -89,7 +89,7 @@ TEST_P(getrf_batched_gtest, getrf_batched_gtest_double)
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.batch_count < 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

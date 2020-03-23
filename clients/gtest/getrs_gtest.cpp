@@ -63,13 +63,13 @@ TEST_P(getrs_gtest, getrs_gtest_float)
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldb < arg.M)
+        if(arg.N < 0 || arg.lda < arg.N || arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -85,13 +85,13 @@ TEST_P(getrs_gtest, getrs_gtest_double)
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldb < arg.M)
+        if(arg.N < 0 || arg.lda < arg.N || arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }

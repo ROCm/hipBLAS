@@ -96,7 +96,13 @@ hipblasStatus_t testing_geqrf_strided_batched(Arguments argus)
            CPU LAPACK
         =================================================================== */
 
-        host_vector<T> work(N);
+        // Workspace query
+        host_vector<T> work(1);
+        cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
+        int lwork = (int)work[0];
+
+        // Perform factorization
+        work = host_vector<T>(lwork);
         for(int b = 0; b < batch_count; b++)
         {
             cblas_geqrf(
@@ -104,7 +110,20 @@ hipblasStatus_t testing_geqrf_strided_batched(Arguments argus)
 
             if(argus.unit_check)
             {
-                unit_check_general<T>(M, N, lda, hA.data() + b * strideA, hA1.data() + b * strideA);
+                T      eps       = std::numeric_limits<T>::epsilon();
+                double tolerance = eps * 1000;
+
+                double e1 = norm_check_general<T>(
+                    'M', M, N, lda, hA.data() + b * strideA, hA1.data() + b * strideA);
+                unit_check_error(e1, tolerance);
+
+                double e2 = norm_check_general<T>('M',
+                                                  min(M, N),
+                                                  1,
+                                                  strideP,
+                                                  hIpiv.data() + b * strideP,
+                                                  hIpiv1.data() + b * strideP);
+                unit_check_error(e2, tolerance);
             }
         }
     }

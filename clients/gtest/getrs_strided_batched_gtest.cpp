@@ -63,13 +63,13 @@ TEST_P(getrs_strided_batched_gtest, getrs_strided_batched_gtest_float)
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldb < arg.M || arg.batch_count < 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.ldb < arg.N || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -85,13 +85,13 @@ TEST_P(getrs_strided_batched_gtest, getrs_strided_batched_gtest_double)
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldb < arg.M || arg.batch_count < 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.ldb < arg.N || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
