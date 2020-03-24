@@ -94,6 +94,20 @@ void cblas_symv(
 template <typename T>
 void cblas_ger(int m, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
 
+// hbmv
+template <typename T>
+void cblas_hbmv(hipblasFillMode_t uplo,
+                int               n,
+                int               k,
+                T                 alpha,
+                T*                A,
+                int               lda,
+                T*                x,
+                int               incx,
+                T                 beta,
+                T*                y,
+                int               incy);
+
 // hemv
 template <typename T>
 void cblas_hemv(
