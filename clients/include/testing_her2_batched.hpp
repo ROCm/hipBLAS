@@ -37,7 +37,7 @@ hipblasStatus_t testing_her2_batched(Arguments argus)
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
 
-    T alpha = (T)argus.alpha;
+    T alpha = T(argus.alpha, argus.alphai);
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
