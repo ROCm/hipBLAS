@@ -120,6 +120,11 @@ void cblas_syr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* A, int
 template <typename T, typename U>
 void cblas_her(hipblasFillMode_t uplo, int n, U alpha, T* x, int incx, T* A, int lda);
 
+// her2
+template <typename T>
+void cblas_her2(
+    hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
+
 // potrf
 template <typename T>
 int cblas_potrf(char uplo, int m, T* A, int lda);

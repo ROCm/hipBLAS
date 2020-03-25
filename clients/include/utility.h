@@ -544,8 +544,10 @@ public:
     int end   = 10240;
     int step  = 1000;
 
-    double alpha = 1.0;
-    double beta  = 0.0;
+    double alpha  = 1.0;
+    double alphai = 0.0;
+    double beta   = 0.0;
+    double betai  = 0.0;
 
     char transA_option = 'N';
     char transB_option = 'N';
@@ -582,8 +584,10 @@ public:
         end   = rhs.end;
         step  = rhs.step;
 
-        alpha = rhs.alpha;
-        beta  = rhs.beta;
+        alpha  = rhs.alpha;
+        alphai = rhs.alphai;
+        beta   = rhs.beta;
+        betai  = rhs.betai;
 
         transA_option = rhs.transA_option;
         transB_option = rhs.transB_option;
