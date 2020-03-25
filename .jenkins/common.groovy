@@ -4,11 +4,21 @@
 def runCompileCommand(platform, project, jobName)
 {
     project.paths.construct_build_prefix()
+
+    def getDependenciesCommand = ""
+    if (project.installLibraryDependenciesFromCI)
+    {
+        project.libraryDependencies.each
+        { libraryName ->
+            getDependenciesCommand += auxiliary.getLibrary(libraryName, platform.jenkinsLabel, 'develop')
+        }
+    }
         
     if(jobName.contains('hipclang'))
     {
         command = """#!/usr/bin/env bash
                 set -x
+                ${getDependenciesCommand}
                 cd ${project.paths.project_build_prefix}
                 LD_LIBRARY_PATH=/opt/rocm/lib CXX=g++ ${project.paths.build_command} --hip-clang
                 """
@@ -17,6 +27,7 @@ def runCompileCommand(platform, project, jobName)
     {
         command = """#!/usr/bin/env bash
                 set -x
+                ${getDependenciesCommand}
                 cd ${project.paths.project_build_prefix}
                 LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=g++ ${project.paths.build_command}
                 """
