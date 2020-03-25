@@ -109,12 +109,16 @@ void cblas_hbmv(hipblasFillMode_t uplo,
                 int               incy);
 
 // hemv
-template <typename T>
+template <typename T, typename U>
 void cblas_hemv(
-    hipblasFillMode_t uplo, int n, T alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
+    hipblasFillMode_t uplo, int n, U alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
 
 template <typename T>
 void cblas_syr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* A, int lda);
+
+// her
+template <typename T, typename U>
+void cblas_her(hipblasFillMode_t uplo, int n, U alpha, T* x, int incx, T* A, int lda);
 
 // potrf
 template <typename T>

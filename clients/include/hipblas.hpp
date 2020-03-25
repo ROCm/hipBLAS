@@ -436,6 +436,41 @@ hipblasStatus_t hipblasHemvStridedBatched(hipblasHandle_t   handle,
                                           int               stride_y,
                                           int               batch_count);
 
+// her
+template <typename T, typename U>
+hipblasStatus_t hipblasHer(hipblasHandle_t   handle,
+                           hipblasFillMode_t uplo,
+                           int               n,
+                           const U*          alpha,
+                           const T*          x,
+                           int               incx,
+                           T*                A,
+                           int               lda);
+
+template <typename T, typename U>
+hipblasStatus_t hipblasHerBatched(hipblasHandle_t   handle,
+                                  hipblasFillMode_t uplo,
+                                  int               n,
+                                  const U*          alpha,
+                                  const T* const    x[],
+                                  int               incx,
+                                  T* const          A[],
+                                  int               lda,
+                                  int               batchCount);
+
+template <typename T, typename U>
+hipblasStatus_t hipblasHerStridedBatched(hipblasHandle_t   handle,
+                                         hipblasFillMode_t uplo,
+                                         int               n,
+                                         const U*          alpha,
+                                         const T*          x,
+                                         int               incx,
+                                         int               stridex,
+                                         T*                A,
+                                         int               lda,
+                                         int               strideA,
+                                         int               batchCount);
+
 // syr
 template <typename T>
 hipblasStatus_t hipblasSyr(hipblasHandle_t   handle,

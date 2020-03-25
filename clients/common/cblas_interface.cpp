@@ -845,6 +845,31 @@ void cblas_hemv<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
     cblas_zhemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
 }
 
+// her
+template <>
+void cblas_her<hipblasComplex, float>(hipblasFillMode_t uplo,
+                                      int               n,
+                                      float             alpha,
+                                      hipblasComplex*   x,
+                                      int               incx,
+                                      hipblasComplex*   A,
+                                      int               lda)
+{
+    cblas_cher(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
+}
+
+template <>
+void cblas_her<hipblasDoubleComplex, double>(hipblasFillMode_t     uplo,
+                                             int                   n,
+                                             double                alpha,
+                                             hipblasDoubleComplex* x,
+                                             int                   incx,
+                                             hipblasDoubleComplex* A,
+                                             int                   lda)
+{
+    cblas_zher(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
+}
+
 // syr
 template <>
 void cblas_syr<float>(
