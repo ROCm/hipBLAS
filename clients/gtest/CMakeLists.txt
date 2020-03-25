@@ -39,31 +39,31 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 set(hipblas_test_source
   hipblas_gtest_main.cpp
-  # set_get_pointer_mode_gtest.cpp
-  # set_get_vector_gtest.cpp
-  # set_get_matrix_gtest.cpp
-  # blas1_gtest.cpp
-  # gbmv_gtest.cpp
-  # gbmv_batched_gtest.cpp
-  # gbmv_strided_batched_gtest.cpp
-  # gemv_gtest.cpp
-  # gemv_batched_gtest.cpp
-  # gemv_strided_batched_gtest.cpp
-  # ger_gtest.cpp
-  # hemv_gtest.cpp
-  # hemv_batched_gtest.cpp
-  # hemv_strided_batched_gtest.cpp
-  # syr_gtest.cpp
-  # tbmv_gtest.cpp
-  # trmv_gtest.cpp
-  # trsv_gtest.cpp
-  # gemm_gtest.cpp
-  # gemm_ex_gtest.cpp
-  # gemm_strided_batched_gtest.cpp
-  # gemm_batched_gtest.cpp
-  # geam_gtest.cpp
-  # trsm_gtest.cpp
-  # trmm_gtest.cpp
+  set_get_pointer_mode_gtest.cpp
+  set_get_vector_gtest.cpp
+  set_get_matrix_gtest.cpp
+  blas1_gtest.cpp
+  gbmv_gtest.cpp
+  gbmv_batched_gtest.cpp
+  gbmv_strided_batched_gtest.cpp
+  gemv_gtest.cpp
+  gemv_batched_gtest.cpp
+  gemv_strided_batched_gtest.cpp
+  ger_gtest.cpp
+  hemv_gtest.cpp
+  hemv_batched_gtest.cpp
+  hemv_strided_batched_gtest.cpp
+  syr_gtest.cpp
+  tbmv_gtest.cpp
+  trmv_gtest.cpp
+  trsv_gtest.cpp
+  gemm_gtest.cpp
+  gemm_ex_gtest.cpp
+  gemm_strided_batched_gtest.cpp
+  gemm_batched_gtest.cpp
+  geam_gtest.cpp
+  trsm_gtest.cpp
+  trmm_gtest.cpp
   getrf_gtest.cpp
   getrf_batched_gtest.cpp
   getrf_strided_batched_gtest.cpp
