@@ -134,6 +134,10 @@ void cblas_hpmv(
 template <typename T, typename U>
 void cblas_hpr(hipblasFillMode_t uplo, int n, U alpha, T* x, int incx, T* AP);
 
+// hpr2
+template <typename T>
+void cblas_hpr2(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* AP);
+
 // potrf
 template <typename T>
 int cblas_potrf(char uplo, int m, T* A, int lda);

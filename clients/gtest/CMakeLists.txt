@@ -58,6 +58,7 @@ set(hipblas_test_source
   her2_gtest.cpp
   hpmv_gtest.cpp
   hpr_gtest.cpp
+  hpr2_gtest.cpp
   syr_gtest.cpp
   tbmv_gtest.cpp
   trmv_gtest.cpp

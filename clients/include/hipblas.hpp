@@ -587,6 +587,45 @@ hipblasStatus_t hipblasHprStridedBatched(hipblasHandle_t   handle,
                                          int               strideAP,
                                          int               batchCount);
 
+// hpr2
+template <typename T>
+hipblasStatus_t hipblasHpr2(hipblasHandle_t   handle,
+                            hipblasFillMode_t uplo,
+                            int               n,
+                            const T*          alpha,
+                            const T*          x,
+                            int               incx,
+                            const T*          y,
+                            int               incy,
+                            T*                AP);
+
+template <typename T>
+hipblasStatus_t hipblasHpr2Batched(hipblasHandle_t   handle,
+                                   hipblasFillMode_t uplo,
+                                   int               n,
+                                   const T*          alpha,
+                                   const T* const    x[],
+                                   int               incx,
+                                   const T* const    y[],
+                                   int               incy,
+                                   T* const          AP[],
+                                   int               batchCount);
+
+template <typename T>
+hipblasStatus_t hipblasHpr2StridedBatched(hipblasHandle_t   handle,
+                                          hipblasFillMode_t uplo,
+                                          int               n,
+                                          const T*          alpha,
+                                          const T*          x,
+                                          int               incx,
+                                          int               stridex,
+                                          const T*          y,
+                                          int               incy,
+                                          int               stridey,
+                                          T*                AP,
+                                          int               strideAP,
+                                          int               batchCount);
+
 // syr
 template <typename T>
 hipblasStatus_t hipblasSyr(hipblasHandle_t   handle,

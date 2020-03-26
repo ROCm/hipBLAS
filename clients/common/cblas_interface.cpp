@@ -947,6 +947,33 @@ void cblas_hpr(hipblasFillMode_t     uplo,
     cblas_zhpr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
 }
 
+// hpr2
+template <>
+void cblas_hpr2(hipblasFillMode_t uplo,
+                int               n,
+                hipblasComplex    alpha,
+                hipblasComplex*   x,
+                int               incx,
+                hipblasComplex*   y,
+                int               incy,
+                hipblasComplex*   AP)
+{
+    cblas_chpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
+}
+
+template <>
+void cblas_hpr2(hipblasFillMode_t     uplo,
+                int                   n,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* x,
+                int                   incx,
+                hipblasDoubleComplex* y,
+                int                   incy,
+                hipblasDoubleComplex* AP)
+{
+    cblas_zhpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
+}
+
 // syr
 template <>
 void cblas_syr<float>(
