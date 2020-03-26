@@ -2701,6 +2701,133 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvStridedBatched(hipblasHandle_t       
                                                           int                         stride_x,
                                                           int                         batch_count);
 
+// tpmv
+HIPBLAS_EXPORT hipblasStatus_t hipblasStpmv(hipblasHandle_t    handle,
+                                            hipblasFillMode_t  uplo,
+                                            hipblasOperation_t transA,
+                                            hipblasDiagType_t  diag,
+                                            int                m,
+                                            const float*       AP,
+                                            float*             x,
+                                            int                incx);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtpmv(hipblasHandle_t    handle,
+                                            hipblasFillMode_t  uplo,
+                                            hipblasOperation_t transA,
+                                            hipblasDiagType_t  diag,
+                                            int                m,
+                                            const double*      AP,
+                                            double*            x,
+                                            int                incx);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmv(hipblasHandle_t       handle,
+                                            hipblasFillMode_t     uplo,
+                                            hipblasOperation_t    transA,
+                                            hipblasDiagType_t     diag,
+                                            int                   m,
+                                            const hipblasComplex* AP,
+                                            hipblasComplex*       x,
+                                            int                   incx);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmv(hipblasHandle_t             handle,
+                                            hipblasFillMode_t           uplo,
+                                            hipblasOperation_t          transA,
+                                            hipblasDiagType_t           diag,
+                                            int                         m,
+                                            const hipblasDoubleComplex* AP,
+                                            hipblasDoubleComplex*       x,
+                                            int                         incx);
+
+// tpmv_batched
+HIPBLAS_EXPORT hipblasStatus_t hipblasStpmvBatched(hipblasHandle_t    handle,
+                                                   hipblasFillMode_t  uplo,
+                                                   hipblasOperation_t transA,
+                                                   hipblasDiagType_t  diag,
+                                                   int                m,
+                                                   const float* const AP[],
+                                                   float* const       x[],
+                                                   int                incx,
+                                                   int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtpmvBatched(hipblasHandle_t     handle,
+                                                   hipblasFillMode_t   uplo,
+                                                   hipblasOperation_t  transA,
+                                                   hipblasDiagType_t   diag,
+                                                   int                 m,
+                                                   const double* const AP[],
+                                                   double* const       x[],
+                                                   int                 incx,
+                                                   int                 batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvBatched(hipblasHandle_t             handle,
+                                                   hipblasFillMode_t           uplo,
+                                                   hipblasOperation_t          transA,
+                                                   hipblasDiagType_t           diag,
+                                                   int                         m,
+                                                   const hipblasComplex* const AP[],
+                                                   hipblasComplex* const       x[],
+                                                   int                         incx,
+                                                   int                         batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvBatched(hipblasHandle_t                   handle,
+                                                   hipblasFillMode_t                 uplo,
+                                                   hipblasOperation_t                transA,
+                                                   hipblasDiagType_t                 diag,
+                                                   int                               m,
+                                                   const hipblasDoubleComplex* const AP[],
+                                                   hipblasDoubleComplex* const       x[],
+                                                   int                               incx,
+                                                   int                               batchCount);
+
+// tpmv_strided_batched
+HIPBLAS_EXPORT hipblasStatus_t hipblasStpmvStridedBatched(hipblasHandle_t    handle,
+                                                          hipblasFillMode_t  uplo,
+                                                          hipblasOperation_t transA,
+                                                          hipblasDiagType_t  diag,
+                                                          int                m,
+                                                          const float*       AP,
+                                                          int                strideAP,
+                                                          float*             x,
+                                                          int                incx,
+                                                          int                stride,
+                                                          int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtpmvStridedBatched(hipblasHandle_t    handle,
+                                                          hipblasFillMode_t  uplo,
+                                                          hipblasOperation_t transA,
+                                                          hipblasDiagType_t  diag,
+                                                          int                m,
+                                                          const double*      AP,
+                                                          int                strideAP,
+                                                          double*            x,
+                                                          int                incx,
+                                                          int                stride,
+                                                          int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvStridedBatched(hipblasHandle_t       handle,
+                                                          hipblasFillMode_t     uplo,
+                                                          hipblasOperation_t    transA,
+                                                          hipblasDiagType_t     diag,
+                                                          int                   m,
+                                                          const hipblasComplex* AP,
+                                                          int                   strideAP,
+                                                          hipblasComplex*       x,
+                                                          int                   incx,
+                                                          int                   stride,
+                                                          int                   batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvStridedBatched(hipblasHandle_t             handle,
+                                                          hipblasFillMode_t           uplo,
+                                                          hipblasOperation_t          transA,
+                                                          hipblasDiagType_t           diag,
+                                                          int                         m,
+                                                          const hipblasDoubleComplex* AP,
+                                                          int                         strideAP,
+                                                          hipblasDoubleComplex*       x,
+                                                          int                         incx,
+                                                          int                         stride,
+                                                          int                         batchCount);
+
 // trmv
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,

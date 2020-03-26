@@ -702,6 +702,41 @@ hipblasStatus_t hipblasTbmvStridedBatched(hipblasHandle_t    handle,
                                           int                stride_x,
                                           int                batch_count);
 
+// tpmv
+template <typename T>
+hipblasStatus_t hipblasTpmv(hipblasHandle_t    handle,
+                            hipblasFillMode_t  uplo,
+                            hipblasOperation_t transA,
+                            hipblasDiagType_t  diag,
+                            int                m,
+                            const T*           AP,
+                            T*                 x,
+                            int                incx);
+
+template <typename T>
+hipblasStatus_t hipblasTpmvBatched(hipblasHandle_t    handle,
+                                   hipblasFillMode_t  uplo,
+                                   hipblasOperation_t transA,
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   const T* const     AP[],
+                                   T* const           x[],
+                                   int                incx,
+                                   int                batchCount);
+
+template <typename T>
+hipblasStatus_t hipblasTpmvStridedBatched(hipblasHandle_t    handle,
+                                          hipblasFillMode_t  uplo,
+                                          hipblasOperation_t transA,
+                                          hipblasDiagType_t  diag,
+                                          int                m,
+                                          const T*           AP,
+                                          int                strideAP,
+                                          T*                 x,
+                                          int                incx,
+                                          int                stridex,
+                                          int                batchCount);
+
 // trmv
 template <typename T>
 hipblasStatus_t hipblasTrmv(hipblasHandle_t    handle,
