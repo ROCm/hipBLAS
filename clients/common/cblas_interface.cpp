@@ -33,6 +33,28 @@ void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
 
+void csymv_(char*           uplo,
+            int*            n,
+            hipblasComplex* alpha,
+            hipblasComplex* A,
+            int*            lda,
+            hipblasComplex* x,
+            int*            incx,
+            hipblasComplex* beta,
+            hipblasComplex* y,
+            int*            incy);
+
+void zsymv_(char*                 uplo,
+            int*                  n,
+            hipblasDoubleComplex* alpha,
+            hipblasDoubleComplex* A,
+            int*                  lda,
+            hipblasDoubleComplex* x,
+            int*                  incx,
+            hipblasDoubleComplex* beta,
+            hipblasDoubleComplex* y,
+            int*                  incy);
+
 #ifdef __cplusplus
 }
 #endif
@@ -735,37 +757,6 @@ void cblas_gemv<hipblasDoubleComplex>(hipblasOperation_t    transA,
         CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, &alpha, A, lda, x, incx, &beta, y, incy);
 }
 
-// symv
-template <>
-void cblas_symv<float>(hipblasFillMode_t uplo,
-                       int               n,
-                       float             alpha,
-                       float*            A,
-                       int               lda,
-                       float*            x,
-                       int               incx,
-                       float             beta,
-                       float*            y,
-                       int               incy)
-{
-    cblas_ssymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
-}
-
-template <>
-void cblas_symv<double>(hipblasFillMode_t uplo,
-                        int               n,
-                        double            alpha,
-                        double*           A,
-                        int               lda,
-                        double*           x,
-                        int               incx,
-                        double            beta,
-                        double*           y,
-                        int               incy)
-{
-    cblas_dsymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
-}
-
 // ger
 template <>
 void cblas_ger<float>(
@@ -972,6 +963,69 @@ void cblas_hpr2(hipblasFillMode_t     uplo,
                 hipblasDoubleComplex* AP)
 {
     cblas_zhpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
+}
+
+// symv
+template <>
+void cblas_symv(hipblasFillMode_t uplo,
+                int               n,
+                float             alpha,
+                float*            A,
+                int               lda,
+                float*            x,
+                int               incx,
+                float             beta,
+                float*            y,
+                int               incy)
+{
+    cblas_ssymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
+}
+
+template <>
+void cblas_symv(hipblasFillMode_t uplo,
+                int               n,
+                double            alpha,
+                double*           A,
+                int               lda,
+                double*           x,
+                int               incx,
+                double            beta,
+                double*           y,
+                int               incy)
+{
+    cblas_dsymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
+}
+
+template <>
+void cblas_symv(hipblasFillMode_t uplo,
+                int               n,
+                hipblasComplex    alpha,
+                hipblasComplex*   A,
+                int               lda,
+                hipblasComplex*   x,
+                int               incx,
+                hipblasComplex    beta,
+                hipblasComplex*   y,
+                int               incy)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    csymv_(&u, &n, &alpha, A, &lda, x, &incx, &beta, y, &incy);
+}
+
+template <>
+void cblas_symv(hipblasFillMode_t     uplo,
+                int                   n,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* A,
+                int                   lda,
+                hipblasDoubleComplex* x,
+                int                   incx,
+                hipblasDoubleComplex  beta,
+                hipblasDoubleComplex* y,
+                int                   incy)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    zsymv_(&u, &n, &alpha, A, &lda, x, &incx, &beta, y, &incy);
 }
 
 // syr
