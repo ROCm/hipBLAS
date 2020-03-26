@@ -555,6 +555,38 @@ hipblasStatus_t hipblasHpmvStridedBatched(hipblasHandle_t   handle,
                                           int               stridey,
                                           int               batchCount);
 
+// hpr
+template <typename T, typename U>
+hipblasStatus_t hipblasHpr(hipblasHandle_t   handle,
+                           hipblasFillMode_t uplo,
+                           int               n,
+                           const U*          alpha,
+                           const T*          x,
+                           int               incx,
+                           T*                AP);
+
+template <typename T, typename U>
+hipblasStatus_t hipblasHprBatched(hipblasHandle_t   handle,
+                                  hipblasFillMode_t uplo,
+                                  int               n,
+                                  const U*          alpha,
+                                  const T* const    x[],
+                                  int               incx,
+                                  T* const          AP[],
+                                  int               batchCount);
+
+template <typename T, typename U>
+hipblasStatus_t hipblasHprStridedBatched(hipblasHandle_t   handle,
+                                         hipblasFillMode_t uplo,
+                                         int               n,
+                                         const U*          alpha,
+                                         const T*          x,
+                                         int               incx,
+                                         int               stridex,
+                                         T*                AP,
+                                         int               strideAP,
+                                         int               batchCount);
+
 // syr
 template <typename T>
 hipblasStatus_t hipblasSyr(hipblasHandle_t   handle,
