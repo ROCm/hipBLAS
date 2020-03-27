@@ -19,7 +19,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T>
+template <typename T, bool CONJ>
 hipblasStatus_t testing_ger_batched(Arguments argus)
 {
     int M           = argus.M;
@@ -37,7 +37,7 @@ hipblasStatus_t testing_ger_batched(Arguments argus)
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
 
-    T alpha = (T)argus.alpha;
+    T alpha = argus.get_alpha<T>();
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -109,7 +109,7 @@ hipblasStatus_t testing_ger_batched(Arguments argus)
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasGerBatched<T>(
+        status = hipblasGerBatched<T, CONJ>(
             handle, M, N, (T*)&alpha, dx, incx, dy, incy, dA, lda, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
@@ -132,7 +132,7 @@ hipblasStatus_t testing_ger_batched(Arguments argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_ger<T>(M, N, alpha, hx[b], incx, hy[b], incy, hB[b], lda);
+            cblas_ger<T, CONJ>(M, N, alpha, hx[b], incx, hy[b], incy, hB[b], lda);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

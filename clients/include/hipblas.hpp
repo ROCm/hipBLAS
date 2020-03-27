@@ -302,7 +302,8 @@ hipblasStatus_t hipblasAxpyStridedBatched(hipblasHandle_t handle,
                                           int             stridey,
                                           int             batch_count);
 
-template <typename T>
+// ger
+template <typename T, bool CONJ>
 hipblasStatus_t hipblasGer(hipblasHandle_t handle,
                            int             m,
                            int             n,
@@ -314,7 +315,7 @@ hipblasStatus_t hipblasGer(hipblasHandle_t handle,
                            T*              A,
                            int             lda);
 
-template <typename T>
+template <typename T, bool CONJ>
 hipblasStatus_t hipblasGerBatched(hipblasHandle_t handle,
                                   int             m,
                                   int             n,
@@ -327,7 +328,7 @@ hipblasStatus_t hipblasGerBatched(hipblasHandle_t handle,
                                   int             lda,
                                   int             batch_count);
 
-template <typename T>
+template <typename T, bool CONJ>
 hipblasStatus_t hipblasGerStridedBatched(hipblasHandle_t handle,
                                          int             m,
                                          int             n,

@@ -91,7 +91,8 @@ template <typename T>
 void cblas_symv(
     hipblasFillMode_t uplo, int n, T alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
 
-template <typename T>
+// ger (ger, geru, gerc)
+template <typename T, bool CONJ>
 void cblas_ger(int m, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
 
 // hbmv

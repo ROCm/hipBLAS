@@ -759,17 +759,73 @@ void cblas_gemv<hipblasDoubleComplex>(hipblasOperation_t    transA,
 
 // ger
 template <>
-void cblas_ger<float>(
+void cblas_ger<float, false>(
     int m, int n, float alpha, float* x, int incx, float* y, int incy, float* A, int lda)
 {
     cblas_sger(CblasColMajor, m, n, alpha, x, incx, y, incy, A, lda);
 }
 
 template <>
-void cblas_ger<double>(
+void cblas_ger<double, false>(
     int m, int n, double alpha, double* x, int incx, double* y, int incy, double* A, int lda)
 {
     cblas_dger(CblasColMajor, m, n, alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_ger<hipblasComplex, false>(int             m,
+                                      int             n,
+                                      hipblasComplex  alpha,
+                                      hipblasComplex* x,
+                                      int             incx,
+                                      hipblasComplex* y,
+                                      int             incy,
+                                      hipblasComplex* A,
+                                      int             lda)
+{
+    cblas_cgeru(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_ger<hipblasComplex, true>(int             m,
+                                     int             n,
+                                     hipblasComplex  alpha,
+                                     hipblasComplex* x,
+                                     int             incx,
+                                     hipblasComplex* y,
+                                     int             incy,
+                                     hipblasComplex* A,
+                                     int             lda)
+{
+    cblas_cgerc(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_ger<hipblasDoubleComplex, false>(int                   m,
+                                            int                   n,
+                                            hipblasDoubleComplex  alpha,
+                                            hipblasDoubleComplex* x,
+                                            int                   incx,
+                                            hipblasDoubleComplex* y,
+                                            int                   incy,
+                                            hipblasDoubleComplex* A,
+                                            int                   lda)
+{
+    cblas_zgeru(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_ger<hipblasDoubleComplex, true>(int                   m,
+                                           int                   n,
+                                           hipblasDoubleComplex  alpha,
+                                           hipblasDoubleComplex* x,
+                                           int                   incx,
+                                           hipblasDoubleComplex* y,
+                                           int                   incy,
+                                           hipblasDoubleComplex* A,
+                                           int                   lda)
+{
+    cblas_zgerc(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
 }
 
 // hbmv
