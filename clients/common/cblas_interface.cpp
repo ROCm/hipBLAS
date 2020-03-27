@@ -965,6 +965,39 @@ void cblas_hpr2(hipblasFillMode_t     uplo,
     cblas_zhpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
 }
 
+// sbmv
+template <>
+void cblas_sbmv(hipblasFillMode_t uplo,
+                int               n,
+                int               k,
+                float             alpha,
+                float*            A,
+                int               lda,
+                float*            x,
+                int               incx,
+                float             beta,
+                float*            y,
+                int               incy)
+{
+    cblas_ssbmv(CblasColMajor, (CBLAS_UPLO)uplo, n, k, alpha, A, lda, x, incx, beta, y, incy);
+}
+
+template <>
+void cblas_sbmv(hipblasFillMode_t uplo,
+                int               n,
+                int               k,
+                double            alpha,
+                double*           A,
+                int               lda,
+                double*           x,
+                int               incx,
+                double            beta,
+                double*           y,
+                int               incy)
+{
+    cblas_dsbmv(CblasColMajor, (CBLAS_UPLO)uplo, n, k, alpha, A, lda, x, incx, beta, y, incy);
+}
+
 // spmv
 template <>
 void cblas_spmv(hipblasFillMode_t uplo,
