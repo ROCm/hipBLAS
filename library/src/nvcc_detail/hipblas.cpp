@@ -4017,7 +4017,7 @@ hipblasStatus_t hipblasSsymvBatched(hipblasHandle_t    handle,
                                     const float* const x[],
                                     int                incx,
                                     const float*       beta,
-                                    float* const       y[],
+                                    float*             y[],
                                     int                incy,
                                     int                batchCount)
 {
@@ -4033,7 +4033,7 @@ hipblasStatus_t hipblasDsymvBatched(hipblasHandle_t     handle,
                                     const double* const x[],
                                     int                 incx,
                                     const double*       beta,
-                                    double* const       y[],
+                                    double*             y[],
                                     int                 incy,
                                     int                 batchCount)
 {
@@ -4049,7 +4049,7 @@ hipblasStatus_t hipblasCsymvBatched(hipblasHandle_t             handle,
                                     const hipblasComplex* const x[],
                                     int                         incx,
                                     const hipblasComplex*       beta,
-                                    hipblasComplex* const       y[],
+                                    hipblasComplex*             y[],
                                     int                         incy,
                                     int                         batchCount)
 {
@@ -4065,7 +4065,7 @@ hipblasStatus_t hipblasZsymvBatched(hipblasHandle_t                   handle,
                                     const hipblasDoubleComplex* const x[],
                                     int                               incx,
                                     const hipblasDoubleComplex*       beta,
-                                    hipblasDoubleComplex* const       y[],
+                                    hipblasDoubleComplex*             y[],
                                     int                               incy,
                                     int                               batchCount)
 {
@@ -4130,7 +4130,7 @@ hipblasStatus_t hipblasCsymvStridedBatched(hipblasHandle_t       handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCsymvStridedBatched(hipblasHandle_t             handle,
+hipblasStatus_t hipblasZsymvStridedBatched(hipblasHandle_t             handle,
                                            hipblasFillMode_t           uplo,
                                            int                         n,
                                            const hipblasDoubleComplex* alpha,
