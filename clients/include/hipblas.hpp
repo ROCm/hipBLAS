@@ -626,6 +626,48 @@ hipblasStatus_t hipblasHpr2StridedBatched(hipblasHandle_t   handle,
                                           int               strideAP,
                                           int               batchCount);
 
+// spmv
+template <typename T>
+hipblasStatus_t hipblasSpmv(hipblasHandle_t   handle,
+                            hipblasFillMode_t uplo,
+                            int               n,
+                            const T*          alpha,
+                            const T*          AP,
+                            const T*          x,
+                            int               incx,
+                            const T*          beta,
+                            T*                y,
+                            int               incy);
+
+template <typename T>
+hipblasStatus_t hipblasSpmvBatched(hipblasHandle_t   handle,
+                                   hipblasFillMode_t uplo,
+                                   int               n,
+                                   const T*          alpha,
+                                   const T* const    AP[],
+                                   const T* const    x[],
+                                   int               incx,
+                                   const T*          beta,
+                                   T*                y[],
+                                   int               incy,
+                                   int               batchCount);
+
+template <typename T>
+hipblasStatus_t hipblasSpmvStridedBatched(hipblasHandle_t   handle,
+                                          hipblasFillMode_t uplo,
+                                          int               n,
+                                          const T*          alpha,
+                                          const T*          AP,
+                                          int               strideAP,
+                                          const T*          x,
+                                          int               incx,
+                                          int               stridex,
+                                          const T*          beta,
+                                          T*                y,
+                                          int               incy,
+                                          int               stridey,
+                                          int               batchCount);
+
 // symv
 template <typename T>
 hipblasStatus_t hipblasSymv(hipblasHandle_t   handle,

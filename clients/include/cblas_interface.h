@@ -138,6 +138,11 @@ void cblas_hpr(hipblasFillMode_t uplo, int n, U alpha, T* x, int incx, T* AP);
 template <typename T>
 void cblas_hpr2(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* AP);
 
+// spmv
+template <typename T>
+void cblas_spmv(
+    hipblasFillMode_t uplo, int n, T alpha, T* AP, T* x, int incx, T beta, T* y, int incy);
+
 // symv
 template <typename T>
 void cblas_symv(
