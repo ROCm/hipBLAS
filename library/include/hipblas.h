@@ -53,6 +53,15 @@ struct hip_complex_number
 typedef hip_complex_number<float>  hipblasComplex;
 typedef hip_complex_number<double> hipblasDoubleComplex;
 
+template <typename T>
+constexpr bool is_complex = false;
+
+template <>
+constexpr bool is_complex<hipblasComplex> = true;
+
+template <>
+constexpr bool is_complex<hipblasDoubleComplex> = true;
+
 enum hipblasStatus_t
 {
     HIPBLAS_STATUS_SUCCESS           = 0, // Function succeeds

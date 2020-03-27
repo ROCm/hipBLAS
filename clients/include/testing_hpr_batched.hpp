@@ -34,7 +34,7 @@ hipblasStatus_t testing_hpr_batched(Arguments argus)
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
 
-    U alpha = (U)argus.alpha;
+    U alpha = argus.get_alpha<U>();
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

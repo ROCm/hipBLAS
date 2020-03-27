@@ -63,8 +63,8 @@ hipblasStatus_t testing_sbmv_strided_batched(Arguments argus)
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
 
-    T alpha = (T)argus.alpha;
-    T beta  = (T)argus.beta;
+    T alpha = argus.get_alpha<T>();
+    T beta  = argus.get_beta<T>();
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);

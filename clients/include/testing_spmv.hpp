@@ -39,8 +39,9 @@ hipblasStatus_t testing_spmv(Arguments argus)
         return status;
     }
 
-    T alpha = T(argus.alpha); //, argus.alphai);
-    T beta  = T(argus.beta);
+    T alpha = argus.get_alpha<T>();
+    T beta  = argus.get_beta<T>();
+
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
     host_vector<T> hx(M * incx);

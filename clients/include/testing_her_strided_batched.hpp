@@ -59,7 +59,7 @@ hipblasStatus_t testing_her_strided_batched(Arguments argus)
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
 
-    U alpha = (U)argus.alpha;
+    U alpha = argus.get_alpha<U>();
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);

@@ -604,6 +604,30 @@ public:
 
         return *this;
     }
+
+    template <typename T, std::enable_if_t<+is_complex<T>, int> = 0>
+    T get_alpha()
+    {
+        return T(alpha, alphai);
+    }
+
+    template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
+    T get_alpha()
+    {
+        return T(alpha);
+    }
+
+    template <typename T, std::enable_if_t<+is_complex<T>, int> = 0>
+    T get_beta()
+    {
+        return T(beta, betai);
+    }
+
+    template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
+    T get_beta()
+    {
+        return T(beta);
+    }
 };
 
 #endif
