@@ -27,6 +27,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     gfortran \
     libboost-program-options-dev \
     libnuma1 \
+    libomp-dev \
     ${library_dependencies} \
     && \
     apt-get clean && \
