@@ -80,10 +80,6 @@ def runPackageCommand(platform, project, jobName)
         platform.runCommand(this, command)
         platform.archiveArtifacts(this, """${project.paths.project_build_prefix}/build/release/package/*.rpm""")        
     }
-    else if(jobName.contains('hipclang'))
-    {
-        packageCommand = null
-    }
     else
     {
         command = """
