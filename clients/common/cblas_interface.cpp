@@ -33,6 +33,16 @@ void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
 
+void cspr_(
+    char* uplo, int* n, hipblasComplex* alpha, hipblasComplex* x, int* incx, hipblasComplex* A);
+
+void zspr_(char*                 uplo,
+           int*                  n,
+           hipblasDoubleComplex* alpha,
+           hipblasDoubleComplex* x,
+           int*                  incx,
+           hipblasDoubleComplex* A);
+
 void csyr_(char*           uplo,
            int*            n,
            hipblasComplex* alpha,
@@ -1096,6 +1106,43 @@ void cblas_spmv(hipblasFillMode_t uplo,
                 int               incy)
 {
     cblas_dspmv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, AP, x, incx, beta, y, incy);
+}
+
+// spr
+template <>
+void cblas_spr(hipblasFillMode_t uplo, int n, float alpha, float* x, int incx, float* AP)
+{
+    cblas_sspr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
+}
+
+template <>
+void cblas_spr(hipblasFillMode_t uplo, int n, double alpha, double* x, int incx, double* AP)
+{
+    cblas_dspr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
+}
+
+template <>
+void cblas_spr(hipblasFillMode_t uplo,
+               int               n,
+               hipblasComplex    alpha,
+               hipblasComplex*   x,
+               int               incx,
+               hipblasComplex*   AP)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    cspr_(&u, &n, &alpha, x, &incx, AP);
+}
+
+template <>
+void cblas_spr(hipblasFillMode_t     uplo,
+               int                   n,
+               hipblasDoubleComplex  alpha,
+               hipblasDoubleComplex* x,
+               int                   incx,
+               hipblasDoubleComplex* AP)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    zspr_(&u, &n, &alpha, x, &incx, AP);
 }
 
 // symv
