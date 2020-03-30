@@ -33,6 +33,21 @@ void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
 
+void csyr_(char*           uplo,
+           int*            n,
+           hipblasComplex* alpha,
+           hipblasComplex* x,
+           int*            incx,
+           hipblasComplex* a,
+           int*            lda);
+void zsyr_(char*                 uplo,
+           int*                  n,
+           hipblasDoubleComplex* alpha,
+           hipblasDoubleComplex* x,
+           int*                  incx,
+           hipblasDoubleComplex* a,
+           int*                  lda);
+
 void csymv_(char*           uplo,
             int*            n,
             hipblasComplex* alpha,
@@ -1161,13 +1176,38 @@ void cblas_syr<double>(
     cblas_dsyr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
 }
 
+template <>
+void cblas_syr<hipblasComplex>(hipblasFillMode_t uplo,
+                               int               n,
+                               hipblasComplex    alpha,
+                               hipblasComplex*   x,
+                               int               incx,
+                               hipblasComplex*   A,
+                               int               lda)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    csyr_(&u, &n, &alpha, x, &incx, A, &lda);
+}
+
+template <>
+void cblas_syr<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+                                     int                   n,
+                                     hipblasDoubleComplex  alpha,
+                                     hipblasDoubleComplex* x,
+                                     int                   incx,
+                                     hipblasDoubleComplex* A,
+                                     int                   lda)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    zsyr_(&u, &n, &alpha, x, &incx, A, &lda);
+}
+
 // syr2
 // No complex version of syr2 - make a local implementation
 template <typename T>
 inline void cblas_syr2_local(
     hipblasFillMode_t uplo, int n, T alpha, T* xa, int incx, T* ya, int incy, T* A, int lda)
 {
-    // TODO: this.
     if(n <= 0)
         return;
 

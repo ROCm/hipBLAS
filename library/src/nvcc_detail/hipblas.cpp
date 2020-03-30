@@ -4400,6 +4400,44 @@ hipblasStatus_t hipblasDsyr(hipblasHandle_t   handle,
         cublasDsyr((cublasHandle_t)handle, hipFillToCudaFill(uplo), n, alpha, x, incx, A, lda));
 }
 
+hipblasStatus_t hipblasCsyr(hipblasHandle_t       handle,
+                            hipblasFillMode_t     uplo,
+                            int                   n,
+                            const hipblasComplex* alpha,
+                            const hipblasComplex* x,
+                            int                   incx,
+                            hipblasComplex*       A,
+                            int                   lda)
+{
+    return hipCUBLASStatusToHIPStatus(cublasCsyr((cublasHandle_t)handle,
+                                                 hipFillToCudaFill(uplo),
+                                                 n,
+                                                 (cuComplex*)alpha,
+                                                 (cuComplex*),
+                                                 incx,
+                                                 (cuComplex*)A,
+                                                 lda));
+}
+
+hipblasStatus_t hipblasZsyr(hipblasHandle_t             handle,
+                            hipblasFillMode_t           uplo,
+                            int                         n,
+                            const hipblasDoubleComplex* alpha,
+                            const hipblasDoubleComplex* x,
+                            int                         incx,
+                            hipblasDoubleComplex*       A,
+                            int                         lda)
+{
+    return hipCUBLASStatusToHIPStatus(cublasZsyr((cublasHandle_t)handle,
+                                                 hipFillToCudaFill(uplo),
+                                                 n,
+                                                 (cuDoubleComplex*)alpha,
+                                                 (cuDoubleComplex*),
+                                                 incx,
+                                                 (cuDoubleComplex*)A,
+                                                 lda));
+}
+
 // syr_batched
 hipblasStatus_t hipblasSsyrBatched(hipblasHandle_t    handle,
                                    hipblasFillMode_t  uplo,
@@ -4423,6 +4461,32 @@ hipblasStatus_t hipblasDsyrBatched(hipblasHandle_t     handle,
                                    double* const       A[],
                                    int                 lda,
                                    int                 batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCsyrBatched(hipblasHandle_t             handle,
+                                   hipblasFillMode_t           uplo,
+                                   int                         n,
+                                   const hipblasComplex*       alpha,
+                                   const hipblasComplex* const x[],
+                                   int                         incx,
+                                   hipblasComplex* const       A[],
+                                   int                         lda,
+                                   int                         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZsyrBatched(hipblasHandle_t                   handle,
+                                   hipblasFillMode_t                 uplo,
+                                   int                               n,
+                                   const hipblasDoubleComplex*       alpha,
+                                   const hipblasDoubleComplex* const x[],
+                                   int                               incx,
+                                   hipblasDoubleComplex* const       A[],
+                                   int                               lda,
+                                   int                               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -4454,6 +4518,36 @@ hipblasStatus_t hipblasDsyrStridedBatched(hipblasHandle_t   handle,
                                           int               lda,
                                           int               strideA,
                                           int               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCsyrStridedBatched(hipblasHandle_t       handle,
+                                          hipblasFillMode_t     uplo,
+                                          int                   n,
+                                          const hipblasComplex* alpha,
+                                          const hipblasComplex* x,
+                                          int                   incx,
+                                          int                   stridex,
+                                          hipblasComplex*       A,
+                                          int                   lda,
+                                          int                   strideA,
+                                          int                   batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZsyrStridedBatched(hipblasHandle_t             handle,
+                                          hipblasFillMode_t           uplo,
+                                          int                         n,
+                                          const hipblasDoubleComplex* alpha,
+                                          const hipblasDoubleComplex* x,
+                                          int                         incx,
+                                          int                         stridex,
+                                          hipblasDoubleComplex*       A,
+                                          int                         lda,
+                                          int                         strideA,
+                                          int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
