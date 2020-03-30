@@ -1161,6 +1161,115 @@ void cblas_syr<double>(
     cblas_dsyr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
 }
 
+// syr2
+// No complex version of syr2 - make a local implementation
+template <typename T>
+inline void cblas_syr2_local(
+    hipblasFillMode_t uplo, int n, T alpha, T* xa, int incx, T* ya, int incy, T* A, int lda)
+{
+    // TODO: this.
+    if(n <= 0)
+        return;
+
+    T* x = (incx < 0) ? xa - ptrdiff_t(incx) * (n - 1) : xa;
+    T* y = (incy < 0) ? ya - ptrdiff_t(incy) * (n - 1) : ya;
+
+    if(uplo == HIPBLAS_FILL_MODE_UPPER)
+    {
+        for(int j = 0; j < n; ++j)
+        {
+            T tmpx(alpha.x * x[j * incx].x - alpha.y * x[j * incx].y,
+                   alpha.x * x[j * incx].y + alpha.y * x[j * incx].x);
+            T tmpy(alpha.x * y[j * incx].x - alpha.y * y[j * incx].y,
+                   alpha.x * y[j * incx].y + alpha.y * y[j * incx].x);
+            for(int i = 0; i <= j; ++i)
+            {
+                T p1(x[i * incx].x * tmpy.x - x[i * incx].y * tmpy.y,
+                     x[i * incx].x * tmpy.y + x[i * incx].y * tmpy.x);
+                T p2(y[i * incy].x * tmpx.x - y[i * incy].y * tmpx.y,
+                     y[i * incy].x * tmpx.y + y[i * incy].y * tmpx.x);
+                A[i + j * lda].x = A[i + j * lda].x + p1.x + p2.x;
+                A[i + j * lda].y = A[i + j * lda].y + p1.y + p2.y;
+            }
+        }
+    }
+    else
+    {
+        for(int j = 0; j < n; ++j)
+        {
+            T tmpx(alpha.x * x[j * incx].x - alpha.y * x[j * incx].y,
+                   alpha.x * x[j * incx].y + alpha.y * x[j * incx].x);
+            T tmpy(alpha.x * y[j * incx].x - alpha.y * y[j * incx].y,
+                   alpha.x * y[j * incx].y + alpha.y * y[j * incx].x);
+            for(int i = j; i < n; ++i)
+            {
+                T p1(x[i * incx].x * tmpy.x - x[i * incx].y * tmpy.y,
+                     x[i * incx].x * tmpy.y + x[i * incx].y * tmpy.x);
+                T p2(y[i * incy].x * tmpx.x - y[i * incy].y * tmpx.y,
+                     y[i * incy].x * tmpx.y + y[i * incy].y * tmpx.x);
+                A[i + j * lda].x = A[i + j * lda].x + p1.x + p2.x;
+                A[i + j * lda].y = A[i + j * lda].y + p1.y + p2.y;
+            }
+        }
+    }
+}
+
+template <>
+void cblas_syr2(hipblasFillMode_t uplo,
+                int               n,
+                float             alpha,
+                float*            x,
+                int               incx,
+                float*            y,
+                int               incy,
+                float*            A,
+                int               lda)
+{
+    cblas_ssyr2(CblasColMajor, CBLAS_UPLO(uplo), n, alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_syr2(hipblasFillMode_t uplo,
+                int               n,
+                double            alpha,
+                double*           x,
+                int               incx,
+                double*           y,
+                int               incy,
+                double*           A,
+                int               lda)
+{
+    cblas_dsyr2(CblasColMajor, CBLAS_UPLO(uplo), n, alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_syr2(hipblasFillMode_t uplo,
+                int               n,
+                hipblasComplex    alpha,
+                hipblasComplex*   x,
+                int               incx,
+                hipblasComplex*   y,
+                int               incy,
+                hipblasComplex*   A,
+                int               lda)
+{
+    cblas_syr2_local(uplo, n, alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_syr2(hipblasFillMode_t     uplo,
+                int                   n,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* x,
+                int                   incx,
+                hipblasDoubleComplex* y,
+                int                   incy,
+                hipblasDoubleComplex* A,
+                int                   lda)
+{
+    cblas_syr2_local(uplo, n, alpha, x, incx, y, incy, A, lda);
+}
+
 // potrf
 template <>
 int cblas_potrf(char uplo, int m, float* A, int lda)
