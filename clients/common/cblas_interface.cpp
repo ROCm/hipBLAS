@@ -1145,6 +1145,27 @@ void cblas_spr(hipblasFillMode_t     uplo,
     zspr_(&u, &n, &alpha, x, &incx, AP);
 }
 
+// spr2
+template <>
+void cblas_spr2(
+    hipblasFillMode_t uplo, int n, float alpha, float* x, int incx, float* y, int incy, float* AP)
+{
+    cblas_sspr2(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, y, incy, AP);
+}
+
+template <>
+void cblas_spr2(hipblasFillMode_t uplo,
+                int               n,
+                double            alpha,
+                double*           x,
+                int               incx,
+                double*           y,
+                int               incy,
+                double*           AP)
+{
+    cblas_dspr2(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, y, incy, AP);
+}
+
 // symv
 template <>
 void cblas_symv(hipblasFillMode_t uplo,

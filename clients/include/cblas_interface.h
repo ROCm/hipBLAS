@@ -118,6 +118,10 @@ void cblas_hemv(
 template <typename T>
 void cblas_spr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* AP);
 
+// spr2
+template <typename T>
+void cblas_spr2(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* AP);
+
 // syr
 template <typename T>
 void cblas_syr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* A, int lda);
