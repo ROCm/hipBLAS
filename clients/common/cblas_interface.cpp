@@ -1541,6 +1541,59 @@ void cblas_tpmv(hipblasFillMode_t           uplo,
         CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), m, A, x, incx);
 }
 
+// tpsv
+template <>
+void cblas_tpsv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                n,
+                const float*       AP,
+                float*             x,
+                int                incx)
+{
+    cblas_stpsv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), n, AP, x, incx);
+}
+
+template <>
+void cblas_tpsv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                n,
+                const double*      AP,
+                double*            x,
+                int                incx)
+{
+    cblas_dtpsv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), n, AP, x, incx);
+}
+
+template <>
+void cblas_tpsv(hipblasFillMode_t     uplo,
+                hipblasOperation_t    transA,
+                hipblasDiagType_t     diag,
+                int                   n,
+                const hipblasComplex* AP,
+                hipblasComplex*       x,
+                int                   incx)
+{
+    cblas_ctpsv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), n, AP, x, incx);
+}
+
+template <>
+void cblas_tpsv(hipblasFillMode_t           uplo,
+                hipblasOperation_t          transA,
+                hipblasDiagType_t           diag,
+                int                         n,
+                const hipblasDoubleComplex* AP,
+                hipblasDoubleComplex*       x,
+                int                         incx)
+{
+    cblas_ztpsv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), n, AP, x, incx);
+}
+
 // trmv
 template <>
 void cblas_trmv<float>(hipblasFillMode_t  uplo,

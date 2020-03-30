@@ -437,6 +437,34 @@ inline void hipblass_init_nan(
                 A[i + j * lda + i_batch * stride] = T(hipblas_nan_rng());
 }
 
+/* ============================================================================================= */
+/*! \brief For testing purposes, to convert a regular matrix to a packed matrix.                  */
+template <typename T>
+inline void regular_to_packed(bool upper, const T* A, T* AP, int n)
+{
+    int index = 0;
+    if(upper)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j <= i; j++)
+            {
+                AP[index++] = A[j + i * n];
+            }
+        }
+    }
+    else
+    {
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = i; j < n; j++)
+            {
+                AP[index++] = A[j + i * n];
+            }
+        }
+    }
+}
+
 /* ============================================================================================ */
 /*! \brief  turn float -> 's', double -> 'd', hipblas_float_complex -> 'c', hipblas_double_complex
  * -> 'z' */

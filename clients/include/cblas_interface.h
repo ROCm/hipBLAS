@@ -203,6 +203,16 @@ void cblas_tpmv(hipblasFillMode_t  uplo,
                 T*                 x,
                 int                incx);
 
+// tpsv
+template <typename T>
+void cblas_tpsv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                n,
+                const T*           AP,
+                T*                 x,
+                int                incx);
+
 // trmv
 template <typename T>
 void cblas_trmv(hipblasFillMode_t  uplo,
