@@ -4176,6 +4176,8 @@ hipblasStatus_t hipblasTrsmStridedBatched<double>(hipblasHandle_t    handle,
                                       batch_count);
 }
 
+#ifdef __HIP_PLATFORM_SOLVER__
+
 // getrf
 template <>
 hipblasStatus_t hipblasGetrf<float>(
@@ -4688,6 +4690,8 @@ hipblasStatus_t hipblasGeqrfStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
     return hipblasZgeqrfStridedBatched(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
+
+#endif
 
 // geam
 template <>

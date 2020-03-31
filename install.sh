@@ -14,6 +14,7 @@ function display_help()
   echo "    [-i|--install] install after build"
   echo "    [-d|--dependencies] install build dependencies"
   echo "    [-c|--clients] build library clients too (combines with -i & -d)"
+  echo "    [-n|--no-solver] build library without rocSOLVER dependency"
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [-r]--relocatable] create a package to support relocatable ROCm"
   echo "    [--cuda] build library for cuda backend"
@@ -121,6 +122,14 @@ install_packages( )
     library_dependencies_centos+=( "rocm-dev" "rocblas" )
     library_dependencies_fedora+=( "rocm-dev" "rocblas" )
     library_dependencies_sles+=( "rocm-dev" "rocblas" )
+
+    if [[ "${build_solver}" == true ]]; then
+      library_dependencies_ubuntu+=( "rocsolver" )
+      library_dependencies_centos+=( "rocsolver" )
+      library_dependencies_fedora+=( "rocsolver" )
+      library_dependencies_sles+=( "rocsolver" )
+    fi
+
   fi
 
   local client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
@@ -217,6 +226,7 @@ install_package=false
 install_dependencies=false
 install_prefix=hipblas-install
 build_clients=false
+build_solver=true
 build_cuda=false
 build_hip_clang=false
 build_release=true
@@ -232,7 +242,7 @@ compiler=g++
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,dependencies,debug,hip-clang,clang,cuda,cmakepp,relocatable: --options rhicdgp: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,clang,cuda,cmakepp,relocatable: --options rhicndgp: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -262,6 +272,9 @@ while true; do
         shift ;;
     -c|--clients)
         build_clients=true
+        shift ;;
+    -n|--no-solver)
+        build_solver=false
         shift ;;
     -g|--debug)
         build_release=false
@@ -361,6 +374,11 @@ pushd .
   # clients
   if [[ "${build_clients}" == true ]]; then
     cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
+  fi
+
+  # solver
+  if [[ "${build_solver}" == false ]]; then
+    cmake_client_options="${cmake_client_options} -DBUILD_WITH_SOLVER=OFF"
   fi
 
   # Build library

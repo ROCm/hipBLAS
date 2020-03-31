@@ -55,9 +55,9 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 # NOTE:  workaround until hcc & hip cmake modules fixes symlink logic in their config files; remove when fixed
 list( APPEND CMAKE_PREFIX_PATH /opt/rocm/hcc /opt/rocm/hip )
 
-# Building tensile can add significant compile time; this option allows to build
-# library without tensile to allow for rapid iteration without GEMM functionality
 option( BUILD_VERBOSE "Output additional build information" OFF )
+
+option( BUILD_WITH_SOLVER "Add additional functions from rocSOLVER" ON )
 
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )

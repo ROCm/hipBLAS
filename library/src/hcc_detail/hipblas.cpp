@@ -4958,6 +4958,11 @@ hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
                                       batch_count));
 }
 
+#ifdef __HIP_PLATFORM_SOLVER__
+//--------------------------------------------------------------------------------------
+//rocSOLVER functions
+//--------------------------------------------------------------------------------------
+
 // getrf
 hipblasStatus_t hipblasSgetrf(
     hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
@@ -6278,6 +6283,8 @@ hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
 
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
+
+#endif
 
 // gemm
 hipblasStatus_t hipblasHgemm(hipblasHandle_t    handle,
