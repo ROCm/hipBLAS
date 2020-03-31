@@ -4181,13 +4181,7 @@ hipblasStatus_t hipblasCspr(hipblasHandle_t       handle,
                             int                   incx,
                             hipblasComplex*       AP)
 {
-    return hipCUBLASStatusToHIPStatus(cublasCspr((cublasHandle_t)handle,
-                                                 hipFillToCudaFill(uplo),
-                                                 n,
-                                                 (cuComplex*)alpha,
-                                                 (cuComplex*)x,
-                                                 incx,
-                                                 (cuComplex*)AP));
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 hipblasStatus_t hipblasZspr(hipblasHandle_t             handle,
@@ -4198,13 +4192,7 @@ hipblasStatus_t hipblasZspr(hipblasHandle_t             handle,
                             int                         incx,
                             hipblasDoubleComplex*       AP)
 {
-    return hipCUBLASStatusToHIPStatus(cublasZspr((cublasHandle_t)handle,
-                                                 hipFillToCudaFill(uplo),
-                                                 n,
-                                                 (cuDoubleComplex*)alpha,
-                                                 (cuDoubleComplex*)x,
-                                                 incx,
-                                                 (cuDoubleComplex*)AP));
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 // spr_batched
@@ -4671,7 +4659,7 @@ hipblasStatus_t hipblasCsyr(hipblasHandle_t       handle,
                                                  hipFillToCudaFill(uplo),
                                                  n,
                                                  (cuComplex*)alpha,
-                                                 (cuComplex*),
+                                                 (cuComplex*)x,
                                                  incx,
                                                  (cuComplex*)A,
                                                  lda));
@@ -4690,7 +4678,7 @@ hipblasStatus_t hipblasZsyr(hipblasHandle_t             handle,
                                                  hipFillToCudaFill(uplo),
                                                  n,
                                                  (cuDoubleComplex*)alpha,
-                                                 (cuDoubleComplex*),
+                                                 (cuDoubleComplex*)x,
                                                  incx,
                                                  (cuDoubleComplex*)A,
                                                  lda));
@@ -5502,7 +5490,7 @@ hipblasStatus_t hipblasZtpsv(hipblasHandle_t             handle,
                              hipblasDoubleComplex*       x,
                              int                         incx)
 {
-    return hipCUBLASStatusToHIPStatus(cublasCtpsv((cublasHandle_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasZtpsv((cublasHandle_t)handle,
                                                   hipFillToCudaFill(uplo),
                                                   hipOperationToCudaOperation(transA),
                                                   hipDiagonalToCudaDiagonal(diag),

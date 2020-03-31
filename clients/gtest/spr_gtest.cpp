@@ -145,7 +145,7 @@ TEST_P(blas2_spr_gtest, spr_gtest_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
