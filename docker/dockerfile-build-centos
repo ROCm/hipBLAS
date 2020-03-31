@@ -38,6 +38,7 @@ RUN yum install -y \
     rpm-build \ 
     deltarpm \
     wget \
+    unzip \
     ${library_dependencies} 
 
 RUN echo '#!/bin/bash' | tee /etc/profile.d/devtoolset7.sh && echo \
