@@ -60,18 +60,16 @@ hipblasStatus_t testing_trsv(Arguments argus)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    vector<T> hA(size_A);
-    vector<T> AAT(size_A);
-    vector<T> hb(size_x);
-    vector<T> hx(size_x);
-    vector<T> hx_or_b_1(size_x);
-    vector<T> hx_or_b_2(size_x);
-    vector<T> cpu_x_or_b(size_x);
+    host_vector<T> hA(size_A);
+    host_vector<T> AAT(size_A);
+    host_vector<T> hb(size_x);
+    host_vector<T> hx(size_x);
+    host_vector<T> hx_or_b_1(size_x);
+    host_vector<T> hx_or_b_2(size_x);
+    host_vector<T> cpu_x_or_b(size_x);
 
-    T *dA, *dx_or_b;
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dA, size_A * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dx_or_b, size_x * sizeof(T)));
+    device_vector<T> dA(size_A);
+    device_vector<T> dx_or_b(size_x);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
@@ -158,8 +156,6 @@ hipblasStatus_t testing_trsv(Arguments argus)
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
-            CHECK_HIP_ERROR(hipFree(dA));
-            CHECK_HIP_ERROR(hipFree(dx_or_b));
             hipblasDestroy(handle);
             return status;
         }
@@ -185,8 +181,6 @@ hipblasStatus_t testing_trsv(Arguments argus)
         unit_check_trsv(error, M, eps_mult, eps);
     }
 
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dx_or_b));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
