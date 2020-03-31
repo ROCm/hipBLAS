@@ -63,19 +63,17 @@ if( NOT CUDA_FOUND )
     target_link_libraries( hipblas PRIVATE roc::rocsolver )
   endif( )
 
-  # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
-  # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
-    target_compile_options( hipblas PRIVATE -Wno-unused-command-line-argument )
-    target_link_libraries( hipblas PRIVATE hip::hip_hcc )
+  if( CUSTOM_TARGET )
+    target_link_libraries( hipblas PRIVATE hip::${CUSTOM_TARGET} )
+  else( )
+    if ( LIBAMDHIP64_LIBRARY )
+      target_link_libraries( hipblas PRIVATE hip::amdhip64 )
+    else ( )
+      get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
+      target_link_libraries( hipblas PRIVATE ${HIP_HCC_LOCATION} )
+    endif ( )
   endif( )
 
-  if ( LIBAMDHIP64_LIBRARY )
-    target_link_libraries( hipblas PRIVATE hip::amdhip64 )
-  else ( )
-    get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
-    target_link_libraries( hipblas PRIVATE ${HIP_HCC_LOCATION} )
-  endif( )
 else( )
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
 
@@ -129,7 +127,7 @@ rocm_install_targets(
 rocm_export_targets(
   TARGETS roc::hipblas
   PREFIX hipblas
-  DEPENDS PACKAGE hip
+  DEPENDS PACKAGE HIP
   NAMESPACE roc::
  )
 
