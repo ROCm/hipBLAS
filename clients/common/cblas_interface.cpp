@@ -2017,6 +2017,65 @@ void cblas_herk(hipblasFillMode_t     uplo,
                 ldc);
 }
 
+// her2k
+template <>
+void cblas_her2k(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 hipblasComplex     alpha,
+                 hipblasComplex*    A,
+                 int                lda,
+                 hipblasComplex*    B,
+                 int                ldb,
+                 float              beta,
+                 hipblasComplex*    C,
+                 int                ldc)
+{
+    cblas_cher2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
+}
+
+template <>
+void cblas_her2k(hipblasFillMode_t     uplo,
+                 hipblasOperation_t    transA,
+                 int                   n,
+                 int                   k,
+                 hipblasDoubleComplex  alpha,
+                 hipblasDoubleComplex* A,
+                 int                   lda,
+                 hipblasDoubleComplex* B,
+                 int                   ldb,
+                 double                beta,
+                 hipblasDoubleComplex* C,
+                 int                   ldc)
+{
+    cblas_zher2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
+}
+
 // trsm
 template <>
 void cblas_trsm<float>(hipblasSideMode_t  side,

@@ -254,6 +254,21 @@ void cblas_herk(hipblasFillMode_t  uplo,
                 T*                 C,
                 int                ldc);
 
+// her2k
+template <typename T, typename U>
+void cblas_her2k(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 T                  alpha,
+                 T*                 A,
+                 int                lda,
+                 T*                 B,
+                 int                ldb,
+                 U                  beta,
+                 T*                 C,
+                 int                ldc);
+
 // gemm
 template <typename T>
 void cblas_gemm(hipblasOperation_t transA,
