@@ -28,6 +28,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     libboost-program-options-dev \
     libnuma1 \
     libomp-dev \
+    wget \
     ${library_dependencies} \
     && \
     apt-get clean && \
