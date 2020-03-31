@@ -5637,6 +5637,115 @@ hipblasStatus_t hipblasGemmStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                       batch_count);
 }
 
+// herk
+template <>
+hipblasStatus_t hipblasHerk(hipblasHandle_t       handle,
+                            hipblasFillMode_t     uplo,
+                            hipblasOperation_t    transA,
+                            int                   n,
+                            int                   k,
+                            const float*          alpha,
+                            const hipblasComplex* A,
+                            int                   lda,
+                            const float*          beta,
+                            hipblasComplex*       C,
+                            int                   ldc)
+{
+    return hipblasCherk(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc);
+}
+
+template <>
+hipblasStatus_t hipblasHerk(hipblasHandle_t             handle,
+                            hipblasFillMode_t           uplo,
+                            hipblasOperation_t          transA,
+                            int                         n,
+                            int                         k,
+                            const double*               alpha,
+                            const hipblasDoubleComplex* A,
+                            int                         lda,
+                            const double*               beta,
+                            hipblasDoubleComplex*       C,
+                            int                         ldc)
+{
+    return hipblasZherk(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc);
+}
+
+// herk_batched
+template <>
+hipblasStatus_t hipblasHerkBatched(hipblasHandle_t             handle,
+                                   hipblasFillMode_t           uplo,
+                                   hipblasOperation_t          transA,
+                                   int                         n,
+                                   int                         k,
+                                   const float*                alpha,
+                                   const hipblasComplex* const A[],
+                                   int                         lda,
+                                   const float*                beta,
+                                   hipblasComplex* const       C[],
+                                   int                         ldc,
+                                   int                         batchCount)
+{
+    return hipblasCherkBatched(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasHerkBatched(hipblasHandle_t                   handle,
+                                   hipblasFillMode_t                 uplo,
+                                   hipblasOperation_t                transA,
+                                   int                               n,
+                                   int                               k,
+                                   const double*                     alpha,
+                                   const hipblasDoubleComplex* const A[],
+                                   int                               lda,
+                                   const double*                     beta,
+                                   hipblasDoubleComplex* const       C[],
+                                   int                               ldc,
+                                   int                               batchCount)
+{
+    return hipblasZherkBatched(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc, batchCount);
+}
+
+// herk_strided_batched
+template <>
+hipblasStatus_t hipblasHerkStridedBatched(hipblasHandle_t       handle,
+                                          hipblasFillMode_t     uplo,
+                                          hipblasOperation_t    transA,
+                                          int                   n,
+                                          int                   k,
+                                          const float*          alpha,
+                                          const hipblasComplex* A,
+                                          int                   lda,
+                                          int                   strideA,
+                                          const float*          beta,
+                                          hipblasComplex*       C,
+                                          int                   ldc,
+                                          int                   strideC,
+                                          int                   batchCount)
+{
+    return hipblasCherkStridedBatched(
+        handle, uplo, transA, n, k, alpha, A, lda, strideA, beta, C, ldc, strideC, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasHerkStridedBatched(hipblasHandle_t             handle,
+                                          hipblasFillMode_t           uplo,
+                                          hipblasOperation_t          transA,
+                                          int                         n,
+                                          int                         k,
+                                          const double*               alpha,
+                                          const hipblasDoubleComplex* A,
+                                          int                         lda,
+                                          int                         strideA,
+                                          const double*               beta,
+                                          hipblasDoubleComplex*       C,
+                                          int                         ldc,
+                                          int                         strideC,
+                                          int                         batchCount)
+{
+    return hipblasZherkStridedBatched(
+        handle, uplo, transA, n, k, alpha, A, lda, strideA, beta, C, ldc, strideC, batchCount);
+}
+
 // trmm
 template <>
 hipblasStatus_t hipblasTrmm<float>(hipblasHandle_t    handle,

@@ -1775,7 +1775,6 @@ void cblas_trsv<hipblasDoubleComplex>(hipblasHandle_t             handle,
  */
 
 // gemm
-
 template <>
 void cblas_gemm<hipblasHalf>(hipblasOperation_t transA,
                              hipblasOperation_t transB,
@@ -1963,6 +1962,57 @@ void cblas_gemm<hipblasDoubleComplex>(hipblasOperation_t    transA,
                 B,
                 ldb,
                 &beta,
+                C,
+                ldc);
+}
+
+// herk
+template <>
+void cblas_herk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                float              alpha,
+                hipblasComplex*    A,
+                int                lda,
+                float              beta,
+                hipblasComplex*    C,
+                int                ldc)
+{
+    cblas_cherk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_herk(hipblasFillMode_t     uplo,
+                hipblasOperation_t    transA,
+                int                   n,
+                int                   k,
+                double                alpha,
+                hipblasDoubleComplex* A,
+                int                   lda,
+                double                beta,
+                hipblasDoubleComplex* C,
+                int                   ldc)
+{
+    cblas_zherk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
                 C,
                 ldc);
 }

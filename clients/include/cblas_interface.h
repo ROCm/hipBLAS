@@ -236,10 +236,25 @@ void cblas_trsv(hipblasHandle_t    handle,
                 T*                 x,
                 int                incx);
 
+// hemv
 template <typename T>
 void cblas_hemv(
     hipblasFillMode_t uplo, int n, T alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
 
+// herk
+template <typename T, typename U>
+void cblas_herk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                U                  alpha,
+                T*                 A,
+                int                lda,
+                U                  beta,
+                T*                 C,
+                int                ldc);
+
+// gemm
 template <typename T>
 void cblas_gemm(hipblasOperation_t transA,
                 hipblasOperation_t transB,
