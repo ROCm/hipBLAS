@@ -18,8 +18,8 @@ def runCompileCommand(platform, project, jobName)
     {
         command = """#!/usr/bin/env bash
                 set -x
-                ${getDependenciesCommand}
                 cd ${project.paths.project_build_prefix}
+                ${getDependenciesCommand}
                 LD_LIBRARY_PATH=/opt/rocm/lib CXX=g++ ${project.paths.build_command} --hip-clang
                 """
     }
@@ -27,8 +27,8 @@ def runCompileCommand(platform, project, jobName)
     {
         command = """#!/usr/bin/env bash
                 set -x
-                ${getDependenciesCommand}
                 cd ${project.paths.project_build_prefix}
+                ${getDependenciesCommand}
                 LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=g++ ${project.paths.build_command}
                 """
     }
