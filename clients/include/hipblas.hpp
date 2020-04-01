@@ -1376,6 +1376,38 @@ hipblasStatus_t hipblasTrmm(hipblasHandle_t    handle,
                             T*                 B,
                             int                ldb);
 
+template <typename T>
+hipblasStatus_t hipblasTrmmBatched(hipblasHandle_t    handle,
+                                   hipblasSideMode_t  side,
+                                   hipblasFillMode_t  uplo,
+                                   hipblasOperation_t transA,
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   int                n,
+                                   const T*           alpha,
+                                   const T* const     A[],
+                                   int                lda,
+                                   T* const           B[],
+                                   int                ldb,
+                                   int                batchCount);
+
+template <typename T>
+hipblasStatus_t hipblasTrmmStridedBatched(hipblasHandle_t    handle,
+                                          hipblasSideMode_t  side,
+                                          hipblasFillMode_t  uplo,
+                                          hipblasOperation_t transA,
+                                          hipblasDiagType_t  diag,
+                                          int                m,
+                                          int                n,
+                                          const T*           alpha,
+                                          const T*           A,
+                                          int                lda,
+                                          int                strideA,
+                                          T*                 B,
+                                          int                ldb,
+                                          int                strideB,
+                                          int                batchCount);
+
 // trsm
 template <typename T>
 hipblasStatus_t hipblasTrsm(hipblasHandle_t    handle,
