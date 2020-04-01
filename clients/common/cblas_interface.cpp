@@ -2133,31 +2133,59 @@ void cblas_trsm<double>(hipblasSideMode_t  side,
                 ldb);
 }
 
-//  template<>
-//  void cblas_trsm<hipblasComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
-//                          hipblasOperation_t transA, hipblasDiagType_t diag,
-//                          int m, int n,
-//                          hipblasComplex alpha,
-//                          const hipblasComplex *A, int lda,
-//                          hipblasComplex *B, int ldb)
-//  {
-//      //just directly cast, since transA, transB are integers in the enum
-//      cblas_ctrsm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
-//      (CBLAS_DIAG)diag, m, n, &alpha, A, lda, B, ldb);
-//  }
+template <>
+void cblas_trsm<hipblasComplex>(hipblasSideMode_t     side,
+                                hipblasFillMode_t     uplo,
+                                hipblasOperation_t    transA,
+                                hipblasDiagType_t     diag,
+                                int                   m,
+                                int                   n,
+                                hipblasComplex        alpha,
+                                const hipblasComplex* A,
+                                int                   lda,
+                                hipblasComplex*       B,
+                                int                   ldb)
+{
+    cblas_ctrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
 
-//  template<>
-//  void cblas_trsm<hipblasDoubleComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
-//                          hipblasOperation_t transA, hipblasDiagType_t diag,
-//                          int m, int n,
-//                          hipblasDoubleComplex alpha,
-//                          const hipblasDoubleComplex *A, int lda,
-//                          hipblasDoubleComplex *B, int ldb)
-//  {
-//      //just directly cast, since transA, transB are integers in the enum
-//      cblas_ztrsm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
-//      (CBLAS_DIAG)diag, m, n, &alpha, A, lda, B, ldb);
-//  }
+template <>
+void cblas_trsm<hipblasDoubleComplex>(hipblasSideMode_t           side,
+                                      hipblasFillMode_t           uplo,
+                                      hipblasOperation_t          transA,
+                                      hipblasDiagType_t           diag,
+                                      int                         m,
+                                      int                         n,
+                                      hipblasDoubleComplex        alpha,
+                                      const hipblasDoubleComplex* A,
+                                      int                         lda,
+                                      hipblasDoubleComplex*       B,
+                                      int                         ldb)
+{
+    cblas_ztrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
 
 // trtri
 template <>

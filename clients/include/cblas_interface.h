@@ -285,6 +285,7 @@ void cblas_gemm(hipblasOperation_t transA,
                 T*                 C,
                 int                ldc);
 
+// trsm
 template <typename T>
 void cblas_trsm(hipblasSideMode_t  side,
                 hipblasFillMode_t  uplo,
@@ -298,9 +299,11 @@ void cblas_trsm(hipblasSideMode_t  side,
                 T*                 B,
                 int                ldb);
 
+// trtri
 template <typename T>
 int cblas_trtri(char uplo, char diag, int n, T* A, int lda);
 
+// trmm
 template <typename T>
 void cblas_trmm(hipblasSideMode_t  side,
                 hipblasFillMode_t  uplo,
