@@ -1361,6 +1361,57 @@ hipblasStatus_t hipblasHer2kStridedBatched(hipblasHandle_t    handle,
                                            int                strideC,
                                            int                batchCount);
 
+// herkx
+template <typename T, typename U>
+hipblasStatus_t hipblasHerkx(hipblasHandle_t    handle,
+                             hipblasFillMode_t  uplo,
+                             hipblasOperation_t transA,
+                             int                n,
+                             int                k,
+                             const T*           alpha,
+                             const T*           A,
+                             int                lda,
+                             const T*           B,
+                             int                ldb,
+                             const U*           beta,
+                             T*                 C,
+                             int                ldc);
+
+template <typename T, typename U>
+hipblasStatus_t hipblasHerkxBatched(hipblasHandle_t    handle,
+                                    hipblasFillMode_t  uplo,
+                                    hipblasOperation_t transA,
+                                    int                n,
+                                    int                k,
+                                    const T*           alpha,
+                                    const T* const     A[],
+                                    int                lda,
+                                    const T* const     B[],
+                                    int                ldb,
+                                    const U*           beta,
+                                    T* const           C[],
+                                    int                ldc,
+                                    int                batchCount);
+
+template <typename T, typename U>
+hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t    handle,
+                                           hipblasFillMode_t  uplo,
+                                           hipblasOperation_t transA,
+                                           int                n,
+                                           int                k,
+                                           const T*           alpha,
+                                           const T*           A,
+                                           int                lda,
+                                           int                strideA,
+                                           const T*           B,
+                                           int                ldb,
+                                           int                strideB,
+                                           const U*           beta,
+                                           T*                 C,
+                                           int                ldc,
+                                           int                strideC,
+                                           int                batchCount);
+
 // syrk
 template <typename T>
 hipblasStatus_t hipblasSyrk(hipblasHandle_t    handle,
@@ -1439,6 +1490,57 @@ hipblasStatus_t hipblasSyr2kBatched(hipblasHandle_t    handle,
 
 template <typename T>
 hipblasStatus_t hipblasSyr2kStridedBatched(hipblasHandle_t    handle,
+                                           hipblasFillMode_t  uplo,
+                                           hipblasOperation_t transA,
+                                           int                n,
+                                           int                k,
+                                           const T*           alpha,
+                                           const T*           A,
+                                           int                lda,
+                                           int                strideA,
+                                           const T*           B,
+                                           int                ldb,
+                                           int                strideB,
+                                           const T*           beta,
+                                           T*                 C,
+                                           int                ldc,
+                                           int                strideC,
+                                           int                batchCount);
+
+// syrkx
+template <typename T>
+hipblasStatus_t hipblasSyrkx(hipblasHandle_t    handle,
+                             hipblasFillMode_t  uplo,
+                             hipblasOperation_t transA,
+                             int                n,
+                             int                k,
+                             const T*           alpha,
+                             const T*           A,
+                             int                lda,
+                             const T*           B,
+                             int                ldb,
+                             const T*           beta,
+                             T*                 C,
+                             int                ldc);
+
+template <typename T>
+hipblasStatus_t hipblasSyrkxBatched(hipblasHandle_t    handle,
+                                    hipblasFillMode_t  uplo,
+                                    hipblasOperation_t transA,
+                                    int                n,
+                                    int                k,
+                                    const T*           alpha,
+                                    const T* const     A[],
+                                    int                lda,
+                                    const T* const     B[],
+                                    int                ldb,
+                                    const T*           beta,
+                                    T* const           C[],
+                                    int                ldc,
+                                    int                batchCount);
+
+template <typename T>
+hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t    handle,
                                            hipblasFillMode_t  uplo,
                                            hipblasOperation_t transA,
                                            int                n,

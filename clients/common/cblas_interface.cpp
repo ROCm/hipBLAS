@@ -2329,6 +2329,75 @@ void cblas_syr2k(hipblasFillMode_t     uplo,
                  ldc);
 }
 
+// syrkx
+template <>
+void cblas_syrkx(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 float              alpha,
+                 float*             A,
+                 int                lda,
+                 float*             B,
+                 int                ldb,
+                 float              beta,
+                 float*             C,
+                 int                ldc)
+{
+    // TODO: Local implementation
+}
+
+template <>
+void cblas_syrkx(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 double             alpha,
+                 double*            A,
+                 int                lda,
+                 double*            B,
+                 int                ldb,
+                 double             beta,
+                 double*            C,
+                 int                ldc)
+{
+    // TODO: Local implementation
+}
+
+template <>
+void cblas_syrkx(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 hipblasComplex     alpha,
+                 hipblasComplex*    A,
+                 int                lda,
+                 hipblasComplex*    B,
+                 int                ldb,
+                 hipblasComplex     beta,
+                 hipblasComplex*    C,
+                 int                ldc)
+{
+    // TODO: Local implementation
+}
+
+template <>
+void cblas_syrkx(hipblasFillMode_t     uplo,
+                 hipblasOperation_t    transA,
+                 int                   n,
+                 int                   k,
+                 hipblasDoubleComplex  alpha,
+                 hipblasDoubleComplex* A,
+                 int                   lda,
+                 hipblasDoubleComplex* B,
+                 int                   ldb,
+                 hipblasDoubleComplex  beta,
+                 hipblasDoubleComplex* C,
+                 int                   ldc)
+{
+    // TODO: Local implementation
+}
+
 // trsm
 template <>
 void cblas_trsm<float>(hipblasSideMode_t  side,
