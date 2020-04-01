@@ -2017,6 +2017,41 @@ void cblas_herk(hipblasFillMode_t     uplo,
                 ldc);
 }
 
+// herkx
+template <>
+void cblas_herkx(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 hipblasComplex     alpha,
+                 hipblasComplex*    A,
+                 int                lda,
+                 hipblasComplex*    B,
+                 int                ldb,
+                 float              beta,
+                 hipblasComplex*    C,
+                 int                ldc)
+{
+    // TODO: Local implementation.
+}
+
+template <>
+void cblas_herkx(hipblasFillMode_t     uplo,
+                 hipblasOperation_t    transA,
+                 int                   n,
+                 int                   k,
+                 hipblasDoubleComplex  alpha,
+                 hipblasDoubleComplex* A,
+                 int                   lda,
+                 hipblasDoubleComplex* B,
+                 int                   ldb,
+                 double                beta,
+                 hipblasDoubleComplex* C,
+                 int                   ldc)
+{
+    // TODO: Local implementation.
+}
+
 // her2k
 template <>
 void cblas_her2k(hipblasFillMode_t  uplo,
@@ -2074,6 +2109,107 @@ void cblas_her2k(hipblasFillMode_t     uplo,
                  beta,
                  C,
                  ldc);
+}
+
+// syrk
+template <>
+void cblas_syrk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                float              alpha,
+                float*             A,
+                int                lda,
+                float              beta,
+                float*             C,
+                int                ldc)
+{
+    cblas_ssyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_syrk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                double             alpha,
+                double*            A,
+                int                lda,
+                double             beta,
+                double*            C,
+                int                ldc)
+{
+    cblas_dsyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_syrk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                hipblasComplex     alpha,
+                hipblasComplex*    A,
+                int                lda,
+                hipblasComplex     beta,
+                hipblasComplex*    C,
+                int                ldc)
+{
+    cblas_csyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                &beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_syrk(hipblasFillMode_t     uplo,
+                hipblasOperation_t    transA,
+                int                   n,
+                int                   k,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* A,
+                int                   lda,
+                hipblasDoubleComplex  beta,
+                hipblasDoubleComplex* C,
+                int                   ldc)
+{
+    cblas_zsyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                &beta,
+                C,
+                ldc);
 }
 
 // trsm
