@@ -6668,6 +6668,281 @@ hipblasStatus_t hipblasZsyrkStridedBatched(hipblasHandle_t             handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+// syr2k
+hipblasStatus_t hipblasSsyr2k(hipblasHandle_t    handle,
+                              hipblasFillMode_t  uplo,
+                              hipblasOperation_t transA,
+                              int                n,
+                              int                k,
+                              const float*       alpha,
+                              const float*       A,
+                              int                lda,
+                              const float*       B,
+                              int                ldb,
+                              const float*       beta,
+                              float*             C,
+                              int                ldc)
+{
+    return hipCUBLASStatusToHIPStatus(cublasSsyr2k((cublasHandle_t)handle,
+                                                   hipFillToCudaFill(uplo),
+                                                   hipOperationToCudaOperation(transA),
+                                                   n,
+                                                   k,
+                                                   alpha,
+                                                   A,
+                                                   lda,
+                                                   B,
+                                                   ldb,
+                                                   beta,
+                                                   C,
+                                                   ldc));
+}
+
+hipblasStatus_t hipblasDsyr2k(hipblasHandle_t    handle,
+                              hipblasFillMode_t  uplo,
+                              hipblasOperation_t transA,
+                              int                n,
+                              int                k,
+                              const double*      alpha,
+                              const double*      A,
+                              int                lda,
+                              const double*      B,
+                              int                ldb,
+                              const double*      beta,
+                              double*            C,
+                              int                ldc)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDsyr2k((cublasHandle_t)handle,
+                                                   hipFillToCudaFill(uplo),
+                                                   hipOperationToCudaOperation(transA),
+                                                   n,
+                                                   k,
+                                                   alpha,
+                                                   A,
+                                                   lda,
+                                                   B,
+                                                   ldb,
+                                                   beta,
+                                                   C,
+                                                   ldc));
+}
+
+hipblasStatus_t hipblasCsyr2k(hipblasHandle_t       handle,
+                              hipblasFillMode_t     uplo,
+                              hipblasOperation_t    transA,
+                              int                   n,
+                              int                   k,
+                              const hipblasComplex* alpha,
+                              const hipblasComplex* A,
+                              int                   lda,
+                              const hipblasComplex* B,
+                              int                   ldb,
+                              const hipblasComplex* beta,
+                              hipblasComplex*       C,
+                              int                   ldc)
+{
+    return hipCUBLASStatusToHIPStatus(cublasCsyr2k((cublasHandle_t)handle,
+                                                   hipFillToCudaFill(uplo),
+                                                   hipOperationToCudaOperation(transA),
+                                                   n,
+                                                   k,
+                                                   (cuComplex*)alpha,
+                                                   (cuComplex*)A,
+                                                   lda,
+                                                   (cuComplex*)B,
+                                                   ldb,
+                                                   (cuComplex*)beta,
+                                                   (cuComplex*)C,
+                                                   ldc));
+}
+
+hipblasStatus_t hipblasZsyr2k(hipblasHandle_t             handle,
+                              hipblasFillMode_t           uplo,
+                              hipblasOperation_t          transA,
+                              int                         n,
+                              int                         k,
+                              const hipblasDoubleComplex* alpha,
+                              const hipblasDoubleComplex* A,
+                              int                         lda,
+                              const hipblasDoubleComplex* B,
+                              int                         ldb,
+                              const hipblasDoubleComplex* beta,
+                              hipblasDoubleComplex*       C,
+                              int                         ldc)
+{
+    return hipCUBLASStatusToHIPStatus(cublasZsyr2k((cublasHandle_t)handle,
+                                                   hipFillToCudaFill(uplo),
+                                                   hipOperationToCudaOperation(transA),
+                                                   n,
+                                                   k,
+                                                   (cuDoubleComplex*)alpha,
+                                                   (cuDoubleComplex*)A,
+                                                   lda,
+                                                   (cuDoubleComplex*)B,
+                                                   ldb,
+                                                   (cuDoubleComplex*)beta,
+                                                   (cuDoubleComplex*)C,
+                                                   ldc));
+}
+
+// syr2k_batched
+hipblasStatus_t hipblasSsyr2kBatched(hipblasHandle_t    handle,
+                                     hipblasFillMode_t  uplo,
+                                     hipblasOperation_t transA,
+                                     int                n,
+                                     int                k,
+                                     const float*       alpha,
+                                     const float* const A[],
+                                     int                lda,
+                                     const float* const B[],
+                                     int                ldb,
+                                     const float*       beta,
+                                     float* const       C[],
+                                     int                ldc,
+                                     int                batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDsyr2kBatched(hipblasHandle_t     handle,
+                                     hipblasFillMode_t   uplo,
+                                     hipblasOperation_t  transA,
+                                     int                 n,
+                                     int                 k,
+                                     const double*       alpha,
+                                     const double* const A[],
+                                     int                 lda,
+                                     const double* const B[],
+                                     int                 ldb,
+                                     const double*       beta,
+                                     double* const       C[],
+                                     int                 ldc,
+                                     int                 batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCsyr2kBatched(hipblasHandle_t             handle,
+                                     hipblasFillMode_t           uplo,
+                                     hipblasOperation_t          transA,
+                                     int                         n,
+                                     int                         k,
+                                     const hipblasComplex*       alpha,
+                                     const hipblasComplex* const A[],
+                                     int                         lda,
+                                     const hipblasComplex* const B[],
+                                     int                         ldb,
+                                     const hipblasComplex*       beta,
+                                     hipblasComplex* const       C[],
+                                     int                         ldc,
+                                     int                         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZsyr2kBatched(hipblasHandle_t                   handle,
+                                     hipblasFillMode_t                 uplo,
+                                     hipblasOperation_t                transA,
+                                     int                               n,
+                                     int                               k,
+                                     const hipblasDoubleComplex*       alpha,
+                                     const hipblasDoubleComplex* const A[],
+                                     int                               lda,
+                                     const hipblasDoubleComplex* const B[],
+                                     int                               ldb,
+                                     const hipblasDoubleComplex*       beta,
+                                     hipblasDoubleComplex* const       C[],
+                                     int                               ldc,
+                                     int                               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// syr2k_strided_batched
+hipblasStatus_t hipblasSsyr2kStridedBatched(hipblasHandle_t    handle,
+                                            hipblasFillMode_t  uplo,
+                                            hipblasOperation_t transA,
+                                            int                n,
+                                            int                k,
+                                            const float*       alpha,
+                                            const float*       A,
+                                            int                lda,
+                                            int                strideA,
+                                            const float*       B,
+                                            int                ldb,
+                                            int                strideB,
+                                            const float*       beta,
+                                            float*             C,
+                                            int                ldc,
+                                            int                strideC,
+                                            int                batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDsyr2kStridedBatched(hipblasHandle_t    handle,
+                                            hipblasFillMode_t  uplo,
+                                            hipblasOperation_t transA,
+                                            int                n,
+                                            int                k,
+                                            const double*      alpha,
+                                            const double*      A,
+                                            int                lda,
+                                            int                strideA,
+                                            const double*      B,
+                                            int                ldb,
+                                            int                strideB,
+                                            const double*      beta,
+                                            double*            C,
+                                            int                ldc,
+                                            int                strideC,
+                                            int                batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCsyr2kStridedBatched(hipblasHandle_t       handle,
+                                            hipblasFillMode_t     uplo,
+                                            hipblasOperation_t    transA,
+                                            int                   n,
+                                            int                   k,
+                                            const hipblasComplex* alpha,
+                                            const hipblasComplex* A,
+                                            int                   lda,
+                                            int                   strideA,
+                                            const hipblasComplex* B,
+                                            int                   ldb,
+                                            int                   strideB,
+                                            const hipblasComplex* beta,
+                                            hipblasComplex*       C,
+                                            int                   ldc,
+                                            int                   strideC,
+                                            int                   batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZsyr2kStridedBatched(hipblasHandle_t             handle,
+                                            hipblasFillMode_t           uplo,
+                                            hipblasOperation_t          transA,
+                                            int                         n,
+                                            int                         k,
+                                            const hipblasDoubleComplex* alpha,
+                                            const hipblasDoubleComplex* A,
+                                            int                         lda,
+                                            int                         strideA,
+                                            const hipblasDoubleComplex* B,
+                                            int                         ldb,
+                                            int                         strideB,
+                                            const hipblasDoubleComplex* beta,
+                                            hipblasDoubleComplex*       C,
+                                            int                         ldc,
+                                            int                         strideC,
+                                            int                         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
 // trmm
 hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                              hipblasSideMode_t  side,

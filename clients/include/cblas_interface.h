@@ -313,6 +313,21 @@ void cblas_syrk(hipblasFillMode_t  uplo,
                 T*                 C,
                 int                ldc);
 
+// syr2k
+template <typename T>
+void cblas_syr2k(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 T                  alpha,
+                 T*                 A,
+                 int                lda,
+                 T*                 B,
+                 int                ldb,
+                 T                  beta,
+                 T*                 C,
+                 int                ldc);
+
 // trsm
 template <typename T>
 void cblas_trsm(hipblasSideMode_t  side,
