@@ -6,7 +6,7 @@ LABEL maintainer="hipblas-maintainer@amd.com"
 
 ARG user_uid
 
-ARG library_dependencies="rocblas"
+ARG library_dependencies="rocblas rocsolver"
 
 # Install dependent packages
 RUN yum install -y \

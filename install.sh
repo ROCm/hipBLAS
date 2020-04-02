@@ -118,10 +118,10 @@ install_packages( )
     library_dependencies_centos+=( "" ) # how to install cuda on centos?
     library_dependencies_fedora+=( "" ) # how to install cuda on fedora?
   elif [[ "${build_hip_clang}" == false ]]; then
-    library_dependencies_ubuntu+=( "rocm-dev" "rocblas" )
-    library_dependencies_centos+=( "rocm-dev" "rocblas" )
-    library_dependencies_fedora+=( "rocm-dev" "rocblas" )
-    library_dependencies_sles+=( "rocm-dev" "rocblas" )
+    library_dependencies_ubuntu+=( "rocm-dev" "rocblas" "rocsolver")
+    library_dependencies_centos+=( "rocm-dev" "rocblas" "rocsolver")
+    library_dependencies_fedora+=( "rocm-dev" "rocblas" "rocsolver")
+    library_dependencies_sles+=( "rocm-dev" "rocblas" "rocsolver")
   fi
 
   local client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
