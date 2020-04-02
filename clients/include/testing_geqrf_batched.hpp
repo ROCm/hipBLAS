@@ -120,7 +120,7 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
             if(argus.unit_check)
             {
                 T      eps       = std::numeric_limits<T>::epsilon();
-                double tolerance = eps * 1000;
+                double tolerance = eps * 2000;
 
                 double e1 = norm_check_general<T>('M', M, N, lda, hA[b].data(), hA1[b].data());
                 unit_check_error(e1, tolerance);
