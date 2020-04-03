@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -189,7 +189,7 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
         for(int b = 0; b < batch_count; b++)
         {
             double error = norm_check_general<T>('F', M, N, ldb, hB_copy[b].data(), hB[b].data());
-            unit_check_trsm(M, N, lda, error, tolerance);
+            unit_check_error(error, tolerance);
         }
     }
 

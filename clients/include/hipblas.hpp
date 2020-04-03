@@ -1180,6 +1180,100 @@ hipblasStatus_t hipblasTrsmStridedBatched(hipblasHandle_t    handle,
                                           int                strideB,
                                           int                batch_count);
 
+// getrf
+template <typename T>
+hipblasStatus_t
+    hipblasGetrf(hipblasHandle_t handle, const int n, T* A, const int lda, int* ipiv, int* info);
+
+template <typename T>
+hipblasStatus_t hipblasGetrfBatched(hipblasHandle_t handle,
+                                    const int       n,
+                                    T* const        A[],
+                                    const int       lda,
+                                    int*            ipiv,
+                                    int*            info,
+                                    const int       batchCount);
+
+template <typename T>
+hipblasStatus_t hipblasGetrfStridedBatched(hipblasHandle_t handle,
+                                           const int       n,
+                                           T*              A,
+                                           const int       lda,
+                                           const int       strideA,
+                                           int*            ipiv,
+                                           const int       strideP,
+                                           int*            info,
+                                           const int       batchCount);
+
+// getrs
+template <typename T>
+hipblasStatus_t hipblasGetrs(hipblasHandle_t          handle,
+                             const hipblasOperation_t trans,
+                             const int                n,
+                             const int                nrhs,
+                             T*                       A,
+                             const int                lda,
+                             const int*               ipiv,
+                             T*                       B,
+                             const int                ldb,
+                             int*                     info);
+
+template <typename T>
+hipblasStatus_t hipblasGetrsBatched(hipblasHandle_t          handle,
+                                    const hipblasOperation_t trans,
+                                    const int                n,
+                                    const int                nrhs,
+                                    T* const                 A[],
+                                    const int                lda,
+                                    const int*               ipiv,
+                                    T* const                 B[],
+                                    const int                ldb,
+                                    int*                     info,
+                                    const int                batchCount);
+
+template <typename T>
+hipblasStatus_t hipblasGetrsStridedBatched(hipblasHandle_t          handle,
+                                           const hipblasOperation_t trans,
+                                           const int                n,
+                                           const int                nrhs,
+                                           T*                       A,
+                                           const int                lda,
+                                           const int                strideA,
+                                           const int*               ipiv,
+                                           const int                strideP,
+                                           T*                       B,
+                                           const int                ldb,
+                                           const int                strideB,
+                                           int*                     info,
+                                           const int                batchCount);
+
+// geqrf
+template <typename T>
+hipblasStatus_t hipblasGeqrf(
+    hipblasHandle_t handle, const int m, const int n, T* A, const int lda, T* ipiv, int* info);
+
+template <typename T>
+hipblasStatus_t hipblasGeqrfBatched(hipblasHandle_t handle,
+                                    const int       m,
+                                    const int       n,
+                                    T* const        A[],
+                                    const int       lda,
+                                    T* const        ipiv[],
+                                    int*            info,
+                                    const int       batchCount);
+
+template <typename T>
+hipblasStatus_t hipblasGeqrfStridedBatched(hipblasHandle_t handle,
+                                           const int       m,
+                                           const int       n,
+                                           T*              A,
+                                           const int       lda,
+                                           const int       strideA,
+                                           T*              ipiv,
+                                           const int       strideP,
+                                           int*            info,
+                                           const int       batchCount);
+
 // trtri
 template <typename T>
 hipblasStatus_t hipblasTrtri(hipblasHandle_t   handle,
