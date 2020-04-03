@@ -48,19 +48,47 @@ struct hip_complex_number
         , y(0)
     {
     }
+
+    auto& operator*=(const hip_complex_number& rhs)
+    {
+        return *this = {x * rhs.x - y * rhs.y, y * rhs.x + x * rhs.y};
+    }
+
+    auto& operator+=(const hip_complex_number& rhs)
+    {
+        return *this = {x + rhs.x, y + rhs.y};
+    }
+
+    auto& operator/(const hip_complex_number& rhs)
+    {
+        if(abs(rhs.x) > abs(rhs.y))
+        {
+            T ratio = rhs.y / rhs.x;
+            T scale = 1 / (rhs.x + rhs.y * ratio);
+            *this   = {(x + y * ratio) * scale, (y - x * ratio) * scale};
+        }
+        else
+        {
+            T ratio = rhs.x / rhs.y;
+            T scale = 1 / (rhs.x * ratio + rhs.y);
+            *this   = {(y + x * ratio) * scale, (y * ratio - x) * scale};
+        }
+        return *this;
+    }
+
+    hip_complex_number& operator-(const hip_complex_number& rhs)
+    {
+        return *this = {x - rhs.x, y - rhs.y};
+    }
+
+    bool operator!=(const hip_complex_number& rhs) const
+    {
+        return (x != rhs.x || y != rhs.y);
+    }
 };
 
 typedef hip_complex_number<float>  hipblasComplex;
 typedef hip_complex_number<double> hipblasDoubleComplex;
-
-template <typename T>
-constexpr bool is_complex = false;
-
-template <>
-constexpr bool is_complex<hipblasComplex> = true;
-
-template <>
-constexpr bool is_complex<hipblasDoubleComplex> = true;
 
 enum hipblasStatus_t
 {
