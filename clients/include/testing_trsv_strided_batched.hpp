@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -22,9 +22,6 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
 {
-    constexpr T eps      = std::numeric_limits<T>::epsilon();
-    constexpr T eps_mult = 40; // arbitrary
-
     int                M            = argus.M;
     int                incx         = argus.incx;
     int                lda          = argus.lda;
@@ -160,6 +157,9 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
     {
         for(int b = 0; b < batch_count; b++)
         {
+            T      eps       = std::numeric_limits<T>::epsilon();
+            double tolerance = eps * 40 * M;
+
             T*     hxb        = hx + b * stridex;
             T*     hx_or_b_1b = hx_or_b_1 + b * stridex;
             double error      = 0.0;
@@ -171,7 +171,8 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
                 else
                     error += std::abs(hx_or_b_1b[i * abs_incx]);
             }
-            unit_check_trsv(error, M, eps_mult, eps);
+
+            unit_check_error(error, tolerance);
         }
     }
 
