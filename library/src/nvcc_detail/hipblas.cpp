@@ -3207,7 +3207,7 @@ hipblasStatus_t hipblasChbmvBatched(hipblasHandle_t             handle,
                                     const hipblasComplex* const x[],
                                     int                         incx,
                                     const hipblasComplex*       beta,
-                                    hipblasComplex*             y[],
+                                    hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batchCount)
 {
@@ -3224,7 +3224,7 @@ hipblasStatus_t hipblasZhbmvBatched(hipblasHandle_t                   handle,
                                     const hipblasDoubleComplex* const x[],
                                     int                               incx,
                                     const hipblasDoubleComplex*       beta,
-                                    hipblasDoubleComplex*             y[],
+                                    hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
 {
@@ -5232,197 +5232,6 @@ hipblasStatus_t hipblasZtbmvStridedBatched(hipblasHandle_t             handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-// tpsv
-hipblasStatus_t hipblasStpsv(hipblasHandle_t    handle,
-                             hipblasFillMode_t  uplo,
-                             hipblasOperation_t transA,
-                             hipblasDiagType_t  diag,
-                             int                m,
-                             const float*       AP,
-                             float*             x,
-                             int                incx)
-{
-    return hipCUBLASStatusToHIPStatus(cublasStpsv((cublasHandle_t)handle,
-                                                  hipFillToCudaFill(uplo),
-                                                  hipOperationToCudaOperation(transA),
-                                                  hipDiagonalToCudaDiagonal(diag),
-                                                  m,
-                                                  AP,
-                                                  x,
-                                                  incx));
-}
-
-hipblasStatus_t hipblasDtpsv(hipblasHandle_t    handle,
-                             hipblasFillMode_t  uplo,
-                             hipblasOperation_t transA,
-                             hipblasDiagType_t  diag,
-                             int                m,
-                             const double*      AP,
-                             double*            x,
-                             int                incx)
-{
-    return hipCUBLASStatusToHIPStatus(cublasDtpsv((cublasHandle_t)handle,
-                                                  hipFillToCudaFill(uplo),
-                                                  hipOperationToCudaOperation(transA),
-                                                  hipDiagonalToCudaDiagonal(diag),
-                                                  m,
-                                                  AP,
-                                                  x,
-                                                  incx));
-}
-
-hipblasStatus_t hipblasCtpsv(hipblasHandle_t       handle,
-                             hipblasFillMode_t     uplo,
-                             hipblasOperation_t    transA,
-                             hipblasDiagType_t     diag,
-                             int                   m,
-                             const hipblasComplex* AP,
-                             hipblasComplex*       x,
-                             int                   incx)
-{
-    return hipCUBLASStatusToHIPStatus(cublasCtpsv((cublasHandle_t)handle,
-                                                  hipFillToCudaFill(uplo),
-                                                  hipOperationToCudaOperation(transA),
-                                                  hipDiagonalToCudaDiagonal(diag),
-                                                  m,
-                                                  (cuComplex*)AP,
-                                                  (cuComplex*)x,
-                                                  incx));
-}
-
-hipblasStatus_t hipblasZtpsv(hipblasHandle_t             handle,
-                             hipblasFillMode_t           uplo,
-                             hipblasOperation_t          transA,
-                             hipblasDiagType_t           diag,
-                             int                         m,
-                             const hipblasDoubleComplex* AP,
-                             hipblasDoubleComplex*       x,
-                             int                         incx)
-{
-    return hipCUBLASStatusToHIPStatus(cublasZtpsv((cublasHandle_t)handle,
-                                                  hipFillToCudaFill(uplo),
-                                                  hipOperationToCudaOperation(transA),
-                                                  hipDiagonalToCudaDiagonal(diag),
-                                                  m,
-                                                  (cuDoubleComplex*)AP,
-                                                  (cuDoubleComplex*)x,
-                                                  incx));
-}
-
-// tpsv_batched
-hipblasStatus_t hipblasStpsvBatched(hipblasHandle_t    handle,
-                                    hipblasFillMode_t  uplo,
-                                    hipblasOperation_t transA,
-                                    hipblasDiagType_t  diag,
-                                    int                m,
-                                    const float* const AP[],
-                                    float* const       x[],
-                                    int                incx,
-                                    int                batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasDtpsvBatched(hipblasHandle_t     handle,
-                                    hipblasFillMode_t   uplo,
-                                    hipblasOperation_t  transA,
-                                    hipblasDiagType_t   diag,
-                                    int                 m,
-                                    const double* const AP[],
-                                    double* const       x[],
-                                    int                 incx,
-                                    int                 batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasCtpsvBatched(hipblasHandle_t             handle,
-                                    hipblasFillMode_t           uplo,
-                                    hipblasOperation_t          transA,
-                                    hipblasDiagType_t           diag,
-                                    int                         m,
-                                    const hipblasComplex* const AP[],
-                                    hipblasComplex* const       x[],
-                                    int                         incx,
-                                    int                         batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasZtpsvBatched(hipblasHandle_t                   handle,
-                                    hipblasFillMode_t                 uplo,
-                                    hipblasOperation_t                transA,
-                                    hipblasDiagType_t                 diag,
-                                    int                               m,
-                                    const hipblasDoubleComplex* const AP[],
-                                    hipblasDoubleComplex* const       x[],
-                                    int                               incx,
-                                    int                               batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-// tpsv_strided_batched
-hipblasStatus_t hipblasStpsvStridedBatched(hipblasHandle_t    handle,
-                                           hipblasFillMode_t  uplo,
-                                           hipblasOperation_t transA,
-                                           hipblasDiagType_t  diag,
-                                           int                m,
-                                           const float*       AP,
-                                           int                strideAP,
-                                           float*             x,
-                                           int                incx,
-                                           int                stridex,
-                                           int                batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasDtpsvStridedBatched(hipblasHandle_t    handle,
-                                           hipblasFillMode_t  uplo,
-                                           hipblasOperation_t transA,
-                                           hipblasDiagType_t  diag,
-                                           int                m,
-                                           const double*      AP,
-                                           int                strideAP,
-                                           double*            x,
-                                           int                incx,
-                                           int                stridex,
-                                           int                batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasCtpsvStridedBatched(hipblasHandle_t       handle,
-                                           hipblasFillMode_t     uplo,
-                                           hipblasOperation_t    transA,
-                                           hipblasDiagType_t     diag,
-                                           int                   m,
-                                           const hipblasComplex* AP,
-                                           int                   strideAP,
-                                           hipblasComplex*       x,
-                                           int                   incx,
-                                           int                   stridex,
-                                           int                   batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasZtpsvStridedBatched(hipblasHandle_t             handle,
-                                           hipblasFillMode_t           uplo,
-                                           hipblasOperation_t          transA,
-                                           hipblasDiagType_t           diag,
-                                           int                         m,
-                                           const hipblasDoubleComplex* AP,
-                                           int                         strideAP,
-                                           hipblasDoubleComplex*       x,
-                                           int                         incx,
-                                           int                         stridex,
-                                           int                         batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
 // tpmv
 hipblasStatus_t hipblasStpmv(hipblasHandle_t    handle,
                              hipblasFillMode_t  uplo,
@@ -5600,6 +5409,197 @@ hipblasStatus_t hipblasCtpmvStridedBatched(hipblasHandle_t       handle,
 }
 
 hipblasStatus_t hipblasZtpmvStridedBatched(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           hipblasOperation_t          transA,
+                                           hipblasDiagType_t           diag,
+                                           int                         m,
+                                           const hipblasDoubleComplex* AP,
+                                           int                         strideAP,
+                                           hipblasDoubleComplex*       x,
+                                           int                         incx,
+                                           int                         stridex,
+                                           int                         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// tpsv
+hipblasStatus_t hipblasStpsv(hipblasHandle_t    handle,
+                             hipblasFillMode_t  uplo,
+                             hipblasOperation_t transA,
+                             hipblasDiagType_t  diag,
+                             int                m,
+                             const float*       AP,
+                             float*             x,
+                             int                incx)
+{
+    return hipCUBLASStatusToHIPStatus(cublasStpsv((cublasHandle_t)handle,
+                                                  hipFillToCudaFill(uplo),
+                                                  hipOperationToCudaOperation(transA),
+                                                  hipDiagonalToCudaDiagonal(diag),
+                                                  m,
+                                                  AP,
+                                                  x,
+                                                  incx));
+}
+
+hipblasStatus_t hipblasDtpsv(hipblasHandle_t    handle,
+                             hipblasFillMode_t  uplo,
+                             hipblasOperation_t transA,
+                             hipblasDiagType_t  diag,
+                             int                m,
+                             const double*      AP,
+                             double*            x,
+                             int                incx)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDtpsv((cublasHandle_t)handle,
+                                                  hipFillToCudaFill(uplo),
+                                                  hipOperationToCudaOperation(transA),
+                                                  hipDiagonalToCudaDiagonal(diag),
+                                                  m,
+                                                  AP,
+                                                  x,
+                                                  incx));
+}
+
+hipblasStatus_t hipblasCtpsv(hipblasHandle_t       handle,
+                             hipblasFillMode_t     uplo,
+                             hipblasOperation_t    transA,
+                             hipblasDiagType_t     diag,
+                             int                   m,
+                             const hipblasComplex* AP,
+                             hipblasComplex*       x,
+                             int                   incx)
+{
+    return hipCUBLASStatusToHIPStatus(cublasCtpsv((cublasHandle_t)handle,
+                                                  hipFillToCudaFill(uplo),
+                                                  hipOperationToCudaOperation(transA),
+                                                  hipDiagonalToCudaDiagonal(diag),
+                                                  m,
+                                                  (cuComplex*)AP,
+                                                  (cuComplex*)x,
+                                                  incx));
+}
+
+hipblasStatus_t hipblasZtpsv(hipblasHandle_t             handle,
+                             hipblasFillMode_t           uplo,
+                             hipblasOperation_t          transA,
+                             hipblasDiagType_t           diag,
+                             int                         m,
+                             const hipblasDoubleComplex* AP,
+                             hipblasDoubleComplex*       x,
+                             int                         incx)
+{
+    return hipCUBLASStatusToHIPStatus(cublasZtpsv((cublasHandle_t)handle,
+                                                  hipFillToCudaFill(uplo),
+                                                  hipOperationToCudaOperation(transA),
+                                                  hipDiagonalToCudaDiagonal(diag),
+                                                  m,
+                                                  (cuDoubleComplex*)AP,
+                                                  (cuDoubleComplex*)x,
+                                                  incx));
+}
+
+// tpsv_batched
+hipblasStatus_t hipblasStpsvBatched(hipblasHandle_t    handle,
+                                    hipblasFillMode_t  uplo,
+                                    hipblasOperation_t transA,
+                                    hipblasDiagType_t  diag,
+                                    int                m,
+                                    const float* const AP[],
+                                    float* const       x[],
+                                    int                incx,
+                                    int                batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDtpsvBatched(hipblasHandle_t     handle,
+                                    hipblasFillMode_t   uplo,
+                                    hipblasOperation_t  transA,
+                                    hipblasDiagType_t   diag,
+                                    int                 m,
+                                    const double* const AP[],
+                                    double* const       x[],
+                                    int                 incx,
+                                    int                 batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCtpsvBatched(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    hipblasOperation_t          transA,
+                                    hipblasDiagType_t           diag,
+                                    int                         m,
+                                    const hipblasComplex* const AP[],
+                                    hipblasComplex* const       x[],
+                                    int                         incx,
+                                    int                         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZtpsvBatched(hipblasHandle_t                   handle,
+                                    hipblasFillMode_t                 uplo,
+                                    hipblasOperation_t                transA,
+                                    hipblasDiagType_t                 diag,
+                                    int                               m,
+                                    const hipblasDoubleComplex* const AP[],
+                                    hipblasDoubleComplex* const       x[],
+                                    int                               incx,
+                                    int                               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// tpsv_strided_batched
+hipblasStatus_t hipblasStpsvStridedBatched(hipblasHandle_t    handle,
+                                           hipblasFillMode_t  uplo,
+                                           hipblasOperation_t transA,
+                                           hipblasDiagType_t  diag,
+                                           int                m,
+                                           const float*       AP,
+                                           int                strideAP,
+                                           float*             x,
+                                           int                incx,
+                                           int                stridex,
+                                           int                batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDtpsvStridedBatched(hipblasHandle_t    handle,
+                                           hipblasFillMode_t  uplo,
+                                           hipblasOperation_t transA,
+                                           hipblasDiagType_t  diag,
+                                           int                m,
+                                           const double*      AP,
+                                           int                strideAP,
+                                           double*            x,
+                                           int                incx,
+                                           int                stridex,
+                                           int                batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCtpsvStridedBatched(hipblasHandle_t       handle,
+                                           hipblasFillMode_t     uplo,
+                                           hipblasOperation_t    transA,
+                                           hipblasDiagType_t     diag,
+                                           int                   m,
+                                           const hipblasComplex* AP,
+                                           int                   strideAP,
+                                           hipblasComplex*       x,
+                                           int                   incx,
+                                           int                   stridex,
+                                           int                   batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZtpsvStridedBatched(hipblasHandle_t             handle,
                                            hipblasFillMode_t           uplo,
                                            hipblasOperation_t          transA,
                                            hipblasDiagType_t           diag,
