@@ -2880,7 +2880,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDspmvStridedBatched(hipblasHandle_t   hand
                                                           int               incy,
                                                           int               stridey,
                                                           int               batchCount);
-
 // spr
 HIPBLAS_EXPORT hipblasStatus_t hipblasSspr(hipblasHandle_t   handle,
                                            hipblasFillMode_t uplo,

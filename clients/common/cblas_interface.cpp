@@ -82,6 +82,28 @@ void zsymv_(char*                 uplo,
             hipblasDoubleComplex* y,
             int*                  incy);
 
+void csymv_(char*           uplo,
+            int*            n,
+            hipblasComplex* alpha,
+            hipblasComplex* A,
+            int*            lda,
+            hipblasComplex* x,
+            int*            incx,
+            hipblasComplex* beta,
+            hipblasComplex* y,
+            int*            incy);
+
+void zsymv_(char*                 uplo,
+            int*                  n,
+            hipblasDoubleComplex* alpha,
+            hipblasDoubleComplex* A,
+            int*                  lda,
+            hipblasDoubleComplex* x,
+            int*                  incx,
+            hipblasDoubleComplex* beta,
+            hipblasDoubleComplex* y,
+            int*                  incy);
+
 #ifdef __cplusplus
 }
 #endif
