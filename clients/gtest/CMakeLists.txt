@@ -78,6 +78,7 @@ set(hipblas_test_source
   geam_gtest.cpp
   herk_gtest.cpp
   her2k_gtest.cpp
+  herkx_gtest.cpp
   syrk_gtest.cpp
   syr2k_gtest.cpp
   trsm_gtest.cpp

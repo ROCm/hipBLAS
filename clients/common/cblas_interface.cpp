@@ -27,8 +27,8 @@ void dtrtri_(char* uplo, char* diag, int* n, double* A, int* lda, int* info);
 
 void sgetrf_(int* m, int* n, float* A, int* lda, int* ipiv, int* info);
 void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
-//  void    cgetrf_(int* m, int* n, hipblasComplex* A, int* lda, int* ipiv, int *info);
-//  void    zgetrf_(int* m, int* n, hipblasDoubleComplex* A, int* lda, int* ipiv, int *info);
+void cgetrf_(int* m, int* n, hipblasComplex* A, int* lda, int* ipiv, int* info);
+void zgetrf_(int* m, int* n, hipblasDoubleComplex* A, int* lda, int* ipiv, int* info);
 
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
@@ -2036,6 +2036,118 @@ void cblas_herk(hipblasFillMode_t     uplo,
 }
 
 // herkx
+template <typename T, typename U>
+void cblas_herkx_local(hipblasFillMode_t  uplo,
+                       hipblasOperation_t transA,
+                       int                n,
+                       int                k,
+                       T                  alpha,
+                       T*                 A,
+                       int                lda,
+                       T*                 B,
+                       int                ldb,
+                       U                  beta,
+                       T*                 C,
+                       int                ldc)
+{
+
+    if(n <= 0 || (beta == 1 && (k == 0 || alpha == T(0))))
+        return;
+
+    if(transA == HIPBLAS_OP_N)
+    {
+        if(uplo == HIPBLAS_FILL_MODE_UPPER)
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                for(int i = 0; i <= j; i++)
+                {
+                    C[i + j * ldc] *= T(beta);
+                }
+                C[j + j * ldc].y = 0;
+
+                for(int l = 0; l < k; l++)
+                {
+                    T Bconj = B[j + l * ldb];
+                    Bconj.y = -Bconj.y;
+                    T temp  = alpha * Bconj;
+                    for(int i = 0; i <= j; ++i)
+                    {
+                        C[i + j * ldc] += temp * A[i + l * lda];
+                    }
+                }
+            }
+        }
+        else // lower
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                for(int i = j; i < n; i++)
+                {
+                    C[i + j * ldc] *= T(beta);
+                }
+                C[j + j * ldc].y = 0;
+
+                for(int l = 0; l < k; l++)
+                {
+                    T Bconj = B[j + l * ldb];
+                    Bconj.y = -Bconj.y;
+                    T temp  = alpha * Bconj;
+                    for(int i = j; i < n; ++i)
+                    {
+                        C[i + j * ldc] += temp * A[i + l * lda];
+                    }
+                }
+            }
+        }
+    }
+    else // conjugate transpose
+    {
+        if(uplo == HIPBLAS_FILL_MODE_UPPER)
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                for(int i = 0; i <= j; i++)
+                {
+                    C[i + j * ldc] *= T(beta);
+                    if(i == j)
+                        C[j + j * ldc].y = 0;
+
+                    T temp(0);
+                    for(int l = 0; l < k; l++)
+                    {
+                        T Aconj = A[l + i * lda];
+                        Aconj.y = -Aconj.y;
+                        temp += Aconj * B[l + j * ldb];
+                    }
+                    C[i + j * ldc] += alpha * temp;
+                }
+            }
+        }
+        else // lower
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                for(int i = j; i < n; i++)
+                {
+                    C[i + j * ldc] *= T(beta);
+                    if(i == j)
+                        C[j + j * ldc].y = 0;
+
+                    T temp(0);
+                    for(int l = 0; l < k; l++)
+                    {
+                        T Aconj = A[l + i * lda];
+                        Aconj.y = -Aconj.y;
+                        temp += Aconj * B[l + j * ldb];
+                    }
+                    C[i + j * ldc] += alpha * temp;
+                }
+            }
+        }
+    }
+}
+
 template <>
 void cblas_herkx(hipblasFillMode_t  uplo,
                  hipblasOperation_t transA,
@@ -2050,7 +2162,7 @@ void cblas_herkx(hipblasFillMode_t  uplo,
                  hipblasComplex*    C,
                  int                ldc)
 {
-    // TODO: Local implementation.
+    cblas_herkx_local(uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 }
 
 template <>
@@ -2067,7 +2179,7 @@ void cblas_herkx(hipblasFillMode_t     uplo,
                  hipblasDoubleComplex* C,
                  int                   ldc)
 {
-    // TODO: Local implementation.
+    cblas_herkx_local(uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 }
 
 // her2k
@@ -2348,73 +2460,7 @@ void cblas_syr2k(hipblasFillMode_t     uplo,
 }
 
 // syrkx
-template <>
-void cblas_syrkx(hipblasFillMode_t  uplo,
-                 hipblasOperation_t transA,
-                 int                n,
-                 int                k,
-                 float              alpha,
-                 float*             A,
-                 int                lda,
-                 float*             B,
-                 int                ldb,
-                 float              beta,
-                 float*             C,
-                 int                ldc)
-{
-    // TODO: Local implementation
-}
-
-template <>
-void cblas_syrkx(hipblasFillMode_t  uplo,
-                 hipblasOperation_t transA,
-                 int                n,
-                 int                k,
-                 double             alpha,
-                 double*            A,
-                 int                lda,
-                 double*            B,
-                 int                ldb,
-                 double             beta,
-                 double*            C,
-                 int                ldc)
-{
-    // TODO: Local implementation
-}
-
-template <>
-void cblas_syrkx(hipblasFillMode_t  uplo,
-                 hipblasOperation_t transA,
-                 int                n,
-                 int                k,
-                 hipblasComplex     alpha,
-                 hipblasComplex*    A,
-                 int                lda,
-                 hipblasComplex*    B,
-                 int                ldb,
-                 hipblasComplex     beta,
-                 hipblasComplex*    C,
-                 int                ldc)
-{
-    // TODO: Local implementation
-}
-
-template <>
-void cblas_syrkx(hipblasFillMode_t     uplo,
-                 hipblasOperation_t    transA,
-                 int                   n,
-                 int                   k,
-                 hipblasDoubleComplex  alpha,
-                 hipblasDoubleComplex* A,
-                 int                   lda,
-                 hipblasDoubleComplex* B,
-                 int                   ldb,
-                 hipblasDoubleComplex  beta,
-                 hipblasDoubleComplex* C,
-                 int                   ldc)
-{
-    // TODO: Local implementation
-}
+// Use syrk with A == B for now.
 
 // trsm
 template <>
@@ -2676,24 +2722,18 @@ int cblas_getrf<double>(int m, int n, double* A, int lda, int* ipiv)
     return info;
 }
 
-// template<>
-// int cblas_getrf<hipblasComplex>(int m,
-//                         int n,
-//                         hipblasComplex *A, int lda,
-//                         int *ipiv)
-// {
-//     int info;
-//     cgetrf_(&m, &n, A, &lda, ipiv, &info);
-//     return info;
-// }
+template <>
+int cblas_getrf<hipblasComplex>(int m, int n, hipblasComplex* A, int lda, int* ipiv)
+{
+    int info;
+    cgetrf_(&m, &n, A, &lda, ipiv, &info);
+    return info;
+}
 
-// template<>
-// int cblas_getrf<hipblasDoubleComplex>(int m,
-//                         int n,
-//                         hipblasDoubleComplex *A, int lda,
-//                         int *ipiv)
-// {
-//     int info;
-//     zgetrf_(&m, &n, A, &lda, ipiv, &info);
-//     return info;
-// }
+template <>
+int cblas_getrf<hipblasDoubleComplex>(int m, int n, hipblasDoubleComplex* A, int lda, int* ipiv)
+{
+    int info;
+    zgetrf_(&m, &n, A, &lda, ipiv, &info);
+    return info;
+}

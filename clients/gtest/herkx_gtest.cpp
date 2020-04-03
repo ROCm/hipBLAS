@@ -3,9 +3,9 @@
  *
  * ************************************************************************ */
 
-#include "testing_syrkx.hpp"
-#include "testing_syrkx_batched.hpp"
-#include "testing_syrkx_strided_batched.hpp"
+#include "testing_herkx.hpp"
+#include "testing_herkx_batched.hpp"
+#include "testing_herkx_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -20,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<double>, char, char, double, int> syrkx_tuple;
+typedef std::tuple<vector<int>, vector<double>, char, char, double, int> herkx_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -58,7 +58,7 @@ const vector<char> uplo_range = {
     'U',
 };
 
-const vector<char> transA_range = {'N', 'T'}; // 'C' not supported yet.
+const vector<char> transA_range = {'N', 'C'};
 
 const vector<double> stride_scale_range = {1.0, 2.5};
 const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
@@ -66,7 +66,7 @@ const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
-     BLAS-2 syrkx:
+     BLAS-2 herkx:
 =================================================================== */
 
 /* ============================Setup Arguments======================================= */
@@ -79,7 +79,7 @@ const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
 // by std:tuple, you have unpack it with extreme care for each one by like "std::get<0>" which is
 // not intuitive and error-prone
 
-Arguments setup_syrkx_arguments(syrkx_tuple tup)
+Arguments setup_herkx_arguments(herkx_tuple tup)
 {
 
     vector<int>    matrix_size  = std::get<0>(tup);
@@ -114,26 +114,26 @@ Arguments setup_syrkx_arguments(syrkx_tuple tup)
     return arg;
 }
 
-class blas2_syrkx_gtest : public ::TestWithParam<syrkx_tuple>
+class blas2_herkx_gtest : public ::TestWithParam<herkx_tuple>
 {
 protected:
-    blas2_syrkx_gtest() {}
-    virtual ~blas2_syrkx_gtest() {}
+    blas2_herkx_gtest() {}
+    virtual ~blas2_herkx_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
-// syrkx
-TEST_P(blas2_syrkx_gtest, syrkx_gtest_float)
+// herkx
+TEST_P(blas2_herkx_gtest, herkx_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_syrkx_arguments(GetParam());
+    Arguments arg = setup_herkx_arguments(GetParam());
 
-    hipblasStatus_t status = testing_syrkx<float>(arg);
+    hipblasStatus_t status = testing_herkx<hipblasComplex, float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -151,16 +151,16 @@ TEST_P(blas2_syrkx_gtest, syrkx_gtest_float)
     }
 }
 
-TEST_P(blas2_syrkx_gtest, syrkx_gtest_double_complex)
+TEST_P(blas2_herkx_gtest, herkx_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_syrkx_arguments(GetParam());
+    Arguments arg = setup_herkx_arguments(GetParam());
 
-    hipblasStatus_t status = testing_syrkx<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_herkx<hipblasDoubleComplex, double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -178,17 +178,17 @@ TEST_P(blas2_syrkx_gtest, syrkx_gtest_double_complex)
     }
 }
 
-// syrkx_batched
-TEST_P(blas2_syrkx_gtest, syrkx_batched_gtest_float)
+// herkx_batched
+TEST_P(blas2_herkx_gtest, herkx_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_syrkx_arguments(GetParam());
+    Arguments arg = setup_herkx_arguments(GetParam());
 
-    hipblasStatus_t status = testing_syrkx_batched<float>(arg);
+    hipblasStatus_t status = testing_herkx_batched<hipblasComplex, float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -207,16 +207,16 @@ TEST_P(blas2_syrkx_gtest, syrkx_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_syrkx_gtest, syrkx_batched_gtest_double_complex)
+TEST_P(blas2_herkx_gtest, herkx_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_syrkx_arguments(GetParam());
+    Arguments arg = setup_herkx_arguments(GetParam());
 
-    hipblasStatus_t status = testing_syrkx_batched<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_herkx_batched<hipblasDoubleComplex, double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -235,17 +235,17 @@ TEST_P(blas2_syrkx_gtest, syrkx_batched_gtest_double_complex)
     }
 }
 
-// syrkx_strided_batched
-TEST_P(blas2_syrkx_gtest, syrkx_strided_batched_gtest_float)
+// herkx_strided_batched
+TEST_P(blas2_herkx_gtest, herkx_strided_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_syrkx_arguments(GetParam());
+    Arguments arg = setup_herkx_arguments(GetParam());
 
-    hipblasStatus_t status = testing_syrkx_strided_batched<float>(arg);
+    hipblasStatus_t status = testing_herkx_strided_batched<hipblasComplex, float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -264,16 +264,16 @@ TEST_P(blas2_syrkx_gtest, syrkx_strided_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_syrkx_gtest, syrkx_strided_batched_gtest_double_complex)
+TEST_P(blas2_herkx_gtest, herkx_strided_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_syrkx_arguments(GetParam());
+    Arguments arg = setup_herkx_arguments(GetParam());
 
-    hipblasStatus_t status = testing_syrkx_strided_batched<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_herkx_strided_batched<hipblasDoubleComplex, double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -297,8 +297,8 @@ TEST_P(blas2_syrkx_gtest, syrkx_strided_batched_gtest_double_complex)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
-INSTANTIATE_TEST_CASE_P(hipblasSyrkx,
-                        blas2_syrkx_gtest,
+INSTANTIATE_TEST_CASE_P(hipblasHerkx,
+                        blas2_herkx_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(uplo_range),
