@@ -103,7 +103,7 @@ hipblasStatus_t testing_trsv(Arguments argus)
         for(int j = 0; j < M; j++)
         {
             hA[i + j * lda] = AAT[i + j * lda];
-            t += std::abs(AAT[i + j * lda]); // > 0 ? AAT[i + j * lda] : -AAT[i + j * lda];
+            t += std::abs(AAT[i + j * lda]);
         }
         hA[i + i * lda] = t;
     }

@@ -16,7 +16,6 @@
 #include "hipblas-export.h"
 #include "hipblas-version.h"
 #include <hip/hip_runtime_api.h>
-#include <math.h>
 
 typedef void* hipblasHandle_t;
 
