@@ -88,43 +88,8 @@ struct hip_complex_number
     }
 };
 
-namespace std
-{
-    template <typename T>
-    T abs(const hip_complex_number<T>& z)
-    {
-        T tr = abs(z.x), ti = abs(z.y);
-        return tr > ti ? (ti /= tr, tr * sqrt(ti * ti + 1)) : (tr /= ti, ti * sqrt(tr * tr + 1));
-    }
-}
-
 typedef hip_complex_number<float>  hipblasComplex;
 typedef hip_complex_number<double> hipblasDoubleComplex;
-
-template <typename T>
-constexpr bool is_complex = false;
-
-template <>
-constexpr bool is_complex<hipblasComplex> = true;
-
-template <>
-constexpr bool is_complex<hipblasDoubleComplex> = true;
-
-// Get base types from complex types.
-template <typename T, typename = void>
-struct real_t_impl
-{
-    using type = T;
-};
-
-template <typename T>
-struct real_t_impl<T, std::enable_if_t<is_complex<T>>>
-{
-    using type = decltype(T().x);
-};
-
-template <typename T>
-using real_t = typename real_t_impl<T>::type;
 
 enum hipblasStatus_t
 {
