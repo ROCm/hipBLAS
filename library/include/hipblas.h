@@ -16,6 +16,7 @@
 #include "hipblas-export.h"
 #include "hipblas-version.h"
 #include <hip/hip_runtime_api.h>
+#include <math.h>
 
 typedef void* hipblasHandle_t;
 
@@ -48,7 +49,54 @@ struct hip_complex_number
         , y(0)
     {
     }
+
+    auto& operator*=(const hip_complex_number& rhs)
+    {
+        return *this = {x * rhs.x - y * rhs.y, y * rhs.x + x * rhs.y};
+    }
+
+    auto& operator+=(const hip_complex_number& rhs)
+    {
+        return *this = {x + rhs.x, y + rhs.y};
+    }
+
+    auto& operator/(const hip_complex_number& rhs)
+    {
+        if(abs(rhs.x) > abs(rhs.y))
+        {
+            T ratio = rhs.y / rhs.x;
+            T scale = 1 / (rhs.x + rhs.y * ratio);
+            *this   = {(x + y * ratio) * scale, (y - x * ratio) * scale};
+        }
+        else
+        {
+            T ratio = rhs.x / rhs.y;
+            T scale = 1 / (rhs.x * ratio + rhs.y);
+            *this   = {(y + x * ratio) * scale, (y * ratio - x) * scale};
+        }
+        return *this;
+    }
+
+    hip_complex_number& operator-(const hip_complex_number& rhs)
+    {
+        return *this = {x - rhs.x, y - rhs.y};
+    }
+
+    bool operator!=(const hip_complex_number& rhs) const
+    {
+        return (x != rhs.x || y != rhs.y);
+    }
 };
+
+namespace std
+{
+    template <typename T>
+    T abs(const hip_complex_number<T>& z)
+    {
+        T tr = abs(z.x), ti = abs(z.y);
+        return tr > ti ? (ti /= tr, tr * sqrt(ti * ti + 1)) : (tr /= ti, ti * sqrt(tr * tr + 1));
+    }
+}
 
 typedef hip_complex_number<float>  hipblasComplex;
 typedef hip_complex_number<double> hipblasDoubleComplex;
@@ -61,6 +109,22 @@ constexpr bool is_complex<hipblasComplex> = true;
 
 template <>
 constexpr bool is_complex<hipblasDoubleComplex> = true;
+
+// Get base types from complex types.
+template <typename T, typename = void>
+struct real_t_impl
+{
+    using type = T;
+};
+
+template <typename T>
+struct real_t_impl<T, std::enable_if_t<is_complex<T>>>
+{
+    using type = decltype(T().x);
+};
+
+template <typename T>
+using real_t = typename real_t_impl<T>::type;
 
 enum hipblasStatus_t
 {

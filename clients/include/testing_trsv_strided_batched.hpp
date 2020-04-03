@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -22,8 +22,8 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
 {
-    constexpr T eps      = std::numeric_limits<T>::epsilon();
-    constexpr T eps_mult = 40; // arbitrary
+    constexpr real_t<T> eps      = std::numeric_limits<real_t<T>>::epsilon();
+    constexpr real_t<T> eps_mult = 40; // arbitrary
 
     int                M            = argus.M;
     int                incx         = argus.incx;
@@ -95,7 +95,7 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
             for(int j = 0; j < M; j++)
             {
                 hAb[i + j * lda] = AATb[i + j * lda];
-                t += AATb[i + j * lda] > 0 ? AATb[i + j * lda] : -AATb[i + j * lda];
+                t += abs(AATb[i + j * lda]);
             }
             hAb[i + i * lda] = t;
         }
@@ -160,17 +160,19 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
     {
         for(int b = 0; b < batch_count; b++)
         {
-            T*     hxb        = hx + b * stridex;
-            T*     hx_or_b_1b = hx_or_b_1 + b * stridex;
-            double error      = 0.0;
+            T*     hxb          = hx + b * stridex;
+            T*     hx_or_b_1b   = hx_or_b_1 + b * stridex;
+            double max_err_scal = 0.0, max_err = 0.0;
             for(int i = 0; i < M; i++)
             {
-                if(hx[i * abs_incx] != 0)
-                    error += std::abs((hxb[i * abs_incx] - hx_or_b_1b[i * abs_incx])
-                                      / hxb[i * abs_incx]);
-                else
-                    error += std::abs(hx_or_b_1b[i * abs_incx]);
+                T diff = (hxb[i * abs_incx] - hx_or_b_1b[i * abs_incx]);
+                if(diff != T(0))
+                {
+                    max_err += abs(diff);
+                }
+                max_err_scal += abs(hx_or_b_1b[i * abs_incx]);
             }
+            double error = max_err / max_err_scal;
             unit_check_trsv(error, M, eps_mult, eps);
         }
     }

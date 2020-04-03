@@ -22,8 +22,8 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trsv(Arguments argus)
 {
-    constexpr T eps      = std::numeric_limits<T>::epsilon();
-    constexpr T eps_mult = 40; // arbitrary
+    constexpr real_t<T> eps      = std::numeric_limits<real_t<T>>::epsilon();
+    constexpr real_t<T> eps_mult = 40; // arbitrary
 
     int                M           = argus.M;
     int                incx        = argus.incx;
@@ -103,7 +103,7 @@ hipblasStatus_t testing_trsv(Arguments argus)
         for(int j = 0; j < M; j++)
         {
             hA[i + j * lda] = AAT[i + j * lda];
-            t += AAT[i + j * lda] > 0 ? AAT[i + j * lda] : -AAT[i + j * lda];
+            t += std::abs(AAT[i + j * lda]); // > 0 ? AAT[i + j * lda] : -AAT[i + j * lda];
         }
         hA[i + i * lda] = t;
     }
@@ -169,16 +169,19 @@ hipblasStatus_t testing_trsv(Arguments argus)
         double error = 0.0;
         if(argus.unit_check)
         {
+            double max_err_scal = 0.0, max_err = 0.0;
             for(int i = 0; i < M; i++)
             {
-                if(hx[i * abs_incx] != 0)
-                    error += std::abs((hx[i * abs_incx] - hx_or_b_1[i * abs_incx])
-                                      / hx[i * abs_incx]);
-                else
-                    error += std::abs(hx_or_b_1[i * abs_incx]);
+                T diff = (hx[i * abs_incx] - hx_or_b_1[i * abs_incx]);
+                if(diff != T(0))
+                {
+                    max_err += abs(diff);
+                }
+                max_err_scal += abs(hx_or_b_1[i * abs_incx]);
             }
+            error = max_err / max_err_scal;
+            unit_check_trsv(error, M, eps_mult, eps);
         }
-        unit_check_trsv(error, M, eps_mult, eps);
     }
 
     hipblasDestroy(handle);

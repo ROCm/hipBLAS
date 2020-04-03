@@ -32,6 +32,8 @@ void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
 
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
+void cpotrf_(char* uplo, int* m, hipblasComplex* A, int* lda, int* info);
+void zpotrf_(char* uplo, int* m, hipblasDoubleComplex* A, int* lda, int* info);
 
 void cspr_(
     char* uplo, int* n, hipblasComplex* alpha, hipblasComplex* x, int* incx, hipblasComplex* A);
@@ -1392,6 +1394,22 @@ int cblas_potrf(char uplo, int m, double* A, int lda)
 {
     int info;
     dpotrf_(&uplo, &m, A, &lda, &info);
+    return info;
+}
+
+template <>
+int cblas_potrf(char uplo, int m, hipblasComplex* A, int lda)
+{
+    int info;
+    cpotrf_(&uplo, &m, A, &lda, &info);
+    return info;
+}
+
+template <>
+int cblas_potrf(char uplo, int m, hipblasDoubleComplex* A, int lda)
+{
+    int info;
+    zpotrf_(&uplo, &m, A, &lda, &info);
     return info;
 }
 
