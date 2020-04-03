@@ -3669,6 +3669,191 @@ hipblasStatus_t hipblasDgerStridedBatched(hipblasHandle_t handle,
                                                                  batchCount));
 }
 
+// hbmv
+hipblasStatus_t hipblasChbmv(hipblasHandle_t       handle,
+                             hipblasFillMode_t     uplo,
+                             int                   n,
+                             int                   k,
+                             const hipblasComplex* alpha,
+                             const hipblasComplex* A,
+                             int                   lda,
+                             const hipblasComplex* x,
+                             int                   incx,
+                             const hipblasComplex* beta,
+                             hipblasComplex*       y,
+                             int                   incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chbmv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  k,
+                                                  (rocblas_float_complex*)alpha,
+                                                  (rocblas_float_complex*)A,
+                                                  lda,
+                                                  (rocblas_float_complex*)x,
+                                                  incx,
+                                                  (rocblas_float_complex*)beta,
+                                                  (rocblas_float_complex*)y,
+                                                  incy));
+}
+
+hipblasStatus_t hipblasZhbmv(hipblasHandle_t             handle,
+                             hipblasFillMode_t           uplo,
+                             int                         n,
+                             int                         k,
+                             const hipblasDoubleComplex* alpha,
+                             const hipblasDoubleComplex* A,
+                             int                         lda,
+                             const hipblasDoubleComplex* x,
+                             int                         incx,
+                             const hipblasDoubleComplex* beta,
+                             hipblasDoubleComplex*       y,
+                             int                         incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhbmv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  k,
+                                                  (rocblas_double_complex*)alpha,
+                                                  (rocblas_double_complex*)A,
+                                                  lda,
+                                                  (rocblas_double_complex*)x,
+                                                  incx,
+                                                  (rocblas_double_complex*)beta,
+                                                  (rocblas_double_complex*)y,
+                                                  incy));
+}
+
+// hbmv_batched
+hipblasStatus_t hipblasChbmvBatched(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    int                         n,
+                                    int                         k,
+                                    const hipblasComplex*       alpha,
+                                    const hipblasComplex* const A[],
+                                    int                         lda,
+                                    const hipblasComplex* const x[],
+                                    int                         incx,
+                                    const hipblasComplex*       beta,
+                                    hipblasComplex* const       y[],
+                                    int                         incy,
+                                    int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chbmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          k,
+                                                          (rocblas_float_complex*)alpha,
+                                                          (rocblas_float_complex**)A,
+                                                          lda,
+                                                          (rocblas_float_complex**)x,
+                                                          incx,
+                                                          (rocblas_float_complex*)beta,
+                                                          (rocblas_float_complex**)y,
+                                                          incy,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasZhbmvBatched(hipblasHandle_t                   handle,
+                                    hipblasFillMode_t                 uplo,
+                                    int                               n,
+                                    int                               k,
+                                    const hipblasDoubleComplex*       alpha,
+                                    const hipblasDoubleComplex* const A[],
+                                    int                               lda,
+                                    const hipblasDoubleComplex* const x[],
+                                    int                               incx,
+                                    const hipblasDoubleComplex*       beta,
+                                    hipblasDoubleComplex* const       y[],
+                                    int                               incy,
+                                    int                               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhbmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          k,
+                                                          (rocblas_double_complex*)alpha,
+                                                          (rocblas_double_complex**)A,
+                                                          lda,
+                                                          (rocblas_double_complex**)x,
+                                                          incx,
+                                                          (rocblas_double_complex*)beta,
+                                                          (rocblas_double_complex**)y,
+                                                          incy,
+                                                          batchCount));
+}
+
+// hbmv_strided_batched
+hipblasStatus_t hipblasChbmvStridedBatched(hipblasHandle_t       handle,
+                                           hipblasFillMode_t     uplo,
+                                           int                   n,
+                                           int                   k,
+                                           const hipblasComplex* alpha,
+                                           const hipblasComplex* A,
+                                           int                   lda,
+                                           int                   strideA,
+                                           const hipblasComplex* x,
+                                           int                   incx,
+                                           int                   stridex,
+                                           const hipblasComplex* beta,
+                                           hipblasComplex*       y,
+                                           int                   incy,
+                                           int                   stridey,
+                                           int                   batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chbmv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  k,
+                                                                  (rocblas_float_complex*)alpha,
+                                                                  (rocblas_float_complex*)A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  (rocblas_float_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_float_complex*)beta,
+                                                                  (rocblas_float_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+hipblasStatus_t hipblasZhbmvStridedBatched(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           int                         n,
+                                           int                         k,
+                                           const hipblasDoubleComplex* alpha,
+                                           const hipblasDoubleComplex* A,
+                                           int                         lda,
+                                           int                         strideA,
+                                           const hipblasDoubleComplex* x,
+                                           int                         incx,
+                                           int                         stridex,
+                                           const hipblasDoubleComplex* beta,
+                                           hipblasDoubleComplex*       y,
+                                           int                         incy,
+                                           int                         stridey,
+                                           int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhbmv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  k,
+                                                                  (rocblas_double_complex*)alpha,
+                                                                  (rocblas_double_complex*)A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  (rocblas_double_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_double_complex*)beta,
+                                                                  (rocblas_double_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
 // hemv
 hipblasStatus_t hipblasChemv(hipblasHandle_t       handle,
                              hipblasFillMode_t     uplo,
@@ -3842,6 +4027,1366 @@ hipblasStatus_t hipblasZhemvStridedBatched(hipblasHandle_t             handle,
                                                                   incy,
                                                                   stride_y,
                                                                   batch_count));
+}
+
+// her
+hipblasStatus_t hipblasCher(hipblasHandle_t       handle,
+                            hipblasFillMode_t     uplo,
+                            int                   n,
+                            const float*          alpha,
+                            const hipblasComplex* x,
+                            int                   incx,
+                            hipblasComplex*       A,
+                            int                   lda)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cher((rocblas_handle)handle,
+                                                 (rocblas_fill)uplo,
+                                                 n,
+                                                 alpha,
+                                                 (rocblas_float_complex*)x,
+                                                 incx,
+                                                 (rocblas_float_complex*)A,
+                                                 lda));
+}
+
+hipblasStatus_t hipblasZher(hipblasHandle_t             handle,
+                            hipblasFillMode_t           uplo,
+                            int                         n,
+                            const double*               alpha,
+                            const hipblasDoubleComplex* x,
+                            int                         incx,
+                            hipblasDoubleComplex*       A,
+                            int                         lda)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zher((rocblas_handle)handle,
+                                                 (rocblas_fill)uplo,
+                                                 n,
+                                                 alpha,
+                                                 (rocblas_double_complex*)x,
+                                                 incx,
+                                                 (rocblas_double_complex*)A,
+                                                 lda));
+}
+
+// her_batched
+hipblasStatus_t hipblasCherBatched(hipblasHandle_t             handle,
+                                   hipblasFillMode_t           uplo,
+                                   int                         n,
+                                   const float*                alpha,
+                                   const hipblasComplex* const x[],
+                                   int                         incx,
+                                   hipblasComplex* const       A[],
+                                   int                         lda,
+                                   int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cher_batched((rocblas_handle)handle,
+                                                         (rocblas_fill)uplo,
+                                                         n,
+                                                         alpha,
+                                                         (rocblas_float_complex**)x,
+                                                         incx,
+                                                         (rocblas_float_complex**)A,
+                                                         lda,
+                                                         batchCount));
+}
+
+hipblasStatus_t hipblasZherBatched(hipblasHandle_t                   handle,
+                                   hipblasFillMode_t                 uplo,
+                                   int                               n,
+                                   const double*                     alpha,
+                                   const hipblasDoubleComplex* const x[],
+                                   int                               incx,
+                                   hipblasDoubleComplex* const       A[],
+                                   int                               lda,
+                                   int                               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zher_batched((rocblas_handle)handle,
+                                                         (rocblas_fill)uplo,
+                                                         n,
+                                                         alpha,
+                                                         (rocblas_double_complex**)x,
+                                                         incx,
+                                                         (rocblas_double_complex**)A,
+                                                         lda,
+                                                         batchCount));
+}
+
+// her_strided_batched
+hipblasStatus_t hipblasCherStridedBatched(hipblasHandle_t       handle,
+                                          hipblasFillMode_t     uplo,
+                                          int                   n,
+                                          const float*          alpha,
+                                          const hipblasComplex* x,
+                                          int                   incx,
+                                          int                   stridex,
+                                          hipblasComplex*       A,
+                                          int                   lda,
+                                          int                   strideA,
+                                          int                   batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cher_strided_batched((rocblas_handle)handle,
+                                                                 (rocblas_fill)uplo,
+                                                                 n,
+                                                                 alpha,
+                                                                 (rocblas_float_complex*)x,
+                                                                 incx,
+                                                                 stridex,
+                                                                 (rocblas_float_complex*)A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 batchCount));
+}
+
+hipblasStatus_t hipblasZherStridedBatched(hipblasHandle_t             handle,
+                                          hipblasFillMode_t           uplo,
+                                          int                         n,
+                                          const double*               alpha,
+                                          const hipblasDoubleComplex* x,
+                                          int                         incx,
+                                          int                         stridex,
+                                          hipblasDoubleComplex*       A,
+                                          int                         lda,
+                                          int                         strideA,
+                                          int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zher_strided_batched((rocblas_handle)handle,
+                                                                 (rocblas_fill)uplo,
+                                                                 n,
+                                                                 alpha,
+                                                                 (rocblas_double_complex*)x,
+                                                                 incx,
+                                                                 stridex,
+                                                                 (rocblas_double_complex*)A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 batchCount));
+}
+
+// her2
+hipblasStatus_t hipblasCher2(hipblasHandle_t       handle,
+                             hipblasFillMode_t     uplo,
+                             int                   n,
+                             const hipblasComplex* alpha,
+                             const hipblasComplex* x,
+                             int                   incx,
+                             const hipblasComplex* y,
+                             int                   incy,
+                             hipblasComplex*       A,
+                             int                   lda)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cher2((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  (rocblas_float_complex*)alpha,
+                                                  (rocblas_float_complex*)x,
+                                                  incx,
+                                                  (rocblas_float_complex*)y,
+                                                  incy,
+                                                  (rocblas_float_complex*)A,
+                                                  lda));
+}
+
+hipblasStatus_t hipblasZher2(hipblasHandle_t             handle,
+                             hipblasFillMode_t           uplo,
+                             int                         n,
+                             const hipblasDoubleComplex* alpha,
+                             const hipblasDoubleComplex* x,
+                             int                         incx,
+                             const hipblasDoubleComplex* y,
+                             int                         incy,
+                             hipblasDoubleComplex*       A,
+                             int                         lda)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zher2((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  (rocblas_double_complex*)alpha,
+                                                  (rocblas_double_complex*)x,
+                                                  incx,
+                                                  (rocblas_double_complex*)y,
+                                                  incy,
+                                                  (rocblas_double_complex*)A,
+                                                  lda));
+}
+
+// her2_batched
+hipblasStatus_t hipblasCher2Batched(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    int                         n,
+                                    const hipblasComplex*       alpha,
+                                    const hipblasComplex* const x[],
+                                    int                         incx,
+                                    const hipblasComplex* const y[],
+                                    int                         incy,
+                                    hipblasComplex* const       A[],
+                                    int                         lda,
+                                    int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cher2_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          (rocblas_float_complex*)alpha,
+                                                          (rocblas_float_complex**)x,
+                                                          incx,
+                                                          (rocblas_float_complex**)y,
+                                                          incy,
+                                                          (rocblas_float_complex**)A,
+                                                          lda,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasZher2Batched(hipblasHandle_t                   handle,
+                                    hipblasFillMode_t                 uplo,
+                                    int                               n,
+                                    const hipblasDoubleComplex*       alpha,
+                                    const hipblasDoubleComplex* const x[],
+                                    int                               incx,
+                                    const hipblasDoubleComplex* const y[],
+                                    int                               incy,
+                                    hipblasDoubleComplex* const       A[],
+                                    int                               lda,
+                                    int                               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zher2_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          (rocblas_double_complex*)alpha,
+                                                          (rocblas_double_complex**)x,
+                                                          incx,
+                                                          (rocblas_double_complex**)y,
+                                                          incy,
+                                                          (rocblas_double_complex**)A,
+                                                          lda,
+                                                          batchCount));
+}
+
+// her2_strided_batched
+hipblasStatus_t hipblasCher2StridedBatched(hipblasHandle_t       handle,
+                                           hipblasFillMode_t     uplo,
+                                           int                   n,
+                                           const hipblasComplex* alpha,
+                                           const hipblasComplex* x,
+                                           int                   incx,
+                                           int                   stridex,
+                                           const hipblasComplex* y,
+                                           int                   incy,
+                                           int                   stridey,
+                                           hipblasComplex*       A,
+                                           int                   lda,
+                                           int                   strideA,
+                                           int                   batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_cher2_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  (rocblas_float_complex*)alpha,
+                                                                  (rocblas_float_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_float_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  (rocblas_float_complex*)A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  batchCount));
+}
+
+hipblasStatus_t hipblasZher2StridedBatched(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           int                         n,
+                                           const hipblasDoubleComplex* alpha,
+                                           const hipblasDoubleComplex* x,
+                                           int                         incx,
+                                           int                         stridex,
+                                           const hipblasDoubleComplex* y,
+                                           int                         incy,
+                                           int                         stridey,
+                                           hipblasDoubleComplex*       A,
+                                           int                         lda,
+                                           int                         strideA,
+                                           int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zher2_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  (rocblas_double_complex*)alpha,
+                                                                  (rocblas_double_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_double_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  (rocblas_double_complex*)A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  batchCount));
+}
+
+// hpmv
+hipblasStatus_t hipblasChpmv(hipblasHandle_t       handle,
+                             hipblasFillMode_t     uplo,
+                             int                   n,
+                             const hipblasComplex* alpha,
+                             const hipblasComplex* AP,
+                             const hipblasComplex* x,
+                             int                   incx,
+                             const hipblasComplex* beta,
+                             hipblasComplex*       y,
+                             int                   incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chpmv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  (rocblas_float_complex*)alpha,
+                                                  (rocblas_float_complex*)AP,
+                                                  (rocblas_float_complex*)x,
+                                                  incx,
+                                                  (rocblas_float_complex*)beta,
+                                                  (rocblas_float_complex*)y,
+                                                  incy));
+}
+
+hipblasStatus_t hipblasZhpmv(hipblasHandle_t             handle,
+                             hipblasFillMode_t           uplo,
+                             int                         n,
+                             const hipblasDoubleComplex* alpha,
+                             const hipblasDoubleComplex* AP,
+                             const hipblasDoubleComplex* x,
+                             int                         incx,
+                             const hipblasDoubleComplex* beta,
+                             hipblasDoubleComplex*       y,
+                             int                         incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhpmv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  (rocblas_double_complex*)alpha,
+                                                  (rocblas_double_complex*)AP,
+                                                  (rocblas_double_complex*)x,
+                                                  incx,
+                                                  (rocblas_double_complex*)beta,
+                                                  (rocblas_double_complex*)y,
+                                                  incy));
+}
+
+// hpmv_batched
+hipblasStatus_t hipblasChpmvBatched(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    int                         n,
+                                    const hipblasComplex*       alpha,
+                                    const hipblasComplex* const AP[],
+                                    const hipblasComplex* const x[],
+                                    int                         incx,
+                                    const hipblasComplex*       beta,
+                                    hipblasComplex* const       y[],
+                                    int                         incy,
+                                    int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chpmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          (rocblas_float_complex*)alpha,
+                                                          (rocblas_float_complex**)AP,
+                                                          (rocblas_float_complex**)x,
+                                                          incx,
+                                                          (rocblas_float_complex*)beta,
+                                                          (rocblas_float_complex**)y,
+                                                          incy,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasZhpmvBatched(hipblasHandle_t                   handle,
+                                    hipblasFillMode_t                 uplo,
+                                    int                               n,
+                                    const hipblasDoubleComplex*       alpha,
+                                    const hipblasDoubleComplex* const AP[],
+                                    const hipblasDoubleComplex* const x[],
+                                    int                               incx,
+                                    const hipblasDoubleComplex*       beta,
+                                    hipblasDoubleComplex* const       y[],
+                                    int                               incy,
+                                    int                               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhpmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          (rocblas_double_complex*)alpha,
+                                                          (rocblas_double_complex**)AP,
+                                                          (rocblas_double_complex**)x,
+                                                          incx,
+                                                          (rocblas_double_complex*)beta,
+                                                          (rocblas_double_complex**)y,
+                                                          incy,
+                                                          batchCount));
+}
+
+// hpmv_strided_batched
+hipblasStatus_t hipblasChpmvStridedBatched(hipblasHandle_t       handle,
+                                           hipblasFillMode_t     uplo,
+                                           int                   n,
+                                           const hipblasComplex* alpha,
+                                           const hipblasComplex* AP,
+                                           int                   strideAP,
+                                           const hipblasComplex* x,
+                                           int                   incx,
+                                           int                   stridex,
+                                           const hipblasComplex* beta,
+                                           hipblasComplex*       y,
+                                           int                   incy,
+                                           int                   stridey,
+                                           int                   batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chpmv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  (rocblas_float_complex*)alpha,
+                                                                  (rocblas_float_complex*)AP,
+                                                                  strideAP,
+                                                                  (rocblas_float_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_float_complex*)beta,
+                                                                  (rocblas_float_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+hipblasStatus_t hipblasZhpmvStridedBatched(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           int                         n,
+                                           const hipblasDoubleComplex* alpha,
+                                           const hipblasDoubleComplex* AP,
+                                           int                         strideAP,
+                                           const hipblasDoubleComplex* x,
+                                           int                         incx,
+                                           int                         stridex,
+                                           const hipblasDoubleComplex* beta,
+                                           hipblasDoubleComplex*       y,
+                                           int                         incy,
+                                           int                         stridey,
+                                           int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhpmv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  (rocblas_double_complex*)alpha,
+                                                                  (rocblas_double_complex*)AP,
+                                                                  strideAP,
+                                                                  (rocblas_double_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_double_complex*)beta,
+                                                                  (rocblas_double_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+// hpr
+hipblasStatus_t hipblasChpr(hipblasHandle_t       handle,
+                            hipblasFillMode_t     uplo,
+                            int                   n,
+                            const float*          alpha,
+                            const hipblasComplex* x,
+                            int                   incx,
+                            hipblasComplex*       AP)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chpr((rocblas_handle)handle,
+                                                 (rocblas_fill)uplo,
+                                                 n,
+                                                 alpha,
+                                                 (rocblas_float_complex*)x,
+                                                 incx,
+                                                 (rocblas_float_complex*)AP));
+}
+
+hipblasStatus_t hipblasZhpr(hipblasHandle_t             handle,
+                            hipblasFillMode_t           uplo,
+                            int                         n,
+                            const double*               alpha,
+                            const hipblasDoubleComplex* x,
+                            int                         incx,
+                            hipblasDoubleComplex*       AP)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhpr((rocblas_handle)handle,
+                                                 (rocblas_fill)uplo,
+                                                 n,
+                                                 alpha,
+                                                 (rocblas_double_complex*)x,
+                                                 incx,
+                                                 (rocblas_double_complex*)AP));
+}
+
+// hpr_batched
+hipblasStatus_t hipblasChprBatched(hipblasHandle_t             handle,
+                                   hipblasFillMode_t           uplo,
+                                   int                         n,
+                                   const float*                alpha,
+                                   const hipblasComplex* const x[],
+                                   int                         incx,
+                                   hipblasComplex* const       AP[],
+                                   int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chpr_batched((rocblas_handle)handle,
+                                                         (rocblas_fill)uplo,
+                                                         n,
+                                                         alpha,
+                                                         (rocblas_float_complex**)x,
+                                                         incx,
+                                                         (rocblas_float_complex**)AP,
+                                                         batchCount));
+}
+
+hipblasStatus_t hipblasZhprBatched(hipblasHandle_t                   handle,
+                                   hipblasFillMode_t                 uplo,
+                                   int                               n,
+                                   const double*                     alpha,
+                                   const hipblasDoubleComplex* const x[],
+                                   int                               incx,
+                                   hipblasDoubleComplex* const       AP[],
+                                   int                               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhpr_batched((rocblas_handle)handle,
+                                                         (rocblas_fill)uplo,
+                                                         n,
+                                                         alpha,
+                                                         (rocblas_double_complex**)x,
+                                                         incx,
+                                                         (rocblas_double_complex**)AP,
+                                                         batchCount));
+}
+
+// hpr_strided_batched
+hipblasStatus_t hipblasChprStridedBatched(hipblasHandle_t       handle,
+                                          hipblasFillMode_t     uplo,
+                                          int                   n,
+                                          const float*          alpha,
+                                          const hipblasComplex* x,
+                                          int                   incx,
+                                          int                   stridex,
+                                          hipblasComplex*       AP,
+                                          int                   strideAP,
+                                          int                   batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chpr_strided_batched((rocblas_handle)handle,
+                                                                 (rocblas_fill)uplo,
+                                                                 n,
+                                                                 alpha,
+                                                                 (rocblas_float_complex*)x,
+                                                                 incx,
+                                                                 stridex,
+                                                                 (rocblas_float_complex*)AP,
+                                                                 strideAP,
+                                                                 batchCount));
+}
+
+hipblasStatus_t hipblasZhprStridedBatched(hipblasHandle_t             handle,
+                                          hipblasFillMode_t           uplo,
+                                          int                         n,
+                                          const double*               alpha,
+                                          const hipblasDoubleComplex* x,
+                                          int                         incx,
+                                          int                         stridex,
+                                          hipblasDoubleComplex*       AP,
+                                          int                         strideAP,
+                                          int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhpr_strided_batched((rocblas_handle)handle,
+                                                                 (rocblas_fill)uplo,
+                                                                 n,
+                                                                 alpha,
+                                                                 (rocblas_double_complex*)x,
+                                                                 incx,
+                                                                 stridex,
+                                                                 (rocblas_double_complex*)AP,
+                                                                 strideAP,
+                                                                 batchCount));
+}
+
+// hpr2
+hipblasStatus_t hipblasChpr2(hipblasHandle_t       handle,
+                             hipblasFillMode_t     uplo,
+                             int                   n,
+                             const hipblasComplex* alpha,
+                             const hipblasComplex* x,
+                             int                   incx,
+                             const hipblasComplex* y,
+                             int                   incy,
+                             hipblasComplex*       AP)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chpr2((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  (rocblas_float_complex*)alpha,
+                                                  (rocblas_float_complex*)x,
+                                                  incx,
+                                                  (rocblas_float_complex*)y,
+                                                  incy,
+                                                  (rocblas_float_complex*)AP));
+}
+
+hipblasStatus_t hipblasZhpr2(hipblasHandle_t             handle,
+                             hipblasFillMode_t           uplo,
+                             int                         n,
+                             const hipblasDoubleComplex* alpha,
+                             const hipblasDoubleComplex* x,
+                             int                         incx,
+                             const hipblasDoubleComplex* y,
+                             int                         incy,
+                             hipblasDoubleComplex*       AP)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhpr2((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  (rocblas_double_complex*)alpha,
+                                                  (rocblas_double_complex*)x,
+                                                  incx,
+                                                  (rocblas_double_complex*)y,
+                                                  incy,
+                                                  (rocblas_double_complex*)AP));
+}
+
+// hpr2_batched
+hipblasStatus_t hipblasChpr2Batched(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    int                         n,
+                                    const hipblasComplex*       alpha,
+                                    const hipblasComplex* const x[],
+                                    int                         incx,
+                                    const hipblasComplex* const y[],
+                                    int                         incy,
+                                    hipblasComplex* const       AP[],
+                                    int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chpr2_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          (rocblas_float_complex*)alpha,
+                                                          (rocblas_float_complex**)x,
+                                                          incx,
+                                                          (rocblas_float_complex**)y,
+                                                          incy,
+                                                          (rocblas_float_complex**)AP,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasZhpr2Batched(hipblasHandle_t                   handle,
+                                    hipblasFillMode_t                 uplo,
+                                    int                               n,
+                                    const hipblasDoubleComplex*       alpha,
+                                    const hipblasDoubleComplex* const x[],
+                                    int                               incx,
+                                    const hipblasDoubleComplex* const y[],
+                                    int                               incy,
+                                    hipblasDoubleComplex* const       AP[],
+                                    int                               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhpr2_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          (rocblas_double_complex*)alpha,
+                                                          (rocblas_double_complex**)x,
+                                                          incx,
+                                                          (rocblas_double_complex**)y,
+                                                          incy,
+                                                          (rocblas_double_complex**)AP,
+                                                          batchCount));
+}
+
+// hpr2_strided_batched
+hipblasStatus_t hipblasChpr2StridedBatched(hipblasHandle_t       handle,
+                                           hipblasFillMode_t     uplo,
+                                           int                   n,
+                                           const hipblasComplex* alpha,
+                                           const hipblasComplex* x,
+                                           int                   incx,
+                                           int                   stridex,
+                                           const hipblasComplex* y,
+                                           int                   incy,
+                                           int                   stridey,
+                                           hipblasComplex*       AP,
+                                           int                   strideAP,
+                                           int                   batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_chpr2_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  (rocblas_float_complex*)alpha,
+                                                                  (rocblas_float_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_float_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  (rocblas_float_complex*)AP,
+                                                                  strideAP,
+                                                                  batchCount));
+}
+
+hipblasStatus_t hipblasZhpr2StridedBatched(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           int                         n,
+                                           const hipblasDoubleComplex* alpha,
+                                           const hipblasDoubleComplex* x,
+                                           int                         incx,
+                                           int                         stridex,
+                                           const hipblasDoubleComplex* y,
+                                           int                         incy,
+                                           int                         stridey,
+                                           hipblasDoubleComplex*       AP,
+                                           int                         strideAP,
+                                           int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zhpr2_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  (rocblas_double_complex*)alpha,
+                                                                  (rocblas_double_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_double_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  (rocblas_double_complex*)AP,
+                                                                  strideAP,
+                                                                  batchCount));
+}
+
+// sbmv
+hipblasStatus_t hipblasSsbmv(hipblasHandle_t   handle,
+                             hipblasFillMode_t uplo,
+                             int               n,
+                             int               k,
+                             const float*      alpha,
+                             const float*      A,
+                             int               lda,
+                             const float*      x,
+                             int               incx,
+                             const float*      beta,
+                             float*            y,
+                             int               incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ssbmv(
+        (rocblas_handle)handle, (rocblas_fill)uplo, n, k, alpha, A, lda, x, incx, beta, y, incy));
+}
+
+hipblasStatus_t hipblasDsbmv(hipblasHandle_t   handle,
+                             hipblasFillMode_t uplo,
+                             int               n,
+                             int               k,
+                             const double*     alpha,
+                             const double*     A,
+                             int               lda,
+                             const double*     x,
+                             int               incx,
+                             const double*     beta,
+                             double*           y,
+                             int               incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dsbmv(
+        (rocblas_handle)handle, (rocblas_fill)uplo, n, k, alpha, A, lda, x, incx, beta, y, incy));
+}
+
+// sbmv_batched
+hipblasStatus_t hipblasSsbmvBatched(hipblasHandle_t    handle,
+                                    hipblasFillMode_t  uplo,
+                                    int                n,
+                                    int                k,
+                                    const float*       alpha,
+                                    const float* const A[],
+                                    int                lda,
+                                    const float* const x[],
+                                    int                incx,
+                                    const float*       beta,
+                                    float*             y[],
+                                    int                incy,
+                                    int                batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ssbmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          k,
+                                                          alpha,
+                                                          A,
+                                                          lda,
+                                                          x,
+                                                          incx,
+                                                          beta,
+                                                          y,
+                                                          incy,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasDsbmvBatched(hipblasHandle_t     handle,
+                                    hipblasFillMode_t   uplo,
+                                    int                 n,
+                                    int                 k,
+                                    const double*       alpha,
+                                    const double* const A[],
+                                    int                 lda,
+                                    const double* const x[],
+                                    int                 incx,
+                                    const double*       beta,
+                                    double*             y[],
+                                    int                 incy,
+                                    int                 batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dsbmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          k,
+                                                          alpha,
+                                                          A,
+                                                          lda,
+                                                          x,
+                                                          incx,
+                                                          beta,
+                                                          y,
+                                                          incy,
+                                                          batchCount));
+}
+
+// sbmv_strided_batched
+hipblasStatus_t hipblasSsbmvStridedBatched(hipblasHandle_t   handle,
+                                           hipblasFillMode_t uplo,
+                                           int               n,
+                                           int               k,
+                                           const float*      alpha,
+                                           const float*      A,
+                                           int               lda,
+                                           int               strideA,
+                                           const float*      x,
+                                           int               incx,
+                                           int               stridex,
+                                           const float*      beta,
+                                           float*            y,
+                                           int               incy,
+                                           int               stridey,
+                                           int               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ssbmv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  k,
+                                                                  alpha,
+                                                                  A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  beta,
+                                                                  y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+hipblasStatus_t hipblasDsbmvStridedBatched(hipblasHandle_t   handle,
+                                           hipblasFillMode_t uplo,
+                                           int               n,
+                                           int               k,
+                                           const double*     alpha,
+                                           const double*     A,
+                                           int               lda,
+                                           int               strideA,
+                                           const double*     x,
+                                           int               incx,
+                                           int               stridex,
+                                           const double*     beta,
+                                           double*           y,
+                                           int               incy,
+                                           int               stridey,
+                                           int               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dsbmv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  k,
+                                                                  alpha,
+                                                                  A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  beta,
+                                                                  y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+// spmv
+hipblasStatus_t hipblasSspmv(hipblasHandle_t   handle,
+                             hipblasFillMode_t uplo,
+                             int               n,
+                             const float*      alpha,
+                             const float*      AP,
+                             const float*      x,
+                             int               incx,
+                             const float*      beta,
+                             float*            y,
+                             int               incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_sspmv(
+        (rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, AP, x, incx, beta, y, incy));
+}
+
+hipblasStatus_t hipblasDspmv(hipblasHandle_t   handle,
+                             hipblasFillMode_t uplo,
+                             int               n,
+                             const double*     alpha,
+                             const double*     AP,
+                             const double*     x,
+                             int               incx,
+                             const double*     beta,
+                             double*           y,
+                             int               incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dspmv(
+        (rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, AP, x, incx, beta, y, incy));
+}
+
+// spmv_batched
+hipblasStatus_t hipblasSspmvBatched(hipblasHandle_t    handle,
+                                    hipblasFillMode_t  uplo,
+                                    int                n,
+                                    const float*       alpha,
+                                    const float* const AP[],
+                                    const float* const x[],
+                                    int                incx,
+                                    const float*       beta,
+                                    float*             y[],
+                                    int                incy,
+                                    int                batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_sspmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          alpha,
+                                                          AP,
+                                                          x,
+                                                          incx,
+                                                          beta,
+                                                          y,
+                                                          incy,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasDspmvBatched(hipblasHandle_t     handle,
+                                    hipblasFillMode_t   uplo,
+                                    int                 n,
+                                    const double*       alpha,
+                                    const double* const AP[],
+                                    const double* const x[],
+                                    int                 incx,
+                                    const double*       beta,
+                                    double*             y[],
+                                    int                 incy,
+                                    int                 batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dspmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          alpha,
+                                                          AP,
+                                                          x,
+                                                          incx,
+                                                          beta,
+                                                          y,
+                                                          incy,
+                                                          batchCount));
+}
+
+// spmv_strided_batched
+hipblasStatus_t hipblasSspmvStridedBatched(hipblasHandle_t   handle,
+                                           hipblasFillMode_t uplo,
+                                           int               n,
+                                           const float*      alpha,
+                                           const float*      AP,
+                                           int               strideAP,
+                                           const float*      x,
+                                           int               incx,
+                                           int               stridex,
+                                           const float*      beta,
+                                           float*            y,
+                                           int               incy,
+                                           int               stridey,
+                                           int               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_sspmv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  alpha,
+                                                                  AP,
+                                                                  strideAP,
+                                                                  x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  beta,
+                                                                  y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+hipblasStatus_t hipblasDspmvStridedBatched(hipblasHandle_t   handle,
+                                           hipblasFillMode_t uplo,
+                                           int               n,
+                                           const double*     alpha,
+                                           const double*     AP,
+                                           int               strideAP,
+                                           const double*     x,
+                                           int               incx,
+                                           int               stridex,
+                                           const double*     beta,
+                                           double*           y,
+                                           int               incy,
+                                           int               stridey,
+                                           int               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dspmv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  alpha,
+                                                                  AP,
+                                                                  strideAP,
+                                                                  x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  beta,
+                                                                  y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+// symv
+hipblasStatus_t hipblasSsymv(hipblasHandle_t   handle,
+                             hipblasFillMode_t uplo,
+                             int               n,
+                             const float*      alpha,
+                             const float*      A,
+                             int               lda,
+                             const float*      x,
+                             int               incx,
+                             const float*      beta,
+                             float*            y,
+                             int               incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ssymv(
+        (rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, A, lda, x, incx, beta, y, incy));
+}
+
+hipblasStatus_t hipblasDsymv(hipblasHandle_t   handle,
+                             hipblasFillMode_t uplo,
+                             int               n,
+                             const double*     alpha,
+                             const double*     A,
+                             int               lda,
+                             const double*     x,
+                             int               incx,
+                             const double*     beta,
+                             double*           y,
+                             int               incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dsymv(
+        (rocblas_handle)handle, (rocblas_fill)uplo, n, alpha, A, lda, x, incx, beta, y, incy));
+}
+
+hipblasStatus_t hipblasCsymv(hipblasHandle_t       handle,
+                             hipblasFillMode_t     uplo,
+                             int                   n,
+                             const hipblasComplex* alpha,
+                             const hipblasComplex* A,
+                             int                   lda,
+                             const hipblasComplex* x,
+                             int                   incx,
+                             const hipblasComplex* beta,
+                             hipblasComplex*       y,
+                             int                   incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_csymv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  (rocblas_float_complex*)alpha,
+                                                  (rocblas_float_complex*)A,
+                                                  lda,
+                                                  (rocblas_float_complex*)x,
+                                                  incx,
+                                                  (rocblas_float_complex*)beta,
+                                                  (rocblas_float_complex*)y,
+                                                  incy));
+}
+
+hipblasStatus_t hipblasZsymv(hipblasHandle_t             handle,
+                             hipblasFillMode_t           uplo,
+                             int                         n,
+                             const hipblasDoubleComplex* alpha,
+                             const hipblasDoubleComplex* A,
+                             int                         lda,
+                             const hipblasDoubleComplex* x,
+                             int                         incx,
+                             const hipblasDoubleComplex* beta,
+                             hipblasDoubleComplex*       y,
+                             int                         incy)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zsymv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  n,
+                                                  (rocblas_double_complex*)alpha,
+                                                  (rocblas_double_complex*)A,
+                                                  lda,
+                                                  (rocblas_double_complex*)x,
+                                                  incx,
+                                                  (rocblas_double_complex*)beta,
+                                                  (rocblas_double_complex*)y,
+                                                  incy));
+}
+
+// symv_batched
+hipblasStatus_t hipblasSsymvBatched(hipblasHandle_t    handle,
+                                    hipblasFillMode_t  uplo,
+                                    int                n,
+                                    const float*       alpha,
+                                    const float* const A[],
+                                    int                lda,
+                                    const float* const x[],
+                                    int                incx,
+                                    const float*       beta,
+                                    float*             y[],
+                                    int                incy,
+                                    int                batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ssymv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          alpha,
+                                                          A,
+                                                          lda,
+                                                          x,
+                                                          incx,
+                                                          beta,
+                                                          y,
+                                                          incy,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasDsymvBatched(hipblasHandle_t     handle,
+                                    hipblasFillMode_t   uplo,
+                                    int                 n,
+                                    const double*       alpha,
+                                    const double* const A[],
+                                    int                 lda,
+                                    const double* const x[],
+                                    int                 incx,
+                                    const double*       beta,
+                                    double*             y[],
+                                    int                 incy,
+                                    int                 batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dsymv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          alpha,
+                                                          A,
+                                                          lda,
+                                                          x,
+                                                          incx,
+                                                          beta,
+                                                          y,
+                                                          incy,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasCsymvBatched(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    int                         n,
+                                    const hipblasComplex*       alpha,
+                                    const hipblasComplex* const A[],
+                                    int                         lda,
+                                    const hipblasComplex* const x[],
+                                    int                         incx,
+                                    const hipblasComplex*       beta,
+                                    hipblasComplex*             y[],
+                                    int                         incy,
+                                    int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_csymv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          (rocblas_float_complex*)alpha,
+                                                          (rocblas_float_complex**)A,
+                                                          lda,
+                                                          (rocblas_float_complex**)x,
+                                                          incx,
+                                                          (rocblas_float_complex*)beta,
+                                                          (rocblas_float_complex**)y,
+                                                          incy,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasZsymvBatched(hipblasHandle_t                   handle,
+                                    hipblasFillMode_t                 uplo,
+                                    int                               n,
+                                    const hipblasDoubleComplex*       alpha,
+                                    const hipblasDoubleComplex* const A[],
+                                    int                               lda,
+                                    const hipblasDoubleComplex* const x[],
+                                    int                               incx,
+                                    const hipblasDoubleComplex*       beta,
+                                    hipblasDoubleComplex*             y[],
+                                    int                               incy,
+                                    int                               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zsymv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          n,
+                                                          (rocblas_double_complex*)alpha,
+                                                          (rocblas_double_complex**)A,
+                                                          lda,
+                                                          (rocblas_double_complex**)x,
+                                                          incx,
+                                                          (rocblas_double_complex*)beta,
+                                                          (rocblas_double_complex**)y,
+                                                          incy,
+                                                          batchCount));
+}
+
+// symv_strided_batched
+hipblasStatus_t hipblasSsymvStridedBatched(hipblasHandle_t   handle,
+                                           hipblasFillMode_t uplo,
+                                           int               n,
+                                           const float*      alpha,
+                                           const float*      A,
+                                           int               lda,
+                                           int               strideA,
+                                           const float*      x,
+                                           int               incx,
+                                           int               stridex,
+                                           const float*      beta,
+                                           float*            y,
+                                           int               incy,
+                                           int               stridey,
+                                           int               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ssymv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  alpha,
+                                                                  A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  beta,
+                                                                  y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+hipblasStatus_t hipblasDsymvStridedBatched(hipblasHandle_t   handle,
+                                           hipblasFillMode_t uplo,
+                                           int               n,
+                                           const double*     alpha,
+                                           const double*     A,
+                                           int               lda,
+                                           int               strideA,
+                                           const double*     x,
+                                           int               incx,
+                                           int               stridex,
+                                           const double*     beta,
+                                           double*           y,
+                                           int               incy,
+                                           int               stridey,
+                                           int               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dsymv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  alpha,
+                                                                  A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  beta,
+                                                                  y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+hipblasStatus_t hipblasCsymvStridedBatched(hipblasHandle_t       handle,
+                                           hipblasFillMode_t     uplo,
+                                           int                   n,
+                                           const hipblasComplex* alpha,
+                                           const hipblasComplex* A,
+                                           int                   lda,
+                                           int                   strideA,
+                                           const hipblasComplex* x,
+                                           int                   incx,
+                                           int                   stridex,
+                                           const hipblasComplex* beta,
+                                           hipblasComplex*       y,
+                                           int                   incy,
+                                           int                   stridey,
+                                           int                   batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_csymv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  (rocblas_float_complex*)alpha,
+                                                                  (rocblas_float_complex*)A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  (rocblas_float_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_float_complex*)beta,
+                                                                  (rocblas_float_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+
+hipblasStatus_t hipblasZsymvStridedBatched(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           int                         n,
+                                           const hipblasDoubleComplex* alpha,
+                                           const hipblasDoubleComplex* A,
+                                           int                         lda,
+                                           int                         strideA,
+                                           const hipblasDoubleComplex* x,
+                                           int                         incx,
+                                           int                         stridex,
+                                           const hipblasDoubleComplex* beta,
+                                           hipblasDoubleComplex*       y,
+                                           int                         incy,
+                                           int                         stridey,
+                                           int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_zsymv_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_fill)uplo,
+                                                                  n,
+                                                                  (rocblas_double_complex*)alpha,
+                                                                  (rocblas_double_complex*)A,
+                                                                  lda,
+                                                                  strideA,
+                                                                  (rocblas_double_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_double_complex*)beta,
+                                                                  (rocblas_double_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
 }
 
 // syr
@@ -4264,6 +5809,273 @@ hipblasStatus_t hipblasZtbmvStridedBatched(hipblasHandle_t             handle,
                                       incx,
                                       stride_x,
                                       batch_count));
+}
+
+// tpmv
+hipblasStatus_t hipblasStpmv(hipblasHandle_t    handle,
+                             hipblasFillMode_t  uplo,
+                             hipblasOperation_t transA,
+                             hipblasDiagType_t  diag,
+                             int                m,
+                             const float*       AP,
+                             float*             x,
+                             int                incx)
+{
+    return rocBLASStatusToHIPStatus(rocblas_stpmv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  hipOperationToHCCOperation(transA),
+                                                  hipDiagonalToHCCDiagonal(diag),
+                                                  m,
+                                                  AP,
+                                                  x,
+                                                  incx));
+}
+
+hipblasStatus_t hipblasDtpmv(hipblasHandle_t    handle,
+                             hipblasFillMode_t  uplo,
+                             hipblasOperation_t transA,
+                             hipblasDiagType_t  diag,
+                             int                m,
+                             const double*      AP,
+                             double*            x,
+                             int                incx)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dtpmv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  hipOperationToHCCOperation(transA),
+                                                  hipDiagonalToHCCDiagonal(diag),
+                                                  m,
+                                                  AP,
+                                                  x,
+                                                  incx));
+}
+
+hipblasStatus_t hipblasCtpmv(hipblasHandle_t       handle,
+                             hipblasFillMode_t     uplo,
+                             hipblasOperation_t    transA,
+                             hipblasDiagType_t     diag,
+                             int                   m,
+                             const hipblasComplex* AP,
+                             hipblasComplex*       x,
+                             int                   incx)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ctpmv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  hipOperationToHCCOperation(transA),
+                                                  hipDiagonalToHCCDiagonal(diag),
+                                                  m,
+                                                  (rocblas_float_complex*)AP,
+                                                  (rocblas_float_complex*)x,
+                                                  incx));
+}
+
+hipblasStatus_t hipblasZtpmv(hipblasHandle_t             handle,
+                             hipblasFillMode_t           uplo,
+                             hipblasOperation_t          transA,
+                             hipblasDiagType_t           diag,
+                             int                         m,
+                             const hipblasDoubleComplex* AP,
+                             hipblasDoubleComplex*       x,
+                             int                         incx)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ztpmv((rocblas_handle)handle,
+                                                  (rocblas_fill)uplo,
+                                                  hipOperationToHCCOperation(transA),
+                                                  hipDiagonalToHCCDiagonal(diag),
+                                                  m,
+                                                  (rocblas_double_complex*)AP,
+                                                  (rocblas_double_complex*)x,
+                                                  incx));
+}
+
+// tpmv_batched
+hipblasStatus_t hipblasStpmvBatched(hipblasHandle_t    handle,
+                                    hipblasFillMode_t  uplo,
+                                    hipblasOperation_t transA,
+                                    hipblasDiagType_t  diag,
+                                    int                m,
+                                    const float* const AP[],
+                                    float* const       x[],
+                                    int                incx,
+                                    int                batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_stpmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          hipOperationToHCCOperation(transA),
+                                                          hipDiagonalToHCCDiagonal(diag),
+                                                          m,
+                                                          AP,
+                                                          x,
+                                                          incx,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasDtpmvBatched(hipblasHandle_t     handle,
+                                    hipblasFillMode_t   uplo,
+                                    hipblasOperation_t  transA,
+                                    hipblasDiagType_t   diag,
+                                    int                 m,
+                                    const double* const AP[],
+                                    double* const       x[],
+                                    int                 incx,
+                                    int                 batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_dtpmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          hipOperationToHCCOperation(transA),
+                                                          hipDiagonalToHCCDiagonal(diag),
+                                                          m,
+                                                          AP,
+                                                          x,
+                                                          incx,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasCtpmvBatched(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    hipblasOperation_t          transA,
+                                    hipblasDiagType_t           diag,
+                                    int                         m,
+                                    const hipblasComplex* const AP[],
+                                    hipblasComplex* const       x[],
+                                    int                         incx,
+                                    int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ctpmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          hipOperationToHCCOperation(transA),
+                                                          hipDiagonalToHCCDiagonal(diag),
+                                                          m,
+                                                          (rocblas_float_complex**)AP,
+                                                          (rocblas_float_complex**)x,
+                                                          incx,
+                                                          batchCount));
+}
+
+hipblasStatus_t hipblasZtpmvBatched(hipblasHandle_t                   handle,
+                                    hipblasFillMode_t                 uplo,
+                                    hipblasOperation_t                transA,
+                                    hipblasDiagType_t                 diag,
+                                    int                               m,
+                                    const hipblasDoubleComplex* const AP[],
+                                    hipblasDoubleComplex* const       x[],
+                                    int                               incx,
+                                    int                               batchCount)
+{
+    return rocBLASStatusToHIPStatus(rocblas_ztpmv_batched((rocblas_handle)handle,
+                                                          (rocblas_fill)uplo,
+                                                          hipOperationToHCCOperation(transA),
+                                                          hipDiagonalToHCCDiagonal(diag),
+                                                          m,
+                                                          (rocblas_double_complex**)AP,
+                                                          (rocblas_double_complex**)x,
+                                                          incx,
+                                                          batchCount));
+}
+
+// tpmv_strided_batched
+hipblasStatus_t hipblasStpmvStridedBatched(hipblasHandle_t    handle,
+                                           hipblasFillMode_t  uplo,
+                                           hipblasOperation_t transA,
+                                           hipblasDiagType_t  diag,
+                                           int                m,
+                                           const float*       AP,
+                                           int                strideAP,
+                                           float*             x,
+                                           int                incx,
+                                           int                stridex,
+                                           int                batchCount)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_stpmv_strided_batched((rocblas_handle)handle,
+                                      (rocblas_fill)uplo,
+                                      hipOperationToHCCOperation(transA),
+                                      hipDiagonalToHCCDiagonal(diag),
+                                      m,
+                                      AP,
+                                      strideAP,
+                                      x,
+                                      incx,
+                                      stridex,
+                                      batchCount));
+}
+
+hipblasStatus_t hipblasDtpmvStridedBatched(hipblasHandle_t    handle,
+                                           hipblasFillMode_t  uplo,
+                                           hipblasOperation_t transA,
+                                           hipblasDiagType_t  diag,
+                                           int                m,
+                                           const double*      AP,
+                                           int                strideAP,
+                                           double*            x,
+                                           int                incx,
+                                           int                stridex,
+                                           int                batchCount)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_dtpmv_strided_batched((rocblas_handle)handle,
+                                      (rocblas_fill)uplo,
+                                      hipOperationToHCCOperation(transA),
+                                      hipDiagonalToHCCDiagonal(diag),
+                                      m,
+                                      AP,
+                                      strideAP,
+                                      x,
+                                      incx,
+                                      stridex,
+                                      batchCount));
+}
+
+hipblasStatus_t hipblasCtpmvStridedBatched(hipblasHandle_t       handle,
+                                           hipblasFillMode_t     uplo,
+                                           hipblasOperation_t    transA,
+                                           hipblasDiagType_t     diag,
+                                           int                   m,
+                                           const hipblasComplex* AP,
+                                           int                   strideAP,
+                                           hipblasComplex*       x,
+                                           int                   incx,
+                                           int                   stridex,
+                                           int                   batchCount)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_ctpmv_strided_batched((rocblas_handle)handle,
+                                      (rocblas_fill)uplo,
+                                      hipOperationToHCCOperation(transA),
+                                      hipDiagonalToHCCDiagonal(diag),
+                                      m,
+                                      (rocblas_float_complex*)AP,
+                                      strideAP,
+                                      (rocblas_float_complex*)x,
+                                      incx,
+                                      stridex,
+                                      batchCount));
+}
+
+hipblasStatus_t hipblasZtpmvStridedBatched(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           hipblasOperation_t          transA,
+                                           hipblasDiagType_t           diag,
+                                           int                         m,
+                                           const hipblasDoubleComplex* AP,
+                                           int                         strideAP,
+                                           hipblasDoubleComplex*       x,
+                                           int                         incx,
+                                           int                         stridex,
+                                           int                         batchCount)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_ztpmv_strided_batched((rocblas_handle)handle,
+                                      (rocblas_fill)uplo,
+                                      hipOperationToHCCOperation(transA),
+                                      hipDiagonalToHCCDiagonal(diag),
+                                      m,
+                                      (rocblas_double_complex*)AP,
+                                      strideAP,
+                                      (rocblas_double_complex*)x,
+                                      incx,
+                                      stridex,
+                                      batchCount));
 }
 
 // trmv
