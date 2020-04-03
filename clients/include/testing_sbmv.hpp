@@ -20,9 +20,10 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_symv(Arguments argus)
+hipblasStatus_t testing_sbmv(Arguments argus)
 {
     int M    = argus.M;
+    int K    = argus.K;
     int lda  = argus.lda;
     int incx = argus.incx;
     int incy = argus.incy;
@@ -34,7 +35,7 @@ hipblasStatus_t testing_symv(Arguments argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || lda < M || incx == 0 || incy == 0)
+    if(M < 0 || K < 0 || lda < K + 1 || incx == 0 || incy == 0)
     {
         status = HIPBLAS_STATUS_INVALID_VALUE;
         return status;
@@ -79,7 +80,7 @@ hipblasStatus_t testing_symv(Arguments argus)
     =================================================================== */
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasSymv<T>(handle, uplo, M, &alpha, dA, lda, dx, incx, &beta, dy, incy);
+        status = hipblasSbmv<T>(handle, uplo, M, K, &alpha, dA, lda, dx, incx, &beta, dy, incy);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
@@ -97,7 +98,7 @@ hipblasStatus_t testing_symv(Arguments argus)
            CPU BLAS
         =================================================================== */
 
-        cblas_symv<T>(uplo, M, alpha, hA.data(), lda, hx.data(), incx, beta, hy.data(), incy);
+        cblas_sbmv<T>(uplo, M, K, alpha, hA.data(), lda, hx.data(), incx, beta, hy.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

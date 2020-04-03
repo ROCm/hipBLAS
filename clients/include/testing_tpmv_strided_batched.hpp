@@ -20,76 +20,79 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_symv(Arguments argus)
+hipblasStatus_t testing_tpmv_strided_batched(Arguments argus)
 {
-    int M    = argus.M;
-    int lda  = argus.lda;
-    int incx = argus.incx;
-    int incy = argus.incy;
+    int    M            = argus.M;
+    int    incx         = argus.incx;
+    double stride_scale = argus.stride_scale;
+    int    batch_count  = argus.batch_count;
 
-    int A_size = lda * M;
+    int dim_A    = M * (M + 1) / 2;
+    int stride_A = dim_A * stride_scale;
+    int stride_x = M * incx * stride_scale;
 
-    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasStatus_t   status = HIPBLAS_STATUS_SUCCESS;
+    int A_size = stride_A * batch_count;
+    int X_size = stride_x * batch_count;
+
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
+
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || lda < M || incx == 0 || incy == 0)
+    if(M < 0 || incx == 0 || batch_count < 0)
     {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
-
-    T alpha = argus.get_alpha<T>();
-    T beta  = argus.get_beta<T>();
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
-    host_vector<T> hx(M * incx);
-    host_vector<T> hy(M * incy);
-    host_vector<T> hres(M * incx);
+    host_vector<T> hx(X_size);
+    host_vector<T> hres(X_size);
 
     device_vector<T> dA(A_size);
-    device_vector<T> dx(M * incx);
-    device_vector<T> dy(M * incy);
+    device_vector<T> dx(X_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
+
+    T alpha = (T)argus.alpha;
+    T beta  = (T)argus.beta;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hA, M, M, lda);
-    hipblas_init<T>(hx, 1, M, incx);
-    hipblas_init<T>(hy, 1, M, incy);
-
-    // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
+    hipblas_init<T>(hA, 1, dim_A, 1, stride_A, batch_count);
+    hipblas_init<T>(hx, 1, M, incx, stride_x, batch_count);
     hres = hx;
 
     // copy data from CPU to device
-    hipMemcpy(dA, hA.data(), sizeof(T) * lda * M, hipMemcpyHostToDevice);
-    hipMemcpy(dx, hx.data(), sizeof(T) * M * incx, hipMemcpyHostToDevice);
-    hipMemcpy(dy, hy.data(), sizeof(T) * M * incy, hipMemcpyHostToDevice);
+    hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice);
+    hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice);
 
     /* =====================================================================
            ROCBLAS
     =================================================================== */
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasSymv<T>(handle, uplo, M, &alpha, dA, lda, dx, incx, &beta, dy, incy);
+        status = hipblasTpmvStridedBatched<T>(
+            handle, uplo, transA, diag, M, dA, stride_A, dx, incx, stride_x, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
+            // here in cuda
             hipblasDestroy(handle);
             return status;
         }
     }
 
     // copy output from device to CPU
-    hipMemcpy(hres.data(), dy, sizeof(T) * M * incy, hipMemcpyDeviceToHost);
+    hipMemcpy(hres.data(), dx, sizeof(T) * X_size, hipMemcpyDeviceToHost);
 
     if(argus.unit_check)
     {
@@ -97,13 +100,17 @@ hipblasStatus_t testing_symv(Arguments argus)
            CPU BLAS
         =================================================================== */
 
-        cblas_symv<T>(uplo, M, alpha, hA.data(), lda, hx.data(), incx, beta, hy.data(), incy);
+        for(int b = 0; b < batch_count; b++)
+        {
+            cblas_tpmv<T>(
+                uplo, transA, diag, M, hA.data() + b * stride_A, hx.data() + b * stride_x, incx);
+        }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, M, incx, hy, hres);
+            unit_check_general<T>(1, M, batch_count, incx, stride_x, hx, hres);
         }
     }
 
