@@ -61,10 +61,14 @@ set(hipblas_test_source
   hpr2_gtest.cpp
   sbmv_gtest.cpp
   spmv_gtest.cpp
+  spr_gtest.cpp
+  spr2_gtest.cpp
   symv_gtest.cpp
   syr_gtest.cpp
+  syr2_gtest.cpp
   tbmv_gtest.cpp
   tpmv_gtest.cpp
+  tpsv_gtest.cpp
   trmv_gtest.cpp
   trsv_gtest.cpp
   gemm_gtest.cpp

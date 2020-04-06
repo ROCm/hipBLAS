@@ -20,11 +20,10 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_trsv_batched(Arguments argus)
+hipblasStatus_t testing_tpsv_batched(Arguments argus)
 {
-    int                M           = argus.M;
+    int                N           = argus.N;
     int                incx        = argus.incx;
-    int                lda         = argus.lda;
     char               char_uplo   = argus.uplo_option;
     char               char_diag   = argus.diag_option;
     char               char_transA = argus.transA_option;
@@ -34,14 +33,15 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
     int                batch_count = argus.batch_count;
 
     int abs_incx = incx < 0 ? -incx : incx;
-    int size_A   = lda * M;
-    int size_x   = abs_incx * M;
+    int size_A   = N * N;
+    int size_AP  = N * (N + 1) / 2;
+    int size_x   = abs_incx * N;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || lda < M || incx == 0 || batch_count < 0)
+    if(N < 0 || incx == 0 || batch_count < 0)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
@@ -52,6 +52,7 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA[batch_count];
+    host_vector<T> hAP[batch_count];
     host_vector<T> AAT[batch_count];
     host_vector<T> hb[batch_count];
     host_vector<T> hx[batch_count];
@@ -59,14 +60,14 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
     host_vector<T> hx_or_b_2[batch_count];
     host_vector<T> cpu_x_or_b[batch_count];
 
-    device_batch_vector<T> bA(batch_count, size_A);
+    device_batch_vector<T> bAP(batch_count, size_AP);
     device_batch_vector<T> bx_or_b(batch_count, size_x);
 
-    device_vector<T*, 0, T> dA(batch_count);
+    device_vector<T*, 0, T> dAP(batch_count);
     device_vector<T*, 0, T> dx_or_b(batch_count);
 
     int last = batch_count - 1;
-    if(!dA || !dx_or_b || (!bA[last] && size_A) || (!bx_or_b[last] && size_x))
+    if(!dAP || !dx_or_b || (!bAP[last] && size_AP) || (!bx_or_b[last] && size_x))
     {
         return HIPBLAS_STATUS_ALLOC_FAILED;
     }
@@ -82,6 +83,7 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
     for(int b = 0; b < batch_count; b++)
     {
         hA[b]         = host_vector<T>(size_A);
+        hAP[b]        = host_vector<T>(size_AP);
         AAT[b]        = host_vector<T>(size_A);
         hb[b]         = host_vector<T>(size_x);
         hx[b]         = host_vector<T>(size_x);
@@ -90,60 +92,61 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
         cpu_x_or_b[b] = host_vector<T>(size_x);
 
         srand(1);
-        hipblas_init<T>(hA[b], M, M, lda);
+        hipblas_init<T>(hA[b], N, N, N);
 
         //  calculate AAT = hA * hA ^ T
-        cblas_gemm<T>(
-            HIPBLAS_OP_N, HIPBLAS_OP_T, M, M, M, 1.0, hA[b], lda, hA[b], lda, 0.0, AAT[b], lda);
+        cblas_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_T, N, N, N, 1.0, hA[b], N, hA[b], N, 0.0, AAT[b], N);
 
         //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
-        for(int i = 0; i < M; i++)
+        for(int i = 0; i < N; i++)
         {
             T t = 0.0;
-            for(int j = 0; j < M; j++)
+            for(int j = 0; j < N; j++)
             {
-                hA[b][i + j * lda] = AAT[b][i + j * lda];
-                t += abs(AAT[b][i + j * lda]);
+                hA[b][i + j * N] = AAT[b][i + j * N];
+                t += abs(AAT[b][i + j * N]);
             }
-            hA[b][i + i * lda] = t;
+            hA[b][i + i * N] = t;
         }
 
         //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(char_uplo, M, hA[b], lda);
+        cblas_potrf<T>(char_uplo, N, hA[b], N);
 
         //  make hA unit diagonal if diag == rocblas_diagonal_unit
         if(char_diag == 'U' || char_diag == 'u')
         {
             if('L' == char_uplo || 'l' == char_uplo)
-                for(int i = 0; i < M; i++)
+                for(int i = 0; i < N; i++)
                 {
-                    T diag = hA[b][i + i * lda];
+                    T diag = hA[b][i + i * N];
                     for(int j = 0; j <= i; j++)
-                        hA[b][i + j * lda] = hA[b][i + j * lda] / diag;
+                        hA[b][i + j * N] = hA[b][i + j * N] / diag;
                 }
             else
-                for(int j = 0; j < M; j++)
+                for(int j = 0; j < N; j++)
                 {
-                    T diag = hA[b][j + j * lda];
+                    T diag = hA[b][j + j * N];
                     for(int i = 0; i <= j; i++)
-                        hA[b][i + j * lda] = hA[b][i + j * lda] / diag;
+                        hA[b][i + j * N] = hA[b][i + j * N] / diag;
                 }
         }
 
-        hipblas_init<T>(hx[b], 1, M, abs_incx);
+        hipblas_init<T>(hx[b], 1, N, abs_incx);
         hb[b] = hx[b];
 
         // Calculate hb = hA*hx;
-        cblas_trmv<T>(uplo, transA, diag, M, hA[b], lda, hb[b], incx);
+        cblas_trmv<T>(uplo, transA, diag, N, hA[b], N, hb[b], incx);
         cpu_x_or_b[b] = hb[b]; // cpuXorB <- B
         hx_or_b_1[b]  = hb[b];
         hx_or_b_2[b]  = hb[b];
 
+        regular_to_packed(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], (T*)hAP[b], N);
+
         // copy data from CPU to device
-        hipMemcpy(bA[b], hA[b], sizeof(T) * size_A, hipMemcpyHostToDevice);
+        hipMemcpy(bAP[b], hAP[b], sizeof(T) * size_AP, hipMemcpyHostToDevice);
         hipMemcpy(bx_or_b[b], hx_or_b_1[b], sizeof(T) * size_x, hipMemcpyHostToDevice);
     }
-    hipMemcpy(dA, bA, sizeof(T*) * batch_count, hipMemcpyHostToDevice);
+    hipMemcpy(dAP, bAP, sizeof(T*) * batch_count, hipMemcpyHostToDevice);
     hipMemcpy(dx_or_b, bx_or_b, sizeof(T*) * batch_count, hipMemcpyHostToDevice);
 
     /* =====================================================================
@@ -156,8 +159,8 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasTrsvBatched<T>(
-            handle, uplo, transA, diag, M, dA, lda, dx_or_b, incx, batch_count);
+        status
+            = hipblasTpsvBatched<T>(handle, uplo, transA, diag, N, dAP, dx_or_b, incx, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
@@ -177,10 +180,10 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
         for(int b = 0; b < batch_count; b++)
         {
             real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
-            double    tolerance = eps * 40 * M;
+            double    tolerance = eps * 40 * N;
 
-            double error = 0.0, max_err = 0.0, max_err_scal = 0.0;
-            for(int i = 0; i < M; i++)
+            double error = 0.0, max_err_scal = 0.0, max_err = 0.0;
+            for(int i = 0; i < N; i++)
             {
                 T diff = (hx[b][i * abs_incx] - hx_or_b_1[b][i * abs_incx]);
                 if(diff != T(0))

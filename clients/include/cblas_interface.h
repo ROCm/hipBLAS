@@ -91,7 +91,8 @@ template <typename T>
 void cblas_symv(
     hipblasFillMode_t uplo, int n, T alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
 
-template <typename T>
+// ger (ger, geru, gerc)
+template <typename T, bool CONJ>
 void cblas_ger(int m, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
 
 // hbmv
@@ -113,8 +114,22 @@ template <typename T, typename U>
 void cblas_hemv(
     hipblasFillMode_t uplo, int n, U alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
 
+// spr
+template <typename T>
+void cblas_spr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* AP);
+
+// spr2
+template <typename T>
+void cblas_spr2(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* AP);
+
+// syr
 template <typename T>
 void cblas_syr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* A, int lda);
+
+// syr2
+template <typename T>
+void cblas_syr2(
+    hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
 
 // her
 template <typename T, typename U>
@@ -185,6 +200,16 @@ void cblas_tpmv(hipblasFillMode_t  uplo,
                 hipblasDiagType_t  diag,
                 int                m,
                 const T*           A,
+                T*                 x,
+                int                incx);
+
+// tpsv
+template <typename T>
+void cblas_tpsv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                n,
+                const T*           AP,
                 T*                 x,
                 int                incx);
 
