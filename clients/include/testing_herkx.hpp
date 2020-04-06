@@ -69,8 +69,9 @@ hipblasStatus_t testing_herkx(Arguments argus)
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, N, K1, lda);
-    hipblas_init<T>(hB, N, K1, ldb);
+    // hipblas_init<T>(hB, N, K1, ldb);
     hipblas_init<T>(hC, N, N, ldc);
+    hB = hA;
 
     // copy matrix is easy in STL; hB = hA: save a copy in hB which will be output of CPU BLAS
     // hB = hA;

@@ -2146,6 +2146,9 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
             }
         }
     }
+    // TODO: Zero out imaginary parts of diagonal. rocBLAS is currently broken in this regard.
+    // for(int i = 0; i < n; i++)
+    //     C[i + i * ldc].y = real_t<T>(0);
 }
 
 template <>
