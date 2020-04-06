@@ -22,9 +22,6 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_tpsv_strided_batched(Arguments argus)
 {
-    constexpr real_t<T> eps      = std::numeric_limits<real_t<T>>::epsilon();
-    constexpr real_t<T> eps_mult = 40; // arbitrary
-
     int                N            = argus.N;
     int                incx         = argus.incx;
     char               char_uplo    = argus.uplo_option;
@@ -162,6 +159,9 @@ hipblasStatus_t testing_tpsv_strided_batched(Arguments argus)
     {
         for(int b = 0; b < batch_count; b++)
         {
+            real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
+            double    tolerance = eps * 40 * N;
+
             T*     hxb        = hx + b * stridex;
             T*     hx_or_b_1b = hx_or_b_1 + b * stridex;
             double error = 0.0, max_err_scal = 0.0, max_err = 0.0;
@@ -175,7 +175,7 @@ hipblasStatus_t testing_tpsv_strided_batched(Arguments argus)
                 max_err_scal += abs(hx_or_b_1b[i * abs_incx]);
             }
             error = max_err / max_err_scal;
-            unit_check_trsv(error, N, eps_mult, eps);
+            unit_check_error(error, tolerance);
         }
     }
 

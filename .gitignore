@@ -28,5 +28,8 @@
 *.out
 *.app
 
-# Tool meta-data
+# Editors
 .vscode
+
+# build-in-source directory
+build*
