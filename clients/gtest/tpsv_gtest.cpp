@@ -3,9 +3,9 @@
  *
  * ************************************************************************ */
 
-#include "testing_trsv.hpp"
-#include "testing_trsv_batched.hpp"
-#include "testing_trsv_strided_batched.hpp"
+#include "testing_tpsv.hpp"
+#include "testing_tpsv_batched.hpp"
+#include "testing_tpsv_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -20,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, int, double, int> trsv_tuple;
+typedef std::tuple<int, int, double, double, int> tpsv_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -40,12 +40,19 @@ Yet, the goal of this file is to verify result correctness not argument-checkers
 Representative sampling is sufficient, endless brute-force sampling is not necessary
 =================================================================== */
 
-// vector of vector, each vector is a {M, lda};
+// vector of vector, each vector is a {N};
 // add/delete as a group
-const vector<vector<int>> matrix_size_range = {{-1, -1}, {11, 11}, {16, 16}, {32, 32}, {65, 65}};
+const vector<int> matrix_size_range = {-1, 11, 16, 32, 65};
 
 // vector of vector, each element is an {incx}
-const vector<int> incx_incy_range = {-2, 1, 0, 2};
+const vector<int> incx_range = {
+    -2, 1, 0, 2
+    //     {10, 100}
+};
+
+// vector, each entry is  {alpha};
+// add/delete single values, like {2.0}
+const vector<double> alpha_range = {0.0};
 
 const vector<double> stride_scale_range = {1.0, 2.5};
 
@@ -54,7 +61,7 @@ const vector<int> batch_count_range = {-1, 0, 1, 2, 10};
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
-     BLAS-2 trsv:
+     BLAS-2 tpsv:
 =================================================================== */
 
 /* ============================Setup Arguments======================================= */
@@ -67,21 +74,13 @@ const vector<int> batch_count_range = {-1, 0, 1, 2, 10};
 // by std:tuple, you have unpack it with extreme care for each one by like "std::get<0>" which is
 // not intuitive and error-prone
 
-Arguments setup_trsv_arguments(trsv_tuple tup)
+Arguments setup_tpsv_arguments(tpsv_tuple tup)
 {
-    vector<int> matrix_size  = std::get<0>(tup);
-    int         incx         = std::get<1>(tup);
-    double      stride_scale = std::get<2>(tup);
-    int         batch_count  = std::get<3>(tup);
-
     Arguments arg;
-
-    // see the comments about matrix_size_range above
-    arg.M   = matrix_size[0];
-    arg.lda = matrix_size[1];
-
-    // see the comments about matrix_size_range above
-    arg.incx = incx;
+    arg.N               = std::get<0>(tup);
+    arg.incx            = std::get<1>(tup);
+    double stride_scale = std::get<3>(tup);
+    int    batch_count  = std::get<4>(tup);
 
     arg.timing = 0;
 
@@ -91,30 +90,30 @@ Arguments setup_trsv_arguments(trsv_tuple tup)
     return arg;
 }
 
-class blas2_trsv_gtest : public ::TestWithParam<trsv_tuple>
+class blas2_tpsv_gtest : public ::TestWithParam<tpsv_tuple>
 {
 protected:
-    blas2_trsv_gtest() {}
-    virtual ~blas2_trsv_gtest() {}
+    blas2_tpsv_gtest() {}
+    virtual ~blas2_tpsv_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
-TEST_P(blas2_trsv_gtest, trsv_float)
+TEST_P(blas2_tpsv_gtest, tpsv_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_trsv_arguments(GetParam());
+    Arguments arg = setup_tpsv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsv<float>(arg);
+    hipblasStatus_t status = testing_tpsv<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0)
+        if(arg.N < 0 || arg.incx == 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -125,21 +124,21 @@ TEST_P(blas2_trsv_gtest, trsv_float)
     }
 }
 
-TEST_P(blas2_trsv_gtest, trsv_double_complex)
+TEST_P(blas2_tpsv_gtest, tpsv_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_trsv_arguments(GetParam());
+    Arguments arg = setup_tpsv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsv<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_tpsv<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0)
+        if(arg.N < 0 || arg.incx == 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -150,16 +149,16 @@ TEST_P(blas2_trsv_gtest, trsv_double_complex)
     }
 }
 
-TEST_P(blas2_trsv_gtest, trsv_batched_float)
+TEST_P(blas2_tpsv_gtest, tpsv_batched_float)
 {
-    Arguments arg = setup_trsv_arguments(GetParam());
+    Arguments arg = setup_tpsv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsv_batched<float>(arg);
+    hipblasStatus_t status = testing_tpsv_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.N < 0 || arg.incx == 0 || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -170,16 +169,16 @@ TEST_P(blas2_trsv_gtest, trsv_batched_float)
     }
 }
 
-TEST_P(blas2_trsv_gtest, trsv_batched_double_complex)
+TEST_P(blas2_tpsv_gtest, tpsv_batched_double_complex)
 {
-    Arguments arg = setup_trsv_arguments(GetParam());
+    Arguments arg = setup_tpsv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsv_batched<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_tpsv_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.N < 0 || arg.incx == 0 || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -190,16 +189,16 @@ TEST_P(blas2_trsv_gtest, trsv_batched_double_complex)
     }
 }
 
-TEST_P(blas2_trsv_gtest, trsv_strided_batched_float)
+TEST_P(blas2_tpsv_gtest, tpsv_strided_batched_float)
 {
-    Arguments arg = setup_trsv_arguments(GetParam());
+    Arguments arg = setup_tpsv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsv_strided_batched<float>(arg);
+    hipblasStatus_t status = testing_tpsv_strided_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.N < 0 || arg.incx == 0 || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -210,16 +209,16 @@ TEST_P(blas2_trsv_gtest, trsv_strided_batched_float)
     }
 }
 
-TEST_P(blas2_trsv_gtest, trsv_strided_batched_double_complex)
+TEST_P(blas2_tpsv_gtest, tpsv_strided_batched_double_complex)
 {
-    Arguments arg = setup_trsv_arguments(GetParam());
+    Arguments arg = setup_tpsv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsv_strided_batched<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_tpsv_strided_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.N < 0 || arg.incx == 0 || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -233,11 +232,12 @@ TEST_P(blas2_trsv_gtest, trsv_strided_batched_double_complex)
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
-// The combinations are  { {M, N, lda}, {incx,incy} }
+// The combinations are  { {M}, {incx} {alpha} }
 
-INSTANTIATE_TEST_CASE_P(hipblastrsv,
-                        blas2_trsv_gtest,
+INSTANTIATE_TEST_CASE_P(hipblastpsv,
+                        blas2_tpsv_gtest,
                         Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(incx_incy_range),
+                                ValuesIn(incx_range),
+                                ValuesIn(alpha_range),
                                 ValuesIn(stride_scale_range),
                                 ValuesIn(batch_count_range)));

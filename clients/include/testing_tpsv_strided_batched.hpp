@@ -20,11 +20,10 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
+hipblasStatus_t testing_tpsv_strided_batched(Arguments argus)
 {
-    int                M            = argus.M;
+    int                N            = argus.N;
     int                incx         = argus.incx;
-    int                lda          = argus.lda;
     char               char_uplo    = argus.uplo_option;
     char               char_diag    = argus.diag_option;
     char               char_transA  = argus.transA_option;
@@ -34,27 +33,27 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
     double             stride_scale = argus.stride_scale;
     int                batch_count  = argus.batch_count;
 
+    int dim_AP   = N * (N + 1) / 2;
     int abs_incx = incx < 0 ? -incx : incx;
-    int strideA  = lda * M * stride_scale;
-    int stridex  = abs_incx * M * stride_scale;
+    int strideA  = N * N; // only for test setup
+    int strideAP = dim_AP * stride_scale;
+    int stridex  = abs_incx * N * stride_scale;
     int size_A   = strideA * batch_count;
+    int size_AP  = strideAP * batch_count;
     int size_x   = stridex * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || lda < M || !incx || batch_count < 0)
+    if(N < 0 || !incx || batch_count < 0)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(!batch_count || !M || !lda)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(size_A);
+    host_vector<T> hAP(size_AP);
     host_vector<T> AAT(size_A);
     host_vector<T> hb(size_x);
     host_vector<T> hx(size_x);
@@ -62,7 +61,7 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
     host_vector<T> hx_or_b_2(size_x);
     host_vector<T> cpu_x_or_b(size_x);
 
-    device_vector<T> dA(size_A);
+    device_vector<T> dAP(size_AP);
     device_vector<T> dx_or_b(size_x);
 
     double gpu_time_used, cpu_time_used;
@@ -73,53 +72,56 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hA, M, M, lda, strideA, batch_count);
-    hipblas_init<T>(hx, 1, M, abs_incx, stridex, batch_count);
+    hipblas_init<T>(hA, N, N, N, strideA, batch_count);
+    hipblas_init<T>(hx, 1, N, abs_incx, stridex, batch_count);
     hb = hx;
 
     for(int b = 0; b < batch_count; b++)
     {
         T* hAb  = hA.data() + b * strideA;
+        T* hAPb = hAP.data() + b * strideAP;
         T* AATb = AAT.data() + b * strideA;
         T* hbb  = hb.data() + b * stridex;
         //  calculate AAT = hA * hA ^ T
-        cblas_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_T, M, M, M, 1.0, hAb, lda, hAb, lda, 0.0, AATb, lda);
+        cblas_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_T, N, N, N, 1.0, hAb, N, hAb, N, 0.0, AATb, N);
 
         //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
-        for(int i = 0; i < M; i++)
+        for(int i = 0; i < N; i++)
         {
             T t = 0.0;
-            for(int j = 0; j < M; j++)
+            for(int j = 0; j < N; j++)
             {
-                hAb[i + j * lda] = AATb[i + j * lda];
-                t += abs(AATb[i + j * lda]);
+                hAb[i + j * N] = AATb[i + j * N];
+                t += abs(AATb[i + j * N]);
             }
-            hAb[i + i * lda] = t;
+            hAb[i + i * N] = t;
         }
         //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(char_uplo, M, hAb, lda);
+        cblas_potrf<T>(char_uplo, N, hAb, N);
 
         //  make hA unit diagonal if diag == rocblas_diagonal_unit
         if(char_diag == 'U' || char_diag == 'u')
         {
             if('L' == char_uplo || 'l' == char_uplo)
-                for(int i = 0; i < M; i++)
+                for(int i = 0; i < N; i++)
                 {
-                    T diag = hAb[i + i * lda];
+                    T diag = hAb[i + i * N];
                     for(int j = 0; j <= i; j++)
-                        hAb[i + j * lda] = hAb[i + j * lda] / diag;
+                        hAb[i + j * N] = hAb[i + j * N] / diag;
                 }
             else
-                for(int j = 0; j < M; j++)
+                for(int j = 0; j < N; j++)
                 {
-                    T diag = hAb[j + j * lda];
+                    T diag = hAb[j + j * N];
                     for(int i = 0; i <= j; i++)
-                        hAb[i + j * lda] = hA[b + j * lda] / diag;
+                        hAb[i + j * N] = hA[b + j * N] / diag;
                 }
         }
 
         // Calculate hb = hA*hx;
-        cblas_trmv<T>(uplo, transA, diag, M, hAb, lda, hbb, incx);
+        cblas_trmv<T>(uplo, transA, diag, N, hAb, N, hbb, incx);
+
+        regular_to_packed(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hAb, (T*)hAPb, N);
     }
 
     cpu_x_or_b = hb; // cpuXorB <- B
@@ -127,7 +129,7 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
     hx_or_b_2  = hb;
 
     // copy data from CPU to device
-    hipMemcpy(dA, hA.data(), sizeof(T) * size_A, hipMemcpyHostToDevice);
+    hipMemcpy(dAP, hAP.data(), sizeof(T) * size_AP, hipMemcpyHostToDevice);
     hipMemcpy(dx_or_b, hx_or_b_1.data(), sizeof(T) * size_x, hipMemcpyHostToDevice);
 
     /* =====================================================================
@@ -140,8 +142,8 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasTrsvStridedBatched<T>(
-            handle, uplo, transA, diag, M, dA, lda, strideA, dx_or_b, incx, stridex, batch_count);
+        status = hipblasTpsvStridedBatched<T>(
+            handle, uplo, transA, diag, N, dAP, strideAP, dx_or_b, incx, stridex, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
@@ -158,12 +160,12 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
         for(int b = 0; b < batch_count; b++)
         {
             real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
-            double    tolerance = eps * 40 * M;
+            double    tolerance = eps * 40 * N;
 
-            T*     hxb          = hx + b * stridex;
-            T*     hx_or_b_1b   = hx_or_b_1 + b * stridex;
-            double max_err_scal = 0.0, max_err = 0.0, error = 0.0;
-            for(int i = 0; i < M; i++)
+            T*     hxb        = hx + b * stridex;
+            T*     hx_or_b_1b = hx_or_b_1 + b * stridex;
+            double error = 0.0, max_err_scal = 0.0, max_err = 0.0;
+            for(int i = 0; i < N; i++)
             {
                 T diff = (hxb[i * abs_incx] - hx_or_b_1b[i * abs_incx]);
                 if(diff != T(0))
@@ -172,7 +174,6 @@ hipblasStatus_t testing_trsv_strided_batched(Arguments argus)
                 }
                 max_err_scal += abs(hx_or_b_1b[i * abs_incx]);
             }
-
             error = max_err / max_err_scal;
             unit_check_error(error, tolerance);
         }

@@ -3,9 +3,9 @@
  *
  * ************************************************************************ */
 
-#include "testing_ger.hpp"
-#include "testing_ger_batched.hpp"
-#include "testing_ger_strided_batched.hpp"
+#include "testing_syr2.hpp"
+#include "testing_syr2_batched.hpp"
+#include "testing_syr2_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -20,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<int>, vector<double>, double, int> ger_tuple;
+typedef std::tuple<vector<int>, vector<int>, double, double, int> syr2_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -40,28 +40,19 @@ Yet, the goal of this file is to verify result correctness not argument-checkers
 Representative sampling is sufficient, endless brute-force sampling is not necessary
 =================================================================== */
 
-// vector of vector, each vector is a {M, N, lda};
+// vector of vector, each vector is a {N, lda};
 // add/delete as a group
-const vector<vector<int>> matrix_size_range = {
-    {-1, -1, -1}, {11, 11, 11}, {16, 16, 16}, {32, 32, 32}, {65, 65, 65}
-    //   {10, 10, 2},
-    //   {600,500, 500},
-    //   {1000, 1000, 1000},
-    //   {2000, 2000, 2000},
-    //   {4011, 4011, 4011},
-    //   {8000, 8000, 8000}
-};
+const vector<vector<int>> matrix_size_range = {{-1, -1}, {11, 11}, {16, 16}, {32, 32}, {65, 65}};
 
-// vector of vector, each pair is a {incx, incy};
-// add/delete this list in pairs, like {1, 1}
+// vector of vector, each element is an {incx, incy}
 const vector<vector<int>> incx_incy_range = {
-    {1, 1}, {0, -1}, {2, 1}
+    {-2, -2}, {1, 1}, {0, 0}, {2, 2}
     //     {10, 100}
 };
 
-// vector, each entry is  {alpha, alphai};
-// add/delete single values, like {2.0, 1.0}
-const vector<vector<double>> alpha_range = {{-0.5, 1.5}, {2.0, 1.0}, {0.0, 0.0}};
+// vector, each entry is  {alpha};
+// add/delete single values, like {2.0}
+const vector<double> alpha_range = {-0.5, 2.0, 0.0};
 
 const vector<double> stride_scale_range = {1.0, 2.5};
 const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
@@ -69,7 +60,7 @@ const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
-     BLAS-2 ger:
+     BLAS-2 syr2:
 =================================================================== */
 
 /* ============================Setup Arguments======================================= */
@@ -82,28 +73,25 @@ const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
 // by std:tuple, you have unpack it with extreme care for each one by like "std::get<0>" which is
 // not intuitive and error-prone
 
-Arguments setup_ger_arguments(ger_tuple tup)
+Arguments setup_syr2_arguments(syr2_tuple tup)
 {
-
-    vector<int>    matrix_size  = std::get<0>(tup);
-    vector<int>    incx_incy    = std::get<1>(tup);
-    vector<double> alpha        = std::get<2>(tup);
-    double         stride_scale = std::get<3>(tup);
-    int            batch_count  = std::get<4>(tup);
+    vector<int> matrix_size  = std::get<0>(tup);
+    vector<int> incx_incy    = std::get<1>(tup);
+    double      alpha        = std::get<2>(tup);
+    double      stride_scale = std::get<3>(tup);
+    int         batch_count  = std::get<4>(tup);
 
     Arguments arg;
 
     // see the comments about matrix_size_range above
-    arg.M   = matrix_size[0];
-    arg.N   = matrix_size[1];
-    arg.lda = matrix_size[2];
+    arg.N   = matrix_size[0];
+    arg.lda = matrix_size[1];
 
     // see the comments about matrix_size_range above
     arg.incx = incx_incy[0];
-    arg.incy = incx_incy[1];
+    arg.incy = incx_incy[0];
 
-    arg.alpha  = alpha[0];
-    arg.alphai = alpha[1];
+    arg.alpha = alpha;
 
     arg.timing = 0;
 
@@ -113,31 +101,31 @@ Arguments setup_ger_arguments(ger_tuple tup)
     return arg;
 }
 
-class blas2_ger_gtest : public ::TestWithParam<ger_tuple>
+class blas2_syr2_gtest : public ::TestWithParam<syr2_tuple>
 {
 protected:
-    blas2_ger_gtest() {}
-    virtual ~blas2_ger_gtest() {}
+    blas2_syr2_gtest() {}
+    virtual ~blas2_syr2_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
-// ger
-TEST_P(blas2_ger_gtest, ger_gtest_float)
+// syr2
+TEST_P(blas2_syr2_gtest, syr2_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_ger_arguments(GetParam());
+    Arguments arg = setup_syr2_arguments(GetParam());
 
-    hipblasStatus_t status = testing_ger<float, false>(arg);
+    hipblasStatus_t status = testing_syr2<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.incx == 0 || arg.incy == 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -148,21 +136,21 @@ TEST_P(blas2_ger_gtest, ger_gtest_float)
     }
 }
 
-TEST_P(blas2_ger_gtest, geru_gtest_float_complex)
+TEST_P(blas2_syr2_gtest, syr2_gtest_float_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_ger_arguments(GetParam());
+    Arguments arg = setup_syr2_arguments(GetParam());
 
-    hipblasStatus_t status = testing_ger<hipblasComplex, false>(arg);
+    hipblasStatus_t status = testing_syr2<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.incx == 0 || arg.incy == 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -173,48 +161,22 @@ TEST_P(blas2_ger_gtest, geru_gtest_float_complex)
     }
 }
 
-TEST_P(blas2_ger_gtest, gerc_gtest_float_complex)
+// syr2_batched
+TEST_P(blas2_syr2_gtest, syr2_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_ger_arguments(GetParam());
+    Arguments arg = setup_syr2_arguments(GetParam());
 
-    hipblasStatus_t status = testing_ger<hipblasComplex, true>(arg);
-
-    // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
-        }
-    }
-}
-
-// ger_batched
-TEST_P(blas2_ger_gtest, ger_batched_gtest_float)
-{
-    // GetParam return a tuple. Tee setup routine unpack the tuple
-    // and initializes arg(Arguments) which will be passed to testing routine
-    // The Arguments data struture have physical meaning associated.
-    // while the tuple is non-intuitive.
-
-    Arguments arg = setup_ger_arguments(GetParam());
-
-    hipblasStatus_t status = testing_ger_batched<float, false>(arg);
+    hipblasStatus_t status = testing_syr2_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.incx == 0 || arg.incy == 0 || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -225,22 +187,21 @@ TEST_P(blas2_ger_gtest, ger_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_ger_gtest, geru_batched_gtest_float_complex)
+TEST_P(blas2_syr2_gtest, syr2_batched_gtest_float_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_ger_arguments(GetParam());
+    Arguments arg = setup_syr2_arguments(GetParam());
 
-    hipblasStatus_t status = testing_ger_batched<hipblasComplex, false>(arg);
+    hipblasStatus_t status = testing_syr2_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.incx == 0 || arg.incy == 0 || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -251,22 +212,22 @@ TEST_P(blas2_ger_gtest, geru_batched_gtest_float_complex)
     }
 }
 
-TEST_P(blas2_ger_gtest, gerc_batched_gtest_float_complex)
+// syr2_strided_batched
+TEST_P(blas2_syr2_gtest, syr2_strided_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_ger_arguments(GetParam());
+    Arguments arg = setup_syr2_arguments(GetParam());
 
-    hipblasStatus_t status = testing_ger_batched<hipblasComplex, true>(arg);
+    hipblasStatus_t status = testing_syr2_strided_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.incx == 0 || arg.incy == 0 || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -277,75 +238,21 @@ TEST_P(blas2_ger_gtest, gerc_batched_gtest_float_complex)
     }
 }
 
-// ger_strided_batched
-TEST_P(blas2_ger_gtest, ger_strided_batched_gtest_float)
+TEST_P(blas2_syr2_gtest, syr2_strided_batched_gtest_float_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_ger_arguments(GetParam());
+    Arguments arg = setup_syr2_arguments(GetParam());
 
-    hipblasStatus_t status = testing_ger_strided_batched<float, false>(arg);
-
-    // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
-        }
-    }
-}
-
-TEST_P(blas2_ger_gtest, geru_strided_batched_gtest_float_complex)
-{
-    // GetParam return a tuple. Tee setup routine unpack the tuple
-    // and initializes arg(Arguments) which will be passed to testing routine
-    // The Arguments data struture have physical meaning associated.
-    // while the tuple is non-intuitive.
-
-    Arguments arg = setup_ger_arguments(GetParam());
-
-    hipblasStatus_t status = testing_ger_strided_batched<hipblasComplex, false>(arg);
+    hipblasStatus_t status = testing_syr2_strided_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
-        }
-    }
-}
-
-TEST_P(blas2_ger_gtest, gerc_strided_batched_gtest_float_complex)
-{
-    // GetParam return a tuple. Tee setup routine unpack the tuple
-    // and initializes arg(Arguments) which will be passed to testing routine
-    // The Arguments data struture have physical meaning associated.
-    // while the tuple is non-intuitive.
-
-    Arguments arg = setup_ger_arguments(GetParam());
-
-    hipblasStatus_t status = testing_ger_strided_batched<hipblasComplex, true>(arg);
-
-    // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.incx == 0 || arg.incy == 0 || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -361,8 +268,8 @@ TEST_P(blas2_ger_gtest, gerc_strided_batched_gtest_float_complex)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
-INSTANTIATE_TEST_CASE_P(hipblasGer,
-                        blas2_ger_gtest,
+INSTANTIATE_TEST_CASE_P(hipblasSyr2,
+                        blas2_syr2_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(incx_incy_range),
                                 ValuesIn(alpha_range),
