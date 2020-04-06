@@ -2064,7 +2064,6 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
                 {
                     C[i + j * ldc] *= T(beta);
                 }
-                C[j + j * ldc].y = 0;
 
                 for(int l = 0; l < k; l++)
                 {
@@ -2086,7 +2085,6 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
                 {
                     C[i + j * ldc] *= T(beta);
                 }
-                C[j + j * ldc].y = 0;
 
                 for(int l = 0; l < k; l++)
                 {
@@ -2110,8 +2108,6 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
                 for(int i = 0; i <= j; i++)
                 {
                     C[i + j * ldc] *= T(beta);
-                    if(i == j)
-                        C[j + j * ldc].y = 0;
 
                     T temp(0);
                     for(int l = 0; l < k; l++)
@@ -2131,8 +2127,6 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
                 for(int i = j; i < n; i++)
                 {
                     C[i + j * ldc] *= T(beta);
-                    if(i == j)
-                        C[j + j * ldc].y = 0;
 
                     T temp(0);
                     for(int l = 0; l < k; l++)
@@ -2146,9 +2140,9 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
             }
         }
     }
-    // TODO: Zero out imaginary parts of diagonal. rocBLAS is currently broken in this regard.
-    // for(int i = 0; i < n; i++)
-    //     C[i + i * ldc].y = real_t<T>(0);
+
+    for(int i = 0; i < n; i++)
+        C[i + i * ldc].y = real_t<T>(0);
 }
 
 template <>
