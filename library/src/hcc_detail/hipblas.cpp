@@ -6055,7 +6055,7 @@ hipblasStatus_t hipblasZsymvStridedBatched(hipblasHandle_t             handle,
                                                                   batchCount));
 }
 
-// tbmv
+// syr
 hipblasStatus_t hipblasSsyr(hipblasHandle_t   handle,
                             hipblasFillMode_t uplo,
                             int               n,
