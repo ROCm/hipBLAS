@@ -142,7 +142,7 @@ hipblasStatus_t testing_trsm(Arguments argus)
         double    tolerance = eps * 40 * M;
 
         double error = norm_check_general<T>('F', M, N, ldb, hB_copy.data(), hB.data());
-        unit_check_trsm(M, N, lda, error, tolerance);
+        unit_check_error(error, tolerance);
     }
 
     hipblasDestroy(handle);

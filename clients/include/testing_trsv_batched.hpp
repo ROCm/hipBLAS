@@ -22,9 +22,6 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trsv_batched(Arguments argus)
 {
-    constexpr real_t<T> eps      = std::numeric_limits<real_t<T>>::epsilon();
-    constexpr real_t<T> eps_mult = 40; // arbitrary
-
     int                M           = argus.M;
     int                incx        = argus.incx;
     int                lda         = argus.lda;
@@ -179,7 +176,10 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
     {
         for(int b = 0; b < batch_count; b++)
         {
-            double max_err_scal = 0.0, max_err = 0.0;
+            real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
+            double    tolerance = eps * 40 * M;
+
+            double error = 0.0, max_err = 0.0, max_err_scal = 0.0;
             for(int i = 0; i < M; i++)
             {
                 T diff = (hx[b][i * abs_incx] - hx_or_b_1[b][i * abs_incx]);
@@ -189,8 +189,8 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
                 }
                 max_err_scal += abs(hx_or_b_1[b][i * abs_incx]);
             }
-            double error = max_err / max_err_scal;
-            unit_check_trsv(error, M, eps_mult, eps);
+            error = max_err / max_err_scal;
+            unit_check_error(error, tolerance);
         }
     }
 

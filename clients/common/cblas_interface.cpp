@@ -30,6 +30,48 @@ void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
 void cgetrf_(int* m, int* n, hipblasComplex* A, int* lda, int* ipiv, int* info);
 void zgetrf_(int* m, int* n, hipblasDoubleComplex* A, int* lda, int* ipiv, int* info);
 
+void sgetrs_(
+    char* trans, int* n, int* nrhs, float* A, int* lda, int* ipiv, float* B, int* ldb, int* info);
+void dgetrs_(
+    char* trans, int* n, int* nrhs, double* A, int* lda, int* ipiv, double* B, int* ldb, int* info);
+void cgetrs_(char*           trans,
+             int*            n,
+             int*            nrhs,
+             hipblasComplex* A,
+             int*            lda,
+             int*            ipiv,
+             hipblasComplex* B,
+             int*            ldb,
+             int*            info);
+void zgetrs_(char*                 trans,
+             int*                  n,
+             int*                  nrhs,
+             hipblasDoubleComplex* A,
+             int*                  lda,
+             int*                  ipiv,
+             hipblasDoubleComplex* B,
+             int*                  ldb,
+             int*                  info);
+
+void sgeqrf_(int* m, int* n, float* A, int* lda, float* tau, float* work, int* lwork, int* info);
+void dgeqrf_(int* m, int* n, double* A, int* lda, double* tau, double* work, int* lwork, int* info);
+void cgeqrf_(int*            m,
+             int*            n,
+             hipblasComplex* A,
+             int*            lda,
+             hipblasComplex* tau,
+             hipblasComplex* work,
+             int*            lwork,
+             int*            info);
+void zgeqrf_(int*                  m,
+             int*                  n,
+             hipblasDoubleComplex* A,
+             int*                  lda,
+             hipblasDoubleComplex* tau,
+             hipblasDoubleComplex* work,
+             int*                  lwork,
+             int*                  info);
+
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
 void cpotrf_(char* uplo, int* m, hipblasComplex* A, int* lda, int* info);
@@ -2732,5 +2774,86 @@ int cblas_getrf<hipblasDoubleComplex>(int m, int n, hipblasDoubleComplex* A, int
 {
     int info;
     zgetrf_(&m, &n, A, &lda, ipiv, &info);
+    return info;
+}
+
+// getrs
+template <>
+int cblas_getrs<float>(char trans, int n, int nrhs, float* A, int lda, int* ipiv, float* B, int ldb)
+{
+    int info;
+    sgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    return info;
+}
+
+template <>
+int cblas_getrs<double>(
+    char trans, int n, int nrhs, double* A, int lda, int* ipiv, double* B, int ldb)
+{
+    int info;
+    dgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    return info;
+}
+
+template <>
+int cblas_getrs<hipblasComplex>(
+    char trans, int n, int nrhs, hipblasComplex* A, int lda, int* ipiv, hipblasComplex* B, int ldb)
+{
+    int info;
+    cgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    return info;
+}
+
+template <>
+int cblas_getrs<hipblasDoubleComplex>(char                  trans,
+                                      int                   n,
+                                      int                   nrhs,
+                                      hipblasDoubleComplex* A,
+                                      int                   lda,
+                                      int*                  ipiv,
+                                      hipblasDoubleComplex* B,
+                                      int                   ldb)
+{
+    int info;
+    zgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    return info;
+}
+
+// geqrf
+template <>
+int cblas_geqrf<float>(int m, int n, float* A, int lda, float* tau, float* work, int lwork)
+{
+    int info;
+    sgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_geqrf<double>(int m, int n, double* A, int lda, double* tau, double* work, int lwork)
+{
+    int info;
+    dgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    return info;
+}
+template <>
+int cblas_geqrf<hipblasComplex>(
+    int m, int n, hipblasComplex* A, int lda, hipblasComplex* tau, hipblasComplex* work, int lwork)
+{
+    int info;
+    cgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_geqrf<hipblasDoubleComplex>(int                   m,
+                                      int                   n,
+                                      hipblasDoubleComplex* A,
+                                      int                   lda,
+                                      hipblasDoubleComplex* tau,
+                                      hipblasDoubleComplex* work,
+                                      int                   lwork)
+{
+    int info;
+    zgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
     return info;
 }

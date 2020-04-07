@@ -188,7 +188,7 @@ hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
         {
             double error = norm_check_general<T>(
                 'F', M, N, ldb, hB_copy.data() + b * strideB, hB.data() + b * strideB);
-            unit_check_trsm(M, N, lda, error, tolerance);
+            unit_check_error(error, tolerance);
         }
     }
 
