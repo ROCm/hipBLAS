@@ -133,7 +133,7 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
                       diag,
                       M,
                       N,
-                      1.0 / alpha,
+                      T(1.0) / alpha,
                       (const T*)hA[b].data(),
                       lda,
                       hB[b].data(),
@@ -183,8 +183,8 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
         // if enable norm check, norm check is invasive
         // any typeinfo(T) will not work here, because template deduction is matched in compilation
         // time
-        T      eps       = std::numeric_limits<T>::epsilon();
-        double tolerance = eps * 40 * M;
+        real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
+        double    tolerance = eps * 40 * M;
 
         for(int b = 0; b < batch_count; b++)
         {

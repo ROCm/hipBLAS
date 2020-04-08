@@ -51,24 +51,20 @@ hipblasStatus_t testing_trsm(Arguments argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    vector<T> hA(A_size);
-    vector<T> hB(B_size);
-    vector<T> hB_copy(B_size);
-    vector<T> hX(B_size);
+    host_vector<T> hA(A_size);
+    host_vector<T> hB(B_size);
+    host_vector<T> hB_copy(B_size);
+    host_vector<T> hX(B_size);
 
-    T *dA, *dB;
+    device_vector<T> dA(A_size);
+    device_vector<T> dB(B_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
     double rocblas_error;
 
     hipblasHandle_t handle;
-
     hipblasCreate(&handle);
-
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dA, A_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dB, B_size * sizeof(T)));
 
     // Initial hA on CPU
     srand(1);
@@ -111,7 +107,7 @@ hipblasStatus_t testing_trsm(Arguments argus)
 
     // Calculate hB = hA*hX;
     cblas_trmm<T>(
-        side, uplo, transA, diag, M, N, 1.0 / alpha, (const T*)hA.data(), lda, hB.data(), ldb);
+        side, uplo, transA, diag, M, N, T(1.0) / alpha, (const T*)hA.data(), lda, hB.data(), ldb);
 
     hB_copy = hB;
 
@@ -142,11 +138,13 @@ hipblasStatus_t testing_trsm(Arguments argus)
         // if enable norm check, norm check is invasive
         // any typeinfo(T) will not work here, because template deduction is matched in compilation
         // time
-        rocblas_error = norm_check_general<T>('F', M, N, ldb, hB_copy.data(), hB.data());
+        real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
+        double    tolerance = eps * 40 * M;
+
+        double error = norm_check_general<T>('F', M, N, ldb, hB_copy.data(), hB.data());
+        unit_check_error(error, tolerance);
     }
 
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dB));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

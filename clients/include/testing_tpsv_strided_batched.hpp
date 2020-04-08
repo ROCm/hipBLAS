@@ -175,6 +175,7 @@ hipblasStatus_t testing_tpsv_strided_batched(Arguments argus)
                 max_err_scal += abs(hx_or_b_1b[i * abs_incx]);
             }
             error = max_err / max_err_scal;
+
             unit_check_error(error, tolerance);
         }
     }
