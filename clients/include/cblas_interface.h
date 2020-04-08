@@ -236,10 +236,55 @@ void cblas_trsv(hipblasHandle_t    handle,
                 T*                 x,
                 int                incx);
 
+// hemv
 template <typename T>
 void cblas_hemv(
     hipblasFillMode_t uplo, int n, T alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
 
+// herk
+template <typename T, typename U>
+void cblas_herk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                U                  alpha,
+                T*                 A,
+                int                lda,
+                U                  beta,
+                T*                 C,
+                int                ldc);
+
+// herkx
+template <typename T, typename U>
+void cblas_herkx(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 T                  alpha,
+                 T*                 A,
+                 int                lda,
+                 T*                 B,
+                 int                ldb,
+                 U                  beta,
+                 T*                 C,
+                 int                ldc);
+
+// her2k
+template <typename T, typename U>
+void cblas_her2k(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 T                  alpha,
+                 T*                 A,
+                 int                lda,
+                 T*                 B,
+                 int                ldb,
+                 U                  beta,
+                 T*                 C,
+                 int                ldc);
+
+// gemm
 template <typename T>
 void cblas_gemm(hipblasOperation_t transA,
                 hipblasOperation_t transB,
@@ -255,6 +300,50 @@ void cblas_gemm(hipblasOperation_t transA,
                 T*                 C,
                 int                ldc);
 
+// syrk
+template <typename T>
+void cblas_syrk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                T                  alpha,
+                T*                 A,
+                int                lda,
+                T                  beta,
+                T*                 C,
+                int                ldc);
+
+// syr2k
+template <typename T>
+void cblas_syr2k(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 T                  alpha,
+                 T*                 A,
+                 int                lda,
+                 T*                 B,
+                 int                ldb,
+                 T                  beta,
+                 T*                 C,
+                 int                ldc);
+
+// syrkx
+template <typename T>
+void cblas_syrkx(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 T                  alpha,
+                 T*                 A,
+                 int                lda,
+                 T*                 B,
+                 int                ldb,
+                 T                  beta,
+                 T*                 C,
+                 int                ldc);
+
+// trsm
 template <typename T>
 void cblas_trsm(hipblasSideMode_t  side,
                 hipblasFillMode_t  uplo,
@@ -268,9 +357,11 @@ void cblas_trsm(hipblasSideMode_t  side,
                 T*                 B,
                 int                ldb);
 
+// trtri
 template <typename T>
 int cblas_trtri(char uplo, char diag, int n, T* A, int lda);
 
+// trmm
 template <typename T>
 void cblas_trmm(hipblasSideMode_t  side,
                 hipblasFillMode_t  uplo,

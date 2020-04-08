@@ -76,6 +76,11 @@ set(hipblas_test_source
   gemm_strided_batched_gtest.cpp
   gemm_batched_gtest.cpp
   geam_gtest.cpp
+  herk_gtest.cpp
+  her2k_gtest.cpp
+  herkx_gtest.cpp
+  syrk_gtest.cpp
+  syr2k_gtest.cpp
   trsm_gtest.cpp
   trmm_gtest.cpp
 )
