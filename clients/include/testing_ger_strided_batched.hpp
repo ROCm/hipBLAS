@@ -19,7 +19,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T>
+template <typename T, bool CONJ>
 hipblasStatus_t testing_ger_strided_batched(Arguments argus)
 {
     int    M            = argus.M;
@@ -94,20 +94,20 @@ hipblasStatus_t testing_ger_strided_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status = hipblasGerStridedBatched<T>(handle,
-                                             M,
-                                             N,
-                                             (T*)&alpha,
-                                             dx,
-                                             incx,
-                                             stride_x,
-                                             dy,
-                                             incy,
-                                             stride_y,
-                                             dA,
-                                             lda,
-                                             stride_A,
-                                             batch_count);
+        status = hipblasGerStridedBatched<T, CONJ>(handle,
+                                                   M,
+                                                   N,
+                                                   (T*)&alpha,
+                                                   dx,
+                                                   incx,
+                                                   stride_x,
+                                                   dy,
+                                                   incy,
+                                                   stride_y,
+                                                   dA,
+                                                   lda,
+                                                   stride_A,
+                                                   batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
@@ -126,15 +126,15 @@ hipblasStatus_t testing_ger_strided_batched(Arguments argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_ger<T>(M,
-                         N,
-                         alpha,
-                         hx.data() + b * stride_x,
-                         incx,
-                         hy.data() + b * stride_y,
-                         incy,
-                         hB.data() + b * stride_A,
-                         lda);
+            cblas_ger<T, CONJ>(M,
+                               N,
+                               alpha,
+                               hx.data() + b * stride_x,
+                               incx,
+                               hy.data() + b * stride_y,
+                               incy,
+                               hB.data() + b * stride_A,
+                               lda);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
