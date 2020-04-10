@@ -22,6 +22,8 @@ function display_help()
   echo "    [--compiler] specify host compiler"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
   echo "    [--custom-target] link against custom target (e.g. host, device)"
+  echo "    [-v|--rocm-dev] Set specific rocm-dev version"
+  echo "    [-b|--rocblas] Set specific rocblas version"
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
@@ -119,18 +121,42 @@ install_packages( )
     library_dependencies_centos+=( "" ) # how to install cuda on centos?
     library_dependencies_fedora+=( "" ) # how to install cuda on fedora?
   elif [[ "${build_hip_clang}" == false ]]; then
-    library_dependencies_ubuntu+=( "rocm-dev" "rocblas" )
-    library_dependencies_centos+=( "rocm-dev" "rocblas" )
-    library_dependencies_fedora+=( "rocm-dev" "rocblas" )
-    library_dependencies_sles+=( "rocm-dev" "rocblas" )
+    # Custom rocm-dev installation
+    if [[ -z ${custom_rocm_dev+foo} ]]; then
+      # Install base rocm-dev package unless -v/--rocm-dev flag is passed
+      library_dependencies_ubuntu+=( "rocm-dev" )
+      library_dependencies_centos+=( "rocm-dev" )
+      library_dependencies_fedora+=( "rocm-dev" )
+      library_dependencies_sles+=( "rocm-dev" )
+    else
+      # Install rocm-specific rocm-dev package
+      library_dependencies_ubuntu+=( "${custom_rocm_dev}" )
+      library_dependencies_centos+=( "${custom_rocm_dev}" )
+      library_dependencies_fedora+=( "${custom_rocm_dev}" )
+      library_dependencies_sles+=( "${custom_rocm_dev}" )
+    fi
 
-    if [[ "${build_solver}" == true ]]; then
+    # Custom rocblas installation
+    if [[ -z ${custom_rocblas+foo} ]]; then
+      # Install base rocblas package unless -b/--rocblas flag is passed
+      library_dependencies_ubuntu+=( "rocblas" )
+      library_dependencies_centos+=( "rocblas" )
+      library_dependencies_fedora+=( "rocblas" )
+      library_dependencies_sles+=( "rocblas" )
+    else
+      # Install rocm-specific rocblas package
+      library_dependencies_ubuntu+=( "${custom_rocblas}" )
+      library_dependencies_centos+=( "${custom_rocblas}" )
+      library_dependencies_fedora+=( "${custom_rocblas}" )
+      library_dependencies_sles+=( "${custom_rocblas}" )
+    fi
+  fi
+
+  if [[ "${build_solver}" == true ]]; then
       library_dependencies_ubuntu+=( "rocsolver" )
       library_dependencies_centos+=( "rocsolver" )
       library_dependencies_fedora+=( "rocsolver" )
       library_dependencies_sles+=( "rocsolver" )
-    fi
-
   fi
 
   local client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
@@ -243,7 +269,7 @@ compiler=g++
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,compiler:,cuda,cmakepp,relocatable:,custom-target: --options rhicndgp: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,clang,cuda,cmakepp,relocatable:,rocm-dev:,rocblas: --options rhicdgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -295,6 +321,12 @@ while true; do
     --custom-target)
         custom_target=${2}
         shift 2 ;;
+    -v|--rocm-dev)
+         custom_rocm_dev=${2}
+         shift 2;;
+    -b|--rocblas)
+         custom_rocblas=${2}
+         shift 2;;
     --prefix)
         install_prefix=${2}
         shift 2 ;;
@@ -391,11 +423,12 @@ pushd .
 
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
-    CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX=${rocm_path} \
+    CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
     -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;${cmake_prefix_path}" \
-    -DCMAKE_SHARED_LINKER_FLAGS=${rocm_rpath} \
+    -DCMAKE_SHARED_LINKER_FLAGS="${rocm_rpath}" \
+    -DCMAKE_EXE_LINKER_FLAGS=" -Wl,--enable-new-dtags -Wl,--rpath,${rocm_path}/lib:${rocm_path}/lib64" \
     -DROCM_DISABLE_LDCONFIG=ON \
-    -DROCM_PATH=${rocm_path} ../..
+    -DROCM_PATH="${rocm_path}" ../..
   else
     CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
   fi
