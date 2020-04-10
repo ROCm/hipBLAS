@@ -1,9 +1,11 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
 #include "testing_trmm.hpp"
+#include "testing_trmm_batched.hpp"
+#include "testing_trmm_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -90,9 +92,9 @@ const vector<vector<char>> full_side_uplo_transA_diag_range = {
     {'R', 'U', 'C', 'U'},
 };
 
-const vector<double> stride_scale_range = {1};
+const vector<double> stride_scale_range = {1, 3};
 
-const vector<int> batch_count_range = {1};
+const vector<int> batch_count_range = {1, 3, 5};
 
 /* ===============Google Unit Test==================================================== */
 
@@ -166,15 +168,8 @@ TEST_P(trmm_gtest, trmm_gtest_float)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
 
-        if(arg.M < 0 || arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.ldb < arg.M)
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -185,7 +180,7 @@ TEST_P(trmm_gtest, trmm_gtest_float)
     }
 }
 
-TEST_P(trmm_gtest, trmm_gtest_double)
+TEST_P(trmm_gtest, trmm_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -194,27 +189,128 @@ TEST_P(trmm_gtest, trmm_gtest_double)
 
     Arguments arg = setup_trmm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trmm<double>(arg);
+    hipblasStatus_t status = testing_trmm<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
 
-        if(arg.M < 0 || arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.ldb < arg.M)
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
             EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(trmm_gtest, trmm_batched_gtest_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trmm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trmm_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(trmm_gtest, trmm_batched_gtest_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trmm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trmm_batched<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(trmm_gtest, trmm_strided_batched_gtest_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trmm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trmm_strided_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(trmm_gtest, trmm_strided_batched_gtest_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trmm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trmm_strided_batched<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }

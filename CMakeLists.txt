@@ -45,7 +45,7 @@ include( ROCMInstallTargets )
 include( ROCMPackageConfigHelpers )
 include( ROCMInstallSymlinks )
 
-set ( VERSION_STRING "0.24.0" )
+set ( VERSION_STRING "0.26.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
@@ -55,21 +55,28 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 # NOTE:  workaround until hcc & hip cmake modules fixes symlink logic in their config files; remove when fixed
 list( APPEND CMAKE_PREFIX_PATH /opt/rocm/hcc /opt/rocm/hip )
 
-# Building tensile can add significant compile time; this option allows to build
-# library without tensile to allow for rapid iteration without GEMM functionality
 option( BUILD_VERBOSE "Output additional build information" OFF )
+
+option( BUILD_WITH_SOLVER "Add additional functions from rocSOLVER" ON )
 
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
 # Find HCC/HIP dependencies
-if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
-  message( STATUS "Building with ROCm tools" )
-  find_package( hcc REQUIRED CONFIG PATHS /opt/rocm )
-endif( )
+#if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
+#  message( STATUS "Building with ROCm tools" )
+#  find_package( hcc REQUIRED CONFIG PATHS /opt/rocm )
+#endif( )
 
 # Hip headers required of all clients; clients use hip to allocate device memory
-find_package( hip REQUIRED CONFIG PATHS /opt/rocm )
+find_package( HIP REQUIRED )
+
+# Look for libamdhip64
+find_library(
+  LIBAMDHIP64_LIBRARY
+  NAMES libamdhip64.so
+  HINTS "${CMAKE_PREFIX_PATH}/lib" )
+message("amdhip64: ${LIBAMDHIP64_LIBRARY}")
 
 # Look for libamdhip64
 find_library(
