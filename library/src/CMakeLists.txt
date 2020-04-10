@@ -72,6 +72,9 @@ if( NOT CUDA_FOUND )
       get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
       target_link_libraries( hipblas PRIVATE ${HIP_HCC_LOCATION} )
     endif ( )
+  # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
+  # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
+
   endif( )
 
 else( )
