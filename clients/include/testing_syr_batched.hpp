@@ -38,7 +38,7 @@ hipblasStatus_t testing_syr_batched(Arguments argus)
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
 
-    T alpha = argus.get_alpha<T>();
+    T alpha = (T)argus.alpha;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -133,7 +133,7 @@ hipblasStatus_t testing_syr_batched(Arguments argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(M, N, batch_count, lda, hA, hA_cpu);
+            unit_check_general<T>(1, N, batch_count, lda, hA, hA_cpu);
         }
     }
 
