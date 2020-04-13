@@ -9,7 +9,7 @@ add_executable( example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
 
 if( NOT TARGET hipblas )
-  find_package( hipblas CONFIG PATHS ${ROCM_PATH}/hipblas )
+  find_package( hipblas CONFIG PATHS /opt/rocm/hipblas )
 
   if( NOT hipblas_FOUND )
     message( FATAL_ERROR "hipBLAS is a required dependency and is not found; try adding rocblas path to CMAKE_PREFIX_PATH")
