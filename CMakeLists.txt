@@ -45,7 +45,7 @@ include( ROCMInstallTargets )
 include( ROCMPackageConfigHelpers )
 include( ROCMInstallSymlinks )
 
-set ( VERSION_STRING "0.27.0" )
+set ( VERSION_STRING "0.25.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
@@ -70,13 +70,6 @@ option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
 # Hip headers required of all clients; clients use hip to allocate device memory
 find_package( HIP REQUIRED )
-
-# Look for libamdhip64
-find_library(
-  LIBAMDHIP64_LIBRARY
-  NAMES libamdhip64.so
-  HINTS "${CMAKE_PREFIX_PATH}/lib" )
-message("amdhip64: ${LIBAMDHIP64_LIBRARY}")
 
 # Look for libamdhip64
 find_library(
