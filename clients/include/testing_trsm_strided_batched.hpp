@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -119,7 +119,7 @@ hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
         }
 
         // Calculate hB = hA*hX;
-        cblas_trmm<T>(side, uplo, transA, diag, M, N, T(1.0) / alpha, (const T*)hAb, lda, hBb, ldb);
+        cblas_trmm<T>(side, uplo, transA, diag, M, N, 1.0 / alpha, (const T*)hAb, lda, hBb, ldb);
     }
     hX      = hB; // original solutions hX
     hB_copy = hB;
@@ -181,14 +181,14 @@ hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
         // if enable norm check, norm check is invasive
         // any typeinfo(T) will not work here, because template deduction is matched in compilation
         // time
-        real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
-        double    tolerance = eps * 40 * M;
+        T      eps       = std::numeric_limits<T>::epsilon();
+        double tolerance = eps * 40 * M;
 
         for(int b = 0; b < batch_count; b++)
         {
             double error = norm_check_general<T>(
                 'F', M, N, ldb, hB_copy.data() + b * strideB, hB.data() + b * strideB);
-            unit_check_error(error, tolerance);
+            unit_check_trsm(M, N, lda, error, tolerance);
         }
     }
 

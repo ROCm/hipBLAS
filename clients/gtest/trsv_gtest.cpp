@@ -20,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, int, double, int> trsv_tuple;
+typedef std::tuple<vector<int>, vector<int>, double, double, int> trsv_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -40,12 +40,27 @@ Yet, the goal of this file is to verify result correctness not argument-checkers
 Representative sampling is sufficient, endless brute-force sampling is not necessary
 =================================================================== */
 
-// vector of vector, each vector is a {M, lda};
+// vector of vector, each vector is a {M, N, lda};
 // add/delete as a group
-const vector<vector<int>> matrix_size_range = {{-1, -1}, {11, 11}, {16, 16}, {32, 32}, {65, 65}};
+const vector<vector<int>> matrix_size_range = {
+    {-1, 0, -1}, {11, 0, 11}, {16, 0, 16}, {32, 0, 32}, {65, 0, 65}
+    //   {10, 10, 2},
+    //   {600,500, 500},
+    //   {1000, 1000, 1000},
+    //   {2000, 2000, 2000},
+    //   {4011, 4011, 4011},
+    //   {8000, 8000, 8000}
+};
 
-// vector of vector, each element is an {incx}
-const vector<int> incx_incy_range = {-2, 1, 0, 2};
+// vector of vector, each element is an {incx, incy}
+const vector<vector<int>> incx_incy_range = {
+    {-2, 0}, {1, 0}, {0, 0}, {2, 0}
+    //     {10, 100}
+};
+
+// vector, each entry is  {alpha};
+// add/delete single values, like {2.0}
+const vector<double> alpha_range = {0.0};
 
 const vector<double> stride_scale_range = {1.0, 2.5};
 
@@ -70,18 +85,19 @@ const vector<int> batch_count_range = {-1, 0, 1, 2, 10};
 Arguments setup_trsv_arguments(trsv_tuple tup)
 {
     vector<int> matrix_size  = std::get<0>(tup);
-    int         incx         = std::get<1>(tup);
-    double      stride_scale = std::get<2>(tup);
-    int         batch_count  = std::get<3>(tup);
+    vector<int> incx         = std::get<1>(tup);
+    double      stride_scale = std::get<3>(tup);
+    int         batch_count  = std::get<4>(tup);
 
     Arguments arg;
 
     // see the comments about matrix_size_range above
     arg.M   = matrix_size[0];
-    arg.lda = matrix_size[1];
+    arg.N   = matrix_size[1];
+    arg.lda = matrix_size[2];
 
     // see the comments about matrix_size_range above
-    arg.incx = incx;
+    arg.incx = incx[0];
 
     arg.timing = 0;
 
@@ -114,7 +130,15 @@ TEST_P(blas2_trsv_gtest, trsv_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0)
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -125,7 +149,7 @@ TEST_P(blas2_trsv_gtest, trsv_float)
     }
 }
 
-TEST_P(blas2_trsv_gtest, trsv_double_complex)
+TEST_P(blas2_trsv_gtest, trsv_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -134,12 +158,20 @@ TEST_P(blas2_trsv_gtest, trsv_double_complex)
 
     Arguments arg = setup_trsv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsv<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_trsv<double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0)
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -159,27 +191,19 @@ TEST_P(blas2_trsv_gtest, trsv_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else
+        else if(arg.lda < arg.M)
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-    }
-}
-
-TEST_P(blas2_trsv_gtest, trsv_batched_double_complex)
-{
-    Arguments arg = setup_trsv_arguments(GetParam());
-
-    hipblasStatus_t status = testing_trsv_batched<hipblasDoubleComplex>(arg);
-
-    // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        else if(arg.incx == 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -199,27 +223,19 @@ TEST_P(blas2_trsv_gtest, trsv_strided_batched_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else
+        else if(arg.lda < arg.M)
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-    }
-}
-
-TEST_P(blas2_trsv_gtest, trsv_strided_batched_double_complex)
-{
-    Arguments arg = setup_trsv_arguments(GetParam());
-
-    hipblasStatus_t status = testing_trsv_strided_batched<hipblasDoubleComplex>(arg);
-
-    // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        else if(arg.incx == 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -233,11 +249,12 @@ TEST_P(blas2_trsv_gtest, trsv_strided_batched_double_complex)
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
-// The combinations are  { {M, N, lda}, {incx,incy} }
+// The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
 INSTANTIATE_TEST_CASE_P(hipblastrsv,
                         blas2_trsv_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(incx_incy_range),
+                                ValuesIn(alpha_range),
                                 ValuesIn(stride_scale_range),
                                 ValuesIn(batch_count_range)));

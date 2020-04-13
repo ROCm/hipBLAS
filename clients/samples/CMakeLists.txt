@@ -37,19 +37,21 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
   if( NOT CUDA_FOUND )
     target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_HCC__ )
 
+
   # Remove following when hcc is fixed; hcc emits following spurious warning
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
   target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument -mf16c)
+  if ( LIBAMDHIP64_LIBRARY )
+    target_link_libraries( ${exe} PRIVATE hip::amdhip64 )
+  else ( )
+    get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
+    target_link_libraries( ${exe} PRIVATE ${HIP_HCC_LOCATION} )
+  endif( )
 
-  if( CUSTOM_TARGET )
-    target_link_libraries( ${exe} PRIVATE hip::${CUSTOM_TARGET} )
-  else( )
-    if( LIBAMDHIP64_LIBRARY )
-      target_link_libraries( ${exe} PRIVATE hip::amdhip64 )
-    else( )
-      get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
-      target_link_libraries( ${exe} PRIVATE ${HIP_HCC_LOCATION} )
-    endif( )
+  # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
+  # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
+    target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument )
   endif( )
 
   if( CMAKE_COMPILER_IS_GNUCXX )

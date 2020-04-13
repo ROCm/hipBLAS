@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -22,6 +22,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trsv_batched(Arguments argus)
 {
+    constexpr T eps      = std::numeric_limits<T>::epsilon();
+    constexpr T eps_mult = 40; // arbitrary
+
     int                M           = argus.M;
     int                incx        = argus.incx;
     int                lda         = argus.lda;
@@ -103,7 +106,7 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
             for(int j = 0; j < M; j++)
             {
                 hA[b][i + j * lda] = AAT[b][i + j * lda];
-                t += abs(AAT[b][i + j * lda]);
+                t += AAT[b][i + j * lda] > 0 ? AAT[b][i + j * lda] : -AAT[b][i + j * lda];
             }
             hA[b][i + i * lda] = t;
         }
@@ -176,21 +179,16 @@ hipblasStatus_t testing_trsv_batched(Arguments argus)
     {
         for(int b = 0; b < batch_count; b++)
         {
-            real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
-            double    tolerance = eps * 40 * M;
-
-            double error = 0.0, max_err = 0.0, max_err_scal = 0.0;
+            double error = 0.0;
             for(int i = 0; i < M; i++)
             {
-                T diff = (hx[b][i * abs_incx] - hx_or_b_1[b][i * abs_incx]);
-                if(diff != T(0))
-                {
-                    max_err += abs(diff);
-                }
-                max_err_scal += abs(hx_or_b_1[b][i * abs_incx]);
+                if(hx[b][i * abs_incx] != 0)
+                    error += std::abs((hx[b][i * abs_incx] - hx_or_b_1[b][i * abs_incx])
+                                      / hx[b][i * abs_incx]);
+                else
+                    error += std::abs(hx_or_b_1[b][i * abs_incx]);
             }
-            error = max_err / max_err_scal;
-            unit_check_error(error, tolerance);
+            unit_check_trsv(error, M, eps_mult, eps);
         }
     }
 
