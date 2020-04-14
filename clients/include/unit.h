@@ -45,12 +45,10 @@ void unit_check_general(
     int M, int N, int batch_count, int lda, host_vector<T> hCPU[], host_vector<T> hGPU[]);
 
 template <typename T>
-void unit_check_error(T error, T tolerance)
-{
-#ifdef GOOGLE_TEST
-    ASSERT_LE(error, tolerance);
-#endif
-}
+void unit_check_trsm(int M, int N, int lda, double hGPU, T tolerance);
+
+template <typename T>
+T get_trsm_tolerance();
 
 template <typename T>
 void unit_check_nrm2(T cpu_result, T gpu_result, T tolerance)
@@ -60,6 +58,14 @@ void unit_check_nrm2(T cpu_result, T gpu_result, T tolerance)
         allowable_error = tolerance * std::numeric_limits<T>::epsilon();
 #ifdef GOOGLE_TEST
     ASSERT_NEAR(cpu_result, gpu_result, allowable_error);
+#endif
+}
+
+template <typename T>
+void unit_check_trsv(double max_error, int M, T forward_tolerance, T eps)
+{
+#ifdef GOOGLE_TEST
+    ASSERT_LE(max_error, forward_tolerance * eps * M);
 #endif
 }
 

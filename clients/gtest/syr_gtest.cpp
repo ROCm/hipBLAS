@@ -133,7 +133,19 @@ TEST_P(blas2_syr_gtest, syr_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0)
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -144,7 +156,7 @@ TEST_P(blas2_syr_gtest, syr_gtest_float)
     }
 }
 
-TEST_P(blas2_syr_gtest, syr_gtest_float_complex)
+TEST_P(blas2_syr_gtest, syr_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -153,12 +165,24 @@ TEST_P(blas2_syr_gtest, syr_gtest_float_complex)
 
     Arguments arg = setup_syr_arguments(GetParam());
 
-    hipblasStatus_t status = testing_syr<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_syr<double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0)
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -184,8 +208,23 @@ TEST_P(blas2_syr_gtest, syr_batched_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -196,7 +235,7 @@ TEST_P(blas2_syr_gtest, syr_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_syr_gtest, syr_batched_gtest_float_complex)
+TEST_P(blas2_syr_gtest, syr_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -205,13 +244,28 @@ TEST_P(blas2_syr_gtest, syr_batched_gtest_float_complex)
 
     Arguments arg = setup_syr_arguments(GetParam());
 
-    hipblasStatus_t status = testing_syr_batched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_syr_batched<double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -237,8 +291,23 @@ TEST_P(blas2_syr_gtest, syr_strided_batched_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -249,7 +318,7 @@ TEST_P(blas2_syr_gtest, syr_strided_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_syr_gtest, syr_strided_batched_gtest_float_complex)
+TEST_P(blas2_syr_gtest, syr_strided_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -258,13 +327,28 @@ TEST_P(blas2_syr_gtest, syr_strided_batched_gtest_float_complex)
 
     Arguments arg = setup_syr_arguments(GetParam());
 
-    hipblasStatus_t status = testing_syr_strided_batched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_syr_strided_batched<double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx <= 0 || arg.incy <= 0
-           || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incy <= 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

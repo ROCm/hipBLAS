@@ -19,7 +19,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T, bool CONJ>
+template <typename T>
 hipblasStatus_t testing_ger(Arguments argus)
 {
 
@@ -62,23 +62,27 @@ hipblasStatus_t testing_ger(Arguments argus)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hB(A_size);
-    host_vector<T> hx(M * incx);
-    host_vector<T> hy(N * incy);
+    vector<T> hA(A_size);
+    vector<T> hB(A_size);
+    vector<T> hx(M * incx);
+    vector<T> hy(N * incy);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dx(M * incx);
-    device_vector<T> dy(N * incy);
+    T *dA, *dx, *dy;
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
 
-    T alpha = argus.get_alpha<T>();
+    T alpha = (T)argus.alpha;
 
     hipblasHandle_t handle;
+
     hipblasCreate(&handle);
+
+    // allocate memory on device
+    CHECK_HIP_ERROR(hipMalloc(&dA, A_size * sizeof(T)));
+    CHECK_HIP_ERROR(hipMalloc(&dx, M * incx * sizeof(T)));
+    CHECK_HIP_ERROR(hipMalloc(&dy, N * incy * sizeof(T)));
 
     // Initial Data on CPU
     srand(1);
@@ -105,10 +109,13 @@ hipblasStatus_t testing_ger(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status = hipblasGer<T, CONJ>(handle, M, N, (T*)&alpha, dx, incx, dy, incy, dA, lda);
+        status = hipblasGer<T>(handle, M, N, (T*)&alpha, dx, incx, dy, incy, dA, lda);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
+            CHECK_HIP_ERROR(hipFree(dA));
+            CHECK_HIP_ERROR(hipFree(dx));
+            CHECK_HIP_ERROR(hipFree(dy));
             hipblasDestroy(handle);
             return status;
         }
@@ -122,7 +129,7 @@ hipblasStatus_t testing_ger(Arguments argus)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_ger<T, CONJ>(M, N, alpha, hx.data(), incx, hy.data(), incy, hB.data(), lda);
+        cblas_ger<T>(M, N, alpha, hx.data(), incx, hy.data(), incy, hB.data(), lda);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
@@ -132,6 +139,9 @@ hipblasStatus_t testing_ger(Arguments argus)
         }
     }
 
+    CHECK_HIP_ERROR(hipFree(dA));
+    CHECK_HIP_ERROR(hipFree(dx));
+    CHECK_HIP_ERROR(hipFree(dy));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
