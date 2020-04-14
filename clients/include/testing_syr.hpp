@@ -59,25 +59,21 @@ hipblasStatus_t testing_syr(Arguments argus)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    vector<T> hA(A_size);
-    vector<T> hA_cpu(A_size);
-    vector<T> hx(x_size);
+    host_vector<T> hA(A_size);
+    host_vector<T> hA_cpu(A_size);
+    host_vector<T> hx(x_size);
 
-    T *dA, *dx;
+    device_vector<T> dA(A_size);
+    device_vector<T> dx(x_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
 
-    T alpha = (T)argus.alpha;
+    T alpha = argus.get_alpha<T>();
 
     hipblasHandle_t handle;
-
     hipblasCreate(&handle);
-
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dA, A_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dx, x_size * sizeof(T)));
 
     // Initial Data on CPU
     srand(1);
@@ -103,8 +99,6 @@ hipblasStatus_t testing_syr(Arguments argus)
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
-            CHECK_HIP_ERROR(hipFree(dA));
-            CHECK_HIP_ERROR(hipFree(dx));
             hipblasDestroy(handle);
             return status;
         }
@@ -124,12 +118,10 @@ hipblasStatus_t testing_syr(Arguments argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, lda, hA.data(), hA_cpu.data());
+            unit_check_general<T>(M, N, lda, hA.data(), hA_cpu.data());
         }
     }
 
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dx));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
