@@ -27,11 +27,102 @@ void dtrtri_(char* uplo, char* diag, int* n, double* A, int* lda, int* info);
 
 void sgetrf_(int* m, int* n, float* A, int* lda, int* ipiv, int* info);
 void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
-//  void    cgetrf_(int* m, int* n, hipblasComplex* A, int* lda, int* ipiv, int *info);
-//  void    zgetrf_(int* m, int* n, hipblasDoubleComplex* A, int* lda, int* ipiv, int *info);
+void cgetrf_(int* m, int* n, hipblasComplex* A, int* lda, int* ipiv, int* info);
+void zgetrf_(int* m, int* n, hipblasDoubleComplex* A, int* lda, int* ipiv, int* info);
+
+void sgetrs_(
+    char* trans, int* n, int* nrhs, float* A, int* lda, int* ipiv, float* B, int* ldb, int* info);
+void dgetrs_(
+    char* trans, int* n, int* nrhs, double* A, int* lda, int* ipiv, double* B, int* ldb, int* info);
+void cgetrs_(char*           trans,
+             int*            n,
+             int*            nrhs,
+             hipblasComplex* A,
+             int*            lda,
+             int*            ipiv,
+             hipblasComplex* B,
+             int*            ldb,
+             int*            info);
+void zgetrs_(char*                 trans,
+             int*                  n,
+             int*                  nrhs,
+             hipblasDoubleComplex* A,
+             int*                  lda,
+             int*                  ipiv,
+             hipblasDoubleComplex* B,
+             int*                  ldb,
+             int*                  info);
+
+void sgeqrf_(int* m, int* n, float* A, int* lda, float* tau, float* work, int* lwork, int* info);
+void dgeqrf_(int* m, int* n, double* A, int* lda, double* tau, double* work, int* lwork, int* info);
+void cgeqrf_(int*            m,
+             int*            n,
+             hipblasComplex* A,
+             int*            lda,
+             hipblasComplex* tau,
+             hipblasComplex* work,
+             int*            lwork,
+             int*            info);
+void zgeqrf_(int*                  m,
+             int*                  n,
+             hipblasDoubleComplex* A,
+             int*                  lda,
+             hipblasDoubleComplex* tau,
+             hipblasDoubleComplex* work,
+             int*                  lwork,
+             int*                  info);
 
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
+void cpotrf_(char* uplo, int* m, hipblasComplex* A, int* lda, int* info);
+void zpotrf_(char* uplo, int* m, hipblasDoubleComplex* A, int* lda, int* info);
+
+void cspr_(
+    char* uplo, int* n, hipblasComplex* alpha, hipblasComplex* x, int* incx, hipblasComplex* A);
+
+void zspr_(char*                 uplo,
+           int*                  n,
+           hipblasDoubleComplex* alpha,
+           hipblasDoubleComplex* x,
+           int*                  incx,
+           hipblasDoubleComplex* A);
+
+void csyr_(char*           uplo,
+           int*            n,
+           hipblasComplex* alpha,
+           hipblasComplex* x,
+           int*            incx,
+           hipblasComplex* a,
+           int*            lda);
+void zsyr_(char*                 uplo,
+           int*                  n,
+           hipblasDoubleComplex* alpha,
+           hipblasDoubleComplex* x,
+           int*                  incx,
+           hipblasDoubleComplex* a,
+           int*                  lda);
+
+void csymv_(char*           uplo,
+            int*            n,
+            hipblasComplex* alpha,
+            hipblasComplex* A,
+            int*            lda,
+            hipblasComplex* x,
+            int*            incx,
+            hipblasComplex* beta,
+            hipblasComplex* y,
+            int*            incy);
+
+void zsymv_(char*                 uplo,
+            int*                  n,
+            hipblasDoubleComplex* alpha,
+            hipblasDoubleComplex* A,
+            int*                  lda,
+            hipblasDoubleComplex* x,
+            int*                  incx,
+            hipblasDoubleComplex* beta,
+            hipblasDoubleComplex* y,
+            int*                  incy);
 
 #ifdef __cplusplus
 }
@@ -541,6 +632,131 @@ void cblas_iamin<hipblasDoubleComplex>(int n, const hipblasDoubleComplex* x, int
  * ===========================================================================
  */
 
+// gbmv
+template <>
+void cblas_gbmv<float>(hipblasOperation_t transA,
+                       int                m,
+                       int                n,
+                       int                kl,
+                       int                ku,
+                       float              alpha,
+                       float*             A,
+                       int                lda,
+                       float*             x,
+                       int                incx,
+                       float              beta,
+                       float*             y,
+                       int                incy)
+{
+    cblas_sgbmv(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                m,
+                n,
+                kl,
+                ku,
+                alpha,
+                A,
+                lda,
+                x,
+                incx,
+                beta,
+                y,
+                incy);
+}
+
+template <>
+void cblas_gbmv<double>(hipblasOperation_t transA,
+                        int                m,
+                        int                n,
+                        int                kl,
+                        int                ku,
+                        double             alpha,
+                        double*            A,
+                        int                lda,
+                        double*            x,
+                        int                incx,
+                        double             beta,
+                        double*            y,
+                        int                incy)
+{
+    cblas_dgbmv(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                m,
+                n,
+                kl,
+                ku,
+                alpha,
+                A,
+                lda,
+                x,
+                incx,
+                beta,
+                y,
+                incy);
+}
+
+template <>
+void cblas_gbmv<hipblasComplex>(hipblasOperation_t transA,
+                                int                m,
+                                int                n,
+                                int                kl,
+                                int                ku,
+                                hipblasComplex     alpha,
+                                hipblasComplex*    A,
+                                int                lda,
+                                hipblasComplex*    x,
+                                int                incx,
+                                hipblasComplex     beta,
+                                hipblasComplex*    y,
+                                int                incy)
+{
+    cblas_cgbmv(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                m,
+                n,
+                kl,
+                ku,
+                &alpha,
+                A,
+                lda,
+                x,
+                incx,
+                &beta,
+                y,
+                incy);
+}
+
+template <>
+void cblas_gbmv<hipblasDoubleComplex>(hipblasOperation_t    transA,
+                                      int                   m,
+                                      int                   n,
+                                      int                   kl,
+                                      int                   ku,
+                                      hipblasDoubleComplex  alpha,
+                                      hipblasDoubleComplex* A,
+                                      int                   lda,
+                                      hipblasDoubleComplex* x,
+                                      int                   incx,
+                                      hipblasDoubleComplex  beta,
+                                      hipblasDoubleComplex* y,
+                                      int                   incy)
+{
+    cblas_zgbmv(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                m,
+                n,
+                kl,
+                ku,
+                &alpha,
+                A,
+                lda,
+                x,
+                incx,
+                &beta,
+                y,
+                incy);
+}
+
 // gemv
 template <>
 void cblas_gemv<float>(hipblasOperation_t transA,
@@ -610,69 +826,451 @@ void cblas_gemv<hipblasDoubleComplex>(hipblasOperation_t    transA,
         CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, &alpha, A, lda, x, incx, &beta, y, incy);
 }
 
-// symv
+// ger
 template <>
-void cblas_symv<float>(hipblasFillMode_t uplo,
-                       int               n,
-                       float             alpha,
-                       float*            A,
-                       int               lda,
-                       float*            x,
-                       int               incx,
-                       float             beta,
-                       float*            y,
-                       int               incy)
-{
-    cblas_ssymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
-}
-
-template <>
-void cblas_symv<double>(hipblasFillMode_t uplo,
-                        int               n,
-                        double            alpha,
-                        double*           A,
-                        int               lda,
-                        double*           x,
-                        int               incx,
-                        double            beta,
-                        double*           y,
-                        int               incy)
-{
-    cblas_dsymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
-}
-
-//  template<>
-//  void cblas_hemv<hipblasComplex>(hipblasFillMode_t uplo, int n,
-//                          hipblasComplex alpha,
-//                          hipblasComplex *A, int lda,
-//                          hipblasComplex *x, int incx,
-//                          hipblasComplex beta, hipblasComplex *y, int incy)
-//  {
-//      cblas_chemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
-//  }
-
-//  template<>
-//  void cblas_hemv<hipblasDoubleComplex>(hipblasFillMode_t uplo, int n,
-//                          hipblasDoubleComplex alpha,
-//                          hipblasDoubleComplex *A, int lda,
-//                          hipblasDoubleComplex *x, int incx,
-//                          hipblasDoubleComplex beta, hipblasDoubleComplex *y, int incy)
-//  {
-//      cblas_zhemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
-//  }
-
-template <>
-void cblas_ger<float>(
+void cblas_ger<float, false>(
     int m, int n, float alpha, float* x, int incx, float* y, int incy, float* A, int lda)
 {
     cblas_sger(CblasColMajor, m, n, alpha, x, incx, y, incy, A, lda);
 }
 
 template <>
-void cblas_ger<double>(
+void cblas_ger<double, false>(
     int m, int n, double alpha, double* x, int incx, double* y, int incy, double* A, int lda)
 {
     cblas_dger(CblasColMajor, m, n, alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_ger<hipblasComplex, false>(int             m,
+                                      int             n,
+                                      hipblasComplex  alpha,
+                                      hipblasComplex* x,
+                                      int             incx,
+                                      hipblasComplex* y,
+                                      int             incy,
+                                      hipblasComplex* A,
+                                      int             lda)
+{
+    cblas_cgeru(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_ger<hipblasComplex, true>(int             m,
+                                     int             n,
+                                     hipblasComplex  alpha,
+                                     hipblasComplex* x,
+                                     int             incx,
+                                     hipblasComplex* y,
+                                     int             incy,
+                                     hipblasComplex* A,
+                                     int             lda)
+{
+    cblas_cgerc(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_ger<hipblasDoubleComplex, false>(int                   m,
+                                            int                   n,
+                                            hipblasDoubleComplex  alpha,
+                                            hipblasDoubleComplex* x,
+                                            int                   incx,
+                                            hipblasDoubleComplex* y,
+                                            int                   incy,
+                                            hipblasDoubleComplex* A,
+                                            int                   lda)
+{
+    cblas_zgeru(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_ger<hipblasDoubleComplex, true>(int                   m,
+                                           int                   n,
+                                           hipblasDoubleComplex  alpha,
+                                           hipblasDoubleComplex* x,
+                                           int                   incx,
+                                           hipblasDoubleComplex* y,
+                                           int                   incy,
+                                           hipblasDoubleComplex* A,
+                                           int                   lda)
+{
+    cblas_zgerc(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
+}
+
+// hbmv
+template <>
+void cblas_hbmv<hipblasComplex>(hipblasFillMode_t uplo,
+                                int               n,
+                                int               k,
+                                hipblasComplex    alpha,
+                                hipblasComplex*   A,
+                                int               lda,
+                                hipblasComplex*   x,
+                                int               incx,
+                                hipblasComplex    beta,
+                                hipblasComplex*   y,
+                                int               incy)
+{
+    cblas_chbmv(CblasColMajor, (CBLAS_UPLO)uplo, n, k, &alpha, A, lda, x, incx, &beta, y, incy);
+}
+
+template <>
+void cblas_hbmv<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+                                      int                   n,
+                                      int                   k,
+                                      hipblasDoubleComplex  alpha,
+                                      hipblasDoubleComplex* A,
+                                      int                   lda,
+                                      hipblasDoubleComplex* x,
+                                      int                   incx,
+                                      hipblasDoubleComplex  beta,
+                                      hipblasDoubleComplex* y,
+                                      int                   incy)
+{
+    cblas_zhbmv(CblasColMajor, (CBLAS_UPLO)uplo, n, k, &alpha, A, lda, x, incx, &beta, y, incy);
+}
+
+// hemv
+template <>
+void cblas_hemv<hipblasComplex>(hipblasFillMode_t uplo,
+                                int               n,
+                                hipblasComplex    alpha,
+                                hipblasComplex*   A,
+                                int               lda,
+                                hipblasComplex*   x,
+                                int               incx,
+                                hipblasComplex    beta,
+                                hipblasComplex*   y,
+                                int               incy)
+{
+    cblas_chemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
+}
+
+template <>
+void cblas_hemv<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+                                      int                   n,
+                                      hipblasDoubleComplex  alpha,
+                                      hipblasDoubleComplex* A,
+                                      int                   lda,
+                                      hipblasDoubleComplex* x,
+                                      int                   incx,
+                                      hipblasDoubleComplex  beta,
+                                      hipblasDoubleComplex* y,
+                                      int                   incy)
+{
+    cblas_zhemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
+}
+
+// her
+template <>
+void cblas_her<hipblasComplex, float>(hipblasFillMode_t uplo,
+                                      int               n,
+                                      float             alpha,
+                                      hipblasComplex*   x,
+                                      int               incx,
+                                      hipblasComplex*   A,
+                                      int               lda)
+{
+    cblas_cher(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
+}
+
+template <>
+void cblas_her<hipblasDoubleComplex, double>(hipblasFillMode_t     uplo,
+                                             int                   n,
+                                             double                alpha,
+                                             hipblasDoubleComplex* x,
+                                             int                   incx,
+                                             hipblasDoubleComplex* A,
+                                             int                   lda)
+{
+    cblas_zher(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
+}
+
+// her2
+template <>
+void cblas_her2<hipblasComplex>(hipblasFillMode_t uplo,
+                                int               n,
+                                hipblasComplex    alpha,
+                                hipblasComplex*   x,
+                                int               incx,
+                                hipblasComplex*   y,
+                                int               incy,
+                                hipblasComplex*   A,
+                                int               lda)
+{
+    cblas_cher2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_her2<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+                                      int                   n,
+                                      hipblasDoubleComplex  alpha,
+                                      hipblasDoubleComplex* x,
+                                      int                   incx,
+                                      hipblasDoubleComplex* y,
+                                      int                   incy,
+                                      hipblasDoubleComplex* A,
+                                      int                   lda)
+{
+    cblas_zher2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, A, lda);
+}
+
+// hpmv
+template <>
+void cblas_hpmv<hipblasComplex>(hipblasFillMode_t uplo,
+                                int               n,
+                                hipblasComplex    alpha,
+                                hipblasComplex*   AP,
+                                hipblasComplex*   x,
+                                int               incx,
+                                hipblasComplex    beta,
+                                hipblasComplex*   y,
+                                int               incy)
+{
+    cblas_chpmv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, AP, x, incx, &beta, y, incy);
+}
+
+template <>
+void cblas_hpmv<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+                                      int                   n,
+                                      hipblasDoubleComplex  alpha,
+                                      hipblasDoubleComplex* AP,
+                                      hipblasDoubleComplex* x,
+                                      int                   incx,
+                                      hipblasDoubleComplex  beta,
+                                      hipblasDoubleComplex* y,
+                                      int                   incy)
+{
+    cblas_zhpmv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, AP, x, incx, &beta, y, incy);
+}
+
+// hpr
+template <>
+void cblas_hpr(
+    hipblasFillMode_t uplo, int n, float alpha, hipblasComplex* x, int incx, hipblasComplex* AP)
+{
+    cblas_chpr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
+}
+
+template <>
+void cblas_hpr(hipblasFillMode_t     uplo,
+               int                   n,
+               double                alpha,
+               hipblasDoubleComplex* x,
+               int                   incx,
+               hipblasDoubleComplex* AP)
+{
+    cblas_zhpr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
+}
+
+// hpr2
+template <>
+void cblas_hpr2(hipblasFillMode_t uplo,
+                int               n,
+                hipblasComplex    alpha,
+                hipblasComplex*   x,
+                int               incx,
+                hipblasComplex*   y,
+                int               incy,
+                hipblasComplex*   AP)
+{
+    cblas_chpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
+}
+
+template <>
+void cblas_hpr2(hipblasFillMode_t     uplo,
+                int                   n,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* x,
+                int                   incx,
+                hipblasDoubleComplex* y,
+                int                   incy,
+                hipblasDoubleComplex* AP)
+{
+    cblas_zhpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
+}
+
+// sbmv
+template <>
+void cblas_sbmv(hipblasFillMode_t uplo,
+                int               n,
+                int               k,
+                float             alpha,
+                float*            A,
+                int               lda,
+                float*            x,
+                int               incx,
+                float             beta,
+                float*            y,
+                int               incy)
+{
+    cblas_ssbmv(CblasColMajor, (CBLAS_UPLO)uplo, n, k, alpha, A, lda, x, incx, beta, y, incy);
+}
+
+template <>
+void cblas_sbmv(hipblasFillMode_t uplo,
+                int               n,
+                int               k,
+                double            alpha,
+                double*           A,
+                int               lda,
+                double*           x,
+                int               incx,
+                double            beta,
+                double*           y,
+                int               incy)
+{
+    cblas_dsbmv(CblasColMajor, (CBLAS_UPLO)uplo, n, k, alpha, A, lda, x, incx, beta, y, incy);
+}
+
+// spmv
+template <>
+void cblas_spmv(hipblasFillMode_t uplo,
+                int               n,
+                float             alpha,
+                float*            AP,
+                float*            x,
+                int               incx,
+                float             beta,
+                float*            y,
+                int               incy)
+{
+    cblas_sspmv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, AP, x, incx, beta, y, incy);
+}
+
+template <>
+void cblas_spmv(hipblasFillMode_t uplo,
+                int               n,
+                double            alpha,
+                double*           AP,
+                double*           x,
+                int               incx,
+                double            beta,
+                double*           y,
+                int               incy)
+{
+    cblas_dspmv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, AP, x, incx, beta, y, incy);
+}
+
+// spr
+template <>
+void cblas_spr(hipblasFillMode_t uplo, int n, float alpha, float* x, int incx, float* AP)
+{
+    cblas_sspr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
+}
+
+template <>
+void cblas_spr(hipblasFillMode_t uplo, int n, double alpha, double* x, int incx, double* AP)
+{
+    cblas_dspr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
+}
+
+template <>
+void cblas_spr(hipblasFillMode_t uplo,
+               int               n,
+               hipblasComplex    alpha,
+               hipblasComplex*   x,
+               int               incx,
+               hipblasComplex*   AP)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    cspr_(&u, &n, &alpha, x, &incx, AP);
+}
+
+template <>
+void cblas_spr(hipblasFillMode_t     uplo,
+               int                   n,
+               hipblasDoubleComplex  alpha,
+               hipblasDoubleComplex* x,
+               int                   incx,
+               hipblasDoubleComplex* AP)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    zspr_(&u, &n, &alpha, x, &incx, AP);
+}
+
+// spr2
+template <>
+void cblas_spr2(
+    hipblasFillMode_t uplo, int n, float alpha, float* x, int incx, float* y, int incy, float* AP)
+{
+    cblas_sspr2(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, y, incy, AP);
+}
+
+template <>
+void cblas_spr2(hipblasFillMode_t uplo,
+                int               n,
+                double            alpha,
+                double*           x,
+                int               incx,
+                double*           y,
+                int               incy,
+                double*           AP)
+{
+    cblas_dspr2(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, y, incy, AP);
+}
+
+// symv
+template <>
+void cblas_symv(hipblasFillMode_t uplo,
+                int               n,
+                float             alpha,
+                float*            A,
+                int               lda,
+                float*            x,
+                int               incx,
+                float             beta,
+                float*            y,
+                int               incy)
+{
+    cblas_ssymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
+}
+
+template <>
+void cblas_symv(hipblasFillMode_t uplo,
+                int               n,
+                double            alpha,
+                double*           A,
+                int               lda,
+                double*           x,
+                int               incx,
+                double            beta,
+                double*           y,
+                int               incy)
+{
+    cblas_dsymv(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, A, lda, x, incx, beta, y, incy);
+}
+
+template <>
+void cblas_symv(hipblasFillMode_t uplo,
+                int               n,
+                hipblasComplex    alpha,
+                hipblasComplex*   A,
+                int               lda,
+                hipblasComplex*   x,
+                int               incx,
+                hipblasComplex    beta,
+                hipblasComplex*   y,
+                int               incy)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    csymv_(&u, &n, &alpha, A, &lda, x, &incx, &beta, y, &incy);
+}
+
+template <>
+void cblas_symv(hipblasFillMode_t     uplo,
+                int                   n,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* A,
+                int                   lda,
+                hipblasDoubleComplex* x,
+                int                   incx,
+                hipblasDoubleComplex  beta,
+                hipblasDoubleComplex* y,
+                int                   incy)
+{
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    zsymv_(&u, &n, &alpha, A, &lda, x, &incx, &beta, y, &incy);
 }
 
 // syr
@@ -690,47 +1288,138 @@ void cblas_syr<double>(
     cblas_dsyr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
 }
 
-// trmv
 template <>
-void cblas_trmv(hipblasFillMode_t  uplo,
-                hipblasOperation_t transA,
-                hipblasDiagType_t  diag,
-                int                m,
-                const float*       A,
-                int                lda,
-                float*             x,
-                int                incx)
+void cblas_syr<hipblasComplex>(hipblasFillMode_t uplo,
+                               int               n,
+                               hipblasComplex    alpha,
+                               hipblasComplex*   x,
+                               int               incx,
+                               hipblasComplex*   A,
+                               int               lda)
 {
-    cblas_strmv(CblasColMajor,
-                CBLAS_UPLO(uplo),
-                CBLAS_TRANSPOSE(transA),
-                CBLAS_DIAG(diag),
-                m,
-                A,
-                lda,
-                x,
-                incx);
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    csyr_(&u, &n, &alpha, x, &incx, A, &lda);
 }
 
 template <>
-void cblas_trmv(hipblasFillMode_t  uplo,
-                hipblasOperation_t transA,
-                hipblasDiagType_t  diag,
-                int                m,
-                const double*      A,
-                int                lda,
-                double*            x,
-                int                incx)
+void cblas_syr<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+                                     int                   n,
+                                     hipblasDoubleComplex  alpha,
+                                     hipblasDoubleComplex* x,
+                                     int                   incx,
+                                     hipblasDoubleComplex* A,
+                                     int                   lda)
 {
-    cblas_dtrmv(CblasColMajor,
-                CBLAS_UPLO(uplo),
-                CBLAS_TRANSPOSE(transA),
-                CBLAS_DIAG(diag),
-                m,
-                A,
-                lda,
-                x,
-                incx);
+    char u = uplo == HIPBLAS_FILL_MODE_UPPER ? 'U' : 'L';
+    zsyr_(&u, &n, &alpha, x, &incx, A, &lda);
+}
+
+// syr2
+// No complex version of syr2 - make a local implementation
+template <typename T>
+inline void cblas_syr2_local(
+    hipblasFillMode_t uplo, int n, T alpha, T* xa, int incx, T* ya, int incy, T* A, int lda)
+{
+    if(n <= 0)
+        return;
+
+    T* x = (incx < 0) ? xa - ptrdiff_t(incx) * (n - 1) : xa;
+    T* y = (incy < 0) ? ya - ptrdiff_t(incy) * (n - 1) : ya;
+
+    if(uplo == HIPBLAS_FILL_MODE_UPPER)
+    {
+        for(int j = 0; j < n; ++j)
+        {
+            T tmpx(alpha.x * x[j * incx].x - alpha.y * x[j * incx].y,
+                   alpha.x * x[j * incx].y + alpha.y * x[j * incx].x);
+            T tmpy(alpha.x * y[j * incx].x - alpha.y * y[j * incx].y,
+                   alpha.x * y[j * incx].y + alpha.y * y[j * incx].x);
+            for(int i = 0; i <= j; ++i)
+            {
+                T p1(x[i * incx].x * tmpy.x - x[i * incx].y * tmpy.y,
+                     x[i * incx].x * tmpy.y + x[i * incx].y * tmpy.x);
+                T p2(y[i * incy].x * tmpx.x - y[i * incy].y * tmpx.y,
+                     y[i * incy].x * tmpx.y + y[i * incy].y * tmpx.x);
+                A[i + j * lda].x = A[i + j * lda].x + p1.x + p2.x;
+                A[i + j * lda].y = A[i + j * lda].y + p1.y + p2.y;
+            }
+        }
+    }
+    else
+    {
+        for(int j = 0; j < n; ++j)
+        {
+            T tmpx(alpha.x * x[j * incx].x - alpha.y * x[j * incx].y,
+                   alpha.x * x[j * incx].y + alpha.y * x[j * incx].x);
+            T tmpy(alpha.x * y[j * incx].x - alpha.y * y[j * incx].y,
+                   alpha.x * y[j * incx].y + alpha.y * y[j * incx].x);
+            for(int i = j; i < n; ++i)
+            {
+                T p1(x[i * incx].x * tmpy.x - x[i * incx].y * tmpy.y,
+                     x[i * incx].x * tmpy.y + x[i * incx].y * tmpy.x);
+                T p2(y[i * incy].x * tmpx.x - y[i * incy].y * tmpx.y,
+                     y[i * incy].x * tmpx.y + y[i * incy].y * tmpx.x);
+                A[i + j * lda].x = A[i + j * lda].x + p1.x + p2.x;
+                A[i + j * lda].y = A[i + j * lda].y + p1.y + p2.y;
+            }
+        }
+    }
+}
+
+template <>
+void cblas_syr2(hipblasFillMode_t uplo,
+                int               n,
+                float             alpha,
+                float*            x,
+                int               incx,
+                float*            y,
+                int               incy,
+                float*            A,
+                int               lda)
+{
+    cblas_ssyr2(CblasColMajor, CBLAS_UPLO(uplo), n, alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_syr2(hipblasFillMode_t uplo,
+                int               n,
+                double            alpha,
+                double*           x,
+                int               incx,
+                double*           y,
+                int               incy,
+                double*           A,
+                int               lda)
+{
+    cblas_dsyr2(CblasColMajor, CBLAS_UPLO(uplo), n, alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_syr2(hipblasFillMode_t uplo,
+                int               n,
+                hipblasComplex    alpha,
+                hipblasComplex*   x,
+                int               incx,
+                hipblasComplex*   y,
+                int               incy,
+                hipblasComplex*   A,
+                int               lda)
+{
+    cblas_syr2_local(uplo, n, alpha, x, incx, y, incy, A, lda);
+}
+
+template <>
+void cblas_syr2(hipblasFillMode_t     uplo,
+                int                   n,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* x,
+                int                   incx,
+                hipblasDoubleComplex* y,
+                int                   incy,
+                hipblasDoubleComplex* A,
+                int                   lda)
+{
+    cblas_syr2_local(uplo, n, alpha, x, incx, y, incy, A, lda);
 }
 
 // potrf
@@ -748,6 +1437,306 @@ int cblas_potrf(char uplo, int m, double* A, int lda)
     int info;
     dpotrf_(&uplo, &m, A, &lda, &info);
     return info;
+}
+
+template <>
+int cblas_potrf(char uplo, int m, hipblasComplex* A, int lda)
+{
+    int info;
+    cpotrf_(&uplo, &m, A, &lda, &info);
+    return info;
+}
+
+template <>
+int cblas_potrf(char uplo, int m, hipblasDoubleComplex* A, int lda)
+{
+    int info;
+    zpotrf_(&uplo, &m, A, &lda, &info);
+    return info;
+}
+
+// tbmv
+template <>
+void cblas_tbmv<float>(hipblasFillMode_t  uplo,
+                       hipblasOperation_t transA,
+                       hipblasDiagType_t  diag,
+                       int                m,
+                       int                k,
+                       const float*       A,
+                       int                lda,
+                       float*             x,
+                       int                incx)
+{
+    cblas_stbmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+template <>
+void cblas_tbmv<double>(hipblasFillMode_t  uplo,
+                        hipblasOperation_t transA,
+                        hipblasDiagType_t  diag,
+                        int                m,
+                        int                k,
+                        const double*      A,
+                        int                lda,
+                        double*            x,
+                        int                incx)
+{
+    cblas_dtbmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+template <>
+void cblas_tbmv<hipblasComplex>(hipblasFillMode_t     uplo,
+                                hipblasOperation_t    transA,
+                                hipblasDiagType_t     diag,
+                                int                   m,
+                                int                   k,
+                                const hipblasComplex* A,
+                                int                   lda,
+                                hipblasComplex*       x,
+                                int                   incx)
+{
+    cblas_ctbmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+template <>
+void cblas_tbmv<hipblasDoubleComplex>(hipblasFillMode_t           uplo,
+                                      hipblasOperation_t          transA,
+                                      hipblasDiagType_t           diag,
+                                      int                         m,
+                                      int                         k,
+                                      const hipblasDoubleComplex* A,
+                                      int                         lda,
+                                      hipblasDoubleComplex*       x,
+                                      int                         incx)
+{
+    cblas_ztbmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+// tpmv
+template <>
+void cblas_tpmv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                m,
+                const float*       A,
+                float*             x,
+                int                incx)
+{
+    cblas_stpmv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), m, A, x, incx);
+}
+
+template <>
+void cblas_tpmv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                m,
+                const double*      A,
+                double*            x,
+                int                incx)
+{
+    cblas_dtpmv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), m, A, x, incx);
+}
+
+template <>
+void cblas_tpmv(hipblasFillMode_t     uplo,
+                hipblasOperation_t    transA,
+                hipblasDiagType_t     diag,
+                int                   m,
+                const hipblasComplex* A,
+                hipblasComplex*       x,
+                int                   incx)
+{
+    cblas_ctpmv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), m, A, x, incx);
+}
+
+template <>
+void cblas_tpmv(hipblasFillMode_t           uplo,
+                hipblasOperation_t          transA,
+                hipblasDiagType_t           diag,
+                int                         m,
+                const hipblasDoubleComplex* A,
+                hipblasDoubleComplex*       x,
+                int                         incx)
+{
+    cblas_ztpmv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), m, A, x, incx);
+}
+
+// tpsv
+template <>
+void cblas_tpsv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                n,
+                const float*       AP,
+                float*             x,
+                int                incx)
+{
+    cblas_stpsv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), n, AP, x, incx);
+}
+
+template <>
+void cblas_tpsv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                n,
+                const double*      AP,
+                double*            x,
+                int                incx)
+{
+    cblas_dtpsv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), n, AP, x, incx);
+}
+
+template <>
+void cblas_tpsv(hipblasFillMode_t     uplo,
+                hipblasOperation_t    transA,
+                hipblasDiagType_t     diag,
+                int                   n,
+                const hipblasComplex* AP,
+                hipblasComplex*       x,
+                int                   incx)
+{
+    cblas_ctpsv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), n, AP, x, incx);
+}
+
+template <>
+void cblas_tpsv(hipblasFillMode_t           uplo,
+                hipblasOperation_t          transA,
+                hipblasDiagType_t           diag,
+                int                         n,
+                const hipblasDoubleComplex* AP,
+                hipblasDoubleComplex*       x,
+                int                         incx)
+{
+    cblas_ztpsv(
+        CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), n, AP, x, incx);
+}
+
+// trmv
+template <>
+void cblas_trmv<float>(hipblasFillMode_t  uplo,
+                       hipblasOperation_t transA,
+                       hipblasDiagType_t  diag,
+                       int                m,
+                       const float*       A,
+                       int                lda,
+                       float*             x,
+                       int                incx)
+{
+    cblas_strmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+template <>
+void cblas_trmv<double>(hipblasFillMode_t  uplo,
+                        hipblasOperation_t transA,
+                        hipblasDiagType_t  diag,
+                        int                m,
+                        const double*      A,
+                        int                lda,
+                        double*            x,
+                        int                incx)
+{
+    cblas_dtrmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+template <>
+void cblas_trmv<hipblasComplex>(hipblasFillMode_t     uplo,
+                                hipblasOperation_t    transA,
+                                hipblasDiagType_t     diag,
+                                int                   m,
+                                const hipblasComplex* A,
+                                int                   lda,
+                                hipblasComplex*       x,
+                                int                   incx)
+{
+    cblas_ctrmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+template <>
+void cblas_trmv<hipblasDoubleComplex>(hipblasFillMode_t           uplo,
+                                      hipblasOperation_t          transA,
+                                      hipblasDiagType_t           diag,
+                                      int                         m,
+                                      const hipblasDoubleComplex* A,
+                                      int                         lda,
+                                      hipblasDoubleComplex*       x,
+                                      int                         incx)
+{
+    cblas_ztrmv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 // trsv
@@ -795,6 +1784,50 @@ void cblas_trsv<double>(hipblasHandle_t    handle,
                 incx);
 }
 
+template <>
+void cblas_trsv<hipblasComplex>(hipblasHandle_t       handle,
+                                hipblasFillMode_t     uplo,
+                                hipblasOperation_t    transA,
+                                hipblasDiagType_t     diag,
+                                int                   m,
+                                const hipblasComplex* A,
+                                int                   lda,
+                                hipblasComplex*       x,
+                                int                   incx)
+{
+    cblas_ctrsv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
+}
+
+template <>
+void cblas_trsv<hipblasDoubleComplex>(hipblasHandle_t             handle,
+                                      hipblasFillMode_t           uplo,
+                                      hipblasOperation_t          transA,
+                                      hipblasDiagType_t           diag,
+                                      int                         m,
+                                      const hipblasDoubleComplex* A,
+                                      int                         lda,
+                                      hipblasDoubleComplex*       x,
+                                      int                         incx)
+{
+    cblas_ztrsv(CblasColMajor,
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
+}
+
 /*
  * ===========================================================================
  *    level 3 BLAS
@@ -802,7 +1835,6 @@ void cblas_trsv<double>(hipblasHandle_t    handle,
  */
 
 // gemm
-
 template <>
 void cblas_gemm<hipblasHalf>(hipblasOperation_t transA,
                              hipblasOperation_t transB,
@@ -994,6 +2026,481 @@ void cblas_gemm<hipblasDoubleComplex>(hipblasOperation_t    transA,
                 ldc);
 }
 
+// herk
+template <>
+void cblas_herk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                float              alpha,
+                hipblasComplex*    A,
+                int                lda,
+                float              beta,
+                hipblasComplex*    C,
+                int                ldc)
+{
+    cblas_cherk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_herk(hipblasFillMode_t     uplo,
+                hipblasOperation_t    transA,
+                int                   n,
+                int                   k,
+                double                alpha,
+                hipblasDoubleComplex* A,
+                int                   lda,
+                double                beta,
+                hipblasDoubleComplex* C,
+                int                   ldc)
+{
+    cblas_zherk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
+}
+
+// herkx
+template <typename T, typename U>
+void cblas_herkx_local(hipblasFillMode_t  uplo,
+                       hipblasOperation_t transA,
+                       int                n,
+                       int                k,
+                       T                  alpha,
+                       T*                 A,
+                       int                lda,
+                       T*                 B,
+                       int                ldb,
+                       U                  beta,
+                       T*                 C,
+                       int                ldc)
+{
+
+    if(n <= 0 || (beta == 1 && (k == 0 || alpha == T(0))))
+        return;
+
+    if(transA == HIPBLAS_OP_N)
+    {
+        if(uplo == HIPBLAS_FILL_MODE_UPPER)
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                for(int i = 0; i <= j; i++)
+                {
+                    C[i + j * ldc] *= T(beta);
+                }
+
+                for(int l = 0; l < k; l++)
+                {
+                    T Bconj = B[j + l * ldb];
+                    Bconj.y = -Bconj.y;
+                    T temp  = alpha * Bconj;
+                    for(int i = 0; i <= j; ++i)
+                    {
+                        C[i + j * ldc] += temp * A[i + l * lda];
+                    }
+                }
+            }
+        }
+        else // lower
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                for(int i = j; i < n; i++)
+                {
+                    C[i + j * ldc] *= T(beta);
+                }
+
+                for(int l = 0; l < k; l++)
+                {
+                    T Bconj = B[j + l * ldb];
+                    Bconj.y = -Bconj.y;
+                    T temp  = alpha * Bconj;
+                    for(int i = j; i < n; ++i)
+                    {
+                        C[i + j * ldc] += temp * A[i + l * lda];
+                    }
+                }
+            }
+        }
+    }
+    else // conjugate transpose
+    {
+        if(uplo == HIPBLAS_FILL_MODE_UPPER)
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                for(int i = 0; i <= j; i++)
+                {
+                    C[i + j * ldc] *= T(beta);
+
+                    T temp(0);
+                    for(int l = 0; l < k; l++)
+                    {
+                        T Aconj = A[l + i * lda];
+                        Aconj.y = -Aconj.y;
+                        temp += Aconj * B[l + j * ldb];
+                    }
+                    C[i + j * ldc] += alpha * temp;
+                }
+            }
+        }
+        else // lower
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                for(int i = j; i < n; i++)
+                {
+                    C[i + j * ldc] *= T(beta);
+
+                    T temp(0);
+                    for(int l = 0; l < k; l++)
+                    {
+                        T Aconj = A[l + i * lda];
+                        Aconj.y = -Aconj.y;
+                        temp += Aconj * B[l + j * ldb];
+                    }
+                    C[i + j * ldc] += alpha * temp;
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i < n; i++)
+        C[i + i * ldc].y = real_t<T>(0);
+}
+
+template <>
+void cblas_herkx(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 hipblasComplex     alpha,
+                 hipblasComplex*    A,
+                 int                lda,
+                 hipblasComplex*    B,
+                 int                ldb,
+                 float              beta,
+                 hipblasComplex*    C,
+                 int                ldc)
+{
+    cblas_herkx_local(uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+
+template <>
+void cblas_herkx(hipblasFillMode_t     uplo,
+                 hipblasOperation_t    transA,
+                 int                   n,
+                 int                   k,
+                 hipblasDoubleComplex  alpha,
+                 hipblasDoubleComplex* A,
+                 int                   lda,
+                 hipblasDoubleComplex* B,
+                 int                   ldb,
+                 double                beta,
+                 hipblasDoubleComplex* C,
+                 int                   ldc)
+{
+    cblas_herkx_local(uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+
+// her2k
+template <>
+void cblas_her2k(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 hipblasComplex     alpha,
+                 hipblasComplex*    A,
+                 int                lda,
+                 hipblasComplex*    B,
+                 int                ldb,
+                 float              beta,
+                 hipblasComplex*    C,
+                 int                ldc)
+{
+    cblas_cher2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
+}
+
+template <>
+void cblas_her2k(hipblasFillMode_t     uplo,
+                 hipblasOperation_t    transA,
+                 int                   n,
+                 int                   k,
+                 hipblasDoubleComplex  alpha,
+                 hipblasDoubleComplex* A,
+                 int                   lda,
+                 hipblasDoubleComplex* B,
+                 int                   ldb,
+                 double                beta,
+                 hipblasDoubleComplex* C,
+                 int                   ldc)
+{
+    cblas_zher2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
+}
+
+// syrk
+template <>
+void cblas_syrk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                float              alpha,
+                float*             A,
+                int                lda,
+                float              beta,
+                float*             C,
+                int                ldc)
+{
+    cblas_ssyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_syrk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                double             alpha,
+                double*            A,
+                int                lda,
+                double             beta,
+                double*            C,
+                int                ldc)
+{
+    cblas_dsyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_syrk(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                int                n,
+                int                k,
+                hipblasComplex     alpha,
+                hipblasComplex*    A,
+                int                lda,
+                hipblasComplex     beta,
+                hipblasComplex*    C,
+                int                ldc)
+{
+    cblas_csyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                &beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_syrk(hipblasFillMode_t     uplo,
+                hipblasOperation_t    transA,
+                int                   n,
+                int                   k,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* A,
+                int                   lda,
+                hipblasDoubleComplex  beta,
+                hipblasDoubleComplex* C,
+                int                   ldc)
+{
+    cblas_zsyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                &beta,
+                C,
+                ldc);
+}
+
+// syr2k
+template <>
+void cblas_syr2k(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 float              alpha,
+                 float*             A,
+                 int                lda,
+                 float*             B,
+                 int                ldb,
+                 float              beta,
+                 float*             C,
+                 int                ldc)
+{
+    cblas_ssyr2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
+}
+
+template <>
+void cblas_syr2k(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 double             alpha,
+                 double*            A,
+                 int                lda,
+                 double*            B,
+                 int                ldb,
+                 double             beta,
+                 double*            C,
+                 int                ldc)
+{
+    cblas_dsyr2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
+}
+
+template <>
+void cblas_syr2k(hipblasFillMode_t  uplo,
+                 hipblasOperation_t transA,
+                 int                n,
+                 int                k,
+                 hipblasComplex     alpha,
+                 hipblasComplex*    A,
+                 int                lda,
+                 hipblasComplex*    B,
+                 int                ldb,
+                 hipblasComplex     beta,
+                 hipblasComplex*    C,
+                 int                ldc)
+{
+    cblas_csyr2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 &beta,
+                 C,
+                 ldc);
+}
+
+template <>
+void cblas_syr2k(hipblasFillMode_t     uplo,
+                 hipblasOperation_t    transA,
+                 int                   n,
+                 int                   k,
+                 hipblasDoubleComplex  alpha,
+                 hipblasDoubleComplex* A,
+                 int                   lda,
+                 hipblasDoubleComplex* B,
+                 int                   ldb,
+                 hipblasDoubleComplex  beta,
+                 hipblasDoubleComplex* C,
+                 int                   ldc)
+{
+    cblas_zsyr2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 &beta,
+                 C,
+                 ldc);
+}
+
+// syrkx
+// Use syrk with A == B for now.
+
 // trsm
 template <>
 void cblas_trsm<float>(hipblasSideMode_t  side,
@@ -1051,31 +2558,59 @@ void cblas_trsm<double>(hipblasSideMode_t  side,
                 ldb);
 }
 
-//  template<>
-//  void cblas_trsm<hipblasComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
-//                          hipblasOperation_t transA, hipblasDiagType_t diag,
-//                          int m, int n,
-//                          hipblasComplex alpha,
-//                          const hipblasComplex *A, int lda,
-//                          hipblasComplex *B, int ldb)
-//  {
-//      //just directly cast, since transA, transB are integers in the enum
-//      cblas_ctrsm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
-//      (CBLAS_DIAG)diag, m, n, &alpha, A, lda, B, ldb);
-//  }
+template <>
+void cblas_trsm<hipblasComplex>(hipblasSideMode_t     side,
+                                hipblasFillMode_t     uplo,
+                                hipblasOperation_t    transA,
+                                hipblasDiagType_t     diag,
+                                int                   m,
+                                int                   n,
+                                hipblasComplex        alpha,
+                                const hipblasComplex* A,
+                                int                   lda,
+                                hipblasComplex*       B,
+                                int                   ldb)
+{
+    cblas_ctrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
 
-//  template<>
-//  void cblas_trsm<hipblasDoubleComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
-//                          hipblasOperation_t transA, hipblasDiagType_t diag,
-//                          int m, int n,
-//                          hipblasDoubleComplex alpha,
-//                          const hipblasDoubleComplex *A, int lda,
-//                          hipblasDoubleComplex *B, int ldb)
-//  {
-//      //just directly cast, since transA, transB are integers in the enum
-//      cblas_ztrsm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
-//      (CBLAS_DIAG)diag, m, n, &alpha, A, lda, B, ldb);
-//  }
+template <>
+void cblas_trsm<hipblasDoubleComplex>(hipblasSideMode_t           side,
+                                      hipblasFillMode_t           uplo,
+                                      hipblasOperation_t          transA,
+                                      hipblasDiagType_t           diag,
+                                      int                         m,
+                                      int                         n,
+                                      hipblasDoubleComplex        alpha,
+                                      const hipblasDoubleComplex* A,
+                                      int                         lda,
+                                      hipblasDoubleComplex*       B,
+                                      int                         ldb)
+{
+    cblas_ztrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
 
 // trtri
 template <>
@@ -1155,31 +2690,59 @@ void cblas_trmm<double>(hipblasSideMode_t  side,
                 ldb);
 }
 
-//  template<>
-//  void cblas_trmm<hipblasComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
-//                          hipblasOperation_t transA, hipblasDiagType_t diag,
-//                          int m, int n,
-//                          hipblasComplex alpha,
-//                          const hipblasComplex *A, int lda,
-//                          hipblasComplex *B, int ldb)
-//  {
-//      //just directly cast, since transA, transB are integers in the enum
-//      cblas_ctrmm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
-//      (CBLAS_DIAG)diag, m, n, &alpha, A, lda, B, ldb);
-//  }
+template <>
+void cblas_trmm<hipblasComplex>(hipblasSideMode_t     side,
+                                hipblasFillMode_t     uplo,
+                                hipblasOperation_t    transA,
+                                hipblasDiagType_t     diag,
+                                int                   m,
+                                int                   n,
+                                hipblasComplex        alpha,
+                                const hipblasComplex* A,
+                                int                   lda,
+                                hipblasComplex*       B,
+                                int                   ldb)
+{
+    cblas_ctrmm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
 
-//  template<>
-//  void cblas_trmm<hipblasDoubleComplex>( hipblasSideMode_t side, hipblasFillMode_t uplo,
-//                          hipblasOperation_t transA, hipblasDiagType_t diag,
-//                          int m, int n,
-//                          hipblasDoubleComplex alpha,
-//                          const hipblasDoubleComplex *A, int lda,
-//                          hipblasDoubleComplex *B, int ldb)
-//  {
-//      //just directly cast, since transA, transB are integers in the enum
-//      cblas_ztrmm(CblasColMajor, (CBLAS_SIDE)side, (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)transA,
-//      (CBLAS_DIAG)diag, m, n, &alpha, A, lda, B, ldb);
-//  }
+template <>
+void cblas_trmm<hipblasDoubleComplex>(hipblasSideMode_t           side,
+                                      hipblasFillMode_t           uplo,
+                                      hipblasOperation_t          transA,
+                                      hipblasDiagType_t           diag,
+                                      int                         m,
+                                      int                         n,
+                                      hipblasDoubleComplex        alpha,
+                                      const hipblasDoubleComplex* A,
+                                      int                         lda,
+                                      hipblasDoubleComplex*       B,
+                                      int                         ldb)
+{
+    cblas_ztrmm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
 
 // getrf
 template <>
@@ -1198,24 +2761,99 @@ int cblas_getrf<double>(int m, int n, double* A, int lda, int* ipiv)
     return info;
 }
 
-// template<>
-// int cblas_getrf<hipblasComplex>(int m,
-//                         int n,
-//                         hipblasComplex *A, int lda,
-//                         int *ipiv)
-// {
-//     int info;
-//     cgetrf_(&m, &n, A, &lda, ipiv, &info);
-//     return info;
-// }
+template <>
+int cblas_getrf<hipblasComplex>(int m, int n, hipblasComplex* A, int lda, int* ipiv)
+{
+    int info;
+    cgetrf_(&m, &n, A, &lda, ipiv, &info);
+    return info;
+}
 
-// template<>
-// int cblas_getrf<hipblasDoubleComplex>(int m,
-//                         int n,
-//                         hipblasDoubleComplex *A, int lda,
-//                         int *ipiv)
-// {
-//     int info;
-//     zgetrf_(&m, &n, A, &lda, ipiv, &info);
-//     return info;
-// }
+template <>
+int cblas_getrf<hipblasDoubleComplex>(int m, int n, hipblasDoubleComplex* A, int lda, int* ipiv)
+{
+    int info;
+    zgetrf_(&m, &n, A, &lda, ipiv, &info);
+    return info;
+}
+
+// getrs
+template <>
+int cblas_getrs<float>(char trans, int n, int nrhs, float* A, int lda, int* ipiv, float* B, int ldb)
+{
+    int info;
+    sgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    return info;
+}
+
+template <>
+int cblas_getrs<double>(
+    char trans, int n, int nrhs, double* A, int lda, int* ipiv, double* B, int ldb)
+{
+    int info;
+    dgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    return info;
+}
+
+template <>
+int cblas_getrs<hipblasComplex>(
+    char trans, int n, int nrhs, hipblasComplex* A, int lda, int* ipiv, hipblasComplex* B, int ldb)
+{
+    int info;
+    cgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    return info;
+}
+
+template <>
+int cblas_getrs<hipblasDoubleComplex>(char                  trans,
+                                      int                   n,
+                                      int                   nrhs,
+                                      hipblasDoubleComplex* A,
+                                      int                   lda,
+                                      int*                  ipiv,
+                                      hipblasDoubleComplex* B,
+                                      int                   ldb)
+{
+    int info;
+    zgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    return info;
+}
+
+// geqrf
+template <>
+int cblas_geqrf<float>(int m, int n, float* A, int lda, float* tau, float* work, int lwork)
+{
+    int info;
+    sgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_geqrf<double>(int m, int n, double* A, int lda, double* tau, double* work, int lwork)
+{
+    int info;
+    dgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    return info;
+}
+template <>
+int cblas_geqrf<hipblasComplex>(
+    int m, int n, hipblasComplex* A, int lda, hipblasComplex* tau, hipblasComplex* work, int lwork)
+{
+    int info;
+    cgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_geqrf<hipblasDoubleComplex>(int                   m,
+                                      int                   n,
+                                      hipblasDoubleComplex* A,
+                                      int                   lda,
+                                      hipblasDoubleComplex* tau,
+                                      hipblasDoubleComplex* work,
+                                      int                   lwork)
+{
+    int info;
+    zgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    return info;
+}

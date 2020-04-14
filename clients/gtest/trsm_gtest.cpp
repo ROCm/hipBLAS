@@ -187,7 +187,7 @@ TEST_P(trsm_gtest, trsm_gtest_float)
     }
 }
 
-TEST_P(trsm_gtest, trsm_gtest_double)
+TEST_P(trsm_gtest, trsm_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -196,21 +196,14 @@ TEST_P(trsm_gtest, trsm_gtest_double)
 
     Arguments arg = setup_trsm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_trsm<double>(arg);
+    hipblasStatus_t status = testing_trsm<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
 
-        if(arg.M < 0 || arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.ldb < arg.M)
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -236,15 +229,35 @@ TEST_P(trsm_gtest, trsm_batched_gtest_float)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
 
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
+        else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
-        else if(arg.ldb < arg.M)
+    }
+}
+
+TEST_P(trsm_gtest, trsm_batched_gtest_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trsm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trsm_batched<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -269,11 +282,34 @@ TEST_P(trsm_gtest, trsm_strided_batched_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(trsm_gtest, trsm_strided_batched_gtest_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trsm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trsm_strided_batched<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

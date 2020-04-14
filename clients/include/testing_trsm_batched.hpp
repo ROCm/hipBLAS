@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -133,7 +133,7 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
                       diag,
                       M,
                       N,
-                      1.0 / alpha,
+                      T(1.0) / alpha,
                       (const T*)hA[b].data(),
                       lda,
                       hB[b].data(),
@@ -183,13 +183,13 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
         // if enable norm check, norm check is invasive
         // any typeinfo(T) will not work here, because template deduction is matched in compilation
         // time
-        T      eps       = std::numeric_limits<T>::epsilon();
-        double tolerance = eps * 40 * M;
+        real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
+        double    tolerance = eps * 40 * M;
 
         for(int b = 0; b < batch_count; b++)
         {
             double error = norm_check_general<T>('F', M, N, ldb, hB_copy[b].data(), hB[b].data());
-            unit_check_trsm(M, N, lda, error, tolerance);
+            unit_check_error(error, tolerance);
         }
     }
 
