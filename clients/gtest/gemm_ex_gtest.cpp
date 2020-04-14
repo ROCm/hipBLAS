@@ -307,10 +307,7 @@ TEST_P(parameterized_gemm_ex, standard)
         }
         else
         {
-            // Only available in cuda cc >= 5.0.
-            // If we want we can change this to call query_device_property() and
-            // call this only if cc < 5.0 on a CUDA device, else fail.
-            EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -352,10 +349,7 @@ TEST_P(parameterized_chunk_gemm_ex, float)
         }
         else
         {
-            // Only available in cuda cc >= 5.0.
-            // If we want we can change this to call query_device_property() and
-            // call this only if cc < 5.0 on a CUDA device, else fail.
-            EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
