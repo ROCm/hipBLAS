@@ -212,19 +212,6 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
                            compute_type,
                            algo);
 
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-
-        CHECK_HIP_ERROR(hipFree(dA));
-        CHECK_HIP_ERROR(hipFree(dB));
-        CHECK_HIP_ERROR(hipFree(dC));
-
-        CHECK_HIP_ERROR(hipFree(d_alpha_Tc));
-        CHECK_HIP_ERROR(hipFree(d_beta_Tc));
-        return status;
-    }
-
     CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(Td) * size_C, hipMemcpyDeviceToHost));
 
     //      std::cout << std::endl << "-----hD_1---------------------------------------" <<

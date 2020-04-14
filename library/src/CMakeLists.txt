@@ -52,36 +52,23 @@ if( NOT CUDA_FOUND )
 
   target_link_libraries( hipblas PRIVATE roc::rocblas )
 
-  # Add rocSOLVER as a dependency if BUILD_WITH_SOLVER is on
-  if( BUILD_WITH_SOLVER )
-    if( NOT TARGET rocsolver )
-      find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
-    endif( )
-
-    target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_SOLVER__ )
-
-    target_link_libraries( hipblas PRIVATE roc::rocsolver )
+  # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
+  # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
+    target_compile_options( hipblas PRIVATE -Wno-unused-command-line-argument )
+    target_link_libraries( hipblas PRIVATE hip::hip_hcc )
   endif( )
 
-  if( CUSTOM_TARGET )
-    target_link_libraries( hipblas PRIVATE hip::${CUSTOM_TARGET} )
-  else( )
-    if ( LIBAMDHIP64_LIBRARY )
-      target_link_libraries( hipblas PRIVATE hip::amdhip64 )
-    else ( )
-      get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
-      target_link_libraries( hipblas PRIVATE ${HIP_HCC_LOCATION} )
-    endif ( )
+  if ( LIBAMDHIP64_LIBRARY )
+    target_link_libraries( hipblas PRIVATE hip::amdhip64 )
+  else ( )
+    get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
+    target_link_libraries( hipblas PRIVATE ${HIP_HCC_LOCATION} )
   endif( )
-
 else( )
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
 
   target_link_libraries( hipblas PRIVATE ${CUDA_CUBLAS_LIBRARIES} )
-
-  if( BUILD_WITH_SOLVER )
-    target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_SOLVER__ )
-  endif( )
 
   # External header includes included as system files
   target_include_directories( hipblas
@@ -127,7 +114,7 @@ rocm_install_targets(
 rocm_export_targets(
   TARGETS roc::hipblas
   PREFIX hipblas
-  DEPENDS PACKAGE HIP
+  DEPENDS PACKAGE hip
   NAMESPACE roc::
  )
 
