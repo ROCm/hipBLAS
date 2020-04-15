@@ -21,14 +21,22 @@
 #define NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, err, NEAR_ASSERT)
 #else
 
-#define NEAR_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, err, NEAR_ASSERT)               \
-    do                                                                                          \
-    {                                                                                           \
-        for(size_t k = 0; k < batch_count; k++)                                                 \
-            for(size_t j = 0; j < N; j++)                                                       \
-                for(size_t i = 0; i < M; i++)                                                   \
-                    NEAR_ASSERT(                                                                \
-                        hCPU[i + j * lda + k * strideA], hGPU[i + j * lda + k * strideA], err); \
+#define NEAR_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, err, NEAR_ASSERT)    \
+    do                                                                               \
+    {                                                                                \
+        for(size_t k = 0; k < batch_count; k++)                                      \
+            for(size_t j = 0; j < N; j++)                                            \
+                for(size_t i = 0; i < M; i++)                                        \
+                    if(hipblas_isnan(hCPU[i + j * lda + k * strideA]))               \
+                    {                                                                \
+                        ASSERT_TRUE(hipblas_isnan(hGPU[i + j * lda + k * strideA])); \
+                    }                                                                \
+                    else                                                             \
+                    {                                                                \
+                        NEAR_ASSERT(hCPU[i + j * lda + k * strideA],                 \
+                                    hGPU[i + j * lda + k * strideA],                 \
+                                    err);                                            \
+                    }                                                                \
     } while(0)
 
 #define NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, err, NEAR_ASSERT)            \
