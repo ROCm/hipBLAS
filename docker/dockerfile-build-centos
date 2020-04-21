@@ -9,7 +9,7 @@ ARG user_uid
 ARG library_dependencies="rocblas rocsolver"
 
 # Install dependent packages
-RUN yum install -y \
+RUN yum install -y --nogpgcheck\
     sudo \
     rock-dkms \
     centos-release-scl \
