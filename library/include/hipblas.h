@@ -49,7 +49,7 @@ struct hip_complex_number
     {
     }
 
-    auto& operator*=(const hip_complex_number& rhs)
+    hip_complex_number& operator*=(const hip_complex_number& rhs)
     {
         return *this = {x * rhs.x - y * rhs.y, y * rhs.x + x * rhs.y};
     }
@@ -60,12 +60,12 @@ struct hip_complex_number
         return lhs *= rhs;
     }
 
-    auto& operator+=(const hip_complex_number& rhs)
+    hip_complex_number& operator+=(const hip_complex_number& rhs)
     {
         return *this = {x + rhs.x, y + rhs.y};
     }
 
-    auto& operator/(const hip_complex_number& rhs)
+    hip_complex_number& operator/(const hip_complex_number& rhs)
     {
         if(abs(rhs.x) > abs(rhs.y))
         {
