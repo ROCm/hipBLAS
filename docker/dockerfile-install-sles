@@ -1,5 +1,5 @@
-# Parameters related to building rocblas
+# Parameters related to building hipblas
 ARG base_image
 
 FROM ${base_image}
-LABEL maintainer="rocblas-maintainer@amd.com"
+LABEL maintainer="hipblas-maintainer@amd.com"
