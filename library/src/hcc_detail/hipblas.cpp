@@ -5,6 +5,7 @@
 #include "limits.h"
 #include "rocblas.h"
 #include "rocsolver.h"
+#include <algorithm>
 #include <math.h>
 
 #define USE_DEVICE_POINTER_MODE(handle, cmd)                        \
