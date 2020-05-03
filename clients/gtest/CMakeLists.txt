@@ -120,7 +120,7 @@ target_include_directories( hipblas-test
 set( THREADS_PREFER_PTHREAD_FLAG ON )
 find_package( Threads REQUIRED )
 target_link_libraries( hipblas-test PRIVATE Threads::Threads )
-target_compile_features( hipblas-test PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type)
+target_compile_features( hipblas-test PUBLIC cxx_std_14 )
 
 target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 
