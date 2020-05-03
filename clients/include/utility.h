@@ -7,50 +7,61 @@
 #define _TESTING_UTILITY_H_
 
 #include "hipblas.h"
+
+#ifdef __cplusplus
+#include "complex.hpp"
 #include <cmath>
 #include <immintrin.h>
 #include <random>
+#include <type_traits>
+#include <vector>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <typeinfo>
-#include <vector>
-
-using namespace std;
 
 /*!\file
  * \brief provide data initialization, timing, hipblas type <-> lapack char conversion utilities.
  */
 
-#define CHECK_HIP_ERROR(error)                \
-    if(error != hipSuccess)                   \
-    {                                         \
-        fprintf(stderr,                       \
-                "error: '%s'(%d) at %s:%d\n", \
-                hipGetErrorString(error),     \
-                error,                        \
-                __FILE__,                     \
-                __LINE__);                    \
-        exit(EXIT_FAILURE);                   \
-    }
-
-#define BLAS_1_RESULT_PRINT                       \
-    if(argus.timing)                              \
+#define CHECK_HIP_ERROR(error)                    \
+    do                                            \
     {                                             \
-        cout << "N, hipblas (us), ";              \
-        if(argus.norm_check)                      \
+        if(error != hipSuccess)                   \
         {                                         \
-            cout << "CPU (us), error";            \
+            fprintf(stderr,                       \
+                    "error: '%s'(%d) at %s:%d\n", \
+                    hipGetErrorString(error),     \
+                    error,                        \
+                    __FILE__,                     \
+                    __LINE__);                    \
+            exit(EXIT_FAILURE);                   \
         }                                         \
-        cout << endl;                             \
-        cout << N << ',' << gpu_time_used << ','; \
-        if(argus.norm_check)                      \
-        {                                         \
-            cout << cpu_time_used << ',';         \
-            cout << hipblas_error;                \
-        }                                         \
-        cout << endl;                             \
-    }
+    } while(0)
+
+#ifdef __cplusplus
+
+#define BLAS_1_RESULT_PRINT                                \
+    do                                                     \
+    {                                                      \
+        if(argus.timing)                                   \
+        {                                                  \
+            std::cout << "N, hipblas (us), ";              \
+            if(argus.norm_check)                           \
+            {                                              \
+                std::cout << "CPU (us), error";            \
+            }                                              \
+            std::cout << std::endl;                        \
+            std::cout << N << ',' << gpu_time_used << ','; \
+            if(argus.norm_check)                           \
+            {                                              \
+                std::cout << cpu_time_used << ',';         \
+                std::cout << hipblas_error;                \
+            }                                              \
+            std::cout << std::endl;                        \
+        }                                                  \
+    } while(0)
 
 // Return true if value is NaN
 template <typename T>
@@ -72,22 +83,18 @@ inline bool hipblas_isnan(hipblasHalf arg)
 }
 inline bool hipblas_isnan(hipblasComplex arg)
 {
-    return std::isnan(arg.x) || std::isnan(arg.y);
+    return std::isnan(arg.real()) || std::isnan(arg.imag());
 }
 inline bool hipblas_isnan(hipblasDoubleComplex arg)
 {
-    return std::isnan(arg.x) || std::isnan(arg.y);
+    return std::isnan(arg.real()) || std::isnan(arg.imag());
 }
 
 // Helper routine to convert floats into their half equivalent; uses F16C instructions
 inline hipblasHalf float_to_half(float val)
 {
     // return static_cast<hipblasHalf>( _mm_cvtsi128_si32( _mm_cvtps_ph( _mm_set_ss( val ), 0 ) )
-    // );
-    const int          zero = 0;
-    short unsigned int a;
-    a = _cvtss_sh(val, zero);
-    //  return _cvtss_sh(val, zero);
+    uint16_t a = _cvtss_sh(val, 0);
     return a;
 }
 
@@ -128,6 +135,33 @@ inline hipblasBfloat16 float_to_bfloat16(float f)
     rv.data = uint16_t(u.int32 >> 16);
     return rv;
 }
+
+/* =============================================================================================== */
+/* Complex / real helpers.                                                                         */
+template <typename T>
+static constexpr bool is_complex = false;
+
+template <>
+constexpr bool is_complex<hipblasComplex> = true;
+
+template <>
+constexpr bool is_complex<hipblasDoubleComplex> = true;
+
+// Get base types from complex types.
+template <typename T, typename = void>
+struct real_t_impl
+{
+    using type = T;
+};
+
+template <typename T>
+struct real_t_impl<T, std::enable_if_t<is_complex<T>>>
+{
+    using type = decltype(T{}.real());
+};
+
+template <typename T>
+using real_t = typename real_t_impl<T>::type;
 
 /* ============================================================================================ */
 /*! \brief  Random number generator which generates NaN values */
@@ -192,6 +226,18 @@ public:
     {
         return random_nan_data<hipblasBfloat16, uint16_t, 7, 8>();
     }
+
+    // Random NaN Complex
+    explicit operator hipblasComplex()
+    {
+        return {float(*this), float(*this)};
+    }
+
+    // Random NaN Double Complex
+    explicit operator hipblasDoubleComplex()
+    {
+        return {double(*this), double(*this)};
+    }
 };
 
 /* ============================================================================================ */
@@ -202,7 +248,7 @@ template <typename T>
 T random_generator()
 {
     // return rand()/( (T)RAND_MAX + 1);
-    return (T)(rand() % 10 + 1);
+    return T(rand() % 10 + 1);
 };
 
 // for hipblasHalf, generate float, and convert to hipblasHalf
@@ -210,8 +256,7 @@ T random_generator()
 template <>
 inline hipblasHalf random_generator<hipblasHalf>()
 {
-    return float_to_half(
-        static_cast<float>((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
+    return float_to_half(float((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
 };
 
 // for hipblasBfloat16, generate float, and convert to hipblasBfloat16
@@ -219,7 +264,7 @@ template <>
 inline hipblasBfloat16 random_generator<hipblasBfloat16>()
 {
     return float_to_bfloat16(
-        static_cast<float>((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
+        float((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
 }
 
 // for hipblasComplex, generate 2 floats
@@ -228,6 +273,7 @@ template <>
 inline hipblasComplex random_generator<hipblasComplex>()
 {
     return hipblasComplex(rand() % 10 + 1, rand() % 10 + 1);
+    return {float(rand() % 10 + 1), float(rand() % 10 + 1)};
 }
 
 // for hipblasDoubleComplex, generate 2 doubles
@@ -236,14 +282,15 @@ template <>
 inline hipblasDoubleComplex random_generator<hipblasDoubleComplex>()
 {
     return hipblasDoubleComplex(rand() % 10 + 1, rand() % 10 + 1);
+    return {double(rand() % 10 + 1), double(rand() % 10 + 1)};
 }
 
 /*! \brief  generate a random number in range [-1,-2,-3,-4,-5,-6,-7,-8,-9,-10] */
 template <typename T>
-T random_generator_negative()
+inline T random_generator_negative()
 {
     // return rand()/( (T)RAND_MAX + 1);
-    return -(T)(rand() % 10 + 1);
+    return -T(rand() % 10 + 1);
 };
 
 // for hipblasHalf, generate float, and convert to hipblasHalf
@@ -251,7 +298,7 @@ T random_generator_negative()
 template <>
 inline hipblasHalf random_generator_negative<hipblasHalf>()
 {
-    return float_to_half(-static_cast<float>((rand() % 3 + 1)));
+    return float_to_half(-float((rand() % 3 + 1)));
 };
 
 // for hipblasBfloat16, generate float, and convert to hipblasBfloat16
@@ -259,7 +306,7 @@ inline hipblasHalf random_generator_negative<hipblasHalf>()
 template <>
 inline hipblasBfloat16 random_generator_negative<hipblasBfloat16>()
 {
-    return float_to_bfloat16(-static_cast<float>((rand() % 3 + 1)));
+    return float_to_bfloat16(-float((rand() % 3 + 1)));
 };
 
 // for complex, generate two values, convert both to negative
@@ -269,13 +316,13 @@ inline hipblasBfloat16 random_generator_negative<hipblasBfloat16>()
 template <>
 inline hipblasComplex random_generator_negative<hipblasComplex>()
 {
-    return hipblasComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+    return {float(-(rand() % 10 + 1)), float(-(rand() % 10 + 1))};
 }
 
 template <>
 inline hipblasDoubleComplex random_generator_negative<hipblasDoubleComplex>()
 {
-    return hipblasDoubleComplex(-(rand() % 10 + 1), -(rand() % 10 + 1));
+    return {double(-(rand() % 10 + 1)), double(-(rand() % 10 + 1))};
 }
 
 /* ============================================================================================ */
@@ -285,37 +332,25 @@ inline hipblasDoubleComplex random_generator_negative<hipblasDoubleComplex>()
 // for vector x (M=1, N=lengthX, lda=incx);
 // for complex number, the real/imag part would be initialized with the same value
 template <typename T>
-void hipblas_init(vector<T>& A, int M, int N, int lda, int stride = 0, int batch_count = 1)
+void hipblas_init(std::vector<T>& A, int M, int N, int lda, int stride = 0, int batch_count = 1)
 {
     for(int b = 0; b < batch_count; b++)
-    {
         for(int i = 0; i < M; ++i)
-        {
             for(int j = 0; j < N; ++j)
-            {
                 A[i + j * lda + b * stride] = random_generator<T>();
-            }
-        }
-    }
-};
+}
 
 template <typename T>
 void hipblas_init(T* A, int M, int N, int lda, int stride = 0, int batch_count = 1)
 {
     for(int b = 0; b < batch_count; b++)
-    {
         for(int i = 0; i < M; ++i)
-        {
             for(int j = 0; j < N; ++j)
-            {
                 A[i + j * lda + b * stride] = random_generator<T>();
-            }
-        }
-    }
-};
+}
 
 template <typename T>
-void hipblas_init_alternating_sign(vector<T>& A, int M, int N, int lda)
+void hipblas_init_alternating_sign(std::vector<T>& A, int M, int N, int lda)
 {
     // Initialize matrix so adjacent entries have alternating sign.
     // In gemm if either A or B are initialized with alernating
@@ -325,23 +360,16 @@ void hipblas_init_alternating_sign(vector<T>& A, int M, int N, int lda)
     // arithmetic where the exponent has only 5 bits, and the
     // mantissa 10 bits.
     for(int i = 0; i < M; ++i)
-    {
         for(int j = 0; j < N; ++j)
-        {
             if(j % 2 ^ i % 2)
-            {
                 A[i + j * lda] = random_generator<T>();
-            }
             else
-            {
                 A[i + j * lda] = random_generator_negative<T>();
-            }
-        }
-    }
-};
+}
 
 template <typename T>
-void hipblas_init_alternating_sign(vector<T>& A, int M, int N, int lda, int stride, int batch_count)
+void hipblas_init_alternating_sign(
+    std::vector<T>& A, int M, int N, int lda, int stride, int batch_count)
 {
     // Initialize matrix so adjacent entries have alternating sign.
     // In gemm if either A or B are initialized with alernating
@@ -351,71 +379,55 @@ void hipblas_init_alternating_sign(vector<T>& A, int M, int N, int lda, int stri
     // arithmetic where the exponent has only 5 bits, and the
     // mantissa 10 bits.
     for(int i_batch = 0; i_batch < batch_count; i_batch++)
-    {
         for(int i = 0; i < M; ++i)
-        {
             for(int j = 0; j < N; ++j)
-            {
                 if(j % 2 ^ i % 2)
-                {
                     A[i + j * lda + i_batch * stride] = random_generator<T>();
-                }
                 else
-                {
                     A[i + j * lda + i_batch * stride] = random_generator_negative<T>();
-                }
-            }
-        }
-    }
-};
+}
 
 /*! \brief  symmetric matrix initialization: */
 // for real matrix only
 template <typename T>
-void hipblas_init_symmetric(vector<T>& A, int N, int lda)
+void hipblas_init_symmetric(std::vector<T>& A, int N, int lda)
 {
     for(int i = 0; i < N; ++i)
-    {
         for(int j = 0; j <= i; ++j)
         {
-            A[j + i * lda] = A[i + j * lda] = random_generator<T>();
+            auto r         = random_generator<T>();
+            A[j + i * lda] = r;
+            A[i + j * lda] = r;
         }
-    }
-};
+}
 
 /*! \brief symmetric matrix initialization for strided_batched matricies: */
 template <typename T>
-void hipblas_init_symmetric(vector<T>& A, int N, int lda, int strideA, int batch_count)
+void hipblas_init_symmetric(std::vector<T>& A, int N, int lda, int strideA, int batch_count)
 {
     for(int b = 0; b < batch_count; b++)
-    {
-        int off = b * strideA;
-        for(int i = 0; i < N; ++i)
-        {
+        for(int off = b * strideA, i = 0; i < N; ++i)
             for(int j = 0; j <= i; ++j)
             {
-                A[j + i * lda + off] = A[i + j * lda + off] = random_generator<T>();
+                auto r               = random_generator<T>();
+                A[i + j * lda + off] = r;
+                A[j + i * lda + off] = r;
             }
-        }
-    }
 }
 
 /*! \brief  hermitian matrix initialization: */
 // for complex matrix only, the real/imag part would be initialized with the same value
 // except the diagonal elment must be real
 template <typename T>
-void hipblas_init_hermitian(vector<T>& A, int N, int lda)
+void hipblas_init_hermitian(std::vector<T>& A, int N, int lda)
 {
     for(int i = 0; i < N; ++i)
-    {
         for(int j = 0; j <= i; ++j)
-        {
-            A[j + i * lda] = A[i + j * lda] = random_generator<T>();
             if(i == j)
-                A[j + i * lda].y = 0.0;
-        }
-    }
-};
+                A[j + i * lda] = random_generator<real_t<T>>();
+            else
+                A[j + i * lda] = A[i + j * lda] = random_generator<T>();
+}
 
 /* ============================================================================================ */
 /*! \brief  Initialize an array with random data, with NaN where appropriate */
@@ -444,25 +456,13 @@ inline void regular_to_packed(bool upper, const T* A, T* AP, int n)
 {
     int index = 0;
     if(upper)
-    {
         for(int i = 0; i < n; i++)
-        {
             for(int j = 0; j <= i; j++)
-            {
                 AP[index++] = A[j + i * n];
-            }
-        }
-    }
     else
-    {
         for(int i = 0; i < n; i++)
-        {
             for(int j = i; j < n; j++)
-            {
                 AP[index++] = A[j + i * n];
-            }
-        }
-    }
 }
 
 /* ============================================================================================ */
@@ -473,58 +473,38 @@ char type2char();
 
 /* ============================================================================================ */
 /*! \brief  Debugging purpose, print out CPU and GPU result matrix, not valid in complex number  */
-template <typename T>
-void print_matrix(vector<T> CPU_result, vector<T> GPU_result, int m, int n, int lda)
+template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
+void print_matrix(
+    const std::vector<T>& CPU_result, const std::vector<T>& GPU_result, int m, int n, int lda)
 {
     for(int i = 0; i < m; i++)
         for(int j = 0; j < n; j++)
-        {
-            printf("matrix  col %d, row %d, CPU result=%f, GPU result=%f\n",
+            printf("matrix  col %d, row %d, CPU result=%.8g, GPU result=%.8g\n",
                    i,
                    j,
-                   CPU_result[j + i * lda],
-                   GPU_result[j + i * lda]);
-        }
+                   double(CPU_result[j + i * lda]),
+                   double(GPU_result[j + i * lda]));
+}
+
+/*! \brief  Debugging purpose, print out CPU and GPU result matrix, valid for complex number  */
+template <typename T, std::enable_if_t<+is_complex<T>, int> = 0>
+void print_matrix(
+    const std::vector<T>& CPU_result, const std::vector<T>& GPU_result, int m, int n, int lda)
+{
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+            printf("matrix  col %d, row %d, CPU result=(%.8g,%.8g), GPU result=(%.8g,%.8g)\n",
+                   i,
+                   j,
+                   double(CPU_result[j + i * lda].real()),
+                   double(CPU_result[j + i * lda].imag()),
+                   double(GPU_result[j + i * lda].real()),
+                   double(GPU_result[j + i * lda].imag()));
 }
 
 /* =============================================================================================== */
-/* Complex / real helpers.                                                                         */
-template <typename T>
-constexpr bool is_complex = false;
 
-template <>
-constexpr bool is_complex<hipblasComplex> = true;
-
-template <>
-constexpr bool is_complex<hipblasDoubleComplex> = true;
-
-// Get base types from complex types.
-template <typename T, typename = void>
-struct real_t_impl
-{
-    using type = T;
-};
-
-template <typename T>
-struct real_t_impl<T, std::enable_if_t<is_complex<T>>>
-{
-    using type = decltype(T().x);
-};
-
-namespace std
-{
-    template <typename T>
-    T abs(const hip_complex_number<T>& z)
-    {
-        T tr = abs(z.x), ti = abs(z.y);
-        return tr > ti ? (ti /= tr, tr * sqrt(ti * ti + 1)) : (tr /= ti, ti * sqrt(tr * tr + 1));
-    }
-}
-
-template <typename T>
-using real_t = typename real_t_impl<T>::type;
-
-/* =============================================================================================== */
+#endif // __cplusplus
 
 #ifdef __cplusplus
 extern "C" {
@@ -575,11 +555,9 @@ hipblasSideMode_t char2hipblas_side(char value);
 
 /* ============================================================================================ */
 
+#ifdef __cplusplus
+
 /*! \brief Class used to parse command arguments in both client & gtest   */
-
-// has to compile with option "-std=c++11", and this hipblas library uses c++11 everywhere
-// c++11 allows intilization of member of a struct
-
 class Arguments
 {
 public:
@@ -697,4 +675,5 @@ public:
     }
 };
 
+#endif // __cplusplus
 #endif

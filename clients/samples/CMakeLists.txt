@@ -7,16 +7,23 @@ set( hipblas_samples_common ../common/utility.cpp )
 add_executable( example-sscal example_sscal.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
+add_executable( example-c example-c.c ${hipblas_samples_common} )
+
+# We test for C99 compatibility in the example-c.c test
+set_source_files_properties(example-c.c PROPERTIES LANGUAGE CXX)
+set_source_files_properties(example-c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
+
+# We test for C++11 compatibility in one of the samples
+set_source_files_properties(example_sgemm_strided_batched.cpp PROPERTIES COMPILE_FLAGS "-std=c++11")
 
 if( NOT TARGET hipblas )
   find_package( hipblas CONFIG PATHS ${ROCM_PATH}/hipblas )
-
   if( NOT hipblas_FOUND )
     message( FATAL_ERROR "hipBLAS is a required dependency and is not found; try adding rocblas path to CMAKE_PREFIX_PATH")
   endif( )
 endif( )
 
-foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
+foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c )
 
   target_link_libraries( ${exe} PRIVATE roc::hipblas )
 
@@ -26,10 +33,7 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
       $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
       ${ROCM_PATH}/hsa/include
   )
-
-  # Try to test for specific compiler features if cmake version is recent enough
-  target_compile_features( ${exe} PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
-
+  set_target_properties(${exe} PROPERTIES LINKER_LANGUAGE CXX)
   set_target_properties( ${exe} PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
   set_target_properties( ${exe} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
   target_include_directories( ${exe} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> )
@@ -39,7 +43,7 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
 
   # Remove following when hcc is fixed; hcc emits following spurious warning
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument -mf16c)
+  target_compile_options( ${exe} PRIVATE -mf16c)
 
   if( CUSTOM_TARGET )
     target_link_libraries( ${exe} PRIVATE hip::${CUSTOM_TARGET} )
@@ -50,12 +54,6 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
       get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
       target_link_libraries( ${exe} PRIVATE ${HIP_HCC_LOCATION} )
     endif( )
-  endif( )
-
-  # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
-  # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
-    target_compile_options( ${exe} PRIVATE -Wno-unused-command-line-argument )
   endif( )
 
   if( CMAKE_COMPILER_IS_GNUCXX )
@@ -76,4 +74,3 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
   endif( )
 
 endforeach( )
-
