@@ -38,6 +38,9 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c
   set_target_properties( ${exe} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
   target_include_directories( ${exe} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> )
 
+  # C++14
+  target_compile_features( ${exe} PUBLIC cxx_std_14 )
+
   if( NOT CUDA_FOUND )
     target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_HCC__ )
 
