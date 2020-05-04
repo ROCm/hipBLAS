@@ -59,12 +59,12 @@
 
 #define NEAR_ASSERT_HALF(a, b, err) ASSERT_NEAR(float(a), float(b), err)
 
-#define NEAR_ASSERT_COMPLEX(a, b, err) \
-    do                                 \
-    {                                  \
-        auto ta = (a), tb = (b);       \
-        ASSERT_NEAR(ta.x, tb.x, err);  \
-        ASSERT_NEAR(ta.y, tb.y, err);  \
+#define NEAR_ASSERT_COMPLEX(a, b, err)          \
+    do                                          \
+    {                                           \
+        auto ta = (a), tb = (b);                \
+        ASSERT_NEAR(ta.real(), tb.real(), err); \
+        ASSERT_NEAR(ta.imag(), tb.imag(), err); \
     } while(0)
 
 template <>
