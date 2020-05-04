@@ -54,9 +54,6 @@ if( NOT CUDA_FOUND )
     if( NOT TARGET rocsolver )
       find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
     endif( )
-
-    target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_SOLVER__ )
-
     target_link_libraries( hipblas PRIVATE roc::rocsolver )
   endif( )
 
@@ -82,10 +79,6 @@ else( )
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
 
   target_link_libraries( hipblas PRIVATE ${CUDA_CUBLAS_LIBRARIES} )
-
-  if( BUILD_WITH_SOLVER )
-    target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_SOLVER__ )
-  endif( )
 
   # External header includes included as system files
   target_include_directories( hipblas
