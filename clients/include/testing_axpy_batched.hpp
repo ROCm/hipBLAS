@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -12,7 +12,6 @@
 #include "norm.h"
 #include "unit.h"
 #include "utility.h"
-#include <complex.h>
 
 using namespace std;
 

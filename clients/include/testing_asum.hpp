@@ -12,7 +12,6 @@
 #include "norm.h"
 #include "unit.h"
 #include "utility.h"
-#include <complex.h>
 
 using namespace std;
 

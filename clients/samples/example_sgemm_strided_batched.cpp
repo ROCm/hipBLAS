@@ -9,8 +9,6 @@
 #include <stdlib.h>
 #include <vector>
 
-using namespace std;
-
 #ifndef CHECK_HIP_ERROR
 #define CHECK_HIP_ERROR(error)                    \
     if(error != hipSuccess)                       \
@@ -137,10 +135,10 @@ int main()
     int size_c = bsc * batch_count;
 
     // Naming: da is in GPU (device) memory. ha is in CPU (host) memory
-    vector<float> ha(size_a);
-    vector<float> hb(size_b);
-    vector<float> hc(size_c);
-    vector<float> hc_gold(size_c);
+    std::vector<float> ha(size_a);
+    std::vector<float> hb(size_b);
+    std::vector<float> hc(size_c);
+    std::vector<float> hc_gold(size_c);
 
     // initial data on host
     srand(1);
@@ -216,7 +214,7 @@ int main()
                             ldc);
     }
 
-    float max_relative_error = numeric_limits<float>::min();
+    float max_relative_error = std::numeric_limits<float>::min();
     for(int i = 0; i < size_c; i++)
     {
         float relative_error = (hc_gold[i] - hc[i]) / hc_gold[i];
@@ -224,7 +222,7 @@ int main()
         max_relative_error
             = relative_error < max_relative_error ? max_relative_error : relative_error;
     }
-    float eps       = numeric_limits<float>::epsilon();
+    float eps       = std::numeric_limits<float>::epsilon();
     float tolerance = 10;
     if(max_relative_error != max_relative_error || max_relative_error > eps * tolerance)
     {
