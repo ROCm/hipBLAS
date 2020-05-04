@@ -39,9 +39,6 @@ target_include_directories( hipblas
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
 )
 
-# C++14
-target_compile_features( hipblas PUBLIC cxx_std_14 )
-
 # Build hipblas from source on AMD platform
 if( NOT CUDA_FOUND )
   if( NOT TARGET rocblas )
