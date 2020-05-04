@@ -27,8 +27,8 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
       ${ROCM_PATH}/hsa/include
   )
 
-  # Try to test for specific compiler features if cmake version is recent enough
-  target_compile_features( ${exe} PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
+  # C++14
+  target_compile_features( ${exe} PRIVATE cxx_std_14 )
 
   set_target_properties( ${exe} PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
   set_target_properties( ${exe} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )

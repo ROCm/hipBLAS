@@ -39,8 +39,8 @@ target_include_directories( hipblas
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
 )
 
-# Test for specific compiler features if cmake version is recent enough
-target_compile_features( hipblas PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
+# C++14
+target_compile_features( hipblas PRIVATE cxx_std_14 )
 
 # Build hipblas from source on AMD platform
 if( NOT CUDA_FOUND )
