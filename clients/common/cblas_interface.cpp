@@ -139,10 +139,10 @@ template <>
 void cblas_axpy<hipblasHalf>(
     int n, const hipblasHalf alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
 {
-    size_t        abs_incx = incx >= 0 ? incx : -incx;
-    size_t        abs_incy = incy >= 0 ? incy : -incy;
-    vector<float> x_float(n * abs_incx);
-    vector<float> y_float(n * abs_incy);
+    size_t             abs_incx = incx >= 0 ? incx : -incx;
+    size_t             abs_incy = incy >= 0 ? incy : -incy;
+    std::vector<float> x_float(n * abs_incx);
+    std::vector<float> y_float(n * abs_incy);
 
     for(size_t i = 0; i < n; i++)
     {
@@ -292,10 +292,10 @@ template <>
 void cblas_dot<hipblasHalf>(
     int n, const hipblasHalf* x, int incx, const hipblasHalf* y, int incy, hipblasHalf* result)
 {
-    size_t        abs_incx = incx >= 0 ? incx : -incx;
-    size_t        abs_incy = incy >= 0 ? incy : -incy;
-    vector<float> x_float(n * abs_incx);
-    vector<float> y_float(n * abs_incy);
+    size_t             abs_incx = incx >= 0 ? incx : -incx;
+    size_t             abs_incy = incy >= 0 ? incy : -incy;
+    std::vector<float> x_float(n * abs_incx);
+    std::vector<float> y_float(n * abs_incy);
 
     for(size_t i = 0; i < n; i++)
     {
@@ -313,10 +313,10 @@ void cblas_dot<hipblasBfloat16>(int                    n,
                                 int                    incy,
                                 hipblasBfloat16*       result)
 {
-    size_t        abs_incx = incx >= 0 ? incx : -incx;
-    size_t        abs_incy = incy >= 0 ? incy : -incy;
-    vector<float> x_float(n * abs_incx);
-    vector<float> y_float(n * abs_incy);
+    size_t             abs_incx = incx >= 0 ? incx : -incx;
+    size_t             abs_incy = incy >= 0 ? incy : -incy;
+    std::vector<float> x_float(n * abs_incx);
+    std::vector<float> y_float(n * abs_incy);
 
     for(size_t i = 0; i < n; i++)
     {
@@ -572,13 +572,13 @@ double abs_helper(T val)
 template <>
 double abs_helper(hipblasComplex val)
 {
-    return std::abs(val.x) + std::abs(val.y);
+    return std::abs(val.real()) + std::abs(val.imag());
 }
 
 template <>
 double abs_helper(hipblasDoubleComplex val)
 {
-    return std::abs(val.x) + std::abs(val.y);
+    return std::abs(val.real()) + std::abs(val.imag());
 }
 
 template <typename T>
@@ -1317,53 +1317,31 @@ void cblas_syr<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
 // syr2
 // No complex version of syr2 - make a local implementation
 template <typename T>
-inline void cblas_syr2_local(
+void cblas_syr2_local(
     hipblasFillMode_t uplo, int n, T alpha, T* xa, int incx, T* ya, int incy, T* A, int lda)
 {
     if(n <= 0)
         return;
 
-    T* x = (incx < 0) ? xa - ptrdiff_t(incx) * (n - 1) : xa;
-    T* y = (incy < 0) ? ya - ptrdiff_t(incy) * (n - 1) : ya;
+    T* x = incx < 0 ? xa - ptrdiff_t(incx) * (n - 1) : xa;
+    T* y = incy < 0 ? ya - ptrdiff_t(incy) * (n - 1) : ya;
 
     if(uplo == HIPBLAS_FILL_MODE_UPPER)
-    {
         for(int j = 0; j < n; ++j)
         {
-            T tmpx(alpha.x * x[j * incx].x - alpha.y * x[j * incx].y,
-                   alpha.x * x[j * incx].y + alpha.y * x[j * incx].x);
-            T tmpy(alpha.x * y[j * incx].x - alpha.y * y[j * incx].y,
-                   alpha.x * y[j * incx].y + alpha.y * y[j * incx].x);
+            T tmpx = alpha * x[j * incx];
+            T tmpy = alpha * y[j * incx];
             for(int i = 0; i <= j; ++i)
-            {
-                T p1(x[i * incx].x * tmpy.x - x[i * incx].y * tmpy.y,
-                     x[i * incx].x * tmpy.y + x[i * incx].y * tmpy.x);
-                T p2(y[i * incy].x * tmpx.x - y[i * incy].y * tmpx.y,
-                     y[i * incy].x * tmpx.y + y[i * incy].y * tmpx.x);
-                A[i + j * lda].x = A[i + j * lda].x + p1.x + p2.x;
-                A[i + j * lda].y = A[i + j * lda].y + p1.y + p2.y;
-            }
+                A[i + j * lda] += x[i * incx] * tmpy + y[i * incy] * tmpx;
         }
-    }
     else
-    {
         for(int j = 0; j < n; ++j)
         {
-            T tmpx(alpha.x * x[j * incx].x - alpha.y * x[j * incx].y,
-                   alpha.x * x[j * incx].y + alpha.y * x[j * incx].x);
-            T tmpy(alpha.x * y[j * incx].x - alpha.y * y[j * incx].y,
-                   alpha.x * y[j * incx].y + alpha.y * y[j * incx].x);
+            T tmpx = alpha * x[j * incx];
+            T tmpy = alpha * y[j * incx];
             for(int i = j; i < n; ++i)
-            {
-                T p1(x[i * incx].x * tmpy.x - x[i * incx].y * tmpy.y,
-                     x[i * incx].x * tmpy.y + x[i * incx].y * tmpy.x);
-                T p2(y[i * incy].x * tmpx.x - y[i * incy].y * tmpx.y,
-                     y[i * incy].x * tmpx.y + y[i * incy].y * tmpx.x);
-                A[i + j * lda].x = A[i + j * lda].x + p1.x + p2.x;
-                A[i + j * lda].y = A[i + j * lda].y + p1.y + p2.y;
-            }
+                A[i + j * lda] += x[i * incx] * tmpy + y[i * incy] * tmpx;
         }
-    }
 }
 
 template <>
@@ -2103,19 +2081,13 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
             for(int j = 0; j < n; ++j)
             {
                 for(int i = 0; i <= j; i++)
-                {
                     C[i + j * ldc] *= T(beta);
-                }
 
                 for(int l = 0; l < k; l++)
                 {
-                    T Bconj = B[j + l * ldb];
-                    Bconj.y = -Bconj.y;
-                    T temp  = alpha * Bconj;
+                    T temp = alpha * std::conj(B[j + l * ldb]);
                     for(int i = 0; i <= j; ++i)
-                    {
                         C[i + j * ldc] += temp * A[i + l * lda];
-                    }
                 }
             }
         }
@@ -2124,19 +2096,13 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
             for(int j = 0; j < n; ++j)
             {
                 for(int i = j; i < n; i++)
-                {
                     C[i + j * ldc] *= T(beta);
-                }
 
                 for(int l = 0; l < k; l++)
                 {
-                    T Bconj = B[j + l * ldb];
-                    Bconj.y = -Bconj.y;
-                    T temp  = alpha * Bconj;
+                    T temp = alpha * std::conj(B[j + l * ldb]);
                     for(int i = j; i < n; ++i)
-                    {
                         C[i + j * ldc] += temp * A[i + l * lda];
-                    }
                 }
             }
         }
@@ -2146,45 +2112,31 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
         if(uplo == HIPBLAS_FILL_MODE_UPPER)
         {
             for(int j = 0; j < n; ++j)
-            {
                 for(int i = 0; i <= j; i++)
                 {
                     C[i + j * ldc] *= T(beta);
-
                     T temp(0);
                     for(int l = 0; l < k; l++)
-                    {
-                        T Aconj = A[l + i * lda];
-                        Aconj.y = -Aconj.y;
-                        temp += Aconj * B[l + j * ldb];
-                    }
+                        temp += std::conj(A[l + i * lda]) * B[l + j * ldb];
                     C[i + j * ldc] += alpha * temp;
                 }
-            }
         }
         else // lower
         {
             for(int j = 0; j < n; ++j)
-            {
                 for(int i = j; i < n; i++)
                 {
                     C[i + j * ldc] *= T(beta);
-
                     T temp(0);
                     for(int l = 0; l < k; l++)
-                    {
-                        T Aconj = A[l + i * lda];
-                        Aconj.y = -Aconj.y;
-                        temp += Aconj * B[l + j * ldb];
-                    }
+                        temp += std::conj(A[l + i * lda]) * B[l + j * ldb];
                     C[i + j * ldc] += alpha * temp;
                 }
-            }
         }
     }
 
     for(int i = 0; i < n; i++)
-        C[i + i * ldc].y = real_t<T>(0);
+        C[i + i * ldc].imag(0);
 }
 
 template <>
