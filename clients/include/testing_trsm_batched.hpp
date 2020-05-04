@@ -181,8 +181,6 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
         }
 
         // if enable norm check, norm check is invasive
-        // any typeinfo(T) will not work here, because template deduction is matched in compilation
-        // time
         real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
         double    tolerance = eps * 40 * M;
 

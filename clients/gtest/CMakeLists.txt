@@ -120,7 +120,6 @@ target_include_directories( hipblas-test
 set( THREADS_PREFER_PTHREAD_FLAG ON )
 find_package( Threads REQUIRED )
 target_link_libraries( hipblas-test PRIVATE Threads::Threads )
-target_compile_features( hipblas-test PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type)
 
 target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 
@@ -144,7 +143,7 @@ if( NOT CUDA_FOUND )
 
   # Remove following when hcc is fixed; hcc emits following spurious warning
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument -mf16c)
+  target_compile_options( hipblas-test PRIVATE -mf16c)
 
   if( CUSTOM_TARGET )
     target_link_libraries( hipblas-test PRIVATE hip::${CUSTOM_TARGET} )

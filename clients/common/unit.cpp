@@ -12,14 +12,15 @@
  * ==================================================== */
 
 /*! \brief Template: gtest unit compare two matrices float/double/complex */
-// Do not put a wrapper over ASSERT_FLOAT_EQ, sincer assert exit the current function NOT the test
-// case
-// a wrapper will cause the loop keep going
+// This returns from the current function if an error occurs
 
 #ifndef GOOGLE_TEST
+
 #define UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, UNIT_ASSERT_EQ)
 #define UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, UNIT_ASSERT_EQ)
-#else
+
+#else // GOOGLE_TEST
+
 #define UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, UNIT_ASSERT_EQ)      \
     do                                                                               \
     {                                                                                \
@@ -36,6 +37,7 @@
                                        hGPU[i + j * lda + k * strideA]);             \
                     }                                                                \
     } while(0)
+
 #define UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, UNIT_ASSERT_EQ)            \
     do                                                                              \
     {                                                                               \
@@ -51,23 +53,24 @@
                         UNIT_ASSERT_EQ(hCPU[k][i + j * lda], hGPU[k][i + j * lda]); \
                     }                                                               \
     } while(0)
-#endif
+
+#endif // GOOGLE_TEST
 
 #define ASSERT_HALF_EQ(a, b) ASSERT_FLOAT_EQ(half_to_float(a), half_to_float(b))
 #define ASSERT_BFLOAT16_EQ(a, b) ASSERT_FLOAT_EQ(bfloat16_to_float(a), bfloat16_to_float(b))
 
-#define ASSERT_FLOAT_COMPLEX_EQ(a, b) \
-    do                                \
-    {                                 \
-        ASSERT_FLOAT_EQ(a.x, b.x);    \
-        ASSERT_FLOAT_EQ(a.y, b.y);    \
+#define ASSERT_FLOAT_COMPLEX_EQ(a, b)        \
+    do                                       \
+    {                                        \
+        ASSERT_FLOAT_EQ(a.real(), b.real()); \
+        ASSERT_FLOAT_EQ(a.imag(), b.imag()); \
     } while(0)
 
-#define ASSERT_DOUBLE_COMPLEX_EQ(a, b) \
-    do                                 \
-    {                                  \
-        ASSERT_DOUBLE_EQ(a.x, b.x);    \
-        ASSERT_DOUBLE_EQ(a.y, b.y);    \
+#define ASSERT_DOUBLE_COMPLEX_EQ(a, b)        \
+    do                                        \
+    {                                         \
+        ASSERT_DOUBLE_EQ(a.real(), b.real()); \
+        ASSERT_DOUBLE_EQ(a.imag(), b.imag()); \
     } while(0)
 
 template <>
@@ -97,36 +100,28 @@ void unit_check_general(int M, int N, int lda, double* hCPU, double* hGPU)
 template <>
 void unit_check_general(int M, int N, int lda, hipblasComplex* hCPU, hipblasComplex* hGPU)
 {
-#pragma unroll
+#ifdef GOOGLE_TEST
     for(int j = 0; j < N; j++)
-    {
-#pragma unroll
         for(int i = 0; i < M; i++)
         {
-#ifdef GOOGLE_TEST
-            ASSERT_FLOAT_EQ(hCPU[i + j * lda].x, hGPU[i + j * lda].x);
-            ASSERT_FLOAT_EQ(hCPU[i + j * lda].y, hGPU[i + j * lda].y);
-#endif
+            ASSERT_FLOAT_EQ(hCPU[i + j * lda].real(), hGPU[i + j * lda].real());
+            ASSERT_FLOAT_EQ(hCPU[i + j * lda].imag(), hGPU[i + j * lda].imag());
         }
-    }
+#endif
 }
 
 template <>
 void unit_check_general(
     int M, int N, int lda, hipblasDoubleComplex* hCPU, hipblasDoubleComplex* hGPU)
 {
-#pragma unroll
+#ifdef GOOGLE_TEST
     for(int j = 0; j < N; j++)
-    {
-#pragma unroll
         for(int i = 0; i < M; i++)
         {
-#ifdef GOOGLE_TEST
-            ASSERT_DOUBLE_EQ(hCPU[i + j * lda].x, hGPU[i + j * lda].x);
-            ASSERT_DOUBLE_EQ(hCPU[i + j * lda].y, hGPU[i + j * lda].y);
-#endif
+            ASSERT_DOUBLE_EQ(hCPU[i + j * lda].real(), hGPU[i + j * lda].real());
+            ASSERT_DOUBLE_EQ(hCPU[i + j * lda].imag(), hGPU[i + j * lda].imag());
         }
-    }
+#endif
 }
 
 template <>
