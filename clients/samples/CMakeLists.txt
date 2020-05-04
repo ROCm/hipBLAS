@@ -28,7 +28,7 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched )
   )
 
   # C++14
-  target_compile_features( ${exe} PRIVATE cxx_std_14 )
+  target_compile_options( ${exe} PRIVATE -std=c++14 )
 
   set_target_properties( ${exe} PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
   set_target_properties( ${exe} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )

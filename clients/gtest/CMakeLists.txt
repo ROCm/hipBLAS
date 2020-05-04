@@ -121,7 +121,7 @@ set( THREADS_PREFER_PTHREAD_FLAG ON )
 find_package( Threads REQUIRED )
 target_link_libraries( hipblas-test PRIVATE Threads::Threads )
 # C++14
-target_compile_features( hipblas-test PRIVATE cxx_std_14 )
+target_compile_options( hipblas-test PRIVATE -std=c++14 )
 target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 
 # External header includes included as SYSTEM files

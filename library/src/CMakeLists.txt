@@ -40,7 +40,7 @@ target_include_directories( hipblas
 )
 
 # C++14
-target_compile_features( hipblas PRIVATE cxx_std_14 )
+target_compile_options( hipblas PRIVATE -std=c++14 )
 
 # Build hipblas from source on AMD platform
 if( NOT CUDA_FOUND )
