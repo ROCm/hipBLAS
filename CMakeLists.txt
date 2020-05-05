@@ -59,6 +59,10 @@ option( BUILD_VERBOSE "Output additional build information" OFF )
 
 option( BUILD_WITH_SOLVER "Add additional functions from rocSOLVER" ON )
 
+if( BUILD_WITH_SOLVER )
+    add_definitions( -D__HIP_PLATFORM_SOLVER__ )
+endif( )
+
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 

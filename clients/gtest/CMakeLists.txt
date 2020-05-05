@@ -137,10 +137,6 @@ target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LI
 if( NOT CUDA_FOUND )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_HCC__ )
 
-  if( BUILD_WITH_SOLVER )
-    target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_SOLVER__ )
-  endif( )
-
   # Remove following when hcc is fixed; hcc emits following spurious warning
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
   target_compile_options( hipblas-test PRIVATE -mf16c)
@@ -167,10 +163,6 @@ if( NOT CUDA_FOUND )
   endif()
 else( )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_NVCC__ )
-
-  if( BUILD_WITH_SOLVER )
-    target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_SOLVER__ )
-  endif( )
 
   target_include_directories( hipblas-test
     PRIVATE
