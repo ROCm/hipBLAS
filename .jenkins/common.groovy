@@ -13,6 +13,7 @@ def runCompileCommand(platform, project, jobName)
             getDependenciesCommand += auxiliary.getLibrary(libraryName, platform.jenkinsLabel, 'develop')
         }
     }
+    String centos = platform.jenkinsLabel.contains('centos') ? 'source scl_source enable devtoolset-7' : ''
         
     if(jobName.contains('hipclang'))
     {
@@ -20,6 +21,7 @@ def runCompileCommand(platform, project, jobName)
                 set -x
                 cd ${project.paths.project_build_prefix}
                 ${getDependenciesCommand}
+                ${centos}
                 LD_LIBRARY_PATH=/opt/rocm/lib CXX=g++ ${project.paths.build_command} --hip-clang
                 """
     }
@@ -29,6 +31,7 @@ def runCompileCommand(platform, project, jobName)
                 set -x
                 cd ${project.paths.project_build_prefix}
                 ${getDependenciesCommand}
+                ${centos}
                 LD_LIBRARY_PATH=/opt/rocm/hcc/lib CXX=g++ ${project.paths.build_command}
                 """
     }
