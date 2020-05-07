@@ -76,6 +76,7 @@ set(hipblas_test_source
   gemm_ex_gtest.cpp
   gemm_strided_batched_gtest.cpp
   gemm_batched_gtest.cpp
+  hemm_gtest.cpp
   geam_gtest.cpp
   herk_gtest.cpp
   her2k_gtest.cpp

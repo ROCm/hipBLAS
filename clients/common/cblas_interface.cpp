@@ -2097,6 +2097,65 @@ void cblas_gemm<hipblasDoubleComplex>(hipblasOperation_t    transA,
                 ldc);
 }
 
+// hemm
+template <>
+void cblas_hemm(hipblasSideMode_t side,
+                hipblasFillMode_t uplo,
+                int               m,
+                int               n,
+                hipblasComplex    alpha,
+                hipblasComplex*   A,
+                int               lda,
+                hipblasComplex*   B,
+                int               ldb,
+                hipblasComplex    beta,
+                hipblasComplex*   C,
+                int               ldc)
+{
+    cblas_chemm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_hemm(hipblasSideMode_t     side,
+                hipblasFillMode_t     uplo,
+                int                   m,
+                int                   n,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* A,
+                int                   lda,
+                hipblasDoubleComplex* B,
+                int                   ldb,
+                hipblasDoubleComplex  beta,
+                hipblasDoubleComplex* C,
+                int                   ldc)
+{
+    cblas_zhemm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
+}
+
 // herk
 template <>
 void cblas_herk(hipblasFillMode_t  uplo,

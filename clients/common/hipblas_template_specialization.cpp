@@ -6885,6 +6885,161 @@ hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t             handle,
                                        batchCount);
 }
 
+// hemm
+template <>
+hipblasStatus_t hipblasHemm(hipblasHandle_t       handle,
+                            hipblasSideMode_t     side,
+                            hipblasFillMode_t     uplo,
+                            int                   n,
+                            int                   k,
+                            const hipblasComplex* alpha,
+                            const hipblasComplex* A,
+                            int                   lda,
+                            const hipblasComplex* B,
+                            int                   ldb,
+                            const hipblasComplex* beta,
+                            hipblasComplex*       C,
+                            int                   ldc)
+{
+    return hipblasChemm(handle, side, uplo, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+
+template <>
+hipblasStatus_t hipblasHemm(hipblasHandle_t             handle,
+                            hipblasSideMode_t           side,
+                            hipblasFillMode_t           uplo,
+                            int                         n,
+                            int                         k,
+                            const hipblasDoubleComplex* alpha,
+                            const hipblasDoubleComplex* A,
+                            int                         lda,
+                            const hipblasDoubleComplex* B,
+                            int                         ldb,
+                            const hipblasDoubleComplex* beta,
+                            hipblasDoubleComplex*       C,
+                            int                         ldc)
+{
+    return hipblasZhemm(handle, side, uplo, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+
+// hemm_batched
+template <>
+hipblasStatus_t hipblasHemmBatched(hipblasHandle_t             handle,
+                                   hipblasSideMode_t           side,
+                                   hipblasFillMode_t           uplo,
+                                   int                         n,
+                                   int                         k,
+                                   const hipblasComplex*       alpha,
+                                   const hipblasComplex* const A[],
+                                   int                         lda,
+                                   const hipblasComplex* const B[],
+                                   int                         ldb,
+                                   const hipblasComplex*       beta,
+                                   hipblasComplex* const       C[],
+                                   int                         ldc,
+                                   int                         batchCount)
+{
+    return hipblasChemmBatched(
+        handle, side, uplo, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasHemmBatched(hipblasHandle_t                   handle,
+                                   hipblasSideMode_t                 side,
+                                   hipblasFillMode_t                 uplo,
+                                   int                               n,
+                                   int                               k,
+                                   const hipblasDoubleComplex*       alpha,
+                                   const hipblasDoubleComplex* const A[],
+                                   int                               lda,
+                                   const hipblasDoubleComplex* const B[],
+                                   int                               ldb,
+                                   const hipblasDoubleComplex*       beta,
+                                   hipblasDoubleComplex* const       C[],
+                                   int                               ldc,
+                                   int                               batchCount)
+{
+    return hipblasZhemmBatched(
+        handle, side, uplo, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+}
+
+// hemm_strided_batched
+template <>
+hipblasStatus_t hipblasHemmStridedBatched(hipblasHandle_t       handle,
+                                          hipblasSideMode_t     side,
+                                          hipblasFillMode_t     uplo,
+                                          int                   n,
+                                          int                   k,
+                                          const hipblasComplex* alpha,
+                                          const hipblasComplex* A,
+                                          int                   lda,
+                                          int                   strideA,
+                                          const hipblasComplex* B,
+                                          int                   ldb,
+                                          int                   strideB,
+                                          const hipblasComplex* beta,
+                                          hipblasComplex*       C,
+                                          int                   ldc,
+                                          int                   strideC,
+                                          int                   batchCount)
+{
+    return hipblasChemmStridedBatched(handle,
+                                      side,
+                                      uplo,
+                                      n,
+                                      k,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      B,
+                                      ldb,
+                                      strideB,
+                                      beta,
+                                      C,
+                                      ldc,
+                                      strideC,
+                                      batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasHemmStridedBatched(hipblasHandle_t             handle,
+                                          hipblasSideMode_t           side,
+                                          hipblasFillMode_t           uplo,
+                                          int                         n,
+                                          int                         k,
+                                          const hipblasDoubleComplex* alpha,
+                                          const hipblasDoubleComplex* A,
+                                          int                         lda,
+                                          int                         strideA,
+                                          const hipblasDoubleComplex* B,
+                                          int                         ldb,
+                                          int                         strideB,
+                                          const hipblasDoubleComplex* beta,
+                                          hipblasDoubleComplex*       C,
+                                          int                         ldc,
+                                          int                         strideC,
+                                          int                         batchCount)
+{
+    return hipblasZhemmStridedBatched(handle,
+                                      side,
+                                      uplo,
+                                      n,
+                                      k,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      B,
+                                      ldb,
+                                      strideB,
+                                      beta,
+                                      C,
+                                      ldc,
+                                      strideC,
+                                      batchCount);
+}
+
 // trmm
 template <>
 hipblasStatus_t hipblasTrmm<float>(hipblasHandle_t    handle,
