@@ -214,15 +214,18 @@ hipblasStatus_t testing_geam_strided_batched(Arguments argus)
         // reference calculation
         for(int b = 0; b < batch_count; b++)
         {
-            for(int i1 = 0; i1 < M; i1++)
-            {
-                for(int i2 = 0; i2 < N; i2++)
-                {
-                    hC_copy[i1 + i2 * ldc + b * stride_C]
-                        = h_alpha * hA[i1 * inc1_A + i2 * inc2_A + b * stride_A]
-                          + h_beta * hB[i1 * inc1_B + i2 * inc2_B + b * stride_B];
-                }
-            }
+            cblas_geam(transA,
+                       transB,
+                       M,
+                       N,
+                       &h_alpha,
+                       (T*)hA + b * stride_A,
+                       lda,
+                       &h_beta,
+                       (T*)hB + b * stride_B,
+                       ldb,
+                       (T*)hC_copy + b * stride_C,
+                       ldc);
         }
     }
 

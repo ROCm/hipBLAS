@@ -1905,6 +1905,109 @@ void cblas_trsv<hipblasDoubleComplex>(hipblasHandle_t             handle,
  * ===========================================================================
  */
 
+template <typename T>
+void cblas_geam_helper(hipblasOperation_t transA,
+                       hipblasOperation_t transB,
+                       int                M,
+                       int                N,
+                       T                  alpha,
+                       T*                 A,
+                       int                lda,
+                       T                  beta,
+                       T*                 B,
+                       int                ldb,
+                       T*                 C,
+                       int                ldc)
+{
+    int inc1_A = transA == HIPBLAS_OP_N ? 1 : lda;
+    int inc2_A = transA == HIPBLAS_OP_N ? lda : 1;
+    int inc1_B = transB == HIPBLAS_OP_N ? 1 : ldb;
+    int inc2_B = transB == HIPBLAS_OP_N ? ldb : 1;
+
+    for(int i = 0; i < M; i++)
+    {
+        for(int j = 0; j < N; j++)
+        {
+            T a_val = A[i * inc1_A + j * inc2_A];
+            T b_val = B[i * inc1_B + j * inc2_B];
+            if(transA == HIPBLAS_OP_C)
+                a_val = std::conj(a_val);
+            if(transB == HIPBLAS_OP_C)
+                b_val = std::conj(b_val);
+            C[i + j * ldc] = alpha * a_val + beta * b_val;
+        }
+    }
+}
+
+// geam
+template <>
+void cblas_geam(hipblasOperation_t transa,
+                hipblasOperation_t transb,
+                int                m,
+                int                n,
+                float*             alpha,
+                float*             A,
+                int                lda,
+                float*             beta,
+                float*             B,
+                int                ldb,
+                float*             C,
+                int                ldc)
+{
+    return cblas_geam_helper(transa, transb, m, n, *alpha, A, lda, *beta, B, ldb, C, ldc);
+}
+
+template <>
+void cblas_geam(hipblasOperation_t transa,
+                hipblasOperation_t transb,
+                int                m,
+                int                n,
+                double*            alpha,
+                double*            A,
+                int                lda,
+                double*            beta,
+                double*            B,
+                int                ldb,
+                double*            C,
+                int                ldc)
+{
+    return cblas_geam_helper(transa, transb, m, n, *alpha, A, lda, *beta, B, ldb, C, ldc);
+}
+
+template <>
+void cblas_geam(hipblasOperation_t transa,
+                hipblasOperation_t transb,
+                int                m,
+                int                n,
+                hipblasComplex*    alpha,
+                hipblasComplex*    A,
+                int                lda,
+                hipblasComplex*    beta,
+                hipblasComplex*    B,
+                int                ldb,
+                hipblasComplex*    C,
+                int                ldc)
+{
+    return cblas_geam_helper(transa, transb, m, n, *alpha, A, lda, *beta, B, ldb, C, ldc);
+}
+
+template <>
+void cblas_geam(hipblasOperation_t    transa,
+                hipblasOperation_t    transb,
+                int                   m,
+                int                   n,
+                hipblasDoubleComplex* alpha,
+                hipblasDoubleComplex* A,
+                int                   lda,
+                hipblasDoubleComplex* beta,
+                hipblasDoubleComplex* B,
+                int                   ldb,
+                hipblasDoubleComplex* C,
+                int                   ldc)
+{
+    return cblas_geam_helper(transa, transb, m, n, *alpha, A, lda, *beta, B, ldb, C, ldc);
+}
+
 // gemm
 template <>
 void cblas_gemm<hipblasHalf>(hipblasOperation_t transA,

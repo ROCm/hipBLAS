@@ -174,15 +174,8 @@ hipblasStatus_t testing_geam(Arguments argus)
     =================================================================== */
     if(status2 != HIPBLAS_STATUS_INVALID_VALUE) // only valid size compare with cblas
     {
-        // reference calculation
-        for(int i1 = 0; i1 < M; i1++)
-        {
-            for(int i2 = 0; i2 < N; i2++)
-            {
-                hC_copy[i1 + i2 * ldc] = h_alpha * hA[i1 * inc1_A + i2 * inc2_A]
-                                         + h_beta * hB[i1 * inc1_B + i2 * inc2_B];
-            }
-        }
+        cblas_geam(
+            transA, transB, M, N, &h_alpha, (T*)hA, lda, &h_beta, (T*)hB, ldb, (T*)hC_copy, ldc);
     }
 
 #ifndef NDEBUG

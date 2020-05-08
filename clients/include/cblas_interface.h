@@ -296,6 +296,21 @@ void cblas_her2k(hipblasFillMode_t  uplo,
                  T*                 C,
                  int                ldc);
 
+// geam
+template <typename T>
+void cblas_geam(hipblasOperation_t transa,
+                hipblasOperation_t transb,
+                int                m,
+                int                n,
+                T*                 alpha,
+                T*                 A,
+                int                lda,
+                T*                 beta,
+                T*                 B,
+                int                ldb,
+                T*                 C,
+                int                ldc);
+
 // gemm
 template <typename T>
 void cblas_gemm(hipblasOperation_t transA,

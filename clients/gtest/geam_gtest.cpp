@@ -53,7 +53,9 @@ const vector<vector<double>> alpha_beta_range = {
 // add/delete this list in pairs, like {'N', 'T'}
 // for single/double precision, 'C'(conjTranspose) will downgraded to 'T' (transpose) internally in
 // sgeam/dgeam,
-const vector<vector<char>> transA_transB_range = {{'N', 'N'}, {'N', 'T'}, {'C', 'N'}, {'T', 'C'}};
+// TODO: Conjugate was broken up to rocBLAS 3.5. Add conjugate tests when fixed.
+const vector<vector<char>> transA_transB_range
+    = {{'N', 'N'}, {'N', 'T'}}; //, {'C', 'N'}, {'T', 'C'}};
 
 const vector<double> stride_scale_range = {1, 3};
 

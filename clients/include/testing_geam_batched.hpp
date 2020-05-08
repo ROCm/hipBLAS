@@ -225,14 +225,18 @@ hipblasStatus_t testing_geam_batched(Arguments argus)
         // reference calculation
         for(int b = 0; b < batch_count; b++)
         {
-            for(int i1 = 0; i1 < M; i1++)
-            {
-                for(int i2 = 0; i2 < N; i2++)
-                {
-                    hC_copy[b][i1 + i2 * ldc] = h_alpha * hA[b][i1 * inc1_A + i2 * inc2_A]
-                                                + h_beta * hB[b][i1 * inc1_B + i2 * inc2_B];
-                }
-            }
+            cblas_geam(transA,
+                       transB,
+                       M,
+                       N,
+                       &h_alpha,
+                       (T*)hA[b],
+                       lda,
+                       &h_beta,
+                       (T*)hB[b],
+                       ldb,
+                       (T*)hC_copy[b],
+                       ldc);
         }
     }
 
