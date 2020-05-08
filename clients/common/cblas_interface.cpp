@@ -2384,6 +2384,123 @@ void cblas_her2k(hipblasFillMode_t     uplo,
                  ldc);
 }
 
+// symm
+template <>
+void cblas_symm(hipblasSideMode_t side,
+                hipblasFillMode_t uplo,
+                int               m,
+                int               n,
+                float             alpha,
+                float*            A,
+                int               lda,
+                float*            B,
+                int               ldb,
+                float             beta,
+                float*            C,
+                int               ldc)
+{
+    cblas_ssymm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_symm(hipblasSideMode_t side,
+                hipblasFillMode_t uplo,
+                int               m,
+                int               n,
+                double            alpha,
+                double*           A,
+                int               lda,
+                double*           B,
+                int               ldb,
+                double            beta,
+                double*           C,
+                int               ldc)
+{
+    cblas_dsymm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_symm(hipblasSideMode_t side,
+                hipblasFillMode_t uplo,
+                int               m,
+                int               n,
+                hipblasComplex    alpha,
+                hipblasComplex*   A,
+                int               lda,
+                hipblasComplex*   B,
+                int               ldb,
+                hipblasComplex    beta,
+                hipblasComplex*   C,
+                int               ldc)
+{
+    cblas_csymm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
+}
+
+template <>
+void cblas_symm(hipblasSideMode_t     side,
+                hipblasFillMode_t     uplo,
+                int                   m,
+                int                   n,
+                hipblasDoubleComplex  alpha,
+                hipblasDoubleComplex* A,
+                int                   lda,
+                hipblasDoubleComplex* B,
+                int                   ldb,
+                hipblasDoubleComplex  beta,
+                hipblasDoubleComplex* C,
+                int                   ldc)
+{
+    cblas_zsymm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
+}
+
 // syrk
 template <>
 void cblas_syrk(hipblasFillMode_t  uplo,

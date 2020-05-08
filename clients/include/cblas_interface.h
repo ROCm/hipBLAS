@@ -327,6 +327,21 @@ void cblas_hemm(hipblasSideMode_t side,
                 T*                C,
                 int               ldc);
 
+// symm
+template <typename T>
+void cblas_symm(hipblasSideMode_t side,
+                hipblasFillMode_t uplo,
+                int               m,
+                int               n,
+                T                 alpha,
+                T*                A,
+                int               lda,
+                T*                B,
+                int               ldb,
+                T                 beta,
+                T*                C,
+                int               ldc);
+
 // syrk
 template <typename T>
 void cblas_syrk(hipblasFillMode_t  uplo,
