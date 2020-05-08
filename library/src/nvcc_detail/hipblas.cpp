@@ -6609,7 +6609,7 @@ hipblasStatus_t hipblasSsymm(hipblasHandle_t   handle,
                              float*            C,
                              int               ldc)
 {
-    return hipCUBLASStatusToHIPStatus(cublasSsymm((rocblas_handle)handle,
+    return hipCUBLASStatusToHIPStatus(cublasSsymm((cublasHandle_t)handle,
                                                   hipSideToCudaSide(side),
                                                   hipFillToCudaFill(uplo),
                                                   m,
@@ -6638,7 +6638,7 @@ hipblasStatus_t hipblasDsymm(hipblasHandle_t   handle,
                              double*           C,
                              int               ldc)
 {
-    return hipCUBLASStatusToHIPStatus(cublasDsymm((rocblas_handle)handle,
+    return hipCUBLASStatusToHIPStatus(cublasDsymm((cublasHandle_t)handle,
                                                   hipSideToCudaSide(side),
                                                   hipFillToCudaFill(uplo),
                                                   m,
@@ -6667,7 +6667,7 @@ hipblasStatus_t hipblasCsymm(hipblasHandle_t       handle,
                              hipblasComplex*       C,
                              int                   ldc)
 {
-    return hipCUBLASStatusToHIPStatus(cublasCsymm((rocblas_handle)handle,
+    return hipCUBLASStatusToHIPStatus(cublasCsymm((cublasHandle_t)handle,
                                                   hipSideToCudaSide(side),
                                                   hipFillToCudaFill(uplo),
                                                   m,
@@ -6696,7 +6696,7 @@ hipblasStatus_t hipblasZsymm(hipblasHandle_t             handle,
                              hipblasDoubleComplex*       C,
                              int                         ldc)
 {
-    return hipCUBLASStatusToHIPStatus(cublasZsymm((rocblas_handle)handle,
+    return hipCUBLASStatusToHIPStatus(cublasZsymm((cublasHandle_t)handle,
                                                   hipSideToCudaSide(side),
                                                   hipFillToCudaFill(uplo),
                                                   m,
@@ -7757,7 +7757,7 @@ hipblasStatus_t hipblasZgeam(hipblasHandle_t             handle,
                              const hipblasDoubleComplex* beta,
                              const hipblasDoubleComplex* B,
                              int                         ldb,
-                             hipblasComplex*             C,
+                             hipblasDoubleComplex*       C,
                              int                         ldc)
 {
     return hipCUBLASStatusToHIPStatus(cublasZgeam((cublasHandle_t)handle,
@@ -7953,13 +7953,13 @@ hipblasStatus_t hipblasChemm(hipblasHandle_t       handle,
                                                   hipFillToCudaFill(uplo),
                                                   n,
                                                   k,
-                                                  (cublasComplex*)alpha,
-                                                  (cublasComplex*)A,
+                                                  (cuComplex*)alpha,
+                                                  (cuComplex*)A,
                                                   lda,
-                                                  (cublasComplex*)B,
+                                                  (cuComplex*)B,
                                                   ldb,
-                                                  (cublasComplex*)beta,
-                                                  (cublasComplex*)C,
+                                                  (cuComplex*)beta,
+                                                  (cuComplex*)C,
                                                   ldc));
 }
 
@@ -7982,13 +7982,13 @@ hipblasStatus_t hipblasZhemm(hipblasHandle_t             handle,
                                                   hipFillToCudaFill(uplo),
                                                   n,
                                                   k,
-                                                  (cublasDoubleComplex*)alpha,
-                                                  (cublasDoubleComplex*)A,
+                                                  (cuDoubleComplex*)alpha,
+                                                  (cuDoubleComplex*)A,
                                                   lda,
-                                                  (cublasDoubleComplex*)B,
+                                                  (cuDoubleComplex*)B,
                                                   ldb,
-                                                  (cublasDoubleComplex*)beta,
-                                                  (cublasDoubleComplex*)C,
+                                                  (cuDoubleComplex*)beta,
+                                                  (cuDoubleComplex*)C,
                                                   ldc));
 }
 
