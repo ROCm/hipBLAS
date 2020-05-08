@@ -43,9 +43,9 @@ const vector<vector<int>> matrix_size_range = {
 // vector of vector, each pair is a {alpha, alphai, beta, betai};
 // add/delete this list in pairs, like {2.0, 4.0}
 const vector<vector<double>> alpha_beta_range = {
-    {1.4, -1.5, 0.0, 0.0},
-    {3.1, 1.3, 0.3, -1.3},
-    {0.0, 0.0, 1.3, -4.5},
+    {2.0, -3.0, 0.0, 0.0},
+    {3.0, 1.0, 1.0, -1.0},
+    {0.0, 0.0, 2.0, -5.0},
     {0.0, 0.0, 0.0, 0.0},
 };
 
@@ -184,6 +184,9 @@ TEST_P(geam_gtest, geam_batched_gtest_float)
 
     hipblasStatus_t status = testing_geam_batched<float>(arg);
 
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
+
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -210,6 +213,9 @@ TEST_P(geam_gtest, geam_batched_gtest_double_complex)
     Arguments arg = setup_geam_arguments(GetParam());
 
     hipblasStatus_t status = testing_geam_batched<hipblasDoubleComplex>(arg);
+
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -238,6 +244,9 @@ TEST_P(geam_gtest, geam_strided_batched_gtest_float)
 
     hipblasStatus_t status = testing_geam_strided_batched<float>(arg);
 
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
+
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -264,6 +273,9 @@ TEST_P(geam_gtest, geam_strided_batched_gtest_double_complex)
     Arguments arg = setup_geam_arguments(GetParam());
 
     hipblasStatus_t status = testing_geam_strided_batched<hipblasDoubleComplex>(arg);
+
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
