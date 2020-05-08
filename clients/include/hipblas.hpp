@@ -1650,6 +1650,57 @@ hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t    handle,
                                            int                strideC,
                                            int                batchCount);
 
+// geam
+template <typename T>
+hipblasStatus_t hipblasGeam(hipblasHandle_t    handle,
+                            hipblasOperation_t transA,
+                            hipblasOperation_t transB,
+                            int                m,
+                            int                n,
+                            const T*           alpha,
+                            const T*           A,
+                            int                lda,
+                            const T*           beta,
+                            const T*           B,
+                            int                ldb,
+                            T*                 C,
+                            int                ldc);
+
+template <typename T>
+hipblasStatus_t hipblasGeamBatched(hipblasHandle_t    handle,
+                                   hipblasOperation_t transA,
+                                   hipblasOperation_t transB,
+                                   int                m,
+                                   int                n,
+                                   const T*           alpha,
+                                   const T* const     A[],
+                                   int                lda,
+                                   const T*           beta,
+                                   const T* const     B[],
+                                   int                ldb,
+                                   T* const           C[],
+                                   int                ldc,
+                                   int                batchCount);
+
+template <typename T>
+hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t    handle,
+                                          hipblasOperation_t transA,
+                                          hipblasOperation_t transB,
+                                          int                m,
+                                          int                n,
+                                          const T*           alpha,
+                                          const T*           A,
+                                          int                lda,
+                                          int                strideA,
+                                          const T*           beta,
+                                          const T*           B,
+                                          int                ldb,
+                                          int                strideB,
+                                          T*                 C,
+                                          int                ldc,
+                                          int                strideC,
+                                          int                batchCount);
+
 // hemm
 template <typename T>
 hipblasStatus_t hipblasHemm(hipblasHandle_t   handle,
@@ -1921,20 +1972,5 @@ hipblasStatus_t hipblasTrtri_trsm(hipblasHandle_t   handle,
                                   T*                A,
                                   int               lda,
                                   T*                invA);
-
-template <typename T>
-hipblasStatus_t hipblasGeam(hipblasHandle_t    handle,
-                            hipblasOperation_t transA,
-                            hipblasOperation_t transB,
-                            int                m,
-                            int                n,
-                            const T*           alpha,
-                            const T*           A,
-                            int                lda,
-                            const T*           beta,
-                            const T*           B,
-                            int                ldb,
-                            T*                 C,
-                            int                ldc);
 
 #endif // _ROCBLAS_HPP_

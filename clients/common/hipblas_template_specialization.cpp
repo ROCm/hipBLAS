@@ -8905,6 +8905,276 @@ hipblasStatus_t hipblasGeam<double>(hipblasHandle_t    handle,
     return hipblasDgeam(handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc);
 }
 
+template <>
+hipblasStatus_t hipblasGeam(hipblasHandle_t       handle,
+                            hipblasOperation_t    transA,
+                            hipblasOperation_t    transB,
+                            int                   m,
+                            int                   n,
+                            const hipblasComplex* alpha,
+                            const hipblasComplex* A,
+                            int                   lda,
+                            const hipblasComplex* beta,
+                            const hipblasComplex* B,
+                            int                   ldb,
+                            hipblasComplex*       C,
+                            int                   ldc)
+{
+    return hipblasCgeam(handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc);
+}
+
+template <>
+hipblasStatus_t hipblasGeam(hipblasHandle_t             handle,
+                            hipblasOperation_t          transA,
+                            hipblasOperation_t          transB,
+                            int                         m,
+                            int                         n,
+                            const hipblasDoubleComplex* alpha,
+                            const hipblasDoubleComplex* A,
+                            int                         lda,
+                            const hipblasDoubleComplex* beta,
+                            const hipblasDoubleComplex* B,
+                            int                         ldb,
+                            hipblasDoubleComplex*       C,
+                            int                         ldc)
+{
+    return hipblasZgeam(handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc);
+}
+
+// geam_batched
+template <>
+hipblasStatus_t hipblasGeamBatched(hipblasHandle_t    handle,
+                                   hipblasOperation_t transA,
+                                   hipblasOperation_t transB,
+                                   int                m,
+                                   int                n,
+                                   const float*       alpha,
+                                   const float* const A[],
+                                   int                lda,
+                                   const float*       beta,
+                                   const float* const B[],
+                                   int                ldb,
+                                   float* const       C[],
+                                   int                ldc,
+                                   int                batchCount)
+{
+    return hipblasSgeamBatched(
+        handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGeamBatched(hipblasHandle_t     handle,
+                                   hipblasOperation_t  transA,
+                                   hipblasOperation_t  transB,
+                                   int                 m,
+                                   int                 n,
+                                   const double*       alpha,
+                                   const double* const A[],
+                                   int                 lda,
+                                   const double*       beta,
+                                   const double* const B[],
+                                   int                 ldb,
+                                   double* const       C[],
+                                   int                 ldc,
+                                   int                 batchCount)
+{
+    return hipblasDgeamBatched(
+        handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGeamBatched(hipblasHandle_t             handle,
+                                   hipblasOperation_t          transA,
+                                   hipblasOperation_t          transB,
+                                   int                         m,
+                                   int                         n,
+                                   const hipblasComplex*       alpha,
+                                   const hipblasComplex* const A[],
+                                   int                         lda,
+                                   const hipblasComplex*       beta,
+                                   const hipblasComplex* const B[],
+                                   int                         ldb,
+                                   hipblasComplex* const       C[],
+                                   int                         ldc,
+                                   int                         batchCount)
+{
+    return hipblasCgeamBatched(
+        handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGeamBatched(hipblasHandle_t                   handle,
+                                   hipblasOperation_t                transA,
+                                   hipblasOperation_t                transB,
+                                   int                               m,
+                                   int                               n,
+                                   const hipblasDoubleComplex*       alpha,
+                                   const hipblasDoubleComplex* const A[],
+                                   int                               lda,
+                                   const hipblasDoubleComplex*       beta,
+                                   const hipblasDoubleComplex* const B[],
+                                   int                               ldb,
+                                   hipblasDoubleComplex* const       C[],
+                                   int                               ldc,
+                                   int                               batchCount)
+{
+    return hipblasZgeamBatched(
+        handle, transA, transB, m, n, alpha, A, lda, beta, B, ldb, C, ldc, batchCount);
+}
+
+// geam_strided_batched
+template <>
+hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t    handle,
+                                          hipblasOperation_t transA,
+                                          hipblasOperation_t transB,
+                                          int                m,
+                                          int                n,
+                                          const float*       alpha,
+                                          const float*       A,
+                                          int                lda,
+                                          int                strideA,
+                                          const float*       beta,
+                                          const float*       B,
+                                          int                ldb,
+                                          int                strideB,
+                                          float*             C,
+                                          int                ldc,
+                                          int                strideC,
+                                          int                batchCount)
+{
+    return hipblasSgeamStridedBatched(handle,
+                                      transA,
+                                      transB,
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      beta,
+                                      B,
+                                      ldb,
+                                      strideB,
+                                      C,
+                                      ldc,
+                                      strideC,
+                                      batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t    handle,
+                                          hipblasOperation_t transA,
+                                          hipblasOperation_t transB,
+                                          int                m,
+                                          int                n,
+                                          const double*      alpha,
+                                          const double*      A,
+                                          int                lda,
+                                          int                strideA,
+                                          const double*      beta,
+                                          const double*      B,
+                                          int                ldb,
+                                          int                strideB,
+                                          double*            C,
+                                          int                ldc,
+                                          int                strideC,
+                                          int                batchCount)
+{
+    return hipblasDgeamStridedBatched(handle,
+                                      transA,
+                                      transB,
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      beta,
+                                      B,
+                                      ldb,
+                                      strideB,
+                                      C,
+                                      ldc,
+                                      strideC,
+                                      batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t       handle,
+                                          hipblasOperation_t    transA,
+                                          hipblasOperation_t    transB,
+                                          int                   m,
+                                          int                   n,
+                                          const hipblasComplex* alpha,
+                                          const hipblasComplex* A,
+                                          int                   lda,
+                                          int                   strideA,
+                                          const hipblasComplex* beta,
+                                          const hipblasComplex* B,
+                                          int                   ldb,
+                                          int                   strideB,
+                                          hipblasComplex*       C,
+                                          int                   ldc,
+                                          int                   strideC,
+                                          int                   batchCount)
+{
+    return hipblasCgeamStridedBatched(handle,
+                                      transA,
+                                      transB,
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      beta,
+                                      B,
+                                      ldb,
+                                      strideB,
+                                      C,
+                                      ldc,
+                                      strideC,
+                                      batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t             handle,
+                                          hipblasOperation_t          transA,
+                                          hipblasOperation_t          transB,
+                                          int                         m,
+                                          int                         n,
+                                          const hipblasDoubleComplex* alpha,
+                                          const hipblasDoubleComplex* A,
+                                          int                         lda,
+                                          int                         strideA,
+                                          const hipblasDoubleComplex* beta,
+                                          const hipblasDoubleComplex* B,
+                                          int                         ldb,
+                                          int                         strideB,
+                                          hipblasDoubleComplex*       C,
+                                          int                         ldc,
+                                          int                         strideC,
+                                          int                         batchCount)
+{
+    return hipblasZgeamStridedBatched(handle,
+                                      transA,
+                                      transB,
+                                      m,
+                                      n,
+                                      alpha,
+                                      A,
+                                      lda,
+                                      strideA,
+                                      beta,
+                                      B,
+                                      ldb,
+                                      strideB,
+                                      C,
+                                      ldc,
+                                      strideC,
+                                      batchCount);
+}
+
 #ifdef __HIP_PLATFORM_SOLVER__
 
 // getrf

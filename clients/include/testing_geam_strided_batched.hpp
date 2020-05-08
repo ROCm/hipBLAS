@@ -21,7 +21,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_geam(Arguments argus)
+hipblasStatus_t testing_geam_strided_batched(Arguments argus)
 {
     int M = argus.M;
     int N = argus.N;
@@ -36,15 +36,16 @@ hipblasStatus_t testing_geam(Arguments argus)
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();
 
-    int A_size, B_size, C_size, A_row, A_col, B_row, B_col;
+    double stride_scale = argus.stride_scale;
+    int    batch_count  = argus.batch_count;
+
+    int A_size, B_size, C_size, stride_A, stride_B, stride_C, A_row, A_col, B_row, B_col;
     int inc1_A, inc2_A, inc1_B, inc2_B;
 
     T hipblas_error = 0.0;
 
-    hipblasHandle_t handle;
     hipblasStatus_t status1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status2 = HIPBLAS_STATUS_SUCCESS;
-    hipblasCreate(&handle);
 
     if(transA == HIPBLAS_OP_N)
     {
@@ -75,16 +76,22 @@ hipblasStatus_t testing_geam(Arguments argus)
         inc2_B = 1;
     }
 
-    A_size = lda * A_col;
-    B_size = ldb * B_col;
-    C_size = ldc * N;
+    stride_A = lda * A_col * stride_scale;
+    stride_B = ldb * B_col * stride_scale;
+    stride_C = ldc * N * stride_scale;
+
+    A_size = stride_A * batch_count;
+    B_size = stride_B * batch_count;
+    C_size = stride_C * batch_count;
 
     // check here to prevent undefined memory allocation error
-    if(M <= 0 || N <= 0 || lda < A_row || ldb < B_row || ldc < M)
+    if(M <= 0 || N <= 0 || lda < A_row || ldb < B_row || ldc < M || batch_count < 0)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     // allocate memory on device
     device_vector<T> dA(A_size);
@@ -107,9 +114,9 @@ hipblasStatus_t testing_geam(Arguments argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hA, A_row, A_col, lda);
-    hipblas_init<T>(hB, B_row, B_col, ldb);
-    hipblas_init<T>(hC1, M, N, ldc);
+    hipblas_init<T>(hA, A_row, A_col, lda, stride_A, batch_count);
+    hipblas_init<T>(hB, B_row, B_col, ldb, stride_B, batch_count);
+    hipblas_init<T>(hC1, M, N, ldc, stride_C, batch_count);
 
     hC2     = hC1;
     hC_copy = hC1;
@@ -134,8 +141,23 @@ hipblasStatus_t testing_geam(Arguments argus)
             return status1;
         }
 
-        status2 = hipblasGeam<T>(
-            handle, transA, transB, M, N, &h_alpha, dA, lda, &h_beta, dB, ldb, dC, ldc);
+        status2 = hipblasGeamStridedBatched<T>(handle,
+                                               transA,
+                                               transB,
+                                               M,
+                                               N,
+                                               &h_alpha,
+                                               dA,
+                                               lda,
+                                               stride_A,
+                                               &h_beta,
+                                               dB,
+                                               ldb,
+                                               stride_B,
+                                               dC,
+                                               ldc,
+                                               stride_C,
+                                               batch_count);
 
         if(status2 != HIPBLAS_STATUS_SUCCESS)
         {
@@ -157,8 +179,23 @@ hipblasStatus_t testing_geam(Arguments argus)
 
         CHECK_HIP_ERROR(hipMemcpy(dC, hC2.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
-        status2 = hipblasGeam<T>(
-            handle, transA, transB, M, N, d_alpha, dA, lda, d_beta, dB, ldb, dC, ldc);
+        status2 = hipblasGeamStridedBatched<T>(handle,
+                                               transA,
+                                               transB,
+                                               M,
+                                               N,
+                                               d_alpha,
+                                               dA,
+                                               lda,
+                                               stride_A,
+                                               d_beta,
+                                               dB,
+                                               ldb,
+                                               stride_B,
+                                               dC,
+                                               ldc,
+                                               stride_C,
+                                               batch_count);
 
         if(status2 != HIPBLAS_STATUS_SUCCESS)
         {
@@ -175,26 +212,26 @@ hipblasStatus_t testing_geam(Arguments argus)
     if(status2 != HIPBLAS_STATUS_INVALID_VALUE) // only valid size compare with cblas
     {
         // reference calculation
-        for(int i1 = 0; i1 < M; i1++)
+        for(int b = 0; b < batch_count; b++)
         {
-            for(int i2 = 0; i2 < N; i2++)
+            for(int i1 = 0; i1 < M; i1++)
             {
-                hC_copy[i1 + i2 * ldc] = h_alpha * hA[i1 * inc1_A + i2 * inc2_A]
-                                         + h_beta * hB[i1 * inc1_B + i2 * inc2_B];
+                for(int i2 = 0; i2 < N; i2++)
+                {
+                    hC_copy[i1 + i2 * ldc + b * stride_C]
+                        = h_alpha * hA[i1 * inc1_A + i2 * inc2_A + b * stride_A]
+                          + h_beta * hB[i1 * inc1_B + i2 * inc2_B + b * stride_B];
+                }
             }
         }
     }
-
-#ifndef NDEBUG
-    print_matrix(hC_copy, hC1, min(M, 3), min(N, 3), ldc);
-#endif
 
     // enable unit check, notice unit check is not invasive, but norm check is,
     // unit check and norm check can not be interchanged their order
     if(argus.unit_check)
     {
-        unit_check_general<T>(M, N, ldc, hC_copy.data(), hC1.data());
-        unit_check_general<T>(M, N, ldc, hC_copy.data(), hC2.data());
+        unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC1);
+        unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC2);
     }
 
     hipblasDestroy(handle);
