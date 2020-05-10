@@ -142,10 +142,10 @@ template <typename T>
 static constexpr bool is_complex = false;
 
 template <>
-constexpr bool is_complex<hipblasComplex> = true;
+static constexpr bool is_complex<hipblasComplex> = true;
 
 template <>
-constexpr bool is_complex<hipblasDoubleComplex> = true;
+static constexpr bool is_complex<hipblasDoubleComplex> = true;
 
 // Get base types from complex types.
 template <typename T, typename = void>
