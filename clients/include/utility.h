@@ -141,11 +141,19 @@ inline hipblasBfloat16 float_to_bfloat16(float f)
 template <typename T>
 static constexpr bool is_complex = false;
 
+#if __clang__
 template <>
 static constexpr bool is_complex<hipblasComplex> = true;
 
 template <>
 static constexpr bool is_complex<hipblasDoubleComplex> = true;
+#else
+template <>
+constexpr bool is_complex<hipblasComplex> = true;
+
+template <>
+constexpr bool is_complex<hipblasDoubleComplex> = true;
+#endif
 
 // Get base types from complex types.
 template <typename T, typename = void>
