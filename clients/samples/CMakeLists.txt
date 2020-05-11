@@ -46,10 +46,10 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c
   target_compile_options( ${exe} PRIVATE -mf16c)
 
   if( CUSTOM_TARGET )
-    target_link_libraries( ${exe} PRIVATE hip::${CUSTOM_TARGET} )
+    target_link_libraries( ${exe} PRIVATE hip::${CUSTOM_TARGET} hip::host )
   else( )
     if( LIBAMDHIP64_LIBRARY )
-      target_link_libraries( ${exe} PRIVATE hip::amdhip64 )
+      target_link_libraries( ${exe} PRIVATE hip::amdhip64 hip::host )
     else( )
       get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
       target_link_libraries( ${exe} PRIVATE ${HIP_HCC_LOCATION} )
