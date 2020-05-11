@@ -10,18 +10,6 @@
 #include <algorithm>
 #include <math.h>
 
-#define USE_DEVICE_POINTER_MODE(handle, cmd)                        \
-    do                                                              \
-    {                                                               \
-        hipblasPointerMode_t mode;                                  \
-        hipblasGetPointerMode(handle, &mode);                       \
-        hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE); \
-                                                                    \
-        cmd;                                                        \
-                                                                    \
-        hipblasSetPointerMode(handle, mode);                        \
-    } while(0);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -10464,30 +10452,22 @@ hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t             handle,
 hipblasStatus_t hipblasSgetrf(
     hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(
-        handle, status = rocsolver_sgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_sgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info));
 }
 
 hipblasStatus_t hipblasDgetrf(
     hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(
-        handle, status = rocsolver_dgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_dgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info));
 }
 
 hipblasStatus_t hipblasCgetrf(
     hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(
-        handle,
-        status = rocsolver_cgetrf(
-            (rocblas_handle)handle, n, n, (rocblas_float_complex*)A, lda, ipiv, info));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_cgetrf((rocblas_handle)handle, n, n, (rocblas_float_complex*)A, lda, ipiv, info));
 }
 
 hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
@@ -10497,12 +10477,8 @@ hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
                               int*                  ipiv,
                               int*                  info)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(
-        handle,
-        status = rocsolver_zgetrf(
-            (rocblas_handle)handle, n, n, (rocblas_double_complex*)A, lda, ipiv, info));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_zgetrf(
+        (rocblas_handle)handle, n, n, (rocblas_double_complex*)A, lda, ipiv, info));
 }
 
 // getrf_batched
@@ -10514,11 +10490,8 @@ hipblasStatus_t hipblasSgetrfBatched(hipblasHandle_t handle,
                                      int*            info,
                                      const int       batch_count)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_sgetrf_batched(
-                                (rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_sgetrf_batched((rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count));
 }
 
 hipblasStatus_t hipblasDgetrfBatched(hipblasHandle_t handle,
@@ -10529,11 +10502,8 @@ hipblasStatus_t hipblasDgetrfBatched(hipblasHandle_t handle,
                                      int*            info,
                                      const int       batch_count)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_dgetrf_batched(
-                                (rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_dgetrf_batched((rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count));
 }
 
 hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle,
@@ -10544,18 +10514,8 @@ hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle,
                                      int*                  info,
                                      const int             batch_count)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_cgetrf_batched((rocblas_handle)handle,
-                                                              n,
-                                                              n,
-                                                              (rocblas_float_complex**)A,
-                                                              lda,
-                                                              ipiv,
-                                                              n,
-                                                              info,
-                                                              batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_cgetrf_batched(
+        (rocblas_handle)handle, n, n, (rocblas_float_complex**)A, lda, ipiv, n, info, batch_count));
 }
 
 hipblasStatus_t hipblasZgetrfBatched(hipblasHandle_t             handle,
@@ -10566,18 +10526,15 @@ hipblasStatus_t hipblasZgetrfBatched(hipblasHandle_t             handle,
                                      int*                        info,
                                      const int                   batch_count)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_zgetrf_batched((rocblas_handle)handle,
-                                                              n,
-                                                              n,
-                                                              (rocblas_double_complex**)A,
-                                                              lda,
-                                                              ipiv,
-                                                              n,
-                                                              info,
-                                                              batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_zgetrf_batched((rocblas_handle)handle,
+                                                             n,
+                                                             n,
+                                                             (rocblas_double_complex**)A,
+                                                             lda,
+                                                             ipiv,
+                                                             n,
+                                                             info,
+                                                             batch_count));
 }
 
 // getrf_strided_batched
@@ -10591,12 +10548,8 @@ hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t handle,
                                             int*            info,
                                             const int       batch_count)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(
-        handle,
-        status = rocsolver_sgetrf_strided_batched(
-            (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_sgetrf_strided_batched(
+        (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count));
 }
 
 hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t handle,
@@ -10609,12 +10562,8 @@ hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t handle,
                                             int*            info,
                                             const int       batch_count)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(
-        handle,
-        status = rocsolver_dgetrf_strided_batched(
-            (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_dgetrf_strided_batched(
+        (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count));
 }
 
 hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t handle,
@@ -10627,19 +10576,16 @@ hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t handle,
                                             int*            info,
                                             const int       batch_count)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_cgetrf_strided_batched((rocblas_handle)handle,
-                                                                      n,
-                                                                      n,
-                                                                      (rocblas_float_complex*)A,
-                                                                      lda,
-                                                                      strideA,
-                                                                      ipiv,
-                                                                      strideP,
-                                                                      info,
-                                                                      batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_cgetrf_strided_batched((rocblas_handle)handle,
+                                                                     n,
+                                                                     n,
+                                                                     (rocblas_float_complex*)A,
+                                                                     lda,
+                                                                     strideA,
+                                                                     ipiv,
+                                                                     strideP,
+                                                                     info,
+                                                                     batch_count));
 }
 
 hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
@@ -10652,19 +10598,16 @@ hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
                                             int*                  info,
                                             const int             batch_count)
 {
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_zgetrf_strided_batched((rocblas_handle)handle,
-                                                                      n,
-                                                                      n,
-                                                                      (rocblas_double_complex*)A,
-                                                                      lda,
-                                                                      strideA,
-                                                                      ipiv,
-                                                                      strideP,
-                                                                      info,
-                                                                      batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_zgetrf_strided_batched((rocblas_handle)handle,
+                                                                     n,
+                                                                     n,
+                                                                     (rocblas_double_complex*)A,
+                                                                     lda,
+                                                                     strideA,
+                                                                     ipiv,
+                                                                     strideP,
+                                                                     info,
+                                                                     batch_count));
 }
 
 // getrs
@@ -10698,18 +10641,8 @@ hipblasStatus_t hipblasSgetrs(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_sgetrs((rocblas_handle)handle,
-                                                      hipOperationToHCCOperation(trans),
-                                                      n,
-                                                      nrhs,
-                                                      A,
-                                                      lda,
-                                                      ipiv,
-                                                      B,
-                                                      ldb));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_sgetrs(
+        (rocblas_handle)handle, hipOperationToHCCOperation(trans), n, nrhs, A, lda, ipiv, B, ldb));
 }
 
 hipblasStatus_t hipblasDgetrs(hipblasHandle_t          handle,
@@ -10742,18 +10675,8 @@ hipblasStatus_t hipblasDgetrs(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_dgetrs((rocblas_handle)handle,
-                                                      hipOperationToHCCOperation(trans),
-                                                      n,
-                                                      nrhs,
-                                                      A,
-                                                      lda,
-                                                      ipiv,
-                                                      B,
-                                                      ldb));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_dgetrs(
+        (rocblas_handle)handle, hipOperationToHCCOperation(trans), n, nrhs, A, lda, ipiv, B, ldb));
 }
 
 hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
@@ -10786,18 +10709,15 @@ hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_cgetrs((rocblas_handle)handle,
-                                                      hipOperationToHCCOperation(trans),
-                                                      n,
-                                                      nrhs,
-                                                      (rocblas_float_complex*)A,
-                                                      lda,
-                                                      ipiv,
-                                                      (rocblas_float_complex*)B,
-                                                      ldb));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_cgetrs((rocblas_handle)handle,
+                                                     hipOperationToHCCOperation(trans),
+                                                     n,
+                                                     nrhs,
+                                                     (rocblas_float_complex*)A,
+                                                     lda,
+                                                     ipiv,
+                                                     (rocblas_float_complex*)B,
+                                                     ldb));
 }
 
 hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
@@ -10830,18 +10750,15 @@ hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_zgetrs((rocblas_handle)handle,
-                                                      hipOperationToHCCOperation(trans),
-                                                      n,
-                                                      nrhs,
-                                                      (rocblas_double_complex*)A,
-                                                      lda,
-                                                      ipiv,
-                                                      (rocblas_double_complex*)B,
-                                                      ldb));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_zgetrs((rocblas_handle)handle,
+                                                     hipOperationToHCCOperation(trans),
+                                                     n,
+                                                     nrhs,
+                                                     (rocblas_double_complex*)A,
+                                                     lda,
+                                                     ipiv,
+                                                     (rocblas_double_complex*)B,
+                                                     ldb));
 }
 
 // getrs_batched
@@ -10878,20 +10795,17 @@ hipblasStatus_t hipblasSgetrsBatched(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_sgetrs_batched((rocblas_handle)handle,
-                                                              hipOperationToHCCOperation(trans),
-                                                              n,
-                                                              nrhs,
-                                                              A,
-                                                              lda,
-                                                              ipiv,
-                                                              n,
-                                                              B,
-                                                              ldb,
-                                                              batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_sgetrs_batched((rocblas_handle)handle,
+                                                             hipOperationToHCCOperation(trans),
+                                                             n,
+                                                             nrhs,
+                                                             A,
+                                                             lda,
+                                                             ipiv,
+                                                             n,
+                                                             B,
+                                                             ldb,
+                                                             batch_count));
 }
 
 hipblasStatus_t hipblasDgetrsBatched(hipblasHandle_t          handle,
@@ -10927,20 +10841,17 @@ hipblasStatus_t hipblasDgetrsBatched(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_dgetrs_batched((rocblas_handle)handle,
-                                                              hipOperationToHCCOperation(trans),
-                                                              n,
-                                                              nrhs,
-                                                              A,
-                                                              lda,
-                                                              ipiv,
-                                                              n,
-                                                              B,
-                                                              ldb,
-                                                              batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_dgetrs_batched((rocblas_handle)handle,
+                                                             hipOperationToHCCOperation(trans),
+                                                             n,
+                                                             nrhs,
+                                                             A,
+                                                             lda,
+                                                             ipiv,
+                                                             n,
+                                                             B,
+                                                             ldb,
+                                                             batch_count));
 }
 
 hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          handle,
@@ -10976,20 +10887,17 @@ hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_cgetrs_batched((rocblas_handle)handle,
-                                                              hipOperationToHCCOperation(trans),
-                                                              n,
-                                                              nrhs,
-                                                              (rocblas_float_complex**)A,
-                                                              lda,
-                                                              ipiv,
-                                                              n,
-                                                              (rocblas_float_complex**)B,
-                                                              ldb,
-                                                              batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_cgetrs_batched((rocblas_handle)handle,
+                                                             hipOperationToHCCOperation(trans),
+                                                             n,
+                                                             nrhs,
+                                                             (rocblas_float_complex**)A,
+                                                             lda,
+                                                             ipiv,
+                                                             n,
+                                                             (rocblas_float_complex**)B,
+                                                             ldb,
+                                                             batch_count));
 }
 
 hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             handle,
@@ -11025,20 +10933,17 @@ hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_zgetrs_batched((rocblas_handle)handle,
-                                                              hipOperationToHCCOperation(trans),
-                                                              n,
-                                                              nrhs,
-                                                              (rocblas_double_complex**)A,
-                                                              lda,
-                                                              ipiv,
-                                                              n,
-                                                              (rocblas_double_complex**)B,
-                                                              ldb,
-                                                              batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_zgetrs_batched((rocblas_handle)handle,
+                                                             hipOperationToHCCOperation(trans),
+                                                             n,
+                                                             nrhs,
+                                                             (rocblas_double_complex**)A,
+                                                             lda,
+                                                             ipiv,
+                                                             n,
+                                                             (rocblas_double_complex**)B,
+                                                             ldb,
+                                                             batch_count));
 }
 
 // getrs_strided_batched
@@ -11078,23 +10983,20 @@ hipblasStatus_t hipblasSgetrsStridedBatched(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status
-                            = rocsolver_sgetrs_strided_batched((rocblas_handle)handle,
-                                                               hipOperationToHCCOperation(trans),
-                                                               n,
-                                                               nrhs,
-                                                               A,
-                                                               lda,
-                                                               strideA,
-                                                               ipiv,
-                                                               strideP,
-                                                               B,
-                                                               ldb,
-                                                               strideB,
-                                                               batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_sgetrs_strided_batched((rocblas_handle)handle,
+                                         hipOperationToHCCOperation(trans),
+                                         n,
+                                         nrhs,
+                                         A,
+                                         lda,
+                                         strideA,
+                                         ipiv,
+                                         strideP,
+                                         B,
+                                         ldb,
+                                         strideB,
+                                         batch_count));
 }
 
 hipblasStatus_t hipblasDgetrsStridedBatched(hipblasHandle_t          handle,
@@ -11133,23 +11035,20 @@ hipblasStatus_t hipblasDgetrsStridedBatched(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status
-                            = rocsolver_dgetrs_strided_batched((rocblas_handle)handle,
-                                                               hipOperationToHCCOperation(trans),
-                                                               n,
-                                                               nrhs,
-                                                               A,
-                                                               lda,
-                                                               strideA,
-                                                               ipiv,
-                                                               strideP,
-                                                               B,
-                                                               ldb,
-                                                               strideB,
-                                                               batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_dgetrs_strided_batched((rocblas_handle)handle,
+                                         hipOperationToHCCOperation(trans),
+                                         n,
+                                         nrhs,
+                                         A,
+                                         lda,
+                                         strideA,
+                                         ipiv,
+                                         strideP,
+                                         B,
+                                         ldb,
+                                         strideB,
+                                         batch_count));
 }
 
 hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t          handle,
@@ -11188,23 +11087,20 @@ hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status
-                            = rocsolver_cgetrs_strided_batched((rocblas_handle)handle,
-                                                               hipOperationToHCCOperation(trans),
-                                                               n,
-                                                               nrhs,
-                                                               (rocblas_float_complex*)A,
-                                                               lda,
-                                                               strideA,
-                                                               ipiv,
-                                                               strideP,
-                                                               (rocblas_float_complex*)B,
-                                                               ldb,
-                                                               strideB,
-                                                               batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_cgetrs_strided_batched((rocblas_handle)handle,
+                                         hipOperationToHCCOperation(trans),
+                                         n,
+                                         nrhs,
+                                         (rocblas_float_complex*)A,
+                                         lda,
+                                         strideA,
+                                         ipiv,
+                                         strideP,
+                                         (rocblas_float_complex*)B,
+                                         ldb,
+                                         strideB,
+                                         batch_count));
 }
 
 hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
@@ -11243,23 +11139,20 @@ hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status
-                            = rocsolver_zgetrs_strided_batched((rocblas_handle)handle,
-                                                               hipOperationToHCCOperation(trans),
-                                                               n,
-                                                               nrhs,
-                                                               (rocblas_double_complex*)A,
-                                                               lda,
-                                                               strideA,
-                                                               ipiv,
-                                                               strideP,
-                                                               (rocblas_double_complex*)B,
-                                                               ldb,
-                                                               strideB,
-                                                               batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_zgetrs_strided_batched((rocblas_handle)handle,
+                                         hipOperationToHCCOperation(trans),
+                                         n,
+                                         nrhs,
+                                         (rocblas_double_complex*)A,
+                                         lda,
+                                         strideA,
+                                         ipiv,
+                                         strideP,
+                                         (rocblas_double_complex*)B,
+                                         ldb,
+                                         strideB,
+                                         batch_count));
 }
 
 // geqrf
@@ -11286,10 +11179,7 @@ hipblasStatus_t hipblasSgeqrf(hipblasHandle_t handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_sgeqrf((rocblas_handle)handle, m, n, A, lda, tau));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_sgeqrf((rocblas_handle)handle, m, n, A, lda, tau));
 }
 
 hipblasStatus_t hipblasDgeqrf(hipblasHandle_t handle,
@@ -11315,10 +11205,7 @@ hipblasStatus_t hipblasDgeqrf(hipblasHandle_t handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_dgeqrf((rocblas_handle)handle, m, n, A, lda, tau));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_dgeqrf((rocblas_handle)handle, m, n, A, lda, tau));
 }
 
 hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
@@ -11344,17 +11231,8 @@ hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
     else
         *info = 0;
 
-    // rocsolver_status status;
-    // USE_DEVICE_POINTER_MODE(handle, status = rocsolver_cgeqrf(
-    //     (rocblas_handle)handle,
-    //     m,
-    //     n,
-    //     (rocblas_float_complex*)A,
-    //     lda,
-    //     (rocblas_float_complex*)tau));
-    // return rocBLASStatusToHIPStatus(status);
-
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return rocBLASStatusToHIPStatus(rocsolver_cgeqrf(
+        (rocblas_handle)handle, m, n, (rocblas_float_complex*)A, lda, (rocblas_float_complex*)tau));
 }
 
 hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
@@ -11380,17 +11258,12 @@ hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
     else
         *info = 0;
 
-    // rocsolver_status status;
-    // USE_DEVICE_POINTER_MODE(handle, status = rocsolver_zgeqrf(
-    //     (rocblas_handle)handle,
-    //     m,
-    //     n,
-    //     (rocblas_double_complex*)A,
-    //     lda,
-    //     (rocblas_double_complex*)tau));
-    // return rocBLASStatusToHIPStatus(status);
-
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return rocBLASStatusToHIPStatus(rocsolver_zgeqrf((rocblas_handle)handle,
+                                                     m,
+                                                     n,
+                                                     (rocblas_double_complex*)A,
+                                                     lda,
+                                                     (rocblas_double_complex*)tau));
 }
 
 // geqrf_batched
@@ -11425,10 +11298,8 @@ hipblasStatus_t hipblasSgeqrfBatched(hipblasHandle_t handle,
     if(perArray > 0)
         hipMalloc(&ipiv, batch_count * perArray * sizeof(float));
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_sgeqrf_batched(
-                                (rocblas_handle)handle, m, n, A, lda, ipiv, perArray, batch_count));
+    rocsolver_status status = rocsolver_sgeqrf_batched(
+        (rocblas_handle)handle, m, n, A, lda, ipiv, perArray, batch_count);
 
     if(status == rocblas_status_success)
     {
@@ -11478,10 +11349,8 @@ hipblasStatus_t hipblasDgeqrfBatched(hipblasHandle_t handle,
     if(perArray > 0)
         hipMalloc(&ipiv, batch_count * perArray * sizeof(double));
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(handle,
-                            status = rocsolver_dgeqrf_batched(
-                                (rocblas_handle)handle, m, n, A, lda, ipiv, perArray, batch_count));
+    rocsolver_status status = rocsolver_dgeqrf_batched(
+        (rocblas_handle)handle, m, n, A, lda, ipiv, perArray, batch_count);
 
     if(status == rocblas_status_success)
     {
@@ -11526,38 +11395,37 @@ hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle,
     else
         *info = 0;
 
-    // int perArray = std::min(m, n);
-    // rocblas_float_complex* ipiv = NULL;
-    // if (perArray > 0)
-    //     hipMalloc(&ipiv, batch_count * perArray * sizeof(rocblas_float_complex));
+    int                    perArray = std::min(m, n);
+    rocblas_float_complex* ipiv     = NULL;
+    if(perArray > 0)
+        hipMalloc(&ipiv, batch_count * perArray * sizeof(rocblas_float_complex));
 
-    // rocsolver_status status;
-    // USE_DEVICE_POINTER_MODE(handle, status = rocsolver_cgeqrf_batched(
-    //     (rocblas_handle)handle,
-    //     m,
-    //     n,
-    //     (rocblas_float_complex**)A,
-    //     lda,
-    //     (rocblas_float_complex*)ipiv,
-    //     perArray,
-    //     batch_count));
+    rocsolver_status status = rocsolver_cgeqrf_batched((rocblas_handle)handle,
+                                                       m,
+                                                       n,
+                                                       (rocblas_float_complex**)A,
+                                                       lda,
+                                                       (rocblas_float_complex*)ipiv,
+                                                       perArray,
+                                                       batch_count);
 
-    // if (status == rocblas_status_success)
-    // {
-    //     // TO DO: Copy ipiv into tau using a fast kernel call
-    //     rocblas_float_complex* hTau[batch_count];
-    //     hipMemcpy(hTau, tau, sizeof(rocblas_float_complex*) * batch_count, hipMemcpyDeviceToHost);
+    if(status == rocblas_status_success)
+    {
+        // TO DO: Copy ipiv into tau using a fast kernel call
+        rocblas_float_complex* hTau[batch_count];
+        hipMemcpy(hTau, tau, sizeof(rocblas_float_complex*) * batch_count, hipMemcpyDeviceToHost);
 
-    //     for(int b = 0; b < batch_count; b++)
-    //         hipMemcpy(hTau[b], ipiv + b * perArray, sizeof(rocblas_float_complex) * perArray, hipMemcpyDeviceToDevice);
-    // }
+        for(int b = 0; b < batch_count; b++)
+            hipMemcpy(hTau[b],
+                      ipiv + b * perArray,
+                      sizeof(rocblas_float_complex) * perArray,
+                      hipMemcpyDeviceToDevice);
+    }
 
-    // if (perArray >  0)
-    //     hipFree(ipiv);
+    if(perArray > 0)
+        hipFree(ipiv);
 
-    // return rocBLASStatusToHIPStatus(status);
-
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return rocBLASStatusToHIPStatus(status);
 }
 
 hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             handle,
@@ -11586,38 +11454,37 @@ hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             handle,
     else
         *info = 0;
 
-    // int perArray = std::min(m, n);
-    // rocblas_double_complex* ipiv = NULL;
-    // if (perArray > 0)
-    //     hipMalloc(&ipiv, batch_count * perArray * sizeof(rocblas_double_complex));
+    int                     perArray = std::min(m, n);
+    rocblas_double_complex* ipiv     = NULL;
+    if(perArray > 0)
+        hipMalloc(&ipiv, batch_count * perArray * sizeof(rocblas_double_complex));
 
-    // rocsolver_status status;
-    // USE_DEVICE_POINTER_MODE(handle, status = rocsolver_zgeqrf_batched(
-    //     (rocblas_handle)handle,
-    //     m,
-    //     n,
-    //     (rocblas_double_complex**)A,
-    //     lda,
-    //     (rocblas_double_complex*)ipiv,
-    //     perArray,
-    //     batch_count));
+    rocsolver_status status = rocsolver_zgeqrf_batched((rocblas_handle)handle,
+                                                       m,
+                                                       n,
+                                                       (rocblas_double_complex**)A,
+                                                       lda,
+                                                       (rocblas_double_complex*)ipiv,
+                                                       perArray,
+                                                       batch_count);
 
-    // if (status == rocblas_status_success)
-    // {
-    //     // TO DO: Copy ipiv into tau using a fast kernel call
-    //     rocblas_double_complex* hTau[batch_count];
-    //     hipMemcpy(hTau, tau, sizeof(rocblas_double_complex*) * batch_count, hipMemcpyDeviceToHost);
+    if(status == rocblas_status_success)
+    {
+        // TO DO: Copy ipiv into tau using a fast kernel call
+        rocblas_double_complex* hTau[batch_count];
+        hipMemcpy(hTau, tau, sizeof(rocblas_double_complex*) * batch_count, hipMemcpyDeviceToHost);
 
-    //     for(int b = 0; b < batch_count; b++)
-    //         hipMemcpy(hTau[b], ipiv + b * perArray, sizeof(rocblas_double_complex) * perArray, hipMemcpyDeviceToDevice);
-    // }
+        for(int b = 0; b < batch_count; b++)
+            hipMemcpy(hTau[b],
+                      ipiv + b * perArray,
+                      sizeof(rocblas_double_complex) * perArray,
+                      hipMemcpyDeviceToDevice);
+    }
 
-    // if (perArray >  0)
-    //     hipFree(ipiv);
+    if(perArray > 0)
+        hipFree(ipiv);
 
-    // return rocBLASStatusToHIPStatus(status);
-
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return rocBLASStatusToHIPStatus(status);
 }
 
 // geqrf_strided_batched
@@ -11649,12 +11516,8 @@ hipblasStatus_t hipblasSgeqrfStridedBatched(hipblasHandle_t handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(
-        handle,
-        status = rocsolver_sgeqrf_strided_batched(
-            (rocblas_handle)handle, m, n, A, lda, strideA, tau, strideT, batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_sgeqrf_strided_batched(
+        (rocblas_handle)handle, m, n, A, lda, strideA, tau, strideT, batch_count));
 }
 
 hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t handle,
@@ -11685,12 +11548,8 @@ hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t handle,
     else
         *info = 0;
 
-    rocsolver_status status;
-    USE_DEVICE_POINTER_MODE(
-        handle,
-        status = rocsolver_dgeqrf_strided_batched(
-            (rocblas_handle)handle, m, n, A, lda, strideA, tau, strideT, batch_count));
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_dgeqrf_strided_batched(
+        (rocblas_handle)handle, m, n, A, lda, strideA, tau, strideT, batch_count));
 }
 
 hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t handle,
@@ -11721,20 +11580,15 @@ hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t handle,
     else
         *info = 0;
 
-    // rocsolver_status status;
-    // USE_DEVICE_POINTER_MODE(handle, status = rocsolver_cgeqrf_strided_batched(
-    //     (rocblas_handle)handle,
-    //     m,
-    //     n,
-    //     (rocblas_float_complex*)A,
-    //     lda,
-    //     strideA,
-    //     (rocblas_float_complex*)tau,
-    //     strideT,
-    //     batch_count));
-    // return rocBLASStatusToHIPStatus(status);
-
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return rocBLASStatusToHIPStatus(rocsolver_cgeqrf_strided_batched((rocblas_handle)handle,
+                                                                     m,
+                                                                     n,
+                                                                     (rocblas_float_complex*)A,
+                                                                     lda,
+                                                                     strideA,
+                                                                     (rocblas_float_complex*)tau,
+                                                                     strideT,
+                                                                     batch_count));
 }
 
 hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
@@ -11765,20 +11619,15 @@ hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
     else
         *info = 0;
 
-    // rocsolver_status status;
-    // USE_DEVICE_POINTER_MODE(handle, status = rocsolver_zgeqrf_strided_batched(
-    //     (rocblas_handle)handle,
-    //     m,
-    //     n,
-    //     (rocblas_double_complex*)A,
-    //     lda,
-    //     strideA,
-    //     (rocblas_double_complex*)tau,
-    //     strideT,
-    //     batch_count));
-    // return rocBLASStatusToHIPStatus(status);
-
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return rocBLASStatusToHIPStatus(rocsolver_zgeqrf_strided_batched((rocblas_handle)handle,
+                                                                     m,
+                                                                     n,
+                                                                     (rocblas_double_complex*)A,
+                                                                     lda,
+                                                                     strideA,
+                                                                     (rocblas_double_complex*)tau,
+                                                                     strideT,
+                                                                     batch_count));
 }
 
 #endif
