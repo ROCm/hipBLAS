@@ -10448,6 +10448,48 @@ hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t             handle,
 //rocSOLVER functions
 //--------------------------------------------------------------------------------------
 
+// The following functions are not included in the public API and must be declared
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+rocblas_status rocsolver_sgeqrf_ptr_batched(rocblas_handle    handle,
+                                            const rocblas_int m,
+                                            const rocblas_int n,
+                                            float* const      A[],
+                                            const rocblas_int lda,
+                                            float* const      ipiv[],
+                                            const rocblas_int batch_count);
+
+rocblas_status rocsolver_dgeqrf_ptr_batched(rocblas_handle    handle,
+                                            const rocblas_int m,
+                                            const rocblas_int n,
+                                            double* const     A[],
+                                            const rocblas_int lda,
+                                            double* const     ipiv[],
+                                            const rocblas_int batch_count);
+
+rocblas_status rocsolver_cgeqrf_ptr_batched(rocblas_handle               handle,
+                                            const rocblas_int            m,
+                                            const rocblas_int            n,
+                                            rocblas_float_complex* const A[],
+                                            const rocblas_int            lda,
+                                            rocblas_float_complex* const ipiv[],
+                                            const rocblas_int            batch_count);
+
+rocblas_status rocsolver_zgeqrf_ptr_batched(rocblas_handle                handle,
+                                            const rocblas_int             m,
+                                            const rocblas_int             n,
+                                            rocblas_double_complex* const A[],
+                                            const rocblas_int             lda,
+                                            rocblas_double_complex* const ipiv[],
+                                            const rocblas_int             batch_count);
+
+#ifdef __cplusplus
+}
+#endif
+
 // getrf
 hipblasStatus_t hipblasSgetrf(
     hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
@@ -11293,29 +11335,8 @@ hipblasStatus_t hipblasSgeqrfBatched(hipblasHandle_t handle,
     else
         *info = 0;
 
-    int    perArray = std::min(m, n);
-    float* ipiv     = NULL;
-    if(perArray > 0)
-        hipMalloc(&ipiv, batch_count * perArray * sizeof(float));
-
-    rocsolver_status status = rocsolver_sgeqrf_batched(
-        (rocblas_handle)handle, m, n, A, lda, ipiv, perArray, batch_count);
-
-    if(status == rocblas_status_success)
-    {
-        // TO DO: Copy ipiv into tau using a fast kernel call
-        float* hTau[batch_count];
-        hipMemcpy(hTau, tau, sizeof(float*) * batch_count, hipMemcpyDeviceToHost);
-
-        for(int b = 0; b < batch_count; b++)
-            hipMemcpy(
-                hTau[b], ipiv + b * perArray, sizeof(float) * perArray, hipMemcpyDeviceToDevice);
-    }
-
-    if(perArray > 0)
-        hipFree(ipiv);
-
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_sgeqrf_ptr_batched((rocblas_handle)handle, m, n, A, lda, tau, batch_count));
 }
 
 hipblasStatus_t hipblasDgeqrfBatched(hipblasHandle_t handle,
@@ -11344,29 +11365,8 @@ hipblasStatus_t hipblasDgeqrfBatched(hipblasHandle_t handle,
     else
         *info = 0;
 
-    int     perArray = std::min(m, n);
-    double* ipiv     = NULL;
-    if(perArray > 0)
-        hipMalloc(&ipiv, batch_count * perArray * sizeof(double));
-
-    rocsolver_status status = rocsolver_dgeqrf_batched(
-        (rocblas_handle)handle, m, n, A, lda, ipiv, perArray, batch_count);
-
-    if(status == rocblas_status_success)
-    {
-        // TO DO: Copy ipiv into tau using a fast kernel call
-        double* hTau[batch_count];
-        hipMemcpy(hTau, tau, sizeof(double*) * batch_count, hipMemcpyDeviceToHost);
-
-        for(int b = 0; b < batch_count; b++)
-            hipMemcpy(
-                hTau[b], ipiv + b * perArray, sizeof(double) * perArray, hipMemcpyDeviceToDevice);
-    }
-
-    if(perArray > 0)
-        hipFree(ipiv);
-
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(
+        rocsolver_dgeqrf_ptr_batched((rocblas_handle)handle, m, n, A, lda, tau, batch_count));
 }
 
 hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle,
@@ -11395,37 +11395,13 @@ hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle,
     else
         *info = 0;
 
-    int                    perArray = std::min(m, n);
-    rocblas_float_complex* ipiv     = NULL;
-    if(perArray > 0)
-        hipMalloc(&ipiv, batch_count * perArray * sizeof(rocblas_float_complex));
-
-    rocsolver_status status = rocsolver_cgeqrf_batched((rocblas_handle)handle,
-                                                       m,
-                                                       n,
-                                                       (rocblas_float_complex**)A,
-                                                       lda,
-                                                       (rocblas_float_complex*)ipiv,
-                                                       perArray,
-                                                       batch_count);
-
-    if(status == rocblas_status_success)
-    {
-        // TO DO: Copy ipiv into tau using a fast kernel call
-        rocblas_float_complex* hTau[batch_count];
-        hipMemcpy(hTau, tau, sizeof(rocblas_float_complex*) * batch_count, hipMemcpyDeviceToHost);
-
-        for(int b = 0; b < batch_count; b++)
-            hipMemcpy(hTau[b],
-                      ipiv + b * perArray,
-                      sizeof(rocblas_float_complex) * perArray,
-                      hipMemcpyDeviceToDevice);
-    }
-
-    if(perArray > 0)
-        hipFree(ipiv);
-
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_cgeqrf_ptr_batched((rocblas_handle)handle,
+                                                                 m,
+                                                                 n,
+                                                                 (rocblas_float_complex**)A,
+                                                                 lda,
+                                                                 (rocblas_float_complex**)tau,
+                                                                 batch_count));
 }
 
 hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             handle,
@@ -11454,37 +11430,13 @@ hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             handle,
     else
         *info = 0;
 
-    int                     perArray = std::min(m, n);
-    rocblas_double_complex* ipiv     = NULL;
-    if(perArray > 0)
-        hipMalloc(&ipiv, batch_count * perArray * sizeof(rocblas_double_complex));
-
-    rocsolver_status status = rocsolver_zgeqrf_batched((rocblas_handle)handle,
-                                                       m,
-                                                       n,
-                                                       (rocblas_double_complex**)A,
-                                                       lda,
-                                                       (rocblas_double_complex*)ipiv,
-                                                       perArray,
-                                                       batch_count);
-
-    if(status == rocblas_status_success)
-    {
-        // TO DO: Copy ipiv into tau using a fast kernel call
-        rocblas_double_complex* hTau[batch_count];
-        hipMemcpy(hTau, tau, sizeof(rocblas_double_complex*) * batch_count, hipMemcpyDeviceToHost);
-
-        for(int b = 0; b < batch_count; b++)
-            hipMemcpy(hTau[b],
-                      ipiv + b * perArray,
-                      sizeof(rocblas_double_complex) * perArray,
-                      hipMemcpyDeviceToDevice);
-    }
-
-    if(perArray > 0)
-        hipFree(ipiv);
-
-    return rocBLASStatusToHIPStatus(status);
+    return rocBLASStatusToHIPStatus(rocsolver_zgeqrf_ptr_batched((rocblas_handle)handle,
+                                                                 m,
+                                                                 n,
+                                                                 (rocblas_double_complex**)A,
+                                                                 lda,
+                                                                 (rocblas_double_complex**)tau,
+                                                                 batch_count));
 }
 
 // geqrf_strided_batched
