@@ -18,6 +18,12 @@
 #include <hip/hip_runtime_api.h>
 #include <stdint.h>
 
+#if __clang__
+#define HIPBLAS_CLANG_STATIC static
+#else
+#define HIPBLAS_CLANG_STATIC
+#endif
+
 typedef void* hipblasHandle_t;
 
 typedef uint16_t hipblasHalf;
