@@ -1,0 +1,39 @@
+# Parameters related to building hipBLAS
+ARG base_image
+
+FROM ${base_image}
+LABEL maintainer="hipblas-maintainer@amd.com"
+
+ARG user_uid
+
+ARG library_dependencies="rocblas rocsolver"
+
+# Install dependent packages
+RUN zypper refresh && zypper -n --no-gpg-checks install\
+    sudo \
+    ca-certificates \
+    git \
+    gcc-c++ \
+    gcc-fortran \
+    make \
+    cmake \
+    rpm-build \
+    dpkg \
+    python2-PyYAML \
+    libboost_program_options1_66_0-devel\
+    libcxxtools9 \
+    libnuma1 \
+    llvm7-devel \
+    python3-pip \
+    python3-virtualenv \
+    wget \
+    ${library_dependencies} 
+
+RUN pip3 install wheel && pip3 install tox pyyaml
+    
+# docker pipeline runs containers with particular uid
+# create a jenkins user with this specific uid so it can use sudo priviledges
+# Grant any member of sudo group password-less sudo privileges
+RUN useradd --create-home -u ${user_uid} -o -G video --shell /bin/bash jenkins && \
+    echo '%video ALL=(ALL) NOPASSWD:ALL' | tee /etc/sudoers.d/sudo-nopasswd && \
+    chmod 400 /etc/sudoers.d/sudo-nopasswd

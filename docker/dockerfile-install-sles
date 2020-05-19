@@ -1,0 +1,5 @@
+# Parameters related to building hipblas
+ARG base_image
+
+FROM ${base_image}
+LABEL maintainer="hipblas-maintainer@amd.com"
