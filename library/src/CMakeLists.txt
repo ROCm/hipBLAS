@@ -42,7 +42,7 @@ target_include_directories( hipblas
 # Build hipblas from source on AMD platform
 if( NOT CUDA_FOUND )
   if( NOT TARGET rocblas )
-    find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocblas )
+    find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm )
   endif( )
 
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_HCC__ )
