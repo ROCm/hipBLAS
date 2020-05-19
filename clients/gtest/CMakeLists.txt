@@ -120,7 +120,6 @@ target_include_directories( hipblas-test
 set( THREADS_PREFER_PTHREAD_FLAG ON )
 find_package( Threads REQUIRED )
 target_link_libraries( hipblas-test PRIVATE Threads::Threads )
-target_compile_features( hipblas-test PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type)
 
 target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 
@@ -138,19 +137,15 @@ target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LI
 if( NOT CUDA_FOUND )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_HCC__ )
 
-  if( BUILD_WITH_SOLVER )
-    target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_SOLVER__ )
-  endif( )
-
   # Remove following when hcc is fixed; hcc emits following spurious warning
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  target_compile_options( hipblas-test PRIVATE -Wno-unused-command-line-argument -mf16c)
+  target_compile_options( hipblas-test PRIVATE -mf16c)
 
   if( CUSTOM_TARGET )
-    target_link_libraries( hipblas-test PRIVATE hip::${CUSTOM_TARGET} )
+    target_link_libraries( hipblas-test PRIVATE hip::${CUSTOM_TARGET} hip::host )
   else( )
     if ( LIBAMDHIP64_LIBRARY )
-      target_link_libraries( hipblas-test PRIVATE hip::amdhip64 )
+      target_link_libraries( hipblas-test PRIVATE hip::amdhip64 hip::host )
     else ( )
       get_target_property( HIP_HCC_LOCATION hip::hip_hcc IMPORTED_LOCATION_RELEASE )
       target_link_libraries( hipblas-test PRIVATE ${HIP_HCC_LOCATION} )
@@ -168,10 +163,6 @@ if( NOT CUDA_FOUND )
   endif()
 else( )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_NVCC__ )
-
-  if( BUILD_WITH_SOLVER )
-    target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_SOLVER__ )
-  endif( )
 
   target_include_directories( hipblas-test
     PRIVATE

@@ -39,9 +39,6 @@ target_include_directories( hipblas
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
 )
 
-# Test for specific compiler features if cmake version is recent enough
-target_compile_features( hipblas PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
-
 # Build hipblas from source on AMD platform
 if( NOT CUDA_FOUND )
   if( NOT TARGET rocblas )
@@ -57,9 +54,6 @@ if( NOT CUDA_FOUND )
     if( NOT TARGET rocsolver )
       find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
     endif( )
-
-    target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_SOLVER__ )
-
     target_link_libraries( hipblas PRIVATE roc::rocsolver )
   endif( )
 
@@ -76,8 +70,7 @@ if( NOT CUDA_FOUND )
 
   # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
   # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
-    target_compile_options( hipblas PRIVATE -Wno-unused-command-line-argument )
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
     target_link_libraries( hipblas PRIVATE hip::hip_hcc )
   endif( )
 
@@ -86,10 +79,6 @@ else( )
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
 
   target_link_libraries( hipblas PRIVATE ${CUDA_CUBLAS_LIBRARIES} )
-
-  if( BUILD_WITH_SOLVER )
-    target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_SOLVER__ )
-  endif( )
 
   # External header includes included as system files
   target_include_directories( hipblas

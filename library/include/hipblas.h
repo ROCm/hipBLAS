@@ -12,96 +12,148 @@
 //
 #ifndef HIPBLAS_H
 #define HIPBLAS_H
-#pragma once
+
 #include "hipblas-export.h"
 #include "hipblas-version.h"
 #include <hip/hip_runtime_api.h>
+#include <stdint.h>
+
+/* Workaround clang bug:
+
+   https://bugs.llvm.org/show_bug.cgi?id=35863
+
+   This macro expands to static if clang is used; otherwise it expands empty.
+   It is intended to be used in variable template specializations, where clang
+   requires static in order for the specializations to have internal linkage,
+   while technically, storage class specifiers besides thread_local are not
+   allowed in template specializations, and static in the primary template
+   definition should imply internal linkage for all specializations.
+
+   If clang shows an error for improperly using a storage class specifier in
+   a specialization, then HIPBLAS_CLANG_STATIC should be redefined as empty,
+   and perhaps removed entirely, if the above bug has been fixed.
+*/
+#if __clang__
+#define HIPBLAS_CLANG_STATIC static
+#else
+#define HIPBLAS_CLANG_STATIC
+#endif
 
 typedef void* hipblasHandle_t;
 
 typedef uint16_t hipblasHalf;
 
-struct hipblasBfloat16
+typedef struct hipblasBfloat16
 {
     uint16_t data;
-};
+} hipblasBfloat16;
 
-template <typename T>
-struct hip_complex_number
+typedef struct hipblasComplex
 {
-    T x, y;
+#ifndef __cplusplus
 
-    template <typename U>
-    hip_complex_number(U a, U b)
-        : x(a)
-        , y(b)
+    float x, y;
+
+#else
+
+private:
+    float x, y;
+
+public:
+#if __cplusplus >= 201103L
+    hipblasComplex() = default;
+#else
+    hipblasComplex() {}
+#endif
+
+    hipblasComplex(float r, float i = 0)
+        : x(r)
+        , y(i)
     {
     }
-    template <typename U>
-    hip_complex_number(U a)
-        : x(a)
-        , y(0)
-    {
-    }
-    hip_complex_number()
-        : x(0)
-        , y(0)
-    {
-    }
 
-    hip_complex_number& operator*=(const hip_complex_number& rhs)
+    float real() const
     {
-        return *this = {x * rhs.x - y * rhs.y, y * rhs.x + x * rhs.y};
+        return x;
     }
-
-    hip_complex_number operator*(const hip_complex_number& rhs) const
+    float imag() const
     {
-        auto lhs = *this;
-        return lhs *= rhs;
+        return y;
+    }
+    void real(float r)
+    {
+        x = r;
+    }
+    void imag(float i)
+    {
+        y = i;
     }
 
-    hip_complex_number& operator+=(const hip_complex_number& rhs)
+#endif
+} hipblasComplex;
+
+typedef struct hipblasDoubleComplex
+{
+#ifndef __cplusplus
+
+    double x, y;
+
+#else
+
+private:
+    double x, y;
+
+public:
+
+#if __cplusplus >= 201103L
+    hipblasDoubleComplex() = default;
+#else
+    hipblasDoubleComplex() {}
+#endif
+
+    hipblasDoubleComplex(double r, double i = 0)
+        : x(r)
+        , y(i)
     {
-        return *this = {x + rhs.x, y + rhs.y};
+    }
+    double real() const
+    {
+        return x;
+    }
+    double imag() const
+    {
+        return y;
+    }
+    void real(double r)
+    {
+        x = r;
+    }
+    void imag(double i)
+    {
+        y = i;
     }
 
-    hip_complex_number& operator/(const hip_complex_number& rhs)
-    {
-        if(abs(rhs.x) > abs(rhs.y))
-        {
-            T ratio = rhs.y / rhs.x;
-            T scale = 1 / (rhs.x + rhs.y * ratio);
-            *this   = {(x + y * ratio) * scale, (y - x * ratio) * scale};
-        }
-        else
-        {
-            T ratio = rhs.x / rhs.y;
-            T scale = 1 / (rhs.x * ratio + rhs.y);
-            *this   = {(y + x * ratio) * scale, (y * ratio - x) * scale};
-        }
-        return *this;
-    }
+#endif
+} hipblasDoubleComplex;
 
-    hip_complex_number& operator-(const hip_complex_number& rhs)
-    {
-        return *this = {x - rhs.x, y - rhs.y};
-    }
+#if __cplusplus >= 201103L
+#include <type_traits>
+static_assert(std::is_standard_layout<hipblasComplex>{},
+              "hipblasComplex is not a standard layout type, and thus is incompatible with C.");
+static_assert(
+    std::is_standard_layout<hipblasDoubleComplex>{},
+    "hipblasDoubleComplex is not a standard layout type, and thus is incompatible with C.");
+static_assert(std::is_trivial<hipblasComplex>{},
+              "hipblasComplex is not a trivial type, and thus is incompatible with C.");
+static_assert(std::is_trivial<hipblasDoubleComplex>{},
+              "hipblasDoubleComplex is not a trivial type, and thus is incompatible with C.");
+static_assert(sizeof(hipblasComplex) == sizeof(float) * 2
+                  && sizeof(hipblasDoubleComplex) == sizeof(double) * 2
+                  && sizeof(hipblasDoubleComplex) == sizeof(hipblasComplex) * 2,
+              "Sizes of hipblasComplex or hipblasDoubleComplex are inconsistent");
+#endif
 
-    bool operator!=(const hip_complex_number& rhs) const
-    {
-        return !(x == y);
-    }
-
-    bool operator==(const hip_complex_number& rhs) const
-    {
-        return (x == rhs.x && y == rhs.y);
-    }
-};
-
-typedef hip_complex_number<float>  hipblasComplex;
-typedef hip_complex_number<double> hipblasDoubleComplex;
-
-enum hipblasStatus_t
+typedef enum
 {
     HIPBLAS_STATUS_SUCCESS           = 0, // Function succeeds
     HIPBLAS_STATUS_NOT_INITIALIZED   = 1, // HIPBLAS library not initialized
@@ -112,44 +164,44 @@ enum hipblasStatus_t
     HIPBLAS_STATUS_INTERNAL_ERROR    = 6, // an internal HIPBLAS operation failed
     HIPBLAS_STATUS_NOT_SUPPORTED     = 7, // function not implemented
     HIPBLAS_STATUS_ARCH_MISMATCH     = 8,
-    HIPBLAS_STATUS_HANDLE_IS_NULLPTR = 9 // hipBLAS handle is null pointer
-};
+    HIPBLAS_STATUS_HANDLE_IS_NULLPTR = 9, // hipBLAS handle is null pointer
+} hipblasStatus_t;
 
 // set the values of enum constants to be the same as those used in cblas
-enum hipblasOperation_t
+typedef enum
 {
     HIPBLAS_OP_N = 111,
     HIPBLAS_OP_T = 112,
-    HIPBLAS_OP_C = 113
-};
+    HIPBLAS_OP_C = 113,
+} hipblasOperation_t;
 
-enum hipblasPointerMode_t
+typedef enum
 {
     HIPBLAS_POINTER_MODE_HOST,
-    HIPBLAS_POINTER_MODE_DEVICE
-};
+    HIPBLAS_POINTER_MODE_DEVICE,
+} hipblasPointerMode_t;
 
-enum hipblasFillMode_t
+typedef enum
 {
     HIPBLAS_FILL_MODE_UPPER = 121,
     HIPBLAS_FILL_MODE_LOWER = 122,
-    HIPBLAS_FILL_MODE_FULL  = 123
-};
+    HIPBLAS_FILL_MODE_FULL  = 123,
+} hipblasFillMode_t;
 
-enum hipblasDiagType_t
+typedef enum
 {
     HIPBLAS_DIAG_NON_UNIT = 131,
-    HIPBLAS_DIAG_UNIT     = 132
-};
+    HIPBLAS_DIAG_UNIT     = 132,
+} hipblasDiagType_t;
 
-enum hipblasSideMode_t
+typedef enum
 {
     HIPBLAS_SIDE_LEFT  = 141,
     HIPBLAS_SIDE_RIGHT = 142,
-    HIPBLAS_SIDE_BOTH  = 143
-};
+    HIPBLAS_SIDE_BOTH  = 143,
+} hipblasSideMode_t;
 
-enum hipblasDatatype_t
+typedef enum
 {
     HIPBLAS_R_16F = 150, /**< 16 bit floating point, real */
     HIPBLAS_R_32F = 151, /**< 32 bit floating point, real */
@@ -167,12 +219,12 @@ enum hipblasDatatype_t
     HIPBLAS_C_32U = 167, /**< 32 bit unsigned integer, complex */
     HIPBLAS_R_16B = 168, /**< 16 bit bfloat, real */
     HIPBLAS_C_16B = 169, /**< 16 bit bfloat, complex */
-};
+} hipblasDatatype_t;
 
-enum hipblasGemmAlgo_t
+typedef enum
 {
-    HIPBLAS_GEMM_DEFAULT = 160
-};
+    HIPBLAS_GEMM_DEFAULT = 160,
+} hipblasGemmAlgo_t;
 
 #ifdef __cplusplus
 extern "C" {
