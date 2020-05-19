@@ -52,7 +52,7 @@ if( NOT CUDA_FOUND )
   # Add rocSOLVER as a dependency if BUILD_WITH_SOLVER is on
   if( BUILD_WITH_SOLVER )
     if( NOT TARGET rocsolver )
-      find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
+      # find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
     endif( )
     target_link_libraries( hipblas PRIVATE roc::rocsolver )
   endif( )

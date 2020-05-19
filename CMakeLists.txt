@@ -92,7 +92,8 @@ endif()
 # CMake list of machine targets
 set( AMDGPU_TARGETS gfx803;gfx900;gfx906;gfx908 CACHE STRING "List of specific machine types for library to target" )
 
-find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm )
+# find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm )
+find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
 
 add_subdirectory( library )
 
