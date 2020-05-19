@@ -73,7 +73,7 @@ option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 #endif( )
 
 # Hip headers required of all clients; clients use hip to allocate device memory
-find_package( HIP REQUIRED )
+find_package( hip REQUIRED )
 
 # Look for libamdhip64
 find_library(

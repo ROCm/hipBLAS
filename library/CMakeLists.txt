@@ -29,7 +29,7 @@ endif( )
 
 #Don't search for hip package again if it's already found
 if(NOT hip_FOUND)
-  find_package( hip REQUIRED CONFIG PATHS ${ROCM_PATH} )
+  ( hip REQUIRED CONFIG PATHS ${ROCM_PATH} )
 endif()
 
 # configure a header file to pass the CMake version settings to the source, and package the header files in the output archive
