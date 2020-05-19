@@ -22,8 +22,9 @@ def runCompileCommand(platform, project, jobName)
     def command = """#!/usr/bin/env bash
                 set -x
                 cd ${project.paths.project_build_prefix}
+                ${getDependenciesCommand}
                 ${centos}
-                ${sles} LD_LIBRARY_PATH=/opt/rocm/lib ${project.paths.build_command} ${hipClang} --compiler /opt/rocm/bin/${compiler}
+                ${sles} LD_LIBRARY_PATH=/opt/rocm/lib ${project.paths.build_command} ${hipClang} --compiler g++
                 """
     platform.runCommand(this, command)
 }
