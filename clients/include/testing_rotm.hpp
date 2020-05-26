@@ -20,6 +20,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_rotm(Arguments arg)
 {
+    bool FORTRAN       = arg.fortran;
+    auto hipblasRotmFn = FORTRAN ? hipblasRotm<T, true> : hipblasRotm<T, false>;
+
     int N    = arg.N;
     int incx = arg.incx;
     int incy = arg.incy;
@@ -75,7 +78,7 @@ hipblasStatus_t testing_rotm(Arguments arg)
                 status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
                 CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
                 CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
-                status_2 = hipblasRotm<T>(handle, N, dx, incx, dy, incy, hparam);
+                status_2 = hipblasRotmFn(handle, N, dx, incx, dy, incy, hparam);
                 host_vector<T> rx(size_x);
                 host_vector<T> ry(size_y);
                 CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
@@ -93,7 +96,7 @@ hipblasStatus_t testing_rotm(Arguments arg)
                 CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
                 CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
                 CHECK_HIP_ERROR(hipMemcpy(dparam, hparam, sizeof(T) * 5, hipMemcpyHostToDevice));
-                status_4 = hipblasRotm<T>(handle, N, dx, incx, dy, incy, dparam);
+                status_4 = hipblasRotmFn(handle, N, dx, incx, dy, incy, dparam);
                 host_vector<T> rx(size_x);
                 host_vector<T> ry(size_y);
                 CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));

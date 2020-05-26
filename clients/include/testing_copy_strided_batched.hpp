@@ -20,6 +20,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_copy_strided_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasCopyStridedBatchedFn
+        = FORTRAN ? hipblasCopyStridedBatched<T, true> : hipblasCopyStridedBatched<T, false>;
+
     int    N            = argus.N;
     int    incx         = argus.incx;
     int    incy         = argus.incy;
@@ -69,8 +73,8 @@ hipblasStatus_t testing_copy_strided_batched(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasCopyStridedBatched<T>(
-        handle, N, dx, incx, stridex, dy, incy, stridey, batch_count);
+    status
+        = hipblasCopyStridedBatchedFn(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         hipblasDestroy(handle);

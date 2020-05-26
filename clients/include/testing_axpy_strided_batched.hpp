@@ -20,6 +20,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_axpy_strided_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasAxpyStridedBatchedFn
+        = FORTRAN ? hipblasAxpyStridedBatched<T, true> : hipblasAxpyStridedBatched<T, false>;
+
     int    N            = argus.N;
     int    incx         = argus.incx;
     int    incy         = argus.incy;
@@ -78,7 +82,7 @@ hipblasStatus_t testing_axpy_strided_batched(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasAxpyStridedBatched<T>(
+    status = hipblasAxpyStridedBatchedFn(
         handle, N, &alpha, dx, incx, stridex, dy, incy, stridey, batch_count);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
