@@ -8,6 +8,7 @@ add_executable( example-sscal example_sscal.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
 add_executable( example-c example-c.c ${hipblas_samples_common} )
+add_executable( example-sscal-fortran example_sscal_fortran.f90 )
 
 # We test for C99 compatibility in the example-c.c test
 set_source_files_properties(example-c.c PROPERTIES LANGUAGE CXX)
@@ -23,7 +24,7 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c )
+foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c;example-sscal-fortran )
 
   target_link_libraries( ${exe} PRIVATE roc::hipblas )
 

@@ -1,9 +1,139 @@
-! Hello.
-
+! ************************************************************************
+!  Copyright 2016-2020 Advanced Micro Devices, Inc.
+! ************************************************************************
 
 module hipblas
     use iso_c_binding
 
+    !--------!
+    !   Aux  !
+    !--------!
+    interface
+        function hipblasCreate(handle) &
+                result(c_int) &
+                bind(c, name = 'hipblasCreate')
+            use iso_c_binding
+            implicit none
+            type(c_ptr), value :: handle
+        end function hipblasCreate
+    end interface
+
+    interface
+        function hipblasDestroy(handle) &
+                result(c_int) &
+                bind(c, name = 'hipblasDestroy')
+            use iso_c_binding
+            implicit none
+            type(c_ptr), value :: handle
+        end function hipblasDestroy
+    end interface
+
+    interface
+        function hipblasSetStream(handle, streamId) &
+                result(c_int) &
+                bind(c, name = 'hipblasSetStream')
+            use iso_c_binding
+            implicit none
+            type(c_ptr), value :: handle
+            type(c_ptr), value :: streamId
+        end function hipblasSetStream
+    end interface
+
+    interface
+        function hipblasGetStream(handle, streamId) &
+                result(c_int) &
+                bind(c, name = 'hipblasGetStream')
+            use iso_c_binding
+            implicit none
+            type(c_ptr), value :: handle
+            type(c_ptr), value :: streamId
+        end function hipblasGetStream
+    end interface
+
+    interface
+        function hipblasSetPointerMode(handle, mode) &
+                result(c_int) &
+                bind(c, name = 'hipblasSetPointerMode')
+            use iso_c_binding
+            implicit none
+            type(c_ptr), value :: handle
+            type(c_ptr), value :: mode
+        end function hipblasSetPointerMode
+    end interface
+
+    interface
+        function hipblasGetPointerMode(handle, mode) &
+                result(c_int) &
+                bind(c, name = 'hipblasGetPointerMode')
+            use iso_c_binding
+            implicit none
+            type(c_ptr), value :: handle
+            type(c_ptr), value :: mode
+        end function hipblasGetPointerMode
+    end interface
+
+    interface
+        function hipblasSetVector(n, elemSize, x, incx, y, incy) &
+                result(c_int) &
+                bind(c, name = 'hipblasSetVector')
+            use iso_c_binding
+            implicit none
+            integer(c_int), value :: n
+            integer(c_int), value :: elemSize
+            type(c_ptr), value :: x
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int), value :: incy
+        end function hipblasSetVector
+    end interface
+
+    interface
+        function hipblasGetVector(n, elemSize, x, incx, y, incy) &
+                result(c_int) &
+                bind(c, name = 'hipblasGetVector')
+            use iso_c_binding
+            implicit none
+            integer(c_int), value :: n
+            integer(c_int), value :: elemSize
+            type(c_ptr), value :: x
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int), value :: incy
+        end function hipblasGetVector
+    end interface
+
+    interface
+        function hipblasSetMatrix(rows, cols, elemSize, A, lda, B, ldb) &
+                result(c_int) &
+                bind(c, name = 'hipblasSetMatrix')
+            use iso_c_binding
+            implicit none
+            integer(c_int), value :: rows
+            integer(c_int), value :: cols
+            integer(c_int), value :: elemSize
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+        end function hipblasSetMatrix
+    end interface
+
+    interface
+        function hipblasGetMatrix(rows, cols, elemSize, A, lda, B, ldb) &
+                result(c_int) &
+                bind(c, name = 'hipblasGetMatrix')
+            use iso_c_binding
+            implicit none
+            integer(c_int), value :: rows
+            integer(c_int), value :: cols
+            integer(c_int), value :: elemSize
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+        end function hipblasGetMatrix
+    end interface
+    
     !--------!
     ! blas 1 !
     !--------!
