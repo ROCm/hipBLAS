@@ -47,14 +47,24 @@ supported_distro( )
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
+check_exit_code( )
+{
+  if (( $1 != 0 )); then
+    exit $1
+  fi
+}
+
+# This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
 elevate_if_not_root( )
 {
   local uid=$(id -u)
 
   if (( ${uid} )); then
     sudo $@
+    check_exit_code "$?"
   else
     $@
+    check_exit_code "$?"
   fi
 }
 
@@ -432,7 +442,10 @@ pushd .
   else
     CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
   fi
+  check_exit_code "$?"
+
   make -j$(nproc)
+  check_exit_code "$?"
 
   # #################################################
   # install
@@ -440,6 +453,7 @@ pushd .
   # installing through package manager, which makes uninstalling easy
   if [[ "${install_package}" == true ]]; then
     make package
+    check_exit_code "$?"
 
     case "${ID}" in
       ubuntu)
