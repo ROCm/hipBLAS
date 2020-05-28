@@ -63,7 +63,7 @@ TEST_P(getrf_gtest, getrf_gtest_float)
 
     Arguments arg = setup_getrf_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf<float>(arg);
+    hipblasStatus_t status = testing_getrf<float, float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -85,7 +85,51 @@ TEST_P(getrf_gtest, getrf_gtest_double)
 
     Arguments arg = setup_getrf_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf<double>(arg);
+    hipblasStatus_t status = testing_getrf<double, double>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(getrf_gtest, getrf_gtest_float_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf<hipblasComplex, float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(getrf_gtest, getrf_gtest_double_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf<hipblasDoubleComplex, double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

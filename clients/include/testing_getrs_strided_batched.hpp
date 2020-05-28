@@ -17,7 +17,7 @@
 
 using namespace std;
 
-template <typename T>
+template <typename T, typename U>
 hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
 {
     int    N            = argus.N;
@@ -54,9 +54,9 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
     host_vector<int> hIpiv1(Ipiv_size);
     int              info;
 
-    device_vector<T>   dA(A_size);
-    device_vector<T>   dB(B_size);
-    device_vector<int> dIpiv(Ipiv_size);
+    device_vector<T, 1>   dA(A_size);
+    device_vector<T, 1>   dB(B_size);
+    device_vector<int, 1> dIpiv(Ipiv_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -144,11 +144,11 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
 
             if(argus.unit_check)
             {
-                T      eps       = std::numeric_limits<T>::epsilon();
+                U      eps       = std::numeric_limits<U>::epsilon();
                 double tolerance = N * eps * 100;
 
                 double e = norm_check_general<T>(
-                    'M', N, 1, ldb, hB.data() + b * strideB, hB1.data() + b * strideB);
+                    'F', N, 1, ldb, hB.data() + b * strideB, hB1.data() + b * strideB);
                 unit_check_error(e, tolerance);
             }
         }

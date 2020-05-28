@@ -17,7 +17,7 @@
 
 using namespace std;
 
-template <typename T>
+template <typename T, typename U>
 hipblasStatus_t testing_geqrf_batched(Arguments argus)
 {
     int M           = argus.M;
@@ -47,8 +47,8 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
     host_vector<T> hIpiv1[batch_count];
     int            info;
 
-    device_batch_vector<T> bA(batch_count, A_size);
-    device_batch_vector<T> bIpiv(batch_count, Ipiv_size);
+    device_batch_vector<T, 1> bA(batch_count, A_size);
+    device_batch_vector<T, 1> bIpiv(batch_count, Ipiv_size);
 
     device_vector<T*, 0, T> dA(batch_count);
     device_vector<T*, 0, T> dIpiv(batch_count);
@@ -109,7 +109,7 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
         // Workspace query
         host_vector<T> work(1);
         cblas_geqrf(M, N, hA[0].data(), lda, hIpiv[0].data(), work.data(), -1);
-        int lwork = (int)work[0];
+        int lwork = type2int(work[0]);
 
         // Perform factorization
         work = host_vector<T>(lwork);
@@ -119,14 +119,14 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
 
             if(argus.unit_check)
             {
-                T      eps       = std::numeric_limits<T>::epsilon();
+                U      eps       = std::numeric_limits<U>::epsilon();
                 double tolerance = eps * 2000;
 
-                double e1 = norm_check_general<T>('M', M, N, lda, hA[b].data(), hA1[b].data());
+                double e1 = norm_check_general<T>('F', M, N, lda, hA[b].data(), hA1[b].data());
                 unit_check_error(e1, tolerance);
 
                 double e2 = norm_check_general<T>(
-                    'M', min(M, N), 1, min(M, N), hIpiv[b].data(), hIpiv1[b].data());
+                    'F', min(M, N), 1, min(M, N), hIpiv[b].data(), hIpiv1[b].data());
                 unit_check_error(e2, tolerance);
             }
         }

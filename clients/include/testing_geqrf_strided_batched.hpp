@@ -17,7 +17,7 @@
 
 using namespace std;
 
-template <typename T>
+template <typename T, typename U>
 hipblasStatus_t testing_geqrf_strided_batched(Arguments argus)
 {
     int    M            = argus.M;
@@ -50,8 +50,8 @@ hipblasStatus_t testing_geqrf_strided_batched(Arguments argus)
     host_vector<T> hIpiv1(Ipiv_size);
     int            info;
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dIpiv(Ipiv_size);
+    device_vector<T, 1> dA(A_size);
+    device_vector<T, 1> dIpiv(Ipiv_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -99,7 +99,7 @@ hipblasStatus_t testing_geqrf_strided_batched(Arguments argus)
         // Workspace query
         host_vector<T> work(1);
         cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
-        int lwork = (int)work[0];
+        int lwork = type2int(work[0]);
 
         // Perform factorization
         work = host_vector<T>(lwork);
@@ -110,14 +110,14 @@ hipblasStatus_t testing_geqrf_strided_batched(Arguments argus)
 
             if(argus.unit_check)
             {
-                T      eps       = std::numeric_limits<T>::epsilon();
+                U      eps       = std::numeric_limits<U>::epsilon();
                 double tolerance = eps * 2000;
 
                 double e1 = norm_check_general<T>(
-                    'M', M, N, lda, hA.data() + b * strideA, hA1.data() + b * strideA);
+                    'F', M, N, lda, hA.data() + b * strideA, hA1.data() + b * strideA);
                 unit_check_error(e1, tolerance);
 
-                double e2 = norm_check_general<T>('M',
+                double e2 = norm_check_general<T>('F',
                                                   min(M, N),
                                                   1,
                                                   strideP,

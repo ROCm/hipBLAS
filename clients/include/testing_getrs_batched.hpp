@@ -17,7 +17,7 @@
 
 using namespace std;
 
-template <typename T>
+template <typename T, typename U>
 hipblasStatus_t testing_getrs_batched(Arguments argus)
 {
     int N           = argus.N;
@@ -51,12 +51,12 @@ hipblasStatus_t testing_getrs_batched(Arguments argus)
     host_vector<int> hIpiv1(Ipiv_size);
     int              info;
 
-    device_batch_vector<T> bA(batch_count, A_size);
-    device_batch_vector<T> bB(batch_count, B_size);
+    device_batch_vector<T, 1> bA(batch_count, A_size);
+    device_batch_vector<T, 1> bB(batch_count, B_size);
 
     device_vector<T*, 0, T> dA(batch_count);
     device_vector<T*, 0, T> dB(batch_count);
-    device_vector<int>      dIpiv(Ipiv_size);
+    device_vector<int, 1>   dIpiv(Ipiv_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -143,10 +143,10 @@ hipblasStatus_t testing_getrs_batched(Arguments argus)
 
             if(argus.unit_check)
             {
-                T      eps       = std::numeric_limits<T>::epsilon();
+                U      eps       = std::numeric_limits<U>::epsilon();
                 double tolerance = N * eps * 100;
 
-                double e = norm_check_general<T>('M', N, 1, ldb, hB[b].data(), hB1[b].data());
+                double e = norm_check_general<T>('F', N, 1, ldb, hB[b].data(), hB1[b].data());
                 unit_check_error(e, tolerance);
             }
         }

@@ -17,7 +17,7 @@
 
 using namespace std;
 
-template <typename T>
+template <typename T, typename U>
 hipblasStatus_t testing_getrf(Arguments argus)
 {
     int M   = argus.N;
@@ -43,9 +43,9 @@ hipblasStatus_t testing_getrf(Arguments argus)
     host_vector<int> hInfo(1);
     host_vector<int> hInfo1(1);
 
-    device_vector<T>   dA(A_size);
-    device_vector<int> dIpiv(Ipiv_size);
-    device_vector<int> dInfo(1);
+    device_vector<T, 1>   dA(A_size);
+    device_vector<int, 1> dIpiv(Ipiv_size);
+    device_vector<int, 1> dInfo(1);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -91,10 +91,10 @@ hipblasStatus_t testing_getrf(Arguments argus)
 
         if(argus.unit_check)
         {
-            T      eps       = std::numeric_limits<T>::epsilon();
+            U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = eps * 2000;
 
-            double e = norm_check_general<T>('M', M, N, lda, hA.data(), hA1.data());
+            double e = norm_check_general<T>('F', M, N, lda, hA.data(), hA1.data());
             unit_check_error(e, tolerance);
         }
     }
