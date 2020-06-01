@@ -67,6 +67,7 @@ set(hipblas_test_source
   syr_gtest.cpp
   syr2_gtest.cpp
   tbmv_gtest.cpp
+  tbsv_gtest.cpp
   tpmv_gtest.cpp
   tpsv_gtest.cpp
   trmv_gtest.cpp
@@ -75,10 +76,12 @@ set(hipblas_test_source
   gemm_ex_gtest.cpp
   gemm_strided_batched_gtest.cpp
   gemm_batched_gtest.cpp
+  hemm_gtest.cpp
   geam_gtest.cpp
   herk_gtest.cpp
   her2k_gtest.cpp
   herkx_gtest.cpp
+  symm_gtest.cpp
   syrk_gtest.cpp
   syr2k_gtest.cpp
   trsm_gtest.cpp
