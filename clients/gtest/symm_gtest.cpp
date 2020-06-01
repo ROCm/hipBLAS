@@ -1,10 +1,11 @@
 /* ************************************************************************
  * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ *
  * ************************************************************************ */
 
-#include "testing_geam.hpp"
-#include "testing_geam_batched.hpp"
-#include "testing_geam_strided_batched.hpp"
+#include "testing_symm.hpp"
+#include "testing_symm_batched.hpp"
+#include "testing_symm_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -19,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<double>, vector<char>, double, int> geam_tuple;
+typedef std::tuple<vector<int>, vector<double>, vector<char>, double, int> symm_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -29,33 +30,50 @@ README: This file contains testers to verify the correctness of
         Normal users only need to get the library routines without testers
      =================================================================== */
 
+/* =====================================================================
+Advance users only: BrainStorm the parameters but do not make artificial one which invalidates the
+matrix.
+like lda pairs with M, and "lda must >= M". case "lda < M" will be guarded by argument-checkers
+inside API of course.
+Yet, the goal of this file is to verify result correctness not argument-checkers.
+
+Representative sampling is sufficient, endless brute-force sampling is not necessary
+=================================================================== */
+
 // vector of vector, each vector is a {M, N, lda, ldb, ldc};
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
-    {-1, -1, -1, 1, 1},
-    {5, 5, 5, 5, 5},
-    {3, 33, 33, 34, 35},
-    {10, 10, 100, 10, 10},
-    {600, 500, 500, 600, 500},
-    //                                      {1024, 1024, 1024, 1024, 1024}
+    {-1, -1, 1, 1, 1},
+    {10, 10, 20, 100, 100},
+    {600, 500, 600, 600, 700},
 };
 
-// vector of vector, each pair is a {alpha, alphai, beta, betai};
-// add/delete this list in pairs, like {2.0, 4.0}
-const vector<vector<double>> alpha_beta_range = {
-    {2.0, -3.0, 0.0, 0.0},
-    {3.0, 1.0, 1.0, -1.0},
-    {0.0, 0.0, 2.0, -5.0},
-    {0.0, 0.0, 0.0, 0.0},
+const vector<vector<int>> full_matrix_size_range = {
+    {192, 192, 192, 192, 192},
+    {640, 640, 960, 960, 960},
 };
 
-// vector of vector, each pair is a {transA, transB};
-// add/delete this list in pairs, like {'N', 'T'}
-// for single/double precision, 'C'(conjTranspose) will downgraded to 'T' (transpose) internally in
-// sgeam/dgeam,
-// TODO: Conjugate was broken up to rocBLAS 3.5. Add conjugate tests when fixed.
-const vector<vector<char>> transA_transB_range
-    = {{'N', 'N'}, {'N', 'T'}}; //, {'C', 'N'}, {'T', 'C'}};
+const vector<vector<double>> alpha_beta_range = {{1.0, 1.0, 1.0, 1.0}, {-5.0, 2.0, 3.0, -2.0}};
+
+// vector of vector, each pair is a {side, uplo};
+// side has two option "Lefe (L), Right (R)"
+// uplo has two "Lower (L), Upper (U)"
+// Each letter is capitalizied, e.g. do not use 'l', but use 'L' instead.
+
+const vector<vector<char>> side_uplo_range = {
+    {'L', 'L'},
+    {'R', 'L'},
+    {'L', 'U'},
+    {'R', 'U'},
+};
+
+// has all the 16 options
+const vector<vector<char>> full_side_uplo_range = {
+    {'L', 'L'},
+    {'R', 'L'},
+    {'L', 'U'},
+    {'R', 'U'},
+};
 
 const vector<double> stride_scale_range = {1, 3};
 
@@ -64,7 +82,7 @@ const vector<int> batch_count_range = {1, 3, 5};
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
-     BLAS-3 GEAM:
+     BLAS-3 symm:
 =================================================================== */
 
 /* ============================Setup Arguments======================================= */
@@ -77,14 +95,14 @@ const vector<int> batch_count_range = {1, 3, 5};
 // by std:tuple, you have unpack it with extreme care for each one by like "std::get<0>" which is
 // not intuitive and error-prone
 
-Arguments setup_geam_arguments(geam_tuple tup)
+Arguments setup_symm_arguments(symm_tuple tup)
 {
 
-    vector<int>    matrix_size   = std::get<0>(tup);
-    vector<double> alpha_beta    = std::get<1>(tup);
-    vector<char>   transA_transB = std::get<2>(tup);
-    double         stride_scale  = std::get<3>(tup);
-    int            batch_count   = std::get<4>(tup);
+    vector<int>    matrix_size  = std::get<0>(tup);
+    vector<double> alpha_beta   = std::get<1>(tup);
+    vector<char>   side_uplo    = std::get<2>(tup);
+    double         stride_scale = std::get<3>(tup);
+    int            batch_count  = std::get<4>(tup);
 
     Arguments arg;
 
@@ -95,48 +113,48 @@ Arguments setup_geam_arguments(geam_tuple tup)
     arg.ldb = matrix_size[3];
     arg.ldc = matrix_size[4];
 
-    // the first element of alpha_beta_range is always alpha, and the second is always beta
     arg.alpha  = alpha_beta[0];
     arg.alphai = alpha_beta[1];
     arg.beta   = alpha_beta[2];
     arg.betai  = alpha_beta[3];
 
-    arg.transA_option = transA_transB[0];
-    arg.transB_option = transA_transB[1];
+    arg.side_option = side_uplo[0];
+    arg.uplo_option = side_uplo[1];
+
+    arg.timing = 1;
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
 
-    arg.timing = 0;
-
     return arg;
 }
 
-class geam_gtest : public ::TestWithParam<geam_tuple>
+class symm_gtest : public ::TestWithParam<symm_tuple>
 {
 protected:
-    geam_gtest() {}
-    virtual ~geam_gtest() {}
+    symm_gtest() {}
+    virtual ~symm_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
-TEST_P(geam_gtest, geam_gtest_float)
+TEST_P(symm_gtest, symm_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_geam_arguments(GetParam());
+    Arguments arg = setup_symm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geam<float>(arg);
+    hipblasStatus_t status = testing_symm<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M)
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -147,22 +165,23 @@ TEST_P(geam_gtest, geam_gtest_float)
     }
 }
 
-TEST_P(geam_gtest, geam_gtest_double_complex)
+TEST_P(symm_gtest, symm_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_geam_arguments(GetParam());
+    Arguments arg = setup_symm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geam<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_symm<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M)
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -173,133 +192,137 @@ TEST_P(geam_gtest, geam_gtest_double_complex)
     }
 }
 
-TEST_P(geam_gtest, geam_batched_gtest_float)
+TEST_P(symm_gtest, symm_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_geam_arguments(GetParam());
+    Arguments arg = setup_symm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geam_batched<float>(arg);
-
-    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
-        return; // for cuda
+    hipblasStatus_t status = testing_symm_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
-           || arg.batch_count < 0)
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
 
-TEST_P(geam_gtest, geam_batched_gtest_double_complex)
+TEST_P(symm_gtest, symm_batched_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_geam_arguments(GetParam());
+    Arguments arg = setup_symm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geam_batched<hipblasDoubleComplex>(arg);
-
-    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
-        return; // for cuda
+    hipblasStatus_t status = testing_symm_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
-           || arg.batch_count < 0)
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
 
-TEST_P(geam_gtest, geam_strided_batched_gtest_float)
+TEST_P(symm_gtest, symm_strided_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_geam_arguments(GetParam());
+    Arguments arg = setup_symm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geam_strided_batched<float>(arg);
-
-    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
-        return; // for cuda
+    hipblasStatus_t status = testing_symm_strided_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
-           || arg.batch_count < 0)
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
 
-TEST_P(geam_gtest, geam_strided_batched_gtest_double_complex)
+TEST_P(symm_gtest, symm_strided_batched_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_geam_arguments(GetParam());
+    Arguments arg = setup_symm_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geam_strided_batched<hipblasDoubleComplex>(arg);
-
-    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
-        return; // for cuda
+    hipblasStatus_t status = testing_symm_strided_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
-           || arg.batch_count < 0)
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
+           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
 
-// This function mainly test the scope of alpha_beta, transA_transB,.the scope of matrix_size_range
-// is small
+// notice we are using vector of vector
+// so each elment in xxx_range is a avector,
+// ValuesIn take each element (a vector) and combine them and feed them to test_p
+// The combinations are  { {M, N, lda, ldb}, alpha, {side, diag} }
 
-INSTANTIATE_TEST_CASE_P(hipblasGeam_scalar_transpose,
-                        geam_gtest,
+// THis function mainly test the scope of matrix_size. the scope of side_uplo_range is
+// small
+// Testing order: side_uplo_xx first, alpha_beta_range second, full_matrix_size last
+// i.e fix the matrix size and alpha, test all the side_uplo_xx first.
+INSTANTIATE_TEST_CASE_P(hipblassymm_matrix_size,
+                        symm_gtest,
+                        Combine(ValuesIn(full_matrix_size_range),
+                                ValuesIn(alpha_beta_range),
+                                ValuesIn(side_uplo_range),
+                                ValuesIn(stride_scale_range),
+                                ValuesIn(batch_count_range)));
+
+// THis function mainly test the scope of  full_side_uplo_range,.the scope of
+// matrix_size_range is small
+INSTANTIATE_TEST_CASE_P(hipblassymm_scalar_transpose,
+                        symm_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
+                                ValuesIn(full_side_uplo_range),
                                 ValuesIn(stride_scale_range),
                                 ValuesIn(batch_count_range)));

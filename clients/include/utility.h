@@ -9,6 +9,7 @@
 #include "hipblas.h"
 
 #ifdef __cplusplus
+#include "cblas_interface.h"
 #include "complex.hpp"
 #include <cmath>
 #include <immintrin.h>
@@ -463,6 +464,115 @@ inline void regular_to_packed(bool upper, const T* A, T* AP, int n)
         for(int i = 0; i < n; i++)
             for(int j = i; j < n; j++)
                 AP[index++] = A[j + i * n];
+}
+
+/* ============================================================================ */
+/* \brief For testing purposes, to convert a regular matrix to a banded matrix. */
+template <typename T>
+inline void regular_to_banded(bool upper, const T* A, int lda, T* AB, int ldab, int n, int k)
+{
+    // convert regular hA matrix to banded hAB matrix.
+    for(int j = 0; j < n; j++)
+    {
+        int min1 = upper ? std::max(0, j - k) : j;
+        int max1 = upper ? j : std::min(n - 1, j + k);
+        int m    = upper ? k - j : -j;
+
+        // Move bands of hA into new banded hAB format.
+        for(int i = min1; i <= max1; i++)
+            AB[j * ldab + (m + i)] = A[j * lda + i];
+
+        min1 = upper ? k + 1 : std::min(k + 1, n - j);
+        max1 = ldab - 1;
+
+        // fill in bottom with random data to ensure we aren't using it.
+        // for !upper, fill in bottom right triangle as well.
+        for(int i = min1; i <= max1; i++)
+            hipblas_init<T>(AB + j * ldab + i, 1, 1, 1);
+
+        // for upper, fill in top left triangle with random data to ensure
+        // we aren't using it.
+        if(upper)
+        {
+            for(int i = 0; i < m; i++)
+                hipblas_init<T>(AB + j * ldab + i, 1, 1, 1);
+        }
+    }
+}
+
+/* ============================================================================== */
+/* \brief For testing purposes, zeros out elements not needed in a banded matrix. */
+template <typename T>
+inline void banded_matrix_setup(bool upper, T* A, int lda, int n, int k)
+{
+    // Make A a banded matrix with k sub/super diagonals.
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < n; j++)
+        {
+            if(upper && (j > k + i || i > j))
+                A[j * n + i] = T(0);
+            else if(!upper && (i > k + j || j > i))
+                A[j * n + i] = T(0);
+        }
+    }
+}
+
+/* ============================================================================================= */
+/*! \brief For testing purposes, makes a matrix hA into a unit_diagonal matrix and               *
+ *         randomly initialize the diagonal.                                                     */
+template <typename T>
+void make_unit_diagonal(hipblasFillMode_t uplo, T* hA, int lda, int N)
+{
+    if(uplo == HIPBLAS_FILL_MODE_LOWER)
+    {
+        for(int i = 0; i < N; i++)
+        {
+            T diag = hA[i + i * N];
+            for(int j = 0; j <= i; j++)
+                hA[i + j * lda] = hA[i + j * lda] / diag;
+        }
+    }
+    else // rocblas_fill_upper
+    {
+        for(int j = 0; j < N; j++)
+        {
+            T diag = hA[j + j * lda];
+            for(int i = 0; i <= j; i++)
+                hA[i + j * lda] = hA[i + j * lda] / diag;
+        }
+    }
+
+    // randomly initalize diagonal to ensure we aren't using it's values for tests.
+    for(int i = 0; i < N; i++)
+    {
+        hipblas_init<T>(hA + i * lda + i, 1, 1, 1);
+    }
+}
+
+/* ============================================================================================= */
+/*! \brief For testing purposes, prepares matrix hA for a triangular solve.                      *
+ *         Makes hA strictly diagonal dominant (SPD), then calculates Cholesky factorization     *
+ *         of hA.                                                                                */
+template <typename T>
+void prepare_triangular_solve(T* hA, int lda, T* AAT, int N, char char_uplo)
+{
+    //  calculate AAT = hA * hA ^ T
+    cblas_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_C, N, N, N, T(1.0), hA, lda, hA, lda, T(0.0), AAT, lda);
+
+    //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
+    for(int i = 0; i < N; i++)
+    {
+        T t = 0.0;
+        for(int j = 0; j < N; j++)
+        {
+            hA[i + j * lda] = AAT[i + j * lda];
+            t += std::abs(AAT[i + j * lda]);
+        }
+        hA[i + i * lda] = t;
+    }
+    //  calculate Cholesky factorization of SPD matrix hA
+    cblas_potrf<T>(char_uplo, N, hA, lda);
 }
 
 /* ============================================================================================ */
