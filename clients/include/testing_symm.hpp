@@ -22,6 +22,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_symm(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasSymmFn = FORTRAN ? hipblasSymm<T, true> : hipblasSymm<T, false>;
+
     int M   = argus.M;
     int N   = argus.N;
     int lda = argus.lda;
@@ -81,7 +84,7 @@ hipblasStatus_t testing_symm(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status = hipblasSymm<T>(handle, side, uplo, M, N, &alpha, dA, lda, dB, ldb, &beta, dC, ldc);
+    status = hipblasSymmFn(handle, side, uplo, M, N, &alpha, dA, lda, dB, ldb, &beta, dC, ldc);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

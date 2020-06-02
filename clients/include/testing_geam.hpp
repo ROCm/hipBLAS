@@ -23,6 +23,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_geam(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasGeamFn = FORTRAN ? hipblasGeam<T, true> : hipblasGeam<T, false>;
+
     int M = argus.M;
     int N = argus.N;
 
@@ -134,7 +137,7 @@ hipblasStatus_t testing_geam(Arguments argus)
             return status1;
         }
 
-        status2 = hipblasGeam<T>(
+        status2 = hipblasGeamFn(
             handle, transA, transB, M, N, &h_alpha, dA, lda, &h_beta, dB, ldb, dC, ldc);
 
         if(status2 != HIPBLAS_STATUS_SUCCESS)
@@ -157,7 +160,7 @@ hipblasStatus_t testing_geam(Arguments argus)
 
         CHECK_HIP_ERROR(hipMemcpy(dC, hC2.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
-        status2 = hipblasGeam<T>(
+        status2 = hipblasGeamFn(
             handle, transA, transB, M, N, d_alpha, dA, lda, d_beta, dB, ldb, dC, ldc);
 
         if(status2 != HIPBLAS_STATUS_SUCCESS)

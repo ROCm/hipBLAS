@@ -22,6 +22,8 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trtri_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasTrtriBatchedFn = FORTRAN ? hipblasTrtriBatched<T, true> : hipblasTrtriBatched<T, false>;
 
     int N           = argus.N;
     int lda         = argus.lda;
@@ -96,7 +98,7 @@ hipblasStatus_t testing_trtri_batched(Arguments argus)
            ROCBLAS
     =================================================================== */
 
-    status = hipblasTrtri_batched<T>(
+    status = hipblasTrtriBatchedFn(
         handle, uplo, diag, N, dA, lda, bsa, dinvA, lda, bsa, batch_count);
 
     if(status != HIPBLAS_STATUS_SUCCESS)

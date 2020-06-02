@@ -22,6 +22,9 @@ using namespace std;
 template <typename T, typename U>
 hipblasStatus_t testing_herk_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasHerkBatchedFn = FORTRAN ? hipblasHerkBatched<T, U, true> : hipblasHerkBatched<T, U, false>;
+
     int N           = argus.N;
     int K           = argus.K;
     int lda         = argus.lda;
@@ -105,7 +108,7 @@ hipblasStatus_t testing_herk_batched(Arguments argus)
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasHerkBatched<T>(
+        status = hipblasHerkBatchedFn(
             handle, uplo, transA, N, K, (U*)&alpha, dA, lda, (U*)&beta, dC, ldc, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)

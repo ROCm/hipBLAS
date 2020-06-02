@@ -18,7 +18,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<double>, vector<char>> gemm_tuple;
+typedef std::tuple<vector<int>, vector<double>, vector<char>, bool> gemm_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -49,6 +49,8 @@ const vector<vector<double>> alpha_beta_range = {{2.0, 0.0}, {0.0, 1.3}};
 // sgemm/dgemm,
 const vector<vector<char>> transA_transB_range = {{'N', 'N'}, {'N', 'T'}, {'C', 'N'}, {'T', 'C'}};
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -71,6 +73,7 @@ Arguments setup_gemm_arguments(gemm_tuple tup)
     vector<int>    matrix_size   = std::get<0>(tup);
     vector<double> alpha_beta    = std::get<1>(tup);
     vector<char>   transA_transB = std::get<2>(tup);
+    bool fortran = std::get<3>(tup);
 
     Arguments arg;
 
@@ -88,6 +91,8 @@ Arguments setup_gemm_arguments(gemm_tuple tup)
 
     arg.transA_option = transA_transB[0];
     arg.transB_option = transA_transB[1];
+
+    arg.fortran = fortran;
 
     arg.timing = 0;
 
@@ -267,4 +272,5 @@ INSTANTIATE_TEST_CASE_P(hipblasGemm_scalar_transpose,
                         gemm_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range)));
+                                ValuesIn(transA_transB_range),
+                                ValuesIn(is_fortran)));

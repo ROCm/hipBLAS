@@ -13,6 +13,7 @@
 #include "cblas_interface.h"
 #include "flops.h"
 #include "hipblas.hpp"
+#include "hipblas_fortran.hpp"
 #include "hipblas_unique_ptr.hpp"
 #include "norm.h"
 #include "unit.h"
@@ -39,8 +40,11 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
                                          hipblasDatatype_t  a_type,
                                          hipblasDatatype_t  b_type,
                                          hipblasDatatype_t  c_type,
-                                         hipblasDatatype_t  compute_type)
+                                         hipblasDatatype_t  compute_type,
+                                         bool FORTRAN)
 {
+    auto hipblasGemmExFn = FORTRAN ? hipblasGemmExFortran : hipblasGemmEx;
+
     hipblasGemmAlgo_t algo           = HIPBLAS_GEMM_DEFAULT;
     uint32_t          solution_index = 0;
     uint32_t          flags          = 0;
@@ -192,7 +196,7 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(Td) * size_B, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(Td) * size_C, hipMemcpyHostToDevice));
 
-    status = hipblasGemmEx(handle,
+    status = hipblasGemmExFn(handle,
                            transA,
                            transB,
                            M,
@@ -334,7 +338,8 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                                     a_type,
                                                                     b_type,
                                                                     c_type,
-                                                                    compute_type);
+                                                                    compute_type,
+                                                                    argus.fortran);
     }
     else if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
             && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_32F)
@@ -354,7 +359,8 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                               a_type,
                                                               b_type,
                                                               c_type,
-                                                              compute_type);
+                                                              compute_type,
+                                                              argus.fortran);
     }
     else if(a_type == HIPBLAS_R_32F && b_type == HIPBLAS_R_32F && c_type == HIPBLAS_R_32F
             && c_type == HIPBLAS_R_32F && compute_type == HIPBLAS_R_32F)
@@ -374,7 +380,8 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                         a_type,
                                                         b_type,
                                                         c_type,
-                                                        compute_type);
+                                                        compute_type,
+                                                        argus.fortran);
     }
     else if(a_type == HIPBLAS_R_64F && b_type == HIPBLAS_R_64F && c_type == HIPBLAS_R_64F
             && c_type == HIPBLAS_R_64F && compute_type == HIPBLAS_R_64F)
@@ -394,7 +401,8 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                           a_type,
                                                           b_type,
                                                           c_type,
-                                                          compute_type);
+                                                          compute_type,
+                                                          argus.fortran);
     }
     else
     {

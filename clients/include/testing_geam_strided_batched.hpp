@@ -23,6 +23,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_geam_strided_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasGeamStridedBatchedFn = FORTRAN ? hipblasGeamStridedBatched<T, true> : hipblasGeamStridedBatched<T, false>;
+
     int M = argus.M;
     int N = argus.N;
 
@@ -141,7 +144,7 @@ hipblasStatus_t testing_geam_strided_batched(Arguments argus)
             return status1;
         }
 
-        status2 = hipblasGeamStridedBatched<T>(handle,
+        status2 = hipblasGeamStridedBatchedFn(handle,
                                                transA,
                                                transB,
                                                M,
@@ -179,7 +182,7 @@ hipblasStatus_t testing_geam_strided_batched(Arguments argus)
 
         CHECK_HIP_ERROR(hipMemcpy(dC, hC2.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
-        status2 = hipblasGeamStridedBatched<T>(handle,
+        status2 = hipblasGeamStridedBatchedFn(handle,
                                                transA,
                                                transB,
                                                M,

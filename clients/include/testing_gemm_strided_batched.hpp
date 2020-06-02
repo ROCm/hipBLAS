@@ -24,6 +24,8 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasGemmStridedBatchedFn = FORTRAN ? hipblasGemmStridedBatched<T, true> : hipblasGemmStridedBatched<T, false>;
 
     int M = argus.M;
     int N = argus.N;
@@ -114,7 +116,7 @@ hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
     =================================================================== */
 
     // library interface
-    status = hipblasGemmStridedBatched<T>(handle,
+    status = hipblasGemmStridedBatchedFn(handle,
                                           transA,
                                           transB,
                                           M,
