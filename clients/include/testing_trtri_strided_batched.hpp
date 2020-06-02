@@ -20,20 +20,20 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_trtri_batched(Arguments argus)
+hipblasStatus_t testing_trtri_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasTrtriBatchedFn = FORTRAN ? hipblasTrtriBatched<T, true> : hipblasTrtriBatched<T, false>;
+    auto hipblasTrtriStridedBatchedFn = FORTRAN ? hipblasTrtriStridedBatched<T, true> : hipblasTrtriStridedBatched<T, false>;
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
     int N = argus.N;
-    int lda;
-    int ldinvA;
-    ldinvA = lda = argus.lda;
+    int lda = argus.lda;
+    int ldinvA = lda;
     int batch_count = argus.batch_count;
 
-    int A_size = size_t(lda) * N;
+    int strideA = lda * N;
+    int A_size = strideA * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -43,20 +43,11 @@ hipblasStatus_t testing_trtri_batched(Arguments argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA[batch_count];
-    host_vector<T> hB[batch_count];
+    host_vector<T> hA(A_size);
+    host_vector<T> hB(A_size);
 
-    device_batch_vector<T> bA(batch_count, A_size);
-    device_batch_vector<T> bB(batch_count, A_size);
-
-    device_vector<T*, 0, T> dA(batch_count);
-    device_vector<T*, 0, T> dinvA(batch_count);
-
-    int last = batch_count - 1;
-    if(!dA || !dinvA || !bA[last] || !bB[last])
-    {
-        return HIPBLAS_STATUS_ALLOC_FAILED;
-    }
+    device_vector<T> dA(A_size);
+    device_vector<T> dinvA(A_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -72,53 +63,49 @@ hipblasStatus_t testing_trtri_batched(Arguments argus)
 
     hipblasCreate(&handle);
 
+    srand(1);
+    hipblas_init_symmetric<T>(hA, N, lda, strideA, batch_count);
     for(int b = 0; b < batch_count; b++)
     {
-        hA[b] = host_vector<T>(A_size);
-        hB[b] = host_vector<T>(A_size);
-
-        srand(1);
-        hipblas_init_symmetric<T>(hA[b], N, lda);
+        T* hAb = hA.data() + b * strideA;
 
         // proprocess the matrix to avoid ill-conditioned matrix
         for(int i = 0; i < N; i++)
         {
             for(int j = 0; j < N; j++)
             {
-                hA[b][i + j * lda] *= 0.01;
+                hAb[i + j * lda] *= 0.01;
 
                 if(j % 2)
-                    hA[b][i + j * lda] *= -1;
+                    hAb[i + j * lda] *= -1;
                 if(uplo == HIPBLAS_FILL_MODE_LOWER && j > i)
-                    hA[b][i + j * lda] = 0.0f;
+                    hAb[i + j * lda] = 0.0f;
                 else if(uplo == HIPBLAS_FILL_MODE_UPPER && j < i)
-                    hA[b][i + j * lda] = 0.0f;
+                    hAb[i + j * lda] = 0.0f;
                 if(i == j)
                 {
                     if(diag == HIPBLAS_DIAG_UNIT)
-                        hA[b][i + j * lda] = 1.0;
+                        hAb[i + j * lda] = 1.0;
                     else
-                        hA[b][i + j * lda] *= 100.0;
+                        hAb[i + j * lda] *= 100.0;
                 }
             }
         }
-
-        hB[b] = hA[b];
-
-        CHECK_HIP_ERROR(hipMemcpy(bA[b], hA[b], sizeof(T) * A_size, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(hipMemcpy(bB[b], hB[b], sizeof(T) * A_size, hipMemcpyHostToDevice));
     }
-    CHECK_HIP_ERROR(hipMemcpy(dA, bA, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dinvA, bB, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
+
+    hB = hA;
+
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dinvA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
 
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status = hipblasTrtriBatchedFn(handle, uplo, diag, N, dA, lda, dinvA, ldinvA, batch_count);
+    status = hipblasTrtriStridedBatchedFn(handle, uplo, diag, N, dA, lda, strideA, dinvA, ldinvA, strideA, batch_count);
 
     // copy output from device to CPU
-    for(int b = 0; b < batch_count; b++)
-        CHECK_HIP_ERROR(hipMemcpy(hA[b], bB[b], sizeof(T) * A_size, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hA.data(), dinvA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
 
     if(argus.unit_check)
     {
@@ -127,20 +114,18 @@ hipblasStatus_t testing_trtri_batched(Arguments argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            int info = cblas_trtri<T>(char_uplo, char_diag, N, hB[b].data(), lda);
+            int info = cblas_trtri<T>(char_uplo, char_diag, N, hB.data() + b * strideA, lda);
 
             if(info != 0)
                 printf("error in cblas_trtri\n");
         }
 
-#ifndef NDEBUG
-        print_matrix(hB, hA, N, N, lda);
-#endif
-
+        // enable unit check, notice unit check is not invasive, but norm check is,
+        // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
             for(int b = 0; b < batch_count; b++)
-                near_check_general<T>(N, N, lda, hB[b].data(), hA[b].data(), rel_error);
+                near_check_general<T>(N, N, lda, hB.data() + b * strideA, hA.data() + b * strideA, rel_error);
         }
     }
 
