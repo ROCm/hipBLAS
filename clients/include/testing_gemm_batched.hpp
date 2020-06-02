@@ -25,6 +25,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_GemmBatched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasGemmBatchedFn = FORTRAN ? hipblasGemmBatched<T, true> : hipblasGemmBatched<T, false>;
+
     int M = argus.M;
     int N = argus.N;
     int K = argus.K;
@@ -50,7 +53,7 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         const T *dA_array[1], *dB_array[1];
         T*       dC1_array[1];
 
-        status = hipblasGemmBatched<T>(handle,
+        status = hipblasGemmBatchedFn(handle,
                                        transA,
                                        transB,
                                        M,
@@ -229,7 +232,7 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     {
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_2 = hipblasGemmBatched<T>(handle,
+        status_2 = hipblasGemmBatchedFn(handle,
                                          transA,
                                          transB,
                                          M,
@@ -277,7 +280,7 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     {
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-        status_2 = hipblasGemmBatched<T>(handle,
+        status_2 = hipblasGemmBatchedFn(handle,
                                          transA,
                                          transB,
                                          M,

@@ -23,6 +23,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_symm_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasSymmBatchedFn = FORTRAN ? hipblasSymmBatched<T, true> : hipblasSymmBatched<T, false>;
+
     int M   = argus.M;
     int N   = argus.N;
     int lda = argus.lda;
@@ -127,7 +130,7 @@ hipblasStatus_t testing_symm_batched(Arguments argus)
     =================================================================== */
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasSymmBatched<T>(handle,
+        status = hipblasSymmBatchedFn(handle,
                                        side,
                                        uplo,
                                        M,

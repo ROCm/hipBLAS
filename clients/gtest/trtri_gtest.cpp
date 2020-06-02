@@ -16,7 +16,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 using namespace std;
 
-typedef std::tuple<vector<int>, char, char, int> trtri_tuple;
+typedef std::tuple<vector<int>, char, char, int, bool> trtri_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -47,6 +47,8 @@ const vector<char> diag_range = {'N', 'U'};
 // it applies on trtri_batched only
 const vector<int> batch_range = {-1, 1, 100, 1000};
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -69,7 +71,9 @@ Arguments setup_trtri_arguments(trtri_tuple tup)
     vector<int> matrix_size = std::get<0>(tup);
     char        uplo        = std::get<1>(tup);
     char        diag        = std::get<2>(tup);
-    int         batch_count = std::get<2>(tup);
+    int         batch_count = std::get<3>(tup);
+    bool fortran = std::get<4>(tup);
+
 
     Arguments arg;
 
@@ -79,6 +83,8 @@ Arguments setup_trtri_arguments(trtri_tuple tup)
     arg.uplo_option = uplo;
     arg.diag_option = diag;
     arg.batch_count = batch_count;
+
+    arg.fortran = fortran;
 
     arg.timing = 0;
 
@@ -176,4 +182,5 @@ INSTANTIATE_TEST_CASE_P(hipblasTrtri,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(uplo_range),
                                 ValuesIn(diag_range),
-                                ValuesIn(batch_range)));
+                                ValuesIn(batch_range),
+                                ValuesIn(is_fortran)));
