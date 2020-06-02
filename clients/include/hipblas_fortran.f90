@@ -8185,5 +8185,4029 @@ module hipblas_interface
               A, lda, stride_A, x, incx, stride_x, batch_count)
     end function hipblasZtrsvStridedBatchedFortran
 
+    !--------!
+    ! blas 3 !
+    !--------!
+
+    ! hemm
+    function hipblasChemmFortran(handle, side, uplo, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasChemmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasChemm(handle, side, uplo, n, k, alpha,&
+                            A, lda, B, ldb, beta, C, ldc)
+    end function hipblasChemmFortran
+
+    function hipblasZhemmFortran(handle, side, uplo, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZhemmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZhemm(handle, side, uplo, n, k, alpha,&
+                            A, lda, B, ldb, beta, C, ldc)
+    end function hipblasZhemmFortran
+
+    ! hemmBatched
+    function hipblasChemmBatchedFortran(handle, side, uplo, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasChemmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasChemmBatched(handle, side, uplo, n, k, alpha,&
+                            A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasChemmBatchedFortran
+
+    function hipblasZhemmBatchedFortran(handle, side, uplo, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZhemmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZhemmBatched(handle, side, uplo, n, k, alpha,&
+                            A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasZhemmBatchedFortran
+
+    ! hemmStridedBatched
+    function hipblasChemmStridedBatchedFortran(handle, side, uplo, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasChemmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasChemmStridedBatched(handle, side, uplo, n, k, alpha,&
+                            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasChemmStridedBatchedFortran
+
+    function hipblasZhemmStridedBatchedFortran(handle, side, uplo, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZhemmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZhemmStridedBatched(handle, side, uplo, n, k, alpha,&
+                            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasZhemmStridedBatchedFortran
+
+    ! herk
+    function hipblasCherkFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasCherkFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasCherk(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc)
+    end function hipblasCherkFortran
+
+    function hipblasZherkFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZherkFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZherk(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc)
+    end function hipblasZherkFortran
+
+    ! herkBatched
+    function hipblasCherkBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCherkBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCherkBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc, batch_count)
+    end function hipblasCherkBatchedFortran
+
+    function hipblasZherkBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZherkBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZherkBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc, batch_count)
+    end function hipblasZherkBatchedFortran
+
+    ! herkStridedBatched
+    function hipblasCherkStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCherkStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCherkStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, beta, C, ldc, stride_C, batch_count)
+    end function hipblasCherkStridedBatchedFortran
+
+    function hipblasZherkStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZherkStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZherkStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, beta, C, ldc, stride_C, batch_count)
+    end function hipblasZherkStridedBatchedFortran
+
+    ! her2k
+    function hipblasCher2kFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasCher2kFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasCher2k(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasCher2kFortran
+
+    function hipblasZher2kFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZher2kFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZher2k(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasZher2kFortran
+
+    ! her2kBatched
+    function hipblasCher2kBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCher2kBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCher2kBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasCher2kBatchedFortran
+
+    function hipblasZher2kBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZher2kBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZher2kBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasZher2kBatchedFortran
+
+    ! her2kStridedBatched
+    function hipblasCher2kStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCher2kStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCher2kStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasCher2kStridedBatchedFortran
+
+    function hipblasZher2kStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZher2kStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZher2kStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasZher2kStridedBatchedFortran
+
+    ! herkx
+    function hipblasCherkxFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasCherkxFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasCherkx(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasCherkxFortran
+
+    function hipblasZherkxFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZherkxFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZherkx(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasZherkxFortran
+
+    ! herkxBatched
+    function hipblasCherkxBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCherkxBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCherkxBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasCherkxBatchedFortran
+
+    function hipblasZherkxBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZherkxBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZherkxBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasZherkxBatchedFortran
+
+    ! herkxStridedBatched
+    function hipblasCherkxStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCherkxStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCherkxStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasCherkxStridedBatchedFortran
+
+    function hipblasZherkxStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZherkxStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZherkxStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasZherkxStridedBatchedFortran
+
+    ! symm
+    function hipblasSsymmFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasSsymmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasSsymm(handle, side, uplo, m, n, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasSsymmFortran
+
+    function hipblasDsymmFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasDsymmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasDsymm(handle, side, uplo, m, n, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasDsymmFortran
+
+    function hipblasCsymmFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasCsymmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasCsymm(handle, side, uplo, m, n, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasCsymmFortran
+
+    function hipblasZsymmFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZsymmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZsymm(handle, side, uplo, m, n, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasZsymmFortran
+
+    ! symmBatched
+    function hipblasSsymmBatchedFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSsymmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSsymmBatched(handle, side, uplo, m, n, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasSsymmBatchedFortran
+
+    function hipblasDsymmBatchedFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDsymmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDsymmBatched(handle, side, uplo, m, n, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasDsymmBatchedFortran
+
+    function hipblasCsymmBatchedFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCsymmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCsymmBatched(handle, side, uplo, m, n, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasCsymmBatchedFortran
+
+    function hipblasZsymmBatchedFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZsymmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZsymmBatched(handle, side, uplo, m, n, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasZsymmBatchedFortran
+
+    ! symmStridedBatched
+    function hipblasSsymmStridedBatchedFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSsymmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSsymmStridedBatched(handle, side, uplo, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasSsymmStridedBatchedFortran
+
+    function hipblasDsymmStridedBatchedFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDsymmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDsymmStridedBatched(handle, side, uplo, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasDsymmStridedBatchedFortran
+
+    function hipblasCsymmStridedBatchedFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCsymmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCsymmStridedBatched(handle, side, uplo, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasCsymmStridedBatchedFortran
+
+    function hipblasZsymmStridedBatchedFortran(handle, side, uplo, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZsymmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZsymmStridedBatched(handle, side, uplo, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasZsymmStridedBatchedFortran
+
+    ! syrk
+    function hipblasSsyrkFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasSsyrkFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasSsyrk(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc)
+    end function hipblasSsyrkFortran
+
+    function hipblasDsyrkFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasDsyrkFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasDsyrk(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc)
+    end function hipblasDsyrkFortran
+
+    function hipblasCsyrkFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasCsyrkFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasCsyrk(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc)
+    end function hipblasCsyrkFortran
+
+    function hipblasZsyrkFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZsyrkFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZsyrk(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc)
+    end function hipblasZsyrkFortran
+
+    ! syrkBatched
+    function hipblasSsyrkBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSsyrkBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSsyrkBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc, batch_count)
+    end function hipblasSsyrkBatchedFortran
+
+    function hipblasDsyrkBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDsyrkBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDsyrkBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc, batch_count)
+    end function hipblasDsyrkBatchedFortran
+
+    function hipblasCsyrkBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCsyrkBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCsyrkBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc, batch_count)
+    end function hipblasCsyrkBatchedFortran
+
+    function hipblasZsyrkBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZsyrkBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZsyrkBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, beta, C, ldc, batch_count)
+    end function hipblasZsyrkBatchedFortran
+
+    ! syrkStridedBatched
+    function hipblasSsyrkStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSsyrkStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSsyrkStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, beta, C, ldc, stride_C, batch_count)
+    end function hipblasSsyrkStridedBatchedFortran
+
+    function hipblasDsyrkStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDsyrkStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDsyrkStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, beta, C, ldc, stride_C, batch_count)
+    end function hipblasDsyrkStridedBatchedFortran
+
+    function hipblasCsyrkStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCsyrkStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCsyrkStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, beta, C, ldc, stride_C, batch_count)
+    end function hipblasCsyrkStridedBatchedFortran
+
+    function hipblasZsyrkStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZsyrkStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZsyrkStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, beta, C, ldc, stride_C, batch_count)
+    end function hipblasZsyrkStridedBatchedFortran
+
+    ! syr2k
+    function hipblasSsyr2kFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasSsyr2kFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasSsyr2k(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasSsyr2kFortran
+
+    function hipblasDsyr2kFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasDsyr2kFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasDsyr2k(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasDsyr2kFortran
+
+    function hipblasCsyr2kFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasCsyr2kFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasCsyr2k(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasCsyr2kFortran
+
+    function hipblasZsyr2kFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZsyr2kFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZsyr2k(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasZsyr2kFortran
+
+    ! syr2kBatched
+    function hipblasSsyr2kBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSsyr2kBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSsyr2kBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasSsyr2kBatchedFortran
+
+    function hipblasDsyr2kBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDsyr2kBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDsyr2kBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasDsyr2kBatchedFortran
+
+    function hipblasCsyr2kBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCsyr2kBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCsyr2kBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasCsyr2kBatchedFortran
+
+    function hipblasZsyr2kBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZsyr2kBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZsyr2kBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasZsyr2kBatchedFortran
+
+    ! syr2kStridedBatched
+    function hipblasSsyr2kStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSsyr2kStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSsyr2kStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasSsyr2kStridedBatchedFortran
+
+    function hipblasDsyr2kStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDsyr2kStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDsyr2kStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasDsyr2kStridedBatchedFortran
+
+    function hipblasCsyr2kStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCsyr2kStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCsyr2kStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasCsyr2kStridedBatchedFortran
+
+    function hipblasZsyr2kStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZsyr2kStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZsyr2kStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasZsyr2kStridedBatchedFortran
+
+    ! syrkx
+    function hipblasSsyrkxFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasSsyrkxFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasSsyrkx(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasSsyrkxFortran
+
+    function hipblasDsyrkxFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasDsyrkxFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasDsyrkx(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasDsyrkxFortran
+
+    function hipblasCsyrkxFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasCsyrkxFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasCsyrkx(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasCsyrkxFortran
+
+    function hipblasZsyrkxFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZsyrkxFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZsyrkx(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasZsyrkxFortran
+
+    ! syrkxBatched
+    function hipblasSsyrkxBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSsyrkxBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSsyrkxBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasSsyrkxBatchedFortran
+
+    function hipblasDsyrkxBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDsyrkxBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDsyrkxBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasDsyrkxBatchedFortran
+
+    function hipblasCsyrkxBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCsyrkxBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCsyrkxBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasCsyrkxBatchedFortran
+
+    function hipblasZsyrkxBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZsyrkxBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZsyrkxBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasZsyrkxBatchedFortran
+
+    ! syrkxStridedBatched
+    function hipblasSsyrkxStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSsyrkxStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSsyrkxStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasSsyrkxStridedBatchedFortran
+
+    function hipblasDsyrkxStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDsyrkxStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDsyrkxStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasDsyrkxStridedBatchedFortran
+
+    function hipblasCsyrkxStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCsyrkxStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCsyrkxStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasCsyrkxStridedBatchedFortran
+
+    function hipblasZsyrkxStridedBatchedFortran(handle, uplo, transA, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZsyrkxStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZsyrkxStridedBatched(handle, uplo, transA, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasZsyrkxStridedBatchedFortran
+
+    ! trmm
+    function hipblasStrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasStrmmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasStrmm(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb)
+    end function hipblasStrmmFortran
+
+    function hipblasDtrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasDtrmmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasDtrmm(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb)
+    end function hipblasDtrmmFortran
+
+    function hipblasCtrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasCtrmmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasCtrmm(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb)
+    end function hipblasCtrmmFortran
+
+    function hipblasZtrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasZtrmmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasZtrmm(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb)
+    end function hipblasZtrmmFortran
+
+    ! trmmBatched
+    function hipblasStrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasStrmmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasStrmmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, batch_count)
+    end function hipblasStrmmBatchedFortran
+
+    function hipblasDtrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDtrmmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, batch_count)
+    end function hipblasDtrmmBatchedFortran
+
+    function hipblasCtrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCtrmmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, batch_count)
+    end function hipblasCtrmmBatchedFortran
+
+    function hipblasZtrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZtrmmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, batch_count)
+    end function hipblasZtrmmBatchedFortran
+
+    ! trmmStridedBatched
+    function hipblasStrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasStrmmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasStrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, batch_count)
+    end function hipblasStrmmStridedBatchedFortran
+
+    function hipblasDtrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDtrmmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, batch_count)
+    end function hipblasDtrmmStridedBatchedFortran
+
+    function hipblasCtrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCtrmmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, batch_count)
+    end function hipblasCtrmmStridedBatchedFortran
+
+    function hipblasZtrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZtrmmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, batch_count)
+    end function hipblasZtrmmStridedBatchedFortran
+
+    ! ! trtri
+    ! function hipblasStrtriFortran(handle, uplo, diag, n, &
+    !         A, lda, invA, ldinvA) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasStrtriFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int) :: res
+    !     res = hipblasStrtri(handle, uplo, diag, n,&
+    !           A, lda, invA, ldinvA)
+    ! end function hipblasStrtriFortran
+
+    ! function hipblasDtrtriFortran(handle, uplo, diag, n, &
+    !         A, lda, invA, ldinvA) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasDtrtriFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int) :: res
+    !     res = hipblasDtrtri(handle, uplo, diag, n,&
+    !           A, lda, invA, ldinvA)
+    ! end function hipblasDtrtriFortran
+
+    ! function hipblasCtrtriFortran(handle, uplo, diag, n, &
+    !         A, lda, invA, ldinvA) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasCtrtriFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int) :: res
+    !     res = hipblasCtrtri(handle, uplo, diag, n,&
+    !           A, lda, invA, ldinvA)
+    ! end function hipblasCtrtriFortran
+
+    ! function hipblasZtrtriFortran(handle, uplo, diag, n, &
+    !         A, lda, invA, ldinvA) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasZtrtriFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int) :: res
+    !     res = hipblasZtrtri(handle, uplo, diag, n,&
+    !           A, lda, invA, ldinvA)
+    ! end function hipblasZtrtriFortran
+
+    ! ! trtriBatched
+    ! function hipblasStrtriBatchedFortran(handle, uplo, diag, n, &
+    !         A, lda, invA, ldinvA, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasStrtriBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasStrtriBatched(handle, uplo, diag, n,&
+    !           A, lda, invA, ldinvA, batch_count)
+    ! end function hipblasStrtriBatchedFortran
+
+    ! function hipblasDtrtriBatchedFortran(handle, uplo, diag, n, &
+    !         A, lda, invA, ldinvA, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasDtrtriBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasDtrtriBatched(handle, uplo, diag, n,&
+    !           A, lda, invA, ldinvA, batch_count)
+    ! end function hipblasDtrtriBatchedFortran
+
+    ! function hipblasCtrtriBatchedFortran(handle, uplo, diag, n, &
+    !         A, lda, invA, ldinvA, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasCtrtriBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasCtrtriBatched(handle, uplo, diag, n,&
+    !           A, lda, invA, ldinvA, batch_count)
+    ! end function hipblasCtrtriBatchedFortran
+
+    ! function hipblasZtrtriBatchedFortran(handle, uplo, diag, n, &
+    !         A, lda, invA, ldinvA, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasZtrtriBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasZtrtriBatched(handle, uplo, diag, n,&
+    !           A, lda, invA, ldinvA, batch_count)
+    ! end function hipblasZtrtriBatchedFortran
+
+    ! ! trtriStridedBatched
+    ! function hipblasStrtriStridedBatchedFortran(handle, uplo, diag, n, &
+    !         A, lda, stride_A, invA, ldinvA, stride_invA, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasStrtriStridedBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_A
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int64_t), value :: stride_invA
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasStrtriStridedBatched(handle, uplo, diag, n,&
+    !           A, lda, stride_A, invA, ldinvA, stride_invA, batch_count)
+    ! end function hipblasStrtriStridedBatchedFortran
+
+    ! function hipblasDtrtriStridedBatchedFortran(handle, uplo, diag, n, &
+    !         A, lda, stride_A, invA, ldinvA, stride_invA, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasDtrtriStridedBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_A
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int64_t), value :: stride_invA
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasDtrtriStridedBatched(handle, uplo, diag, n,&
+    !           A, lda, stride_A, invA, ldinvA, stride_invA, batch_count)
+    ! end function hipblasDtrtriStridedBatchedFortran
+
+    ! function hipblasCtrtriStridedBatchedFortran(handle, uplo, diag, n, &
+    !         A, lda, stride_A, invA, ldinvA, stride_invA, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasCtrtriStridedBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_A
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int64_t), value :: stride_invA
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasCtrtriStridedBatched(handle, uplo, diag, n,&
+    !           A, lda, stride_A, invA, ldinvA, stride_invA, batch_count)
+    ! end function hipblasCtrtriStridedBatchedFortran
+
+    ! function hipblasZtrtriStridedBatchedFortran(handle, uplo, diag, n, &
+    !         A, lda, stride_A, invA, ldinvA, stride_invA, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasZtrtriStridedBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_A
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: ldinvA
+    !     integer(c_int64_t), value :: stride_invA
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasZtrtriStridedBatched(handle, uplo, diag, n,&
+    !           A, lda, stride_A, invA, ldinvA, stride_invA, batch_count)
+    ! end function hipblasZtrtriStridedBatchedFortran
+
+    ! trsm
+    function hipblasStrsmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasStrsmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasStrsm(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb)
+    end function hipblasStrsmFortran
+
+    function hipblasDtrsmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasDtrsmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasDtrsm(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb)
+    end function hipblasDtrsmFortran
+
+    function hipblasCtrsmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasCtrsmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasCtrsm(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb)
+    end function hipblasCtrsmFortran
+
+    function hipblasZtrsmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasZtrsmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasZtrsm(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb)
+    end function hipblasZtrsmFortran
+
+    ! trsmBatched
+    function hipblasStrsmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasStrsmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasStrsmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, batch_count)
+    end function hipblasStrsmBatchedFortran
+
+    function hipblasDtrsmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDtrsmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDtrsmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, batch_count)
+    end function hipblasDtrsmBatchedFortran
+
+    function hipblasCtrsmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCtrsmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCtrsmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, batch_count)
+    end function hipblasCtrsmBatchedFortran
+
+    function hipblasZtrsmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, B, ldb, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZtrsmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZtrsmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, batch_count)
+    end function hipblasZtrsmBatchedFortran
+
+    ! trsmStridedBatched
+    function hipblasStrsmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasStrsmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasStrsmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, batch_count)
+    end function hipblasStrsmStridedBatchedFortran
+
+    function hipblasDtrsmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDtrsmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDtrsmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, batch_count)
+    end function hipblasDtrsmStridedBatchedFortran
+
+    function hipblasCtrsmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCtrsmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCtrsmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, batch_count)
+    end function hipblasCtrsmStridedBatchedFortran
+
+    function hipblasZtrsmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZtrsmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZtrsmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, batch_count)
+    end function hipblasZtrsmStridedBatchedFortran
+
+    ! gemm
+    function hipblasHgemmFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasHgemmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasHgemm(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasHgemmFortran
+
+    function hipblasSgemmFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasSgemmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasSgemm(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasSgemmFortran
+
+    function hipblasDgemmFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasDgemmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasDgemm(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasDgemmFortran
+
+    function hipblasCgemmFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasCgemmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasCgemm(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasCgemmFortran
+
+    function hipblasZgemmFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZgemmFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZgemm(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc)
+    end function hipblasZgemmFortran
+
+    ! gemmBatched
+    function hipblasHgemmBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasHgemmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasHgemmBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasHgemmBatchedFortran
+
+    function hipblasSgemmBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSgemmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSgemmBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasSgemmBatchedFortran
+
+    function hipblasDgemmBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDgemmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDgemmBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasDgemmBatchedFortran
+
+    function hipblasCgemmBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCgemmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCgemmBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasCgemmBatchedFortran
+
+    function hipblasZgemmBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, B, ldb, beta, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZgemmBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZgemmBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, B, ldb, beta, C, ldc, batch_count)
+    end function hipblasZgemmBatchedFortran
+
+    ! gemmStridedBatched
+    function hipblasHgemmStridedBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasHgemmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasHgemmStridedBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasHgemmStridedBatchedFortran
+
+    function hipblasSgemmStridedBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSgemmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSgemmStridedBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasSgemmStridedBatchedFortran
+
+    function hipblasDgemmStridedBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDgemmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDgemmStridedBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasDgemmStridedBatchedFortran
+
+    function hipblasCgemmStridedBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCgemmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCgemmStridedBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasCgemmStridedBatchedFortran
+
+    function hipblasZgemmStridedBatchedFortran(handle, transA, transB, m, n, k, alpha, &
+            A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZgemmStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZgemmStridedBatched(handle, transA, transB, m, n, k, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, beta, C, ldc, stride_C, batch_count)
+    end function hipblasZgemmStridedBatchedFortran
+
+    ! ! dgmm
+    ! function hipblasSdgmmFortran(handle, side, m, n, &
+    !         A, lda, x, incx, C, ldc) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasSdgmmFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int) :: res
+    !     res = hipblasSdgmm(handle, side, m, n,&
+    !           A, lda, x, incx, C, ldc)
+    ! end function hipblasSdgmmFortran
+
+    ! function hipblasDdgmmFortran(handle, side, m, n, &
+    !         A, lda, x, incx, C, ldc) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasDdgmmFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int) :: res
+    !     res = hipblasDdgmm(handle, side, m, n,&
+    !           A, lda, x, incx, C, ldc)
+    ! end function hipblasDdgmmFortran
+
+    ! function hipblasCdgmmFortran(handle, side, m, n, &
+    !         A, lda, x, incx, C, ldc) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasCdgmmFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int) :: res
+    !     res = hipblasCdgmm(handle, side, m, n,&
+    !           A, lda, x, incx, C, ldc)
+    ! end function hipblasCdgmmFortran
+
+    ! function hipblasZdgmmFortran(handle, side, m, n, &
+    !         A, lda, x, incx, C, ldc) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasZdgmmFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int) :: res
+    !     res = hipblasZdgmm(handle, side, m, n,&
+    !           A, lda, x, incx, C, ldc)
+    ! end function hipblasZdgmmFortran
+
+    ! ! dgmmBatched
+    ! function hipblasSdgmmBatchedFortran(handle, side, m, n, &
+    !         A, lda, x, incx, C, ldc, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasSdgmmBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasSdgmmBatched(handle, side, m, n,&
+    !           A, lda, x, incx, C, ldc, batch_count)
+    ! end function hipblasSdgmmBatchedFortran
+
+    ! function hipblasDdgmmBatchedFortran(handle, side, m, n, &
+    !         A, lda, x, incx, C, ldc, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasDdgmmBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasDdgmmBatched(handle, side, m, n,&
+    !           A, lda, x, incx, C, ldc, batch_count)
+    ! end function hipblasDdgmmBatchedFortran
+
+    ! function hipblasCdgmmBatchedFortran(handle, side, m, n, &
+    !         A, lda, x, incx, C, ldc, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasCdgmmBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasCdgmmBatched(handle, side, m, n,&
+    !           A, lda, x, incx, C, ldc, batch_count)
+    ! end function hipblasCdgmmBatchedFortran
+
+    ! function hipblasZdgmmBatchedFortran(handle, side, m, n, &
+    !         A, lda, x, incx, C, ldc, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasZdgmmBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasZdgmmBatched(handle, side, m, n,&
+    !           A, lda, x, incx, C, ldc, batch_count)
+    ! end function hipblasZdgmmBatchedFortran
+
+    ! ! dgmmStridedBatched
+    ! function hipblasSdgmmStridedBatchedFortran(handle, side, m, n, &
+    !         A, lda, stride_A, x, incx, stride_x, C, ldc, stride_C, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasSdgmmStridedBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_A
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     integer(c_int64_t), value :: stride_x
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int64_t), value :: stride_C
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasSdgmmStridedBatched(handle, side, m, n,&
+    !           A, lda, stride_A, x, incx, stride_x, C, ldc, stride_C, batch_count)
+    ! end function hipblasSdgmmStridedBatchedFortran
+
+    ! function hipblasDdgmmStridedBatchedFortran(handle, side, m, n, &
+    !         A, lda, stride_A, x, incx, stride_x, C, ldc, stride_C, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasDdgmmStridedBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_A
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     integer(c_int64_t), value :: stride_x
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int64_t), value :: stride_C
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasDdgmmStridedBatched(handle, side, m, n,&
+    !           A, lda, stride_A, x, incx, stride_x, C, ldc, stride_C, batch_count)
+    ! end function hipblasDdgmmStridedBatchedFortran
+
+    ! function hipblasCdgmmStridedBatchedFortran(handle, side, m, n, &
+    !         A, lda, stride_A, x, incx, stride_x, C, ldc, stride_C, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasCdgmmStridedBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_A
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     integer(c_int64_t), value :: stride_x
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int64_t), value :: stride_C
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasCdgmmStridedBatched(handle, side, m, n,&
+    !           A, lda, stride_A, x, incx, stride_x, C, ldc, stride_C, batch_count)
+    ! end function hipblasCdgmmStridedBatchedFortran
+
+    ! function hipblasZdgmmStridedBatchedFortran(handle, side, m, n, &
+    !         A, lda, stride_A, x, incx, stride_x, C, ldc, stride_C, batch_count) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasZdgmmStridedBatchedFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_A
+    !     type(c_ptr), value :: x
+    !     integer(c_int), value :: incx
+    !     integer(c_int64_t), value :: stride_x
+    !     type(c_ptr), value :: C
+    !     integer(c_int), value :: ldc
+    !     integer(c_int64_t), value :: stride_C
+    !     integer(c_int), value :: batch_count
+    !     integer(c_int) :: res
+    !     res = hipblasZdgmmStridedBatched(handle, side, m, n,&
+    !           A, lda, stride_A, x, incx, stride_x, C, ldc, stride_C, batch_count)
+    ! end function hipblasZdgmmStridedBatchedFortran
+
+    ! geam
+    function hipblasSgeamFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, beta, B, ldb, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasSgeamFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasSgeam(handle, transA, transB, m, n, alpha,&
+              A, lda, beta, B, ldb, C, ldc)
+    end function hipblasSgeamFortran
+
+    function hipblasDgeamFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, beta, B, ldb, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasDgeamFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasDgeam(handle, transA, transB, m, n, alpha,&
+              A, lda, beta, B, ldb, C, ldc)
+    end function hipblasDgeamFortran
+
+    function hipblasCgeamFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, beta, B, ldb, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasCgeamFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasCgeam(handle, transA, transB, m, n, alpha,&
+              A, lda, beta, B, ldb, C, ldc)
+    end function hipblasCgeamFortran
+
+    function hipblasZgeamFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, beta, B, ldb, C, ldc) &
+            result(res) &
+            bind(c, name = 'hipblasZgeamFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int) :: res
+        res = hipblasZgeam(handle, transA, transB, m, n, alpha,&
+              A, lda, beta, B, ldb, C, ldc)
+    end function hipblasZgeamFortran
+
+    ! geamBatched
+    function hipblasSgeamBatchedFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, beta, B, ldb, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSgeamBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSgeamBatched(handle, transA, transB, m, n, alpha,&
+              A, lda, beta, B, ldb, C, ldc, batch_count)
+    end function hipblasSgeamBatchedFortran
+
+    function hipblasDgeamBatchedFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, beta, B, ldb, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDgeamBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDgeamBatched(handle, transA, transB, m, n, alpha,&
+              A, lda, beta, B, ldb, C, ldc, batch_count)
+    end function hipblasDgeamBatchedFortran
+
+    function hipblasCgeamBatchedFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, beta, B, ldb, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCgeamBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCgeamBatched(handle, transA, transB, m, n, alpha,&
+              A, lda, beta, B, ldb, C, ldc, batch_count)
+    end function hipblasCgeamBatchedFortran
+
+    function hipblasZgeamBatchedFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, beta, B, ldb, C, ldc, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZgeamBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZgeamBatched(handle, transA, transB, m, n, alpha,&
+              A, lda, beta, B, ldb, C, ldc, batch_count)
+    end function hipblasZgeamBatchedFortran
+
+    ! geamStridedBatched
+    function hipblasSgeamStridedBatchedFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, stride_A, beta, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSgeamStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSgeamStridedBatched(handle, transA, transB, m, n, alpha,&
+              A, lda, stride_A, beta, B, ldb, stride_B, C, ldc, stride_C, batch_count)
+    end function hipblasSgeamStridedBatchedFortran
+
+    function hipblasDgeamStridedBatchedFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, stride_A, beta, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDgeamStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDgeamStridedBatched(handle, transA, transB, m, n, alpha,&
+              A, lda, stride_A, beta, B, ldb, stride_B, C, ldc, stride_C, batch_count)
+    end function hipblasDgeamStridedBatchedFortran
+
+    function hipblasCgeamStridedBatchedFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, stride_A, beta, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCgeamStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCgeamStridedBatched(handle, transA, transB, m, n, alpha,&
+              A, lda, stride_A, beta, B, ldb, stride_B, C, ldc, stride_C, batch_count)
+    end function hipblasCgeamStridedBatchedFortran
+
+    function hipblasZgeamStridedBatchedFortran(handle, transA, transB, m, n, alpha, &
+            A, lda, stride_A, beta, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZgeamStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZgeamStridedBatched(handle, transA, transB, m, n, alpha,&
+              A, lda, stride_A, beta, B, ldb, stride_B, C, ldc, stride_C, batch_count)
+    end function hipblasZgeamStridedBatchedFortran
+
+    !-----------------!
+    ! blas Extensions !
+    !-----------------!
+
+    ! gemmEx
+    function hipblasGemmExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
+            b, b_type, ldb, beta, c, c_type, ldc, d, d_type, ldd, &
+            compute_type, algo, solution_index, flags) &
+            result(res) &
+            bind(c, name = 'hipblasGemmExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: a
+        integer(kind(HIPBLAS_R_16F)), value :: a_type
+        integer(c_int), value :: lda
+        type(c_ptr), value :: b
+        integer(kind(HIPBLAS_R_16F)), value :: b_type
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: c
+        integer(kind(HIPBLAS_R_16F)), value :: c_type
+        integer(c_int), value :: ldc
+        type(c_ptr), value :: d
+        integer(kind(HIPBLAS_R_16F)), value :: d_type
+        integer(c_int), value :: ldd
+        integer(kind(HIPBLAS_R_16F)), value :: compute_type
+        integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+        integer(c_int32_t), value :: solution_index
+        ! No unsigned types in fortran. If larger values are needed
+        ! we will need a workaround.
+        integer(c_int32_t), value :: flags
+        integer(c_int) :: res
+        res = hipblasGemmEx(handle, transA, transB, m, n, k, alpha,&
+              a, a_type, lda, b, b_type, ldb, beta, c, c_type, ldc,&
+              d, d_type, ldd, compute_type, algo, solution_index, flags)
+    end function hipblasGemmExFortran
+
+    ! function hipblasGemmBatchedExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
+    !         b, b_type, ldb, beta, c, c_type, ldc, d, d_type, ldd, &
+    !         batch_count, compute_type, algo, solution_index, flags) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasGemmBatchedExFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_OP_N)), value :: transA
+    !     integer(kind(HIPBLAS_OP_N)), value :: transB
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     integer(c_int), value :: k
+    !     type(c_ptr), value :: alpha
+    !     type(c_ptr), value :: a
+    !     integer(kind(HIPBLAS_R_16F)), value :: a_type
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: b
+    !     integer(kind(HIPBLAS_R_16F)), value :: b_type
+    !     integer(c_int), value :: ldb
+    !     type(c_ptr), value :: beta
+    !     type(c_ptr), value :: c
+    !     integer(kind(HIPBLAS_R_16F)), value :: c_type
+    !     integer(c_int), value :: ldc
+    !     type(c_ptr), value :: d
+    !     integer(kind(HIPBLAS_R_16F)), value :: d_type
+    !     integer(c_int), value :: ldd
+    !     integer(c_int), value :: batch_count
+    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
+    !     integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+    !     integer(c_int32_t), value :: solution_index
+    !     ! No unsigned types in fortran. If larger values are needed
+    !     ! we will need a workaround.
+    !     integer(c_int32_t), value :: flags
+    !     integer(c_int) :: res
+    !     res = hipblasGemmBatchedEx(handle, transA, transB, m, n, k, alpha,&
+    !           a, a_type, lda, b, b_type, ldb, beta, c, c_type, ldc,&
+    !           d, d_type, ldd, batch_count, compute_type, algo, solution_index, flags)
+    ! end function hipblasGemmBatchedExFortran
+
+    ! function hipblasGemmStridedBatchedExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, stride_a, &
+    !         b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, d, d_type, ldd, stride_d, &
+    !         batch_count, compute_type, algo, solution_index, flags) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasGemmStridedBatchedExFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_OP_N)), value :: transA
+    !     integer(kind(HIPBLAS_OP_N)), value :: transB
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     integer(c_int), value :: k
+    !     type(c_ptr), value :: alpha
+    !     type(c_ptr), value :: a
+    !     integer(kind(HIPBLAS_R_16F)), value :: a_type
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_a
+    !     type(c_ptr), value :: b
+    !     integer(kind(HIPBLAS_R_16F)), value :: b_type
+    !     integer(c_int), value :: ldb
+    !     integer(c_int64_t), value :: stride_b
+    !     type(c_ptr), value :: beta
+    !     type(c_ptr), value :: c
+    !     integer(kind(HIPBLAS_R_16F)), value :: c_type
+    !     integer(c_int), value :: ldc
+    !     integer(c_int64_t), value :: stride_c
+    !     type(c_ptr), value :: d
+    !     integer(kind(HIPBLAS_R_16F)), value :: d_type
+    !     integer(c_int), value :: ldd
+    !     integer(c_int64_t), value :: stride_d
+    !     integer(c_int), value :: batch_count
+    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
+    !     integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+    !     integer(c_int32_t), value :: solution_index
+    !     ! No unsigned types in fortran. If larger values are needed
+    !     ! we will need a workaround.
+    !     integer(c_int32_t), value :: flags
+    !     integer(c_int) :: res
+    !     res = hipblasGemmStridedBatchedEx(handle, transA, transB, m, n, k, alpha,&
+    !           a, a_type, lda, stride_a, b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c,&
+    !           d, d_type, ldd, stride_d, batch_count, compute_type, algo, solution_index, flags)
+    ! end function hipblasGemmStridedBatchedExFortran
+
+    ! ! trsmEx
+    ! function hipblasTrsmExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, &
+    !         B, ldb, invA, invA_size, compute_type) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasTrsmExFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(kind(HIPBLAS_FILL_MODE_UPPER)), value :: uplo
+    !     integer(kind(HIPBLAS_OP_N)), value :: transA
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: alpha
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: B
+    !     integer(c_int), value :: ldb
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: invA_size
+    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
+    !     integer(c_int) :: res
+    !     res = hipblasTrsmEx(handle, side, uplo, transA, diag, m, n, alpha,&
+    !           A, lda, B, ldb, invA, invA_size, compute_type)
+    ! end function hipblasTrsmExFortran
+
+    ! function hipblasTrsmBatchedExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, &
+    !         B, ldb, batch_count, invA, invA_size, compute_type) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasTrsmBatchedExFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(kind(HIPBLAS_FILL_MODE_UPPER)), value :: uplo
+    !     integer(kind(HIPBLAS_OP_N)), value :: transA
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: alpha
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     type(c_ptr), value :: B
+    !     integer(c_int), value :: ldb
+    !     integer(c_int), value :: batch_count
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: invA_size
+    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
+    !     integer(c_int) :: res
+    !     res = hipblasTrsmBatchedEx(handle, side, uplo, transA, diag, m, n, alpha,&
+    !           A, lda, B, ldb, batch_count, invA, invA_size, compute_type)
+    ! end function hipblasTrsmBatchedExFortran
+
+    ! function hipblasTrsmStridedBatchedExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, stride_A, &
+    !         B, ldb, stride_B, batch_count, invA, invA_size, stride_invA, compute_type) &
+    !         result(res) &
+    !         bind(c, name = 'hipblasTrsmStridedBatchedExFortran')
+    !     use iso_c_binding
+    !     use hipblas_enums
+    !     implicit none
+    !     type(c_ptr), value :: handle
+    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+    !     integer(kind(HIPBLAS_FILL_MODE_UPPER)), value :: uplo
+    !     integer(kind(HIPBLAS_OP_N)), value :: transA
+    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+    !     integer(c_int), value :: m
+    !     integer(c_int), value :: n
+    !     type(c_ptr), value :: alpha
+    !     type(c_ptr), value :: A
+    !     integer(c_int), value :: lda
+    !     integer(c_int64_t), value :: stride_A
+    !     type(c_ptr), value :: B
+    !     integer(c_int), value :: ldb
+    !     integer(c_int64_t), value :: stride_B
+    !     integer(c_int), value :: batch_count
+    !     type(c_ptr), value :: invA
+    !     integer(c_int), value :: invA_size
+    !     integer(c_int64_t), value :: stride_invA
+    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
+    !     integer(c_int) :: res
+    !     res = hipblasTrsmStridedBatchedEx(handle, side, uplo, transA, diag, m, n, alpha,&
+    !           A, lda, stride_A, B, ldb, stride_B, batch_count, invA, invA_size, stride_invA, compute_type)
+    ! end function hipblasTrsmStridedBatchedExFortran
 
 end module hipblas_interface
