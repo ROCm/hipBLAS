@@ -29,6 +29,8 @@ constexpr double nrm2_tolerance_multiplier<hipblasDoubleComplex> = 110;
 template <typename T1, typename T2>
 hipblasStatus_t testing_nrm2(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasNrm2Fn = FORTRAN ? hipblasNrm2<T1, T2, true> : hipblasNrm2<T1, T2, false>;
 
     int N    = argus.N;
     int incx = argus.incx;
@@ -77,11 +79,11 @@ hipblasStatus_t testing_nrm2(Arguments argus)
 
     status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-    status_2 = hipblasNrm2<T1, T2>(handle, N, dx, incx, d_rocblas_result);
+    status_2 = hipblasNrm2Fn(handle, N, dx, incx, d_rocblas_result);
 
     status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-    status_4 = hipblasNrm2<T1, T2>(handle, N, dx, incx, &rocblas_result_1);
+    status_4 = hipblasNrm2Fn(handle, N, dx, incx, &rocblas_result_1);
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
        || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))

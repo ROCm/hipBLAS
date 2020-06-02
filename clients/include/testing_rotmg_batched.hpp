@@ -20,6 +20,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_rotmg_batched(Arguments arg)
 {
+    bool FORTRAN = arg.fortran;
+    auto hipblasRotmgBatchedFn
+        = FORTRAN ? hipblasRotmgBatched<T, true> : hipblasRotmgBatched<T, false>;
+
     int batch_count = arg.batch_count;
 
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
@@ -113,7 +117,7 @@ hipblasStatus_t testing_rotmg_batched(Arguments arg)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_2 = (hipblasRotmgBatched<T>(
+        status_2 = (hipblasRotmgBatchedFn(
             handle, rd1_in, rd2_in, rx1_in, ry1_in, rparams_in, batch_count));
 
         if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
@@ -165,7 +169,7 @@ hipblasStatus_t testing_rotmg_batched(Arguments arg)
             hipMemcpy(dparams, bparams, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
 
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_4 = hipblasRotmgBatched<T>(handle, dd1, dd2, dx1, dy1, dparams, batch_count);
+        status_4 = hipblasRotmgBatchedFn(handle, dd1, dd2, dx1, dy1, dparams, batch_count);
 
         if((status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
         {

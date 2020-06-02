@@ -29,6 +29,10 @@ constexpr double nrm2_batched_tolerance_multiplier<hipblasDoubleComplex> = 110;
 template <typename T1, typename T2>
 hipblasStatus_t testing_nrm2_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasNrm2BatchedFn
+        = FORTRAN ? hipblasNrm2Batched<T1, T2, true> : hipblasNrm2Batched<T1, T2, false>;
+
     int N           = argus.N;
     int incx        = argus.incx;
     int batch_count = argus.batch_count;
@@ -91,11 +95,10 @@ hipblasStatus_t testing_nrm2_batched(Arguments argus)
 
     // hipblasNrm2 accept both dev/host pointer for the scalar
     status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-    status_2 = hipblasNrm2Batched<T1, T2>(handle, N, dx_array, incx, batch_count, d_rocblas_result);
+    status_2 = hipblasNrm2BatchedFn(handle, N, dx_array, incx, batch_count, d_rocblas_result);
 
     status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-    status_4
-        = hipblasNrm2Batched<T1, T2>(handle, N, dx_array, incx, batch_count, h_rocblas_result_1);
+    status_4 = hipblasNrm2BatchedFn(handle, N, dx_array, incx, batch_count, h_rocblas_result_1);
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
        || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))

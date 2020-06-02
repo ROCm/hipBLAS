@@ -27,6 +27,13 @@ else( )
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvcc_detail/hipblas.cpp" )
 endif( )
 
+set (hipblas_f90_source
+  hipblas_module.f90
+)
+
+# Create hipBLAS Fortran module
+add_library(hipblas_fortran ${hipblas_f90_source})
+
 add_library( hipblas
   ${hipblas_source}
   ${relative_hipblas_headers_public}

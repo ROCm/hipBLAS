@@ -21,6 +21,10 @@ using namespace std;
 template <typename T, typename U = T, typename V = T>
 hipblasStatus_t testing_rot_strided_batched(Arguments arg)
 {
+    bool FORTRAN                    = arg.fortran;
+    auto hipblasRotStridedBatchedFn = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
+                                              : hipblasRotStridedBatched<T, U, V, false>;
+
     int    N            = arg.N;
     int    incx         = arg.incx;
     int    incy         = arg.incy;
@@ -93,7 +97,7 @@ hipblasStatus_t testing_rot_strided_batched(Arguments arg)
             status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
             CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
-            status_2 = ((hipblasRotStridedBatched<T, U, V>(
+            status_2 = ((hipblasRotStridedBatchedFn(
                 handle, N, dx, incx, stride_x, dy, incy, stride_y, hc, hs, batch_count)));
 
             if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
@@ -122,7 +126,7 @@ hipblasStatus_t testing_rot_strided_batched(Arguments arg)
             CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
-            status_4 = ((hipblasRotStridedBatched<T, U, V>(
+            status_4 = ((hipblasRotStridedBatchedFn(
                 handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count)));
 
             if((status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))

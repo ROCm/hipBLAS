@@ -163,11 +163,19 @@ hipblasStatus_t testing_iamax_iamin_batched(const Arguments&                 arg
 template <typename T>
 hipblasStatus_t testing_amax_batched(const Arguments& arg)
 {
-    return testing_iamax_iamin_batched<T, cblas_iamax<T>>(arg, hipblasIamaxBatched<T>);
+    bool FORTRAN = arg.fortran;
+    auto hipblasIamaxBatchedFn
+        = FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
+
+    return testing_iamax_iamin_batched<T, cblas_iamax<T>>(arg, hipblasIamaxBatchedFn);
 }
 
 template <typename T>
 hipblasStatus_t testing_amin_batched(const Arguments& arg)
 {
-    return testing_iamax_iamin_batched<T, cblas_iamin<T>>(arg, hipblasIaminBatched<T>);
+    bool FORTRAN = arg.fortran;
+    auto hipblasIaminBatchedFn
+        = FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
+
+    return testing_iamax_iamin_batched<T, cblas_iamin<T>>(arg, hipblasIaminBatchedFn);
 }

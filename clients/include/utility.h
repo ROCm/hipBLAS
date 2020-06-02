@@ -713,6 +713,8 @@ public:
     int apiCallCount = 1;
     int batch_count  = 10;
 
+    bool fortran = false;
+
     int norm_check = 0;
     int unit_check = 1;
     int timing     = 0;
@@ -752,6 +754,8 @@ public:
 
         apiCallCount = rhs.apiCallCount;
         batch_count  = rhs.batch_count;
+
+        fortran = rhs.fortran;
 
         norm_check = rhs.norm_check;
         unit_check = rhs.unit_check;
