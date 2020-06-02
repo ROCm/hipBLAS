@@ -22,6 +22,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_syrk(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasSyrkFn = FORTRAN ? hipblasSyrk<T, true> : hipblasSyrk<T, false>;
+
     int N   = argus.N;
     int K   = argus.K;
     int lda = argus.lda;
@@ -85,7 +88,7 @@ hipblasStatus_t testing_syrk(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
         status
-            = hipblasSyrk<T>(handle, uplo, transA, N, K, (T*)&alpha, dA, lda, (T*)&beta, dC, ldc);
+            = hipblasSyrkFn(handle, uplo, transA, N, K, (T*)&alpha, dA, lda, (T*)&beta, dC, ldc);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

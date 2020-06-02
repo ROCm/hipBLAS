@@ -25,7 +25,7 @@ README: This file contains testers to verify the correctness of
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipblasDatatype_t>>
+typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipblasDatatype_t>, bool>
     gemm_ex_tuple;
 
 // clang-format off
@@ -219,6 +219,9 @@ const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIPBLAS_R_16F,
                                                                  HIPBLAS_R_64F,
                                                                  HIPBLAS_R_64F,
                                                                  HIPBLAS_R_64F}};
+
+const bool is_fortran[] = {false, true};
+const bool is_fortran_false[] = {false};
 // clang-format on
 
 /* ===============Google Unit Test==================================================== */
@@ -242,6 +245,7 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
     vector<double>            alpha_beta      = std::get<1>(tup);
     vector<char>              transA_transB   = std::get<2>(tup);
     vector<hipblasDatatype_t> precision_types = std::get<3>(tup);
+    bool fortran = std::get<4>(tup);
 
     Arguments arg;
 
@@ -266,6 +270,8 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
     arg.b_type       = precision_types[1];
     arg.c_type       = precision_types[2];
     arg.compute_type = precision_types[4];
+
+    arg.fortran = fortran;
 
     return arg;
 }
@@ -377,53 +383,61 @@ INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_hpa_half,
                         Combine(ValuesIn(small_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half)));
+                                ValuesIn(precision_hpa_half),
+                                ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_half,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(small_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half)));
+                                ValuesIn(precision_half),
+                                ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_single,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(small_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single)));
+                                ValuesIn(precision_single),
+                                ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_double,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(small_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double)));
+                                ValuesIn(precision_double),
+                                ValuesIn(is_fortran)));
 //----medium
 INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_hpa_half,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(medium_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half)));
+                                ValuesIn(precision_hpa_half),
+                                ValuesIn(is_fortran_false)));
 
 INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_half,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(medium_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half)));
+                                ValuesIn(precision_half),
+                                ValuesIn(is_fortran_false)));
 
 INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_float,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(medium_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single)));
+                                ValuesIn(precision_single),
+                                ValuesIn(is_fortran_false)));
 
 INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_double,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(medium_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double)));
+                                ValuesIn(precision_double),
+                                ValuesIn(is_fortran_false)));

@@ -20,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, double, vector<char>, double, int> trmm_tuple;
+typedef std::tuple<vector<int>, double, vector<char>, double, int, bool> trmm_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -96,6 +96,9 @@ const vector<double> stride_scale_range = {1, 3};
 
 const vector<int> batch_count_range = {1, 3, 5};
 
+const bool is_fortran[] = {false, true};
+const bool is_fortran_false[] = {false};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -120,6 +123,7 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     vector<char> side_uplo_transA_diag = std::get<2>(tup);
     double       stride_scale          = std::get<3>(tup);
     int          batch_count           = std::get<4>(tup);
+    bool fortran = std::get<5>(tup);
 
     Arguments arg;
 
@@ -140,6 +144,8 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
+
+    arg.fortran = fortran;
 
     return arg;
 }
@@ -330,7 +336,8 @@ INSTANTIATE_TEST_CASE_P(hipblastrmm_matrix_size,
                                 ValuesIn(alpha_range),
                                 ValuesIn(side_uplo_transA_diag_range),
                                 ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));
 
 // THis function mainly test the scope of  full_side_uplo_transA_diag_range,.the scope of
 // matrix_size_range is small
@@ -340,4 +347,5 @@ INSTANTIATE_TEST_CASE_P(hipblastrmm_scalar_transpose,
                                 ValuesIn(alpha_range),
                                 ValuesIn(full_side_uplo_transA_diag_range),
                                 ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran_false)));

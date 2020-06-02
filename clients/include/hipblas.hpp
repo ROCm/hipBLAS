@@ -1242,19 +1242,6 @@ hipblasStatus_t hipblasGemvStridedBatched(hipblasHandle_t    handle,
                                           int                batch_count);
 
 template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasSymv(hipblasHandle_t   handle,
-                            hipblasFillMode_t uplo,
-                            int               n,
-                            const T*          alpha,
-                            const T*          A,
-                            int               lda,
-                            const T*          x,
-                            int               incx,
-                            const T*          beta,
-                            T*                y,
-                            int               incy);
-
-template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasGemm(hipblasHandle_t    handle,
                             hipblasOperation_t transA,
                             hipblasOperation_t transB,

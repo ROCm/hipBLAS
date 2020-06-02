@@ -22,6 +22,8 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trtri(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasTrtriFn = FORTRAN ? hipblasTrtri<T, true> : hipblasTrtri<T, false>;
 
     int N = argus.N;
     int lda;
@@ -91,7 +93,7 @@ hipblasStatus_t testing_trtri(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status = hipblasTrtri<T>(handle, uplo, diag, N, dA, lda, dinvA, ldinvA);
+    status = hipblasTrtriFn(handle, uplo, diag, N, dA, lda, dinvA, ldinvA);
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hA.data(), dinvA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
