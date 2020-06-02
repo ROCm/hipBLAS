@@ -20,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<int, int, double, double, int> spr_tuple;
+typedef std::tuple<int, int, double, double, int, bool> spr_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -54,6 +54,8 @@ const vector<double> alpha_range = {-0.5, 2.0, 0.0};
 const vector<double> stride_scale_range = {1.0, 2.5};
 const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -79,6 +81,7 @@ Arguments setup_spr_arguments(spr_tuple tup)
     double alpha        = std::get<2>(tup);
     double stride_scale = std::get<3>(tup);
     int    batch_count  = std::get<4>(tup);
+    arg.fortran = std::get<5>(tup);
 
     arg.alpha = alpha;
 
@@ -263,4 +266,5 @@ INSTANTIATE_TEST_CASE_P(hipblasSpr,
                                 ValuesIn(incx_range),
                                 ValuesIn(alpha_range),
                                 ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));

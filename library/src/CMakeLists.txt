@@ -135,4 +135,8 @@ rocm_export_targets(
   NAMESPACE roc::
  )
 
+# Force installation of .f90 module files
+install(FILES "hipblas_module.f90"
+        DESTINATION "hipblas/include")
+
 rocm_install_symlink_subdir( hipblas )
