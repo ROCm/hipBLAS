@@ -16195,7 +16195,6 @@ hipblasStatus_t hipblasTrmvStridedBatched<hipblasDoubleComplex, true>(hipblasHan
 //  * ===========================================================================
 //  */
 
-// TODO: Update these with fortran
 // trtri
 template<>
 hipblasStatus_t hipblasTrtri<float, true>(hipblasHandle_t handle,
