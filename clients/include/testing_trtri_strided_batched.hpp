@@ -104,6 +104,12 @@ hipblasStatus_t testing_trtri_strided_batched(Arguments argus)
     =================================================================== */
     status = hipblasTrtriStridedBatchedFn(handle, uplo, diag, N, dA, lda, strideA, dinvA, ldinvA, strideA, batch_count);
 
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
+
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hA.data(), dinvA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
 
