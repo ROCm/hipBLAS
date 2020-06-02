@@ -20,6 +20,11 @@ using namespace std;
 template <typename T, bool CONJ = false>
 hipblasStatus_t testing_dot_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasDotBatchedFn
+        = FORTRAN ? (CONJ ? hipblasDotcBatched<T, true> : hipblasDotBatched<T, true>)
+                  : (CONJ ? hipblasDotcBatched<T, false> : hipblasDotBatched<T, false>);
+
     int N           = argus.N;
     int incx        = argus.incx;
     int incy        = argus.incy;
@@ -105,28 +110,16 @@ hipblasStatus_t testing_dot_batched(Arguments argus)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-        status_2 = (CONJ ? hipblasDotcBatched<T> : hipblasDotBatched<T>)(handle,
-                                                                         N,
-                                                                         dx_array,
-                                                                         incx,
-                                                                         dy_array,
-                                                                         incy,
-                                                                         batch_count,
-                                                                         d_rocblas_result);
+        status_2 = (hipblasDotBatchedFn)(
+            handle, N, dx_array, incx, dy_array, incy, batch_count, d_rocblas_result);
     }
     if(host_pointer)
     {
 
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_3 = (CONJ ? hipblasDotcBatched<T> : hipblasDotBatched<T>)(handle,
-                                                                         N,
-                                                                         dx_array,
-                                                                         incx,
-                                                                         dy_array,
-                                                                         incy,
-                                                                         batch_count,
-                                                                         h_rocblas_result2);
+        status_3 = (hipblasDotBatchedFn)(
+            handle, N, dx_array, incx, dy_array, incy, batch_count, h_rocblas_result2);
     }
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)

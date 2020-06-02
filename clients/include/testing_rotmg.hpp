@@ -20,6 +20,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_rotmg(Arguments arg)
 {
+    bool FORTRAN        = arg.fortran;
+    auto hipblasRotmgFn = FORTRAN ? hipblasRotmg<T, true> : hipblasRotmg<T, false>;
+
     hipblasHandle_t handle;
     hipblasCreate(&handle);
     host_vector<T> params(9);
@@ -43,7 +46,7 @@ hipblasStatus_t testing_rotmg(Arguments arg)
     {
         host_vector<T> hparams = params;
         status_1               = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        status_2               = (hipblasRotmg<T>(
+        status_2               = (hipblasRotmgFn(
             handle, &hparams[0], &hparams[1], &hparams[2], &hparams[3], &hparams[4]));
 
         if(arg.unit_check)
@@ -55,8 +58,8 @@ hipblasStatus_t testing_rotmg(Arguments arg)
         device_vector<T> dparams(9);
         CHECK_HIP_ERROR(hipMemcpy(dparams, params, 9 * sizeof(T), hipMemcpyHostToDevice));
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_4 = (hipblasRotmg<T>(
-            handle, dparams, dparams + 1, dparams + 2, dparams + 3, dparams + 4));
+        status_4
+            = (hipblasRotmgFn(handle, dparams, dparams + 1, dparams + 2, dparams + 3, dparams + 4));
         host_vector<T> hparams(9);
         CHECK_HIP_ERROR(hipMemcpy(hparams, dparams, 9 * sizeof(T), hipMemcpyDeviceToHost));
 

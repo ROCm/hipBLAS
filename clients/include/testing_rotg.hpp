@@ -20,6 +20,9 @@ using namespace std;
 template <typename T, typename U = T>
 hipblasStatus_t testing_rotg(Arguments arg)
 {
+    bool FORTRAN       = arg.fortran;
+    auto hipblasRotgFn = FORTRAN ? hipblasRotg<T, U, true> : hipblasRotg<T, U, false>;
+
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
@@ -56,7 +59,7 @@ hipblasStatus_t testing_rotg(Arguments arg)
         host_vector<U> hc = c;
         host_vector<T> hs = s;
         status_1          = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        status_2          = ((hipblasRotg<T, U>(handle, ha, hb, hc, hs)));
+        status_2          = ((hipblasRotgFn(handle, ha, hb, hc, hs)));
 
         if(arg.unit_check)
         {
@@ -78,7 +81,7 @@ hipblasStatus_t testing_rotg(Arguments arg)
         CHECK_HIP_ERROR(hipMemcpy(dc, c, sizeof(U), hipMemcpyHostToDevice));
         CHECK_HIP_ERROR(hipMemcpy(ds, s, sizeof(T), hipMemcpyHostToDevice));
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_4 = ((hipblasRotg<T, U>(handle, da, db, dc, ds)));
+        status_4 = ((hipblasRotgFn(handle, da, db, dc, ds)));
         host_vector<T> ha(1);
         host_vector<T> hb(1);
         host_vector<U> hc(1);

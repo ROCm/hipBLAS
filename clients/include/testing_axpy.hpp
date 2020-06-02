@@ -20,6 +20,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_axpy(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasAxpyFn = FORTRAN ? hipblasAxpy<T, true> : hipblasAxpy<T, false>;
+
     int N    = argus.N;
     int incx = argus.incx;
     int incy = argus.incy;
@@ -70,7 +73,7 @@ hipblasStatus_t testing_axpy(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasAxpy<T>(handle, N, &alpha, dx, incx, dy, incy);
+    status = hipblasAxpyFn(handle, N, &alpha, dx, incx, dy, incy);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         hipblasDestroy(handle);

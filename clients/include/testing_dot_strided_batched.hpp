@@ -20,6 +20,12 @@ using namespace std;
 template <typename T, bool CONJ = false>
 hipblasStatus_t testing_dot_strided_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasDotStridedBatchedFn
+        = FORTRAN
+              ? (CONJ ? hipblasDotcStridedBatched<T, true> : hipblasDotStridedBatched<T, true>)
+              : (CONJ ? hipblasDotcStridedBatched<T, false> : hipblasDotStridedBatched<T, false>);
+
     int    N            = argus.N;
     int    incx         = argus.incx;
     int    incy         = argus.incy;
@@ -87,34 +93,16 @@ hipblasStatus_t testing_dot_strided_batched(Arguments argus)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-        status_2
-            = (CONJ ? hipblasDotcStridedBatched<T> : hipblasDotStridedBatched<T>)(handle,
-                                                                                  N,
-                                                                                  dx,
-                                                                                  incx,
-                                                                                  stridex,
-                                                                                  dy,
-                                                                                  incy,
-                                                                                  stridey,
-                                                                                  batch_count,
-                                                                                  d_rocblas_result);
+        status_2 = (hipblasDotStridedBatchedFn)(
+            handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, d_rocblas_result);
     }
     if(host_pointer)
     {
 
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_4 = (CONJ ? hipblasDotcStridedBatched<T>
-                         : hipblasDotStridedBatched<T>)(handle,
-                                                        N,
-                                                        dx,
-                                                        incx,
-                                                        stridex,
-                                                        dy,
-                                                        incy,
-                                                        stridey,
-                                                        batch_count,
-                                                        h_rocblas_result2);
+        status_4 = (hipblasDotStridedBatchedFn)(
+            handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, h_rocblas_result2);
     }
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)

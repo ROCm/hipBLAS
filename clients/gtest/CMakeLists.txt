@@ -113,7 +113,7 @@ set( hipblas_benchmark_common
   ../common/hipblas_template_specialization.cpp
 )
 
-add_executable( hipblas-test ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_benchmark_common} )
+add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_benchmark_common} )
 
 target_include_directories( hipblas-test
   PRIVATE
@@ -135,7 +135,7 @@ target_include_directories( hipblas-test
     ${ROCM_PATH}/hsa/include
 )
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} )
+target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} hipblas_fortran_client )
 
 if( NOT CUDA_FOUND )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_HCC__ )

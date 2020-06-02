@@ -20,11 +20,21 @@ if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
 endif()
 
 # This project may compile dependencies for clients
-project( hipblas-clients LANGUAGES CXX )
+project( hipblas-clients LANGUAGES CXX Fortran )
 
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 include( build-options )
+
+set(hipblas_f90_source_clients
+  include/hipblas_fortran.f90
+)
+
+if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_SAMPLES )
+  add_library(hipblas_fortran_client ${hipblas_f90_source_clients})
+  add_dependencies(hipblas_fortran_client hipblas_fortran)
+  include_directories(${CMAKE_BINARY_DIR}/include)
+endif( )
 
 if( BUILD_CLIENTS_TESTS )
   add_subdirectory( gtest )
