@@ -22,6 +22,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_tpsv_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasTpsvBatchedFn = FORTRAN ? hipblasTpsvBatched<T, true> : hipblasTpsvBatched<T, false>;
+
     int                N           = argus.N;
     int                incx        = argus.incx;
     char               char_uplo   = argus.uplo_option;
@@ -160,7 +163,7 @@ hipblasStatus_t testing_tpsv_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
         status
-            = hipblasTpsvBatched<T>(handle, uplo, transA, diag, N, dAP, dx_or_b, incx, batch_count);
+            = hipblasTpsvBatchedFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

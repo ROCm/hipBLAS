@@ -22,6 +22,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_hpr2(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasHpr2Fn = FORTRAN ? hipblasHpr2<T, true> : hipblasHpr2<T, false>;
+
     int N    = argus.N;
     int incx = argus.incx;
     int incy = argus.incy;
@@ -82,7 +85,7 @@ hipblasStatus_t testing_hpr2(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status = hipblasHpr2<T>(handle, uplo, N, (T*)&alpha, dx, incx, dy, incy, dA);
+        status = hipblasHpr2Fn(handle, uplo, N, (T*)&alpha, dx, incx, dy, incy, dA);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

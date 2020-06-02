@@ -951,7 +951,7 @@ hipblasStatus_t hipblasTbmvStridedBatched(hipblasHandle_t    handle,
                                           int                batch_count);
 
 // tbsv
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasTbsv(hipblasHandle_t    handle,
                             hipblasFillMode_t  uplo,
                             hipblasOperation_t transA,
@@ -963,7 +963,7 @@ hipblasStatus_t hipblasTbsv(hipblasHandle_t    handle,
                             T*                 x,
                             int                incx);
 
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasTbsvBatched(hipblasHandle_t    handle,
                                    hipblasFillMode_t  uplo,
                                    hipblasOperation_t transA,
@@ -976,7 +976,7 @@ hipblasStatus_t hipblasTbsvBatched(hipblasHandle_t    handle,
                                    int                incx,
                                    int                batchCount);
 
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasTbsvStridedBatched(hipblasHandle_t    handle,
                                           hipblasFillMode_t  uplo,
                                           hipblasOperation_t transA,
@@ -1454,7 +1454,7 @@ hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t    handle,
                                            int                batchCount);
 
 // symm
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasSymm(hipblasHandle_t   handle,
                             hipblasSideMode_t side,
                             hipblasFillMode_t uplo,
@@ -1469,7 +1469,7 @@ hipblasStatus_t hipblasSymm(hipblasHandle_t   handle,
                             T*                C,
                             int               ldc);
 
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasSymmBatched(hipblasHandle_t   handle,
                                    hipblasSideMode_t side,
                                    hipblasFillMode_t uplo,
@@ -1485,7 +1485,7 @@ hipblasStatus_t hipblasSymmBatched(hipblasHandle_t   handle,
                                    int               ldc,
                                    int               batchCount);
 
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasSymmStridedBatched(hipblasHandle_t   handle,
                                           hipblasSideMode_t side,
                                           hipblasFillMode_t uplo,
@@ -1651,7 +1651,7 @@ hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t    handle,
                                            int                batchCount);
 
 // geam
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasGeam(hipblasHandle_t    handle,
                             hipblasOperation_t transA,
                             hipblasOperation_t transB,
@@ -1666,7 +1666,7 @@ hipblasStatus_t hipblasGeam(hipblasHandle_t    handle,
                             T*                 C,
                             int                ldc);
 
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasGeamBatched(hipblasHandle_t    handle,
                                    hipblasOperation_t transA,
                                    hipblasOperation_t transB,
@@ -1682,7 +1682,7 @@ hipblasStatus_t hipblasGeamBatched(hipblasHandle_t    handle,
                                    int                ldc,
                                    int                batchCount);
 
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t    handle,
                                           hipblasOperation_t transA,
                                           hipblasOperation_t transB,
@@ -1702,7 +1702,7 @@ hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t    handle,
                                           int                batchCount);
 
 // hemm
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasHemm(hipblasHandle_t   handle,
                             hipblasSideMode_t side,
                             hipblasFillMode_t uplo,
@@ -1717,7 +1717,7 @@ hipblasStatus_t hipblasHemm(hipblasHandle_t   handle,
                             T*                C,
                             int               ldc);
 
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasHemmBatched(hipblasHandle_t   handle,
                                    hipblasSideMode_t side,
                                    hipblasFillMode_t uplo,
@@ -1733,7 +1733,7 @@ hipblasStatus_t hipblasHemmBatched(hipblasHandle_t   handle,
                                    int               ldc,
                                    int               batchCount);
 
-template <typename T>
+template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasHemmStridedBatched(hipblasHandle_t   handle,
                                           hipblasSideMode_t side,
                                           hipblasFillMode_t uplo,

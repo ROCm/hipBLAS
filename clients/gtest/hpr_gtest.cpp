@@ -20,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<int, int, double, char, double, int> hpr_tuple;
+typedef std::tuple<int, int, double, char, double, int, bool> hpr_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -60,6 +60,8 @@ const vector<char> uplo_range = {
 const vector<double> stride_scale_range = {1.0, 2.5};
 const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -86,6 +88,7 @@ Arguments setup_hpr_arguments(hpr_tuple tup)
     arg.uplo_option  = std::get<3>(tup);
     arg.stride_scale = std::get<4>(tup);
     arg.batch_count  = std::get<5>(tup);
+    arg.fortran      = std::get<6>(tup);
     arg.timing       = 0;
 
     return arg;
@@ -265,4 +268,5 @@ INSTANTIATE_TEST_CASE_P(hipblasHpr,
                                 ValuesIn(alpha_range),
                                 ValuesIn(uplo_range),
                                 ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));

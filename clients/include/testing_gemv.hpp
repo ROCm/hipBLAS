@@ -22,6 +22,8 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_gemv(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasGemvFn = FORTRAN ? hipblasGemv<T, true> : hipblasGemv<T, false>;
 
     int M    = argus.M;
     int N    = argus.N;
@@ -116,7 +118,7 @@ hipblasStatus_t testing_gemv(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status = hipblasGemv<T>(
+        status = hipblasGemvFn(
             handle, transA, M, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy);
 
         if(status != HIPBLAS_STATUS_SUCCESS)

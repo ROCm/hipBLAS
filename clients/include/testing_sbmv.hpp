@@ -22,6 +22,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_sbmv(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasSbmvFn = FORTRAN ? hipblasSbmv<T, true> : hipblasSbmv<T, false>;
+
     int M    = argus.M;
     int K    = argus.K;
     int lda  = argus.lda;
@@ -80,7 +83,7 @@ hipblasStatus_t testing_sbmv(Arguments argus)
     =================================================================== */
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasSbmv<T>(handle, uplo, M, K, &alpha, dA, lda, dx, incx, &beta, dy, incy);
+        status = hipblasSbmvFn(handle, uplo, M, K, &alpha, dA, lda, dx, incx, &beta, dy, incy);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

@@ -20,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<int, vector<int>, vector<double>, char, double, int> hpmv_tuple;
+typedef std::tuple<int, vector<int>, vector<double>, char, double, int, bool> hpmv_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -75,6 +75,8 @@ const vector<char> transA_range = {
 const vector<double> stride_scale_range = {1.0, 2.5};
 const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -100,6 +102,7 @@ Arguments setup_hpmv_arguments(hpmv_tuple tup)
     char           transA       = std::get<3>(tup);
     double         stride_scale = std::get<4>(tup);
     int            batch_count  = std::get<5>(tup);
+    bool fortran = std::get<6>(tup);
 
     Arguments arg;
 
@@ -122,6 +125,8 @@ Arguments setup_hpmv_arguments(hpmv_tuple tup)
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
+
+    arg.fortran = fortran;
 
     return arg;
 }
@@ -222,4 +227,5 @@ INSTANTIATE_TEST_CASE_P(hipblasHpmv,
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_range),
                                 ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));

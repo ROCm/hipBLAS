@@ -22,6 +22,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_tpmv(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasTpmvFn = FORTRAN ? hipblasTpmv<T, true> : hipblasTpmv<T, false>;
+
     int M    = argus.M;
     int incx = argus.incx;
 
@@ -73,7 +76,7 @@ hipblasStatus_t testing_tpmv(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status = hipblasTpmv<T>(handle, uplo, transA, diag, M, dA, dx, incx);
+        status = hipblasTpmvFn(handle, uplo, transA, diag, M, dA, dx, incx);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
