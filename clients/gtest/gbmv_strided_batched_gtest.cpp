@@ -18,7 +18,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<int>, double, vector<double>, char, int> gbmv_tuple;
+typedef std::tuple<vector<int>, vector<int>, double, vector<double>, char, int, bool> gbmv_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -87,6 +87,8 @@ const vector<int> batch_count_range = {
     //               100,
 };
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -112,6 +114,7 @@ Arguments setup_gbmv_arguments(gbmv_tuple tup)
     vector<double> alpha_beta   = std::get<3>(tup);
     char           transA       = std::get<4>(tup);
     int            batch_count  = std::get<5>(tup);
+    bool fortran = std::get<6>(tup);
 
     Arguments arg;
 
@@ -135,6 +138,8 @@ Arguments setup_gbmv_arguments(gbmv_tuple tup)
     arg.beta  = alpha_beta[1];
 
     arg.transA_option = transA;
+
+    arg.fortran = fortran;
 
     arg.timing = 0;
 
@@ -207,4 +212,5 @@ INSTANTIATE_TEST_CASE_P(hipblasGbmvStridedBatched,
                                 ValuesIn(stride_scale_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));

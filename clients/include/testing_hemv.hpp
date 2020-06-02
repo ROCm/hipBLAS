@@ -22,6 +22,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_hemv(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasHemvFn = FORTRAN ? hipblasHemv<T, true> : hipblasHemv<T, false>;
+
     int N    = argus.N;
     int lda  = argus.lda;
     int incx = argus.incx;
@@ -81,7 +84,7 @@ hipblasStatus_t testing_hemv(Arguments argus)
     {
 
         status
-            = hipblasHemv<T>(handle, uplo, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy);
+            = hipblasHemvFn(handle, uplo, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

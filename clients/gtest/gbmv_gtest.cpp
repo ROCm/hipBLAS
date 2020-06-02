@@ -18,7 +18,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<int>, vector<double>, char> gbmv_tuple;
+typedef std::tuple<vector<int>, vector<int>, vector<double>, char, bool> gbmv_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -74,6 +74,8 @@ const vector<char> transA_range = {
     'C',
 };
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -97,6 +99,7 @@ Arguments setup_gbmv_arguments(gbmv_tuple tup)
     vector<int>    incx_incy   = std::get<1>(tup);
     vector<double> alpha_beta  = std::get<2>(tup);
     char           transA      = std::get<3>(tup);
+    bool fortran = std::get<4>(tup);
 
     Arguments arg;
 
@@ -116,6 +119,8 @@ Arguments setup_gbmv_arguments(gbmv_tuple tup)
     arg.beta  = alpha_beta[1];
 
     arg.transA_option = transA;
+
+    arg.fortran = fortran;
 
     arg.timing = 0;
 
@@ -193,4 +198,5 @@ INSTANTIATE_TEST_CASE_P(hipblasGbmv,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(incx_incy_range),
                                 ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_range)));
+                                ValuesIn(transA_range),
+                                ValuesIn(is_fortran)));

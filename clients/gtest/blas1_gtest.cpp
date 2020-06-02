@@ -104,7 +104,7 @@ double stride_scale_range[] = {1.0, 2.5};
 
 int batch_count_range[] = {-1, 0, 1, 2, 10};
 
-bool is_fortran[] = {false, true};
+const bool is_fortran[] = {false, true};
 
 /* ===============Google Unit Test==================================================== */
 
