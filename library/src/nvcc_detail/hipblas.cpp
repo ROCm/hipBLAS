@@ -8817,7 +8817,7 @@ hipblasStatus_t hipblasSdgmm(hipblasHandle_t handle,
                                             int ldc)
 {
     return hipCUBLASStatusToHIPStatus(cublasSdgmm((cublasHandle_t)handle,
-                                                   CudaSideToHIPSide(side),
+                                                   hipSideToCudaSide(side),
                                                    m,
                                                    n,
                                                    A,
@@ -8840,7 +8840,7 @@ hipblasStatus_t hipblasDdgmm(hipblasHandle_t handle,
                                             int ldc)
 {
     return hipCUBLASStatusToHIPStatus(cublasDdgmm((cublasHandle_t)handle,
-                                                   CudaSideToHIPSide(side),
+                                                   hipSideToCudaSide(side),
                                                    m,
                                                    n,
                                                    A,
@@ -8863,7 +8863,7 @@ hipblasStatus_t hipblasCdgmm(hipblasHandle_t handle,
                                             int ldc)
 {
     return hipCUBLASStatusToHIPStatus(cublasCdgmm((cublasHandle_t)handle,
-                                                   CudaSideToHIPSide(side),
+                                                   hipSideToCudaSide(side),
                                                    m,
                                                    n,
                                                    (cuComplex*)A,
@@ -8886,7 +8886,7 @@ hipblasStatus_t hipblasZdgmm(hipblasHandle_t handle,
                                             int ldc)
 {
     return hipCUBLASStatusToHIPStatus(cublasZdgmm((cublasHandle_t)handle,
-                                                   CudaSideToHIPSide(side),
+                                                   hipSideToCudaSide(side),
                                                    m,
                                                    n,
                                                    (cuDoubleComplex*)A,
