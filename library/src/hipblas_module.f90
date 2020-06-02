@@ -37,7 +37,7 @@ module hipblas_enums
         enumerator :: HIPBLAS_STATUS_ALLOC_FAILED      = 2
         enumerator :: HIPBLAS_STATUS_INVALID_VALUE     = 3
         enumerator :: HIPBLAS_STATUS_MAPPING_ERROR     = 4
-        enumerator :: HIPBLAS_STATUSExECUTION_FAILED  = 5
+        enumerator :: HIPBLAS_STATUS_EXECUTION_FAILED  = 5
         enumerator :: HIPBLAS_STATUS_INTERNAL_ERROR    = 6
         enumerator :: HIPBLAS_STATUS_NOT_SUPPORTED     = 7
         enumerator :: HIPBLAS_STATUS_ARCH_MISMATCH     = 8
