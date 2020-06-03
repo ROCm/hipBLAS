@@ -22,7 +22,7 @@ using namespace std;
 template <typename T, typename U>
 hipblasStatus_t testing_her(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN      = argus.fortran;
     auto hipblasHerFn = FORTRAN ? hipblasHer<T, U, true> : hipblasHer<T, U, false>;
 
     int N    = argus.N;

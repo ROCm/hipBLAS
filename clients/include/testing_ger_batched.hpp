@@ -23,8 +23,9 @@ template <typename T, bool CONJ>
 hipblasStatus_t testing_ger_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasGerBatchedFn = FORTRAN ? (CONJ ? hipblasGerBatched<T, true, true>  : hipblasGerBatched<T, false, true>)
-                                : (CONJ ? hipblasGerBatched<T, true, false> : hipblasGerBatched<T, false, false>);
+    auto hipblasGerBatchedFn
+        = FORTRAN ? (CONJ ? hipblasGerBatched<T, true, true> : hipblasGerBatched<T, false, true>)
+                  : (CONJ ? hipblasGerBatched<T, true, false> : hipblasGerBatched<T, false, false>);
 
     int M           = argus.M;
     int N           = argus.N;

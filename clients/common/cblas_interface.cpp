@@ -22,8 +22,8 @@ extern "C" {
 
 void strtri_(char* uplo, char* diag, int* n, float* A, int* lda, int* info);
 void dtrtri_(char* uplo, char* diag, int* n, double* A, int* lda, int* info);
-void    ctrtri_(char* uplo, char* diag, int* n, hipblasComplex* A,  int* lda, int *info);
-void    ztrtri_(char* uplo, char* diag, int* n, hipblasDoubleComplex* A, int* lda, int *info);
+void ctrtri_(char* uplo, char* diag, int* n, hipblasComplex* A, int* lda, int* info);
+void ztrtri_(char* uplo, char* diag, int* n, hipblasDoubleComplex* A, int* lda, int* info);
 
 void sgetrf_(int* m, int* n, float* A, int* lda, int* ipiv, int* info);
 void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);

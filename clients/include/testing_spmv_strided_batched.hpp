@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_spmv_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasSpmvStridedBatchedFn = FORTRAN ? hipblasSpmvStridedBatched<T, true> : hipblasSpmvStridedBatched<T, false>;
+    auto hipblasSpmvStridedBatchedFn
+        = FORTRAN ? hipblasSpmvStridedBatched<T, true> : hipblasSpmvStridedBatched<T, false>;
 
     int    M            = argus.M;
     int    incx         = argus.incx;
@@ -89,19 +90,19 @@ hipblasStatus_t testing_spmv_strided_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
         status = hipblasSpmvStridedBatchedFn(handle,
-                                              uplo,
-                                              M,
-                                              &alpha,
-                                              dA,
-                                              stride_A,
-                                              dx,
-                                              incx,
-                                              stride_x,
-                                              &beta,
-                                              dy,
-                                              incy,
-                                              stride_y,
-                                              batch_count);
+                                             uplo,
+                                             M,
+                                             &alpha,
+                                             dA,
+                                             stride_A,
+                                             dx,
+                                             incx,
+                                             stride_x,
+                                             &beta,
+                                             dy,
+                                             incy,
+                                             stride_y,
+                                             batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

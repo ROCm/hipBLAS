@@ -74,7 +74,7 @@ Arguments setup_trtri_arguments(trtri_tuple tup)
     char        uplo        = std::get<1>(tup);
     char        diag        = std::get<2>(tup);
     int         batch_count = std::get<3>(tup);
-    bool fortran = std::get<4>(tup);
+    bool        fortran     = std::get<4>(tup);
 
     Arguments arg;
 

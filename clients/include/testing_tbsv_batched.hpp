@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_tbsv_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasTbsvBatchedFn = FORTRAN ? hipblasTbsvBatched<T, true> : hipblasTbsvBatched<T, false>;
+    auto hipblasTbsvBatchedFn
+        = FORTRAN ? hipblasTbsvBatched<T, true> : hipblasTbsvBatched<T, false>;
 
     int                M           = argus.M;
     int                K           = argus.K;

@@ -23,14 +23,15 @@ template <typename T>
 hipblasStatus_t testing_trtri_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasTrtriBatchedFn = FORTRAN ? hipblasTrtriBatched<T, true> : hipblasTrtriBatched<T, false>;
+    auto hipblasTrtriBatchedFn
+        = FORTRAN ? hipblasTrtriBatched<T, true> : hipblasTrtriBatched<T, false>;
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
     int N = argus.N;
     int lda;
     int ldinvA;
-    ldinvA = lda = argus.lda;
+    ldinvA = lda    = argus.lda;
     int batch_count = argus.batch_count;
 
     int A_size = size_t(lda) * N;

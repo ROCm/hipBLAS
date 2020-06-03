@@ -99,7 +99,7 @@ Arguments setup_gemm_batched_arguments(gemm_batched_tuple tup)
     vector<double> alpha_beta    = std::get<1>(tup);
     vector<char>   transA_transB = std::get<2>(tup);
     int            batch_count   = std::get<3>(tup);
-    bool fortran = std::get<4>(tup);
+    bool           fortran       = std::get<4>(tup);
 
     Arguments arg;
 

@@ -23,17 +23,18 @@ template <typename T>
 hipblasStatus_t testing_trtri_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasTrtriStridedBatchedFn = FORTRAN ? hipblasTrtriStridedBatched<T, true> : hipblasTrtriStridedBatched<T, false>;
+    auto hipblasTrtriStridedBatchedFn
+        = FORTRAN ? hipblasTrtriStridedBatched<T, true> : hipblasTrtriStridedBatched<T, false>;
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
-    int N = argus.N;
-    int lda = argus.lda;
-    int ldinvA = lda;
+    int N           = argus.N;
+    int lda         = argus.lda;
+    int ldinvA      = lda;
     int batch_count = argus.batch_count;
 
     int strideA = lda * N;
-    int A_size = strideA * batch_count;
+    int A_size  = strideA * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -102,7 +103,8 @@ hipblasStatus_t testing_trtri_strided_batched(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status = hipblasTrtriStridedBatchedFn(handle, uplo, diag, N, dA, lda, strideA, dinvA, ldinvA, strideA, batch_count);
+    status = hipblasTrtriStridedBatchedFn(
+        handle, uplo, diag, N, dA, lda, strideA, dinvA, ldinvA, strideA, batch_count);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -131,7 +133,8 @@ hipblasStatus_t testing_trtri_strided_batched(Arguments argus)
         if(argus.unit_check)
         {
             for(int b = 0; b < batch_count; b++)
-                near_check_general<T>(N, N, lda, hB.data() + b * strideA, hA.data() + b * strideA, rel_error);
+                near_check_general<T>(
+                    N, N, lda, hB.data() + b * strideA, hA.data() + b * strideA, rel_error);
         }
     }
 

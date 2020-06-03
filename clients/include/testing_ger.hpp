@@ -22,8 +22,8 @@ using namespace std;
 template <typename T, bool CONJ>
 hipblasStatus_t testing_ger(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
-    auto hipblasGerFn = FORTRAN ? (CONJ ? hipblasGer<T, true, true>  : hipblasGer<T, false, true>)
+    bool FORTRAN      = argus.fortran;
+    auto hipblasGerFn = FORTRAN ? (CONJ ? hipblasGer<T, true, true> : hipblasGer<T, false, true>)
                                 : (CONJ ? hipblasGer<T, true, false> : hipblasGer<T, false, false>);
 
     int M    = argus.M;

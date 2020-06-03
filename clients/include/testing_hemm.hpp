@@ -22,7 +22,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_hemm(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN       = argus.fortran;
     auto hipblasHemmFn = FORTRAN ? hipblasHemm<T, true> : hipblasHemm<T, false>;
 
     int M   = argus.M;

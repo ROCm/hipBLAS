@@ -245,7 +245,7 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
     vector<double>            alpha_beta      = std::get<1>(tup);
     vector<char>              transA_transB   = std::get<2>(tup);
     vector<hipblasDatatype_t> precision_types = std::get<3>(tup);
-    bool fortran = std::get<4>(tup);
+    bool                      fortran         = std::get<4>(tup);
 
     Arguments arg;
 

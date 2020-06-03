@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_syrk_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasSyrkBatchedFn = FORTRAN ? hipblasSyrkBatched<T, true> : hipblasSyrkBatched<T, false>;
+    auto hipblasSyrkBatchedFn
+        = FORTRAN ? hipblasSyrkBatched<T, true> : hipblasSyrkBatched<T, false>;
 
     int N           = argus.N;
     int K           = argus.K;

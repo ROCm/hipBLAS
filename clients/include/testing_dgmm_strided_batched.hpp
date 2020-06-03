@@ -23,18 +23,19 @@ template <typename T>
 hipblasStatus_t testing_dgmm_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasDgmmStridedBatchedFn = FORTRAN ? hipblasDgmmStridedBatched<T, true> : hipblasDgmmStridedBatched<T, false>;
+    auto hipblasDgmmStridedBatchedFn
+        = FORTRAN ? hipblasDgmmStridedBatched<T, true> : hipblasDgmmStridedBatched<T, false>;
 
     hipblasSideMode_t side = char2hipblas_side(argus.side_option);
 
-    int M    = argus.M;
-    int N    = argus.N;
-    int lda  = argus.lda;
-    int incx = argus.incx;
-    int ldc  = argus.ldc;
-    int batch_count = argus.batch_count;
+    int M            = argus.M;
+    int N            = argus.N;
+    int lda          = argus.lda;
+    int incx         = argus.incx;
+    int ldc          = argus.ldc;
+    int batch_count  = argus.batch_count;
     int stride_scale = argus.stride_scale;
-    int k = (side == HIPBLAS_SIDE_RIGHT ? N : M);
+    int k            = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
     int stride_A = size_t(lda) * N * stride_scale;
     int stride_x = size_t(incx) * k * stride_scale;
@@ -81,7 +82,7 @@ hipblasStatus_t testing_dgmm_strided_batched(Arguments argus)
     hipblas_init<T>(hC, M, N, ldc, stride_C, batch_count);
     hA_copy = hA;
     hx_copy = hx;
-    hC_1 = hC;
+    hC_1    = hC;
     hC_gold = hC;
 
     // copy data from CPU to device

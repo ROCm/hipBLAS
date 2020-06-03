@@ -24,7 +24,8 @@ template <typename T>
 hipblasStatus_t testing_tpmv_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasTpmvBatchedFn = FORTRAN ? hipblasTpmvBatched<T, true> : hipblasTpmvBatched<T, false>;
+    auto hipblasTpmvBatchedFn
+        = FORTRAN ? hipblasTpmvBatched<T, true> : hipblasTpmvBatched<T, false>;
 
     int M    = argus.M;
     int incx = argus.incx;

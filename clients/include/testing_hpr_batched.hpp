@@ -23,7 +23,8 @@ template <typename T, typename U>
 hipblasStatus_t testing_hpr_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasHprBatchedFn = FORTRAN ? hipblasHprBatched<T, U, true> : hipblasHprBatched<T, U, false>;
+    auto hipblasHprBatchedFn
+        = FORTRAN ? hipblasHprBatched<T, U, true> : hipblasHprBatched<T, U, false>;
 
     int N           = argus.N;
     int incx        = argus.incx;

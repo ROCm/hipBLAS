@@ -90,7 +90,7 @@ Arguments setup_syr_arguments(syr_tuple tup)
     double      alpha        = std::get<2>(tup);
     double      stride_scale = std::get<3>(tup);
     int         batch_count  = std::get<4>(tup);
-    bool fortran = std::get<5>(tup);
+    bool        fortran      = std::get<5>(tup);
 
     Arguments arg;
 

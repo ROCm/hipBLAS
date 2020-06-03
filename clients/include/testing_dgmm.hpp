@@ -22,7 +22,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_dgmm(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN       = argus.fortran;
     auto hipblasDgmmFn = FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
 
     hipblasSideMode_t side = char2hipblas_side(argus.side_option);
@@ -35,7 +35,7 @@ hipblasStatus_t testing_dgmm(Arguments argus)
 
     int A_size = size_t(lda) * N;
     int C_size = size_t(ldc) * N;
-    int k = (side == HIPBLAS_SIDE_RIGHT ? N : M);
+    int k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
     int X_size = size_t(incx) * k;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
@@ -75,7 +75,7 @@ hipblasStatus_t testing_dgmm(Arguments argus)
     hipblas_init<T>(hC, M, N, ldc);
     hA_copy = hA;
     hx_copy = hx;
-    hC_1 = hC;
+    hC_1    = hC;
     hC_gold = hC;
 
     // copy data from CPU to device
@@ -86,8 +86,7 @@ hipblasStatus_t testing_dgmm(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status = hipblasDgmmFn(
-        handle, side, M, N, dA, lda, dx, incx, dC, ldc);
+    status = hipblasDgmmFn(handle, side, M, N, dA, lda, dx, incx, dC, ldc);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

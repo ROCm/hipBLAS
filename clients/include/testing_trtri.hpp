@@ -11,9 +11,9 @@
 #include "cblas_interface.h"
 #include "flops.h"
 #include "hipblas.hpp"
+#include "near.h"
 #include "norm.h"
 #include "unit.h"
-#include "near.h"
 #include "utility.h"
 
 using namespace std;
@@ -23,7 +23,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trtri(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN        = argus.fortran;
     auto hipblasTrtriFn = FORTRAN ? hipblasTrtri<T, true> : hipblasTrtri<T, false>;
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;

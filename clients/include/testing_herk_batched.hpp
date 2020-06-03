@@ -23,7 +23,8 @@ template <typename T, typename U>
 hipblasStatus_t testing_herk_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasHerkBatchedFn = FORTRAN ? hipblasHerkBatched<T, U, true> : hipblasHerkBatched<T, U, false>;
+    auto hipblasHerkBatchedFn
+        = FORTRAN ? hipblasHerkBatched<T, U, true> : hipblasHerkBatched<T, U, false>;
 
     int N           = argus.N;
     int K           = argus.K;

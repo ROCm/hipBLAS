@@ -81,7 +81,7 @@ Arguments setup_spr_arguments(spr_tuple tup)
     double alpha        = std::get<2>(tup);
     double stride_scale = std::get<3>(tup);
     int    batch_count  = std::get<4>(tup);
-    arg.fortran = std::get<5>(tup);
+    arg.fortran         = std::get<5>(tup);
 
     arg.alpha = alpha;
 

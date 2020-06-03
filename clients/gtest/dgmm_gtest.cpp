@@ -77,19 +77,19 @@ const bool is_fortran[] = {false, true};
 Arguments setup_dgmm_arguments(dgmm_tuple tup)
 {
 
-    vector<int>            matrix_size  = std::get<0>(tup);
-    char           side       = std::get<1>(tup);
-    double         stride_scale = std::get<2>(tup);
-    int            batch_count  = std::get<3>(tup);
-    bool fortran = std::get<4>(tup);
+    vector<int> matrix_size  = std::get<0>(tup);
+    char        side         = std::get<1>(tup);
+    double      stride_scale = std::get<2>(tup);
+    int         batch_count  = std::get<3>(tup);
+    bool        fortran      = std::get<4>(tup);
 
     Arguments arg;
 
-    arg.M = matrix_size[0];
-    arg.N = matrix_size[1];
-    arg.lda = matrix_size[2];
+    arg.M    = matrix_size[0];
+    arg.N    = matrix_size[1];
+    arg.lda  = matrix_size[2];
     arg.incx = matrix_size[3];
-    arg.ldc = matrix_size[4];
+    arg.ldc  = matrix_size[4];
 
     arg.side_option = side;
 
@@ -179,7 +179,8 @@ TEST_P(dgmm_gtest, dgmm_batched_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldc < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldc < arg.M || arg.incx == 0
+           || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -204,7 +205,8 @@ TEST_P(dgmm_gtest, dgmm_batched_gtest_float_complex)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldc < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldc < arg.M || arg.incx == 0
+           || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -229,7 +231,8 @@ TEST_P(dgmm_gtest, dgmm_strided_batched_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldc < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldc < arg.M || arg.incx == 0
+           || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -254,7 +257,8 @@ TEST_P(dgmm_gtest, dgmm_strided_batched_gtest_float_complex)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldc < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.ldc < arg.M || arg.incx == 0
+           || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

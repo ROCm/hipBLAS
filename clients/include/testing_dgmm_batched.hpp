@@ -23,20 +23,21 @@ template <typename T>
 hipblasStatus_t testing_dgmm_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasDgmmBatchedFn = FORTRAN ? hipblasDgmmBatched<T, true> : hipblasDgmmBatched<T, false>;
+    auto hipblasDgmmBatchedFn
+        = FORTRAN ? hipblasDgmmBatched<T, true> : hipblasDgmmBatched<T, false>;
 
     hipblasSideMode_t side = char2hipblas_side(argus.side_option);
 
-    int M    = argus.M;
-    int N    = argus.N;
-    int lda  = argus.lda;
-    int incx = argus.incx;
-    int ldc  = argus.ldc;
+    int M           = argus.M;
+    int N           = argus.N;
+    int lda         = argus.lda;
+    int incx        = argus.incx;
+    int ldc         = argus.ldc;
     int batch_count = argus.batch_count;
 
     int A_size = size_t(lda) * N;
     int C_size = size_t(ldc) * N;
-    int k = (side == HIPBLAS_SIDE_RIGHT ? N : M);
+    int k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
     int X_size = size_t(incx) * k;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
@@ -83,12 +84,12 @@ hipblasStatus_t testing_dgmm_batched(Arguments argus)
     srand(1);
     for(int b = 0; b < batch_count; b++)
     {
-        hA[b] = host_vector<T>(A_size);
+        hA[b]      = host_vector<T>(A_size);
         hA_copy[b] = host_vector<T>(A_size);
-        hx[b] = host_vector<T>(X_size);
+        hx[b]      = host_vector<T>(X_size);
         hx_copy[b] = host_vector<T>(X_size);
-        hC[b] = host_vector<T>(C_size);
-        hC_1[b] = host_vector<T>(C_size);
+        hC[b]      = host_vector<T>(C_size);
+        hC_1[b]    = host_vector<T>(C_size);
         hC_gold[b] = host_vector<T>(C_size);
 
         srand(1);
@@ -98,7 +99,7 @@ hipblasStatus_t testing_dgmm_batched(Arguments argus)
 
         hA_copy[b] = hA[b];
         hx_copy[b] = hx[b];
-        hC_1[b] = hC[b];
+        hC_1[b]    = hC[b];
         hC_gold[b] = hC[b];
 
         hipMemcpy(bA[b], hA[b].data(), sizeof(T) * A_size, hipMemcpyHostToDevice);
@@ -113,8 +114,7 @@ hipblasStatus_t testing_dgmm_batched(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status = hipblasDgmmBatchedFn(
-        handle, side, M, N, dA, lda, dx, incx, dC, ldc, batch_count);
+    status = hipblasDgmmBatchedFn(handle, side, M, N, dA, lda, dx, incx, dC, ldc, batch_count);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -141,11 +141,13 @@ hipblasStatus_t testing_dgmm_batched(Arguments argus)
                 {
                     if(HIPBLAS_SIDE_RIGHT == side)
                     {
-                        hC_gold[b][i1 + i2 * ldc] = hA_copy[b][i1 + i2 * lda] + hx_copy[b][i2 * incx];
+                        hC_gold[b][i1 + i2 * ldc]
+                            = hA_copy[b][i1 + i2 * lda] + hx_copy[b][i2 * incx];
                     }
                     else
                     {
-                        hC_gold[b][i1 + i2 * ldc] = hA_copy[b][i1 + i2 * lda] + hx_copy[b][i1 * incx];
+                        hC_gold[b][i1 + i2 * ldc]
+                            = hA_copy[b][i1 + i2 * lda] + hx_copy[b][i1 * incx];
                     }
                 }
             }
