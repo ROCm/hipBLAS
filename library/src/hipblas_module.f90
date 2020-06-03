@@ -11679,7 +11679,7 @@ module hipblas
     ! gemmEx
     interface
         function hipblasGemmEx(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
-                b, b_type, ldb, beta, c, c_type, ldc, d, d_type, ldd, &
+                b, b_type, ldb, beta, c, c_type, ldc,&
                 compute_type, algo, solution_index, flags) &
                 result(c_int) &
                 bind(c, name = 'hipblasGemmEx')
@@ -11703,9 +11703,6 @@ module hipblas
             type(c_ptr), value :: c
             integer(kind(HIPBLAS_R_16F)), value :: c_type
             integer(c_int), value :: ldc
-            type(c_ptr), value :: d
-            integer(kind(HIPBLAS_R_16F)), value :: d_type
-            integer(c_int), value :: ldd
             integer(kind(HIPBLAS_R_16F)), value :: compute_type
             integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
             integer(c_int32_t), value :: solution_index
@@ -11717,7 +11714,7 @@ module hipblas
 
     interface
         function hipblasGemmBatchedEx(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
-                b, b_type, ldb, beta, c, c_type, ldc, d, d_type, ldd, &
+                b, b_type, ldb, beta, c, c_type, ldc,&
                 batch_count, compute_type, algo, solution_index, flags) &
                 result(c_int) &
                 bind(c, name = 'hipblasGemmBatchedEx')
@@ -11741,9 +11738,6 @@ module hipblas
             type(c_ptr), value :: c
             integer(kind(HIPBLAS_R_16F)), value :: c_type
             integer(c_int), value :: ldc
-            type(c_ptr), value :: d
-            integer(kind(HIPBLAS_R_16F)), value :: d_type
-            integer(c_int), value :: ldd
             integer(c_int), value :: batch_count
             integer(kind(HIPBLAS_R_16F)), value :: compute_type
             integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
@@ -11756,7 +11750,7 @@ module hipblas
 
     interface
         function hipblasGemmStridedBatchedEx(handle, transA, transB, m, n, k, alpha, a, a_type, lda, stride_a, &
-                b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, d, d_type, ldd, stride_d, &
+                b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c,&
                 batch_count, compute_type, algo, solution_index, flags) &
                 result(c_int) &
                 bind(c, name = 'hipblasGemmStridedBatchedEx')
@@ -11783,10 +11777,6 @@ module hipblas
             integer(kind(HIPBLAS_R_16F)), value :: c_type
             integer(c_int), value :: ldc
             integer(c_int64_t), value :: stride_c
-            type(c_ptr), value :: d
-            integer(kind(HIPBLAS_R_16F)), value :: d_type
-            integer(c_int), value :: ldd
-            integer(c_int64_t), value :: stride_d
             integer(c_int), value :: batch_count
             integer(kind(HIPBLAS_R_16F)), value :: compute_type
             integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
