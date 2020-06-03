@@ -2,7 +2,9 @@
  * Copyright 2016-2020 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
+#include "testing_gemm_batched_ex.hpp"
 #include "testing_gemm_ex.hpp"
+#include "testing_gemm_strided_batched_ex.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -25,7 +27,7 @@ README: This file contains testers to verify the correctness of
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipblasDatatype_t>>
+typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipblasDatatype_t>, int, bool>
     gemm_ex_tuple;
 
 // clang-format off
@@ -219,6 +221,12 @@ const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIPBLAS_R_16F,
                                                                  HIPBLAS_R_64F,
                                                                  HIPBLAS_R_64F,
                                                                  HIPBLAS_R_64F}};
+
+const int batch_count_range[] = { -1, 1, 5 };
+const int batch_count_range_small[] = { 1 };
+
+const bool is_fortran[] = {false, true};
+const bool is_fortran_false[] = {false};
 // clang-format on
 
 /* ===============Google Unit Test==================================================== */
@@ -242,6 +250,8 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
     vector<double>            alpha_beta      = std::get<1>(tup);
     vector<char>              transA_transB   = std::get<2>(tup);
     vector<hipblasDatatype_t> precision_types = std::get<3>(tup);
+    int                       batch_count     = std::get<4>(tup);
+    bool                      fortran         = std::get<5>(tup);
 
     Arguments arg;
 
@@ -266,6 +276,10 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
     arg.b_type       = precision_types[1];
     arg.c_type       = precision_types[2];
     arg.compute_type = precision_types[4];
+
+    arg.batch_count = batch_count;
+
+    arg.fortran = fortran;
 
     return arg;
 }
@@ -294,6 +308,87 @@ TEST_P(parameterized_gemm_ex, standard)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.M < 0 || arg.N < 0 || arg.K < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            // Only available in cuda cc >= 5.0.
+            // If we want we can change this to call query_device_property() and
+            // call this only if cc < 5.0 on a CUDA device, else fail.
+            EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+        }
+    }
+}
+
+class parameterized_gemm_batched_ex : public ::TestWithParam<gemm_ex_tuple>
+{
+protected:
+    parameterized_gemm_batched_ex() {}
+    virtual ~parameterized_gemm_batched_ex() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+TEST_P(parameterized_gemm_batched_ex, standard_batched)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_gemm_ex_arguments(GetParam());
+
+    hipblasStatus_t status = testing_gemm_batched_ex(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.K < 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            // Only available in cuda cc >= 5.0.
+            // If we want we can change this to call query_device_property() and
+            // call this only if cc < 5.0 on a CUDA device, else fail.
+            EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+        }
+    }
+}
+
+TEST_P(parameterized_gemm_batched_ex, standard_strided_batched)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_gemm_ex_arguments(GetParam());
+
+    hipblasStatus_t status = testing_gemm_strided_batched_ex(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.K < 0 || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -377,53 +472,106 @@ INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_hpa_half,
                         Combine(ValuesIn(small_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half)));
+                                ValuesIn(precision_hpa_half),
+                                ValuesIn(batch_count_range_small),
+                                ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_half,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(small_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half)));
+                                ValuesIn(precision_half),
+                                ValuesIn(batch_count_range_small),
+                                ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_single,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(small_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single)));
+                                ValuesIn(precision_single),
+                                ValuesIn(batch_count_range_small),
+                                ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_double,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(small_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double)));
+                                ValuesIn(precision_double),
+                                ValuesIn(batch_count_range_small),
+                                ValuesIn(is_fortran)));
 //----medium
 INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_hpa_half,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(medium_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half)));
+                                ValuesIn(precision_hpa_half),
+                                ValuesIn(batch_count_range_small),
+                                ValuesIn(is_fortran_false)));
 
 INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_half,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(medium_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half)));
+                                ValuesIn(precision_half),
+                                ValuesIn(batch_count_range_small),
+                                ValuesIn(is_fortran_false)));
 
 INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_float,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(medium_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single)));
+                                ValuesIn(precision_single),
+                                ValuesIn(batch_count_range_small),
+                                ValuesIn(is_fortran_false)));
 
 INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_double,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(medium_matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double)));
+                                ValuesIn(precision_double),
+                                ValuesIn(batch_count_range_small),
+                                ValuesIn(is_fortran_false)));
+
+//----small-batched
+INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_hpa_half,
+                        parameterized_gemm_batched_ex,
+                        Combine(ValuesIn(small_matrix_size_range),
+                                ValuesIn(alpha_beta_range),
+                                ValuesIn(transA_transB_range),
+                                ValuesIn(precision_hpa_half),
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_half,
+                        parameterized_gemm_batched_ex,
+                        Combine(ValuesIn(small_matrix_size_range),
+                                ValuesIn(alpha_beta_range),
+                                ValuesIn(transA_transB_range),
+                                ValuesIn(precision_half),
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_single,
+                        parameterized_gemm_batched_ex,
+                        Combine(ValuesIn(small_matrix_size_range),
+                                ValuesIn(alpha_beta_range),
+                                ValuesIn(transA_transB_range),
+                                ValuesIn(precision_single),
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_double,
+                        parameterized_gemm_batched_ex,
+                        Combine(ValuesIn(small_matrix_size_range),
+                                ValuesIn(alpha_beta_range),
+                                ValuesIn(transA_transB_range),
+                                ValuesIn(precision_double),
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));

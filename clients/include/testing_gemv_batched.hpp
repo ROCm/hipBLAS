@@ -23,6 +23,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_gemvBatched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasGemvBatchedFn
+        = FORTRAN ? hipblasGemvBatched<T, true> : hipblasGemvBatched<T, false>;
 
     int M    = argus.M;
     int N    = argus.N;
@@ -142,19 +145,19 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
     =================================================================== */
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasGemvBatched<T>(handle,
-                                       transA,
-                                       M,
-                                       N,
-                                       (T*)&alpha,
-                                       dA_array,
-                                       lda,
-                                       dx_array,
-                                       incx,
-                                       (T*)&beta,
-                                       dy_array,
-                                       incy,
-                                       batch_count);
+        status = hipblasGemvBatchedFn(handle,
+                                      transA,
+                                      M,
+                                      N,
+                                      (T*)&alpha,
+                                      dA_array,
+                                      lda,
+                                      dx_array,
+                                      incx,
+                                      (T*)&beta,
+                                      dy_array,
+                                      incy,
+                                      batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

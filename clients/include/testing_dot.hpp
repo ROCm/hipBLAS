@@ -20,6 +20,10 @@ using namespace std;
 template <typename T, bool CONJ = false>
 hipblasStatus_t testing_dot(Arguments argus)
 {
+    bool FORTRAN      = argus.fortran;
+    auto hipblasDotFn = FORTRAN ? (CONJ ? hipblasDotc<T, true> : hipblasDot<T, true>)
+                                : (CONJ ? hipblasDotc<T, false> : hipblasDot<T, false>);
+
     int N    = argus.N;
     int incx = argus.incx;
     int incy = argus.incy;
@@ -88,16 +92,14 @@ hipblasStatus_t testing_dot(Arguments argus)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-        status_2 = (CONJ ? hipblasDotc<T>
-                         : hipblasDot<T>)(handle, N, dx, incx, dy, incy, d_rocblas_result);
+        status_2 = (hipblasDotFn)(handle, N, dx, incx, dy, incy, d_rocblas_result);
     }
     else
     {
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_2 = (CONJ ? hipblasDotc<T>
-                         : hipblasDot<T>)(handle, N, dx, incx, dy, incy, &rocblas_result);
+        status_2 = (hipblasDotFn)(handle, N, dx, incx, dy, incy, &rocblas_result);
     }
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))

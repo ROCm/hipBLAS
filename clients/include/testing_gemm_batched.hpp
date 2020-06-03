@@ -25,6 +25,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_GemmBatched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasGemmBatchedFn
+        = FORTRAN ? hipblasGemmBatched<T, true> : hipblasGemmBatched<T, false>;
+
     int M = argus.M;
     int N = argus.N;
     int K = argus.K;
@@ -50,21 +54,21 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         const T *dA_array[1], *dB_array[1];
         T*       dC1_array[1];
 
-        status = hipblasGemmBatched<T>(handle,
-                                       transA,
-                                       transB,
-                                       M,
-                                       N,
-                                       K,
-                                       &h_alpha,
-                                       dA_array,
-                                       lda,
-                                       dB_array,
-                                       ldb,
-                                       &h_beta,
-                                       dC1_array,
-                                       ldc,
-                                       batch_count);
+        status = hipblasGemmBatchedFn(handle,
+                                      transA,
+                                      transB,
+                                      M,
+                                      N,
+                                      K,
+                                      &h_alpha,
+                                      dA_array,
+                                      lda,
+                                      dB_array,
+                                      ldb,
+                                      &h_beta,
+                                      dC1_array,
+                                      ldc,
+                                      batch_count);
 
         verify_hipblas_status_invalid_value(
             status,
@@ -229,21 +233,21 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     {
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_2 = hipblasGemmBatched<T>(handle,
-                                         transA,
-                                         transB,
-                                         M,
-                                         N,
-                                         K,
-                                         &h_alpha,
-                                         (const T* const*)dA_array_dev,
-                                         lda,
-                                         (const T* const*)dB_array_dev,
-                                         ldb,
-                                         &h_beta,
-                                         dC2_array_dev,
-                                         ldc,
-                                         batch_count);
+        status_2 = hipblasGemmBatchedFn(handle,
+                                        transA,
+                                        transB,
+                                        M,
+                                        N,
+                                        K,
+                                        &h_alpha,
+                                        (const T* const*)dA_array_dev,
+                                        lda,
+                                        (const T* const*)dB_array_dev,
+                                        ldb,
+                                        &h_beta,
+                                        dC2_array_dev,
+                                        ldc,
+                                        batch_count);
 
         if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
         {
@@ -277,21 +281,21 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
     {
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
-        status_2 = hipblasGemmBatched<T>(handle,
-                                         transA,
-                                         transB,
-                                         M,
-                                         N,
-                                         K,
-                                         d_alpha,
-                                         (const T* const*)dA_array_dev,
-                                         lda,
-                                         (const T* const*)dB_array_dev,
-                                         ldb,
-                                         d_beta,
-                                         dC1_array_dev,
-                                         ldc,
-                                         batch_count);
+        status_2 = hipblasGemmBatchedFn(handle,
+                                        transA,
+                                        transB,
+                                        M,
+                                        N,
+                                        K,
+                                        d_alpha,
+                                        (const T* const*)dA_array_dev,
+                                        lda,
+                                        (const T* const*)dB_array_dev,
+                                        ldb,
+                                        d_beta,
+                                        dC1_array_dev,
+                                        ldc,
+                                        batch_count);
 
         if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
         {

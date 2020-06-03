@@ -22,6 +22,9 @@ using namespace std;
 template <typename T, typename U>
 hipblasStatus_t testing_her2k(Arguments argus)
 {
+    bool FORTRAN        = argus.fortran;
+    auto hipblasHer2kFn = FORTRAN ? hipblasHer2k<T, U, true> : hipblasHer2k<T, U, false>;
+
     int N   = argus.N;
     int K   = argus.K;
     int lda = argus.lda;
@@ -91,7 +94,7 @@ hipblasStatus_t testing_her2k(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status = hipblasHer2k<T>(
+        status = hipblasHer2kFn(
             handle, uplo, transA, N, K, (T*)&alpha, dA, lda, dB, ldb, (U*)&beta, dC, ldc);
 
         if(status != HIPBLAS_STATUS_SUCCESS)

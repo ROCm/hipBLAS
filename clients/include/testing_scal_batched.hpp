@@ -20,6 +20,10 @@ using namespace std;
 template <typename T, typename U = T>
 hipblasStatus_t testing_scal_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasScalBatchedFn
+        = FORTRAN ? hipblasScalBatched<T, U, true> : hipblasScalBatched<T, U, false>;
+
     int N           = argus.N;
     int incx        = argus.incx;
     int batch_count = argus.batch_count;
@@ -81,7 +85,7 @@ hipblasStatus_t testing_scal_batched(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasScalBatched<T, U>(handle, N, &alpha, dx_array, incx, batch_count);
+    status = hipblasScalBatchedFn(handle, N, &alpha, dx_array, incx, batch_count);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         hipblasDestroy(handle);

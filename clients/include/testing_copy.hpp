@@ -20,6 +20,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_copy(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasCopyFn = FORTRAN ? hipblasCopy<T, true> : hipblasCopy<T, false>;
+
     int N    = argus.N;
     int incx = argus.incx;
     int incy = argus.incy;
@@ -75,7 +78,7 @@ hipblasStatus_t testing_copy(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasCopy<T>(handle, N, dx, incx, dy, incy);
+    status = hipblasCopyFn(handle, N, dx, incx, dy, incy);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         CHECK_HIP_ERROR(hipFree(dx));

@@ -27,6 +27,13 @@ else( )
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvcc_detail/hipblas.cpp" )
 endif( )
 
+set (hipblas_f90_source
+  hipblas_module.f90
+)
+
+# Create hipBLAS Fortran module
+add_library(hipblas_fortran ${hipblas_f90_source})
+
 add_library( hipblas
   ${hipblas_source}
   ${relative_hipblas_headers_public}
@@ -127,5 +134,9 @@ rocm_export_targets(
   DEPENDS PACKAGE HIP
   NAMESPACE roc::
  )
+
+# Force installation of .f90 module files
+install(FILES "hipblas_module.f90"
+        DESTINATION "hipblas/include")
 
 rocm_install_symlink_subdir( hipblas )

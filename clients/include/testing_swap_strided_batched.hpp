@@ -20,6 +20,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_swap_strided_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasSwapStridedBatchedFn
+        = FORTRAN ? hipblasSwapStridedBatched<T, true> : hipblasSwapStridedBatched<T, false>;
+
     int    N            = argus.N;
     int    incx         = argus.incx;
     int    incy         = argus.incy;
@@ -71,8 +75,8 @@ hipblasStatus_t testing_swap_strided_batched(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasSwapStridedBatched<T>(
-        handle, N, dx, incx, stridex, dy, incy, stridey, batch_count);
+    status
+        = hipblasSwapStridedBatchedFn(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count);
 
     if((status != HIPBLAS_STATUS_SUCCESS))
     {

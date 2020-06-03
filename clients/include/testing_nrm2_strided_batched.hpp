@@ -29,6 +29,10 @@ constexpr double nrm2_strided_batched_tolerance_multiplier<hipblasDoubleComplex>
 template <typename T1, typename T2>
 hipblasStatus_t testing_nrm2_strided_batched(Arguments argus)
 {
+    bool FORTRAN                     = argus.fortran;
+    auto hipblasNrm2StridedBatchedFn = FORTRAN ? hipblasNrm2StridedBatched<T1, T2, true>
+                                               : hipblasNrm2StridedBatched<T1, T2, false>;
+
     int    N            = argus.N;
     int    incx         = argus.incx;
     double stride_scale = argus.stride_scale;
@@ -77,11 +81,11 @@ hipblasStatus_t testing_nrm2_strided_batched(Arguments argus)
     // hipblasNrm2 accept both dev/host pointer for the scalar
 
     status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-    status_2 = hipblasNrm2StridedBatched<T1, T2>(
-        handle, N, dx, incx, stridex, batch_count, d_rocblas_result);
+    status_2
+        = hipblasNrm2StridedBatchedFn(handle, N, dx, incx, stridex, batch_count, d_rocblas_result);
 
     status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-    status_4 = hipblasNrm2StridedBatched<T1, T2>(
+    status_4 = hipblasNrm2StridedBatchedFn(
         handle, N, dx, incx, stridex, batch_count, h_rocblas_result_1);
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)

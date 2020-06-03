@@ -18,7 +18,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<double>, vector<char>, int> gemm_strided_batched_tuple;
+typedef std::tuple<vector<int>, vector<double>, vector<char>, int, bool> gemm_strided_batched_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -67,6 +67,8 @@ const vector<int> batch_count_range = {
     //               100,
 };
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -90,6 +92,7 @@ Arguments setup_gemm_strided_batched_arguments(gemm_strided_batched_tuple tup)
     vector<double> alpha_beta    = std::get<1>(tup);
     vector<char>   transA_transB = std::get<2>(tup);
     int            batch_count   = std::get<3>(tup);
+    bool           fortran       = std::get<4>(tup);
 
     Arguments arg;
 
@@ -110,6 +113,8 @@ Arguments setup_gemm_strided_batched_arguments(gemm_strided_batched_tuple tup)
 
     arg.batch_count = batch_count;
     arg.timing      = 0;
+
+    arg.fortran = fortran;
 
     return arg;
 }
@@ -298,4 +303,5 @@ INSTANTIATE_TEST_CASE_P(hipblasGemmStridedBatched,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(transA_transB_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));

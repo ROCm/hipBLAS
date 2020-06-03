@@ -22,6 +22,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_syrk_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasSyrkBatchedFn
+        = FORTRAN ? hipblasSyrkBatched<T, true> : hipblasSyrkBatched<T, false>;
+
     int N           = argus.N;
     int K           = argus.K;
     int lda         = argus.lda;
@@ -105,7 +109,7 @@ hipblasStatus_t testing_syrk_batched(Arguments argus)
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasSyrkBatched<T>(
+        status = hipblasSyrkBatchedFn(
             handle, uplo, transA, N, K, (T*)&alpha, dA, lda, (T*)&beta, dC, ldc, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)

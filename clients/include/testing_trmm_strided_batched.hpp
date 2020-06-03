@@ -22,6 +22,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trmm_strided_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasTrmmStridedBatchedFn
+        = FORTRAN ? hipblasTrmmStridedBatched<T, true> : hipblasTrmmStridedBatched<T, false>;
+
     int    M            = argus.M;
     int    N            = argus.N;
     int    lda          = argus.lda;
@@ -83,21 +87,21 @@ hipblasStatus_t testing_trmm_strided_batched(Arguments argus)
     =================================================================== */
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasTrmmStridedBatched<T>(handle,
-                                              side,
-                                              uplo,
-                                              transA,
-                                              diag,
-                                              M,
-                                              N,
-                                              &alpha,
-                                              dA,
-                                              lda,
-                                              stride_A,
-                                              dB,
-                                              ldb,
-                                              stride_B,
-                                              batch_count);
+        status = hipblasTrmmStridedBatchedFn(handle,
+                                             side,
+                                             uplo,
+                                             transA,
+                                             diag,
+                                             M,
+                                             N,
+                                             &alpha,
+                                             dA,
+                                             lda,
+                                             stride_A,
+                                             dB,
+                                             ldb,
+                                             stride_B,
+                                             batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

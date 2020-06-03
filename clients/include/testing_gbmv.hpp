@@ -22,6 +22,8 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_gbmv(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasGbmvFn = FORTRAN ? hipblasGbmv<T, true> : hipblasGbmv<T, false>;
 
     int M    = argus.M;
     int N    = argus.N;
@@ -98,7 +100,7 @@ hipblasStatus_t testing_gbmv(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status = hipblasGbmv<T>(
+        status = hipblasGbmvFn(
             handle, transA, M, N, KL, KU, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy);
 
         if(status != HIPBLAS_STATUS_SUCCESS)

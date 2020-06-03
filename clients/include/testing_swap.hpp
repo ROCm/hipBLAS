@@ -20,6 +20,8 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_swap(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasSwapFn = FORTRAN ? hipblasSwap<T, true> : hipblasSwap<T, false>;
 
     int N    = argus.N;
     int incx = argus.incx;
@@ -81,7 +83,7 @@ hipblasStatus_t testing_swap(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasSwap<T>(handle, N, dx, incx, dy, incy);
+    status = hipblasSwapFn(handle, N, dx, incx, dy, incy);
 
     if((status != HIPBLAS_STATUS_SUCCESS))
     {

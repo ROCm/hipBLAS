@@ -22,6 +22,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_tbmv_strided_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasTbmvStridedBatchedFn
+        = FORTRAN ? hipblasTbmvStridedBatched<T, true> : hipblasTbmvStridedBatched<T, false>;
+
     int    M            = argus.M;
     int    K            = argus.K;
     int    lda          = argus.lda;
@@ -81,7 +85,7 @@ hipblasStatus_t testing_tbmv_strided_batched(Arguments argus)
     =================================================================== */
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasTbmvStridedBatched<T>(
+        status = hipblasTbmvStridedBatchedFn(
             handle, uplo, transA, diag, M, K, dA, lda, stride_A, dx, incx, stride_x, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
