@@ -24,7 +24,8 @@ template <typename T>
 hipblasStatus_t testing_trmv_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasTrmvBatchedFn = FORTRAN ? hipblasTrmvBatched<T, true> : hipblasTrmvBatched<T, false>;
+    auto hipblasTrmvBatchedFn
+        = FORTRAN ? hipblasTrmvBatched<T, true> : hipblasTrmvBatched<T, false>;
 
     int M    = argus.M;
     int lda  = argus.lda;

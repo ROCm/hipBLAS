@@ -73,7 +73,7 @@ Arguments setup_gemm_arguments(gemm_tuple tup)
     vector<int>    matrix_size   = std::get<0>(tup);
     vector<double> alpha_beta    = std::get<1>(tup);
     vector<char>   transA_transB = std::get<2>(tup);
-    bool fortran = std::get<3>(tup);
+    bool           fortran       = std::get<3>(tup);
 
     Arguments arg;
 

@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_symv_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasSymvStridedBatchedFn = FORTRAN ? hipblasSymvStridedBatched<T, true> : hipblasSymvStridedBatched<T, false>;
+    auto hipblasSymvStridedBatchedFn
+        = FORTRAN ? hipblasSymvStridedBatched<T, true> : hipblasSymvStridedBatched<T, false>;
 
     int    M            = argus.M;
     int    lda          = argus.lda;
@@ -89,20 +90,20 @@ hipblasStatus_t testing_symv_strided_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
         status = hipblasSymvStridedBatchedFn(handle,
-                                              uplo,
-                                              M,
-                                              &alpha,
-                                              dA,
-                                              lda,
-                                              stride_A,
-                                              dx,
-                                              incx,
-                                              stride_x,
-                                              &beta,
-                                              dy,
-                                              incy,
-                                              stride_y,
-                                              batch_count);
+                                             uplo,
+                                             M,
+                                             &alpha,
+                                             dA,
+                                             lda,
+                                             stride_A,
+                                             dx,
+                                             incx,
+                                             stride_x,
+                                             &beta,
+                                             dy,
+                                             incy,
+                                             stride_y,
+                                             batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

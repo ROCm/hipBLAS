@@ -114,7 +114,7 @@ Arguments setup_hemv_arguments(hemv_tuple tup)
     vector<double> alpha_beta   = std::get<3>(tup);
     char           transA       = std::get<4>(tup);
     int            batch_count  = std::get<5>(tup);
-    bool fortran = std::get<6>(tup);
+    bool           fortran      = std::get<6>(tup);
 
     Arguments arg;
 

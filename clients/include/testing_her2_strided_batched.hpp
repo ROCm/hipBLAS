@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_her2_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasHer2StridedBatchedFn = FORTRAN ? hipblasHer2StridedBatched<T, true> : hipblasHer2StridedBatched<T, false>;
+    auto hipblasHer2StridedBatchedFn
+        = FORTRAN ? hipblasHer2StridedBatched<T, true> : hipblasHer2StridedBatched<T, false>;
 
     int    N            = argus.N;
     int    incx         = argus.incx;
@@ -97,19 +98,19 @@ hipblasStatus_t testing_her2_strided_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
         status = hipblasHer2StridedBatchedFn(handle,
-                                              uplo,
-                                              N,
-                                              (T*)&alpha,
-                                              dx,
-                                              incx,
-                                              stride_x,
-                                              dy,
-                                              incy,
-                                              stride_y,
-                                              dA,
-                                              lda,
-                                              stride_A,
-                                              batch_count);
+                                             uplo,
+                                             N,
+                                             (T*)&alpha,
+                                             dx,
+                                             incx,
+                                             stride_x,
+                                             dy,
+                                             incy,
+                                             stride_y,
+                                             dA,
+                                             lda,
+                                             stride_A,
+                                             batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

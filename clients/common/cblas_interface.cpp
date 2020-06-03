@@ -22,8 +22,8 @@ extern "C" {
 
 void strtri_(char* uplo, char* diag, int* n, float* A, int* lda, int* info);
 void dtrtri_(char* uplo, char* diag, int* n, double* A, int* lda, int* info);
-//  void    ctrtri_(char* uplo, char* diag, int* n, hipblasComplex* A,  int* lda, int *info);
-//  void    ztrtri_(char* uplo, char* diag, int* n, hipblasDoubleComplex* A, int* lda, int *info);
+void ctrtri_(char* uplo, char* diag, int* n, hipblasComplex* A, int* lda, int* info);
+void ztrtri_(char* uplo, char* diag, int* n, hipblasDoubleComplex* A, int* lda, int* info);
 
 void sgetrf_(int* m, int* n, float* A, int* lda, int* ipiv, int* info);
 void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
@@ -2954,6 +2954,26 @@ int cblas_trtri<double>(char uplo, char diag, int n, double* A, int lda)
     // printf("transA: hipblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
     int info;
     dtrtri_(&uplo, &diag, &n, A, &lda, &info);
+    return info;
+}
+
+template <>
+int cblas_trtri<hipblasComplex>(char uplo, char diag, int n, hipblasComplex* A, int lda)
+{
+    // just directly cast, since transA, transB are integers in the enum
+    // printf("transA: hipblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
+    int info;
+    ctrtri_(&uplo, &diag, &n, A, &lda, &info);
+    return info;
+}
+
+template <>
+int cblas_trtri<hipblasDoubleComplex>(char uplo, char diag, int n, hipblasDoubleComplex* A, int lda)
+{
+    // just directly cast, since transA, transB are integers in the enum
+    // printf("transA: hipblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
+    int info;
+    ztrtri_(&uplo, &diag, &n, A, &lda, &info);
     return info;
 }
 

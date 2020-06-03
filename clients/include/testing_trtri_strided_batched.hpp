@@ -11,7 +11,6 @@
 #include "cblas_interface.h"
 #include "flops.h"
 #include "hipblas.hpp"
-#include "near.h"
 #include "norm.h"
 #include "unit.h"
 #include "utility.h"
@@ -21,32 +20,35 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_trtri(Arguments argus)
+hipblasStatus_t testing_trtri_strided_batched(Arguments argus)
 {
-    bool FORTRAN        = argus.fortran;
-    auto hipblasTrtriFn = FORTRAN ? hipblasTrtri<T, true> : hipblasTrtri<T, false>;
+    bool FORTRAN = argus.fortran;
+    auto hipblasTrtriStridedBatchedFn
+        = FORTRAN ? hipblasTrtriStridedBatched<T, true> : hipblasTrtriStridedBatched<T, false>;
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
-    int N = argus.N;
-    int lda;
-    int ldinvA;
-    ldinvA = lda = argus.lda;
+    int N           = argus.N;
+    int lda         = argus.lda;
+    int ldinvA      = lda;
+    int batch_count = argus.batch_count;
 
-    int A_size = size_t(lda) * N;
+    int strideA = lda * N;
+    int A_size  = strideA * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // check here to prevent undefined memory allocation error
-    if(N < 0 || lda < 0 || lda < N)
+    if(N < 0 || lda < 0 || lda < N || batch_count < 0)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    vector<T> hA(A_size);
-    vector<T> hB(A_size);
+    host_vector<T> hA(A_size);
+    host_vector<T> hB(A_size);
 
-    T *dA, *dinvA;
+    device_vector<T> dA(A_size);
+    device_vector<T> dinvA(A_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -62,33 +64,32 @@ hipblasStatus_t testing_trtri(Arguments argus)
 
     hipblasCreate(&handle);
 
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dA, A_size * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dinvA, A_size * sizeof(T)));
-
-    // Initial Data on CPU
     srand(1);
-    hipblas_init_symmetric<T>(hA, N, lda);
-
-    // proprocess the matrix to avoid ill-conditioned matrix
-    for(int i = 0; i < N; i++)
+    hipblas_init_symmetric<T>(hA, N, lda, strideA, batch_count);
+    for(int b = 0; b < batch_count; b++)
     {
-        for(int j = 0; j < N; j++)
-        {
-            hA[i + j * lda] *= 0.01;
+        T* hAb = hA.data() + b * strideA;
 
-            if(j % 2)
-                hA[i + j * lda] *= -1;
-            if(uplo == HIPBLAS_FILL_MODE_LOWER && j > i)
-                hA[i + j * lda] = 0.0f;
-            else if(uplo == HIPBLAS_FILL_MODE_UPPER && j < i)
-                hA[i + j * lda] = 0.0f;
-            if(i == j)
+        // proprocess the matrix to avoid ill-conditioned matrix
+        for(int i = 0; i < N; i++)
+        {
+            for(int j = 0; j < N; j++)
             {
-                if(diag == HIPBLAS_DIAG_UNIT)
-                    hA[i + j * lda] = 1.0;
-                else
-                    hA[i + j * lda] *= 100.0;
+                hAb[i + j * lda] *= 0.01;
+
+                if(j % 2)
+                    hAb[i + j * lda] *= -1;
+                if(uplo == HIPBLAS_FILL_MODE_LOWER && j > i)
+                    hAb[i + j * lda] = 0.0f;
+                else if(uplo == HIPBLAS_FILL_MODE_UPPER && j < i)
+                    hAb[i + j * lda] = 0.0f;
+                if(i == j)
+                {
+                    if(diag == HIPBLAS_DIAG_UNIT)
+                        hAb[i + j * lda] = 1.0;
+                    else
+                        hAb[i + j * lda] *= 100.0;
+                }
             }
         }
     }
@@ -102,7 +103,8 @@ hipblasStatus_t testing_trtri(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status = hipblasTrtriFn(handle, uplo, diag, N, dA, lda, dinvA, ldinvA);
+    status = hipblasTrtriStridedBatchedFn(
+        handle, uplo, diag, N, dA, lda, strideA, dinvA, ldinvA, strideA, batch_count);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -118,24 +120,24 @@ hipblasStatus_t testing_trtri(Arguments argus)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
+        for(int b = 0; b < batch_count; b++)
+        {
+            int info = cblas_trtri<T>(char_uplo, char_diag, N, hB.data() + b * strideA, lda);
 
-        int info = cblas_trtri<T>(char_uplo, char_diag, N, hB.data(), lda);
+            if(info != 0)
+                printf("error in cblas_trtri\n");
+        }
 
-        if(info != 0)
-            printf("error in cblas_trtri\n");
-
-#ifndef NDEBUG
-        print_matrix(hB, hA, N, N, lda);
-#endif
-
+        // enable unit check, notice unit check is not invasive, but norm check is,
+        // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            near_check_general<T>(N, N, lda, hB.data(), hA.data(), rel_error);
+            for(int b = 0; b < batch_count; b++)
+                near_check_general<T>(
+                    N, N, lda, hB.data() + b * strideA, hA.data() + b * strideA, rel_error);
         }
     }
 
-    CHECK_HIP_ERROR(hipFree(dA));
-    CHECK_HIP_ERROR(hipFree(dinvA));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

@@ -22,7 +22,7 @@ using namespace std;
 template <typename T, typename U>
 hipblasStatus_t testing_herk(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN       = argus.fortran;
     auto hipblasHerkFn = FORTRAN ? hipblasHerk<T, U, true> : hipblasHerk<T, U, false>;
 
     int N   = argus.N;
@@ -88,8 +88,7 @@ hipblasStatus_t testing_herk(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
 
-        status
-            = hipblasHerkFn(handle, uplo, transA, N, K, (U*)&alpha, dA, lda, (U*)&beta, dC, ldc);
+        status = hipblasHerkFn(handle, uplo, transA, N, K, (U*)&alpha, dA, lda, (U*)&beta, dC, ldc);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

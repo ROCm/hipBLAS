@@ -96,7 +96,7 @@ const vector<double> stride_scale_range = {1, 3};
 
 const vector<int> batch_count_range = {1, 3, 5};
 
-const bool is_fortran[] = {false, true};
+const bool is_fortran[]       = {false, true};
 const bool is_fortran_false[] = {false};
 
 /* ===============Google Unit Test==================================================== */
@@ -123,7 +123,7 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     vector<char> side_uplo_transA_diag = std::get<2>(tup);
     double       stride_scale          = std::get<3>(tup);
     int          batch_count           = std::get<4>(tup);
-    bool fortran = std::get<5>(tup);
+    bool         fortran               = std::get<5>(tup);
 
     Arguments arg;
 

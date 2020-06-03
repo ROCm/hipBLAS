@@ -99,7 +99,7 @@ Arguments setup_gemv_arguments(gemv_tuple tup)
     vector<int>    incx_incy   = std::get<1>(tup);
     vector<double> alpha_beta  = std::get<2>(tup);
     char           transA      = std::get<3>(tup);
-    bool fortran = std::get<4>(tup);
+    bool           fortran     = std::get<4>(tup);
 
     Arguments arg;
 
