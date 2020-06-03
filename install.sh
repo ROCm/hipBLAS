@@ -121,6 +121,7 @@ install_packages( )
   # dependencies needed for library and clients to build
   local library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" )
   local library_dependencies_centos=( "epel-release" "make" "cmake3" "gcc-c++" "rpm-build" )
+  local library_dependencies_centos8=( "epel-release" "make" "cmake3" "gcc-c++" "rpm-build" )
   local library_dependencies_fedora=( "make" "cmake" "gcc-c++" "libcxx-devel" "rpm-build" )
   local library_dependencies_sles=( "make" "cmake" "gcc-c++" "libcxxtools9" "rpm-build" )
 
@@ -170,6 +171,7 @@ install_packages( )
 
   local client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
   local client_dependencies_centos=( "devtoolset-7-gcc-gfortran" "boost-devel" )
+  local client_dependencies_centos8=( "gcc-gfortran" "boost-devel" )
   local client_dependencies_fedora=( "gcc-gfortran" "boost-devel" )
   local client_dependencies_sles=( "libboost_program_options1_66_0-devel" "pkg-config" "dpkg" )
 
@@ -187,10 +189,16 @@ install_packages( )
 #     yum -y update brings *all* installed packages up to date
 #     without seeking user approval
 #     elevate_if_not_root yum -y update
-      install_yum_packages "${library_dependencies_centos[@]}"
-
-      if [[ "${build_clients}" == true ]]; then
-        install_yum_packages "${client_dependencies_centos[@]}"
+      if [[ "${VERSION_ID}" == "8" ]]; then
+        install_yum_packages "${library_dependencies_centos8[@]}"
+        if [[ "${build_clients}" == true ]]; then
+          install_yum_packages "${client_dependencies_centos8[@]}"
+        fi
+      else
+        install_yum_packages "${library_dependencies_centos[@]}"
+        if [[ "${build_clients}" == true ]]; then
+          install_yum_packages "${client_dependencies_centos[@]}"
+        fi
       fi
       ;;
 
