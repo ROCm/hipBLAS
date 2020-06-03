@@ -2,8 +2,8 @@
  * Copyright 2016-2020 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
-#include "testing_gemm_ex.hpp"
 #include "testing_gemm_batched_ex.hpp"
+#include "testing_gemm_ex.hpp"
 #include "testing_gemm_strided_batched_ex.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
@@ -575,4 +575,3 @@ INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_double,
                                 ValuesIn(precision_double),
                                 ValuesIn(batch_count_range),
                                 ValuesIn(is_fortran)));
-
