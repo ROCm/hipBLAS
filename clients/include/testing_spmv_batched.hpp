@@ -23,6 +23,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_spmv_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasSpmvBatchedFn
+        = FORTRAN ? hipblasSpmvBatched<T, true> : hipblasSpmvBatched<T, false>;
+
     int M    = argus.M;
     int incx = argus.incx;
     int incy = argus.incy;
@@ -123,7 +127,7 @@ hipblasStatus_t testing_spmv_batched(Arguments argus)
     =================================================================== */
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasSpmvBatched<T>(
+        status = hipblasSpmvBatchedFn(
             handle, uplo, M, &alpha, dA_array, dx_array, incx, &beta, dy_array, incy, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)

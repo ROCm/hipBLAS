@@ -22,6 +22,8 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trsm(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasTrsmFn = FORTRAN ? hipblasTrsm<T, true> : hipblasTrsm<T, false>;
 
     int M   = argus.M;
     int N   = argus.N;
@@ -119,7 +121,7 @@ hipblasStatus_t testing_trsm(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasTrsm<T>(handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb);
+    status = hipblasTrsmFn(handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb);
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hB.data(), dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));

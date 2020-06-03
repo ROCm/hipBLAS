@@ -67,22 +67,27 @@ set(hipblas_test_source
   syr_gtest.cpp
   syr2_gtest.cpp
   tbmv_gtest.cpp
+  tbsv_gtest.cpp
   tpmv_gtest.cpp
   tpsv_gtest.cpp
   trmv_gtest.cpp
   trsv_gtest.cpp
+  dgmm_gtest.cpp
   gemm_gtest.cpp
   gemm_ex_gtest.cpp
   gemm_strided_batched_gtest.cpp
   gemm_batched_gtest.cpp
+  hemm_gtest.cpp
   geam_gtest.cpp
   herk_gtest.cpp
   her2k_gtest.cpp
   herkx_gtest.cpp
+  symm_gtest.cpp
   syrk_gtest.cpp
   syr2k_gtest.cpp
   trsm_gtest.cpp
   trmm_gtest.cpp
+  trtri_gtest.cpp
 )
 
 if( BUILD_WITH_SOLVER )
@@ -110,7 +115,7 @@ set( hipblas_benchmark_common
   ../common/hipblas_template_specialization.cpp
 )
 
-add_executable( hipblas-test ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_benchmark_common} )
+add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_benchmark_common} )
 
 target_include_directories( hipblas-test
   PRIVATE
@@ -132,7 +137,7 @@ target_include_directories( hipblas-test
     ${ROCM_PATH}/hsa/include
 )
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} )
+target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} hipblas_fortran_client )
 
 if( NOT CUDA_FOUND )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_HCC__ )
@@ -163,7 +168,8 @@ if( NOT CUDA_FOUND )
   endif()
 else( )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_NVCC__ )
-
+  # need mf16c flag for float->half convertion
+  target_compile_options( hipblas-test PRIVATE -mf16c )
   target_include_directories( hipblas-test
     PRIVATE
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>

@@ -24,6 +24,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasGemmStridedBatchedFn
+        = FORTRAN ? hipblasGemmStridedBatched<T, true> : hipblasGemmStridedBatched<T, false>;
 
     int M = argus.M;
     int N = argus.N;
@@ -114,24 +117,24 @@ hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
     =================================================================== */
 
     // library interface
-    status = hipblasGemmStridedBatched<T>(handle,
-                                          transA,
-                                          transB,
-                                          M,
-                                          N,
-                                          K,
-                                          &alpha,
-                                          dA,
-                                          lda,
-                                          bsa,
-                                          dB,
-                                          ldb,
-                                          bsb,
-                                          &beta,
-                                          dC,
-                                          ldc,
-                                          bsc,
-                                          batch_count);
+    status = hipblasGemmStridedBatchedFn(handle,
+                                         transA,
+                                         transB,
+                                         M,
+                                         N,
+                                         K,
+                                         &alpha,
+                                         dA,
+                                         lda,
+                                         bsa,
+                                         dB,
+                                         ldb,
+                                         bsb,
+                                         &beta,
+                                         dC,
+                                         ldc,
+                                         bsc,
+                                         batch_count);
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));

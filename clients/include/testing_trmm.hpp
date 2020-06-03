@@ -22,6 +22,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trmm(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasTrmmFn = FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
+
     int M   = argus.M;
     int N   = argus.N;
     int lda = argus.lda;
@@ -76,7 +79,7 @@ hipblasStatus_t testing_trmm(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status = hipblasTrmm<T>(handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb);
+    status = hipblasTrmmFn(handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

@@ -24,6 +24,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_gemm(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasGemmFn = FORTRAN ? hipblasGemm<T, true> : hipblasGemm<T, false>;
+
     int M = argus.M;
     int N = argus.N;
     int K = argus.K;
@@ -106,7 +109,7 @@ hipblasStatus_t testing_gemm(Arguments argus)
 
     // library interface
     status
-        = hipblasGemm<T>(handle, transA, transB, M, N, K, &alpha, dA, lda, dB, ldb, &beta, dC, ldc);
+        = hipblasGemmFn(handle, transA, transB, M, N, K, &alpha, dA, lda, dB, ldb, &beta, dC, ldc);
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));

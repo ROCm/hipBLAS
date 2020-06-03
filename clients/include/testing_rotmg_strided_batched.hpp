@@ -20,6 +20,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_rotmg_strided_batched(Arguments arg)
 {
+    bool FORTRAN = arg.fortran;
+    auto hipblasRotmgStridedBatchedFn
+        = FORTRAN ? hipblasRotmgStridedBatched<T, true> : hipblasRotmgStridedBatched<T, false>;
+
     int    batch_count  = arg.batch_count;
     double stride_scale = arg.stride_scale;
     int    stride_d1    = stride_scale;
@@ -93,18 +97,18 @@ hipblasStatus_t testing_rotmg_strided_batched(Arguments arg)
 
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
-        status_2 = (hipblasRotmgStridedBatched<T>(handle,
-                                                  rd1,
-                                                  stride_d1,
-                                                  rd2,
-                                                  stride_d2,
-                                                  rx1,
-                                                  stride_x1,
-                                                  ry1,
-                                                  stride_y1,
-                                                  rparams,
-                                                  stride_param,
-                                                  batch_count));
+        status_2 = (hipblasRotmgStridedBatchedFn(handle,
+                                                 rd1,
+                                                 stride_d1,
+                                                 rd2,
+                                                 stride_d2,
+                                                 rx1,
+                                                 stride_x1,
+                                                 ry1,
+                                                 stride_y1,
+                                                 rparams,
+                                                 stride_param,
+                                                 batch_count));
 
         if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
         {
@@ -140,18 +144,18 @@ hipblasStatus_t testing_rotmg_strided_batched(Arguments arg)
         CHECK_HIP_ERROR(hipMemcpy(dparams, hparams, sizeof(T) * size_param, hipMemcpyHostToDevice));
 
         status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_4 = (hipblasRotmgStridedBatched<T>(handle,
-                                                  dd1,
-                                                  stride_d1,
-                                                  dd2,
-                                                  stride_d2,
-                                                  dx1,
-                                                  stride_x1,
-                                                  dy1,
-                                                  stride_y1,
-                                                  dparams,
-                                                  stride_param,
-                                                  batch_count));
+        status_4 = (hipblasRotmgStridedBatchedFn(handle,
+                                                 dd1,
+                                                 stride_d1,
+                                                 dd2,
+                                                 stride_d2,
+                                                 dx1,
+                                                 stride_x1,
+                                                 dy1,
+                                                 stride_y1,
+                                                 dparams,
+                                                 stride_param,
+                                                 batch_count));
 
         if((status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
         {

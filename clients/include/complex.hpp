@@ -186,6 +186,16 @@ namespace std
     {
         return abs(reinterpret_cast<const complex<double>&>(z));
     }
+
+    inline float conj(const float& r)
+    {
+        return r;
+    }
+
+    inline double conj(const double& r)
+    {
+        return r;
+    }
 }
 
 #endif

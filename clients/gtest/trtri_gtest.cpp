@@ -4,6 +4,8 @@
  * ************************************************************************ */
 
 #include "testing_trtri.hpp"
+#include "testing_trtri_batched.hpp"
+#include "testing_trtri_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -16,7 +18,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 using namespace std;
 
-typedef std::tuple<vector<int>, char, char, int> trtri_tuple;
+typedef std::tuple<vector<int>, char, char, int, bool> trtri_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -47,6 +49,8 @@ const vector<char> diag_range = {'N', 'U'};
 // it applies on trtri_batched only
 const vector<int> batch_range = {-1, 1, 100, 1000};
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -69,16 +73,19 @@ Arguments setup_trtri_arguments(trtri_tuple tup)
     vector<int> matrix_size = std::get<0>(tup);
     char        uplo        = std::get<1>(tup);
     char        diag        = std::get<2>(tup);
-    int         batch_count = std::get<2>(tup);
+    int         batch_count = std::get<3>(tup);
+    bool        fortran     = std::get<4>(tup);
 
     Arguments arg;
 
-    arg.N   = matrix_size[1];
-    arg.lda = matrix_size[2];
+    arg.N   = matrix_size[0];
+    arg.lda = matrix_size[1];
 
     arg.uplo_option = uplo;
     arg.diag_option = diag;
     arg.batch_count = batch_count;
+
+    arg.fortran = fortran;
 
     arg.timing = 0;
 
@@ -108,22 +115,13 @@ TEST_P(trtri_gtest, trtri_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-
-        if(arg.N < 0)
+        if(arg.N < 0 || arg.lda < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.lda < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.N > 32)
-        {
-            EXPECT_EQ(hipblasStatus_t_not_implemented, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -143,25 +141,39 @@ TEST_P(trtri_gtest, trtri_batched_float)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
 
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.lda < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.N > 32)
-        {
-            EXPECT_EQ(hipblasStatus_t_not_implemented, status);
-        }
-        else if(arg.batch_count < 0)
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(trtri_gtest, trtri_strided_batched_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trtri_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trtri_strided_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -176,4 +188,5 @@ INSTANTIATE_TEST_CASE_P(hipblasTrtri,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(uplo_range),
                                 ValuesIn(diag_range),
-                                ValuesIn(batch_range)));
+                                ValuesIn(batch_range),
+                                ValuesIn(is_fortran)));

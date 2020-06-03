@@ -22,6 +22,11 @@ using namespace std;
 template <typename T, bool CONJ>
 hipblasStatus_t testing_ger_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasGerBatchedFn
+        = FORTRAN ? (CONJ ? hipblasGerBatched<T, true, true> : hipblasGerBatched<T, false, true>)
+                  : (CONJ ? hipblasGerBatched<T, true, false> : hipblasGerBatched<T, false, false>);
+
     int M           = argus.M;
     int N           = argus.N;
     int incx        = argus.incx;
@@ -109,7 +114,7 @@ hipblasStatus_t testing_ger_batched(Arguments argus)
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasGerBatched<T, CONJ>(
+        status = hipblasGerBatchedFn(
             handle, M, N, (T*)&alpha, dx, incx, dy, incy, dA, lda, batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)

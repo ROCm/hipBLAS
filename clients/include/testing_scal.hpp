@@ -20,6 +20,8 @@ using namespace std;
 template <typename T, typename U = T>
 hipblasStatus_t testing_scal(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasScalFn = FORTRAN ? hipblasScal<T, U, true> : hipblasScal<T, U, false>;
 
     int N    = argus.N;
     int incx = argus.incx;
@@ -70,7 +72,7 @@ hipblasStatus_t testing_scal(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasScal<T, U>(handle, N, &alpha, dx, incx);
+    status = hipblasScalFn(handle, N, &alpha, dx, incx);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         CHECK_HIP_ERROR(hipFree(dx));

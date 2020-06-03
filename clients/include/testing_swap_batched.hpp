@@ -20,6 +20,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_swap_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasSwapBatchedFn
+        = FORTRAN ? hipblasSwapBatched<T, true> : hipblasSwapBatched<T, false>;
+
     int N           = argus.N;
     int incx        = argus.incx;
     int incy        = argus.incy;
@@ -95,7 +99,7 @@ hipblasStatus_t testing_swap_batched(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasSwapBatched<T>(handle, N, dx_array, incx, dy_array, incy, batch_count);
+    status = hipblasSwapBatchedFn(handle, N, dx_array, incx, dy_array, incy, batch_count);
 
     if((status != HIPBLAS_STATUS_SUCCESS))
     {

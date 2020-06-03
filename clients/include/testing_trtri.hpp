@@ -11,6 +11,7 @@
 #include "cblas_interface.h"
 #include "flops.h"
 #include "hipblas.hpp"
+#include "near.h"
 #include "norm.h"
 #include "unit.h"
 #include "utility.h"
@@ -22,18 +23,22 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trtri(Arguments argus)
 {
+    bool FORTRAN        = argus.fortran;
+    auto hipblasTrtriFn = FORTRAN ? hipblasTrtri<T, true> : hipblasTrtri<T, false>;
+
+    const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
     int N = argus.N;
     int lda;
     int ldinvA;
     ldinvA = lda = argus.lda;
 
-    int A_size = lda * N;
+    int A_size = size_t(lda) * N;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // check here to prevent undefined memory allocation error
-    if(N < 0 || lda < 0)
+    if(N < 0 || lda < 0 || lda < N)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
@@ -52,8 +57,8 @@ hipblasStatus_t testing_trtri(Arguments argus)
     char char_uplo = argus.uplo_option;
     char char_diag = argus.diag_option;
 
-    hipblasFillMode_t uplo = char2hipblasFillMode_t(char_uplo);
-    hipblasDiagType_t diag = char2hipblasDiagType_t(char_diag);
+    hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
+    hipblasDiagType_t diag = char2hipblas_diagonal(char_diag);
 
     hipblasCreate(&handle);
 
@@ -74,6 +79,10 @@ hipblasStatus_t testing_trtri(Arguments argus)
 
             if(j % 2)
                 hA[i + j * lda] *= -1;
+            if(uplo == HIPBLAS_FILL_MODE_LOWER && j > i)
+                hA[i + j * lda] = 0.0f;
+            else if(uplo == HIPBLAS_FILL_MODE_UPPER && j < i)
+                hA[i + j * lda] = 0.0f;
             if(i == j)
             {
                 if(diag == HIPBLAS_DIAG_UNIT)
@@ -83,15 +92,23 @@ hipblasStatus_t testing_trtri(Arguments argus)
             }
         }
     }
+
     hB = hA;
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dinvA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
 
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status = hipblasTrtri<T>(handle, uplo, diag, N, dA, lda, dinvA, ldinvA);
+    status = hipblasTrtriFn(handle, uplo, diag, N, dA, lda, dinvA, ldinvA);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hA.data(), dinvA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
@@ -111,11 +128,9 @@ hipblasStatus_t testing_trtri(Arguments argus)
         print_matrix(hB, hA, N, N, lda);
 #endif
 
-        // enable unit check, notice unit check is not invasive, but norm check is,
-        // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(N, N, lda, hB.data(), hA.data());
+            near_check_general<T>(N, N, lda, hB.data(), hA.data(), rel_error);
         }
     }
 

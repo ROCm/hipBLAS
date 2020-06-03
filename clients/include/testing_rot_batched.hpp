@@ -20,6 +20,10 @@ using namespace std;
 template <typename T, typename U = T, typename V = T>
 hipblasStatus_t testing_rot_batched(Arguments arg)
 {
+    bool FORTRAN = arg.fortran;
+    auto hipblasRotBatchedFn
+        = FORTRAN ? hipblasRotBatched<T, U, V, true> : hipblasRotBatched<T, U, V, false>;
+
     int N           = arg.N;
     int incx        = arg.incx;
     int incy        = arg.incy;
@@ -112,8 +116,7 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
             CHECK_HIP_ERROR(hipMemcpy(dx, bx, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(dy, by, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
 
-            status_2 = ((
-                hipblasRotBatched<T, U, V>(handle, N, dx, incx, dy, incy, hc, hs, batch_count)));
+            status_2 = ((hipblasRotBatchedFn(handle, N, dx, incx, dy, incy, hc, hs, batch_count)));
 
             if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
             {
@@ -155,8 +158,7 @@ hipblasStatus_t testing_rot_batched(Arguments arg)
             CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
 
-            status_4 = ((
-                hipblasRotBatched<T, U, V>(handle, N, dx, incx, dy, incy, dc, ds, batch_count)));
+            status_4 = ((hipblasRotBatchedFn(handle, N, dx, incx, dy, incy, dc, ds, batch_count)));
 
             if((status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
             {

@@ -193,6 +193,18 @@ void cblas_tbmv(hipblasFillMode_t  uplo,
                 T*                 x,
                 int                incx);
 
+// tbsv
+template <typename T>
+void cblas_tbsv(hipblasFillMode_t  uplo,
+                hipblasOperation_t transA,
+                hipblasDiagType_t  diag,
+                int                m,
+                int                k,
+                const T*           A,
+                int                lda,
+                T*                 x,
+                int                incx);
+
 // tpmv
 template <typename T>
 void cblas_tpmv(hipblasFillMode_t  uplo,
@@ -284,6 +296,21 @@ void cblas_her2k(hipblasFillMode_t  uplo,
                  T*                 C,
                  int                ldc);
 
+// geam
+template <typename T>
+void cblas_geam(hipblasOperation_t transa,
+                hipblasOperation_t transb,
+                int                m,
+                int                n,
+                T*                 alpha,
+                T*                 A,
+                int                lda,
+                T*                 beta,
+                T*                 B,
+                int                ldb,
+                T*                 C,
+                int                ldc);
+
 // gemm
 template <typename T>
 void cblas_gemm(hipblasOperation_t transA,
@@ -299,6 +326,36 @@ void cblas_gemm(hipblasOperation_t transA,
                 T                  beta,
                 T*                 C,
                 int                ldc);
+
+// hemm
+template <typename T>
+void cblas_hemm(hipblasSideMode_t side,
+                hipblasFillMode_t uplo,
+                int               m,
+                int               n,
+                T                 alpha,
+                T*                A,
+                int               lda,
+                T*                B,
+                int               ldb,
+                T                 beta,
+                T*                C,
+                int               ldc);
+
+// symm
+template <typename T>
+void cblas_symm(hipblasSideMode_t side,
+                hipblasFillMode_t uplo,
+                int               m,
+                int               n,
+                T                 alpha,
+                T*                A,
+                int               lda,
+                T*                B,
+                int               ldb,
+                T                 beta,
+                T*                C,
+                int               ldc);
 
 // syrk
 template <typename T>

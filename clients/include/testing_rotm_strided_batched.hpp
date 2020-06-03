@@ -20,6 +20,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_rotm_strided_batched(Arguments arg)
 {
+    bool FORTRAN = arg.fortran;
+    auto hipblasRotmStridedBatchedFn
+        = FORTRAN ? hipblasRotmStridedBatched<T, true> : hipblasRotmStridedBatched<T, false>;
+
     double stride_scale = arg.stride_scale;
 
     int N            = arg.N;
@@ -96,17 +100,17 @@ hipblasStatus_t testing_rotm_strided_batched(Arguments arg)
                 CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
                 CHECK_HIP_ERROR(
                     hipMemcpy(dparam, hparam, sizeof(T) * size_param, hipMemcpyHostToDevice));
-                status_2 = ((hipblasRotmStridedBatched<T>(handle,
-                                                          N,
-                                                          dx,
-                                                          incx,
-                                                          stride_x,
-                                                          dy,
-                                                          incy,
-                                                          stride_y,
-                                                          dparam,
-                                                          stride_param,
-                                                          batch_count)));
+                status_2 = ((hipblasRotmStridedBatchedFn(handle,
+                                                         N,
+                                                         dx,
+                                                         incx,
+                                                         stride_x,
+                                                         dy,
+                                                         incy,
+                                                         stride_y,
+                                                         dparam,
+                                                         stride_param,
+                                                         batch_count)));
 
                 if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
                 {

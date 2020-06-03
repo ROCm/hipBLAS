@@ -22,6 +22,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_trsm_batched(Arguments argus)
 {
+    bool FORTRAN = argus.fortran;
+    auto hipblasTrsmBatchedFn
+        = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
+
     int M   = argus.M;
     int N   = argus.N;
     int lda = argus.lda;
@@ -152,7 +156,7 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasTrsmBatched<T>(
+    status = hipblasTrsmBatchedFn(
         handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb, batch_count);
 
     // copy output from device to CPU

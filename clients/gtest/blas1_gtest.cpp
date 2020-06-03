@@ -52,7 +52,7 @@ using ::testing::ValuesIn;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
-typedef std::tuple<int, vector<double>, vector<int>, double, int> blas1_tuple;
+typedef std::tuple<int, vector<double>, vector<int>, double, int, bool> blas1_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -104,6 +104,8 @@ double stride_scale_range[] = {1.0, 2.5};
 
 int batch_count_range[] = {-1, 0, 1, 2, 10};
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -127,6 +129,7 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
     vector<int>    incx_incy    = std::get<2>(tup);
     double         stride_scale = std::get<3>(tup);
     int            batch_count  = std::get<4>(tup);
+    bool           fortran      = std::get<5>(tup);
 
     // the first element of alpha_beta_range is always alpha, and the second is always beta
     double alpha = alpha_beta[0];
@@ -144,6 +147,8 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
+
+    arg.fortran = fortran;
 
     arg.timing
         = 0; // disable timing data print out. Not supposed to collect performance data in gtest
@@ -2357,4 +2362,5 @@ INSTANTIATE_TEST_CASE_P(hipblasBlas1,
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(incx_incy_range),
                                 ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));

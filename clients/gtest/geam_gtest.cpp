@@ -3,6 +3,8 @@
  * ************************************************************************ */
 
 #include "testing_geam.hpp"
+#include "testing_geam_batched.hpp"
+#include "testing_geam_strided_batched.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -17,7 +19,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<double>, vector<char>> geam_tuple;
+typedef std::tuple<vector<int>, vector<double>, vector<char>, double, int, bool> geam_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -38,20 +40,28 @@ const vector<vector<int>> matrix_size_range = {
     //                                      {1024, 1024, 1024, 1024, 1024}
 };
 
-// vector of vector, each pair is a {alpha, beta};
+// vector of vector, each pair is a {alpha, alphai, beta, betai};
 // add/delete this list in pairs, like {2.0, 4.0}
 const vector<vector<double>> alpha_beta_range = {
-    {1.4, 0.0},
-    {3.1, 0.3},
-    {0.0, 1.3},
-    {0.0, 0.0},
+    {2.0, -3.0, 0.0, 0.0},
+    {3.0, 1.0, 1.0, -1.0},
+    {0.0, 0.0, 2.0, -5.0},
+    {0.0, 0.0, 0.0, 0.0},
 };
 
 // vector of vector, each pair is a {transA, transB};
 // add/delete this list in pairs, like {'N', 'T'}
 // for single/double precision, 'C'(conjTranspose) will downgraded to 'T' (transpose) internally in
 // sgeam/dgeam,
-const vector<vector<char>> transA_transB_range = {{'N', 'N'}, {'N', 'T'}, {'C', 'N'}, {'T', 'C'}};
+// TODO: Conjugate was broken up to rocBLAS 3.5. Add conjugate tests when fixed.
+const vector<vector<char>> transA_transB_range
+    = {{'N', 'N'}, {'N', 'T'}}; //, {'C', 'N'}, {'T', 'C'}};
+
+const vector<double> stride_scale_range = {1, 3};
+
+const vector<int> batch_count_range = {1, 3, 5};
+
+const bool is_fortran[] = {false, true};
 
 /* ===============Google Unit Test==================================================== */
 
@@ -75,6 +85,9 @@ Arguments setup_geam_arguments(geam_tuple tup)
     vector<int>    matrix_size   = std::get<0>(tup);
     vector<double> alpha_beta    = std::get<1>(tup);
     vector<char>   transA_transB = std::get<2>(tup);
+    double         stride_scale  = std::get<3>(tup);
+    int            batch_count   = std::get<4>(tup);
+    bool           fortran       = std::get<5>(tup);
 
     Arguments arg;
 
@@ -86,11 +99,18 @@ Arguments setup_geam_arguments(geam_tuple tup)
     arg.ldc = matrix_size[4];
 
     // the first element of alpha_beta_range is always alpha, and the second is always beta
-    arg.alpha = alpha_beta[0];
-    arg.beta  = alpha_beta[1];
+    arg.alpha  = alpha_beta[0];
+    arg.alphai = alpha_beta[1];
+    arg.beta   = alpha_beta[2];
+    arg.betai  = alpha_beta[3];
 
     arg.transA_option = transA_transB[0];
     arg.transB_option = transA_transB[1];
+
+    arg.stride_scale = stride_scale;
+    arg.batch_count  = batch_count;
+
+    arg.fortran = fortran;
 
     arg.timing = 0;
 
@@ -120,19 +140,8 @@ TEST_P(geam_gtest, geam_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.ldc < arg.M)
+        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -143,7 +152,7 @@ TEST_P(geam_gtest, geam_gtest_float)
     }
 }
 
-TEST_P(geam_gtest, geam_gtest_double)
+TEST_P(geam_gtest, geam_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -152,24 +161,13 @@ TEST_P(geam_gtest, geam_gtest_double)
 
     Arguments arg = setup_geam_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geam<double>(arg);
+    hipblasStatus_t status = testing_geam<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.ldc < arg.M)
+        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -180,11 +178,134 @@ TEST_P(geam_gtest, geam_gtest_double)
     }
 }
 
-// THis function mainly test the scope of alpha_beta, transA_transB,.the scope of matrix_size_range
+TEST_P(geam_gtest, geam_batched_gtest_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_geam_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geam_batched<float>(arg);
+
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
+           || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(geam_gtest, geam_batched_gtest_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_geam_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geam_batched<hipblasDoubleComplex>(arg);
+
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
+           || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(geam_gtest, geam_strided_batched_gtest_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_geam_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geam_strided_batched<float>(arg);
+
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
+           || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(geam_gtest, geam_strided_batched_gtest_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_geam_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geam_strided_batched<hipblasDoubleComplex>(arg);
+
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || (arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+           || (arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
+           || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+// This function mainly test the scope of alpha_beta, transA_transB,.the scope of matrix_size_range
 // is small
 
 INSTANTIATE_TEST_CASE_P(hipblasGeam_scalar_transpose,
                         geam_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range)));
+                                ValuesIn(transA_transB_range),
+                                ValuesIn(stride_scale_range),
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));

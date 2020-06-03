@@ -20,6 +20,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_rotm_batched(Arguments arg)
 {
+    bool FORTRAN = arg.fortran;
+    auto hipblasRotmBatchedFn
+        = FORTRAN ? hipblasRotmBatched<T, true> : hipblasRotmBatched<T, false>;
+
     int N           = arg.N;
     int incx        = arg.incx;
     int incy        = arg.incy;
@@ -114,7 +118,7 @@ hipblasStatus_t testing_rotm_batched(Arguments arg)
                     hipMemcpy(dparam, bparam, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
 
                 status_2
-                    = (hipblasRotmBatched<T>(handle, N, dx, incx, dy, incy, dparam, batch_count));
+                    = (hipblasRotmBatchedFn(handle, N, dx, incx, dy, incy, dparam, batch_count));
 
                 if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
                 {

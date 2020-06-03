@@ -23,6 +23,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_geam(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasGeamFn = FORTRAN ? hipblasGeam<T, true> : hipblasGeam<T, false>;
+
     int M = argus.M;
     int N = argus.N;
 
@@ -33,8 +36,8 @@ hipblasStatus_t testing_geam(Arguments argus)
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
 
-    T h_alpha = argus.alpha;
-    T h_beta  = argus.beta;
+    T h_alpha = argus.get_alpha<T>();
+    T h_beta  = argus.get_beta<T>();
 
     int A_size, B_size, C_size, A_row, A_col, B_row, B_col;
     int inc1_A, inc2_A, inc1_B, inc2_B;
@@ -87,21 +90,11 @@ hipblasStatus_t testing_geam(Arguments argus)
     }
 
     // allocate memory on device
-    auto dA_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * A_size), hipblas::device_free};
-    auto dB_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * B_size), hipblas::device_free};
-    auto dC_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * C_size), hipblas::device_free};
-    auto d_alpha_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
-    auto d_beta_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
-    T* dA      = (T*)dA_managed.get();
-    T* dB      = (T*)dB_managed.get();
-    T* dC      = (T*)dC_managed.get();
-    T* d_alpha = (T*)d_alpha_managed.get();
-    T* d_beta  = (T*)d_beta_managed.get();
+    device_vector<T> dA(A_size);
+    device_vector<T> dB(B_size);
+    device_vector<T> dC(C_size);
+    device_vector<T> d_alpha(1);
+    device_vector<T> d_beta(1);
     if(!dA || !dB || !dC || !d_alpha || !d_beta)
     {
         hipblasDestroy(handle);
@@ -109,11 +102,11 @@ hipblasStatus_t testing_geam(Arguments argus)
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
-    vector<T> hA(A_size);
-    vector<T> hB(B_size);
-    vector<T> hC1(C_size);
-    vector<T> hC2(C_size);
-    vector<T> hC_copy(C_size);
+    host_vector<T> hA(A_size);
+    host_vector<T> hB(B_size);
+    host_vector<T> hC1(C_size);
+    host_vector<T> hC2(C_size);
+    host_vector<T> hC_copy(C_size);
 
     // Initial Data on CPU
     srand(1);
@@ -144,7 +137,7 @@ hipblasStatus_t testing_geam(Arguments argus)
             return status1;
         }
 
-        status2 = hipblasGeam<T>(
+        status2 = hipblasGeamFn(
             handle, transA, transB, M, N, &h_alpha, dA, lda, &h_beta, dB, ldb, dC, ldc);
 
         if(status2 != HIPBLAS_STATUS_SUCCESS)
@@ -167,7 +160,7 @@ hipblasStatus_t testing_geam(Arguments argus)
 
         CHECK_HIP_ERROR(hipMemcpy(dC, hC2.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
-        status2 = hipblasGeam<T>(
+        status2 = hipblasGeamFn(
             handle, transA, transB, M, N, d_alpha, dA, lda, d_beta, dB, ldb, dC, ldc);
 
         if(status2 != HIPBLAS_STATUS_SUCCESS)
@@ -184,15 +177,8 @@ hipblasStatus_t testing_geam(Arguments argus)
     =================================================================== */
     if(status2 != HIPBLAS_STATUS_INVALID_VALUE) // only valid size compare with cblas
     {
-        // reference calculation
-        for(int i1 = 0; i1 < M; i1++)
-        {
-            for(int i2 = 0; i2 < N; i2++)
-            {
-                hC_copy[i1 + i2 * ldc] = h_alpha * hA[i1 * inc1_A + i2 * inc2_A]
-                                         + h_beta * hB[i1 * inc1_B + i2 * inc2_B];
-            }
-        }
+        cblas_geam(
+            transA, transB, M, N, &h_alpha, (T*)hA, lda, &h_beta, (T*)hB, ldb, (T*)hC_copy, ldc);
     }
 
 #ifndef NDEBUG

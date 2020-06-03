@@ -20,7 +20,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<int>, double, int> tbmv_tuple;
+typedef std::tuple<vector<int>, vector<int>, double, int, bool> tbmv_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -63,6 +63,8 @@ const vector<double> stride_scale_range = {1.0, 2.5};
 
 const vector<int> batch_count_range = {-1, 0, 1, 2, 10};
 
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -85,6 +87,7 @@ Arguments setup_tbmv_arguments(tbmv_tuple tup)
     vector<int> incx         = std::get<1>(tup);
     double      stride_scale = std::get<2>(tup);
     int         batch_count  = std::get<3>(tup);
+    bool        fortran      = std::get<4>(tup);
 
     Arguments arg;
 
@@ -100,6 +103,8 @@ Arguments setup_tbmv_arguments(tbmv_tuple tup)
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
+
+    arg.fortran = fortran;
 
     return arg;
 }
@@ -213,4 +218,5 @@ INSTANTIATE_TEST_CASE_P(hipblastbmv,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(incx_incy_range),
                                 ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));
