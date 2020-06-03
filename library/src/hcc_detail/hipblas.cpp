@@ -14197,12 +14197,7 @@ extern "C" hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                          hipblasGemmAlgo_t  algo)
 {
     uint32_t solution_index = 0;
-
     uint32_t flags = 0;
-
-    size_t* workspace_size = 0;
-
-    void* workspace = 0;
 
     return rocBLASStatusToHIPStatus(rocblas_gemm_ex((rocblas_handle)handle,
                                                     hipOperationToHCCOperation(transa),
@@ -14227,7 +14222,114 @@ extern "C" hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                                     HIPDatatypeToRocblasDatatype(compute_type),
                                                     HIPGemmAlgoToRocblasGemmAlgo(algo),
                                                     solution_index,
-                                                    flags,
-                                                    workspace_size,
-                                                    workspace));
+                                                    flags));
+}
+
+extern "C" hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
+                                         hipblasOperation_t transa,
+                                         hipblasOperation_t transb,
+                                         int                m,
+                                         int                n,
+                                         int                k,
+                                         const void*        alpha,
+                                         const void*        A[],
+                                         hipblasDatatype_t  a_type,
+                                         int                lda,
+                                         const void*        B[],
+                                         hipblasDatatype_t  b_type,
+                                         int                ldb,
+                                         const void*        beta,
+                                         void*              C[],
+                                         hipblasDatatype_t  c_type,
+                                         int                ldc,
+                                         int batch_count,
+                                         hipblasDatatype_t  compute_type,
+                                         hipblasGemmAlgo_t  algo)
+{
+    uint32_t solution_index = 0;
+    uint32_t flags = 0;
+
+    return rocBLASStatusToHIPStatus(rocblas_gemm_batched_ex((rocblas_handle)handle,
+                                                    hipOperationToHCCOperation(transa),
+                                                    hipOperationToHCCOperation(transb),
+                                                    m,
+                                                    n,
+                                                    k,
+                                                    alpha,
+                                                    (void*)A,
+                                                    HIPDatatypeToRocblasDatatype(a_type),
+                                                    lda,
+                                                    (void*)B,
+                                                    HIPDatatypeToRocblasDatatype(b_type),
+                                                    ldb,
+                                                    beta,
+                                                    (void*)C,
+                                                    HIPDatatypeToRocblasDatatype(c_type),
+                                                    ldc,
+                                                    (void*)C,
+                                                    HIPDatatypeToRocblasDatatype(c_type),
+                                                    ldc,
+                                                    batch_count,
+                                                    HIPDatatypeToRocblasDatatype(compute_type),
+                                                    HIPGemmAlgoToRocblasGemmAlgo(algo),
+                                                    solution_index,
+                                                    flags));
+}
+
+extern "C" hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
+                                         hipblasOperation_t transa,
+                                         hipblasOperation_t transb,
+                                         int                m,
+                                         int                n,
+                                         int                k,
+                                         const void*        alpha,
+                                         const void*        A,
+                                         hipblasDatatype_t  a_type,
+                                         int                lda,
+                                         int stride_A,
+                                         const void*        B,
+                                         hipblasDatatype_t  b_type,
+                                         int                ldb,
+                                         int stride_B,
+                                         const void*        beta,
+                                         void*              C,
+                                         hipblasDatatype_t  c_type,
+                                         int                ldc,
+                                         int stride_C,
+                                         int batch_count,
+                                         hipblasDatatype_t  compute_type,
+                                         hipblasGemmAlgo_t  algo)
+{
+    uint32_t solution_index = 0;
+    uint32_t flags = 0;
+
+    return rocBLASStatusToHIPStatus(rocblas_gemm_strided_batched_ex((rocblas_handle)handle,
+                                                    hipOperationToHCCOperation(transa),
+                                                    hipOperationToHCCOperation(transb),
+                                                    m,
+                                                    n,
+                                                    k,
+                                                    alpha,
+                                                    A,
+                                                    HIPDatatypeToRocblasDatatype(a_type),
+                                                    lda,
+                                                    stride_A,
+                                                    B,
+                                                    HIPDatatypeToRocblasDatatype(b_type),
+                                                    ldb,
+                                                    stride_B,
+                                                    beta,
+                                                    C,
+                                                    HIPDatatypeToRocblasDatatype(c_type),
+                                                    ldc,
+                                                    stride_C,
+                                                    C,
+                                                    HIPDatatypeToRocblasDatatype(c_type),
+                                                    ldc,
+                                                    stride_C,
+                                                    batch_count,
+                                                    HIPDatatypeToRocblasDatatype(compute_type),
+                                                    HIPGemmAlgoToRocblasGemmAlgo(algo),
+                                                    solution_index,
+                                                    flags));
 }
