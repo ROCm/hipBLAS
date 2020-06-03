@@ -11998,7 +11998,7 @@ module hipblas_interface
 
     ! gemmEx
     function hipblasGemmExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
-            b, b_type, ldb, beta, c, c_type, ldc, d, d_type, ldd, &
+            b, b_type, ldb, beta, c, c_type, ldc,&
             compute_type, algo, solution_index, flags) &
             result(res) &
             bind(c, name = 'hipblasGemmExFortran')
@@ -12022,9 +12022,6 @@ module hipblas_interface
         type(c_ptr), value :: c
         integer(kind(HIPBLAS_R_16F)), value :: c_type
         integer(c_int), value :: ldc
-        type(c_ptr), value :: d
-        integer(kind(HIPBLAS_R_16F)), value :: d_type
-        integer(c_int), value :: ldd
         integer(kind(HIPBLAS_R_16F)), value :: compute_type
         integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
         integer(c_int32_t), value :: solution_index
@@ -12034,94 +12031,87 @@ module hipblas_interface
         integer(c_int) :: res
         res = hipblasGemmEx(handle, transA, transB, m, n, k, alpha,&
               a, a_type, lda, b, b_type, ldb, beta, c, c_type, ldc,&
-              d, d_type, ldd, compute_type, algo, solution_index, flags)
+              compute_type, algo, solution_index, flags)
     end function hipblasGemmExFortran
 
-    ! function hipblasGemmBatchedExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
-    !         b, b_type, ldb, beta, c, c_type, ldc, d, d_type, ldd, &
-    !         batch_count, compute_type, algo, solution_index, flags) &
-    !         result(res) &
-    !         bind(c, name = 'hipblasGemmBatchedExFortran')
-    !     use iso_c_binding
-    !     use hipblas_enums
-    !     implicit none
-    !     type(c_ptr), value :: handle
-    !     integer(kind(HIPBLAS_OP_N)), value :: transA
-    !     integer(kind(HIPBLAS_OP_N)), value :: transB
-    !     integer(c_int), value :: m
-    !     integer(c_int), value :: n
-    !     integer(c_int), value :: k
-    !     type(c_ptr), value :: alpha
-    !     type(c_ptr), value :: a
-    !     integer(kind(HIPBLAS_R_16F)), value :: a_type
-    !     integer(c_int), value :: lda
-    !     type(c_ptr), value :: b
-    !     integer(kind(HIPBLAS_R_16F)), value :: b_type
-    !     integer(c_int), value :: ldb
-    !     type(c_ptr), value :: beta
-    !     type(c_ptr), value :: c
-    !     integer(kind(HIPBLAS_R_16F)), value :: c_type
-    !     integer(c_int), value :: ldc
-    !     type(c_ptr), value :: d
-    !     integer(kind(HIPBLAS_R_16F)), value :: d_type
-    !     integer(c_int), value :: ldd
-    !     integer(c_int), value :: batch_count
-    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
-    !     integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-    !     integer(c_int32_t), value :: solution_index
-    !     ! No unsigned types in fortran. If larger values are needed
-    !     ! we will need a workaround.
-    !     integer(c_int32_t), value :: flags
-    !     integer(c_int) :: res
-    !     res = hipblasGemmBatchedEx(handle, transA, transB, m, n, k, alpha,&
-    !           a, a_type, lda, b, b_type, ldb, beta, c, c_type, ldc,&
-    !           d, d_type, ldd, batch_count, compute_type, algo, solution_index, flags)
-    ! end function hipblasGemmBatchedExFortran
+    function hipblasGemmBatchedExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
+            b, b_type, ldb, beta, c, c_type, ldc,&
+            batch_count, compute_type, algo, solution_index, flags) &
+            result(res) &
+            bind(c, name = 'hipblasGemmBatchedExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: a
+        integer(kind(HIPBLAS_R_16F)), value :: a_type
+        integer(c_int), value :: lda
+        type(c_ptr), value :: b
+        integer(kind(HIPBLAS_R_16F)), value :: b_type
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: c
+        integer(kind(HIPBLAS_R_16F)), value :: c_type
+        integer(c_int), value :: ldc
+        integer(c_int), value :: batch_count
+        integer(kind(HIPBLAS_R_16F)), value :: compute_type
+        integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+        integer(c_int32_t), value :: solution_index
+        ! No unsigned types in fortran. If larger values are needed
+        ! we will need a workaround.
+        integer(c_int32_t), value :: flags
+        integer(c_int) :: res
+        res = hipblasGemmBatchedEx(handle, transA, transB, m, n, k, alpha,&
+              a, a_type, lda, b, b_type, ldb, beta, c, c_type, ldc,&
+              batch_count, compute_type, algo, solution_index, flags)
+    end function hipblasGemmBatchedExFortran
 
-    ! function hipblasGemmStridedBatchedExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, stride_a, &
-    !         b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, d, d_type, ldd, stride_d, &
-    !         batch_count, compute_type, algo, solution_index, flags) &
-    !         result(res) &
-    !         bind(c, name = 'hipblasGemmStridedBatchedExFortran')
-    !     use iso_c_binding
-    !     use hipblas_enums
-    !     implicit none
-    !     type(c_ptr), value :: handle
-    !     integer(kind(HIPBLAS_OP_N)), value :: transA
-    !     integer(kind(HIPBLAS_OP_N)), value :: transB
-    !     integer(c_int), value :: m
-    !     integer(c_int), value :: n
-    !     integer(c_int), value :: k
-    !     type(c_ptr), value :: alpha
-    !     type(c_ptr), value :: a
-    !     integer(kind(HIPBLAS_R_16F)), value :: a_type
-    !     integer(c_int), value :: lda
-    !     integer(c_int64_t), value :: stride_a
-    !     type(c_ptr), value :: b
-    !     integer(kind(HIPBLAS_R_16F)), value :: b_type
-    !     integer(c_int), value :: ldb
-    !     integer(c_int64_t), value :: stride_b
-    !     type(c_ptr), value :: beta
-    !     type(c_ptr), value :: c
-    !     integer(kind(HIPBLAS_R_16F)), value :: c_type
-    !     integer(c_int), value :: ldc
-    !     integer(c_int64_t), value :: stride_c
-    !     type(c_ptr), value :: d
-    !     integer(kind(HIPBLAS_R_16F)), value :: d_type
-    !     integer(c_int), value :: ldd
-    !     integer(c_int64_t), value :: stride_d
-    !     integer(c_int), value :: batch_count
-    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
-    !     integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-    !     integer(c_int32_t), value :: solution_index
-    !     ! No unsigned types in fortran. If larger values are needed
-    !     ! we will need a workaround.
-    !     integer(c_int32_t), value :: flags
-    !     integer(c_int) :: res
-    !     res = hipblasGemmStridedBatchedEx(handle, transA, transB, m, n, k, alpha,&
-    !           a, a_type, lda, stride_a, b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c,&
-    !           d, d_type, ldd, stride_d, batch_count, compute_type, algo, solution_index, flags)
-    ! end function hipblasGemmStridedBatchedExFortran
+    function hipblasGemmStridedBatchedExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, stride_a, &
+            b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c,&
+            batch_count, compute_type, algo, solution_index, flags) &
+            result(res) &
+            bind(c, name = 'hipblasGemmStridedBatchedExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_OP_N)), value :: transB
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: k
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: a
+        integer(kind(HIPBLAS_R_16F)), value :: a_type
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_a
+        type(c_ptr), value :: b
+        integer(kind(HIPBLAS_R_16F)), value :: b_type
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_b
+        type(c_ptr), value :: beta
+        type(c_ptr), value :: c
+        integer(kind(HIPBLAS_R_16F)), value :: c_type
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_c
+        integer(c_int), value :: batch_count
+        integer(kind(HIPBLAS_R_16F)), value :: compute_type
+        integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+        integer(c_int32_t), value :: solution_index
+        ! No unsigned types in fortran. If larger values are needed
+        ! we will need a workaround.
+        integer(c_int32_t), value :: flags
+        integer(c_int) :: res
+        res = hipblasGemmStridedBatchedEx(handle, transA, transB, m, n, k, alpha,&
+              a, a_type, lda, stride_a, b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c,&
+              batch_count, compute_type, algo, solution_index, flags)
+    end function hipblasGemmStridedBatchedExFortran
 
     ! ! trsmEx
     ! function hipblasTrsmExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, &
