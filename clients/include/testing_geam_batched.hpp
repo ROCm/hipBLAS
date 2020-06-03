@@ -24,7 +24,8 @@ template <typename T>
 hipblasStatus_t testing_geam_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasGeamBatchedFn = FORTRAN ? hipblasGeamBatched<T, true> : hipblasGeamBatched<T, false>;
+    auto hipblasGeamBatchedFn
+        = FORTRAN ? hipblasGeamBatched<T, true> : hipblasGeamBatched<T, false>;
 
     int M = argus.M;
     int N = argus.N;
@@ -161,19 +162,19 @@ hipblasStatus_t testing_geam_batched(Arguments argus)
         }
 
         status2 = hipblasGeamBatchedFn(handle,
-                                        transA,
-                                        transB,
-                                        M,
-                                        N,
-                                        &h_alpha,
-                                        dA,
-                                        lda,
-                                        &h_beta,
-                                        dB,
-                                        ldb,
-                                        dC,
-                                        ldc,
-                                        batch_count);
+                                       transA,
+                                       transB,
+                                       M,
+                                       N,
+                                       &h_alpha,
+                                       dA,
+                                       lda,
+                                       &h_beta,
+                                       dB,
+                                       ldb,
+                                       dC,
+                                       ldc,
+                                       batch_count);
 
         if(status2 != HIPBLAS_STATUS_SUCCESS)
         {

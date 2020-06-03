@@ -87,7 +87,7 @@ Arguments setup_syrk_arguments(syrk_tuple tup)
     char           transA       = std::get<3>(tup);
     double         stride_scale = std::get<4>(tup);
     int            batch_count  = std::get<5>(tup);
-    bool fortran = std::get<6>(tup);
+    bool           fortran      = std::get<6>(tup);
 
     Arguments arg;
 

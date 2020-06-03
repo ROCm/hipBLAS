@@ -22,7 +22,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_tbsv(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN       = argus.fortran;
     auto hipblasTbsvFn = FORTRAN ? hipblasTbsv<T, true> : hipblasTbsv<T, false>;
 
     int                M           = argus.M;

@@ -23,7 +23,8 @@ template <typename T, typename U>
 hipblasStatus_t testing_her_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasHerStridedBatchedFn = FORTRAN ? hipblasHerStridedBatched<T, U, true> : hipblasHerStridedBatched<T, U, false>;
+    auto hipblasHerStridedBatchedFn
+        = FORTRAN ? hipblasHerStridedBatched<T, U, true> : hipblasHerStridedBatched<T, U, false>;
 
     int    N            = argus.N;
     int    incx         = argus.incx;

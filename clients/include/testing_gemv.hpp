@@ -22,7 +22,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_gemv(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN       = argus.fortran;
     auto hipblasGemvFn = FORTRAN ? hipblasGemv<T, true> : hipblasGemv<T, false>;
 
     int M    = argus.M;

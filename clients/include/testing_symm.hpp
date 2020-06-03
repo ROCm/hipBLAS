@@ -22,7 +22,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_symm(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN       = argus.fortran;
     auto hipblasSymmFn = FORTRAN ? hipblasSymm<T, true> : hipblasSymm<T, false>;
 
     int M   = argus.M;

@@ -72,6 +72,7 @@ set(hipblas_test_source
   tpsv_gtest.cpp
   trmv_gtest.cpp
   trsv_gtest.cpp
+  dgmm_gtest.cpp
   gemm_gtest.cpp
   gemm_ex_gtest.cpp
   gemm_strided_batched_gtest.cpp
@@ -86,6 +87,7 @@ set(hipblas_test_source
   syr2k_gtest.cpp
   trsm_gtest.cpp
   trmm_gtest.cpp
+  trtri_gtest.cpp
 )
 
 if( BUILD_WITH_SOLVER )

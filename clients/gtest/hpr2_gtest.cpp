@@ -87,7 +87,7 @@ Arguments setup_hpr2_arguments(hpr2_tuple tup)
     char           uplo         = std::get<3>(tup);
     double         stride_scale = std::get<4>(tup);
     int            batch_count  = std::get<5>(tup);
-    bool fortran = std::get<6>(tup);
+    bool           fortran      = std::get<6>(tup);
 
     Arguments arg;
 

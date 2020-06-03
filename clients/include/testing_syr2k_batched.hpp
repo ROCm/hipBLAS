@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_syr2k_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasSyr2kBatchedFn = FORTRAN ? hipblasSyr2kBatched<T, true> : hipblasSyr2kBatched<T, false>;
+    auto hipblasSyr2kBatchedFn
+        = FORTRAN ? hipblasSyr2kBatched<T, true> : hipblasSyr2kBatched<T, false>;
 
     int N           = argus.N;
     int K           = argus.K;
@@ -118,19 +119,19 @@ hipblasStatus_t testing_syr2k_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
         status = hipblasSyr2kBatchedFn(handle,
-                                        uplo,
-                                        transA,
-                                        N,
-                                        K,
-                                        (T*)&alpha,
-                                        dA,
-                                        lda,
-                                        dB,
-                                        ldb,
-                                        (T*)&beta,
-                                        dC,
-                                        ldc,
-                                        batch_count);
+                                       uplo,
+                                       transA,
+                                       N,
+                                       K,
+                                       (T*)&alpha,
+                                       dA,
+                                       lda,
+                                       dB,
+                                       ldb,
+                                       (T*)&beta,
+                                       dC,
+                                       ldc,
+                                       batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

@@ -79,7 +79,7 @@ const vector<int> batch_count_range = {
     //               100,
 };
 
-const bool is_fortran[] = { false, true };
+const bool is_fortran[] = {false, true};
 
 /* ===============Google Unit Test==================================================== */
 

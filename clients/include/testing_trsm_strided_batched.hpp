@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasTrsmStridedBatchedFn = FORTRAN ? hipblasTrsmStridedBatched<T, true> : hipblasTrsmStridedBatched<T, false>;
+    auto hipblasTrsmStridedBatchedFn
+        = FORTRAN ? hipblasTrsmStridedBatched<T, true> : hipblasTrsmStridedBatched<T, false>;
 
     int M   = argus.M;
     int N   = argus.N;
@@ -136,20 +137,20 @@ hipblasStatus_t testing_trsm_strided_batched(Arguments argus)
     =================================================================== */
 
     status = hipblasTrsmStridedBatchedFn(handle,
-                                          side,
-                                          uplo,
-                                          transA,
-                                          diag,
-                                          M,
-                                          N,
-                                          &alpha,
-                                          dA,
-                                          lda,
-                                          strideA,
-                                          dB,
-                                          ldb,
-                                          strideB,
-                                          batch_count);
+                                         side,
+                                         uplo,
+                                         transA,
+                                         diag,
+                                         M,
+                                         N,
+                                         &alpha,
+                                         dA,
+                                         lda,
+                                         strideA,
+                                         dB,
+                                         ldb,
+                                         strideB,
+                                         batch_count);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

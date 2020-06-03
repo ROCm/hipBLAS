@@ -24,7 +24,8 @@ template <typename T>
 hipblasStatus_t testing_hpmv_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasHpmvBatchedFn = FORTRAN ? hipblasHpmvBatched<T, true> : hipblasHpmvBatched<T, false>;
+    auto hipblasHpmvBatchedFn
+        = FORTRAN ? hipblasHpmvBatched<T, true> : hipblasHpmvBatched<T, false>;
 
     int N    = argus.N;
     int incx = argus.incx;
@@ -130,16 +131,16 @@ hipblasStatus_t testing_hpmv_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
         status = hipblasHpmvBatchedFn(handle,
-                                       uplo,
-                                       N,
-                                       (T*)&alpha,
-                                       dA_array,
-                                       dx_array,
-                                       incx,
-                                       (T*)&beta,
-                                       dy_array,
-                                       incy,
-                                       batch_count);
+                                      uplo,
+                                      N,
+                                      (T*)&alpha,
+                                      dA_array,
+                                      dx_array,
+                                      incx,
+                                      (T*)&beta,
+                                      dy_array,
+                                      incy,
+                                      batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

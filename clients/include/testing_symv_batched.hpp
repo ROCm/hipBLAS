@@ -24,7 +24,8 @@ template <typename T>
 hipblasStatus_t testing_symv_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasSymvBatchedFn = FORTRAN ? hipblasSymvBatched<T, true> : hipblasSymvBatched<T, false>;
+    auto hipblasSymvBatchedFn
+        = FORTRAN ? hipblasSymvBatched<T, true> : hipblasSymvBatched<T, false>;
 
     int M    = argus.M;
     int lda  = argus.lda;
@@ -128,17 +129,17 @@ hipblasStatus_t testing_symv_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
         status = hipblasSymvBatchedFn(handle,
-                                       uplo,
-                                       M,
-                                       &alpha,
-                                       dA_array,
-                                       lda,
-                                       dx_array,
-                                       incx,
-                                       &beta,
-                                       dy_array,
-                                       incy,
-                                       batch_count);
+                                      uplo,
+                                      M,
+                                      &alpha,
+                                      dA_array,
+                                      lda,
+                                      dx_array,
+                                      incx,
+                                      &beta,
+                                      dy_array,
+                                      incy,
+                                      batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_syr_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasSyrStridedBatchedFn = FORTRAN ? hipblasSyrStridedBatched<T, true> : hipblasSyrStridedBatched<T, false>;
+    auto hipblasSyrStridedBatchedFn
+        = FORTRAN ? hipblasSyrStridedBatched<T, true> : hipblasSyrStridedBatched<T, false>;
 
     int               M            = argus.M;
     int               N            = argus.N;

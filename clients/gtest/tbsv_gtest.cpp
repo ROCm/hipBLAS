@@ -87,7 +87,7 @@ Arguments setup_tbsv_arguments(tbsv_tuple tup)
     vector<int> incx         = std::get<1>(tup);
     double      stride_scale = std::get<2>(tup);
     int         batch_count  = std::get<3>(tup);
-    bool fortran = std::get<4>(tup);
+    bool        fortran      = std::get<4>(tup);
 
     Arguments arg;
 

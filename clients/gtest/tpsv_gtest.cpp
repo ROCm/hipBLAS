@@ -83,7 +83,7 @@ Arguments setup_tpsv_arguments(tpsv_tuple tup)
     arg.incx            = std::get<1>(tup);
     double stride_scale = std::get<3>(tup);
     int    batch_count  = std::get<4>(tup);
-    bool fortran = std::get<5>(tup);
+    bool   fortran      = std::get<5>(tup);
 
     arg.timing = 0;
 

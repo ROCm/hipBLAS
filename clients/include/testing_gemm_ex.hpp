@@ -41,7 +41,7 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
                                          hipblasDatatype_t  b_type,
                                          hipblasDatatype_t  c_type,
                                          hipblasDatatype_t  compute_type,
-                                         bool FORTRAN)
+                                         bool               FORTRAN)
 {
     auto hipblasGemmExFn = FORTRAN ? hipblasGemmExFortran : hipblasGemmEx;
 
@@ -197,24 +197,24 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(Td) * size_C, hipMemcpyHostToDevice));
 
     status = hipblasGemmExFn(handle,
-                           transA,
-                           transB,
-                           M,
-                           N,
-                           K,
-                           &h_alpha_Tc,
-                           dA,
-                           a_type,
-                           lda,
-                           dB,
-                           b_type,
-                           ldb,
-                           &h_beta_Tc,
-                           dC,
-                           c_type,
-                           ldc,
-                           compute_type,
-                           algo);
+                             transA,
+                             transB,
+                             M,
+                             N,
+                             K,
+                             &h_alpha_Tc,
+                             dA,
+                             a_type,
+                             lda,
+                             dB,
+                             b_type,
+                             ldb,
+                             &h_beta_Tc,
+                             dC,
+                             c_type,
+                             ldc,
+                             compute_type,
+                             algo);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

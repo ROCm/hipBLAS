@@ -22,7 +22,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_symv(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN       = argus.fortran;
     auto hipblasSymvFn = FORTRAN ? hipblasSymv<T, true> : hipblasSymv<T, false>;
 
     int M    = argus.M;

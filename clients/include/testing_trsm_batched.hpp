@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_trsm_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasTrsmBatchedFn = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
+    auto hipblasTrsmBatchedFn
+        = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
 
     int M   = argus.M;
     int N   = argus.N;

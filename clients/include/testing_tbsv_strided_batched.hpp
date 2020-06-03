@@ -23,7 +23,8 @@ template <typename T>
 hipblasStatus_t testing_tbsv_strided_batched(Arguments argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasTbsvStridedBatchedFn = FORTRAN ? hipblasTbsvStridedBatched<T, true> : hipblasTbsvStridedBatched<T, false>;
+    auto hipblasTbsvStridedBatchedFn
+        = FORTRAN ? hipblasTbsvStridedBatched<T, true> : hipblasTbsvStridedBatched<T, false>;
 
     int                M            = argus.M;
     int                K            = argus.K;
@@ -119,18 +120,18 @@ hipblasStatus_t testing_tbsv_strided_batched(Arguments argus)
     for(int iter = 0; iter < 1; iter++)
     {
         status = hipblasTbsvStridedBatchedFn(handle,
-                                              uplo,
-                                              transA,
-                                              diag,
-                                              M,
-                                              K,
-                                              dAB,
-                                              lda,
-                                              strideAB,
-                                              dx_or_b,
-                                              incx,
-                                              stridex,
-                                              batch_count);
+                                             uplo,
+                                             transA,
+                                             diag,
+                                             M,
+                                             K,
+                                             dAB,
+                                             lda,
+                                             strideAB,
+                                             dx_or_b,
+                                             incx,
+                                             stridex,
+                                             batch_count);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {

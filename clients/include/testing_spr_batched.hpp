@@ -22,7 +22,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_spr_batched(Arguments argus)
 {
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN             = argus.fortran;
     auto hipblasSprBatchedFn = FORTRAN ? hipblasSprBatched<T, true> : hipblasSprBatched<T, false>;
 
     int               N           = argus.N;
