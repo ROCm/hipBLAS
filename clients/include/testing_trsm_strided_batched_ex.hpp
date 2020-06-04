@@ -11,6 +11,7 @@
 #include "cblas_interface.h"
 #include "flops.h"
 #include "hipblas.hpp"
+#include "hipblas_fortran.hpp"
 #include "norm.h"
 #include "unit.h"
 #include "utility.h"
