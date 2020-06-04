@@ -14176,6 +14176,7 @@ hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t             handle,
 }
 #endif
 
+// gemm_ex
 extern "C" hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                          hipblasOperation_t transa,
                                          hipblasOperation_t transb,
@@ -14334,4 +14335,116 @@ extern "C" hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle
                                         HIPGemmAlgoToRocblasGemmAlgo(algo),
                                         solution_index,
                                         flags));
+}
+
+// trsm_ex
+extern "C" hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
+                                         hipblasSideMode_t  side,
+                                         hipblasFillMode_t  uplo,
+                                         hipblasOperation_t transA,
+                                         hipblasDiagType_t  diag,
+                                         int                m,
+                                         int                n,
+                                         const void*        alpha,
+                                         void*              A,
+                                         int                lda,
+                                         void*              B,
+                                         int                ldb,
+                                         const void*        invA,
+                                         int                invA_size,
+                                         hipblasDatatype_t  compute_type)
+{
+    return rocBLASStatusToHIPStatus(rocblas_trsm_ex((rocblas_handle)handle,
+                                                    hipSideToHCCSide(side),
+                                                    hipFillToHCCFill(uplo),
+                                                    hipOperationToHCCOperation(transA),
+                                                    hipDiagonalToHCCDiagonal(diag),
+                                                    m,
+                                                    n,
+                                                    alpha,
+                                                    A,
+                                                    lda,
+                                                    B,
+                                                    ldb,
+                                                    invA,
+                                                    invA_size,
+                                                    HIPDatatypeToRocblasDatatype(compute_type)));
+}
+
+extern "C" hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
+                                                hipblasSideMode_t  side,
+                                                hipblasFillMode_t  uplo,
+                                                hipblasOperation_t transA,
+                                                hipblasDiagType_t  diag,
+                                                int                m,
+                                                int                n,
+                                                const void*        alpha,
+                                                void*              A,
+                                                int                lda,
+                                                void*              B,
+                                                int                ldb,
+                                                int                batch_count,
+                                                const void*        invA,
+                                                int                invA_size,
+                                                hipblasDatatype_t  compute_type)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_trsm_batched_ex((rocblas_handle)handle,
+                                hipSideToHCCSide(side),
+                                hipFillToHCCFill(uplo),
+                                hipOperationToHCCOperation(transA),
+                                hipDiagonalToHCCDiagonal(diag),
+                                m,
+                                n,
+                                alpha,
+                                A,
+                                lda,
+                                B,
+                                ldb,
+                                batch_count,
+                                invA,
+                                invA_size,
+                                HIPDatatypeToRocblasDatatype(compute_type)));
+}
+
+extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
+                                                       hipblasSideMode_t  side,
+                                                       hipblasFillMode_t  uplo,
+                                                       hipblasOperation_t transA,
+                                                       hipblasDiagType_t  diag,
+                                                       int                m,
+                                                       int                n,
+                                                       const void*        alpha,
+                                                       void*              A,
+                                                       int                lda,
+                                                       int                stride_A,
+                                                       void*              B,
+                                                       int                ldb,
+                                                       int                stride_B,
+                                                       int                batch_count,
+                                                       const void*        invA,
+                                                       int                invA_size,
+                                                       int                stride_invA,
+                                                       hipblasDatatype_t  compute_type)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_trsm_strided_batched_ex((rocblas_handle)handle,
+                                        hipSideToHCCSide(side),
+                                        hipFillToHCCFill(uplo),
+                                        hipOperationToHCCOperation(transA),
+                                        hipDiagonalToHCCDiagonal(diag),
+                                        m,
+                                        n,
+                                        alpha,
+                                        A,
+                                        lda,
+                                        stride_A,
+                                        B,
+                                        ldb,
+                                        stride_B,
+                                        batch_count,
+                                        invA,
+                                        invA_size,
+                                        stride_invA,
+                                        HIPDatatypeToRocblasDatatype(compute_type)));
 }
