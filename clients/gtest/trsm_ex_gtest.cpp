@@ -42,11 +42,6 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 
 // vector of vector, each vector is a {M, N, lda, ldb};
 // add/delete as a group
-const vector<vector<int>> matrix_size_range = {
-    {-1, -1, 1, 1}, {10, 10, 20, 100}, {600, 500, 600, 600},
-    //                                      {1024, 1024, 1024, 1024}
-};
-
 const vector<vector<int>> full_matrix_size_range = {
     {192, 192, 192, 192}, {640, 640, 960, 960},
     //                                      {1000, 1000, 1000, 1000},
@@ -70,26 +65,6 @@ const vector<vector<char>> side_uplo_transA_diag_range = {
     {'L', 'L', 'N', 'N'},
     {'R', 'L', 'N', 'N'},
     {'L', 'U', 'C', 'N'},
-};
-
-// has all the 16 options
-const vector<vector<char>> full_side_uplo_transA_diag_range = {
-    {'L', 'L', 'N', 'N'},
-    {'R', 'L', 'N', 'N'},
-    {'L', 'U', 'N', 'N'},
-    {'R', 'U', 'N', 'N'},
-    {'L', 'L', 'C', 'N'},
-    {'R', 'L', 'C', 'N'},
-    {'L', 'U', 'C', 'N'},
-    {'R', 'U', 'C', 'N'},
-    {'L', 'L', 'N', 'U'},
-    {'R', 'L', 'N', 'U'},
-    {'L', 'U', 'N', 'U'},
-    {'R', 'U', 'N', 'U'},
-    {'L', 'L', 'C', 'U'},
-    {'R', 'L', 'C', 'U'},
-    {'L', 'U', 'C', 'U'},
-    {'R', 'U', 'C', 'U'},
 };
 
 const vector<double> stride_scale_range = {2.5};
