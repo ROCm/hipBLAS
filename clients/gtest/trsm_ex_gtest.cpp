@@ -188,7 +188,7 @@ TEST_P(trsm_ex_gtest, trsm_ex_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -216,7 +216,7 @@ TEST_P(trsm_ex_gtest, trsm_gtest_ex_double_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -244,7 +244,7 @@ TEST_P(trsm_ex_gtest, trsm_batched_ex_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
@@ -272,7 +272,7 @@ TEST_P(trsm_ex_gtest, trsm_batched_ex_gtest_double_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
         }
     }
 }
