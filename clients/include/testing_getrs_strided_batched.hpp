@@ -20,6 +20,9 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasGetrsStridedBatchedFn = FORTRAN ? hipblasGetrsStridedBatched<T, true> : hipblasGetrsStridedBatched<T, false>;
+
     int    N            = argus.N;
     int    lda          = argus.lda;
     int    ldb          = argus.ldb;
@@ -111,7 +114,7 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasGetrsStridedBatched<T>(
+    status = hipblasGetrsStridedBatchedFn(
         handle, op, N, 1, dA, lda, strideA, dIpiv, strideP, dB, ldb, strideB, &info, batch_count);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
