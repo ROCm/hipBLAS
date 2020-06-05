@@ -47,8 +47,8 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
     host_vector<T> hIpiv1[batch_count];
     int            info;
 
-    device_batch_vector<T, 1> bA(batch_count, A_size);
-    device_batch_vector<T, 1> bIpiv(batch_count, Ipiv_size);
+    device_batch_vector<T> bA(batch_count, A_size);
+    device_batch_vector<T> bIpiv(batch_count, Ipiv_size);
 
     device_vector<T*, 0, T> dA(batch_count);
     device_vector<T*, 0, T> dIpiv(batch_count);
@@ -70,6 +70,18 @@ hipblasStatus_t testing_geqrf_batched(Arguments argus)
         hIpiv1[b] = host_vector<T>(Ipiv_size);
 
         hipblas_init<T>(hA[b], M, N, lda);
+
+        // scale A to avoid singularities
+        for(int i = 0; i < M; i++)
+        {
+            for(int j = 0; j < N; j++)
+            {
+                if(i == j)
+                    hA[b][i + j * lda] += 400;
+                else
+                    hA[b][i + j * lda] -= 4;
+            }
+        }
 
         // Copy data from CPU to device
         CHECK_HIP_ERROR(hipMemcpy(bA[b], hA[b].data(), A_size * sizeof(T), hipMemcpyHostToDevice));

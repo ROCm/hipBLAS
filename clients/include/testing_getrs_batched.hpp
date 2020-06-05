@@ -51,12 +51,12 @@ hipblasStatus_t testing_getrs_batched(Arguments argus)
     host_vector<int> hIpiv1(Ipiv_size);
     int              info;
 
-    device_batch_vector<T, 1> bA(batch_count, A_size);
-    device_batch_vector<T, 1> bB(batch_count, B_size);
+    device_batch_vector<T> bA(batch_count, A_size);
+    device_batch_vector<T> bB(batch_count, B_size);
 
     device_vector<T*, 0, T> dA(batch_count);
     device_vector<T*, 0, T> dB(batch_count);
-    device_vector<int, 1>   dIpiv(Ipiv_size);
+    device_vector<int>      dIpiv(Ipiv_size);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -78,15 +78,15 @@ hipblasStatus_t testing_getrs_batched(Arguments argus)
         hipblas_init<T>(hA[b], N, N, lda);
         hipblas_init<T>(hX[b], N, 1, ldb);
 
-        // Put hA entries into range [0, 1], make diagonally dominant
+        // scale A to avoid singularities
         for(int i = 0; i < N; i++)
         {
             for(int j = 0; j < N; j++)
             {
-                hA[b][i + j * lda] = (hA[b][i + j * lda] - 1.0) / 10.0;
-
                 if(i == j)
-                    hA[b][i + j * lda] *= 100;
+                    hA[b][i + j * lda] += 400;
+                else
+                    hA[b][i + j * lda] -= 4;
             }
         }
 

@@ -43,9 +43,9 @@ hipblasStatus_t testing_getrf(Arguments argus)
     host_vector<int> hInfo(1);
     host_vector<int> hInfo1(1);
 
-    device_vector<T, 1>   dA(A_size);
-    device_vector<int, 1> dIpiv(Ipiv_size);
-    device_vector<int, 1> dInfo(1);
+    device_vector<T>   dA(A_size);
+    device_vector<int> dIpiv(Ipiv_size);
+    device_vector<int> dInfo(1);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -57,6 +57,18 @@ hipblasStatus_t testing_getrf(Arguments argus)
     // Initial hA on CPU
     srand(1);
     hipblas_init<T>(hA, M, N, lda);
+
+    // scale A to avoid singularities
+    for(int i = 0; i < M; i++)
+    {
+        for(int j = 0; j < N; j++)
+        {
+            if(i == j)
+                hA[i + j * lda] += 400;
+            else
+                hA[i + j * lda] -= 4;
+        }
+    }
 
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));

@@ -51,9 +51,9 @@ hipblasStatus_t testing_getrf_strided_batched(Arguments argus)
     host_vector<int> hInfo(batch_count);
     host_vector<int> hInfo1(batch_count);
 
-    device_vector<T, 1>   dA(A_size);
-    device_vector<int, 1> dIpiv(Ipiv_size);
-    device_vector<int, 1> dInfo(batch_count);
+    device_vector<T>   dA(A_size);
+    device_vector<int> dIpiv(Ipiv_size);
+    device_vector<int> dInfo(batch_count);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
@@ -69,6 +69,18 @@ hipblasStatus_t testing_getrf_strided_batched(Arguments argus)
         T* hAb = hA.data() + b * strideA;
 
         hipblas_init<T>(hAb, M, N, lda);
+
+        // scale A to avoid singularities
+        for(int i = 0; i < M; i++)
+        {
+            for(int j = 0; j < N; j++)
+            {
+                if(i == j)
+                    hAb[i + j * lda] += 400;
+                else
+                    hAb[i + j * lda] -= 4;
+            }
+        }
     }
 
     // Copy data from CPU to device
