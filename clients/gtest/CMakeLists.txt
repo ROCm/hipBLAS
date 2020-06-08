@@ -86,6 +86,7 @@ set(hipblas_test_source
   syrk_gtest.cpp
   syr2k_gtest.cpp
   trsm_gtest.cpp
+  trsm_ex_gtest.cpp
   trmm_gtest.cpp
   trtri_gtest.cpp
 )

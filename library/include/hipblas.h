@@ -6972,6 +6972,60 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    ha
                                                            hipblasDatatype_t  compute_type,
                                                            hipblasGemmAlgo_t  algo);
 
+// trsm_ex
+HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
+                                             hipblasSideMode_t  side,
+                                             hipblasFillMode_t  uplo,
+                                             hipblasOperation_t transA,
+                                             hipblasDiagType_t  diag,
+                                             int                m,
+                                             int                n,
+                                             const void*        alpha,
+                                             void*              A,
+                                             int                lda,
+                                             void*              B,
+                                             int                ldb,
+                                             const void*        invA,
+                                             int                invA_size,
+                                             hipblasDatatype_t  compute_type);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
+                                                    hipblasSideMode_t  side,
+                                                    hipblasFillMode_t  uplo,
+                                                    hipblasOperation_t transA,
+                                                    hipblasDiagType_t  diag,
+                                                    int                m,
+                                                    int                n,
+                                                    const void*        alpha,
+                                                    void*              A,
+                                                    int                lda,
+                                                    void*              B,
+                                                    int                ldb,
+                                                    int                batch_count,
+                                                    const void*        invA,
+                                                    int                invA_size,
+                                                    hipblasDatatype_t  compute_type);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
+                                                           hipblasSideMode_t  side,
+                                                           hipblasFillMode_t  uplo,
+                                                           hipblasOperation_t transA,
+                                                           hipblasDiagType_t  diag,
+                                                           int                m,
+                                                           int                n,
+                                                           const void*        alpha,
+                                                           void*              A,
+                                                           int                lda,
+                                                           int                stride_A,
+                                                           void*              B,
+                                                           int                ldb,
+                                                           int                stride_B,
+                                                           int                batch_count,
+                                                           const void*        invA,
+                                                           int                invA_size,
+                                                           int                stride_invA,
+                                                           hipblasDatatype_t  compute_type);
+
 #ifdef __cplusplus
 }
 #endif
