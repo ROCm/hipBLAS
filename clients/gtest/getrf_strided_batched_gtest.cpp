@@ -63,7 +63,7 @@ TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_float)
 
     Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_strided_batched<float>(arg);
+    hipblasStatus_t status = testing_getrf_strided_batched<float, float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -85,7 +85,51 @@ TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_double)
 
     Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_strided_batched<double>(arg);
+    hipblasStatus_t status = testing_getrf_strided_batched<double, double>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_float_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_strided_batched<hipblasComplex, float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_double_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_strided_batched<hipblasDoubleComplex, double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

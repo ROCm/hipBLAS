@@ -32,6 +32,30 @@ char type2char<double>()
 //      return 'z';
 //  }
 
+template <>
+int type2int<float>(float val)
+{
+    return (int)val;
+}
+
+template <>
+int type2int<double>(double val)
+{
+    return (int)val;
+}
+
+template <>
+int type2int<hipblasComplex>(hipblasComplex val)
+{
+    return (int)val.real();
+}
+
+template <>
+int type2int<hipblasDoubleComplex>(hipblasDoubleComplex val)
+{
+    return (int)val.real();
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif

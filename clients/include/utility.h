@@ -582,6 +582,12 @@ template <typename T>
 char type2char();
 
 /* ============================================================================================ */
+/*! \brief  turn float -> int, double -> int, hipblas_float_complex.real() -> int,
+ * hipblas_double_complex.real() -> int */
+template <typename T>
+int type2int(T val);
+
+/* ============================================================================================ */
 /*! \brief  Debugging purpose, print out CPU and GPU result matrix, not valid in complex number  */
 template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
 void print_matrix(
