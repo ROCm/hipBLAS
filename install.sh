@@ -24,6 +24,7 @@ function display_help()
   echo "    [--custom-target] link against custom target (e.g. host, device)"
   echo "    [-v|--rocm-dev] Set specific rocm-dev version"
   echo "    [-b|--rocblas] Set specific rocblas version"
+  echo "    [--rocblas-path] Set specific path to custom built rocblas"
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
@@ -147,18 +148,22 @@ install_packages( )
     fi
 
     # Custom rocblas installation
-    if [[ -z ${custom_rocblas+foo} ]]; then
-      # Install base rocblas package unless -b/--rocblas flag is passed
-      library_dependencies_ubuntu+=( "rocblas" )
-      library_dependencies_centos+=( "rocblas" )
-      library_dependencies_fedora+=( "rocblas" )
-      library_dependencies_sles+=( "rocblas" )
-    else
-      # Install rocm-specific rocblas package
-      library_dependencies_ubuntu+=( "${custom_rocblas}" )
-      library_dependencies_centos+=( "${custom_rocblas}" )
-      library_dependencies_fedora+=( "${custom_rocblas}" )
-      library_dependencies_sles+=( "${custom_rocblas}" )
+    # Do not install rocblas if --rocblas_path flag is set,
+    # as we will be building against our own rocblas intead.
+    if [[ -z ${rocblas_path+foo} ]]; then
+      if [[ -z ${custom_rocblas+foo} ]]; then
+        # Install base rocblas package unless -b/--rocblas flag is passed
+        library_dependencies_ubuntu+=( "rocblas" )
+        library_dependencies_centos+=( "rocblas" )
+        library_dependencies_fedora+=( "rocblas" )
+        library_dependencies_sles+=( "rocblas" )
+      else
+        # Install rocm-specific rocblas package
+        library_dependencies_ubuntu+=( "${custom_rocblas}" )
+        library_dependencies_centos+=( "${custom_rocblas}" )
+        library_dependencies_fedora+=( "${custom_rocblas}" )
+        library_dependencies_sles+=( "${custom_rocblas}" )
+      fi
     fi
 
     if [[ "${build_solver}" == true ]]; then
@@ -286,7 +291,7 @@ compiler=g++
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,compiler:,cuda,cmakepp,relocatable:,rocm-dev:,rocblas:,custom-target: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,compiler:,cuda,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -344,6 +349,9 @@ while true; do
     -b|--rocblas)
          custom_rocblas=${2}
          shift 2;;
+    --rocblas-path)
+        rocblas_path=${2}
+        shift 2 ;;
     --prefix)
         install_prefix=${2}
         shift 2 ;;
@@ -436,6 +444,11 @@ pushd .
 
   if [[ ${custom_target+foo} ]]; then
     cmake_common_options="${cmake_common_options} -DCUSTOM_TARGET=${custom_target}"
+  fi
+
+  # custom rocblas
+  if [[ ${rocblas_path+foo} ]]; then
+    cmake_common_options="${cmake_common_options} -DCUSTOM_ROCBLAS=${rocblas_path}"
   fi
 
   # Build library

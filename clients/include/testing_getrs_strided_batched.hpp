@@ -17,7 +17,7 @@
 
 using namespace std;
 
-template <typename T>
+template <typename T, typename U>
 hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
 {
     bool FORTRAN       = argus.fortran;
@@ -81,15 +81,15 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
         hipblas_init<T>(hAb, N, N, lda);
         hipblas_init<T>(hXb, N, 1, ldb);
 
-        // Put hA entries into range [0, 1], make diagonally dominant
+        // scale A to avoid singularities
         for(int i = 0; i < N; i++)
         {
             for(int j = 0; j < N; j++)
             {
-                hAb[i + j * lda] = (hAb[i + j * lda] - 1.0) / 10.0;
-
                 if(i == j)
-                    hAb[i + j * lda] *= 100;
+                    hAb[i + j * lda] += 400;
+                else
+                    hAb[i + j * lda] -= 4;
             }
         }
 
@@ -147,11 +147,11 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
 
             if(argus.unit_check)
             {
-                T      eps       = std::numeric_limits<T>::epsilon();
+                U      eps       = std::numeric_limits<U>::epsilon();
                 double tolerance = N * eps * 100;
 
                 double e = norm_check_general<T>(
-                    'M', N, 1, ldb, hB.data() + b * strideB, hB1.data() + b * strideB);
+                    'F', N, 1, ldb, hB.data() + b * strideB, hB1.data() + b * strideB);
                 unit_check_error(e, tolerance);
             }
         }

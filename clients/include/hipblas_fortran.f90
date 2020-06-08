@@ -12113,91 +12113,91 @@ module hipblas_interface
               batch_count, compute_type, algo, solution_index, flags)
     end function hipblasGemmStridedBatchedExFortran
 
-    ! ! trsmEx
-    ! function hipblasTrsmExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, &
-    !         B, ldb, invA, invA_size, compute_type) &
-    !         result(res) &
-    !         bind(c, name = 'hipblasTrsmExFortran')
-    !     use iso_c_binding
-    !     use hipblas_enums
-    !     implicit none
-    !     type(c_ptr), value :: handle
-    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
-    !     integer(kind(HIPBLAS_FILL_MODE_UPPER)), value :: uplo
-    !     integer(kind(HIPBLAS_OP_N)), value :: transA
-    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
-    !     integer(c_int), value :: m
-    !     integer(c_int), value :: n
-    !     type(c_ptr), value :: alpha
-    !     type(c_ptr), value :: A
-    !     integer(c_int), value :: lda
-    !     type(c_ptr), value :: B
-    !     integer(c_int), value :: ldb
-    !     type(c_ptr), value :: invA
-    !     integer(c_int), value :: invA_size
-    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
-    !     integer(c_int) :: res
-    !     res = hipblasTrsmEx(handle, side, uplo, transA, diag, m, n, alpha,&
-    !           A, lda, B, ldb, invA, invA_size, compute_type)
-    ! end function hipblasTrsmExFortran
+    ! trsmEx
+    function hipblasTrsmExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, &
+            B, ldb, invA, invA_size, compute_type) &
+            result(res) &
+            bind(c, name = 'hipblasTrsmExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_UPPER)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: invA
+        integer(c_int), value :: invA_size
+        integer(kind(HIPBLAS_R_16F)), value :: compute_type
+        integer(c_int) :: res
+        res = hipblasTrsmEx(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, invA, invA_size, compute_type)
+    end function hipblasTrsmExFortran
 
-    ! function hipblasTrsmBatchedExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, &
-    !         B, ldb, batch_count, invA, invA_size, compute_type) &
-    !         result(res) &
-    !         bind(c, name = 'hipblasTrsmBatchedExFortran')
-    !     use iso_c_binding
-    !     use hipblas_enums
-    !     implicit none
-    !     type(c_ptr), value :: handle
-    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
-    !     integer(kind(HIPBLAS_FILL_MODE_UPPER)), value :: uplo
-    !     integer(kind(HIPBLAS_OP_N)), value :: transA
-    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
-    !     integer(c_int), value :: m
-    !     integer(c_int), value :: n
-    !     type(c_ptr), value :: alpha
-    !     type(c_ptr), value :: A
-    !     integer(c_int), value :: lda
-    !     type(c_ptr), value :: B
-    !     integer(c_int), value :: ldb
-    !     integer(c_int), value :: batch_count
-    !     type(c_ptr), value :: invA
-    !     integer(c_int), value :: invA_size
-    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
-    !     integer(c_int) :: res
-    !     res = hipblasTrsmBatchedEx(handle, side, uplo, transA, diag, m, n, alpha,&
-    !           A, lda, B, ldb, batch_count, invA, invA_size, compute_type)
-    ! end function hipblasTrsmBatchedExFortran
+    function hipblasTrsmBatchedExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, &
+            B, ldb, batch_count, invA, invA_size, compute_type) &
+            result(res) &
+            bind(c, name = 'hipblasTrsmBatchedExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_UPPER)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int), value :: batch_count
+        type(c_ptr), value :: invA
+        integer(c_int), value :: invA_size
+        integer(kind(HIPBLAS_R_16F)), value :: compute_type
+        integer(c_int) :: res
+        res = hipblasTrsmBatchedEx(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, B, ldb, batch_count, invA, invA_size, compute_type)
+    end function hipblasTrsmBatchedExFortran
 
-    ! function hipblasTrsmStridedBatchedExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, stride_A, &
-    !         B, ldb, stride_B, batch_count, invA, invA_size, stride_invA, compute_type) &
-    !         result(res) &
-    !         bind(c, name = 'hipblasTrsmStridedBatchedExFortran')
-    !     use iso_c_binding
-    !     use hipblas_enums
-    !     implicit none
-    !     type(c_ptr), value :: handle
-    !     integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
-    !     integer(kind(HIPBLAS_FILL_MODE_UPPER)), value :: uplo
-    !     integer(kind(HIPBLAS_OP_N)), value :: transA
-    !     integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
-    !     integer(c_int), value :: m
-    !     integer(c_int), value :: n
-    !     type(c_ptr), value :: alpha
-    !     type(c_ptr), value :: A
-    !     integer(c_int), value :: lda
-    !     integer(c_int64_t), value :: stride_A
-    !     type(c_ptr), value :: B
-    !     integer(c_int), value :: ldb
-    !     integer(c_int64_t), value :: stride_B
-    !     integer(c_int), value :: batch_count
-    !     type(c_ptr), value :: invA
-    !     integer(c_int), value :: invA_size
-    !     integer(c_int64_t), value :: stride_invA
-    !     integer(kind(HIPBLAS_R_16F)), value :: compute_type
-    !     integer(c_int) :: res
-    !     res = hipblasTrsmStridedBatchedEx(handle, side, uplo, transA, diag, m, n, alpha,&
-    !           A, lda, stride_A, B, ldb, stride_B, batch_count, invA, invA_size, stride_invA, compute_type)
-    ! end function hipblasTrsmStridedBatchedExFortran
+    function hipblasTrsmStridedBatchedExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, stride_A, &
+            B, ldb, stride_B, batch_count, invA, invA_size, stride_invA, compute_type) &
+            result(res) &
+            bind(c, name = 'hipblasTrsmStridedBatchedExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_SIDE_LEFT)), value :: side
+        integer(kind(HIPBLAS_FILL_MODE_UPPER)), value :: uplo
+        integer(kind(HIPBLAS_OP_N)), value :: transA
+        integer(kind(HIPBLAS_DIAG_UNIT)), value :: diag
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: stride_A
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: stride_B
+        integer(c_int), value :: batch_count
+        type(c_ptr), value :: invA
+        integer(c_int), value :: invA_size
+        integer(c_int64_t), value :: stride_invA
+        integer(kind(HIPBLAS_R_16F)), value :: compute_type
+        integer(c_int) :: res
+        res = hipblasTrsmStridedBatchedEx(handle, side, uplo, transA, diag, m, n, alpha,&
+              A, lda, stride_A, B, ldb, stride_B, batch_count, invA, invA_size, stride_invA, compute_type)
+    end function hipblasTrsmStridedBatchedExFortran
 
 end module hipblas_interface

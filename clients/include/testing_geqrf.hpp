@@ -17,7 +17,7 @@
 
 using namespace std;
 
-template <typename T>
+template <typename T, typename U>
 hipblasStatus_t testing_geqrf(Arguments argus)
 {
     bool FORTRAN       = argus.fortran;
@@ -59,6 +59,18 @@ hipblasStatus_t testing_geqrf(Arguments argus)
     srand(1);
     hipblas_init<T>(hA, M, N, lda);
 
+    // scale A to avoid singularities
+    for(int i = 0; i < M; i++)
+    {
+        for(int j = 0; j < N; j++)
+        {
+            if(i == j)
+                hA[i + j * lda] += 400;
+            else
+                hA[i + j * lda] -= 4;
+        }
+    }
+
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(T)));
@@ -88,7 +100,7 @@ hipblasStatus_t testing_geqrf(Arguments argus)
         // Workspace query
         host_vector<T> work(1);
         cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
-        int lwork = (int)work[0];
+        int lwork = type2int(work[0]);
 
         // Perform factorization
         work = host_vector<T>(lwork);
@@ -96,14 +108,14 @@ hipblasStatus_t testing_geqrf(Arguments argus)
 
         if(argus.unit_check)
         {
-            T      eps       = std::numeric_limits<T>::epsilon();
+            U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = eps * 2000;
 
-            double e1 = norm_check_general<T>('M', M, N, lda, hA.data(), hA1.data());
+            double e1 = norm_check_general<T>('F', M, N, lda, hA.data(), hA1.data());
             unit_check_error(e1, tolerance);
 
             double e2
-                = norm_check_general<T>('M', min(M, N), 1, min(M, N), hIpiv.data(), hIpiv1.data());
+                = norm_check_general<T>('F', min(M, N), 1, min(M, N), hIpiv.data(), hIpiv1.data());
             unit_check_error(e2, tolerance);
         }
     }

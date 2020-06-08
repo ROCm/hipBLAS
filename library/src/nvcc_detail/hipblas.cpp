@@ -10064,6 +10064,7 @@ hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t             handle,
 }
 #endif
 
+// gemm_ex
 extern "C" hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                          hipblasOperation_t transa,
                                          hipblasOperation_t transb,
@@ -10196,4 +10197,67 @@ extern "C" hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle
                                    batch_count,
                                    HIPDatatypeToCudaDatatype(compute_type),
                                    HIPGemmAlgoToCudaGemmAlgo(algo)));
+}
+
+// trsm_ex
+extern "C" hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
+                                         hipblasSideMode_t  side,
+                                         hipblasFillMode_t  uplo,
+                                         hipblasOperation_t transA,
+                                         hipblasDiagType_t  diag,
+                                         int                m,
+                                         int                n,
+                                         const void*        alpha,
+                                         void*              A,
+                                         int                lda,
+                                         void*              B,
+                                         int                ldb,
+                                         const void*        invA,
+                                         int                invA_size,
+                                         hipblasDatatype_t  compute_type)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+extern "C" hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
+                                                hipblasSideMode_t  side,
+                                                hipblasFillMode_t  uplo,
+                                                hipblasOperation_t transA,
+                                                hipblasDiagType_t  diag,
+                                                int                m,
+                                                int                n,
+                                                const void*        alpha,
+                                                void*              A,
+                                                int                lda,
+                                                void*              B,
+                                                int                ldb,
+                                                int                batch_count,
+                                                const void*        invA,
+                                                int                invA_size,
+                                                hipblasDatatype_t  compute_type)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
+                                                       hipblasSideMode_t  side,
+                                                       hipblasFillMode_t  uplo,
+                                                       hipblasOperation_t transA,
+                                                       hipblasDiagType_t  diag,
+                                                       int                m,
+                                                       int                n,
+                                                       const void*        alpha,
+                                                       void*              A,
+                                                       int                lda,
+                                                       int                stride_A,
+                                                       void*              B,
+                                                       int                ldb,
+                                                       int                stride_B,
+                                                       int                batch_count,
+                                                       const void*        invA,
+                                                       int                invA_size,
+                                                       int                stride_invA,
+                                                       hipblasDatatype_t  compute_type)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
