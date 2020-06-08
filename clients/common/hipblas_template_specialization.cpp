@@ -18,26 +18,6 @@
  * ===========================================================================
  */
 
-/* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
- *
- * ************************************************************************/
-
-#include "hipblas.h"
-#include "hipblas.hpp"
-#include "hipblas_fortran.hpp"
-#include <typeinfo>
-
-/*!\file
- * \brief provide template functions interfaces to ROCBLAS C89 interfaces
-*/
-
-/*
- * ===========================================================================
- *    level 1 BLAS
- * ===========================================================================
- */
-
 // axpy
 template <>
 hipblasStatus_t hipblasAxpy<hipblasHalf>(hipblasHandle_t    handle,

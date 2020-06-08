@@ -6438,7 +6438,6 @@ hipblasStatus_t hipblasTrsmStridedBatchedExFortran(hipblasHandle_t    handle,
                                                    int                invA_size,
                                                    int                stride_invA,
                                                    hipblasDatatype_t  compute_type);
-}
 
 /* ==========
  *    Solver
@@ -6816,5 +6815,7 @@ hipblasStatus_t hipblasZgeqrfStridedBatchedFortran(hipblasHandle_t handle,
                                      const int stride_T,
                                      int* info,
                                      const int batch_count);
+
+}
 
 #endif
