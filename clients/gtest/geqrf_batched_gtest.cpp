@@ -60,7 +60,7 @@ TEST_P(geqrf_batched_gtest, geqrf_batched_gtest_float)
 
     Arguments arg = setup_geqrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_batched<float>(arg);
+    hipblasStatus_t status = testing_geqrf_batched<float, float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -82,7 +82,51 @@ TEST_P(geqrf_batched_gtest, geqrf_batched_gtest_double)
 
     Arguments arg = setup_geqrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_batched<double>(arg);
+    hipblasStatus_t status = testing_geqrf_batched<double, double>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+        }
+    }
+}
+
+TEST_P(geqrf_batched_gtest, geqrf_batched_gtest_float_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_geqrf_batched_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geqrf_batched<hipblasComplex, float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+        }
+    }
+}
+
+TEST_P(geqrf_batched_gtest, geqrf_batched_gtest_double_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_geqrf_batched_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geqrf_batched<hipblasDoubleComplex, double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

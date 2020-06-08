@@ -17,7 +17,7 @@
 
 using namespace std;
 
-template <typename T>
+template <typename T, typename U>
 hipblasStatus_t testing_getrf_strided_batched(Arguments argus)
 {
     int    M            = argus.N;
@@ -69,6 +69,18 @@ hipblasStatus_t testing_getrf_strided_batched(Arguments argus)
         T* hAb = hA.data() + b * strideA;
 
         hipblas_init<T>(hAb, M, N, lda);
+
+        // scale A to avoid singularities
+        for(int i = 0; i < M; i++)
+        {
+            for(int j = 0; j < N; j++)
+            {
+                if(i == j)
+                    hAb[i + j * lda] += 400;
+                else
+                    hAb[i + j * lda] -= 4;
+            }
+        }
     }
 
     // Copy data from CPU to device
@@ -108,11 +120,11 @@ hipblasStatus_t testing_getrf_strided_batched(Arguments argus)
 
             if(argus.unit_check)
             {
-                T      eps       = std::numeric_limits<T>::epsilon();
+                U      eps       = std::numeric_limits<U>::epsilon();
                 double tolerance = eps * 2000;
 
                 double e = norm_check_general<T>(
-                    'M', M, N, lda, hA.data() + b * strideA, hA1.data() + b * strideA);
+                    'F', M, N, lda, hA.data() + b * strideA, hA1.data() + b * strideA);
                 unit_check_error(e, tolerance);
             }
         }
