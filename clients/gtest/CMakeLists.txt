@@ -99,6 +99,9 @@ if( BUILD_WITH_SOLVER )
     getrs_gtest.cpp
     getrs_batched_gtest.cpp
     getrs_strided_batched_gtest.cpp
+    getri_gtest.cpp
+    getri_batched_gtest.cpp
+    getri_strided_batched_gtest.cpp
     geqrf_gtest.cpp
     geqrf_batched_gtest.cpp
     geqrf_strided_batched_gtest.cpp
