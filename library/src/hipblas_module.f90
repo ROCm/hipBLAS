@@ -12431,6 +12431,229 @@ module hipblas
         end function hipblasZgetrsStridedBatched
     end interface
 
+    ! getri
+    interface
+        function hipblasSgetri(handle, n, A, lda, ipiv, info) &
+                result(c_int) &
+                bind(c, name = 'hipblasSgetri')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: ipiv
+            type(c_ptr), value :: info
+        end function hipblasSgetri
+    end interface
+
+    interface
+        function hipblasDgetri(handle, n, A, lda, ipiv, info) &
+                result(c_int) &
+                bind(c, name = 'hipblasDgetri')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: ipiv
+            type(c_ptr), value :: info
+        end function hipblasDgetri
+    end interface
+
+    interface
+        function hipblasCgetri(handle, n, A, lda, ipiv, info) &
+                result(c_int) &
+                bind(c, name = 'hipblasCgetri')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: ipiv
+            type(c_ptr), value :: info
+        end function hipblasCgetri
+    end interface
+
+    interface
+        function hipblasZgetri(handle, n, A, lda, ipiv, info) &
+                result(c_int) &
+                bind(c, name = 'hipblasZgetri')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: ipiv
+            type(c_ptr), value :: info
+        end function hipblasZgetri
+    end interface
+
+    ! getri_batched
+    interface
+        function hipblasSgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batch_count) &
+                result(c_int) &
+                bind(c, name = 'hipblasSgetriBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: ipiv
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
+            type(c_ptr), value :: info
+            integer(c_int), value :: batch_count
+        end function hipblasSgetriBatched
+    end interface
+
+    interface
+        function hipblasDgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batch_count) &
+                result(c_int) &
+                bind(c, name = 'hipblasDgetriBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: ipiv
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
+            type(c_ptr), value :: info
+            integer(c_int), value :: batch_count
+        end function hipblasDgetriBatched
+    end interface
+
+    interface
+        function hipblasCgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batch_count) &
+                result(c_int) &
+                bind(c, name = 'hipblasCgetriBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: ipiv
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
+            type(c_ptr), value :: info
+            integer(c_int), value :: batch_count
+        end function hipblasCgetriBatched
+    end interface
+
+    interface
+        function hipblasZgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batch_count) &
+                result(c_int) &
+                bind(c, name = 'hipblasZgetriBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: ipiv
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
+            type(c_ptr), value :: info
+            integer(c_int), value :: batch_count
+        end function hipblasZgetriBatched
+    end interface
+
+    ! getri_strided_batched
+    interface
+        function hipblasSgetriStridedBatched(handle, n, A, lda, stride_A,&
+                    ipiv, stride_P, info, batch_count) &
+                result(c_int) &
+                bind(c, name = 'hipblasSgetriStridedBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            integer(c_int), value :: stride_A
+            type(c_ptr), value :: ipiv
+            integer(c_int), value :: stride_P
+            type(c_ptr), value :: info
+            integer(c_int), value :: batch_count
+        end function hipblasSgetriStridedBatched
+    end interface
+
+    interface
+        function hipblasDgetriStridedBatched(handle, n, A, lda, stride_A,&
+                    ipiv, stride_P, info, batch_count) &
+                result(c_int) &
+                bind(c, name = 'hipblasDgetriStridedBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            integer(c_int), value :: stride_A
+            type(c_ptr), value :: ipiv
+            integer(c_int), value :: stride_P
+            type(c_ptr), value :: info
+            integer(c_int), value :: batch_count
+        end function hipblasDgetriStridedBatched
+    end interface
+
+    interface
+        function hipblasCgetriStridedBatched(handle, n, A, lda, stride_A,&
+                    ipiv, stride_P, info, batch_count) &
+                result(c_int) &
+                bind(c, name = 'hipblasCgetriStridedBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            integer(c_int), value :: stride_A
+            type(c_ptr), value :: ipiv
+            integer(c_int), value :: stride_P
+            type(c_ptr), value :: info
+            integer(c_int), value :: batch_count
+        end function hipblasCgetriStridedBatched
+    end interface
+
+    interface
+        function hipblasZgetriStridedBatched(handle, n, A, lda, stride_A,&
+                    ipiv, stride_P, info, batch_count) &
+                result(c_int) &
+                bind(c, name = 'hipblasZgetriStridedBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            integer(c_int), value :: stride_A
+            type(c_ptr), value :: ipiv
+            integer(c_int), value :: stride_P
+            type(c_ptr), value :: info
+            integer(c_int), value :: batch_count
+        end function hipblasZgetriStridedBatched
+    end interface
+
     ! geqrf
     interface
         function hipblasSgeqrf(handle, m, n, A, lda, tau, info) &
