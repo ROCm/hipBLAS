@@ -20,6 +20,9 @@ using namespace std;
 template <typename T, typename U>
 hipblasStatus_t testing_getrf(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
+
     int M   = argus.N;
     int N   = argus.N;
     int lda = argus.lda;
@@ -79,7 +82,7 @@ hipblasStatus_t testing_getrf(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasGetrf<T>(handle, N, dA, lda, dIpiv, dInfo);
+    status = hipblasGetrfFn(handle, N, dA, lda, dIpiv, dInfo);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
