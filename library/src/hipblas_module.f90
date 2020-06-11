@@ -205,7 +205,73 @@ module hipblas
             integer(c_int), value :: ldb
         end function hipblasGetMatrix
     end interface
-    
+
+    interface
+        function hipblasSetVectorAsync(n, elemSize, x, incx, y, incy, stream) &
+                result(c_int) &
+                bind(c, name = 'hipblasSetVectorAsync')
+            use iso_c_binding
+            implicit none
+            integer(c_int), value :: n
+            integer(c_int), value :: elemSize
+            type(c_ptr), value :: x
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int), value :: incy
+            type(c_ptr), value :: stream
+        end function hipblasSetVectorAsync
+    end interface
+
+    interface
+        function hipblasGetVectorAsync(n, elemSize, x, incx, y, incy, stream) &
+                result(c_int) &
+                bind(c, name = 'hipblasGetVectorAsync')
+            use iso_c_binding
+            implicit none
+            integer(c_int), value :: n
+            integer(c_int), value :: elemSize
+            type(c_ptr), value :: x
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int), value :: incy
+            type(c_ptr), value :: stream
+        end function hipblasGetVectorAsync
+    end interface
+
+    interface
+        function hipblasSetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream) &
+                result(c_int) &
+                bind(c, name = 'hipblasSetMatrixAsync')
+            use iso_c_binding
+            implicit none
+            integer(c_int), value :: rows
+            integer(c_int), value :: cols
+            integer(c_int), value :: elemSize
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: stream
+        end function hipblasSetMatrixAsync
+    end interface
+
+    interface
+        function hipblasGetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream) &
+                result(c_int) &
+                bind(c, name = 'hipblasGetMatrixAsync')
+            use iso_c_binding
+            implicit none
+            integer(c_int), value :: rows
+            integer(c_int), value :: cols
+            integer(c_int), value :: elemSize
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: stream
+        end function hipblasGetMatrixAsync
+    end interface
+
     !--------!
     ! blas 1 !
     !--------!

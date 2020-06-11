@@ -339,6 +339,34 @@ hipblasStatus_t
     return rocBLASStatusToHIPStatus(rocblas_get_matrix(rows, cols, elemSize, A, lda, B, ldb));
 }
 
+hipblasStatus_t hipblasSetVectorAsync(
+    int n, int elemSize, const void* x, int incx, void* y, int incy, hipStream_t stream)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_set_vector_async(n, elemSize, x, incx, y, incy, stream));
+}
+
+hipblasStatus_t hipblasGetVectorAsync(
+    int n, int elemSize, const void* x, int incx, void* y, int incy, hipStream_t stream)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_get_vector_async(n, elemSize, x, incx, y, incy, stream));
+}
+
+hipblasStatus_t hipblasSetMatrixAsync(
+    int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb, hipStream_t stream)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_set_matrix_async(rows, cols, elemSize, A, lda, B, ldb, stream));
+}
+
+hipblasStatus_t hipblasGetMatrixAsync(
+    int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb, hipStream_t stream)
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_get_matrix_async(rows, cols, elemSize, A, lda, B, ldb, stream));
+}
+
 // amax
 hipblasStatus_t hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int* result)
 {
