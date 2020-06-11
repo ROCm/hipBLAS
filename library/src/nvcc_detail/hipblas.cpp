@@ -299,14 +299,14 @@ hipblasStatus_t hipblasGetVectorAsync(
 }
 
 hipblasStatus_t hipblasSetMatrixAsync(
-    int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb.hipStream_t stream)
+    int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb, hipStream_t stream)
 {
     return hipCUBLASStatusToHIPStatus(
         cublasSetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream));
 }
 
 hipblasStatus_t hipblasGetMatrixAsync(
-    int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb.hipStream_t stream)
+    int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb, hipStream_t stream)
 {
     return hipCUBLASStatusToHIPStatus(
         cublasGetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream));
