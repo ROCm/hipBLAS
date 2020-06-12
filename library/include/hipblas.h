@@ -256,6 +256,30 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasGetMatrix(int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasSetVectorAsync(
+    int n, int elem_size, const void* x, int incx, void* y, int incy, hipStream_t stream);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGetVectorAsync(
+    int n, int elem_size, const void* x, int incx, void* y, int incy, hipStream_t stream);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSetMatrixAsync(int         rows,
+                                                     int         cols,
+                                                     int         elem_size,
+                                                     const void* A,
+                                                     int         lda,
+                                                     void*       B,
+                                                     int         ldb,
+                                                     hipStream_t stream);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGetMatrixAsync(int         rows,
+                                                     int         cols,
+                                                     int         elem_size,
+                                                     const void* A,
+                                                     int         lda,
+                                                     void*       B,
+                                                     int         ldb,
+                                                     hipStream_t stream);
+
 // amax
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int* result);
