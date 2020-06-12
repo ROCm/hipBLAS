@@ -4,6 +4,7 @@
  * ************************************************************************ */
 
 #include "testing_set_get_vector.hpp"
+#include "testing_set_get_vector_async.hpp"
 #include "utility.h"
 #include <gtest/gtest.h>
 #include <math.h>
@@ -18,7 +19,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<int, vector<int>> set_get_vector_tuple;
+typedef std::tuple<int, vector<int>, bool> set_get_vector_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -54,6 +55,8 @@ const vector<vector<int>> incx_incy_incd_range = {{1, 1, 1},
                                                   {3, 2, 2},
                                                   {3, 3, 1},
                                                   {3, 3, 3}};
+
+const bool is_fortran[] = {false, true};
 
 /* ===============Google Unit Test==================================================== */
 
@@ -114,19 +117,32 @@ TEST_P(set_vector_get_vector_gtest, float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0)
+        if(arg.M < 0 || arg.incx <= 0 || arg.incy <= 0 || arg.incx <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.incx <= 0)
+        else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
-        else if(arg.incy <= 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.incd <= 0)
+    }
+}
+
+TEST_P(set_vector_get_vector_gtest, async_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_set_get_vector_arguments(GetParam());
+
+    hipblasStatus_t status = testing_set_get_vector_async<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.incx <= 0 || arg.incy <= 0 || arg.incx <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -144,4 +160,6 @@ TEST_P(set_vector_get_vector_gtest, float)
 
 INSTANTIATE_TEST_CASE_P(rocblas_auxiliary_small,
                         set_vector_get_vector_gtest,
-                        Combine(ValuesIn(M_range), ValuesIn(incx_incy_incd_range)));
+                        Combine(ValuesIn(M_range),
+                                ValuesIn(incx_incy_incd_range),
+                                ValuesIn(is_fortran)));

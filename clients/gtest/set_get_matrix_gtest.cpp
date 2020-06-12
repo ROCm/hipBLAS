@@ -4,6 +4,7 @@
  * ************************************************************************ */
 
 #include "testing_set_get_matrix.hpp"
+#include "testing_set_get_matrix_async.hpp"
 #include "utility.h"
 #include <functional>
 #include <gtest/gtest.h>
@@ -20,7 +21,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<int>> set_get_matrix_tuple;
+typedef std::tuple<vector<int>, vector<int>, bool> set_get_matrix_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -66,6 +67,9 @@ const vector<vector<int>> lda_ldb_ldc_range = {{3, 3, 3},
                                                {5, 5, 3},
                                                {5, 5, 4},
                                                {5, 5, 5}};
+
+const bool is_fortran[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -123,23 +127,32 @@ TEST_P(set_matrix_get_matrix_gtest, float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.rows < 0)
+        if(arg.rows < 0 || arg.cols <= 0 || arg.lda <= 0 || arg.ldb <= 0 || arg.ldc <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.cols <= 0)
+        else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
-        else if(arg.lda <= 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.ldb <= 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.ldc <= 0)
+    }
+}
+
+TEST_P(set_matrix_get_matrix_gtest, async_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_set_get_matrix_arguments(GetParam());
+
+    hipblasStatus_t status = testing_set_get_matrix_async<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.rows < 0 || arg.cols <= 0 || arg.lda <= 0 || arg.ldb <= 0 || arg.ldc <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -157,4 +170,6 @@ TEST_P(set_matrix_get_matrix_gtest, float)
 
 INSTANTIATE_TEST_CASE_P(hipblasAuxiliary_small,
                         set_matrix_get_matrix_gtest,
-                        Combine(ValuesIn(rows_cols_range), ValuesIn(lda_ldb_ldc_range)));
+                        Combine(ValuesIn(rows_cols_range),
+                                ValuesIn(lda_ldb_ldc_range),
+                                ValuesIn(is_fortran)));

@@ -5,6 +5,137 @@ module hipblas_interface
     contains
 
     !--------!
+    !  Aux   !
+    !--------!
+    function hipblasSetVectorFortran(n, elemSize, x, incx, y, incy) &
+            result(res) &
+            bind(c, name = 'hipblasSetVectorFortran')
+        use iso_c_binding
+        implicit none
+        integer(c_int), value :: n
+        integer(c_int), value :: elemSize
+        type(c_ptr), value :: x
+        integer(c_int), value :: incx
+        type(c_ptr), value :: y
+        integer(c_int), value :: incy
+        integer(c_int) :: res
+        res = hipblasSetVector(n, elemSize, x, incx, y, incy)
+    end function hipblasSetVectorFortran
+
+    function hipblasGetVectorFortran(n, elemSize, x, incx, y, incy) &
+            result(res) &
+            bind(c, name = 'hipblasGetVectorFortran')
+        use iso_c_binding
+        implicit none
+        integer(c_int), value :: n
+        integer(c_int), value :: elemSize
+        type(c_ptr), value :: x
+        integer(c_int), value :: incx
+        type(c_ptr), value :: y
+        integer(c_int), value :: incy
+        integer(c_int) :: res
+        res = hipblasGetVector(n, elemSize, x, incx, y, incy)
+    end function hipblasGetVectorFortran
+
+    function hipblasSetMatrixFortran(rows, cols, elemSize, A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasSetMatrixFortran')
+        use iso_c_binding
+        implicit none
+        integer(c_int), value :: rows
+        integer(c_int), value :: cols
+        integer(c_int), value :: elemSize
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasSetMatrix(rows, cols, elemSize, A, lda, B, ldb)
+    end function hipblasSetMatrixFortran
+
+    function hipblasGetMatrixFortran(rows, cols, elemSize, A, lda, B, ldb) &
+            result(res) &
+            bind(c, name = 'hipblasGetMatrixFortran')
+        use iso_c_binding
+        implicit none
+        integer(c_int), value :: rows
+        integer(c_int), value :: cols
+        integer(c_int), value :: elemSize
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int) :: res
+        res = hipblasSetMatrix(rows, cols, elemSize, A, lda, B, ldb)
+    end function hipblasGetMatrixFortran
+
+    function hipblasSetVectorAsyncFortran(n, elemSize, x, incx, y, incy, stream) &
+            result(res) &
+            bind(c, name = 'hipblasSetVectorAsyncFortran')
+        use iso_c_binding
+        implicit none
+        integer(c_int), value :: n
+        integer(c_int), value :: elemSize
+        type(c_ptr), value :: x
+        integer(c_int), value :: incx
+        type(c_ptr), value :: y
+        integer(c_int), value :: incy
+        type(c_ptr), value :: stream
+        integer(c_int) :: res
+        res = hipblasSetVectorAsync(n, elemSize, x, incx, y, incy, stream)
+    end function hipblasSetVectorAsyncFortran
+
+    function hipblasGetVectorAsyncFortran(n, elemSize, x, incx, y, incy, stream) &
+            result(res) &
+            bind(c, name = 'hipblasGetVectorAsyncFortran')
+        use iso_c_binding
+        implicit none
+        integer(c_int), value :: n
+        integer(c_int), value :: elemSize
+        type(c_ptr), value :: x
+        integer(c_int), value :: incx
+        type(c_ptr), value :: y
+        integer(c_int), value :: incy
+        type(c_ptr), value :: stream
+        integer(c_int) :: res
+        res = hipblasGetVectorAsync(n, elemSize, x, incx, y, incy, stream)
+    end function hipblasGetVectorAsyncFortran
+
+    function hipblasSetMatrixAsyncFortran(rows, cols, elemSize, A, lda, B, ldb, stream) &
+            result(res) &
+            bind(c, name = 'hipblasSetMatrixAsyncFortran')
+        use iso_c_binding
+        implicit none
+        integer(c_int), value :: rows
+        integer(c_int), value :: cols
+        integer(c_int), value :: elemSize
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: stream
+        integer(c_int) :: res
+        res = hipblasSetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream)
+    end function hipblasSetMatrixAsyncFortran
+
+    function hipblasGetMatrixAsyncFortran(rows, cols, elemSize, A, lda, B, ldb, stream) &
+            result(res) &
+            bind(c, name = 'hipblasGetMatrixAsyncFortran')
+        use iso_c_binding
+        implicit none
+        integer(c_int), value :: rows
+        integer(c_int), value :: cols
+        integer(c_int), value :: elemSize
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: stream
+        integer(c_int) :: res
+        res = hipblasGetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream)
+    end function hipblasGetMatrixAsyncFortran
+
+    !--------!
     ! blas 1 !
     !--------!
 
