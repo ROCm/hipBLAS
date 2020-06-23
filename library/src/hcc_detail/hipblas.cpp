@@ -13075,39 +13075,6 @@ hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
                                          batch_count));
 }
 
-// getri
-hipblasStatus_t hipblasSgetri(
-    hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
-{
-    return rocBLASStatusToHIPStatus(
-        rocsolver_sgetri((rocblas_handle)handle, n, A, lda, ipiv, info));
-}
-
-hipblasStatus_t hipblasDgetri(
-    hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info)
-{
-    return rocBLASStatusToHIPStatus(
-        rocsolver_dgetri((rocblas_handle)handle, n, A, lda, ipiv, info));
-}
-
-hipblasStatus_t hipblasCgetri(
-    hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info)
-{
-    return rocBLASStatusToHIPStatus(
-        rocsolver_cgetri((rocblas_handle)handle, n, (rocblas_float_complex*)A, lda, ipiv, info));
-}
-
-hipblasStatus_t hipblasZgetri(hipblasHandle_t       handle,
-                              const int             n,
-                              hipblasDoubleComplex* A,
-                              const int             lda,
-                              int*                  ipiv,
-                              int*                  info)
-{
-    return rocBLASStatusToHIPStatus(
-        rocsolver_zgetri((rocblas_handle)handle, n, (rocblas_double_complex*)A, lda, ipiv, info));
-}
-
 // getri_batched
 hipblasStatus_t hipblasSgetriBatched(hipblasHandle_t handle,
                                      const int       n,
@@ -13179,77 +13146,6 @@ hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             handle,
                                                                         ldc,
                                                                         info,
                                                                         batch_count));
-}
-
-// getri_strided_batched
-hipblasStatus_t hipblasSgetriStridedBatched(hipblasHandle_t handle,
-                                            const int       n,
-                                            float*          A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            int*            ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
-{
-    return rocBLASStatusToHIPStatus(rocsolver_sgetri_strided_batched(
-        (rocblas_handle)handle, n, A, lda, strideA, ipiv, strideP, info, batch_count));
-}
-
-hipblasStatus_t hipblasDgetriStridedBatched(hipblasHandle_t handle,
-                                            const int       n,
-                                            double*         A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            int*            ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
-{
-    return rocBLASStatusToHIPStatus(rocsolver_dgetri_strided_batched(
-        (rocblas_handle)handle, n, A, lda, strideA, ipiv, strideP, info, batch_count));
-}
-
-hipblasStatus_t hipblasCgetriStridedBatched(hipblasHandle_t handle,
-                                            const int       n,
-                                            hipblasComplex* A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            int*            ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
-{
-    return rocBLASStatusToHIPStatus(rocsolver_cgetri_strided_batched((rocblas_handle)handle,
-                                                                     n,
-                                                                     (rocblas_float_complex*)A,
-                                                                     lda,
-                                                                     strideA,
-                                                                     ipiv,
-                                                                     strideP,
-                                                                     info,
-                                                                     batch_count));
-}
-
-hipblasStatus_t hipblasZgetriStridedBatched(hipblasHandle_t       handle,
-                                            const int             n,
-                                            hipblasDoubleComplex* A,
-                                            const int             lda,
-                                            const int             strideA,
-                                            int*                  ipiv,
-                                            const int             strideP,
-                                            int*                  info,
-                                            const int             batch_count)
-{
-    return rocBLASStatusToHIPStatus(rocsolver_zgetri_strided_batched((rocblas_handle)handle,
-                                                                     n,
-                                                                     (rocblas_double_complex*)A,
-                                                                     lda,
-                                                                     strideA,
-                                                                     ipiv,
-                                                                     strideP,
-                                                                     info,
-                                                                     batch_count));
 }
 
 // geqrf

@@ -9405,35 +9405,6 @@ hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-// getri
-hipblasStatus_t hipblasSgetri(
-    hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasDgetri(
-    hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasCgetri(
-    hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasZgetri(hipblasHandle_t       handle,
-                              const int             n,
-                              hipblasDoubleComplex* A,
-                              const int             lda,
-                              int*                  ipiv,
-                              int*                  info)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
 // getri_batched
 hipblasStatus_t hipblasSgetriBatched(hipblasHandle_t handle,
                                      const int       n,
@@ -9503,59 +9474,6 @@ hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             handle,
                                                           ldc,
                                                           info,
                                                           batch_count));
-}
-
-// getri_strided_batched
-hipblasStatus_t hipblasSgetriStridedBatched(hipblasHandle_t handle,
-                                            const int       n,
-                                            float*          A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            int*            ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasDgetriStridedBatched(hipblasHandle_t handle,
-                                            const int       n,
-                                            double*         A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            int*            ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasCgetriStridedBatched(hipblasHandle_t handle,
-                                            const int       n,
-                                            hipblasComplex* A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            int*            ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasZgetriStridedBatched(hipblasHandle_t       handle,
-                                            const int             n,
-                                            hipblasDoubleComplex* A,
-                                            const int             lda,
-                                            const int             strideA,
-                                            int*                  ipiv,
-                                            const int             strideP,
-                                            int*                  info,
-                                            const int             batch_count)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 // geqrf
