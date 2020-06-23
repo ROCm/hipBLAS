@@ -9405,6 +9405,77 @@ hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+// getri_batched
+hipblasStatus_t hipblasSgetriBatched(hipblasHandle_t handle,
+                                     const int       n,
+                                     float* const    A[],
+                                     const int       lda,
+                                     int*            ipiv,
+                                     float* const    C[],
+                                     const int       ldc,
+                                     int*            info,
+                                     const int       batch_count)
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasSgetriBatched((cublasHandle_t)handle, n, A, lda, ipiv, C, ldc, info, batch_count));
+}
+
+hipblasStatus_t hipblasDgetriBatched(hipblasHandle_t handle,
+                                     const int       n,
+                                     double* const   A[],
+                                     const int       lda,
+                                     int*            ipiv,
+                                     double* const   C[],
+                                     const int       ldc,
+                                     int*            info,
+                                     const int       batch_count)
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasDgetriBatched((cublasHandle_t)handle, n, A, lda, ipiv, C, ldc, info, batch_count));
+}
+
+hipblasStatus_t hipblasCgetriBatched(hipblasHandle_t       handle,
+                                     const int             n,
+                                     hipblasComplex* const A[],
+                                     const int             lda,
+                                     int*                  ipiv,
+                                     hipblasComplex* const C[],
+                                     const int             ldc,
+                                     int*                  info,
+                                     const int             batch_count)
+{
+    return hipCUBLASStatusToHIPStatus(cublasCgetriBatched((cublasHandle_t)handle,
+                                                          n,
+                                                          (cuComplex**)A,
+                                                          lda,
+                                                          ipiv,
+                                                          (cuComplex**)C,
+                                                          ldc,
+                                                          info,
+                                                          batch_count));
+}
+
+hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             handle,
+                                     const int                   n,
+                                     hipblasDoubleComplex* const A[],
+                                     const int                   lda,
+                                     int*                        ipiv,
+                                     hipblasDoubleComplex* const C[],
+                                     const int                   ldc,
+                                     int*                        info,
+                                     const int                   batch_count)
+{
+    return hipCUBLASStatusToHIPStatus(cublasZgetriBatched((cublasHandle_t)handle,
+                                                          n,
+                                                          (cuDoubleComplex**)A,
+                                                          lda,
+                                                          ipiv,
+                                                          (cuDoubleComplex**)C,
+                                                          ldc,
+                                                          info,
+                                                          batch_count));
+}
+
 // geqrf
 hipblasStatus_t hipblasSgeqrf(hipblasHandle_t handle,
                               const int       m,

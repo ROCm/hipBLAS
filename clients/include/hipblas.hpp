@@ -1900,6 +1900,18 @@ hipblasStatus_t hipblasGetrsStridedBatched(hipblasHandle_t          handle,
                                            int*                     info,
                                            const int                batchCount);
 
+// getri
+template <typename T, bool FORTRAN = false>
+hipblasStatus_t hipblasGetriBatched(hipblasHandle_t handle,
+                                    const int       n,
+                                    T* const        A[],
+                                    const int       lda,
+                                    int*            ipiv,
+                                    T* const        C[],
+                                    const int       ldc,
+                                    int*            info,
+                                    const int       batchCount);
+
 // geqrf
 template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasGeqrf(

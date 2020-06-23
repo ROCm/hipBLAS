@@ -53,6 +53,18 @@ void zgetrs_(char*                 trans,
              int*                  ldb,
              int*                  info);
 
+void sgetri_(int* n, float* A, int* lda, int* ipiv, float* work, int* lwork, int* info);
+void dgetri_(int* n, double* A, int* lda, int* ipiv, double* work, int* lwork, int* info);
+void cgetri_(
+    int* n, hipblasComplex* A, int* lda, int* ipiv, hipblasComplex* work, int* lwork, int* info);
+void zgetri_(int*                  n,
+             hipblasDoubleComplex* A,
+             int*                  lda,
+             int*                  ipiv,
+             hipblasDoubleComplex* work,
+             int*                  lwork,
+             int*                  info);
+
 void sgeqrf_(int* m, int* n, float* A, int* lda, float* tau, float* work, int* lwork, int* info);
 void dgeqrf_(int* m, int* n, double* A, int* lda, double* tau, double* work, int* lwork, int* info);
 void cgeqrf_(int*            m,
@@ -3160,6 +3172,41 @@ int cblas_getrs<hipblasDoubleComplex>(char                  trans,
 {
     int info;
     zgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    return info;
+}
+
+// getri
+template <>
+int cblas_getri<float>(int n, float* A, int lda, int* ipiv, float* work, int lwork)
+{
+    int info;
+    sgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_getri<double>(int n, double* A, int lda, int* ipiv, double* work, int lwork)
+{
+    int info;
+    dgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_getri<hipblasComplex>(
+    int n, hipblasComplex* A, int lda, int* ipiv, hipblasComplex* work, int lwork)
+{
+    int info;
+    cgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_getri<hipblasDoubleComplex>(
+    int n, hipblasDoubleComplex* A, int lda, int* ipiv, hipblasDoubleComplex* work, int lwork)
+{
+    int info;
+    zgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
     return info;
 }
 
