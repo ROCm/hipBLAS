@@ -514,6 +514,83 @@ module hipblas_interface
                 ipiv, stride_P, B, ldb, stride_B, info, batch_count)
     end function hipblasZgetrsStridedBatchedFortran
 
+    ! getri_batched
+    function hipblasSgetriBatchedFortran(handle, n, A, lda, ipiv, C, ldc, info, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasSgetriBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(c_int), value :: n
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: ipiv
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        type(c_ptr), value :: info
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasSgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batch_count)
+    end function hipblasSgetriBatchedFortran
+
+    function hipblasDgetriBatchedFortran(handle, n, A, lda, ipiv, C, ldc, info, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasDgetriBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(c_int), value :: n
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: ipiv
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        type(c_ptr), value :: info
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasDgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batch_count)
+    end function hipblasDgetriBatchedFortran
+
+    function hipblasCgetriBatchedFortran(handle, n, A, lda, ipiv, C, ldc, info, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasCgetriBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(c_int), value :: n
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: ipiv
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        type(c_ptr), value :: info
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasCgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batch_count)
+    end function hipblasCgetriBatchedFortran
+
+    function hipblasZgetriBatchedFortran(handle, n, A, lda, ipiv, C, ldc, info, batch_count) &
+            result(res) &
+            bind(c, name = 'hipblasZgetriBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(c_int), value :: n
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: ipiv
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        type(c_ptr), value :: info
+        integer(c_int), value :: batch_count
+        integer(c_int) :: res
+        res = hipblasZgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batch_count)
+    end function hipblasZgetriBatchedFortran
+
     ! geqrf
     function hipblasSgeqrfFortran(handle, m, n, A, lda, tau, info) &
             result(res) &
