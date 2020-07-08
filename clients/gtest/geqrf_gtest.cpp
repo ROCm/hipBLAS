@@ -16,7 +16,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 using namespace std;
 
-typedef std::tuple<vector<int>, double, int> geqrf_tuple;
+typedef std::tuple<vector<int>, double, int, bool> geqrf_tuple;
 
 const vector<vector<int>> matrix_size_range
     = {{-1, -1, 1, 1}, {10, 10, 10, 10}, {10, 10, 20, 100}, {600, 500, 600, 600}};
@@ -25,11 +25,14 @@ const vector<double> stride_scale_range = {2.5};
 
 const vector<int> batch_count_range = {1};
 
+const vector<bool> is_fortran = {false, true};
+
 Arguments setup_geqrf_arguments(geqrf_tuple tup)
 {
     vector<int> matrix_size  = std::get<0>(tup);
     double      stride_scale = std::get<1>(tup);
     int         batch_count  = std::get<2>(tup);
+    bool        fortran      = std::get<3>(tup);
 
     Arguments arg;
 
@@ -40,6 +43,8 @@ Arguments setup_geqrf_arguments(geqrf_tuple tup)
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
+
+    arg.fortran = fortran;
 
     return arg;
 }
@@ -60,7 +65,7 @@ TEST_P(geqrf_gtest, geqrf_gtest_float)
 
     Arguments arg = setup_geqrf_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf<float>(arg);
+    hipblasStatus_t status = testing_geqrf<float, float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -82,7 +87,51 @@ TEST_P(geqrf_gtest, geqrf_gtest_double)
 
     Arguments arg = setup_geqrf_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf<double>(arg);
+    hipblasStatus_t status = testing_geqrf<double, double>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(geqrf_gtest, geqrf_gtest_float_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_geqrf_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geqrf<hipblasComplex, float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(geqrf_gtest, geqrf_gtest_double_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_geqrf_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geqrf<hipblasDoubleComplex, double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -106,4 +155,5 @@ INSTANTIATE_TEST_CASE_P(hipblasGeqrf,
                         geqrf_gtest,
                         Combine(ValuesIn(matrix_size_range),
                                 ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+                                ValuesIn(batch_count_range),
+                                ValuesIn(is_fortran)));

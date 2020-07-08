@@ -10,6 +10,7 @@
 
 #include "cblas_interface.h"
 #include "hipblas.hpp"
+#include "hipblas_fortran.hpp"
 #include "norm.h"
 #include "unit.h"
 #include "utility.h"
@@ -21,6 +22,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_set_get_vector(Arguments argus)
 {
+    bool FORTRAN            = argus.fortran;
+    auto hipblasSetVectorFn = FORTRAN ? hipblasSetVectorFortran : hipblasSetVector;
+    auto hipblasGetVectorFn = FORTRAN ? hipblasGetVectorFortran : hipblasGetVector;
+
     int M    = argus.M;
     int incx = argus.incx;
     int incy = argus.incy;
@@ -54,18 +59,15 @@ hipblasStatus_t testing_set_get_vector(Arguments argus)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    vector<T> hx(M * incx);
-    vector<T> hy(M * incy);
-    vector<T> hy_ref(M * incy);
+    host_vector<T> hx(M * incx);
+    host_vector<T> hy(M * incy);
+    host_vector<T> hy_ref(M * incy);
 
-    T* db;
+    device_vector<T> db(M * incd);
 
     hipblasHandle_t handle;
 
     hipblasCreate(&handle);
-
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&db, M * incd * sizeof(T)));
 
     // Initial Data on CPU
     srand(1);
@@ -76,22 +78,20 @@ hipblasStatus_t testing_set_get_vector(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    status_set = hipblasSetVector(M, sizeof(T), (void*)hx.data(), incx, (void*)db, incd);
+    status_set = hipblasSetVectorFn(M, sizeof(T), (void*)hx.data(), incx, (void*)db, incd);
 
-    status_get = hipblasGetVector(M, sizeof(T), (void*)db, incd, (void*)hy.data(), incy);
+    status_get = hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy.data(), incy);
 
     if(status_set != HIPBLAS_STATUS_SUCCESS)
     {
-        CHECK_HIP_ERROR(hipFree(db));
         hipblasDestroy(handle);
-        return status;
+        return status_set;
     }
 
     if(status_get != HIPBLAS_STATUS_SUCCESS)
     {
-        CHECK_HIP_ERROR(hipFree(db));
         hipblasDestroy(handle);
-        return status;
+        return status_get;
     }
 
     if(argus.unit_check)
@@ -114,7 +114,6 @@ hipblasStatus_t testing_set_get_vector(Arguments argus)
         }
     }
 
-    CHECK_HIP_ERROR(hipFree(db));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

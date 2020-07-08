@@ -21,11 +21,11 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_set_get_matrix(Arguments argus)
+hipblasStatus_t testing_set_get_matrix_async(Arguments argus)
 {
-    bool FORTRAN            = argus.fortran;
-    auto hipblasSetMatrixFn = FORTRAN ? hipblasSetMatrixFortran : hipblasSetMatrix;
-    auto hipblasGetMatrixFn = FORTRAN ? hipblasGetMatrixFortran : hipblasGetMatrix;
+    bool FORTRAN                 = argus.fortran;
+    auto hipblasSetMatrixAsyncFn = FORTRAN ? hipblasSetMatrixAsyncFortran : hipblasSetMatrixAsync;
+    auto hipblasGetMatrixAsyncFn = FORTRAN ? hipblasGetMatrixAsyncFortran : hipblasGetMatrixAsync;
 
     int rows = argus.rows;
     int cols = argus.cols;
@@ -39,27 +39,7 @@ hipblasStatus_t testing_set_get_matrix(Arguments argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(rows < 0)
-    {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
-    }
-    else if(cols < 0)
-    {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
-    }
-    else if(lda <= 0)
-    {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
-    }
-    else if(ldb <= 0)
-    {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
-    }
-    else if(ldc <= 0)
+    if(rows < 0 || cols < 0 || lda <= 0 || ldb <= 0 || ldc <= 0)
     {
         status = HIPBLAS_STATUS_INVALID_VALUE;
         return status;
@@ -78,8 +58,10 @@ hipblasStatus_t testing_set_get_matrix(Arguments argus)
     double rocblas_error = 0.0;
 
     hipblasHandle_t handle;
-
     hipblasCreate(&handle);
+
+    hipStream_t stream;
+    hipblasGetStream(handle, &stream);
 
     // Initial Data on CPU
     srand(1);
@@ -100,8 +82,13 @@ hipblasStatus_t testing_set_get_matrix(Arguments argus)
            ROCBLAS
     =================================================================== */
 
-    status_set = hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha.data(), lda, (void*)dc, ldc);
-    status_get = hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb.data(), ldb);
+    status_set = hipblasSetMatrixAsyncFn(
+        rows, cols, sizeof(T), (void*)ha.data(), lda, (void*)dc, ldc, stream);
+    status_get = hipblasGetMatrixAsyncFn(
+        rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb.data(), ldb, stream);
+
+    hipStreamSynchronize(stream);
+
     if(status_set != HIPBLAS_STATUS_SUCCESS)
     {
         hipblasDestroy(handle);
