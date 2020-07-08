@@ -86,6 +86,7 @@ set(hipblas_test_source
   syrk_gtest.cpp
   syr2k_gtest.cpp
   trsm_gtest.cpp
+  trsm_ex_gtest.cpp
   trmm_gtest.cpp
   trtri_gtest.cpp
 )
@@ -98,6 +99,7 @@ if( BUILD_WITH_SOLVER )
     getrs_gtest.cpp
     getrs_batched_gtest.cpp
     getrs_strided_batched_gtest.cpp
+    getri_batched_gtest.cpp
     geqrf_gtest.cpp
     geqrf_batched_gtest.cpp
     geqrf_strided_batched_gtest.cpp

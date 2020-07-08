@@ -17,9 +17,12 @@
 
 using namespace std;
 
-template <typename T>
+template <typename T, typename U>
 hipblasStatus_t testing_getrs(Arguments argus)
 {
+    bool FORTRAN       = argus.fortran;
+    auto hipblasGetrsFn = FORTRAN ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
+
     int N   = argus.N;
     int lda = argus.lda;
     int ldb = argus.ldb;
@@ -61,15 +64,15 @@ hipblasStatus_t testing_getrs(Arguments argus)
     hipblas_init<T>(hA, N, N, lda);
     hipblas_init<T>(hX, N, 1, ldb);
 
-    // Put hA entries into range [0, 1], make diagonally dominant
+    // scale A to avoid singularities
     for(int i = 0; i < N; i++)
     {
         for(int j = 0; j < N; j++)
         {
-            hA[i + j * lda] = (hA[i + j * lda] - 1.0) / 10.0;
-
             if(i == j)
-                hA[i + j * lda] *= 100;
+                hA[i + j * lda] += 400;
+            else
+                hA[i + j * lda] -= 4;
         }
     }
 
@@ -94,7 +97,7 @@ hipblasStatus_t testing_getrs(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasGetrs<T>(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info);
+    status = hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -122,10 +125,10 @@ hipblasStatus_t testing_getrs(Arguments argus)
 
         if(argus.unit_check)
         {
-            T      eps       = std::numeric_limits<T>::epsilon();
+            U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
 
-            double e = norm_check_general<T>('M', N, 1, ldb, hB.data(), hB1.data());
+            double e = norm_check_general<T>('F', N, 1, ldb, hB.data(), hB1.data());
             unit_check_error(e, tolerance);
         }
     }

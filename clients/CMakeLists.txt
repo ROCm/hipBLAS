@@ -30,8 +30,17 @@ set(hipblas_f90_source_clients
   include/hipblas_fortran.f90
 )
 
+set(hipblas_f90_source_clients_solver
+  include/hipblas_fortran_solver.f90
+)
+
 if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_SAMPLES )
-  add_library(hipblas_fortran_client ${hipblas_f90_source_clients})
+  if( BUILD_WITH_SOLVER)
+    add_library(hipblas_fortran_client ${hipblas_f90_source_clients} ${hipblas_f90_source_clients_solver})
+  else()
+    add_library(hipblas_fortran_client ${hipblas_f90_source_clients})
+  endif()
+
   add_dependencies(hipblas_fortran_client hipblas_fortran)
   include_directories(${CMAKE_BINARY_DIR}/include)
 endif( )

@@ -18,26 +18,6 @@
  * ===========================================================================
  */
 
-/* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
- *
- * ************************************************************************/
-
-#include "hipblas.h"
-#include "hipblas.hpp"
-#include "hipblas_fortran.hpp"
-#include <typeinfo>
-
-/*!\file
- * \brief provide template functions interfaces to ROCBLAS C89 interfaces
-*/
-
-/*
- * ===========================================================================
- *    level 1 BLAS
- * ===========================================================================
- */
-
 // axpy
 template <>
 hipblasStatus_t hipblasAxpy<hipblasHalf>(hipblasHandle_t    handle,
@@ -9881,6 +9861,63 @@ hipblasStatus_t hipblasGetrsStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
         handle, trans, n, nrhs, A, lda, strideA, ipiv, strideP, B, ldb, strideB, info, batchCount);
 }
 
+// getri_batched
+template <>
+hipblasStatus_t hipblasGetriBatched<float>(hipblasHandle_t handle,
+                                           const int       n,
+                                           float* const    A[],
+                                           const int       lda,
+                                           int*            ipiv,
+                                           float* const    C[],
+                                           const int       ldc,
+                                           int*            info,
+                                           const int       batchCount)
+{
+    return hipblasSgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGetriBatched<double>(hipblasHandle_t handle,
+                                            const int       n,
+                                            double* const   A[],
+                                            const int       lda,
+                                            int*            ipiv,
+                                            double* const   C[],
+                                            const int       ldc,
+                                            int*            info,
+                                            const int       batchCount)
+{
+    return hipblasDgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGetriBatched<hipblasComplex>(hipblasHandle_t       handle,
+                                                    const int             n,
+                                                    hipblasComplex* const A[],
+                                                    const int             lda,
+                                                    int*                  ipiv,
+                                                    hipblasComplex* const C[],
+                                                    const int             ldc,
+                                                    int*                  info,
+                                                    const int             batchCount)
+{
+    return hipblasCgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGetriBatched<hipblasDoubleComplex>(hipblasHandle_t             handle,
+                                                          const int                   n,
+                                                          hipblasDoubleComplex* const A[],
+                                                          const int                   lda,
+                                                          int*                        ipiv,
+                                                          hipblasDoubleComplex* const C[],
+                                                          const int                   ldc,
+                                                          int*                        info,
+                                                          const int                   batchCount)
+{
+    return hipblasZgetriBatched(handle, n, A, lda, ipiv, C, ldc, info, batchCount);
+}
+
 // geqrf
 template <>
 hipblasStatus_t hipblasGeqrf<float>(hipblasHandle_t handle,
@@ -19654,519 +19691,585 @@ hipblasStatus_t
                                              batchCount);
 }
 
-// #ifdef __HIP_PLATFORM_SOLVER__
+#ifdef __HIP_PLATFORM_SOLVER__
 
-// // getrf
-// template <>
-// hipblasStatus_t hipblasGetrf<float, true>(
-//     hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
-// {
-//     return hipblasSgetrfFortran(handle, n, A, lda, ipiv, info);
-// }
+// getrf
+template <>
+hipblasStatus_t hipblasGetrf<float, true>(
+    hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
+{
+    return hipblasSgetrfFortran(handle, n, A, lda, ipiv, info);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrf<double, true>(
-//     hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info)
-// {
-//     return hipblasDgetrfFortran(handle, n, A, lda, ipiv, info);
-// }
+template <>
+hipblasStatus_t hipblasGetrf<double, true>(
+    hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info)
+{
+    return hipblasDgetrfFortran(handle, n, A, lda, ipiv, info);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrf<hipblasComplex, true>(
-//     hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info)
-// {
-//     return hipblasCgetrfFortran(handle, n, A, lda, ipiv, info);
-// }
+template <>
+hipblasStatus_t hipblasGetrf<hipblasComplex, true>(
+    hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info)
+{
+    return hipblasCgetrfFortran(handle, n, A, lda, ipiv, info);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrf<hipblasDoubleComplex, true>(hipblasHandle_t       handle,
-//                                                    const int             n,
-//                                                    hipblasDoubleComplex* A,
-//                                                    const int             lda,
-//                                                    int*                  ipiv,
-//                                                    int*                  info)
-// {
-//     return hipblasZgetrfFortran(handle, n, A, lda, ipiv, info);
-// }
+template <>
+hipblasStatus_t hipblasGetrf<hipblasDoubleComplex, true>(hipblasHandle_t       handle,
+                                                         const int             n,
+                                                         hipblasDoubleComplex* A,
+                                                         const int             lda,
+                                                         int*                  ipiv,
+                                                         int*                  info)
+{
+    return hipblasZgetrfFortran(handle, n, A, lda, ipiv, info);
+}
 
-// // getrf_batched
-// template <>
-// hipblasStatus_t hipblasGetrfBatched<float, true>(hipblasHandle_t handle,
-//                                            const int       n,
-//                                            float* const    A[],
-//                                            const int       lda,
-//                                            int*            ipiv,
-//                                            int*            info,
-//                                            const int       batchCount)
-// {
-//     return hipblasSgetrfBatchedFortran(handle, n, A, lda, ipiv, info, batchCount);
-// }
+// getrf_batched
+template <>
+hipblasStatus_t hipblasGetrfBatched<float, true>(hipblasHandle_t handle,
+                                                 const int       n,
+                                                 float* const    A[],
+                                                 const int       lda,
+                                                 int*            ipiv,
+                                                 int*            info,
+                                                 const int       batchCount)
+{
+    return hipblasSgetrfBatchedFortran(handle, n, A, lda, ipiv, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrfBatched<double, true>(hipblasHandle_t handle,
-//                                             const int       n,
-//                                             double* const   A[],
-//                                             const int       lda,
-//                                             int*            ipiv,
-//                                             int*            info,
-//                                             const int       batchCount)
-// {
-//     return hipblasDgetrfBatchedFortran(handle, n, A, lda, ipiv, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrfBatched<double, true>(hipblasHandle_t handle,
+                                                  const int       n,
+                                                  double* const   A[],
+                                                  const int       lda,
+                                                  int*            ipiv,
+                                                  int*            info,
+                                                  const int       batchCount)
+{
+    return hipblasDgetrfBatchedFortran(handle, n, A, lda, ipiv, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrfBatched<hipblasComplex, true>(hipblasHandle_t       handle,
-//                                                     const int             n,
-//                                                     hipblasComplex* const A[],
-//                                                     const int             lda,
-//                                                     int*                  ipiv,
-//                                                     int*                  info,
-//                                                     const int             batchCount)
-// {
-//     return hipblasCgetrfBatchedFortran(handle, n, A, lda, ipiv, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrfBatched<hipblasComplex, true>(hipblasHandle_t       handle,
+                                                          const int             n,
+                                                          hipblasComplex* const A[],
+                                                          const int             lda,
+                                                          int*                  ipiv,
+                                                          int*                  info,
+                                                          const int             batchCount)
+{
+    return hipblasCgetrfBatchedFortran(handle, n, A, lda, ipiv, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrfBatched<hipblasDoubleComplex, true>(hipblasHandle_t             handle,
-//                                                           const int                   n,
-//                                                           hipblasDoubleComplex* const A[],
-//                                                           const int                   lda,
-//                                                           int*                        ipiv,
-//                                                           int*                        info,
-//                                                           const int                   batchCount)
-// {
-//     return hipblasZgetrfBatchedFortran(handle, n, A, lda, ipiv, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrfBatched<hipblasDoubleComplex, true>(hipblasHandle_t             handle,
+                                                                const int                   n,
+                                                                hipblasDoubleComplex* const A[],
+                                                                const int                   lda,
+                                                                int*                        ipiv,
+                                                                int*                        info,
+                                                                const int batchCount)
+{
+    return hipblasZgetrfBatchedFortran(handle, n, A, lda, ipiv, info, batchCount);
+}
 
-// // getrf_strided_batched
-// template <>
-// hipblasStatus_t hipblasGetrfStridedBatched<float, true>(hipblasHandle_t handle,
-//                                                   const int       n,
-//                                                   float*          A,
-//                                                   const int       lda,
-//                                                   const int       strideA,
-//                                                   int*            ipiv,
-//                                                   const int       strideP,
-//                                                   int*            info,
-//                                                   const int       batchCount)
-// {
-//     return hipblasSgetrfStridedBatchedFortran(handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
-// }
+// getrf_strided_batched
+template <>
+hipblasStatus_t hipblasGetrfStridedBatched<float, true>(hipblasHandle_t handle,
+                                                        const int       n,
+                                                        float*          A,
+                                                        const int       lda,
+                                                        const int       strideA,
+                                                        int*            ipiv,
+                                                        const int       strideP,
+                                                        int*            info,
+                                                        const int       batchCount)
+{
+    return hipblasSgetrfStridedBatchedFortran(
+        handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrfStridedBatched<double, true>(hipblasHandle_t handle,
-//                                                    const int       n,
-//                                                    double*         A,
-//                                                    const int       lda,
-//                                                    const int       strideA,
-//                                                    int*            ipiv,
-//                                                    const int       strideP,
-//                                                    int*            info,
-//                                                    const int       batchCount)
-// {
-//     return hipblasDgetrfStridedBatchedFortran(handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrfStridedBatched<double, true>(hipblasHandle_t handle,
+                                                         const int       n,
+                                                         double*         A,
+                                                         const int       lda,
+                                                         const int       strideA,
+                                                         int*            ipiv,
+                                                         const int       strideP,
+                                                         int*            info,
+                                                         const int       batchCount)
+{
+    return hipblasDgetrfStridedBatchedFortran(
+        handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrfStridedBatched<hipblasComplex, true>(hipblasHandle_t handle,
-//                                                            const int       n,
-//                                                            hipblasComplex* A,
-//                                                            const int       lda,
-//                                                            const int       strideA,
-//                                                            int*            ipiv,
-//                                                            const int       strideP,
-//                                                            int*            info,
-//                                                            const int       batchCount)
-// {
-//     return hipblasCgetrfStridedBatchedFortran(handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrfStridedBatched<hipblasComplex, true>(hipblasHandle_t handle,
+                                                                 const int       n,
+                                                                 hipblasComplex* A,
+                                                                 const int       lda,
+                                                                 const int       strideA,
+                                                                 int*            ipiv,
+                                                                 const int       strideP,
+                                                                 int*            info,
+                                                                 const int       batchCount)
+{
+    return hipblasCgetrfStridedBatchedFortran(
+        handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrfStridedBatched<hipblasDoubleComplex, true>(hipblasHandle_t       handle,
-//                                                                  const int             n,
-//                                                                  hipblasDoubleComplex* A,
-//                                                                  const int             lda,
-//                                                                  const int             strideA,
-//                                                                  int*                  ipiv,
-//                                                                  const int             strideP,
-//                                                                  int*                  info,
-//                                                                  const int             batchCount)
-// {
-//     return hipblasZgetrfStridedBatchedFortran(handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrfStridedBatched<hipblasDoubleComplex, true>(hipblasHandle_t       handle,
+                                                                       const int             n,
+                                                                       hipblasDoubleComplex* A,
+                                                                       const int             lda,
+                                                                       const int strideA,
+                                                                       int*      ipiv,
+                                                                       const int strideP,
+                                                                       int*      info,
+                                                                       const int batchCount)
+{
+    return hipblasZgetrfStridedBatchedFortran(
+        handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+}
 
-// // getrs
-// template <>
-// hipblasStatus_t hipblasGetrs<float, true>(hipblasHandle_t          handle,
-//                                     const hipblasOperation_t trans,
-//                                     const int                n,
-//                                     const int                nrhs,
-//                                     float*                   A,
-//                                     const int                lda,
-//                                     const int*               ipiv,
-//                                     float*                   B,
-//                                     const int                ldb,
-//                                     int*                     info)
-// {
-//     return hipblasSgetrsFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info);
-// }
+// getrs
+template <>
+hipblasStatus_t hipblasGetrs<float, true>(hipblasHandle_t          handle,
+                                          const hipblasOperation_t trans,
+                                          const int                n,
+                                          const int                nrhs,
+                                          float*                   A,
+                                          const int                lda,
+                                          const int*               ipiv,
+                                          float*                   B,
+                                          const int                ldb,
+                                          int*                     info)
+{
+    return hipblasSgetrsFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrs<double, true>(hipblasHandle_t          handle,
-//                                      const hipblasOperation_t trans,
-//                                      const int                n,
-//                                      const int                nrhs,
-//                                      double*                  A,
-//                                      const int                lda,
-//                                      const int*               ipiv,
-//                                      double*                  B,
-//                                      const int                ldb,
-//                                      int*                     info)
-// {
-//     return hipblasDgetrsFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info);
-// }
+template <>
+hipblasStatus_t hipblasGetrs<double, true>(hipblasHandle_t          handle,
+                                           const hipblasOperation_t trans,
+                                           const int                n,
+                                           const int                nrhs,
+                                           double*                  A,
+                                           const int                lda,
+                                           const int*               ipiv,
+                                           double*                  B,
+                                           const int                ldb,
+                                           int*                     info)
+{
+    return hipblasDgetrsFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrs<hipblasComplex, true>(hipblasHandle_t          handle,
-//                                              const hipblasOperation_t trans,
-//                                              const int                n,
-//                                              const int                nrhs,
-//                                              hipblasComplex*          A,
-//                                              const int                lda,
-//                                              const int*               ipiv,
-//                                              hipblasComplex*          B,
-//                                              const int                ldb,
-//                                              int*                     info)
-// {
-//     return hipblasCgetrsFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info);
-// }
+template <>
+hipblasStatus_t hipblasGetrs<hipblasComplex, true>(hipblasHandle_t          handle,
+                                                   const hipblasOperation_t trans,
+                                                   const int                n,
+                                                   const int                nrhs,
+                                                   hipblasComplex*          A,
+                                                   const int                lda,
+                                                   const int*               ipiv,
+                                                   hipblasComplex*          B,
+                                                   const int                ldb,
+                                                   int*                     info)
+{
+    return hipblasCgetrsFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrs<hipblasDoubleComplex, true>(hipblasHandle_t          handle,
-//                                                    const hipblasOperation_t trans,
-//                                                    const int                n,
-//                                                    const int                nrhs,
-//                                                    hipblasDoubleComplex*    A,
-//                                                    const int                lda,
-//                                                    const int*               ipiv,
-//                                                    hipblasDoubleComplex*    B,
-//                                                    const int                ldb,
-//                                                    int*                     info)
-// {
-//     return hipblasZgetrsFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info);
-// }
+template <>
+hipblasStatus_t hipblasGetrs<hipblasDoubleComplex, true>(hipblasHandle_t          handle,
+                                                         const hipblasOperation_t trans,
+                                                         const int                n,
+                                                         const int                nrhs,
+                                                         hipblasDoubleComplex*    A,
+                                                         const int                lda,
+                                                         const int*               ipiv,
+                                                         hipblasDoubleComplex*    B,
+                                                         const int                ldb,
+                                                         int*                     info)
+{
+    return hipblasZgetrsFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info);
+}
 
-// // getrs_batched
-// template <>
-// hipblasStatus_t hipblasGetrsBatched<float, true>(hipblasHandle_t          handle,
-//                                            const hipblasOperation_t trans,
-//                                            const int                n,
-//                                            const int                nrhs,
-//                                            float* const             A[],
-//                                            const int                lda,
-//                                            const int*               ipiv,
-//                                            float* const             B[],
-//                                            const int                ldb,
-//                                            int*                     info,
-//                                            const int                batchCount)
-// {
-//     return hipblasSgetrsBatchedFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info, batchCount);
-// }
+// getrs_batched
+template <>
+hipblasStatus_t hipblasGetrsBatched<float, true>(hipblasHandle_t          handle,
+                                                 const hipblasOperation_t trans,
+                                                 const int                n,
+                                                 const int                nrhs,
+                                                 float* const             A[],
+                                                 const int                lda,
+                                                 const int*               ipiv,
+                                                 float* const             B[],
+                                                 const int                ldb,
+                                                 int*                     info,
+                                                 const int                batchCount)
+{
+    return hipblasSgetrsBatchedFortran(
+        handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrsBatched<double, true>(hipblasHandle_t          handle,
-//                                             const hipblasOperation_t trans,
-//                                             const int                n,
-//                                             const int                nrhs,
-//                                             double* const            A[],
-//                                             const int                lda,
-//                                             const int*               ipiv,
-//                                             double* const            B[],
-//                                             const int                ldb,
-//                                             int*                     info,
-//                                             const int                batchCount)
-// {
-//     return hipblasDgetrsBatchedFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrsBatched<double, true>(hipblasHandle_t          handle,
+                                                  const hipblasOperation_t trans,
+                                                  const int                n,
+                                                  const int                nrhs,
+                                                  double* const            A[],
+                                                  const int                lda,
+                                                  const int*               ipiv,
+                                                  double* const            B[],
+                                                  const int                ldb,
+                                                  int*                     info,
+                                                  const int                batchCount)
+{
+    return hipblasDgetrsBatchedFortran(
+        handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrsBatched<hipblasComplex, true>(hipblasHandle_t          handle,
-//                                                     const hipblasOperation_t trans,
-//                                                     const int                n,
-//                                                     const int                nrhs,
-//                                                     hipblasComplex* const    A[],
-//                                                     const int                lda,
-//                                                     const int*               ipiv,
-//                                                     hipblasComplex* const    B[],
-//                                                     const int                ldb,
-//                                                     int*                     info,
-//                                                     const int                batchCount)
-// {
-//     return hipblasCgetrsBatchedFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrsBatched<hipblasComplex, true>(hipblasHandle_t          handle,
+                                                          const hipblasOperation_t trans,
+                                                          const int                n,
+                                                          const int                nrhs,
+                                                          hipblasComplex* const    A[],
+                                                          const int                lda,
+                                                          const int*               ipiv,
+                                                          hipblasComplex* const    B[],
+                                                          const int                ldb,
+                                                          int*                     info,
+                                                          const int                batchCount)
+{
+    return hipblasCgetrsBatchedFortran(
+        handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrsBatched<hipblasDoubleComplex, true>(hipblasHandle_t             handle,
-//                                                           const hipblasOperation_t    trans,
-//                                                           const int                   n,
-//                                                           const int                   nrhs,
-//                                                           hipblasDoubleComplex* const A[],
-//                                                           const int                   lda,
-//                                                           const int*                  ipiv,
-//                                                           hipblasDoubleComplex* const B[],
-//                                                           const int                   ldb,
-//                                                           int*                        info,
-//                                                           const int                   batchCount)
-// {
-//     return hipblasZgetrsBatchedFortran(handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrsBatched<hipblasDoubleComplex, true>(hipblasHandle_t             handle,
+                                                                const hipblasOperation_t    trans,
+                                                                const int                   n,
+                                                                const int                   nrhs,
+                                                                hipblasDoubleComplex* const A[],
+                                                                const int                   lda,
+                                                                const int*                  ipiv,
+                                                                hipblasDoubleComplex* const B[],
+                                                                const int                   ldb,
+                                                                int*                        info,
+                                                                const int batchCount)
+{
+    return hipblasZgetrsBatchedFortran(
+        handle, trans, n, nrhs, A, lda, ipiv, B, ldb, info, batchCount);
+}
 
-// // getrs_strided_batched
-// template <>
-// hipblasStatus_t hipblasGetrsStridedBatched<float, true>(hipblasHandle_t          handle,
-//                                                   const hipblasOperation_t trans,
-//                                                   const int                n,
-//                                                   const int                nrhs,
-//                                                   float*                   A,
-//                                                   const int                lda,
-//                                                   const int                strideA,
-//                                                   const int*               ipiv,
-//                                                   const int                strideP,
-//                                                   float*                   B,
-//                                                   const int                ldb,
-//                                                   const int                strideB,
-//                                                   int*                     info,
-//                                                   const int                batchCount)
-// {
-//     return hipblasSgetrsStridedBatchedFortran(
-//         handle, trans, n, nrhs, A, lda, strideA, ipiv, strideP, B, ldb, strideB, info, batchCount);
-// }
+// getrs_strided_batched
+template <>
+hipblasStatus_t hipblasGetrsStridedBatched<float, true>(hipblasHandle_t          handle,
+                                                        const hipblasOperation_t trans,
+                                                        const int                n,
+                                                        const int                nrhs,
+                                                        float*                   A,
+                                                        const int                lda,
+                                                        const int                strideA,
+                                                        const int*               ipiv,
+                                                        const int                strideP,
+                                                        float*                   B,
+                                                        const int                ldb,
+                                                        const int                strideB,
+                                                        int*                     info,
+                                                        const int                batchCount)
+{
+    return hipblasSgetrsStridedBatchedFortran(
+        handle, trans, n, nrhs, A, lda, strideA, ipiv, strideP, B, ldb, strideB, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrsStridedBatched<double, true>(hipblasHandle_t          handle,
-//                                                    const hipblasOperation_t trans,
-//                                                    const int                n,
-//                                                    const int                nrhs,
-//                                                    double*                  A,
-//                                                    const int                lda,
-//                                                    const int                strideA,
-//                                                    const int*               ipiv,
-//                                                    const int                strideP,
-//                                                    double*                  B,
-//                                                    const int                ldb,
-//                                                    const int                strideB,
-//                                                    int*                     info,
-//                                                    const int                batchCount)
-// {
-//     return hipblasDgetrsStridedBatchedFortran(
-//         handle, trans, n, nrhs, A, lda, strideA, ipiv, strideP, B, ldb, strideB, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrsStridedBatched<double, true>(hipblasHandle_t          handle,
+                                                         const hipblasOperation_t trans,
+                                                         const int                n,
+                                                         const int                nrhs,
+                                                         double*                  A,
+                                                         const int                lda,
+                                                         const int                strideA,
+                                                         const int*               ipiv,
+                                                         const int                strideP,
+                                                         double*                  B,
+                                                         const int                ldb,
+                                                         const int                strideB,
+                                                         int*                     info,
+                                                         const int                batchCount)
+{
+    return hipblasDgetrsStridedBatchedFortran(
+        handle, trans, n, nrhs, A, lda, strideA, ipiv, strideP, B, ldb, strideB, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrsStridedBatched<hipblasComplex, true>(hipblasHandle_t          handle,
-//                                                            const hipblasOperation_t trans,
-//                                                            const int                n,
-//                                                            const int                nrhs,
-//                                                            hipblasComplex*          A,
-//                                                            const int                lda,
-//                                                            const int                strideA,
-//                                                            const int*               ipiv,
-//                                                            const int                strideP,
-//                                                            hipblasComplex*          B,
-//                                                            const int                ldb,
-//                                                            const int                strideB,
-//                                                            int*                     info,
-//                                                            const int                batchCount)
-// {
-//     return hipblasCgetrsStridedBatchedFortran(
-//         handle, trans, n, nrhs, A, lda, strideA, ipiv, strideP, B, ldb, strideB, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGetrsStridedBatched<hipblasComplex, true>(hipblasHandle_t          handle,
+                                                                 const hipblasOperation_t trans,
+                                                                 const int                n,
+                                                                 const int                nrhs,
+                                                                 hipblasComplex*          A,
+                                                                 const int                lda,
+                                                                 const int                strideA,
+                                                                 const int*               ipiv,
+                                                                 const int                strideP,
+                                                                 hipblasComplex*          B,
+                                                                 const int                ldb,
+                                                                 const int                strideB,
+                                                                 int*                     info,
+                                                                 const int batchCount)
+{
+    return hipblasCgetrsStridedBatchedFortran(
+        handle, trans, n, nrhs, A, lda, strideA, ipiv, strideP, B, ldb, strideB, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGetrsStridedBatched<hipblasDoubleComplex, true>(hipblasHandle_t          handle,
-//                                                                  const hipblasOperation_t trans,
-//                                                                  const int                n,
-//                                                                  const int                nrhs,
-//                                                                  hipblasDoubleComplex*    A,
-//                                                                  const int                lda,
-//                                                                  const int                strideA,
-//                                                                  const int*               ipiv,
-//                                                                  const int                strideP,
-//                                                                  hipblasDoubleComplex*    B,
-//                                                                  const int                ldb,
-//                                                                  const int                strideB,
-//                                                                  int*                     info,
-//                                                                  const int batchCount)
-// {
-//     return hipblasZgetrsStridedBatchedFortran(
-//         handle, trans, n, nrhs, A, lda, strideA, ipiv, strideP, B, ldb, strideB, info, batchCount);
-// }
+template <>
+hipblasStatus_t
+    hipblasGetrsStridedBatched<hipblasDoubleComplex, true>(hipblasHandle_t          handle,
+                                                           const hipblasOperation_t trans,
+                                                           const int                n,
+                                                           const int                nrhs,
+                                                           hipblasDoubleComplex*    A,
+                                                           const int                lda,
+                                                           const int                strideA,
+                                                           const int*               ipiv,
+                                                           const int                strideP,
+                                                           hipblasDoubleComplex*    B,
+                                                           const int                ldb,
+                                                           const int                strideB,
+                                                           int*                     info,
+                                                           const int                batchCount)
+{
+    return hipblasZgetrsStridedBatchedFortran(
+        handle, trans, n, nrhs, A, lda, strideA, ipiv, strideP, B, ldb, strideB, info, batchCount);
+}
 
-// // geqrf
-// template <>
-// hipblasStatus_t hipblasGeqrf<float, true>(hipblasHandle_t handle,
-//                                     const int       m,
-//                                     const int       n,
-//                                     float*          A,
-//                                     const int       lda,
-//                                     float*          ipiv,
-//                                     int*            info)
-// {
-//     return hipblasSgeqrfFortran(handle, m, n, A, lda, ipiv, info);
-// }
+// getri_batched
+template <>
+hipblasStatus_t hipblasGetriBatched<float, true>(hipblasHandle_t handle,
+                                                 const int       n,
+                                                 float* const    A[],
+                                                 const int       lda,
+                                                 int*            ipiv,
+                                                 float* const    C[],
+                                                 const int       ldc,
+                                                 int*            info,
+                                                 const int       batchCount)
+{
+    return hipblasSgetriBatchedFortran(handle, n, A, lda, ipiv, C, ldc, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGeqrf<double, true>(hipblasHandle_t handle,
-//                                      const int       m,
-//                                      const int       n,
-//                                      double*         A,
-//                                      const int       lda,
-//                                      double*         ipiv,
-//                                      int*            info)
-// {
-//     return hipblasDgeqrfFortran(handle, m, n, A, lda, ipiv, info);
-// }
+template <>
+hipblasStatus_t hipblasGetriBatched<double, true>(hipblasHandle_t handle,
+                                                  const int       n,
+                                                  double* const   A[],
+                                                  const int       lda,
+                                                  int*            ipiv,
+                                                  double* const   C[],
+                                                  const int       ldc,
+                                                  int*            info,
+                                                  const int       batchCount)
+{
+    return hipblasDgetriBatchedFortran(handle, n, A, lda, ipiv, C, ldc, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGeqrf<hipblasComplex, true>(hipblasHandle_t handle,
-//                                              const int       m,
-//                                              const int       n,
-//                                              hipblasComplex* A,
-//                                              const int       lda,
-//                                              hipblasComplex* ipiv,
-//                                              int*            info)
-// {
-//     return hipblasCgeqrfFortran(handle, m, n, A, lda, ipiv, info);
-// }
+template <>
+hipblasStatus_t hipblasGetriBatched<hipblasComplex, true>(hipblasHandle_t       handle,
+                                                          const int             n,
+                                                          hipblasComplex* const A[],
+                                                          const int             lda,
+                                                          int*                  ipiv,
+                                                          hipblasComplex* const C[],
+                                                          const int             ldc,
+                                                          int*                  info,
+                                                          const int             batchCount)
+{
+    return hipblasCgetriBatchedFortran(handle, n, A, lda, ipiv, C, ldc, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGeqrf<hipblasDoubleComplex, true>(hipblasHandle_t       handle,
-//                                                    const int             m,
-//                                                    const int             n,
-//                                                    hipblasDoubleComplex* A,
-//                                                    const int             lda,
-//                                                    hipblasDoubleComplex* ipiv,
-//                                                    int*                  info)
-// {
-//     return hipblasZgeqrfFortran(handle, m, n, A, lda, ipiv, info);
-// }
+template <>
+hipblasStatus_t hipblasGetriBatched<hipblasDoubleComplex, true>(hipblasHandle_t             handle,
+                                                                const int                   n,
+                                                                hipblasDoubleComplex* const A[],
+                                                                const int                   lda,
+                                                                int*                        ipiv,
+                                                                hipblasDoubleComplex* const C[],
+                                                                const int                   ldc,
+                                                                int*                        info,
+                                                                const int batchCount)
+{
+    return hipblasZgetriBatchedFortran(handle, n, A, lda, ipiv, C, ldc, info, batchCount);
+}
 
-// // geqrf_batched
-// template <>
-// hipblasStatus_t hipblasGeqrfBatched<float, true>(hipblasHandle_t handle,
-//                                            const int       m,
-//                                            const int       n,
-//                                            float* const    A[],
-//                                            const int       lda,
-//                                            float* const    ipiv[],
-//                                            int*            info,
-//                                            const int       batchCount)
-// {
-//     return hipblasSgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
-// }
+// geqrf
+template <>
+hipblasStatus_t hipblasGeqrf<float, true>(hipblasHandle_t handle,
+                                          const int       m,
+                                          const int       n,
+                                          float*          A,
+                                          const int       lda,
+                                          float*          ipiv,
+                                          int*            info)
+{
+    return hipblasSgeqrfFortran(handle, m, n, A, lda, ipiv, info);
+}
 
-// template <>
-// hipblasStatus_t hipblasGeqrfBatched<double, true>(hipblasHandle_t handle,
-//                                             const int       m,
-//                                             const int       n,
-//                                             double* const   A[],
-//                                             const int       lda,
-//                                             double* const   ipiv[],
-//                                             int*            info,
-//                                             const int       batchCount)
-// {
-//     return hipblasDgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGeqrf<double, true>(hipblasHandle_t handle,
+                                           const int       m,
+                                           const int       n,
+                                           double*         A,
+                                           const int       lda,
+                                           double*         ipiv,
+                                           int*            info)
+{
+    return hipblasDgeqrfFortran(handle, m, n, A, lda, ipiv, info);
+}
 
-// template <>
-// hipblasStatus_t hipblasGeqrfBatched<hipblasComplex, true>(hipblasHandle_t       handle,
-//                                                     const int             m,
-//                                                     const int             n,
-//                                                     hipblasComplex* const A[],
-//                                                     const int             lda,
-//                                                     hipblasComplex* const ipiv[],
-//                                                     int*                  info,
-//                                                     const int             batchCount)
-// {
-//     return hipblasCgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGeqrf<hipblasComplex, true>(hipblasHandle_t handle,
+                                                   const int       m,
+                                                   const int       n,
+                                                   hipblasComplex* A,
+                                                   const int       lda,
+                                                   hipblasComplex* ipiv,
+                                                   int*            info)
+{
+    return hipblasCgeqrfFortran(handle, m, n, A, lda, ipiv, info);
+}
 
-// template <>
-// hipblasStatus_t hipblasGeqrfBatched<hipblasDoubleComplex, true>(hipblasHandle_t             handle,
-//                                                           const int                   m,
-//                                                           const int                   n,
-//                                                           hipblasDoubleComplex* const A[],
-//                                                           const int                   lda,
-//                                                           hipblasDoubleComplex* const ipiv[],
-//                                                           int*                        info,
-//                                                           const int                   batchCount)
-// {
-//     return hipblasZgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGeqrf<hipblasDoubleComplex, true>(hipblasHandle_t       handle,
+                                                         const int             m,
+                                                         const int             n,
+                                                         hipblasDoubleComplex* A,
+                                                         const int             lda,
+                                                         hipblasDoubleComplex* ipiv,
+                                                         int*                  info)
+{
+    return hipblasZgeqrfFortran(handle, m, n, A, lda, ipiv, info);
+}
 
-// // geqrf_strided_batched
-// template <>
-// hipblasStatus_t hipblasGeqrfStridedBatched<float, true>(hipblasHandle_t handle,
-//                                                   const int       m,
-//                                                   const int       n,
-//                                                   float*          A,
-//                                                   const int       lda,
-//                                                   const int       strideA,
-//                                                   float*          ipiv,
-//                                                   const int       strideP,
-//                                                   int*            info,
-//                                                   const int       batchCount)
-// {
-//     return hipblasSgeqrfStridedBatchedFortran(
-//         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
-// }
+// geqrf_batched
+template <>
+hipblasStatus_t hipblasGeqrfBatched<float, true>(hipblasHandle_t handle,
+                                                 const int       m,
+                                                 const int       n,
+                                                 float* const    A[],
+                                                 const int       lda,
+                                                 float* const    ipiv[],
+                                                 int*            info,
+                                                 const int       batchCount)
+{
+    return hipblasSgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGeqrfStridedBatched<double, true>(hipblasHandle_t handle,
-//                                                    const int       m,
-//                                                    const int       n,
-//                                                    double*         A,
-//                                                    const int       lda,
-//                                                    const int       strideA,
-//                                                    double*         ipiv,
-//                                                    const int       strideP,
-//                                                    int*            info,
-//                                                    const int       batchCount)
-// {
-//     return hipblasDgeqrfStridedBatchedFortran(
-//         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGeqrfBatched<double, true>(hipblasHandle_t handle,
+                                                  const int       m,
+                                                  const int       n,
+                                                  double* const   A[],
+                                                  const int       lda,
+                                                  double* const   ipiv[],
+                                                  int*            info,
+                                                  const int       batchCount)
+{
+    return hipblasDgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGeqrfStridedBatched<hipblasComplex, true>(hipblasHandle_t handle,
-//                                                            const int       m,
-//                                                            const int       n,
-//                                                            hipblasComplex* A,
-//                                                            const int       lda,
-//                                                            const int       strideA,
-//                                                            hipblasComplex* ipiv,
-//                                                            const int       strideP,
-//                                                            int*            info,
-//                                                            const int       batchCount)
-// {
-//     return hipblasCgeqrfStridedBatchedFortran(
-//         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGeqrfBatched<hipblasComplex, true>(hipblasHandle_t       handle,
+                                                          const int             m,
+                                                          const int             n,
+                                                          hipblasComplex* const A[],
+                                                          const int             lda,
+                                                          hipblasComplex* const ipiv[],
+                                                          int*                  info,
+                                                          const int             batchCount)
+{
+    return hipblasCgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
+}
 
-// template <>
-// hipblasStatus_t hipblasGeqrfStridedBatched<hipblasDoubleComplex, true>(hipblasHandle_t       handle,
-//                                                                  const int             m,
-//                                                                  const int             n,
-//                                                                  hipblasDoubleComplex* A,
-//                                                                  const int             lda,
-//                                                                  const int             strideA,
-//                                                                  hipblasDoubleComplex* ipiv,
-//                                                                  const int             strideP,
-//                                                                  int*                  info,
-//                                                                  const int             batchCount)
-// {
-//     return hipblasZgeqrfStridedBatchedFortran(
-//         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
-// }
+template <>
+hipblasStatus_t hipblasGeqrfBatched<hipblasDoubleComplex, true>(hipblasHandle_t             handle,
+                                                                const int                   m,
+                                                                const int                   n,
+                                                                hipblasDoubleComplex* const A[],
+                                                                const int                   lda,
+                                                                hipblasDoubleComplex* const ipiv[],
+                                                                int*                        info,
+                                                                const int batchCount)
+{
+    return hipblasZgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
+}
 
-// #endif
+// geqrf_strided_batched
+template <>
+hipblasStatus_t hipblasGeqrfStridedBatched<float, true>(hipblasHandle_t handle,
+                                                        const int       m,
+                                                        const int       n,
+                                                        float*          A,
+                                                        const int       lda,
+                                                        const int       strideA,
+                                                        float*          ipiv,
+                                                        const int       strideP,
+                                                        int*            info,
+                                                        const int       batchCount)
+{
+    return hipblasSgeqrfStridedBatchedFortran(
+        handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGeqrfStridedBatched<double, true>(hipblasHandle_t handle,
+                                                         const int       m,
+                                                         const int       n,
+                                                         double*         A,
+                                                         const int       lda,
+                                                         const int       strideA,
+                                                         double*         ipiv,
+                                                         const int       strideP,
+                                                         int*            info,
+                                                         const int       batchCount)
+{
+    return hipblasDgeqrfStridedBatchedFortran(
+        handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGeqrfStridedBatched<hipblasComplex, true>(hipblasHandle_t handle,
+                                                                 const int       m,
+                                                                 const int       n,
+                                                                 hipblasComplex* A,
+                                                                 const int       lda,
+                                                                 const int       strideA,
+                                                                 hipblasComplex* ipiv,
+                                                                 const int       strideP,
+                                                                 int*            info,
+                                                                 const int       batchCount)
+{
+    return hipblasCgeqrfStridedBatchedFortran(
+        handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+}
+
+template <>
+hipblasStatus_t hipblasGeqrfStridedBatched<hipblasDoubleComplex, true>(hipblasHandle_t       handle,
+                                                                       const int             m,
+                                                                       const int             n,
+                                                                       hipblasDoubleComplex* A,
+                                                                       const int             lda,
+                                                                       const int strideA,
+                                                                       hipblasDoubleComplex* ipiv,
+                                                                       const int strideP,
+                                                                       int*      info,
+                                                                       const int batchCount)
+{
+    return hipblasZgeqrfStridedBatchedFortran(
+        handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+}
+
+#endif

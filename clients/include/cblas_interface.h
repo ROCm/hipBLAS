@@ -439,6 +439,9 @@ template <typename T>
 int cblas_getrs(char trans, int n, int nrhs, T* A, int lda, int* ipiv, T* B, int ldb);
 
 template <typename T>
+int cblas_getri(int n, T* A, int lda, int* ipiv, T* work, int lwork);
+
+template <typename T>
 int cblas_geqrf(int m, int n, T* A, int lda, T* tau, T* work, int lwork);
 /* ============================================================================================ */
 
