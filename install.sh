@@ -420,7 +420,6 @@ if [[ "${install_dependencies}" == true ]]; then
 # We append customary rocm path; if user provides custom rocm path in ${path}, our
 # hard-coded path has lesser priority
 # export PATH=${PATH}:/opt/rocm/bin
-export PATH=${rocm_path}/bin:${rocm_path}/hip/bin:${rocm_path}/llvm/bin:${PATH}
 pushd .
   # #################################################
   # configure & build
@@ -429,8 +428,13 @@ pushd .
   cmake_client_options=""
 
   if [[ "${build_static}" == true ]]; then
+    if [[ "${build_cuda}" == true ]]; then
+      printf "Static library not supported for CUDA backend.\n"
+      exit 1
+    fi
     cmake_common_options="${cmake_common_options} -DBUILD_SHARED_LIBS=OFF"
-    compiler="hipcc" #force hipcc for static libs, g++ doesn't work
+    compiler="${rocm_path}/bin/hipcc" #force hipcc for static libs, g++ doesn't work
+    printf "Forcing compiler to hipcc for static library.\n"
   fi
 
   # build type
