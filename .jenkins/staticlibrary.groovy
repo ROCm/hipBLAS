@@ -14,7 +14,7 @@ def runCI =
     nodeDetails, jobName->
 
     def prj  = new rocProject('hipBLAS', 'StaticLibrary')
-    prj.paths.build_command = './install.sh -cd -p --static /opt/rocm/lib/cmake'
+    prj.paths.build_command = './install.sh -cd --static -p /opt/rocm/lib/cmake'
     prj.libraryDependencies = ['rocBLAS-internal', 'rocSOLVER']
 
     // Define test architectures, optional rocm version argument is available
