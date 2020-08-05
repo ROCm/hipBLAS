@@ -25,6 +25,7 @@ function display_help()
   echo "    [-v|--rocm-dev] Set specific rocm-dev version"
   echo "    [-b|--rocblas] Set specific rocblas version"
   echo "    [--rocblas-path] Set specific path to custom built rocblas"
+  echo "    [--static] Create static library instead of shared library"
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
@@ -283,6 +284,7 @@ build_relocatable=false
 cmake_prefix_path=/opt/rocm
 rocm_path=/opt/rocm
 compiler=g++
+build_static=false
 
 # #################################################
 # Parameter parsing
@@ -291,7 +293,7 @@ compiler=g++
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,compiler:,cuda,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,compiler:,cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -337,6 +339,9 @@ while true; do
     --cuda)
         build_cuda=true
         shift ;;
+    --static)
+        build_static=true
+	shift ;;
     -p|--cmakepp)
         cmake_prefix_path=${2}
         shift 2 ;;
@@ -415,13 +420,22 @@ if [[ "${install_dependencies}" == true ]]; then
 # We append customary rocm path; if user provides custom rocm path in ${path}, our
 # hard-coded path has lesser priority
 # export PATH=${PATH}:/opt/rocm/bin
-
 pushd .
   # #################################################
   # configure & build
   # #################################################
   cmake_common_options=""
   cmake_client_options=""
+
+  if [[ "${build_static}" == true ]]; then
+    if [[ "${build_cuda}" == true ]]; then
+      printf "Static library not supported for CUDA backend.\n"
+      exit 1
+    fi
+    cmake_common_options="${cmake_common_options} -DBUILD_SHARED_LIBS=OFF"
+    compiler="${rocm_path}/bin/hipcc" #force hipcc for static libs, g++ doesn't work
+    printf "Forcing compiler to hipcc for static library.\n"
+  fi
 
   # build type
   if [[ "${build_release}" == true ]]; then
