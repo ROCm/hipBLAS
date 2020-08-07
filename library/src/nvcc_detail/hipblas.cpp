@@ -10358,3 +10358,32 @@ extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
+
+extern "C" hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t    handle,
+                                          hipblasFillMode_t  uplo,
+                                          hipblasOperation_t trans,
+                                          int                n,
+                                          int                k,
+                                          const float*       alpha,
+                                          const void*        A,
+                                          hipblasDatatype_t  Atype,
+                                          int                lda,
+                                          const float*       beta,
+                                          hipblasComplex*    C,
+                                          hipblasDatatype_t  Ctype,
+                                          int                ldc)
+{
+    return hipCUBLASStatusToHIPStatus(cublasGemmStridedBatchedEx((cublasHandle_t)handle,
+                                                                 hipFillToCudaFill(uplo),
+                                                                 hipOperationToCudaOperation(trans),
+                                                                 n,
+                                                                 k,
+                                                                 alpha,
+                                                                 A,
+                                                                 HIPDatatypeToCudaDatatype(Atype),
+                                                                 lda,
+                                                                 beta,
+                                                                 C,
+                                                                 HIPDatatypeToCudaDatatype(c_type),
+                                                                 ldc));
+}

@@ -7091,6 +7091,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
                                                            int                stride_invA,
                                                            hipblasDatatype_t  compute_type);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t    handle,
+                                              hipblasFillMode_t  uplo,
+                                              hipblasOperation_t trans,
+                                              int                n,
+                                              int                k,
+                                              const float*       alpha,
+                                              const void*        A,
+                                              hipblasDatatype_t  Atype,
+                                              int                lda,
+                                              const float*       beta,
+                                              hipblasComplex*    C,
+                                              hipblasDatatype_t  Ctype,
+                                              int                ldc);
+
 #ifdef __cplusplus
 }
 #endif
