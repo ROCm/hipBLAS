@@ -6466,6 +6466,20 @@ hipblasStatus_t hipblasTrsmStridedBatchedExFortran(hipblasHandle_t    handle,
                                                    int                stride_invA,
                                                    hipblasDatatype_t  compute_type);
 
+hipblasStatus_t hipblasCsyrkExFortran(hipblasHandle_t       handle,
+                                      hipblasFillMode_t     uplo,
+                                      hipblasOperation_t    trans,
+                                      int                   n,
+                                      int                   k,
+                                      const hipblasComplex* alpha,
+                                      const void*           A,
+                                      hipblasDatatype_t     Atype,
+                                      int                   lda,
+                                      const hipblasComplex* beta,
+                                      hipblasComplex*       C,
+                                      hipblasDatatype_t     Ctype,
+                                      int                   ldc);
+
 /* ==========
  *    Solver
  * ========== */

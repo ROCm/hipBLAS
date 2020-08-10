@@ -43,10 +43,59 @@ typedef void* hipblasHandle_t;
 
 typedef uint16_t hipblasHalf;
 
+typedef struct hipblasFloat8
+{
+    uint8_t data;
+} hipblasFloat8;
+
 typedef struct hipblasBfloat16
 {
     uint16_t data;
 } hipblasBfloat16;
+
+typedef struct hipblasFloat8Complex
+{
+#ifndef __cplusplus
+
+    hipblasFloat8 x, y;
+
+#else
+
+private:
+    hipblasFloat8 x, y;
+
+public:
+#if __cplusplus >= 201103L
+    hipblasFloat8Complex() = default;
+#else
+    hipblasFloat8Complex() {}
+#endif
+
+    hipblasFloat8Complex(hipblasFloat8 r, hipblasFloat8 i = 0)
+        : x(r)
+        , y(i)
+    {
+    }
+
+    hipblasFloat8 real() const
+    {
+        return x;
+    }
+    hipblasFloat8 imag() const
+    {
+        return y;
+    }
+    void real(hipblasFloat8 r)
+    {
+        x = r;
+    }
+    void imag(hipblasFloat8 i)
+    {
+        y = i;
+    }
+
+#endif
+} hipblasFloat8Complex;
 
 typedef struct hipblasComplex
 {
