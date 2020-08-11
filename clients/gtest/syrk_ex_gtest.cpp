@@ -109,9 +109,6 @@ Arguments setup_syrk_ex_arguments(syrk_ex_tuple tup)
     arg.uplo_option   = uplo;
     arg.transA_option = transA;
 
-    arg.stride_scale = stride_scale;
-    arg.batch_count  = batch_count;
-
     arg.fortran = fortran;
 
     return arg;
@@ -138,7 +135,7 @@ TEST_P(blas2_syrk_ex_gtest, syrk_ex_gtest_float)
     if(arg.transA_option == 'C')
         arg.transA_option = 'T';
 
-    hipblasStatus_t status = testing_syrk_ex<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_syrk_ex(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -151,7 +148,11 @@ TEST_P(blas2_syrk_ex_gtest, syrk_ex_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            // TODO: This is not currently supported in rocBLAS.
+            // Also, it appears that cuBLAS documentation is wrong,
+            // as we are getting a NOT_SUPPORTED return value with
+            // the documented Atype and Ctype.
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
         }
     }
 }

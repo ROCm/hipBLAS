@@ -178,6 +178,9 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
     case HIPBLAS_C_64F:
         return CUDA_C_64F;
 
+    case HIPBLAS_C_8I:
+        return CUDA_C_8I;
+
     default:
         throw "Non existent DataType";
     }

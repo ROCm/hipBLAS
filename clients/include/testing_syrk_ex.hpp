@@ -11,6 +11,7 @@
 #include "cblas_interface.h"
 #include "flops.h"
 #include "hipblas.hpp"
+#include "hipblas_fortran.hpp"
 #include "norm.h"
 #include "unit.h"
 #include "utility.h"
@@ -28,9 +29,16 @@ hipblasStatus_t testing_syrk_ex_template(hipblasFillMode_t  uplo,
                                          int                lda,
                                          T                  beta,
                                          int                ldc,
+                                         hipblasDatatype_t  a_type,
+                                         hipblasDatatype_t  c_type,
+                                         bool               unit_check,
+                                         bool               norm_check,
+                                         bool               timing,
                                          bool               FORTRAN)
 {
-    auto hipblasSyrkExFn = FORTRAN ? hipblasSyrkExFortran : hipblasSyrkEx;
+    auto hipblasSyrkExFn = FORTRAN ? hipblasCsyrkExFortran : hipblasCsyrkEx;
+
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     int K1     = (transA == HIPBLAS_OP_N ? K : N);
     int A_size = lda * K1;
@@ -39,6 +47,7 @@ hipblasStatus_t testing_syrk_ex_template(hipblasFillMode_t  uplo,
     host_vector<Atype> hA(A_size);
     host_vector<Ctype> hC(C_size);
     host_vector<Ctype> hC2(C_size);
+    host_vector<T>     hA_T(C_size);
 
     device_vector<Atype> dA(A_size);
     device_vector<Ctype> dC(C_size);
@@ -47,9 +56,6 @@ hipblasStatus_t testing_syrk_ex_template(hipblasFillMode_t  uplo,
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
     double rocblas_error;
 
-    T alpha = argus.get_alpha<T>();
-    T beta  = argus.get_beta<T>();
-
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
@@ -57,6 +63,15 @@ hipblasStatus_t testing_syrk_ex_template(hipblasFillMode_t  uplo,
     srand(1);
     hipblas_init<Atype>(hA, N, K1, lda);
     hipblas_init<Ctype>(hC, N, N, ldc);
+
+    for(int i = 0; i < N; i++)
+    {
+        for(int j = 0; j < N; j++)
+        {
+            hA_T[j + i * ldc].real(float(hA[j + i * ldc].real()));
+            hA_T[j + i * ldc].imag(float(hA[j + i * ldc].imag()));
+        }
+    }
 
     // copy matrix is easy in STL; hB = hA: save a copy in hB which will be output of CPU BLAS
     // hB = hA;
@@ -68,15 +83,15 @@ hipblasStatus_t testing_syrk_ex_template(hipblasFillMode_t  uplo,
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    if(argus.timing)
+    if(timing)
     {
         gpu_time_used = get_time_us(); // in microseconds
     }
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status
-            = hipblasSyrkExFn(handle, uplo, transA, N, K, (T*)&alpha, dA, lda, (T*)&beta, dC, ldc);
+        status = hipblasSyrkExFn(
+            handle, uplo, transA, N, K, (T*)&alpha, dA, a_type, lda, (T*)&beta, dC, c_type, ldc);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
@@ -88,23 +103,20 @@ hipblasStatus_t testing_syrk_ex_template(hipblasFillMode_t  uplo,
     // copy output from device to CPU
     hipMemcpy(hC2.data(), dC, sizeof(Ctype) * C_size, hipMemcpyDeviceToHost);
 
-    if(argus.unit_check)
+    if(unit_check)
     {
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        // cblas_syrk<T>(uplo, transA, N, K, alpha, hA.data(), lda, beta, hC, ldc);
+        cblas_syrk<T>(uplo, transA, N, K, alpha, hA_T.data(), lda, beta, hC.data(), ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
-        {
-            unit_check_general<Ctype>(N, N, ldc, hC2.data(), hC.data());
-        }
+        unit_check_general<Ctype>(N, N, ldc, hC2.data(), hC.data());
     }
 
     hipblasDestroy(handle);
-    return HIPBLAS_STATUS_SUCCESS;
+    return status;
 }
 
 hipblasStatus_t testing_syrk_ex(Arguments argus)
@@ -122,6 +134,9 @@ hipblasStatus_t testing_syrk_ex(Arguments argus)
     hipblasDatatype_t a_type = argus.a_type;
     hipblasDatatype_t c_type = argus.c_type;
 
+    hipblasComplex alpha = argus.get_alpha<hipblasComplex>();
+    hipblasComplex beta  = argus.get_beta<hipblasComplex>();
+
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
@@ -132,16 +147,41 @@ hipblasStatus_t testing_syrk_ex(Arguments argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     if(a_type == HIPBLAS_C_8I && c_type == HIPBLAS_C_32F)
     {
-        status = testing_syrk_ex_template<hipblasComplex, hipblasFloat8Complex, hipblasComplex>(
-            uplo, transA, N, K, alpha, lda, beta, ldc, FORTRAN);
+        status = testing_syrk_ex_template<hipblasComplex, hipblasInt8Complex, hipblasComplex>(
+            uplo,
+            transA,
+            N,
+            K,
+            alpha,
+            lda,
+            beta,
+            ldc,
+            a_type,
+            c_type,
+            argus.unit_check,
+            argus.norm_check,
+            argus.timing,
+            FORTRAN);
     }
     else if(a_type == HIPBLAS_C_32F && c_type == HIPBLAS_C_32F)
     {
         status = testing_syrk_ex_template<hipblasComplex, hipblasComplex, hipblasComplex>(
-            uplo, transA, N, K, alpha, lda, beta, ldc, FORTRAN);
+            uplo,
+            transA,
+            N,
+            K,
+            alpha,
+            lda,
+            beta,
+            ldc,
+            a_type,
+            c_type,
+            argus.unit_check,
+            argus.norm_check,
+            argus.timing,
+            FORTRAN);
     }
     else
     {
