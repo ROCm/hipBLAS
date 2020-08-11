@@ -6480,6 +6480,20 @@ hipblasStatus_t hipblasCsyrkExFortran(hipblasHandle_t       handle,
                                       hipblasDatatype_t     Ctype,
                                       int                   ldc);
 
+hipblasStatus_t hipblasCherkExFortran(hipblasHandle_t       handle,
+                                      hipblasFillMode_t     uplo,
+                                      hipblasOperation_t    trans,
+                                      int                   n,
+                                      int                   k,
+                                      const hipblasComplex* alpha,
+                                      const void*           A,
+                                      hipblasDatatype_t     Atype,
+                                      int                   lda,
+                                      const hipblasComplex* beta,
+                                      hipblasComplex*       C,
+                                      hipblasDatatype_t     Ctype,
+                                      int                   ldc);
+
 /* ==========
  *    Solver
  * ========== */

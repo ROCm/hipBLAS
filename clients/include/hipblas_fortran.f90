@@ -12355,4 +12355,28 @@ module hipblas_interface
         res = hipblasCsyrkEx(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc)
     end function hipblasCsyrkExFortran
 
+    ! CherkEx
+    function hipblasCherkExFortran(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc) &
+        result(res) &
+        bind(c, name = 'hipblasCherkExFortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int), value :: n
+    integer(c_int), value :: k
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(kind(HIPBLAS_R_16F)), value :: Atype
+    integer(c_int), value :: lda
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: C
+    integer(kind(HIPBLAS_R_16F)), value :: Ctype
+    integer(c_int), value :: ldc
+    integer(c_int) :: res
+    res = hipblasCherkEx(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc)
+end function hipblasCherkExFortran
+
 end module hipblas_interface
