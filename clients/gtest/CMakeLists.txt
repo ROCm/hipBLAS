@@ -80,6 +80,7 @@ set(hipblas_test_source
   hemm_gtest.cpp
   geam_gtest.cpp
   herk_gtest.cpp
+  herk_ex_gtest.cpp
   her2k_gtest.cpp
   herkx_gtest.cpp
   symm_gtest.cpp

@@ -20,14 +20,14 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T, typename Atype, typename Ctype>
+template <typename T, typename SCAL, typename Atype, typename Ctype>
 hipblasStatus_t testing_herk_ex_template(hipblasFillMode_t  uplo,
                                          hipblasOperation_t transA,
                                          int                N,
                                          int                K,
-                                         T                  alpha,
+                                         SCAL               alpha,
                                          int                lda,
-                                         T                  beta,
+                                         SCAL               beta,
                                          int                ldc,
                                          hipblasDatatype_t  a_type,
                                          hipblasDatatype_t  c_type,
@@ -90,8 +90,19 @@ hipblasStatus_t testing_herk_ex_template(hipblasFillMode_t  uplo,
 
     for(int iter = 0; iter < 1; iter++)
     {
-        status = hipblasherkExFn(
-            handle, uplo, transA, N, K, (T*)&alpha, dA, a_type, lda, (T*)&beta, dC, c_type, ldc);
+        status = hipblasHerkExFn(handle,
+                                 uplo,
+                                 transA,
+                                 N,
+                                 K,
+                                 (SCAL*)&alpha,
+                                 dA,
+                                 a_type,
+                                 lda,
+                                 (SCAL*)&beta,
+                                 dC,
+                                 c_type,
+                                 ldc);
 
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
@@ -134,8 +145,8 @@ hipblasStatus_t testing_herk_ex(Arguments argus)
     hipblasDatatype_t a_type = argus.a_type;
     hipblasDatatype_t c_type = argus.c_type;
 
-    hipblasComplex alpha = argus.get_alpha<hipblasComplex>();
-    hipblasComplex beta  = argus.get_beta<hipblasComplex>();
+    float alpha = argus.get_alpha<float>();
+    float beta  = argus.get_beta<float>();
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -149,25 +160,26 @@ hipblasStatus_t testing_herk_ex(Arguments argus)
 
     if(a_type == HIPBLAS_C_8I && c_type == HIPBLAS_C_32F)
     {
-        status = testing_herk_ex_template<hipblasComplex, hipblasInt8Complex, hipblasComplex>(
-            uplo,
-            transA,
-            N,
-            K,
-            alpha,
-            lda,
-            beta,
-            ldc,
-            a_type,
-            c_type,
-            argus.unit_check,
-            argus.norm_check,
-            argus.timing,
-            FORTRAN);
+        status
+            = testing_herk_ex_template<hipblasComplex, float, hipblasInt8Complex, hipblasComplex>(
+                uplo,
+                transA,
+                N,
+                K,
+                alpha,
+                lda,
+                beta,
+                ldc,
+                a_type,
+                c_type,
+                argus.unit_check,
+                argus.norm_check,
+                argus.timing,
+                FORTRAN);
     }
     else if(a_type == HIPBLAS_C_32F && c_type == HIPBLAS_C_32F)
     {
-        status = testing_herk_ex_template<hipblasComplex, hipblasComplex, hipblasComplex>(
+        status = testing_herk_ex_template<hipblasComplex, float, hipblasComplex, hipblasComplex>(
             uplo,
             transA,
             N,

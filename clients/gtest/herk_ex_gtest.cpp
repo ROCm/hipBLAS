@@ -117,8 +117,8 @@ Arguments setup_herk_ex_arguments(herk_ex_tuple tup)
 class blas2_herk_ex_gtest : public ::TestWithParam<herk_ex_tuple>
 {
 protected:
-    blas2_herk_gtest() {}
-    virtual ~blas2_herk_gtest() {}
+    blas2_herk_ex_gtest() {}
+    virtual ~blas2_herk_ex_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
@@ -133,7 +133,7 @@ TEST_P(blas2_herk_ex_gtest, herk_ex_gtest_float)
 
     Arguments arg = setup_herk_ex_arguments(GetParam());
 
-    hipblasStatus_t status = testing_herk_ex<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_herk_ex(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -146,7 +146,11 @@ TEST_P(blas2_herk_ex_gtest, herk_ex_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            // TODO: This is not currently supported in rocBLAS.
+            // Also, it appears that cuBLAS documentation is wrong,
+            // as we are getting a NOT_SUPPORTED return value with
+            // the documented Atype and Ctype.
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
         }
     }
 }
@@ -162,4 +166,5 @@ INSTANTIATE_TEST_CASE_P(hipblasHerkEx,
                                 ValuesIn(alpha_beta_range),
                                 ValuesIn(uplo_range),
                                 ValuesIn(transA_range),
+                                ValuesIn(precisions),
                                 ValuesIn(is_fortran)));
