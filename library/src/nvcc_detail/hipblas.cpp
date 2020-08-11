@@ -10362,6 +10362,7 @@ extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+// syrk_ex
 extern "C" hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
                                           hipblasFillMode_t     uplo,
                                           hipblasOperation_t    trans,
@@ -10391,6 +10392,7 @@ extern "C" hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
                                                     ldc));
 }
 
+// herk_ex
 extern "C" hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
                                           hipblasFillMode_t  uplo,
                                           hipblasOperation_t trans,
@@ -10418,4 +10420,151 @@ extern "C" hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
                                                     (cuComplex*)C,
                                                     HIPDatatypeToCudaDatatype(Ctype),
                                                     ldc));
+}
+
+// nrm2_ex
+extern "C" hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
+                                         int               n,
+                                         const void*       x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         void*             result,
+                                         hipblasDatatype_t resultType,
+                                         hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasNrm2Ex((cublasHandlt_t)handle,
+                                                   n,
+                                                   x,
+                                                   HIPDatatypeToCudaDatatype(xType),
+                                                   incx,
+                                                   result,
+                                                   HIPDatatypeToCudaDatatype(resultType),
+                                                   HIPDatatypeToCudaDatatype(executionType)));
+}
+
+// axpy_ex
+extern "C" hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
+                                         int               n,
+                                         const void*       alpha,
+                                         hipblasDatatype_t alphaType,
+                                         const void*       x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         void*             y,
+                                         hipblasDatatype_t yType,
+                                         int               incy,
+                                         hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasAxpyEx((cublasHandlt_t)handle,
+                                                   n,
+                                                   alpha,
+                                                   HIPDatatypeToCudaDatatype(alphaType),
+                                                   x,
+                                                   HIPDatatypeToCudaDatatype(xType),
+                                                   incx,
+                                                   y,
+                                                   HIPDatatypeToCudaDatatype(yType),
+                                                   incy,
+                                                   HIPDatatypeToCudaDatatype(executionType)));
+}
+
+// dot_ex
+extern "C" hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
+                                        int               n,
+                                        const void*       x,
+                                        hipblasDatatype_t xType,
+                                        int               incx,
+                                        const void*       y,
+                                        hipblasDatatype_t yType,
+                                        int               incy,
+                                        void*             result,
+                                        hipblasDatatype_t resultType,
+                                        hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDotEx((cublasHandlt_t)handle,
+                                                  n,
+                                                  x,
+                                                  HIPDatatypeToCudaDatatype(xType),
+                                                  incx,
+                                                  y,
+                                                  HIPDatatypeToCudaDatatype(yType),
+                                                  incy,
+                                                  result,
+                                                  HIPDatatypeToCudaDatatype(resultType),
+                                                  HIPDatatypeToCudaDatatype(executionType)));
+}
+
+extern "C" hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
+                                         int               n,
+                                         const void*       x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         const void*       y,
+                                         hipblasDatatype_t yType,
+                                         int               incy,
+                                         void*             result,
+                                         hipblasDatatype_t resultType,
+                                         hipblasDatatype_t executionType)
+{
+    return return hipCUBLASStatusToHIPStatus(
+        cublasDotcEx((cublasHandlt_t)handle,
+                     n,
+                     x,
+                     HIPDatatypeToCudaDatatype(xType),
+                     incx,
+                     y,
+                     HIPDatatypeToCudaDatatype(yType),
+                     incy,
+                     result,
+                     HIPDatatypeToCudaDatatype(resultType),
+                     HIPDatatypeToCudaDatatype(executionType)));
+}
+
+// rot_ex
+extern "C" hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
+                                        int               n,
+                                        void*             x,
+                                        hipblasDatatype_t xType,
+                                        int               incx,
+                                        void*             y,
+                                        hipblasDatatype_t yType,
+                                        int               incy,
+                                        const void*       c,
+                                        const void*       s,
+                                        hipblasDatatype_t csType,
+                                        hipblasDatatype_t executionType)
+{
+    return return hipCUBLASStatusToHIPStatus(cublasRotEx((cublasHandlt_t)handle,
+                                                         n,
+                                                         x,
+                                                         HIPDatatypeToCudaDatatype(xType),
+                                                         incx,
+                                                         y,
+                                                         HIPDatatypeToCudaDatatype(yType),
+                                                         incy,
+                                                         c,
+                                                         s,
+                                                         HIPDatatypeToCudaDatatype(csType),
+                                                         HIPDatatypeToCudaDatatype(executionType)));
+}
+
+// scal_ex
+extern "C" hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
+                                         int               n,
+                                         const void*       alpha,
+                                         hipblasDatatype_t alphaType,
+                                         void*             x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         hipblasDatatype_t executionType)
+{
+    return return hipCUBLASStatusToHIPStatus(
+        cublasScalEx((cublasHandlt_t)handle,
+                     n,
+                     alpha,
+                     HIPDatatypeToCudaDatatype(alphaType),
+                     x,
+                     HIPDatatypeToCudaDatatype(xType),
+                     incx,
+                     HIPDatatypeToCudaDatatype(executionType)));
 }

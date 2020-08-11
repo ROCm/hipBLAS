@@ -14395,6 +14395,7 @@ extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle
                                         HIPDatatypeToRocblasDatatype(compute_type)));
 }
 
+// syrk_ex
 extern "C" hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
                                           hipblasFillMode_t     uplo,
                                           hipblasOperation_t    trans,
@@ -14412,6 +14413,7 @@ extern "C" hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+// herk_ex
 extern "C" hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
                                           hipblasFillMode_t  uplo,
                                           hipblasOperation_t trans,
@@ -14425,6 +14427,96 @@ extern "C" hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
                                           hipblasComplex*    C,
                                           hipblasDatatype_t  Ctype,
                                           int                ldc)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// nrm2_ex
+extern "C" hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
+                                         int               n,
+                                         const void*       x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         void*             result,
+                                         hipblasDatatype_t resultType,
+                                         hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// axpy_ex
+extern "C" hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
+                                         int               n,
+                                         const void*       alpha,
+                                         hipblasDatatype_t alphaType,
+                                         const void*       x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         void*             y,
+                                         hipblasDatatype_t yType,
+                                         int               incy,
+                                         hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// dot_ex
+extern "C" hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
+                                        int               n,
+                                        const void*       x,
+                                        hipblasDatatype_t xType,
+                                        int               incx,
+                                        const void*       y,
+                                        hipblasDatatype_t yType,
+                                        int               incy,
+                                        void*             result,
+                                        hipblasDatatype_t resultType,
+                                        hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+extern "C" hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
+                                         int               n,
+                                         const void*       x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         const void*       y,
+                                         hipblasDatatype_t yType,
+                                         int               incy,
+                                         void*             result,
+                                         hipblasDatatype_t resultType,
+                                         hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// rot_ex
+extern "C" hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
+                                        int               n,
+                                        void*             x,
+                                        hipblasDatatype_t xType,
+                                        int               incx,
+                                        void*             y,
+                                        hipblasDatatype_t yType,
+                                        int               incy,
+                                        const void*       c,
+                                        const void*       s,
+                                        hipblasDatatype_t csType,
+                                        hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// scal_ex
+extern "C" hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
+                                         int               n,
+                                         const void*       alpha,
+                                         hipblasDatatype_t alphaType,
+                                         void*             x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         hipblasDatatype_t executionType)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }

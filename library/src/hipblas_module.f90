@@ -11937,6 +11937,7 @@ module hipblas
         end function hipblasTrsmStridedBatchedEx
     end interface
 
+    ! syrkEx
     interface
         function hipblasCsyrkEx(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc) &
                 result(c_int) &
@@ -11960,6 +11961,7 @@ module hipblas
         end function hipblasCsyrkEx
     end interface
 
+    ! herkEx
     interface
         function hipblasCherkEx(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc) &
                 result(c_int) &
@@ -11981,6 +11983,132 @@ module hipblas
             integer(kind(HIPBLAS_R_16F)), value :: Ctype
             integer(c_int), value :: ldc
         end function hipblasCherkEx
+    end interface
+
+    ! nrm2Ex
+    interface
+        function hipblasNrm2Ex(handle, n, x, xType, incx, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasNrm2Ex')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasNrm2Ex
+    end interface
+
+    ! axpyEx
+    interface
+        function hipblasAxpyEx(handle, n, alpha, alphaType, x, xType, incx, y, yType, incy, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasAxpyEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasAxpyEx
+    end interface
+
+    ! dotEx
+    interface
+        function hipblasDotEx(handle, n, x, xType, incx, y, yType, incy, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasDotEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotEx
+    end interface
+
+    interface
+        function hipblasDotcEx(handle, n, x, xType, incx, y, yType, incy, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasDotcEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotcEx
+    end interface
+
+    ! rotEx
+    interface
+        function hipblasRotEx(handle, n, x, xType, incx, y, yType, incy, c, s, csType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasRotEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            type(c_ptr), value :: c
+            type(c_ptr), value :: s
+            integer(kind(HIPBLAS_R_16F)), value :: csType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasRotEx
+    end interface
+
+    ! scalEx
+    interface
+        function hipblasScalEx(handle, n, alpha, alphaType, x, xType, incx, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasScalEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasScalEx
     end interface
 
     !--------!

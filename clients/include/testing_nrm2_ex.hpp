@@ -1,0 +1,166 @@
+/* ************************************************************************
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ *
+ * ************************************************************************ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+
+#include "cblas_interface.h"
+#include "hipblas.hpp"
+#include "norm.h"
+#include "unit.h"
+#include "utility.h"
+
+using namespace std;
+
+/* ============================================================================================ */
+
+// Tolerance of 100 fails for complex,
+// TODO: something better than arbitrary tolerance.
+template <typename T>
+constexpr double nrm2_tolerance_multiplier = 100;
+template <>
+constexpr double nrm2_tolerance_multiplier<hipblasComplex> = 110;
+template <>
+constexpr double nrm2_tolerance_multiplier<hipblasDoubleComplex> = 110;
+
+template <typename X_TYPE, typename R_TYPE = X_TYPE, typename E_TYPE = R_TYPE>
+hipblasStatus_t testing_nrm2_ex_template(int               N,
+                                         int               incx,
+                                         hipblasDatatype_t xType,
+                                         hipblasDatatype_t resultType,
+                                         hipblasDatatype_t executionType,
+                                         bool              unit_check,
+                                         bool              norm_check,
+                                         bool              timing,
+                                         bool              FORTRAN)
+{
+    bool FORTRAN         = argus.fortran;
+    auto hipblasNrm2ExFn = FORTRAN ? hipblasNrm2ExFortran : hipblasNrm2Ex;
+
+    int N    = argus.N;
+    int incx = argus.incx;
+
+    // check to prevent undefined memory allocation error
+    if(N < 0 || incx < 0)
+    {
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    }
+
+    hipblasDatatype_t xType         = argus.a_type;
+    hipblasDatatype_t resultType    = argus.b_type;
+    hipblasDatatype_t executionType = argus.compute_type;
+
+    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
+
+    int sizeX = N * incx;
+
+    // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
+    host_vector<X_TYPE> hx(sizeX);
+
+    device_vector<X_TYPE> dx(sizeX);
+    device_vector<R_TYPE> d_rocblas_result(1);
+
+    R_TYPE cpu_result, rocblas_result_1, rocblas_result_2;
+
+    double gpu_time_used, cpu_time_used;
+    double rocblas_error;
+
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
+
+    // Initial Data on CPU
+    srand(1);
+    hipblas_init<X_TYPE>(hx, 1, N, incx);
+
+    // copy data from CPU to device, does not work for incx != 1
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(X_TYPE) * sizeX, hipMemcpyHostToDevice));
+
+    // hipblasNrm2 accept both dev/host pointer for the scalar
+    status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
+    status_2
+        = hipblasNrm2ExFn(handle, N, dx, xType, incx, d_rocblas_result, resultType, executionType);
+
+    status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+    status_4
+        = hipblasNrm2ExFn(handle, N, dx, xType, incx, &rocblas_result_1, resultType, executionType);
+
+    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
+       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
+    {
+        hipblasDestroy(handle);
+        if(status_1 != HIPBLAS_STATUS_SUCCESS)
+            return status_1;
+        if(status_2 != HIPBLAS_STATUS_SUCCESS)
+            return status_2;
+        if(status_3 != HIPBLAS_STATUS_SUCCESS)
+            return status_3;
+        if(status_4 != HIPBLAS_STATUS_SUCCESS)
+            return status_4;
+    }
+
+    CHECK_HIP_ERROR(
+        hipMemcpy(&rocblas_result_2, d_rocblas_result, sizeof(R_TYPE), hipMemcpyDeviceToHost));
+
+    if(argus.unit_check || argus.norm_check)
+    {
+
+        /* =====================================================================
+                    CPU BLAS
+        =================================================================== */
+
+        cblas_nrm2<X_TYPE, R_TYPE>(N, hx.data(), incx, &cpu_result);
+
+        if(argus.unit_check)
+        {
+            R_TYPE tolerance = nrm2_tolerance_multiplier<R_TYPE>;
+            unit_check_nrm2<R_TYPE>(cpu_result, rocblas_result_1, tolerance);
+            unit_check_nrm2<R_TYPE>(cpu_result, rocblas_result_2, tolerance);
+        }
+
+    } // end of if unit/norm check
+
+    hipblasDestroy(handle);
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+hipblasStatus_t testing_nrm2_ex(Arguments argus)
+{
+    hipblasDatatype_t xType         = argus.a_type;
+    hipblasDatatype_t resultType    = argus.b_type;
+    hipblasDatatype_t executionType = argus.compute_type;
+
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+
+    if(xType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
+    {
+        status = testing_nrm2_ex_template<hipblasHalf, float, float>(argus);
+    }
+    else if(xType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
+    {
+        status = testing_nrm2_ex_template<float>(argus);
+    }
+    else if(xType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
+    {
+        status = testing_nrm2_ex_template<double>(argus);
+    }
+    else if(xType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F && executionType == HIPBLAS_C_32F)
+    {
+        status = testing_nrm2_ex_template<hipblasComplex>(argus);
+    }
+    else if(xType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F && executionType == HIPBLAS_C_64F)
+    {
+        status = testing_nrm2_ex_template<hipblasDoubleComplex>(argus);
+    }
+    else
+    {
+        status = HIPBLAS_STATUS_NOT_SUPPORTED;
+    }
+
+    return status;
+}
