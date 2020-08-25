@@ -11,9 +11,12 @@ import java.nio.file.Path
 
 def runCI = 
 {
-    nodeDetails, jobName->
+    nodeDetails, jobName, buildCommand, label->
 
     def prj  = new rocProject('hipBLAS', 'PreCheckin')
+    
+    //customize for project
+    prj.paths.build_command = buildCommand
     prj.libraryDependencies = ['rocBLAS-internal', 'rocSOLVER']
 
     // Define test architectures, optional rocm version argument is available
@@ -42,7 +45,7 @@ def runCI =
     {
         platform, project->
         
-        commonGroovy.runPackageCommand(platform, project)
+        commonGroovy.runPackageCommand(platform, project, jobName, label)
     }
 
     buildProject(prj, formatCheck, nodes.dockerArray, compileCommand, testCommand, packageCommand)

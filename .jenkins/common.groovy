@@ -40,11 +40,27 @@ def runTestCommand (platform, project)
     junit "${project.paths.project_build_prefix}/build/release/clients/staging/*.xml"
 }
 
-def runPackageCommand(platform, project)
+def runPackageCommand(platform, project, jobName, label='')
 {
-        def packageHelper = platform.makePackage(platform.jenkinsLabel,"${project.paths.project_build_prefix}/build/release")
-        platform.runCommand(this, packageHelper[0])
-        platform.archiveArtifacts(this, packageHelper[1])
-}
+    def command
+
+    label = label != '' ? '-' + label.toLowerCase() : ''
+    String ext = platform.jenkinsLabel.contains('ubuntu') ? "deb" : "rpm"
+    String dir = jobName.contains('Debug') ? "debug" : "release"
+
+    command = """
+            set -x
+            cd ${project.paths.project_build_prefix}/build/${dir}
+            make package
+            mkdir -p package
+            mv *.${ext} package/
+            for f in package
+            do
+                mv "$f" "${f%.*}-$label.${ext}"
+            done
+        """
+
+    platform.runCommand(this, command)
+    platform.archiveArtifacts(this, """${project.paths.project_build_prefix}/build/${dir}/package/*.${ext}""")
 
 return this
