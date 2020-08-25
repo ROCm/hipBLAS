@@ -54,8 +54,9 @@ def runPackageCommand(platform, project, jobName, label='')
             make package
             mkdir -p package
             for f in hipblas*.${ext}
-            do
-                mv "$f" "${f%.*}-$label.${ext}"
+            do 
+                filename="${f%.*}"
+                mv "${f}" "${filename}-${label}.${ext}"
             done
             mv *.${ext} package/
         """
