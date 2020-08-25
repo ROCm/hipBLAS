@@ -57,7 +57,7 @@ def runPackageCommand(platform, project, jobName, label='')
             then
                 for f in hipblas*.${ext}
                 do 
-                    mv "\$f" "hipblas-${label}-\${f#*-}"
+                    mv "\$f" "hipblas${label}-\${f#*-}"
                 done
             fi
             mv *.${ext} package/
