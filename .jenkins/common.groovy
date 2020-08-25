@@ -53,13 +53,10 @@ def runPackageCommand(platform, project, jobName, label='')
             cd ${project.paths.project_build_prefix}/build/${dir}
             make package
             mkdir -p package
-            if [! -z "${label}" ]
-            then
-                for f in hipblas*.${ext}
-                do 
-                    mv "\$f" "hipblas${label}-\${f#*-}"
-                done
-            fi
+            for f in hipblas*.$ext
+            do 
+                mv "\$f" "hipblas${label}-\${f#*-}"
+            done
             mv *.${ext} package/
         """
 
