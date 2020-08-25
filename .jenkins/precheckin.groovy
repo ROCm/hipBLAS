@@ -14,13 +14,12 @@ def runCI =
     nodeDetails, jobName->
 
     def prj  = new rocProject('hipBLAS', 'PreCheckin')
-    prj.paths.build_command = './install.sh -cd -p /opt/rocm/lib/cmake'
     prj.libraryDependencies = ['rocBLAS-internal', 'rocSOLVER']
 
     // Define test architectures, optional rocm version argument is available
     def nodes = new dockerNodes(nodeDetails, jobName, prj)
 
-    boolean formatCheck = true
+    boolean formatCheck = false
 
     def commonGroovy
 
@@ -49,6 +48,30 @@ def runCI =
     buildProject(prj, formatCheck, nodes.dockerArray, compileCommand, testCommand, packageCommand)
 }
 
+def setupCI(urlJobName, jobNameList, buildCommand, runCI, label)
+{
+    jobNameList = auxiliary.appendJobNameList(jobNameList)
+
+    jobNameList.each
+    {
+        jobName, nodeDetails->
+        if (urlJobName == jobName)
+            stage(label + ' ' + jobName) {
+                runCI(nodeDetails, jobName, buildCommand, label)
+            }
+    }
+
+    // For url job names that are not listed by the jobNameList i.e. compute-rocm-dkms-no-npi-1901
+    if(!jobNameList.keySet().contains(urlJobName))
+    {
+        properties(auxiliary.addCommonProperties([pipelineTriggers([cron('0 1 * * *')])]))
+        stage(label + ' ' + urlJobName) {
+            runCI([ubuntu18:['gfx906']], urlJobName, buildCommand, label)
+        }
+    }
+    
+}
+
 ci: { 
     String urlJobName = auxiliary.getTopJobName(env.BUILD_URL)
 
@@ -57,7 +80,7 @@ ci: {
     propertyList = auxiliary.appendPropertyList(propertyList)
 
     def jobNameList = ["compute-rocm-dkms-no-npi-hipclang":([ubuntu18:['gfx900'],centos7:['gfx906'],sles15sp1:['gfx908']]),
-                       "rocm-docker":([ubuntu16:['gfx900'],ubuntu18:['gfx900'],centos7:['gfx906'],sles15sp1:['gfx906']])]
+                       "rocm-docker":([ubuntu18:['gfx900'],centos7:['gfx906'],sles15sp1:['gfx906']])]
     jobNameList = auxiliary.appendJobNameList(jobNameList)
 
     propertyList.each 
@@ -66,22 +89,12 @@ ci: {
         if (urlJobName == jobName)
             properties(auxiliary.addCommonProperties(property))
     }
+    
+    String hostBuildCommand = './install.sh -c --hip-clang --compiler=g++'
+    String hipClangBuildCommand = './install.sh -c --hip-clang --compiler=/opt/rocm/hip/bin/hipcc'
+    String clangBuildCommand = './install.sh -c --hip-clang --compiler=clang++'
 
-    jobNameList.each 
-    {
-        jobName, nodeDetails->
-        if (urlJobName == jobName)
-            stage(jobName) {
-                runCI(nodeDetails, jobName)
-            }
-    }
-
-    // For url job names that are not listed by the jobNameList i.e. compute-rocm-dkms-no-npi-1901
-    if(!jobNameList.keySet().contains(urlJobName))
-    {
-        properties(auxiliary.addCommonProperties([pipelineTriggers([cron('0 1 * * *')])]))
-        stage(urlJobName) {
-            runCI([ubuntu16:['gfx906']], urlJobName)
-        }
-    }
+    setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
+    setupCI(urlJobName, jobNameList, clangBuildCommand, runCI, 'clang++')
+    setupCI(urlJobName, jobNameList, hipClangBuildCommand, runCI, 'hip-clang')
 }

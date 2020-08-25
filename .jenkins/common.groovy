@@ -14,8 +14,6 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
         }
     }
     
-    String compiler = jobName.contains('hipclang') ? 'hipcc' : 'hcc'
-    String hipClang = jobName.contains('hipclang') ? '--hip-clang' : ''
     String sles = platform.jenkinsLabel.contains('sles') ? '/usr/bin/sudo --preserve-env' : ''
     String centos = platform.jenkinsLabel.contains('centos') ? 'source scl_source enable devtoolset-7' : ':'
 
@@ -24,7 +22,7 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
                 cd ${project.paths.project_build_prefix}
                 ${getDependenciesCommand}
                 ${centos}
-                ${sles} LD_LIBRARY_PATH=/opt/rocm/lib ${project.paths.build_command} ${hipClang} --compiler g++
+                ${sles} LD_LIBRARY_PATH=/opt/rocm/lib ${project.paths.build_command}
                 """
     platform.runCommand(this, command)
 }
