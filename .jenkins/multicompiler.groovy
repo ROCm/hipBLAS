@@ -13,7 +13,7 @@ def runCI =
 {
     nodeDetails, jobName, buildCommand, label->
 
-    def prj  = new rocProject('hipBLAS', 'PreCheckin')
+    def prj  = new rocProject('hipBLAS', 'MultiCompiler')
     
     //customize for project
     prj.paths.build_command = buildCommand
@@ -94,5 +94,10 @@ ci: {
     }
     
     String hostBuildCommand = './install.sh -c --hip-clang --compiler=g++'
+    String hipClangBuildCommand = './install.sh -c --hip-clang --compiler=/opt/rocm/hip/bin/hipcc'
+    String clangBuildCommand = './install.sh -c --hip-clang --compiler=clang++'
+
     setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
+    setupCI(urlJobName, jobNameList, clangBuildCommand, runCI, 'clang++')
+    setupCI(urlJobName, jobNameList, hipClangBuildCommand, runCI, 'hip-clang')
 }
