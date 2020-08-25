@@ -59,6 +59,7 @@ def runPackageCommand(platform, project, jobName, label='')
                 do 
                     mv "\$f" "hipblas-${label}-\${f#*-}"
                 done
+            fi
             mv *.${ext} package/
         """
 
