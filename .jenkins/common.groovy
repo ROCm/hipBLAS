@@ -64,5 +64,6 @@ def runPackageCommand(platform, project, jobName, label='')
 
     platform.runCommand(this, command)
     platform.archiveArtifacts(this, """${project.paths.project_build_prefix}/build/${dir}/package/*.${ext}""")
+}
 
 return this
