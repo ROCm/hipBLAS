@@ -20,7 +20,7 @@ using namespace std;
 template <typename T, typename U>
 hipblasStatus_t testing_getrf(Arguments argus)
 {
-    bool FORTRAN       = argus.fortran;
+    bool FORTRAN        = argus.fortran;
     auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
 
     int M   = argus.N;

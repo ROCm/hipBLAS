@@ -20,8 +20,9 @@ using namespace std;
 template <typename T, typename U>
 hipblasStatus_t testing_getrs_batched(Arguments argus)
 {
-    bool FORTRAN       = argus.fortran;
-    auto hipblasGetrsBatchedFn = FORTRAN ? hipblasGetrsBatched<T, true> : hipblasGetrsBatched<T, false>;
+    bool FORTRAN = argus.fortran;
+    auto hipblasGetrsBatchedFn
+        = FORTRAN ? hipblasGetrsBatched<T, true> : hipblasGetrsBatched<T, false>;
 
     int N           = argus.N;
     int lda         = argus.lda;
