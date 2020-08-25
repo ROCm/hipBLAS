@@ -53,11 +53,11 @@ def runPackageCommand(platform, project, jobName, label='')
             cd ${project.paths.project_build_prefix}/build/${dir}
             make package
             mkdir -p package
-            mv *.${ext} package/
-            for f in package
+            for f in hipblas*.${ext}
             do
                 mv "$f" "${f%.*}-$label.${ext}"
             done
+            mv *.${ext} package/
         """
 
     platform.runCommand(this, command)
