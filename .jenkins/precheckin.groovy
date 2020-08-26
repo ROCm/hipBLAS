@@ -93,6 +93,6 @@ ci: {
             properties(auxiliary.addCommonProperties(property))
     }
     
-    String hostBuildCommand = './install.sh -c --hip-clang --compiler=g++'
+    String hostBuildCommand = './install.sh -c --compiler=g++'
     setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
 }

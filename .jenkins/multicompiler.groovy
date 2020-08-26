@@ -93,9 +93,9 @@ ci: {
             properties(auxiliary.addCommonProperties(property))
     }
     
-    String hostBuildCommand = './install.sh -c --hip-clang --compiler=g++'
-    String hipClangBuildCommand = './install.sh -c --hip-clang --compiler=/opt/rocm/hip/bin/hipcc'
-    String clangBuildCommand = './install.sh -c --hip-clang --compiler=clang++'
+    String hostBuildCommand = './install.sh -c --compiler=g++'
+    String hipClangBuildCommand = './install.sh -c --compiler=/opt/rocm/hip/bin/hipcc'
+    String clangBuildCommand = './install.sh -c --compiler=clang++'
 
     setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
     setupCI(urlJobName, jobNameList, clangBuildCommand, runCI, 'clang++')
