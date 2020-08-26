@@ -14,7 +14,6 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
         }
     }
     
-    String sles = platform.jenkinsLabel.contains('sles') ? '/usr/bin/sudo --preserve-env' : ''
     String centos = platform.jenkinsLabel.contains('centos') ? 'source scl_source enable devtoolset-7' : ':'
 
     def command = """#!/usr/bin/env bash
@@ -22,7 +21,7 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
                 cd ${project.paths.project_build_prefix}
                 ${getDependenciesCommand}
                 ${centos}
-                ${sles} LD_LIBRARY_PATH=/opt/rocm/lib ${project.paths.build_command}
+                LD_LIBRARY_PATH=/opt/rocm/lib ${project.paths.build_command}
                 """
     platform.runCommand(this, command)
 }
