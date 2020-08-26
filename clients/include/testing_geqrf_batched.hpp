@@ -20,8 +20,9 @@ using namespace std;
 template <typename T, typename U>
 hipblasStatus_t testing_geqrf_batched(Arguments argus)
 {
-    bool FORTRAN       = argus.fortran;
-    auto hipblasGeqrfBatchedFn = FORTRAN ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
+    bool FORTRAN = argus.fortran;
+    auto hipblasGeqrfBatchedFn
+        = FORTRAN ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
 
     int M           = argus.M;
     int N           = argus.N;
