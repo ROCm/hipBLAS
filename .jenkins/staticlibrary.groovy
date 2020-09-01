@@ -43,7 +43,7 @@ def runCI =
     {
         platform, project->
         
-        commonGroovy.runPackageCommand(platform, project)
+        commonGroovy.runPackageCommand(platform, project, jobName)
     }
 
     buildProject(prj, formatCheck, nodes.dockerArray, compileCommand, testCommand, packageCommand)
@@ -79,7 +79,7 @@ ci: {
     {
         properties(auxiliary.addCommonProperties([pipelineTriggers([cron('0 1 * * *')])]))
         stage(urlJobName) {
-            runCI([ubuntu16:['gfx900']], urlJobName)
+            runCI([ubuntu18:['gfx900']], urlJobName)
         }
     }
 }
