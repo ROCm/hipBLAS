@@ -18,7 +18,7 @@ function display_help()
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [-r]--relocatable] create a package to support relocatable ROCm"
   echo "    [--cuda] build library for cuda backend"
-  echo "    [--hip-clang] build library with hip-clang"
+  echo "    [--[no-]hip-clang] Whether to build library with hip-clang"
   echo "    [--compiler] specify host compiler"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
   echo "    [--custom-target] link against custom target (e.g. host, device)"
@@ -278,7 +278,7 @@ install_prefix=hipblas-install
 build_clients=false
 build_solver=true
 build_cuda=false
-build_hip_clang=false
+build_hip_clang=true
 build_release=true
 build_relocatable=false
 cmake_prefix_path=/opt/rocm
@@ -293,7 +293,7 @@ build_static=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,compiler:,cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -332,6 +332,9 @@ while true; do
         shift ;;
     --hip-clang)
         build_hip_clang=true
+        shift ;;
+    --no-hip-clang)
+        build_hip_clang=false
         shift ;;
     --compiler)
         compiler=${2}
