@@ -22,6 +22,10 @@ if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
 endif()
 
+if ( NOT DEFINED CMAKE_Fortran_COMPILER AND NOT DEFINED ENV{FC} )
+  set( CMAKE_Fortran_COMPILER  "gfortran" )
+endif()
+
 project( hipblas LANGUAGES CXX Fortran )
 
 # This finds the rocm-cmake project, and installs it if not found
