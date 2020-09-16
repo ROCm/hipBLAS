@@ -66,12 +66,12 @@ README: This file contains testers to verify the correctness of
 
 When you see this error, do not hack this source code, hack the Makefile. It is due to compilation.
 
-from ‘testing::internal::CartesianProductHolder3<testing::internal::ParamGenerator<int>,
+from 'testing::internal::CartesianProductHolder3<testing::internal::ParamGenerator<int>,
 testing::internal::ParamGenerator<std::vector<double> >,
-testing::internal::ParamGenerator<std::vector<int> > >’
+testing::internal::ParamGenerator<std::vector<int> > >'
 
-to ‘testing::internal::ParamGenerator<std::tuple<int, std::vector<double, std::allocator<double> >,
-std::vector<int, std::allocator<int> > > >’
+to 'testing::internal::ParamGenerator<std::tuple<int, std::vector<double, std::allocator<double> >,
+std::vector<int, std::allocator<int> > > >'
 
 */
 

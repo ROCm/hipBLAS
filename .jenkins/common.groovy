@@ -13,7 +13,7 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
             getDependenciesCommand += auxiliary.getLibrary(libraryName, platform.jenkinsLabel, 'develop', sameOrg)
         }
     }
-    
+
     String centos = platform.jenkinsLabel.contains('centos') ? 'source scl_source enable devtoolset-7' : ':'
 
     def command = """#!/usr/bin/env bash
@@ -52,10 +52,13 @@ def runPackageCommand(platform, project, jobName, label='')
             cd ${project.paths.project_build_prefix}/build/${dir}
             make package
             mkdir -p package
-            for f in hipblas*.$ext
-            do 
-                mv "\$f" "hipblas${label}-\${f#*-}"
-            done
+            if [ ! -z "$label" ]
+            then
+                for f in hipblas*.$ext
+                do
+                    mv "\$f" "hipblas${label}-\${f#*-}"
+                done
+            fi
             mv *.${ext} package/
         """
 
