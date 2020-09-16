@@ -9,12 +9,12 @@ import com.amd.project.*
 import com.amd.docker.*
 import java.nio.file.Path
 
-def runCI = 
+def runCI =
 {
     nodeDetails, jobName, buildCommand, label->
 
     def prj  = new rocProject('hipBLAS', 'PreCheckin')
-    
+
     //customize for project
     prj.paths.build_command = buildCommand
     prj.libraryDependencies = ['rocBLAS-internal', 'rocSOLVER']
@@ -44,7 +44,7 @@ def runCI =
     def packageCommand =
     {
         platform, project->
-        
+
         commonGroovy.runPackageCommand(platform, project, jobName, label)
     }
 
@@ -72,10 +72,10 @@ def setupCI(urlJobName, jobNameList, buildCommand, runCI, label)
             runCI([ubuntu18:['gfx906']], urlJobName, buildCommand, label)
         }
     }
-    
+
 }
 
-ci: { 
+ci: {
     String urlJobName = auxiliary.getTopJobName(env.BUILD_URL)
 
     def propertyList = ["compute-rocm-dkms-no-npi-hipclang":[pipelineTriggers([cron('0 1 * * 0')])],
@@ -86,13 +86,13 @@ ci: {
                        "rocm-docker":([ubuntu18:['gfx900'],centos7:['gfx906'],sles15sp1:['gfx906']])]
     jobNameList = auxiliary.appendJobNameList(jobNameList)
 
-    propertyList.each 
+    propertyList.each
     {
         jobName, property->
         if (urlJobName == jobName)
             properties(auxiliary.addCommonProperties(property))
     }
-    
+
     String hostBuildCommand = './install.sh -c --compiler=g++'
     setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
 }
