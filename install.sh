@@ -449,6 +449,11 @@ pushd .
     cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Debug"
   fi
 
+  # cuda
+  if [[ "${build_cuda}" == false ]]; then
+    cmake_common_options="${cmake_common_options} -DTRY_CUDA=OFF"
+  fi
+
   # clients
   if [[ "${build_clients}" == true ]]; then
     cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
