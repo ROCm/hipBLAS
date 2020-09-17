@@ -17,7 +17,7 @@ function display_help()
   echo "    [-n|--no-solver] build library without rocSOLVER dependency"
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [-r]--relocatable] create a package to support relocatable ROCm"
-  echo "    [--cuda] build library for cuda backend"
+  echo "    [--cuda|--use-cuda] build library for cuda backend"
   echo "    [--[no-]hip-clang] Whether to build library with hip-clang"
   echo "    [--compiler] specify host compiler"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
@@ -293,7 +293,7 @@ build_static=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -339,7 +339,7 @@ while true; do
     --compiler)
         compiler=${2}
         shift 2 ;;
-    --cuda)
+    --cuda|--use-cuda)
         build_cuda=true
         shift ;;
     --static)
@@ -447,6 +447,11 @@ pushd .
   else
     mkdir -p ${build_dir}/debug/clients && cd ${build_dir}/debug
     cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Debug"
+  fi
+
+  # cuda
+  if [[ "${build_cuda}" == false ]]; then
+    cmake_common_options="${cmake_common_options} -DUSE_CUDA=OFF"
   fi
 
   # clients
