@@ -415,12 +415,18 @@ TEST_P(parameterized_gemm_batched_ex, standard_batched)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else
+        else if(status == HIPBLAS_STATUS_ARCH_MISMATCH)
         {
             // Only available in cuda cc >= 5.0.
             // If we want we can change this to call query_device_property() and
             // call this only if cc < 5.0 on a CUDA device, else fail.
             EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+        }
+        else
+        {
+            // cublas/rocblas do not have identical support
+            // (i.e. cublas doesn't support i8/i32 here)
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
         }
     }
 }
@@ -451,12 +457,18 @@ TEST_P(parameterized_gemm_batched_ex, standard_strided_batched)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else
+        else if(status == HIPBLAS_STATUS_ARCH_MISMATCH)
         {
             // Only available in cuda cc >= 5.0.
             // If we want we can change this to call query_device_property() and
             // call this only if cc < 5.0 on a CUDA device, else fail.
             EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+        }
+        else
+        {
+            // cublas/rocblas do not have identical support
+            // (i.e. cublas doesn't support i8/i32 here)
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
         }
     }
 }
