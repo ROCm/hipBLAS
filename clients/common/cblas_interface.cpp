@@ -2273,7 +2273,7 @@ void cblas_gemm<hipblasDoubleComplex>(hipblasOperation_t    transA,
                 C,
                 ldc);
 }
-#include <iostream>
+
 template <>
 void cblas_gemm<int8_t, int32_t, int32_t>(hipblasOperation_t transA,
                                           hipblasOperation_t transB,
