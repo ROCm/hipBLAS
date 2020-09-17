@@ -17,7 +17,7 @@ function display_help()
   echo "    [-n|--no-solver] build library without rocSOLVER dependency"
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [-r]--relocatable] create a package to support relocatable ROCm"
-  echo "    [--cuda] build library for cuda backend"
+  echo "    [--cuda|--use-cuda] build library for cuda backend"
   echo "    [--[no-]hip-clang] Whether to build library with hip-clang"
   echo "    [--compiler] specify host compiler"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
@@ -339,7 +339,7 @@ while true; do
     --compiler)
         compiler=${2}
         shift 2 ;;
-    --cuda)
+    --cuda|--use-cuda)
         build_cuda=true
         shift ;;
     --static)
@@ -451,7 +451,7 @@ pushd .
 
   # cuda
   if [[ "${build_cuda}" == false ]]; then
-    cmake_common_options="${cmake_common_options} -DTRY_CUDA=OFF"
+    cmake_common_options="${cmake_common_options} -DUSE_CUDA=OFF"
   fi
 
   # clients
