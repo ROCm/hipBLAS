@@ -186,6 +186,12 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     hC_gold = hC;
 
     // copy data from CPU to device
+
+    // CUDA doesn't do packing
+#ifdef __HIP_PLATFORM_NVCC__
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(Ta) * size_A, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(Tb) * size_B, hipMemcpyHostToDevice));
+#else
     if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N)
     {
         vector<Ta> hA_packed(hA);
@@ -209,7 +215,7 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     {
         CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(Tb) * size_B, hipMemcpyHostToDevice));
     }
-
+#endif
     CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(Tc) * size_C, hipMemcpyHostToDevice));
 
     status = hipblasGemmExFn(handle,

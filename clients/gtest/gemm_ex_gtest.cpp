@@ -180,6 +180,12 @@ const vector<vector<double>> small_alpha_beta_range = {
 const vector<vector<double>> full_alpha_beta_range = {
     {1.0, 0.0}, {-1.0, -1.0}, {2.0, 1.0}, {0.0, 1.0}};
 
+// For Cuda v < 10.0, only alpha and beta = 1 or = 0 are
+// supported.
+const vector<vector<double>> alpha_beta_range_int8 = {
+    {1.0, 1.0}, {1.0, 0.0},
+};
+
 // vector of vector, each pair is a {transA, transB};
 // add/delete this list in pairs, like {'N', 'T'}
 // for single/double precision, 'C'(conjTranspose) will downgraded to 'T' (transpose) internally in
@@ -569,7 +575,7 @@ INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_double_complex,
 INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_int8,
                         parameterized_gemm_ex,
                         Combine(ValuesIn(int8_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
+                                ValuesIn(alpha_beta_range_int8),
                                 ValuesIn(transA_transB_range),
                                 ValuesIn(precision_int8),
                                 ValuesIn(batch_count_range_small),
@@ -670,7 +676,7 @@ INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_double_complex,
 INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_int8,
                         parameterized_gemm_batched_ex,
                         Combine(ValuesIn(int8_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
+                                ValuesIn(alpha_beta_range_int8),
                                 ValuesIn(transA_transB_range),
                                 ValuesIn(precision_int8),
                                 ValuesIn(batch_count_range),
