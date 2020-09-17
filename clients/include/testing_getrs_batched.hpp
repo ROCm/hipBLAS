@@ -96,7 +96,7 @@ hipblasStatus_t testing_getrs_batched(Arguments argus)
 
         // Calculate hB = hA*hX;
         cblas_gemm<T>(
-            op, op, N, 1, N, 1, hA[b].data(), lda, hX[b].data(), ldb, 0, hB[b].data(), ldb);
+            op, op, N, 1, N, (T)1, hA[b].data(), lda, hX[b].data(), ldb, (T)0, hB[b].data(), ldb);
 
         // LU factorize hA on the CPU
         info = cblas_getrf<T>(N, N, hA[b].data(), lda, hIpiv.data() + b * strideP);

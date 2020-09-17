@@ -24,7 +24,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename Td, typename Tc>
+template <typename Ta, typename Tb = Ta, typename Tc = Tb, typename Tex = Tc>
 hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
                                          hipblasOperation_t transB,
                                          int                M,
@@ -51,46 +51,38 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     size_t*           workspace_size = 0;
     void*             workspace      = 0;
 
-    Td h_alpha_Td;
-    Td h_beta_Td;
+    Tex h_alpha_Tc;
+    Tex h_beta_Tc;
 
-    if(is_same<Td, hipblasHalf>::value)
-    {
-        h_alpha_Td = float_to_half(alpha_float);
-        h_beta_Td  = float_to_half(beta_float);
-    }
-    else if(is_same<Td, float>::value)
-    {
-        h_alpha_Td = static_cast<Td>(alpha_float);
-        h_beta_Td  = static_cast<Td>(beta_float);
-    }
-    else if(is_same<Td, double>::value)
-    {
-        h_alpha_Td = static_cast<Td>(alpha_float);
-        h_beta_Td  = static_cast<Td>(beta_float);
-    }
-    else
-    {
-        return HIPBLAS_STATUS_NOT_SUPPORTED;
-    }
-
-    Tc h_alpha_Tc;
-    Tc h_beta_Tc;
-
-    if(is_same<Tc, hipblasHalf>::value)
+    if(is_same<Tex, hipblasHalf>::value)
     {
         h_alpha_Tc = float_to_half(alpha_float);
         h_beta_Tc  = float_to_half(beta_float);
     }
-    else if(is_same<Tc, float>::value)
+    else if(is_same<Tex, float>::value)
     {
-        h_alpha_Tc = static_cast<Tc>(alpha_float);
-        h_beta_Tc  = static_cast<Tc>(beta_float);
+        h_alpha_Tc = static_cast<Tex>(alpha_float);
+        h_beta_Tc  = static_cast<Tex>(beta_float);
     }
-    else if(is_same<Tc, double>::value)
+    else if(is_same<Tex, double>::value)
     {
-        h_alpha_Tc = static_cast<Tc>(alpha_float);
-        h_beta_Tc  = static_cast<Tc>(beta_float);
+        h_alpha_Tc = static_cast<Tex>(alpha_float);
+        h_beta_Tc  = static_cast<Tex>(beta_float);
+    }
+    else if(is_same<Tex, hipblasComplex>::value)
+    {
+        h_alpha_Tc = static_cast<Tex>(alpha_float);
+        h_beta_Tc  = static_cast<Tex>(beta_float);
+    }
+    else if(is_same<Tex, hipblasDoubleComplex>::value)
+    {
+        h_alpha_Tc = static_cast<Tex>(alpha_float);
+        h_beta_Tc  = static_cast<Tex>(beta_float);
+    }
+    else if(is_same<Tex, int32_t>::value)
+    {
+        h_alpha_Tc = static_cast<Tex>(alpha_float);
+        h_beta_Tc  = static_cast<Tex>(beta_float);
     }
     else
     {
@@ -132,15 +124,17 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     //  Tc* d_alpha_Tc = (Tc*)d_alpha_Tc_managed.get();
     //  Tc* d_beta_Tc  = (Tc*)d_beta_Tc_managed.get();
 
-    Td *dA, *dB, *dC;
-    Tc *d_alpha_Tc, *d_beta_Tc;
+    Ta*  dA;
+    Tb*  dB;
+    Tc*  dC;
+    Tex *d_alpha_Tc, *d_beta_Tc;
 
-    CHECK_HIP_ERROR(hipMalloc(&dA, size_A * sizeof(Td)));
-    CHECK_HIP_ERROR(hipMalloc(&dB, size_B * sizeof(Td)));
-    CHECK_HIP_ERROR(hipMalloc(&dC, size_C * sizeof(Td)));
+    CHECK_HIP_ERROR(hipMalloc(&dA, size_A * sizeof(Ta)));
+    CHECK_HIP_ERROR(hipMalloc(&dB, size_B * sizeof(Tb)));
+    CHECK_HIP_ERROR(hipMalloc(&dC, size_C * sizeof(Tc)));
 
-    CHECK_HIP_ERROR(hipMalloc(&d_alpha_Tc, sizeof(Td)));
-    CHECK_HIP_ERROR(hipMalloc(&d_beta_Tc, sizeof(Td)));
+    CHECK_HIP_ERROR(hipMalloc(&d_alpha_Tc, sizeof(Tex)));
+    CHECK_HIP_ERROR(hipMalloc(&d_beta_Tc, sizeof(Tex)));
 
     if(!dA || !dB || !dC || !d_alpha_Tc || !d_beta_Tc)
     {
@@ -153,16 +147,16 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     hipblasCreate(&handle);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
-    vector<Td> hA(size_A);
-    vector<Td> hB(size_B);
-    vector<Td> hC(size_C);
-    vector<Td> hC_gold(size_C);
+    vector<Ta> hA(size_A);
+    vector<Tb> hB(size_B);
+    vector<Tc> hC(size_C);
+    vector<Tc> hC_gold(size_C);
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<Td>(hA, A_row, A_col, lda);
-    hipblas_init_alternating_sign<Td>(hB, B_row, B_col, ldb);
-    hipblas_init<Td>(hC, M, N, ldc);
+    hipblas_init<Ta>(hA, A_row, A_col, lda);
+    hipblas_init_alternating_sign<Tb>(hB, B_row, B_col, ldb);
+    hipblas_init<Tc>(hC, M, N, ldc);
 
     //  if(is_same<Td, hipblasHalf>::value)
     //  {
@@ -192,9 +186,31 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     hC_gold = hC;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(Td) * size_A, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(Td) * size_B, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(Td) * size_C, hipMemcpyHostToDevice));
+    if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N)
+    {
+        vector<Ta> hA_packed(hA);
+        hipblas_packInt8(hA_packed, M, K, lda);
+        CHECK_HIP_ERROR(
+            hipMemcpy(dA, hA_packed.data(), sizeof(Ta) * size_A, hipMemcpyHostToDevice));
+    }
+    else
+    {
+        CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(Ta) * size_A, hipMemcpyHostToDevice));
+    }
+
+    if(std::is_same<Tb, int8_t>{} && transB != HIPBLAS_OP_N)
+    {
+        vector<Tb> hB_packed(hB);
+        hipblas_packInt8(hB_packed, N, K, ldb);
+        CHECK_HIP_ERROR(
+            hipMemcpy(dB, hB_packed.data(), sizeof(Tb) * size_B, hipMemcpyHostToDevice));
+    }
+    else
+    {
+        CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(Tb) * size_B, hipMemcpyHostToDevice));
+    }
+
+    CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(Tc) * size_C, hipMemcpyHostToDevice));
 
     status = hipblasGemmExFn(handle,
                              transA,
@@ -229,7 +245,7 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
         return status;
     }
 
-    CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(Td) * size_C, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
 
     //      std::cout << std::endl << "-----hD_1---------------------------------------" <<
     //      std::endl;
@@ -247,19 +263,19 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
 
     // CPU BLAS
 
-    cblas_gemm<Td>(transA,
-                   transB,
-                   M,
-                   N,
-                   K,
-                   h_alpha_Td,
-                   hA.data(),
-                   lda,
-                   hB.data(),
-                   ldb,
-                   h_beta_Td,
-                   hC_gold.data(),
-                   ldc);
+    cblas_gemm<Ta, Tc, Tex>(transA,
+                            transB,
+                            M,
+                            N,
+                            K,
+                            h_alpha_Tc,
+                            hA.data(),
+                            lda,
+                            hB.data(),
+                            ldb,
+                            h_beta_Tc,
+                            hC_gold.data(),
+                            ldc);
 
     //      std::cout << std::endl << "---gold---gold---gold---------------------" << std::endl;
     //      if(is_same<Td, hipblasHalf>::value)
@@ -280,7 +296,7 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     // unit check and norm check can not be interchanged their order
     if(unit_check)
     {
-        unit_check_general<Td>(M, N, ldc, hC_gold.data(), hC.data());
+        unit_check_general<Tc>(M, N, ldc, hC_gold.data(), hC.data());
     }
 
     hipblasDestroy(handle);
@@ -323,70 +339,92 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
     if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
        && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_16F)
     {
-        status = testing_gemm_ex_template<hipblasHalf, hipblasHalf>(transA,
-                                                                    transB,
-                                                                    M,
-                                                                    N,
-                                                                    K,
-                                                                    alpha,
-                                                                    lda,
-                                                                    ldb,
-                                                                    beta,
-                                                                    ldc,
-                                                                    norm_check,
-                                                                    unit_check,
-                                                                    a_type,
-                                                                    b_type,
-                                                                    c_type,
-                                                                    compute_type,
-                                                                    argus.fortran);
+        status = testing_gemm_ex_template<hipblasHalf>(transA,
+                                                       transB,
+                                                       M,
+                                                       N,
+                                                       K,
+                                                       alpha,
+                                                       lda,
+                                                       ldb,
+                                                       beta,
+                                                       ldc,
+                                                       norm_check,
+                                                       unit_check,
+                                                       a_type,
+                                                       b_type,
+                                                       c_type,
+                                                       compute_type,
+                                                       argus.fortran);
     }
     else if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
             && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_32F)
     {
-        status = testing_gemm_ex_template<hipblasHalf, float>(transA,
-                                                              transB,
-                                                              M,
-                                                              N,
-                                                              K,
-                                                              alpha,
-                                                              lda,
-                                                              ldb,
-                                                              beta,
-                                                              ldc,
-                                                              norm_check,
-                                                              unit_check,
-                                                              a_type,
-                                                              b_type,
-                                                              c_type,
-                                                              compute_type,
-                                                              argus.fortran);
+        status
+            = testing_gemm_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float>(transA,
+                                                                                     transB,
+                                                                                     M,
+                                                                                     N,
+                                                                                     K,
+                                                                                     alpha,
+                                                                                     lda,
+                                                                                     ldb,
+                                                                                     beta,
+                                                                                     ldc,
+                                                                                     norm_check,
+                                                                                     unit_check,
+                                                                                     a_type,
+                                                                                     b_type,
+                                                                                     c_type,
+                                                                                     compute_type,
+                                                                                     argus.fortran);
     }
     else if(a_type == HIPBLAS_R_32F && b_type == HIPBLAS_R_32F && c_type == HIPBLAS_R_32F
             && c_type == HIPBLAS_R_32F && compute_type == HIPBLAS_R_32F)
     {
-        status = testing_gemm_ex_template<float, float>(transA,
-                                                        transB,
-                                                        M,
-                                                        N,
-                                                        K,
-                                                        alpha,
-                                                        lda,
-                                                        ldb,
-                                                        beta,
-                                                        ldc,
-                                                        norm_check,
-                                                        unit_check,
-                                                        a_type,
-                                                        b_type,
-                                                        c_type,
-                                                        compute_type,
-                                                        argus.fortran);
+        status = testing_gemm_ex_template<float>(transA,
+                                                 transB,
+                                                 M,
+                                                 N,
+                                                 K,
+                                                 alpha,
+                                                 lda,
+                                                 ldb,
+                                                 beta,
+                                                 ldc,
+                                                 norm_check,
+                                                 unit_check,
+                                                 a_type,
+                                                 b_type,
+                                                 c_type,
+                                                 compute_type,
+                                                 argus.fortran);
     }
     else if(a_type == HIPBLAS_R_64F && b_type == HIPBLAS_R_64F && c_type == HIPBLAS_R_64F
             && c_type == HIPBLAS_R_64F && compute_type == HIPBLAS_R_64F)
     {
-        status = testing_gemm_ex_template<double, double>(transA,
+        status = testing_gemm_ex_template<double>(transA,
+                                                  transB,
+                                                  M,
+                                                  N,
+                                                  K,
+                                                  alpha,
+                                                  lda,
+                                                  ldb,
+                                                  beta,
+                                                  ldc,
+                                                  norm_check,
+                                                  unit_check,
+                                                  a_type,
+                                                  b_type,
+                                                  c_type,
+                                                  compute_type,
+                                                  argus.fortran);
+    }
+    else if(a_type == HIPBLAS_C_32F && b_type == HIPBLAS_C_32F && c_type == HIPBLAS_C_32F
+            && c_type == HIPBLAS_C_32F && compute_type == HIPBLAS_C_32F)
+    {
+        status = testing_gemm_ex_template<hipblasComplex>(transA,
                                                           transB,
                                                           M,
                                                           N,
@@ -403,6 +441,48 @@ hipblasStatus_t testing_gemm_ex(Arguments argus)
                                                           c_type,
                                                           compute_type,
                                                           argus.fortran);
+    }
+    else if(a_type == HIPBLAS_C_64F && b_type == HIPBLAS_C_64F && c_type == HIPBLAS_C_64F
+            && c_type == HIPBLAS_C_64F && compute_type == HIPBLAS_C_64F)
+    {
+        status = testing_gemm_ex_template<hipblasDoubleComplex>(transA,
+                                                                transB,
+                                                                M,
+                                                                N,
+                                                                K,
+                                                                alpha,
+                                                                lda,
+                                                                ldb,
+                                                                beta,
+                                                                ldc,
+                                                                norm_check,
+                                                                unit_check,
+                                                                a_type,
+                                                                b_type,
+                                                                c_type,
+                                                                compute_type,
+                                                                argus.fortran);
+    }
+    else if(a_type == HIPBLAS_R_8I && b_type == HIPBLAS_R_8I && c_type == HIPBLAS_R_32I
+            && c_type == HIPBLAS_R_32I && compute_type == HIPBLAS_R_32I)
+    {
+        status = testing_gemm_ex_template<int8_t, int8_t, int32_t, int32_t>(transA,
+                                                                            transB,
+                                                                            M,
+                                                                            N,
+                                                                            K,
+                                                                            alpha,
+                                                                            lda,
+                                                                            ldb,
+                                                                            beta,
+                                                                            ldc,
+                                                                            norm_check,
+                                                                            unit_check,
+                                                                            a_type,
+                                                                            b_type,
+                                                                            c_type,
+                                                                            compute_type,
+                                                                            argus.fortran);
     }
     else
     {

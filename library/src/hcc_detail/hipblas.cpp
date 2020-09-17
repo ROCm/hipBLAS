@@ -173,6 +173,12 @@ rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
     case HIPBLAS_R_64F:
         return rocblas_datatype_f64_r;
 
+    case HIPBLAS_R_8I:
+        return rocblas_datatype_i8_r;
+
+    case HIPBLAS_R_32I:
+        return rocblas_datatype_i32_r;
+
     case HIPBLAS_C_16F:
         return rocblas_datatype_f16_c;
 
@@ -199,6 +205,12 @@ hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
 
     case rocblas_datatype_f64_r:
         return HIPBLAS_R_64F;
+
+    case rocblas_datatype_i8_r:
+        return HIPBLAS_R_8I;
+
+    case rocblas_datatype_i32_r:
+        return HIPBLAS_R_32I;
 
     case rocblas_datatype_f16_c:
         return HIPBLAS_C_16F;
