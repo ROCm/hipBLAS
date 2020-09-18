@@ -220,12 +220,12 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
                       N,
                       K,
                       h_alpha,
-                      hA_array[i],
+                      (T*)hA_array[i],
                       lda,
-                      hB_array[i],
+                      (T*)hB_array[i],
                       ldb,
                       h_beta,
-                      hC_copy_array[i],
+                      (T*)hC_copy_array[i],
                       ldc);
     }
 
