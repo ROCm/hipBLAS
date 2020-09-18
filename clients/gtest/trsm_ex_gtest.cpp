@@ -315,11 +315,11 @@ TEST_P(trsm_ex_gtest, trsm_strided_batched_ex_gtest_double_complex)
 // small
 // Testing order: side_uplo_transA_xx first, alpha_range second, full_matrix_size last
 // i.e fix the matrix size and alpha, test all the side_uplo_transA_xx first.
-INSTANTIATE_TEST_CASE_P(hipblasTrsm_matrix_size,
-                        trsm_ex_gtest,
-                        Combine(ValuesIn(full_matrix_size_range),
-                                ValuesIn(alpha_range),
-                                ValuesIn(side_uplo_transA_diag_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasTrsm_matrix_size,
+                         trsm_ex_gtest,
+                         Combine(ValuesIn(full_matrix_size_range),
+                                 ValuesIn(alpha_range),
+                                 ValuesIn(side_uplo_transA_diag_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

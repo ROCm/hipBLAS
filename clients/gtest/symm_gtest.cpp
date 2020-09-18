@@ -315,22 +315,22 @@ TEST_P(symm_gtest, symm_strided_batched_gtest_double_complex)
 // small
 // Testing order: side_uplo_xx first, alpha_beta_range second, full_matrix_size last
 // i.e fix the matrix size and alpha, test all the side_uplo_xx first.
-INSTANTIATE_TEST_CASE_P(hipblassymm_matrix_size,
-                        symm_gtest,
-                        Combine(ValuesIn(full_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(side_uplo_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblassymm_matrix_size,
+                         symm_gtest,
+                         Combine(ValuesIn(full_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(side_uplo_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
 // THis function mainly test the scope of  full_side_uplo_range,.the scope of
 // matrix_size_range is small
-INSTANTIATE_TEST_CASE_P(hipblassymm_scalar_transpose,
-                        symm_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(full_side_uplo_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(hipblassymm_scalar_transpose,
+                         symm_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(full_side_uplo_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran_false)));

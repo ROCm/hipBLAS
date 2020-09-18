@@ -167,11 +167,11 @@ TEST_P(hemv_gtest_batched, hemv_gtest_float_complex)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha, beta}, {transA}, {batch_count} }
 
-INSTANTIATE_TEST_CASE_P(hipblasHemvBatched,
-                        hemv_gtest_batched,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(incx_incy_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasHemvBatched,
+                         hemv_gtest_batched,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(incx_incy_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

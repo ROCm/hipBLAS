@@ -268,9 +268,9 @@ TEST_P(gemm_gtest, gemm_gtest_double_complex)
 // THis function mainly test the scope of alpha_beta, transA_transB,.the scope of matrix_size_range
 // is small
 
-INSTANTIATE_TEST_CASE_P(hipblasGemm_scalar_transpose,
-                        gemm_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasGemm_scalar_transpose,
+                         gemm_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(is_fortran)));

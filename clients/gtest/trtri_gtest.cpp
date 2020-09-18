@@ -183,10 +183,10 @@ TEST_P(trtri_gtest, trtri_strided_batched_float)
 // The combinations are  { {N, lda}, uplo, diag }
 
 // THis function mainly test the scope of matrix_size.
-INSTANTIATE_TEST_CASE_P(hipblasTrtri,
-                        trtri_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(uplo_range),
-                                ValuesIn(diag_range),
-                                ValuesIn(batch_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasTrtri,
+                         trtri_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(uplo_range),
+                                 ValuesIn(diag_range),
+                                 ValuesIn(batch_range),
+                                 ValuesIn(is_fortran)));

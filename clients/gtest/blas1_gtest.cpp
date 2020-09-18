@@ -2356,11 +2356,11 @@ TEST_P(blas1_gtest, amin_strided_batched_float_complex)
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { N, {alpha, beta}, {incx, incy} }
-INSTANTIATE_TEST_CASE_P(hipblasBlas1,
-                        blas1_gtest,
-                        Combine(ValuesIn(N_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(incx_incy_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasBlas1,
+                         blas1_gtest,
+                         Combine(ValuesIn(N_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(incx_incy_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

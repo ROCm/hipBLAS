@@ -594,41 +594,41 @@ INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_int8,
                                 ValuesIn(is_fortran)));
 
 //----medium
-INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_hpa_half,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(medium_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
 
-INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_half,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(medium_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_half,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_half),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
 
-INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_float,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(medium_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_float,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
 
-INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_double,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(medium_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_double,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
 
 //----small-batched
 INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_hpa_half,
