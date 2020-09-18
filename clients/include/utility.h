@@ -329,6 +329,23 @@ inline hipblasDoubleComplex random_generator_negative<hipblasDoubleComplex>()
 /* ============================================================================================ */
 
 /* ============================================================================================ */
+/*! \brief Packs strided_batched matricies into groups of 4 in N */
+template <typename T>
+void hipblas_packInt8(
+    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t batch_count = 1, size_t stride_a = 0)
+{
+    std::vector<T> temp(A);
+    for(size_t b = 0; b < batch_count; b++)
+        for(size_t colBase = 0; colBase < N; colBase += 4)
+            for(size_t row = 0; row < lda; row++)
+                for(size_t colOffset = 0; colOffset < 4; colOffset++)
+                    A[(colBase * lda + 4 * row) + colOffset + (stride_a * b)]
+                        = temp[(colBase + colOffset) * lda + row + (stride_a * b)];
+}
+
+/* ============================================================================================ */
+
+/* ============================================================================================ */
 /*! \brief  matrix/vector initialization: */
 // for vector x (M=1, N=lengthX, lda=incx);
 // for complex number, the real/imag part would be initialized with the same value
