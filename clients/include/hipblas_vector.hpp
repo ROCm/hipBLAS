@@ -131,10 +131,12 @@ public:
         return data[n];
     }
 
-    operator T* *()
+    // clang-format off
+    operator T**()
     {
         return data;
     }
+    // clang-format on
 
     // Disallow copying or assigning
     device_batch_vector(const device_batch_vector&) = delete;
