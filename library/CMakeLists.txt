@@ -60,8 +60,8 @@ add_subdirectory( src )
 # endif( )
 
 # Package specific CPACK vars
-set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 0.10.3), rocsolver, libc" )
-set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 0.10.3, rocsolver, libc" )
+set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 0.10.3)" )
+set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 0.10.3" )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md" )
 
