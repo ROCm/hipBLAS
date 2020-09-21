@@ -530,68 +530,68 @@ protected:
 // TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
 
 //----small
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_hpa_half,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_hpa_half,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_half,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_half,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_half),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_single,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_double,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_single_complex,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single_complex),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single_complex,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single_complex),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_double_complex,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double_complex),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double_complex),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_int8,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(int8_matrix_size_range),
-                                ValuesIn(alpha_beta_range_int8),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_int8),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(int8_matrix_size_range),
+                                 ValuesIn(alpha_beta_range_int8),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_int8),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
 //----medium
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,
@@ -631,65 +631,65 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_double,
                                  ValuesIn(is_fortran_false)));
 
 //----small-batched
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_hpa_half,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_half,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_half,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_half),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_single,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_double,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_single_complex,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single_complex),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single_complex,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single_complex),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_double_complex,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double_complex),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double_complex),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_int8,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(int8_matrix_size_range),
-                                ValuesIn(alpha_beta_range_int8),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_int8),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(int8_matrix_size_range),
+                                 ValuesIn(alpha_beta_range_int8),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_int8),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
