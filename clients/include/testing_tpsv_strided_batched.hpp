@@ -87,7 +87,7 @@ hipblasStatus_t testing_tpsv_strided_batched(Arguments argus)
         T* AATb = AAT.data() + b * strideA;
         T* hbb  = hb.data() + b * stridex;
         //  calculate AAT = hA * hA ^ T
-        cblas_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_T, N, N, N, 1.0, hAb, N, hAb, N, 0.0, AATb, N);
+        cblas_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_T, N, N, N, (T)1.0, hAb, N, hAb, N, (T)0.0, AATb, N);
 
         //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
         for(int i = 0; i < N; i++)
