@@ -312,19 +312,19 @@ void cblas_geam(hipblasOperation_t transa,
                 int                ldc);
 
 // gemm
-template <typename T>
+template <typename Ti, typename To = Ti, typename Tc = To>
 void cblas_gemm(hipblasOperation_t transA,
                 hipblasOperation_t transB,
                 int                m,
                 int                n,
                 int                k,
-                T                  alpha,
-                T*                 A,
+                Tc                 alpha,
+                Ti*                A,
                 int                lda,
-                T*                 B,
+                Ti*                B,
                 int                ldb,
-                T                  beta,
-                T*                 C,
+                Tc                 beta,
+                To*                C,
                 int                ldc);
 
 // hemm

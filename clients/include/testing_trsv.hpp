@@ -87,12 +87,12 @@ hipblasStatus_t testing_trsv(Arguments argus)
                   M,
                   M,
                   M,
-                  1.0,
+                  (T)1.0,
                   hA.data(),
                   lda,
                   hA.data(),
                   lda,
-                  0.0,
+                  (T)0.0,
                   AAT.data(),
                   lda);
 
