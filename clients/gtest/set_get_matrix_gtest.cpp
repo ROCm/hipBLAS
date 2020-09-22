@@ -168,8 +168,8 @@ TEST_P(set_matrix_get_matrix_gtest, async_float)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
-INSTANTIATE_TEST_CASE_P(hipblasAuxiliary_small,
-                        set_matrix_get_matrix_gtest,
-                        Combine(ValuesIn(rows_cols_range),
-                                ValuesIn(lda_ldb_ldc_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasAuxiliary_small,
+                         set_matrix_get_matrix_gtest,
+                         Combine(ValuesIn(rows_cols_range),
+                                 ValuesIn(lda_ldb_ldc_range),
+                                 ValuesIn(is_fortran)));

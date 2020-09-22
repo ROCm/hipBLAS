@@ -222,11 +222,11 @@ TEST_P(blas2_spmv_gtest, spmv_strided_batched_float)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M}, {incx,incy} }
 
-INSTANTIATE_TEST_CASE_P(hipblasspmv,
-                        blas2_spmv_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(incx_incy_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasspmv,
+                         blas2_spmv_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(incx_incy_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
