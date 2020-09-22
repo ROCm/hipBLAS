@@ -274,10 +274,10 @@ TEST_P(dgmm_gtest, dgmm_strided_batched_gtest_float_complex)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M}, {incx,incy} {alpha, alphai, beta, betai}, {transA}, {stride_scale}, {batch_count} }
 
-INSTANTIATE_TEST_CASE_P(hipblasDgmm,
-                        dgmm_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(side_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasDgmm,
+                         dgmm_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(side_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

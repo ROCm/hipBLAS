@@ -158,8 +158,8 @@ TEST_P(set_vector_get_vector_gtest, async_float)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
-INSTANTIATE_TEST_CASE_P(rocblas_auxiliary_small,
-                        set_vector_get_vector_gtest,
-                        Combine(ValuesIn(M_range),
-                                ValuesIn(incx_incy_incd_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(rocblas_auxiliary_small,
+                         set_vector_get_vector_gtest,
+                         Combine(ValuesIn(M_range),
+                                 ValuesIn(incx_incy_incd_range),
+                                 ValuesIn(is_fortran)));

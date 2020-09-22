@@ -240,10 +240,10 @@ TEST_P(blas2_trsv_gtest, trsv_strided_batched_double_complex)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} }
 
-INSTANTIATE_TEST_CASE_P(hipblastrsv,
-                        blas2_trsv_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(incx_incy_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblastrsv,
+                         blas2_trsv_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(incx_incy_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

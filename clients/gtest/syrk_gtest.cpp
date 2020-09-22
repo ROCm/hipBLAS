@@ -300,12 +300,12 @@ TEST_P(blas2_syrk_gtest, syrk_strided_batched_gtest_double_complex)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
-INSTANTIATE_TEST_CASE_P(hipblasSyrk,
-                        blas2_syrk_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(uplo_range),
-                                ValuesIn(transA_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasSyrk,
+                         blas2_syrk_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(uplo_range),
+                                 ValuesIn(transA_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
