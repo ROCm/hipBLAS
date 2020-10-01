@@ -202,6 +202,30 @@ cublasGemmAlgo_t HIPGemmAlgoToCudaGemmAlgo(hipblasGemmAlgo_t algo)
     }
 }
 
+rocblas_atomics_mode HIPAtomicsModeToCudaAtomicsMode(hipblasAtomicsMode_t mode)
+{
+    switch(mode)
+    {
+    case HIPBLAS_ATOMICS_NOT_ALLOWED:
+        return CUBLAS_ATOMICS_NOT_ALLOWED;
+    case HIPBLAS_ATOMICS_MODE_ALLOWED:
+        return CUBLAS_ATOMICS_ALLOWED;
+    }
+    throw "Non existent AtomicsMode";
+}
+
+hipblasAtomicsMode_t CudaAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode)
+{
+    switch(mode)
+    {
+    case CUBLAS_ATOMICS_NOT_ALLOWED:
+        return HIPBLAS_ATOMICS_NOT_ALLOWED;
+    case CUBLAS_ATOMICS_ALLOWED:
+        return HIPBLAS_ATOMICS_ALLOWED;
+    }
+    throw "Non existent AtomicsMode";
+}
+
 hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
 {
     switch(cuStatus)
@@ -316,6 +340,19 @@ hipblasStatus_t hipblasGetMatrixAsync(
 {
     return hipCUBLASStatusToHIPStatus(
         cublasGetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream));
+}
+
+// atomics mode
+hipblasStatus_t hipblasSetAtomicsMode(hipblasHandle_t handle, hipblasAtomicsMode_t atomics_mode)
+{
+    return hipCUBLASStatusToHIPStatus(rocblas_set_atomics_mode(
+        (cublasHandle_t)handle, HIPAtomicsModeToCudaAtomicsMode(atomics_mode)));
+}
+
+hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t handle, hipblasAtomicsMode_t* atomics_mode)
+{
+    return hipCUBLASStatusToHIPStatus(
+        rocblas_get_atomics_mode((cublasHandle_t)handle, (cublasAtomicsMode_t*)atomics_mode));
 }
 
 // amax
