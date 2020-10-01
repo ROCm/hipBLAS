@@ -272,22 +272,22 @@ rocblas_atomics_mode HIPAtomicsModeToRocblasAtomicsMode(hipblasAtomicsMode_t mod
 {
     switch(mode)
     {
-    case HIPBLAS_ATOMICS_MODE_NOT_ALLOWED:
+    case HIPBLAS_ATOMICS_NOT_ALLOWED:
         return rocblas_atomics_not_allowed;
-    case HIPBLAS_ATOMICS_MODE_ALLOWED:
+    case HIPBLAS_ATOMICS_ALLOWED:
         return rocblas_atomics_allowed;
     }
     throw "Non existent AtomicsMode";
 }
 
-hipblasAtomicsMode_t RocblasAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode)
+hipblasAtomicsMode_t RocblasAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode mode)
 {
     switch(mode)
     {
     case rocblas_atomics_not_allowed:
-        return HIPBLAS_ATOMICS_MODE_NOT_ALLOWED;
+        return HIPBLAS_ATOMICS_NOT_ALLOWED;
     case rocblas_atomics_allowed:
-        return HIPBLAS_ATOMICS_MODE_ALLOWED;
+        return HIPBLAS_ATOMICS_ALLOWED;
     }
     throw "Non existent AtomicsMode";
 }

@@ -208,7 +208,7 @@ cublasAtomicsMode_t HIPAtomicsModeToCudaAtomicsMode(hipblasAtomicsMode_t mode)
     {
     case HIPBLAS_ATOMICS_NOT_ALLOWED:
         return CUBLAS_ATOMICS_NOT_ALLOWED;
-    case HIPBLAS_ATOMICS_MODE_ALLOWED:
+    case HIPBLAS_ATOMICS_ALLOWED:
         return CUBLAS_ATOMICS_ALLOWED;
     }
     throw "Non existent AtomicsMode";
