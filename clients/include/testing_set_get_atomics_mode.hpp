@@ -33,15 +33,16 @@ hipblasStatus_t testing_set_get_atomics_mode(Arguments argus)
     hipblasHandle_t      handle;
     hipblasCreate(&handle);
 
-    // Make sure default atomics mode is allowed
-    status = hipblasGetAtomicsModeFn(handle, &mode);
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    // Not checking default as rocBLAS defaults to allowed
+    // and cuBLAS defaults to not allowed.
+    // status = hipblasGetAtomicsModeFn(handle, &mode);
+    // if(status != HIPBLAS_STATUS_SUCCESS)
+    // {
+    //     hipblasDestroy(handle);
+    //     return status;
+    // }
 
-    EXPECT_EQ(HIPBLAS_ATOMICS_ALLOWED, mode);
+    // EXPECT_EQ(HIPBLAS_ATOMICS_ALLOWED, mode);
 
     // Make sure set()/get() functions work
     status_set = hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_NOT_ALLOWED);
