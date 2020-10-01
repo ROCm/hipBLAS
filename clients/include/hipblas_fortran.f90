@@ -135,6 +135,30 @@ module hipblas_interface
         res = hipblasGetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream)
     end function hipblasGetMatrixAsyncFortran
 
+    function hipblasSetAtomicsModeFortran(handle, atomics_mode) &
+            result(res) &
+            bind(c, name = 'hipblasSetAtomicsModeFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_ATOMICS_ALLOWED)), value :: atomics_mode
+        integer(c_int) :: res
+        res = hipblasSetAtomicsMode(handle, atomics_mode)
+    end function hipblasSetAtomicsModeFortran
+
+    function hipblasGetAtomicsModeFortran(handle, atomics_mode) &
+            result(res) &
+            bind(c, name = 'hipblasGetAtomicsModeFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        type(c_ptr), value :: atomics_mode
+        integer(c_int) :: res
+        res = hipblasGetAtomicsMode(handle, atomics_mode)
+    end function hipblasGetAtomicsModeFortran
+
     !--------!
     ! blas 1 !
     !--------!

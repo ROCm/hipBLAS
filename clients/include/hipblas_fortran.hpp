@@ -39,6 +39,12 @@ hipblasStatus_t hipblasSetMatrixAsyncFortran(
 hipblasStatus_t hipblasGetMatrixAsyncFortran(
     int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb, hipStream_t stream);
 
+hipblasStatus_t hipblasSetAtomicsModeFortran(hipblasHandle_t      handle,
+                                             hipblasAtomicsMode_t atomics_mode);
+
+hipblasStatus_t hipblasGetAtomicsModeFortran(hipblasHandle_t       handle,
+                                             hipblasAtomicsMode_t* atomics_mode);
+
 /* ==========
  *    L1
  * ========== */
