@@ -226,6 +226,12 @@ typedef enum
     HIPBLAS_GEMM_DEFAULT = 160,
 } hipblasGemmAlgo_t;
 
+typedef enum
+{
+    HIPBLAS_ATOMICS_NOT_ALLOWED = 0,
+    HIPBLAS_ATOMICS_ALLOWED     = 1,
+} hipblasAtomicsMode_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -279,6 +285,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGetMatrixAsync(int         rows,
                                                      void*       B,
                                                      int         ldb,
                                                      hipStream_t stream);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSetAtomicsMode(hipblasHandle_t      handle,
+                                                     hipblasAtomicsMode_t atomics_mode);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t       handle,
+                                                     hipblasAtomicsMode_t* atomics_mode);
 
 // amax
 HIPBLAS_EXPORT hipblasStatus_t
