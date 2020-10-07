@@ -298,10 +298,10 @@ TEST_P(gemm_strided_batched_gtest, hipblasDoubleComplex)
 // The combinations are  { {M, N, K, lda, ldb, ldc}, {alpha, beta}, {transA, transB}, {batch_count}
 // }
 
-INSTANTIATE_TEST_CASE_P(hipblasGemmStridedBatched,
-                        gemm_strided_batched_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasGemmStridedBatched,
+                         gemm_strided_batched_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

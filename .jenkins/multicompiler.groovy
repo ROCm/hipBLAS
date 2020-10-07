@@ -98,6 +98,5 @@ ci: {
     String clangBuildCommand = './install.sh -c --compiler=clang++'
 
     setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
-    setupCI(urlJobName, jobNameList, clangBuildCommand, runCI, 'clang++')
     setupCI(urlJobName, jobNameList, hipClangBuildCommand, runCI, 'hip-clang')
 }

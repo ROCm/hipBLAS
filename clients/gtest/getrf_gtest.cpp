@@ -154,9 +154,9 @@ TEST_P(getrf_gtest, getrf_gtest_double_complex)
 // ValuesIn takes each element (a vector), combines them, and feeds them to test_p
 // The combinations are  { {M, N, lda, ldb}, stride_scale, batch_count }
 
-INSTANTIATE_TEST_CASE_P(hipblasGetrf,
-                        getrf_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasGetrf,
+                         getrf_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

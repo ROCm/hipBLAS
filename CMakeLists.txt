@@ -22,6 +22,10 @@ if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
 endif()
 
+if ( NOT DEFINED CMAKE_Fortran_COMPILER AND NOT DEFINED ENV{FC} )
+  set( CMAKE_Fortran_COMPILER  "gfortran" )
+endif()
+
 project( hipblas LANGUAGES CXX Fortran )
 
 # This finds the rocm-cmake project, and installs it if not found
@@ -45,7 +49,7 @@ include( ROCMInstallTargets )
 include( ROCMPackageConfigHelpers )
 include( ROCMInstallSymlinks )
 
-set ( VERSION_STRING "0.36.0" )
+set ( VERSION_STRING "0.38.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
@@ -84,8 +88,8 @@ message("amdhip64: ${LIBAMDHIP64_LIBRARY}")
 
 # Quietly look for CUDA, but if not found it's not an error
 # The presense of hip is not sufficient to determine if we want a rocm or cuda backend
-option(TRY_CUDA "Look for CUDA and use that as a backend if found" ON)
-if(TRY_CUDA)
+option(USE_CUDA "Look for CUDA and use that as a backend if found" ON)
+if(USE_CUDA)
     find_package( CUDA QUIET )
 endif()
 

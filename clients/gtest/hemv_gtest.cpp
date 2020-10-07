@@ -163,10 +163,10 @@ TEST_P(hemv_gtest, hemv_gtest_float_complex)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha, beta}, {transA} }
 
-INSTANTIATE_TEST_CASE_P(hipblasHemv,
-                        hemv_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(incx_incy_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasHemv,
+                         hemv_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(incx_incy_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_range),
+                                 ValuesIn(is_fortran)));
