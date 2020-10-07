@@ -321,9 +321,6 @@ hipblasStatus_t hipblasCreate(hipblasHandle_t* handle)
     if(!handle)
         return HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
 
-    // We set the default device memory size to a larger size than rocBLAS's default
-    rocblas_device_malloc_set_default_memory_size(16 * 1024 * 1024);
-
     // Create the rocBLAS handle
     return rocBLASStatusToHIPStatus(rocblas_create_handle((rocblas_handle*)handle));
 }
