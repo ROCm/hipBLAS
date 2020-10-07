@@ -83,7 +83,7 @@ set( HIPBLAS_CONFIG_DIR "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBD
 rocm_create_package(
     NAME ${package_name}
     DESCRIPTION "Radeon Open Compute BLAS marshalling library"
-    MAINTAINER "rocblas-maintainer@amd.com"
+    MAINTAINER "hipBLAS Maintainer <hipblas-maintainer@amd.com>"
     LDCONFIG
     LDCONFIG_DIR ${HIPBLAS_CONFIG_DIR}
 )

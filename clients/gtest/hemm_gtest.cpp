@@ -228,20 +228,20 @@ TEST_P(hemm_gtest, hemm_strided_batched_gtest_double_complex)
 // small
 // Testing order: side_uplo_xx first, alpha_beta_range second, full_matrix_size last
 // i.e fix the matrix size and alpha, test all the side_uplo_xx first.
-INSTANTIATE_TEST_CASE_P(hipblashemm_matrix_size,
-                        hemm_gtest,
-                        Combine(ValuesIn(full_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(side_uplo_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+INSTANTIATE_TEST_SUITE_P(hipblashemm_matrix_size,
+                         hemm_gtest,
+                         Combine(ValuesIn(full_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(side_uplo_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range)));
 
 // THis function mainly test the scope of  full_side_uplo_range,.the scope of
 // matrix_size_range is small
-INSTANTIATE_TEST_CASE_P(hipblashemm_scalar_transpose,
-                        hemm_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(full_side_uplo_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range)));
+INSTANTIATE_TEST_SUITE_P(hipblashemm_scalar_transpose,
+                         hemm_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(full_side_uplo_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range)));

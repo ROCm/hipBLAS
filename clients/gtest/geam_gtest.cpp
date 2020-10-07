@@ -301,11 +301,11 @@ TEST_P(geam_gtest, geam_strided_batched_gtest_double_complex)
 // This function mainly test the scope of alpha_beta, transA_transB,.the scope of matrix_size_range
 // is small
 
-INSTANTIATE_TEST_CASE_P(hipblasGeam_scalar_transpose,
-                        geam_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasGeam_scalar_transpose,
+                         geam_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

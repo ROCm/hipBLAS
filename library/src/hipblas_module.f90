@@ -72,6 +72,11 @@ module hipblas_enums
         enumerator :: HIPBLAS_GEMM_DEFAULT = 100
     end enum
 
+    enum, bind(c)
+        enumerator :: HIPBLAS_ATOMICS_NOT_ALLOWED = 0
+        enumerator :: HIPBLAS_ATOMICS_ALLOWED = 1
+    end enum
+
 end module hipblas_enums
 
 module hipblas
@@ -270,6 +275,31 @@ module hipblas
             integer(c_int), value :: ldb
             type(c_ptr), value :: stream
         end function hipblasGetMatrixAsync
+    end interface
+
+    ! atomics mode
+    interface
+        function hipblasSetAtomicsMode(handle, atomics_mode) &
+                result(c_int) &
+                bind(c, name = 'hipblasSetAtomicsMode')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_ATOMICS_ALLOWED)), value :: atomics_mode
+        end function hipblasSetAtomicsMode
+    end interface
+
+    interface
+        function hipblasGetAtomicsMode(handle, atomics_mode) &
+                result(c_int) &
+                bind(c, name = 'hipblasGetAtomicsMode')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            type(c_ptr), value :: atomics_mode
+        end function hipblasGetAtomicsMode
     end interface
 
     !--------!
