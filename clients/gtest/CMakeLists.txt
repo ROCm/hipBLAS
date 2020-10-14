@@ -107,18 +107,18 @@ if( BUILD_WITH_SOLVER )
   )
 endif( )
 
-set( hipblas_benchmark_common
+set( hipblas_test_common
   ../common/utility.cpp
   ../common/cblas_interface.cpp
-  ../common/flops.cpp
   ../common/norm.cpp
   ../common/unit.cpp
   ../common/near.cpp
   ../common/arg_check.cpp
+  ../common/hipblas_datatype2string.cpp
   ../common/hipblas_template_specialization.cpp
 )
 
-add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_benchmark_common} )
+add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
 
 target_include_directories( hipblas-test
   PRIVATE

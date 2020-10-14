@@ -8,20 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "hipblas_vector.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_gemvBatched(Arguments argus)
+hipblasStatus_t testing_gemvBatched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasGemvBatchedFn
@@ -143,8 +137,20 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
     /* =====================================================================
            ROCBLAS
     =================================================================== */
-    for(int iter = 0; iter < 1; iter++)
+    hipStream_t stream;
+    status = hipblasGetStream(handle, &stream);
+    if(status != HIPBLAS_STATUS_SUCCESS)
     {
+        hipblasDestroy(handle);
+        return status;
+    }
+    int runs = argus.timing ? argus.cold_iters + argus.iters : 1;
+    for(int iter = 0; iter < runs; iter++)
+    {
+        if(argus.timing && iter == argus.cold_iters)
+        {
+            gpu_time_used = get_time_us_sync(stream);
+        }
         status = hipblasGemvBatchedFn(handle,
                                       transA,
                                       M,
@@ -165,6 +171,10 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
             hipblasDestroy(handle);
             return status;
         }
+    }
+    if(argus.timing)
+    {
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
     }
 
     // copy output from device to CPU
@@ -191,6 +201,25 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
         {
             unit_check_general<T>(1, Y_size, batch_count, incy, hz_array, hy_array);
         }
+    }
+
+    if(argus.timing)
+    {
+        ArgumentModel<e_transA_option,
+                      e_M,
+                      e_N,
+                      e_alpha,
+                      e_lda,
+                      e_incx,
+                      e_beta,
+                      e_incy,
+                      e_batch_count>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         gemv_gflop_count<T>(transA, M, N),
+                         gemv_gbyte_count<T>(transA, M, N),
+                         cpu_time_used);
     }
 
     hipblasDestroy(handle);
