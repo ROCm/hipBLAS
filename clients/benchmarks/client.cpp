@@ -1099,12 +1099,12 @@ try
          "BLAS_EX: second dimension * leading dimension.")
 
         ("stride_x",
-         value<hipblas_int>(&arg.stride_x)->default_value(128*128),
+         value<hipblas_int>(&arg.stride_x)->default_value(128),
          "Specific stride of strided_batched vector x, is only applicable to strided batched"
          "BLAS_2: second dimension.")
 
         ("stride_y",
-         value<hipblas_int>(&arg.stride_y)->default_value(128*128),
+         value<hipblas_int>(&arg.stride_y)->default_value(128),
          "Specific stride of strided_batched vector y, is only applicable to strided batched"
          "BLAS_2: leading dimension.")
 
