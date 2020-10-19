@@ -30,7 +30,6 @@ public:
                   double             gpu_us,
                   double             gflops,
                   double             gbytes,
-                  double             cpu_us,
                   double             norm1,
                   double             norm2)
     {
@@ -42,16 +41,12 @@ public:
         double hipblas_gflops = gflops * batch_count * hot_calls / gpu_us * 1e6;
         double hipblas_GBps   = gbytes * batch_count * hot_calls / gpu_us * 1e6;
 
-        double cblas_gflops = gflops * batch_count / cpu_us * 1e6;
-
         // append performance fields
         name_line << ",hipblas-Gflops,hipblas-GB/s,hipblas-us,";
         val_line << ", " << hipblas_gflops << ", " << hipblas_GBps << ", " << gpu_us << ", ";
 
         if(arg.unit_check || arg.norm_check)
         {
-            name_line << "CPU-Gflops,CPU-us,";
-            val_line << cblas_gflops << ", " << cpu_us << ", ";
             if(arg.norm_check)
             {
                 name_line << "norm_error_host_ptr,norm_error_device_ptr,";
@@ -66,7 +61,6 @@ public:
                   double           gpu_us,
                   double           gflops,
                   double           gpu_bytes = 0,
-                  double           cpu_us    = 0,
                   double           norm1     = 0,
                   double           norm2     = 0)
     {
@@ -114,7 +108,7 @@ public:
 #endif
 
         if(arg.timing)
-            log_perf(name_list, value_list, arg, gpu_us, gflops, gpu_bytes, cpu_us, norm1, norm2);
+            log_perf(name_list, value_list, arg, gpu_us, gflops, gpu_bytes, norm1, norm2);
 
         str << name_list.str() << "\n" << value_list.str() << std::endl;
     }
