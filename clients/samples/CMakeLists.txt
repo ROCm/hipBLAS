@@ -26,41 +26,26 @@ endif( )
 
 foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c )
 
-  target_link_libraries( ${exe} PRIVATE roc::hipblas )
-
   # External header includes included as SYSTEM files
   target_include_directories( ${exe}
     SYSTEM PRIVATE
       $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
-      ${ROCM_PATH}/hsa/include
   )
-  set_target_properties(${exe} PROPERTIES LINKER_LANGUAGE CXX)
-  set_target_properties( ${exe} PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
-  set_target_properties( ${exe} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
+
   target_include_directories( ${exe} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> )
+
+  target_compile_options( ${exe} PRIVATE -mf16c)
+
+  target_link_libraries( ${exe} PRIVATE roc::hipblas )
 
   if( NOT CUDA_FOUND )
     target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_HCC__ )
 
-  # Remove following when hcc is fixed; hcc emits following spurious warning
-  # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  target_compile_options( ${exe} PRIVATE -mf16c)
-
-  if( CUSTOM_TARGET )
-    target_link_libraries( ${exe} PRIVATE hip::${CUSTOM_TARGET} hip::host )
-  else( )
-    if( LIBAMDHIP64_LIBRARY )
-      target_link_libraries( ${exe} PRIVATE hip::amdhip64 hip::host )
+    if( CUSTOM_TARGET )
+      target_link_libraries( ${exe} PRIVATE hip::${CUSTOM_TARGET} hip::host )
     else( )
       target_link_libraries( ${exe} PRIVATE hip::host )
     endif( )
-  endif( )
-
-  if( CMAKE_COMPILER_IS_GNUCXX )
-    # GCC needs specific flag to turn on f16c intrinsics
-    target_compile_options( ${exe} PRIVATE -mf16c )
-  endif()
-
 
   else( )
     target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_NVCC__ )
@@ -72,5 +57,9 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c
 
     target_link_libraries( ${exe} PRIVATE ${CUDA_LIBRARIES} )
   endif( )
+
+  set_target_properties(${exe} PROPERTIES LINKER_LANGUAGE CXX)
+  set_target_properties( ${exe} PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
+  set_target_properties( ${exe} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 
 endforeach( )

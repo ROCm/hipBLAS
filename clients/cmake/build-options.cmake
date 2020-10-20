@@ -13,3 +13,13 @@ if( NOT BUILD_CLIENTS_TESTS )
   option( BUILD_CLIENTS_TESTS "Build hipBLAS unit tests" OFF )
 endif( )
 
+if( NOT BUILD_CLIENTS_BENCHMARKS )
+  option( BUILD_CLIENTS_BENCHMARKS "Build hipBLAS benchmarks" OFF )
+endif( )
+
+if( NOT BUILD_CLIENTS_SAMPLES )
+  option( BUILD_CLIENTS_SAMPLES "Build hipBLAS samples" OFF )
+endif( )
+
+
+
