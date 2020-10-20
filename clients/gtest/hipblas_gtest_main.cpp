@@ -5,7 +5,6 @@
 
 #include <gtest/gtest.h>
 #include <stdexcept>
-// #include "utility.h"
 
 /* =====================================================================
       Main function:

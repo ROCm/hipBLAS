@@ -72,19 +72,8 @@ if( NOT CUDA_FOUND )
   if( CUSTOM_TARGET )
     target_link_libraries( hipblas PRIVATE hip::${CUSTOM_TARGET} )
   else( )
-    if ( LIBAMDHIP64_LIBRARY )
-      target_link_libraries( hipblas PRIVATE hip::amdhip64 )
-    else ( )
-      target_link_libraries( hipblas PRIVATE hip::host )
-    endif ( )
+    target_link_libraries( hipblas PRIVATE hip::host )
   endif( )
-
-  # Remove following when hcc is fixed; hcc emits following spurious warning ROCm v1.6.3
-  # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$" )
-    target_link_libraries( hipblas PRIVATE hip::hip_hcc )
-  endif( )
-
 
 else( )
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )

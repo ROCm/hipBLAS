@@ -141,7 +141,7 @@ hipblasStatus_t testing_trtri_batched(Arguments argus)
         }
 
 #ifndef NDEBUG
-        print_matrix(hB, hA, N, N, lda);
+        //print_matrix(hB, hA, N, N, lda);
 #endif
 
         if(argus.unit_check)
