@@ -21,7 +21,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_geam_batched(Arguments argus)
+hipblasStatus_t testing_geam_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasGeamBatchedFn

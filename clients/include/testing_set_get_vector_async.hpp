@@ -20,7 +20,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_set_get_vector_async(Arguments argus)
+hipblasStatus_t testing_set_get_vector_async(const Arguments& argus)
 {
     bool FORTRAN                 = argus.fortran;
     auto hipblasSetVectorAsyncFn = FORTRAN ? hipblasSetVectorAsyncFortran : hipblasSetVectorAsync;

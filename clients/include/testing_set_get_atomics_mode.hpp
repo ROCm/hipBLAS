@@ -19,7 +19,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-hipblasStatus_t testing_set_get_atomics_mode(Arguments argus)
+hipblasStatus_t testing_set_get_atomics_mode(const Arguments& argus)
 {
     bool FORTRAN                 = argus.fortran;
     auto hipblasSetAtomicsModeFn = FORTRAN ? hipblasSetAtomicsModeFortran : hipblasSetAtomicsMode;

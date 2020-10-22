@@ -21,7 +21,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_geam(Arguments argus)
+hipblasStatus_t testing_geam(const Arguments& argus)
 {
     bool FORTRAN       = argus.fortran;
     auto hipblasGeamFn = FORTRAN ? hipblasGeam<T, true> : hipblasGeam<T, false>;

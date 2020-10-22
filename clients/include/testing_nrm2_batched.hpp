@@ -7,11 +7,7 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
@@ -27,7 +23,7 @@ template <>
 constexpr double nrm2_batched_tolerance_multiplier<hipblasDoubleComplex> = 110;
 
 template <typename T1, typename T2>
-hipblasStatus_t testing_nrm2_batched(Arguments argus)
+hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasNrm2BatchedFn

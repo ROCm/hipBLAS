@@ -7,18 +7,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T1, typename T2>
-hipblasStatus_t testing_asum(Arguments argus)
+hipblasStatus_t testing_asum(const Arguments& argus)
 {
 
     int N    = argus.N;

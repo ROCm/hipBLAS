@@ -7,18 +7,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T, bool CONJ = false>
-hipblasStatus_t testing_dot(Arguments argus)
+hipblasStatus_t testing_dot(const Arguments& argus)
 {
     bool FORTRAN      = argus.fortran;
     auto hipblasDotFn = FORTRAN ? (CONJ ? hipblasDotc<T, true> : hipblasDot<T, true>)
@@ -143,7 +139,7 @@ hipblasStatus_t testing_dot(Arguments argus)
 }
 
 template <typename T>
-hipblasStatus_t testing_dotc(Arguments argus)
+hipblasStatus_t testing_dotc(const Arguments& argus)
 {
     return testing_dot<T, true>(argus);
 }
