@@ -499,7 +499,7 @@ pushd .
 
     case "${ID}" in
       ubuntu)
-        elevate_if_not_root dpkg -i hipblas-*.deb
+        elevate_if_not_root dpkg -i hipblas[-\_]*.deb
       ;;
       centos|rhel)
         elevate_if_not_root yum -y localinstall hipblas-*.rpm
