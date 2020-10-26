@@ -9,12 +9,7 @@
 #include <sys/time.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 #include <typeinfo>
 
 using namespace std;
@@ -22,7 +17,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_gemm(Arguments argus)
+hipblasStatus_t testing_gemm(const Arguments& argus)
 {
     bool FORTRAN       = argus.fortran;
     auto hipblasGemmFn = FORTRAN ? hipblasGemm<T, true> : hipblasGemm<T, false>;

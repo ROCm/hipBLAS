@@ -16,6 +16,7 @@ std::ostream& operator<<(std::ostream& os, std::pair<T1, T2> p)
 {
     os << p.first << ": ";
     os << p.second;
+    return os;
 }
 
 // Function to print Arguments out to stream in YAML format

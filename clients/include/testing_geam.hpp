@@ -7,21 +7,18 @@
 #include <limits>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <typeinfo>
 #include <vector>
 
-#include "hipblas.hpp"
 #include "hipblas_unique_ptr.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
-#include <typeinfo>
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_geam(Arguments argus)
+hipblasStatus_t testing_geam(const Arguments& argus)
 {
     bool FORTRAN       = argus.fortran;
     auto hipblasGeamFn = FORTRAN ? hipblasGeam<T, true> : hipblasGeam<T, false>;

@@ -8,19 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T, bool CONJ>
-hipblasStatus_t testing_ger_strided_batched(Arguments argus)
+hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
 {
     bool FORTRAN                    = argus.fortran;
     auto hipblasGerStridedBatchedFn = FORTRAN ? (CONJ ? hipblasGerStridedBatched<T, true, true>

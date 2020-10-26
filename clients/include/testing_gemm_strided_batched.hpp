@@ -7,22 +7,18 @@
 #include <iostream>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <typeinfo>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
-#include <typeinfo>
+#include "hipblas_unique_ptr.hpp"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_GemmStridedBatched(Arguments argus)
+hipblasStatus_t testing_GemmStridedBatched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasGemmStridedBatchedFn

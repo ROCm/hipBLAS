@@ -8,20 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "hipblas_vector.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_spmv_batched(Arguments argus)
+hipblasStatus_t testing_spmv_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasSpmvBatchedFn
