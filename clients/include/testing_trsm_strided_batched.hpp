@@ -159,37 +159,34 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hB.data(), dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
 
-        if(argus.unit_check)
-        {
-            /* =====================================================================
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
 
-            for(int b = 0; b < batch_count; b++)
-            {
-                cblas_trsm<T>(side,
-                              uplo,
-                              transA,
-                              diag,
-                              M,
-                              N,
-                              alpha,
-                              (const T*)hA.data() + b * strideA,
-                              lda,
-                              hB_copy.data() + b * strideB,
-                              ldb);
-            }
+        for(int b = 0; b < batch_count; b++)
+        {
+            cblas_trsm<T>(side,
+                          uplo,
+                          transA,
+                          diag,
+                          M,
+                          N,
+                          alpha,
+                          (const T*)hA.data() + b * strideA,
+                          lda,
+                          hB_copy.data() + b * strideB,
+                          ldb);
+        }
 
-            // if enable norm check, norm check is invasive
-            real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
-            double    tolerance = eps * 40 * M;
+        // if enable norm check, norm check is invasive
+        real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
+        double    tolerance = eps * 40 * M;
 
-            for(int b = 0; b < batch_count; b++)
-            {
-                hipblas_error = norm_check_general<T>(
-                    'F', M, N, ldb, hB_copy.data() + b * strideB, hB.data() + b * strideB);
-                unit_check_error(hipblas_error, tolerance);
-            }
+        for(int b = 0; b < batch_count; b++)
+        {
+            hipblas_error = norm_check_general<T>(
+                'F', M, N, ldb, hB_copy.data() + b * strideB, hB.data() + b * strideB);
+            unit_check_error(hipblas_error, tolerance);
         }
     }
     if(argus.timing)

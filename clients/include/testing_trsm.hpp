@@ -58,7 +58,7 @@ hipblasStatus_t testing_trsm(const Arguments& argus)
 
     double gpu_time_used;
     double hipblasGflops, cblas_gflops;
-    double rocblas_error;
+    double hipblas_error;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
@@ -133,8 +133,8 @@ hipblasStatus_t testing_trsm(const Arguments& argus)
         real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
         double    tolerance = eps * 40 * M;
 
-        rocblas_error = norm_check_general<T>('F', M, N, ldb, hB_copy.data(), hB.data());
-        unit_check_error(rocblas_error, tolerance);
+        hipblas_error = norm_check_general<T>('F', M, N, ldb, hB_copy.data(), hB.data());
+        unit_check_error(hipblas_error, tolerance);
     }
 
     if(argus.timing)
@@ -177,7 +177,7 @@ hipblasStatus_t testing_trsm(const Arguments& argus)
                          gpu_time_used,
                          trsm_gflop_count<T>(M, N, K),
                          trsm_gbyte_count<T>(M, N, K),
-                         rocblas_error);
+                         hipblas_error);
     }
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
