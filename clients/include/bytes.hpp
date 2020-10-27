@@ -170,6 +170,13 @@ constexpr double tpsv_gbyte_count(int n)
  * ===========================================================================
  */
 
+/* \brief byte counts of TRSM */
+template <typename T>
+constexpr double trsm_gbyte_count(int m, int n, int k)
+{
+    return (sizeof(T) * (tri_count(k) + n * m)) / 1e9;
+}
+
 /* \brief byte counts of SYRK */
 template <typename T>
 constexpr double syrk_gbyte_count(int n, int k)

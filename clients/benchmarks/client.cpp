@@ -234,8 +234,6 @@ void run_function(const func_map& map, const Arguments& arg, const std::string& 
     match->second(arg);
 }
 
-#if BUILD_WITH_TENSILE
-
 #include "testing_gemm.hpp"
 #include "testing_gemm_batched.hpp"
 #include "testing_gemm_batched_ex.hpp"
@@ -257,7 +255,7 @@ void run_function(const func_map& map, const Arguments& arg, const std::string& 
 #include "testing_trtri.hpp"
 #include "testing_trtri_batched.hpp"
 #include "testing_trtri_strided_batched.hpp"
-
+/*
 // Template to dispatch testing_gemm_ex for performance tests
 // When Ti == void or Ti == To == Tc == bfloat16, the test is marked invalid
 template <typename Ti, typename To = Ti, typename Tc = To, typename = void>
@@ -308,9 +306,7 @@ struct perf_gemm_strided_batched_ex<
         run_function(map, arg);
     }
 };
-
-#endif // BUILD_WITH_TENSILE
-
+*/
 template <typename T, typename U = T, typename = void>
 struct perf_blas : hipblas_test_invalid
 {
@@ -424,7 +420,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"syrkx", testing_syr2k<T, false>},
                 {"syrkx_batched", testing_syr2k_batched<T, false>},
                 {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
-#if BUILD_WITH_TENSILE
                 {"trmm", testing_trmm<T>},
                 {"trmm_batched", testing_trmm_batched<T>},
                 {"trmm_strided_batched", testing_trmm_strided_batched<T>},
@@ -434,16 +429,16 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"gemm", testing_gemm<T>},
                 {"gemm_batched", testing_gemm_batched<T>},
                 {"gemm_strided_batched", testing_gemm_strided_batched<T>},
-                {"trsm", testing_trsm<T>},
-                {"trsm_ex", testing_trsm_ex<T>},
-                {"trsm_batched", testing_trsm_batched<T>},
-                {"trsm_batched_ex", testing_trsm_batched_ex<T>},
-                {"trsm_strided_batched", testing_trsm_strided_batched<T>},
-                {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
-                {"trsv", testing_trsv<T>},
+*/
+            {"trsm", testing_trsm<T>},
+            {"trsm_ex", testing_trsm_ex<T>},
+            {"trsm_batched", testing_trsm_batched<T>},
+            {"trsm_batched_ex", testing_trsm_batched_ex<T>},
+            {"trsm_strided_batched", testing_trsm_strided_batched<T>},
+            {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
+            /*                {"trsv", testing_trsv<T>},
                 {"trsv_batched", testing_trsv_batched<T>},
                 {"trsv_strided_batched", testing_trsv_strided_batched<T>},
-#endif
 */
         };
         run_function(fmap, arg);
@@ -478,11 +473,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, hipblasHalf>{}>> : hipbl
                 {"dot", testing_dot<T>},
                 {"dot_batched", testing_dot_batched<T>},
                 {"dot_strided_batched", testing_dot_strided_batched<T>},
-#if BUILD_WITH_TENSILE
                 {"gemm", testing_gemm<T>},
                 {"gemm_batched", testing_gemm_batched<T>},
                 {"gemm_strided_batched", testing_gemm_strided_batched<T>},
-#endif
 */
         };
         run_function(map, arg);
@@ -499,7 +492,7 @@ struct perf_blas<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-        /* {"asum", testing_asum<T>},
+            /* {"asum", testing_asum<T>},
                 {"asum_batched", testing_asum_batched<T>},
                 {"asum_strided_batched", testing_asum_strided_batched<T>},
                 {"axpy", testing_axpy<T>},
@@ -618,27 +611,27 @@ struct perf_blas<
                 {"herkx", testing_her2k<T, false>},
                 {"herkx_batched", testing_her2k_batched<T, false>},
                 {"herkx_strided_batched", testing_her2k_strided_batched<T, false>},
-                */
-#if BUILD_WITH_TENSILE
             {"trtri", testing_trtri<T>},
             {"trtri_batched", testing_trtri_batched<T>},
             {"trtri_strided_batched", testing_trtri_strided_batched<T>},
             {"gemm", testing_gemm<T>},
             {"gemm_batched", testing_gemm_batched<T>},
             {"gemm_strided_batched", testing_gemm_strided_batched<T>},
+	    */
             {"trsm", testing_trsm<T>},
             {"trsm_ex", testing_trsm_ex<T>},
             {"trsm_batched", testing_trsm_batched<T>},
             {"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
             {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
-            {"trsv", testing_trsv<T>},
+            /*
+	    {"trsv", testing_trsv<T>},
             {"trsv_batched", testing_trsv_batched<T>},
             {"trsv_strided_batched", testing_trsv_strided_batched<T>},
             {"trmm", testing_trmm<T>},
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
-#endif
+	    */
         };
         run_function(map, arg);
     }
@@ -819,8 +812,7 @@ int run_bench_test(Arguments& arg)
     const char*           function = arg.function;
     if(!strncmp(function, prefix, sizeof(prefix) - 1))
         function += sizeof(prefix) - 1;
-
-#if BUILD_WITH_TENSILE
+    /*
     if(!strcmp(function, "gemm") || !strcmp(function, "gemm_batched"))
     {
         // adjust dimension for GEMM routines
@@ -961,9 +953,9 @@ int run_bench_test(Arguments& arg)
         }
 
         hipblas_gemm_dispatch<perf_gemm_strided_batched_ex>(arg);
+
     }
-    else
-#endif
+    else*/
     {
         /*
         if(!strcmp(function, "scal") || !strcmp(function, "scal_batched")
