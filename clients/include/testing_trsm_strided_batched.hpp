@@ -188,12 +188,10 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
         real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
         double    tolerance = eps * 40 * M;
 
-        for(int b = 0; b < batch_count; b++)
-        {
-            hipblas_error = norm_check_general<T>(
-                'F', M, N, ldb, hB_copy.data() + b * strideB, hB.data() + b * strideB);
+        hipblas_error = norm_check_general<T>(
+            'F', M, N, ldb, strideB, hB_copy.data(), hB.data(), batch_count);
+        if(argus.unit_check)
             unit_check_error(hipblas_error, tolerance);
-        }
     }
     if(argus.timing)
     {

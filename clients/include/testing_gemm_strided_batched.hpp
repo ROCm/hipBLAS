@@ -177,8 +177,8 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
         }
         if(argus.norm_check)
         {
-            hipblas_error
-                = norm_check_general<T>('F', M, N * batch_count, lda, hC_copy.data(), hC.data());
+            hipblas_error = norm_check_general<T>(
+                'F', M, N, lda, bsc, hC_copy.data(), hC.data(), batch_count);
         }
     } // end of if unit/norm check
 

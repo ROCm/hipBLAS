@@ -144,7 +144,8 @@ hipblasStatus_t testing_trsm(const Arguments& argus)
         double    tolerance = eps * 40 * M;
 
         hipblas_error = norm_check_general<T>('F', M, N, ldb, hB_copy.data(), hB.data());
-        unit_check_error(hipblas_error, tolerance);
+        if(argus.unit_check)
+            unit_check_error(hipblas_error, tolerance);
     }
 
     if(argus.timing)
