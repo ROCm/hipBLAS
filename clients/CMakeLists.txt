@@ -46,7 +46,6 @@ if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_SAMPLES )
 
   add_dependencies(hipblas_fortran_client hipblas_fortran)
   include_directories(${CMAKE_BINARY_DIR}/include)
-  include_directories(/home/dmcniven/WORKSPACE/hipblas-d1/build/deps/lapack/src/lapack-build/include)
 endif( )
 
 if( BUILD_CLIENTS_TESTS )

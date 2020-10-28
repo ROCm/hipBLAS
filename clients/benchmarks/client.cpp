@@ -426,16 +426,17 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"trtri", testing_trtri<T>},
                 {"trtri_batched", testing_trtri_batched<T>},
                 {"trtri_strided_batched", testing_trtri_strided_batched<T>},
-                {"gemm", testing_gemm<T>},
-                {"gemm_batched", testing_gemm_batched<T>},
-                {"gemm_strided_batched", testing_gemm_strided_batched<T>},
 */
+            {"gemm", testing_gemm<T>},
+            {"gemm_batched", testing_gemm_batched<T>},
+            {"gemm_strided_batched", testing_gemm_strided_batched<T>},
+
             {"trsm", testing_trsm<T>},
-            {"trsm_ex", testing_trsm_ex<T>},
+            //{"trsm_ex", testing_trsm_ex<T>},
             {"trsm_batched", testing_trsm_batched<T>},
-            {"trsm_batched_ex", testing_trsm_batched_ex<T>},
+            //{"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
-            {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
+            //{"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
             /*                {"trsv", testing_trsv<T>},
                 {"trsv_batched", testing_trsv_batched<T>},
                 {"trsv_strided_batched", testing_trsv_strided_batched<T>},
@@ -473,10 +474,11 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, hipblasHalf>{}>> : hipbl
                 {"dot", testing_dot<T>},
                 {"dot_batched", testing_dot_batched<T>},
                 {"dot_strided_batched", testing_dot_strided_batched<T>},
-                {"gemm", testing_gemm<T>},
-                {"gemm_batched", testing_gemm_batched<T>},
-                {"gemm_strided_batched", testing_gemm_strided_batched<T>},
-*/
+              */
+            {"gemm", testing_gemm<T>},
+            {"gemm_batched", testing_gemm_batched<T>},
+            {"gemm_strided_batched", testing_gemm_strided_batched<T>},
+
         };
         run_function(map, arg);
     }
@@ -614,16 +616,16 @@ struct perf_blas<
             {"trtri", testing_trtri<T>},
             {"trtri_batched", testing_trtri_batched<T>},
             {"trtri_strided_batched", testing_trtri_strided_batched<T>},
+          */
             {"gemm", testing_gemm<T>},
             {"gemm_batched", testing_gemm_batched<T>},
             {"gemm_strided_batched", testing_gemm_strided_batched<T>},
-	    */
             {"trsm", testing_trsm<T>},
-            {"trsm_ex", testing_trsm_ex<T>},
+            //{"trsm_ex", testing_trsm_ex<T>},
             {"trsm_batched", testing_trsm_batched<T>},
-            {"trsm_batched_ex", testing_trsm_batched_ex<T>},
+            //{"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
-            {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
+            //{"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
             /*
 	    {"trsv", testing_trsv<T>},
             {"trsv_batched", testing_trsv_batched<T>},
@@ -812,12 +814,12 @@ int run_bench_test(Arguments& arg)
     const char*           function = arg.function;
     if(!strncmp(function, prefix, sizeof(prefix) - 1))
         function += sizeof(prefix) - 1;
-    /*
+
     if(!strcmp(function, "gemm") || !strcmp(function, "gemm_batched"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
+        hipblas_int min_lda = arg.transA_option == 'N' ? arg.M : arg.K;
+        hipblas_int min_ldb = arg.transB_option == 'N' ? arg.K : arg.N;
         hipblas_int min_ldc = arg.M;
 
         if(arg.lda < min_lda)
@@ -839,8 +841,8 @@ int run_bench_test(Arguments& arg)
     else if(!strcmp(function, "gemm_strided_batched"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
+        hipblas_int min_lda = arg.transA_option == 'N' ? arg.M : arg.K;
+        hipblas_int min_ldb = arg.transB_option == 'N' ? arg.K : arg.N;
         hipblas_int min_ldc = arg.M;
         if(arg.lda < min_lda)
         {
@@ -859,13 +861,13 @@ int run_bench_test(Arguments& arg)
         }
 
         //      hipblas_int min_stride_a =
-        //          arg.transA == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
+        //          arg.transA_option == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
         //      hipblas_int min_stride_b =
-        //          arg.transB == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
+        //          arg.transB_option == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
         //      hipblas_int min_stride_a =
-        //          arg.transA == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
+        //          arg.transA_option == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
         //      hipblas_int min_stride_b =
-        //          arg.transB == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
+        //          arg.transB_option == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
         hipblas_int min_stride_c = arg.ldc * arg.N;
         //      if (arg.stride_a < min_stride_a)
         //      {
@@ -886,12 +888,12 @@ int run_bench_test(Arguments& arg)
             arg.stride_c = min_stride_c;
         }
     }
-
+    /*
     if(!strcmp(function, "gemm_ex") || !strcmp(function, "gemm_batched_ex"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
+        hipblas_int min_lda = arg.transA_option == 'N' ? arg.M : arg.K;
+        hipblas_int min_ldb = arg.transB_option == 'N' ? arg.K : arg.N;
         hipblas_int min_ldc = arg.M;
         hipblas_int min_ldd = arg.M;
 
@@ -920,8 +922,8 @@ int run_bench_test(Arguments& arg)
     else if(!strcmp(function, "gemm_strided_batched_ex"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
+        hipblas_int min_lda = arg.transA_option == 'N' ? arg.M : arg.K;
+        hipblas_int min_ldb = arg.transB_option == 'N' ? arg.K : arg.N;
         hipblas_int min_ldc = arg.M;
         hipblas_int min_ldd = arg.M;
         if(arg.lda < min_lda)
@@ -1189,17 +1191,17 @@ try
          value<hipblas_int>(&arg.cold_iters)->default_value(2),
          "Cold Iterations to run before entering the timing loop")
 
-        // ("algo",
-        //  value<uint32_t>(&arg.algo)->default_value(0),
-        //  "extended precision gemm algorithm")
+        ("algo",
+         value<uint32_t>(&arg.algo)->default_value(0),
+         "extended precision gemm algorithm")
 
-        // ("solution_index",
-        //  value<int32_t>(&arg.solution_index)->default_value(0),
-        //  "extended precision gemm solution index")
+        ("solution_index",
+         value<int32_t>(&arg.solution_index)->default_value(0),
+         "extended precision gemm solution index")
 
-        // ("flags",
-        //  value<uint32_t>(&arg.flags)->default_value(hipblas_gemm_flags_none),
-        //  "gemm_ex flags")
+        ("flags",
+         value<uint32_t>(&arg.flags)->default_value(0),
+         "gemm_ex flags")
 
         ("atomics_not_allowed",
          bool_switch(&atomics_not_allowed)->default_value(false),
