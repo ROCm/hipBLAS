@@ -225,57 +225,6 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
                           ldc);
         }
 
-        // test hipBLAS batched gemm with alpha and beta pointers on host
-        {
-            status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-
-            status_2 = hipblasGemmBatchedFn(handle,
-                                            transA,
-                                            transB,
-                                            M,
-                                            N,
-                                            K,
-                                            &h_alpha,
-                                            (const T* const*)dA_array_dev,
-                                            lda,
-                                            (const T* const*)dB_array_dev,
-                                            ldb,
-                                            &h_beta,
-                                            dC2_array_dev,
-                                            ldc,
-                                            batch_count);
-
-            if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
-            {
-                std::cout << "hipblasGemmBatched error" << std::endl;
-                hipblasDestroy(handle);
-                if(status_1 != HIPBLAS_STATUS_SUCCESS)
-                    return status_1;
-                if(status_2 != HIPBLAS_STATUS_SUCCESS)
-                    return status_2;
-            }
-
-            for(int i = 0; i < batch_count; i++)
-            {
-                // copy result matrices from device to host
-                err_C_2 = hipMemcpy(
-                    hC_array[i], dC2_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
-
-                if(err_C_2 != hipSuccess)
-                {
-                    hipblasDestroy(handle);
-                    std::cerr << "dX_array[i] hipMemcpy error" << std::endl;
-                    return HIPBLAS_STATUS_MAPPING_ERROR;
-                }
-            }
-            // check hipBLAS result against "golden" result
-            if(argus.unit_check)
-                unit_check_general<T>(M, N, batch_count, lda, hC_copy_array, hC_array);
-            if(argus.norm_check)
-                hipblas_error
-                    = norm_check_general<T>('F', M, N, lda, hC_copy_array, hC_array, batch_count);
-        }
-
         // test hipBLAS batched gemm with alpha and beta pointers on device
         {
             status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
@@ -326,6 +275,57 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
                 hipblas_error
                     = norm_check_general<T>('F', M, N, lda, hC_copy_array, hC_array, batch_count);
         }
+
+        // test hipBLAS batched gemm with alpha and beta pointers on host
+        {
+            status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+
+            status_2 = hipblasGemmBatchedFn(handle,
+                                            transA,
+                                            transB,
+                                            M,
+                                            N,
+                                            K,
+                                            &h_alpha,
+                                            (const T* const*)dA_array_dev,
+                                            lda,
+                                            (const T* const*)dB_array_dev,
+                                            ldb,
+                                            &h_beta,
+                                            dC2_array_dev,
+                                            ldc,
+                                            batch_count);
+
+            if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
+            {
+                std::cout << "hipblasGemmBatched error" << std::endl;
+                hipblasDestroy(handle);
+                if(status_1 != HIPBLAS_STATUS_SUCCESS)
+                    return status_1;
+                if(status_2 != HIPBLAS_STATUS_SUCCESS)
+                    return status_2;
+            }
+
+            for(int i = 0; i < batch_count; i++)
+            {
+                // copy result matrices from device to host
+                err_C_2 = hipMemcpy(
+                    hC_array[i], dC2_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
+
+                if(err_C_2 != hipSuccess)
+                {
+                    hipblasDestroy(handle);
+                    std::cerr << "dX_array[i] hipMemcpy error" << std::endl;
+                    return HIPBLAS_STATUS_MAPPING_ERROR;
+                }
+            }
+            // check hipBLAS result against "golden" result
+            if(argus.unit_check)
+                unit_check_general<T>(M, N, batch_count, lda, hC_copy_array, hC_array);
+            if(argus.norm_check)
+                hipblas_error
+                    = norm_check_general<T>('F', M, N, lda, hC_copy_array, hC_array, batch_count);
+        }
     }
 
     if(argus.timing)
@@ -337,6 +337,13 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
             hipblasDestroy(handle);
             return status;
         }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
         {
@@ -349,12 +356,12 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
                                           M,
                                           N,
                                           K,
-                                          d_alpha,
+                                          &h_alpha,
                                           (const T* const*)dA_array_dev,
                                           lda,
                                           (const T* const*)dB_array_dev,
                                           ldb,
-                                          d_beta,
+                                          &h_beta,
                                           dC1_array_dev,
                                           ldc,
                                           batch_count);

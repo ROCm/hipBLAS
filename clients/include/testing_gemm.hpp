@@ -99,12 +99,24 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(T) * ldc * N, hipMemcpyHostToDevice));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
+
+    status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // library interface
     status
         = hipblasGemmFn(handle, transA, transB, M, N, K, &alpha, dA, lda, dB, ldb, &beta, dC, ldc);
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
@@ -160,6 +172,13 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
             hipblasDestroy(handle);
             return status;
         }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
         {

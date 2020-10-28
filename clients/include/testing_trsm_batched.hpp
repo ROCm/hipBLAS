@@ -154,8 +154,19 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
 
     if(argus.unit_check || argus.norm_check)
     {
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
         status = hipblasTrsmBatchedFn(
             handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb, batch_count);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
 
         // copy output from device to CPU
         for(int b = 0; b < batch_count; b++)
@@ -199,6 +210,13 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
             hipblasDestroy(handle);
             return status;
         }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
         {

@@ -134,6 +134,12 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
 
     if(argus.unit_check || argus.norm_check)
     {
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
         status = hipblasTrsmStridedBatchedFn(handle,
                                              side,
                                              uplo,
@@ -198,6 +204,13 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
             hipblasDestroy(handle);
             return status;
         }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
         {

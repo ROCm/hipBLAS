@@ -117,8 +117,18 @@ hipblasStatus_t testing_trsm(const Arguments& argus)
     =================================================================== */
     if(argus.unit_check || argus.norm_check)
     {
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
         status = hipblasTrsmFn(handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb);
-
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
         /* =====================================================================
            CPU BLAS
         =================================================================== */
@@ -141,6 +151,12 @@ hipblasStatus_t testing_trsm(const Arguments& argus)
     {
         hipStream_t stream;
         status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
             hipblasDestroy(handle);

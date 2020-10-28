@@ -113,6 +113,13 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
     =================================================================== */
     if(argus.unit_check || argus.norm_check)
     {
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
         // library interface
         status = hipblasGemmStridedBatchedFn(handle,
                                              transA,
@@ -133,6 +140,11 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
                                              bsc,
                                              batch_count);
 
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
 
@@ -179,6 +191,13 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
             hipblasDestroy(handle);
             return status;
         }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
         {
