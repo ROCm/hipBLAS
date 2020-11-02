@@ -137,7 +137,7 @@ TEST_P(gemm_strided_batched_gtest, float)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<float>(arg);
+    hipblasStatus_t status = testing_gemm_strided_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -178,7 +178,7 @@ TEST_P(gemm_strided_batched_gtest, double)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<double>(arg);
+    hipblasStatus_t status = testing_gemm_strided_batched<double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -219,7 +219,7 @@ TEST_P(gemm_strided_batched_gtest, hipblasComplex)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_gemm_strided_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -260,7 +260,7 @@ TEST_P(gemm_strided_batched_gtest, hipblasDoubleComplex)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_gemm_strided_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)

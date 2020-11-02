@@ -18,7 +18,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_GemmStridedBatched(const Arguments& argus)
+hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasGemmStridedBatchedFn
@@ -47,10 +47,10 @@ hipblasStatus_t testing_GemmStridedBatched(const Arguments& argus)
     T   alpha = argus.alpha;
     T   beta  = argus.beta;
 
+    double hipblas_error;
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops;
 
-    T               rocblas_error = 0.0;
     hipblasHandle_t handle;
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
     hipblasCreate(&handle);
@@ -109,34 +109,44 @@ hipblasStatus_t testing_GemmStridedBatched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
-
-    // library interface
-    status = hipblasGemmStridedBatchedFn(handle,
-                                         transA,
-                                         transB,
-                                         M,
-                                         N,
-                                         K,
-                                         &alpha,
-                                         dA,
-                                         lda,
-                                         bsa,
-                                         dB,
-                                         ldb,
-                                         bsb,
-                                         &beta,
-                                         dC,
-                                         ldc,
-                                         bsc,
-                                         batch_count);
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
-
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        // library interface
+        status = hipblasGemmStridedBatchedFn(handle,
+                                             transA,
+                                             transB,
+                                             M,
+                                             N,
+                                             K,
+                                             &alpha,
+                                             dA,
+                                             lda,
+                                             bsa,
+                                             dB,
+                                             ldb,
+                                             bsb,
+                                             &beta,
+                                             dC,
+                                             ldc,
+                                             bsc,
+                                             batch_count);
+
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
                     CPU BLAS
@@ -165,8 +175,80 @@ hipblasStatus_t testing_GemmStridedBatched(const Arguments& argus)
         {
             unit_check_general<T>(M, N * batch_count, lda, hC_copy.data(), hC.data());
         }
-
+        if(argus.norm_check)
+        {
+            hipblas_error = norm_check_general<T>(
+                'F', M, N, lda, bsc, hC_copy.data(), hC.data(), batch_count);
+        }
     } // end of if unit/norm check
+
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status = hipblasGemmStridedBatchedFn(handle,
+                                                 transA,
+                                                 transB,
+                                                 M,
+                                                 N,
+                                                 K,
+                                                 &alpha,
+                                                 dA,
+                                                 lda,
+                                                 bsa,
+                                                 dB,
+                                                 ldb,
+                                                 bsb,
+                                                 &beta,
+                                                 dC,
+                                                 ldc,
+                                                 bsc,
+                                                 batch_count);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_transA_option,
+                      e_transB_option,
+                      e_M,
+                      e_N,
+                      e_K,
+                      e_alpha,
+                      e_lda,
+                      e_ldb,
+                      e_beta,
+                      e_ldc,
+                      e_batch_count>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         gemm_gflop_count<T>(M, N, K),
+                         gemm_gbyte_count<T>(M, N, K),
+                         hipblas_error);
+    }
 
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;

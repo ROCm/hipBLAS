@@ -84,9 +84,12 @@ struct Arguments
     int iters;
     int cold_iters;
 
-    char function[64];
-    char name[64];
-    char category[64];
+    uint32_t algo;
+    int32_t  solution_index;
+    uint32_t flags;
+    char     function[64];
+    char     name[64];
+    char     category[64];
 
     int atomics_mode;
 
@@ -136,6 +139,9 @@ struct Arguments
     OPER(timing) SEP                 \
     OPER(iters) SEP                  \
     OPER(cold_iters) SEP             \
+    OPER(algo) SEP                   \
+    OPER(solution_index) SEP         \
+    OPER(flags) SEP                  \
     OPER(function) SEP               \
     OPER(name) SEP                   \
     OPER(category) SEP               \

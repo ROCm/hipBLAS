@@ -99,19 +99,32 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(T) * ldc * N, hipMemcpyHostToDevice));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
+
+    status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // library interface
     status
         = hipblasGemmFn(handle, transA, transB, M, N, K, &alpha, dA, lda, dB, ldb, &beta, dC, ldc);
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
+    }
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
 
-    if(argus.unit_check)
+    double hipblas_error = 0.0;
+    double gpu_time_used = 0.0;
+    if(argus.unit_check || argus.norm_check)
     {
-
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -142,8 +155,64 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
         {
             unit_check_general<T>(M, N, ldc, hC_copy.data(), hC.data());
         }
+        if(argus.norm_check)
+        {
+            hipblas_error
+                = std::abs(norm_check_general<T>('F', M, N, ldc, hC_copy.data(), hC.data()));
+        }
 
     } // end of if unit/norm check
+
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status = hipblasGemmFn(
+                handle, transA, transB, M, N, K, &alpha, dA, lda, dB, ldb, &beta, dC, ldc);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_transA_option,
+                      e_transB_option,
+                      e_M,
+                      e_N,
+                      e_K,
+                      e_alpha,
+                      e_lda,
+                      e_ldb,
+                      e_beta,
+                      e_ldc>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         gemm_gflop_count<T>(M, N, K),
+                         gemm_gbyte_count<T>(M, N, K),
+                         hipblas_error);
+    }
 
     hipblasDestroy(handle);
     return status;
