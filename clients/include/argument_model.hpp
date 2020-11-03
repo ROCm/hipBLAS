@@ -43,7 +43,8 @@ public:
 
         // append performance fields
         name_line << ",hipblas-Gflops,hipblas-GB/s,hipblas-us,";
-        val_line << ", " << hipblas_gflops << ", " << hipblas_GBps << ", " << gpu_us << ", ";
+        val_line << ", " << hipblas_gflops << ", " << hipblas_GBps << ", " << gpu_us / hot_calls
+                 << ", ";
 
         if(arg.unit_check || arg.norm_check)
         {
