@@ -7,7 +7,6 @@ import sys
 
 from matplotlib.ticker import (AutoMinorLocator)
 
-sys.path.append('../../../clients/common/')
 import hipblas_gentest as gt
 
 import commandrunner as cr
