@@ -148,7 +148,7 @@ def incrementParam(cur, max, mul, step_size, done):
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-w', '--workingdir',     required=False, default = '/home/marnauta/rocBLAS/build/release/clients/staging')
+    parser.add_argument('-w', '--workingdir',     required=False, default = '/home/marnauta/hipBLAS/build/release/clients/staging')
     parser.add_argument('-n', '--nmin',           required=False, default = 1, type=int)
     parser.add_argument('-N', '--nmax',           required=False, default = 1024, type=int)
     parser.add_argument('-k', '--kmin',           required=False, default = 1, type=int)
