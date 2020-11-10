@@ -118,22 +118,22 @@ class SystemMonitor(object):
         self.metrics = metrics
         self.data = {metric:{} for metric in self.metrics}
 
-    def record_line(self):
+    def record_line(self, cuda):
         now = datetime.datetime.now()
         for metric in self.metrics:
-            self.data[metric][now] = self.measure(metric)
+            self.data[metric][now] = self.measure(metric, cuda)
 
-    def measure(self, metric, device=None):
+    def measure(self, metric, cuda, device=None):
         if device is None:
-            device = smi.listDevices(showall=False)[0]
+            device = getspecs.listdevices(cuda, smi)[0]
         if smi is None:
             return 0.0
         elif metric == 'fan_speed_percent':
-            return smi.getFanSpeed(device)[1]
-        elif metric.find('clk') >=0 and metric.split('_')[0] in smi.validClockNames:
-            return int(smi.getCurrentClock(device, metric.split('_')[0], 'freq').strip('Mhz'))
+            return getspecs.getfanspeed(device, cuda, smi)[1]
+        elif metric.find('clk') >=0 and metric.split('_')[0] in getspecs.validclocknames:
+            return int(getspecs.getcurrentclockfreq(device, metric.split('_')[0], cuda, smi).strip('Mhz'))
         elif 'used_memory_percent':
-            used_bytes, total_bytes = smi.getMemInfo(device, 'vram')
+            used_bytes, total_bytes = getspecs.getmeminfo(device, 'vram', cuda, smi)
             return int(used_bytes)*100.0/int(total_bytes)
         else:
             raise ValueError('Unrecognized metric requested: {}'.format(metric))
@@ -485,7 +485,7 @@ class ArgumentSetABC(object):
                 try:
                     while proc.poll() is None:
                         if smi is not None and poll_metric_count % 20 == 0:
-                            system_monitor.record_line()
+                            system_monitor.record_line(cuda)
                         time.sleep(0.01)
                         poll_metric_count += 1
                 except Exception as e:
@@ -574,7 +574,7 @@ class ArgumentSetSort(OrderedDict):
 
 class MachineSpecs(dict):
     @classmethod
-    def collect_specs(cls, device_numbers, install_path):
+    def collect_specs(cls, device_numbers, cuda, install_path):
         # Helper to translate bytes into human readable units
         def to_mem_units(num_bytes):
             num_bytes = int(num_bytes)
@@ -592,37 +592,38 @@ class MachineSpecs(dict):
         host_info['kernel version'] = getspecs.getkernel()
         host_info['rocm version'] = getspecs.getrocmversion()
         rv['Host'] = host_info
-
         for device_num in device_numbers:
             device_info = {}
-            device_info['device'] = getspecs.getdeviceinfo(device_num)
-            device_info['vbios version'] = getspecs.getvbios(device_num)
-            device_info['vram'] = getspecs.getvram(device_num)
-            device_info['performance level'] = getspecs.getperflevel(device_num)
-            device_info['system clock'] = getspecs.getsclk(device_num)
-            device_info['memory clock'] = getspecs.getmclk(device_num)
+            device_info['device'] = getspecs.getdeviceinfo(device_num, cuda)
+            device_info['vbios version'] = getspecs.getvbios(device_num, cuda)
+            device_info['vram'] = getspecs.getvram(device_num, cuda)
+            device_info['performance level'] = getspecs.getperflevel(device_num, cuda)
+            device_info['system clock'] = getspecs.getsclk(device_num, cuda)
+            device_info['memory clock'] = getspecs.getmclk(device_num, cuda)
             rv['Device {0:2d}'.format(device_num)] = device_info
 
         smi = import_rocm_smi(install_path)
-        if smi is not None:
-            devices = smi.listDevices(showall=False)
-            for device in devices:
-                smi_info = {}
-                smi_info['Bus'] = smi.getBus(device)
-                smi_info['Profile'] = smi.getProfile(device)
-                smi_info['Start Fan Speed'] = str(smi.getFanSpeed(device)[1]) + '%'
-                for clock in smi.validClockNames:
-                    freq = smi.getCurrentClock(device, clock, 'freq')
-                    measured_level = smi.getCurrentClock(device, clock, 'level')
-                    max_level = smi.getMaxLevel(device, clock)
-                    smi_info['Start ' + clock] = '{} - Level {}/{}'.format(freq, measured_level, max_level)
-                for mem_type in smi.validMemTypes:
-                    key = 'Start {} Memory'.format(mem_type)
-                    used_bytes, total_bytes = smi.getMemInfo(device, mem_type)
-                    smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes), to_mem_units(total_bytes))
-                for component in smi.validVersionComponents:
-                    smi_info[component.capitalize() + ' Version'] = smi.getVersion([device], component)
-                rv['ROCm ' + device.capitalize()] = smi_info
+        devices = getspecs.listdevices(cuda, smi)
+        for device in devices:
+            smi_info = {}
+            smi_info['Bus'] = getspecs.getbus(device, cuda, smi)
+            smi_info['Profile'] = getspecs.getprofile(device, cuda, smi)
+            smi_info['Start Fan Speed'] = getspecs.getfanspeedpercent(device, cuda, smi) + '%'
+            for clock in getspecs.validclocknames(cuda, smi):
+                freq = getspecs.getcurrentclockfreq(device, clock, cuda, smi)
+                measured_level = getspecs.getcurrentclocklevel(device, clock, cuda, smi)
+                max_level = getspecs.getmaxlevel(device, clock, cuda, smi)
+                smi_info['Start ' + clock] = '{} - Level {}/{}'.format(freq, measured_level, max_level)
+            for mem_type in getspecs.validmemtypes(cuda, smi):
+                key = 'Start {} Memory'.format(mem_type)
+                used_bytes, total_bytes = getspecs.getmeminfo(device, mem_type, cuda, smi)
+                print('used, total')
+                print (used_bytes)
+                print (total_bytes)
+                smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes), to_mem_units(total_bytes))
+            for component in getspecs.validversioncomponents(cuda, smi):
+                smi_info[component.capitalize() + ' Version'] = getspecs.getversion(device, component, cuda, smi)
+            rv['ROCm ' + device.capitalize()] = smi_info
 
         return rv
 
@@ -700,9 +701,9 @@ class RunConfiguration(object):
     def _machine_specs_filename(self):
         return os.path.join(self.output_directory, "specs.json")
 
-    def save_specifications(self, device_num):
+    def save_specifications(self, device_num, cuda):
         filename = self._machine_specs_filename()
-        MachineSpecs.collect_specs([device_num], self.user_args.install_path).save(filename)
+        MachineSpecs.collect_specs([device_num], cuda, self.user_args.install_path).save(filename)
         # Does not return the specs because to use them robustly, they need to be loaded
         # from disk. Collecting could overwrite saved specs when post-processing results.
 
@@ -998,6 +999,7 @@ class CommandRunner(object):
         executable_directories = user_args.input_executables
         output_directories = user_args.output_directories
         labels = user_args.labels
+        cuda = user_args.cuda
 
         print('Excecutable directories: ', executable_directories)
 
@@ -1018,6 +1020,12 @@ class CommandRunner(object):
         self.executable_directories = executable_directories
         self.output_directories = output_directories
         self.labels = labels
+        self.cuda = cuda
+
+        if self.cuda:
+            print('Running for a CUDA system')
+        else:
+            print('Not running for a CUDA system')
 
         self.run_configurations = RunConfigurationsList()
         for exec_dir, out_dir, label in zip(executable_directories, output_directories, labels):
@@ -1129,7 +1137,7 @@ class CommandRunner(object):
         for run_configuration in self.run_configurations:
             if self.is_run_tool():
                 run_configuration.make_output_directory()
-                run_configuration.save_specifications(self.user_args.device_num)
+                run_configuration.save_specifications(self.user_args.device_num, self.cuda)
             elif not self.is_dry_run():
                 run_configuration.assert_exists()
 
@@ -1294,6 +1302,7 @@ def parse_input_arguments(parser):
     def to_test_methods(s):
         return to_multiple_choices(all_test_methods, s)
 
+    parser.add_argument('--cuda', default=False, action='store_true', help='Run on a CUDA device.')
     parser.add_argument('-i', '--input-executables', action='append', required=True,
                         help='Input executable location, can be added multiple times.')
     parser.add_argument('-o', '--output-directories', action='append', default=[],
