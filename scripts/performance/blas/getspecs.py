@@ -244,7 +244,7 @@ def getbandwidth(devicenum, cuda):
 
 def listdevices(cuda, smi=None):
     if cuda:
-        cmd = [get_smi_exec(cuda), "--query-gpu=count", "--format=csv,noheader", "-i", 0]
+        cmd = [get_smi_exec(cuda), "--query-gpu=count", "--format=csv,noheader", "-i", '0']
         success, cout = _subprocess_helper(cmd)
         if not success:
             return []

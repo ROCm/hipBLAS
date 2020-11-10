@@ -129,12 +129,12 @@ class SystemMonitor(object):
         if smi is None:
             return 0.0
         elif metric == 'fan_speed_percent':
-            return getspecs.getfanspeed(device, cuda, smi)[1]
-        elif metric.find('clk') >=0 and metric.split('_')[0] in getspecs.validclocknames:
+            return getspecs.getfanspeedpercent(device, cuda, smi)[1]
+        elif metric.find('clk') >=0 and metric.split('_')[0] in getspecs.validclocknames(cuda, smi):
             return int(getspecs.getcurrentclockfreq(device, metric.split('_')[0], cuda, smi).strip('Mhz'))
         elif 'used_memory_percent':
             used_bytes, total_bytes = getspecs.getmeminfo(device, 'vram', cuda, smi)
-            return int(used_bytes)*100.0/int(total_bytes)
+            return int(used_bytes.split()[0])*100.0/int(total_bytes.split()[0])
         else:
             raise ValueError('Unrecognized metric requested: {}'.format(metric))
 
@@ -485,7 +485,7 @@ class ArgumentSetABC(object):
                 try:
                     while proc.poll() is None:
                         if smi is not None and poll_metric_count % 20 == 0:
-                            system_monitor.record_line(cuda)
+                            system_monitor.record_line(self.user_args.cuda)
                         time.sleep(0.01)
                         poll_metric_count += 1
                 except Exception as e:
@@ -620,10 +620,13 @@ class MachineSpecs(dict):
                 print('used, total')
                 print (used_bytes)
                 print (total_bytes)
-                smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes), to_mem_units(total_bytes))
+                smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes.split()[0]), to_mem_units(total_bytes.split()[0]))
             for component in getspecs.validversioncomponents(cuda, smi):
                 smi_info[component.capitalize() + ' Version'] = getspecs.getversion(device, component, cuda, smi)
-            rv['ROCm ' + device.capitalize()] = smi_info
+            if cuda:
+                rv['Card' + str(device)] = smi_info
+            else:
+                rv[device.capitalize()] = smi_info
 
         return rv
 
@@ -1078,7 +1081,7 @@ class CommandRunner(object):
 
     def main(self):
         self.execute()
-        self.show_plots()
+        self.show_plots(self.cuda)
         self.get_system_summary()
         self.output_summary()
 
@@ -1177,7 +1180,7 @@ class CommandRunner(object):
         if self.is_run_tool() or self.is_dry_run():
             command_list.execute_shuffled(overwrite = self.is_overwrite(), dry_run = self.is_dry_run())
 
-    def show_plots(self):
+    def show_plots(self, cuda):
         if self.is_dry_run():
             return
         grouped_run_configurations = self.run_configurations.group_by_label()
@@ -1213,7 +1216,7 @@ class CommandRunner(object):
             # Add any Matplotlib plots using Comparison.plot()
             if self.is_use_matplotlib():
                 figure, axes = plt.subplots(figsize = (7, 7))
-                plot_success = comparison.plot(self.run_configurations, axes)
+                plot_success = comparison.plot(self.run_configurations, axes, cuda)
                 print(comparison.get_caption(self.run_configurations))
                 if plot_success:
                     axes.legend(fontsize = 10, bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
