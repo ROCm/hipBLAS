@@ -7,18 +7,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "hipblas.hpp"
-#include "near.h"
-#include "norm.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_rotm_strided_batched(Arguments arg)
+hipblasStatus_t testing_rotm_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasRotmStridedBatchedFn

@@ -10,12 +10,7 @@
 #include <vector>
 
 #include "arg_check.h"
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 #include <typeinfo>
 
 using namespace std;
@@ -23,7 +18,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_GemmBatched(Arguments argus)
+hipblasStatus_t testing_gemm_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasGemmBatchedFn
@@ -79,9 +74,8 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         return status;
     }
 
-    T rocblas_error = 0.0;
-
-    double gpu_time_used, cpu_time_used;
+    double hipblas_error = 0.0;
+    double gpu_time_used;
     double hipblasGflops, cblas_gflops;
 
     hipblasStatus_t status   = HIPBLAS_STATUS_SUCCESS;
@@ -211,118 +205,192 @@ hipblasStatus_t testing_GemmBatched(Arguments argus)
         return HIPBLAS_STATUS_MAPPING_ERROR;
     }
 
-    // calculate "golden" result on CPU
-    for(int i = 0; i < batch_count; i++)
+    if(argus.unit_check || argus.norm_check)
     {
-        cblas_gemm<T>(transA,
-                      transB,
-                      M,
-                      N,
-                      K,
-                      h_alpha,
-                      (T*)hA_array[i],
-                      lda,
-                      (T*)hB_array[i],
-                      ldb,
-                      h_beta,
-                      (T*)hC_copy_array[i],
-                      ldc);
-    }
-
-    // test hipBLAS batched gemm with alpha and beta pointers on host
-    {
-        status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-
-        status_2 = hipblasGemmBatchedFn(handle,
-                                        transA,
-                                        transB,
-                                        M,
-                                        N,
-                                        K,
-                                        &h_alpha,
-                                        (const T* const*)dA_array_dev,
-                                        lda,
-                                        (const T* const*)dB_array_dev,
-                                        ldb,
-                                        &h_beta,
-                                        dC2_array_dev,
-                                        ldc,
-                                        batch_count);
-
-        if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
-        {
-            std::cout << "hipblasGemmBatched error" << std::endl;
-            hipblasDestroy(handle);
-            if(status_1 != HIPBLAS_STATUS_SUCCESS)
-                return status_1;
-            if(status_2 != HIPBLAS_STATUS_SUCCESS)
-                return status_2;
-        }
-
+        // calculate "golden" result on CPU
         for(int i = 0; i < batch_count; i++)
         {
-            // copy result matrices from device to host
-            err_C_2 = hipMemcpy(
-                hC_array[i], dC2_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
+            cblas_gemm<T>(transA,
+                          transB,
+                          M,
+                          N,
+                          K,
+                          h_alpha,
+                          (T*)hA_array[i],
+                          lda,
+                          (T*)hB_array[i],
+                          ldb,
+                          h_beta,
+                          (T*)hC_copy_array[i],
+                          ldc);
+        }
 
-            if(err_C_2 != hipSuccess)
+        // test hipBLAS batched gemm with alpha and beta pointers on device
+        {
+            status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
+
+            status_2 = hipblasGemmBatchedFn(handle,
+                                            transA,
+                                            transB,
+                                            M,
+                                            N,
+                                            K,
+                                            d_alpha,
+                                            (const T* const*)dA_array_dev,
+                                            lda,
+                                            (const T* const*)dB_array_dev,
+                                            ldb,
+                                            d_beta,
+                                            dC1_array_dev,
+                                            ldc,
+                                            batch_count);
+
+            if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
             {
+                std::cout << "hipblasGemmBatched error" << std::endl;
                 hipblasDestroy(handle);
-                std::cerr << "dX_array[i] hipMemcpy error" << std::endl;
-                return HIPBLAS_STATUS_MAPPING_ERROR;
+                if(status_1 != HIPBLAS_STATUS_SUCCESS)
+                    return status_1;
+                if(status_2 != HIPBLAS_STATUS_SUCCESS)
+                    return status_2;
             }
 
+            for(int i = 0; i < batch_count; i++)
+            {
+                // copy result matrices from device to host
+                err_C_1 = hipMemcpy(
+                    hC_array[i], dC1_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
+
+                if(err_C_1 != hipSuccess)
+                {
+                    hipblasDestroy(handle);
+                    std::cerr << "hC_array[i] hipMemcpy error" << std::endl;
+                    return HIPBLAS_STATUS_MAPPING_ERROR;
+                }
+            }
             // check hipBLAS result against "golden" result
-            unit_check_general<T>(M, N, lda, hC_copy_array[i], hC_array[i]);
+            if(argus.unit_check)
+                unit_check_general<T>(M, N, batch_count, lda, hC_copy_array, hC_array);
+            if(argus.norm_check)
+                hipblas_error
+                    = norm_check_general<T>('F', M, N, lda, hC_copy_array, hC_array, batch_count);
+        }
+
+        // test hipBLAS batched gemm with alpha and beta pointers on host
+        {
+            status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+
+            status_2 = hipblasGemmBatchedFn(handle,
+                                            transA,
+                                            transB,
+                                            M,
+                                            N,
+                                            K,
+                                            &h_alpha,
+                                            (const T* const*)dA_array_dev,
+                                            lda,
+                                            (const T* const*)dB_array_dev,
+                                            ldb,
+                                            &h_beta,
+                                            dC2_array_dev,
+                                            ldc,
+                                            batch_count);
+
+            if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
+            {
+                std::cout << "hipblasGemmBatched error" << std::endl;
+                hipblasDestroy(handle);
+                if(status_1 != HIPBLAS_STATUS_SUCCESS)
+                    return status_1;
+                if(status_2 != HIPBLAS_STATUS_SUCCESS)
+                    return status_2;
+            }
+
+            for(int i = 0; i < batch_count; i++)
+            {
+                // copy result matrices from device to host
+                err_C_2 = hipMemcpy(
+                    hC_array[i], dC2_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
+
+                if(err_C_2 != hipSuccess)
+                {
+                    hipblasDestroy(handle);
+                    std::cerr << "dX_array[i] hipMemcpy error" << std::endl;
+                    return HIPBLAS_STATUS_MAPPING_ERROR;
+                }
+            }
+            // check hipBLAS result against "golden" result
+            if(argus.unit_check)
+                unit_check_general<T>(M, N, batch_count, lda, hC_copy_array, hC_array);
+            if(argus.norm_check)
+                hipblas_error
+                    = norm_check_general<T>('F', M, N, lda, hC_copy_array, hC_array, batch_count);
         }
     }
 
-    // test hipBLAS batched gemm with alpha and beta pointers on device
+    if(argus.timing)
     {
-        status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-
-        status_2 = hipblasGemmBatchedFn(handle,
-                                        transA,
-                                        transB,
-                                        M,
-                                        N,
-                                        K,
-                                        d_alpha,
-                                        (const T* const*)dA_array_dev,
-                                        lda,
-                                        (const T* const*)dB_array_dev,
-                                        ldb,
-                                        d_beta,
-                                        dC1_array_dev,
-                                        ldc,
-                                        batch_count);
-
-        if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
         {
-            std::cout << "hipblasGemmBatched error" << std::endl;
             hipblasDestroy(handle);
-            if(status_1 != HIPBLAS_STATUS_SUCCESS)
-                return status_1;
-            if(status_2 != HIPBLAS_STATUS_SUCCESS)
-                return status_2;
+            return status;
+        }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
         }
 
-        for(int i = 0; i < batch_count; i++)
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
         {
-            // copy result matrices from device to host
-            err_C_1 = hipMemcpy(
-                hC_array[i], dC1_array[i], sizeof(T) * C_mat_size, hipMemcpyDeviceToHost);
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
 
-            if(err_C_1 != hipSuccess)
+            status = hipblasGemmBatchedFn(handle,
+                                          transA,
+                                          transB,
+                                          M,
+                                          N,
+                                          K,
+                                          &h_alpha,
+                                          (const T* const*)dA_array_dev,
+                                          lda,
+                                          (const T* const*)dB_array_dev,
+                                          ldb,
+                                          &h_beta,
+                                          dC1_array_dev,
+                                          ldc,
+                                          batch_count);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
             {
                 hipblasDestroy(handle);
-                std::cerr << "hC_array[i] hipMemcpy error" << std::endl;
-                return HIPBLAS_STATUS_MAPPING_ERROR;
+                return status;
             }
-
-            // check hipBLAS result against "golden" result
-            unit_check_general<T>(M, N, lda, hC_copy_array[i], hC_array[i]);
         }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_transA_option,
+                      e_transB_option,
+                      e_M,
+                      e_N,
+                      e_K,
+                      e_alpha,
+                      e_lda,
+                      e_ldb,
+                      e_beta,
+                      e_ldc,
+                      e_batch_count>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         gemm_gflop_count<T>(M, N, K),
+                         gemm_gbyte_count<T>(M, N, K),
+                         hipblas_error);
     }
 
     hipblasDestroy(handle);

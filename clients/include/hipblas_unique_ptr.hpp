@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "hipblas.h"
+
 #define PRINT_IF_HIP_ERROR(INPUT_STATUS_FOR_CHECK)                \
     {                                                             \
         hipError_t TMP_STATUS_FOR_CHECK = INPUT_STATUS_FOR_CHECK; \

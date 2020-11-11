@@ -7,18 +7,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "hipblas.hpp"
-#include "near.h"
-#include "norm.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T, typename U = T>
-hipblasStatus_t testing_rotg(Arguments arg)
+hipblasStatus_t testing_rotg(const Arguments& arg)
 {
     bool FORTRAN       = arg.fortran;
     auto hipblasRotgFn = FORTRAN ? hipblasRotg<T, U, true> : hipblasRotg<T, U, false>;

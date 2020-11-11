@@ -8,19 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_trsm_batched(Arguments argus)
+hipblasStatus_t testing_trsm_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasTrsmBatchedFn
@@ -77,7 +72,8 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
         return HIPBLAS_STATUS_ALLOC_FAILED;
     }
 
-    double gpu_time_used, cpu_time_used;
+    double hipblas_error;
+    double gpu_time_used;
     double hipblasGflops, cblas_gflops;
 
     hipblasHandle_t handle;
@@ -156,15 +152,26 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
            HIPBLAS
     =================================================================== */
 
-    status = hipblasTrsmBatchedFn(
-        handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb, batch_count);
-
-    // copy output from device to CPU
-    for(int b = 0; b < batch_count; b++)
-        CHECK_HIP_ERROR(hipMemcpy(hB[b], bB[b], sizeof(T) * B_size, hipMemcpyDeviceToHost));
-
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        status = hipblasTrsmBatchedFn(
+            handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb, batch_count);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        // copy output from device to CPU
+        for(int b = 0; b < batch_count; b++)
+            CHECK_HIP_ERROR(hipMemcpy(hB[b], bB[b], sizeof(T) * B_size, hipMemcpyDeviceToHost));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */
@@ -188,13 +195,62 @@ hipblasStatus_t testing_trsm_batched(Arguments argus)
         real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
         double    tolerance = eps * 40 * M;
 
-        for(int b = 0; b < batch_count; b++)
-        {
-            double error = norm_check_general<T>('F', M, N, ldb, hB_copy[b].data(), hB[b].data());
-            unit_check_error(error, tolerance);
-        }
+        hipblas_error = norm_check_general<T>('F', M, N, ldb, hB_copy, hB, batch_count);
+        if(argus.unit_check)
+            unit_check_error(hipblas_error, tolerance);
     }
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
 
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+            {
+                gpu_time_used = get_time_us_sync(stream);
+            }
+
+            status = hipblasTrsmBatchedFn(
+                handle, side, uplo, transA, diag, M, N, &alpha, dA, lda, dB, ldb, batch_count);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_side_option,
+                      e_uplo_option,
+                      e_transA_option,
+                      e_diag_option,
+                      e_M,
+                      e_N,
+                      e_alpha,
+                      e_lda,
+                      e_ldb,
+                      e_batch_count>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         trsm_gflop_count<T>(M, N, K),
+                         trsm_gbyte_count<T>(M, N, K),
+                         hipblas_error);
+    }
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

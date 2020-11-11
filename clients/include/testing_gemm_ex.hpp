@@ -7,18 +7,10 @@
 #include <limits>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <typeinfo>
 #include <vector>
 
-#include "arg_check.h"
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "hipblas_fortran.hpp"
-#include "hipblas_unique_ptr.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
-#include <typeinfo>
+#include "testing_common.hpp"
 
 using namespace std;
 
@@ -316,7 +308,7 @@ hipblasStatus_t testing_gemm_ex_template(hipblasOperation_t transA,
     return status;
 }
 
-hipblasStatus_t testing_gemm_ex(Arguments argus)
+hipblasStatus_t testing_gemm_ex(const Arguments& argus)
 {
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);

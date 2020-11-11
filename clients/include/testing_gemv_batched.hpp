@@ -8,20 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "hipblas_vector.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_gemvBatched(Arguments argus)
+hipblasStatus_t testing_gemvBatched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasGemvBatchedFn
@@ -141,9 +135,9 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
     }
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
-    for(int iter = 0; iter < 1; iter++)
+    if(argus.unit_check || argus.norm_check)
     {
         status = hipblasGemvBatchedFn(handle,
                                       transA,
@@ -165,16 +159,7 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
             hipblasDestroy(handle);
             return status;
         }
-    }
 
-    // copy output from device to CPU
-    for(int b = 0; b < batch_count; b++)
-    {
-        hipMemcpy(hy_array[b], by_array[b], sizeof(T) * Y_size, hipMemcpyDeviceToHost);
-    }
-
-    if(argus.unit_check)
-    {
         /* =====================================================================
            CPU BLAS
         =================================================================== */
@@ -185,12 +170,79 @@ hipblasStatus_t testing_gemvBatched(Arguments argus)
                 transA, M, N, alpha, hA_array[b], lda, hx_array[b], incx, beta, hz_array[b], incy);
         }
 
+        // copy output from device to CPU
+        for(int b = 0; b < batch_count; b++)
+        {
+            hipMemcpy(hy_array[b], by_array[b], sizeof(T) * Y_size, hipMemcpyDeviceToHost);
+        }
+
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
             unit_check_general<T>(1, Y_size, batch_count, incy, hz_array, hy_array);
         }
+        if(argus.norm_check)
+        {
+            rocblas_error
+                = norm_check_general<T>('F', 1, Y_size, incy, hz_array, hy_array, batch_count);
+        }
+    }
+
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+            {
+                gpu_time_used = get_time_us_sync(stream);
+            }
+            status = hipblasGemvBatchedFn(handle,
+                                          transA,
+                                          M,
+                                          N,
+                                          (T*)&alpha,
+                                          dA_array,
+                                          lda,
+                                          dx_array,
+                                          incx,
+                                          (T*)&beta,
+                                          dy_array,
+                                          incy,
+                                          batch_count);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                // here in cuda
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_transA_option,
+                      e_M,
+                      e_N,
+                      e_alpha,
+                      e_lda,
+                      e_incx,
+                      e_beta,
+                      e_incy,
+                      e_batch_count>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         gemv_gflop_count<T>(transA, M, N),
+                         gemv_gbyte_count<T>(transA, M, N),
+                         rocblas_error);
     }
 
     hipblasDestroy(handle);

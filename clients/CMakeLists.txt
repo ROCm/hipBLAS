@@ -22,6 +22,9 @@ endif()
 # This project may compile dependencies for clients
 project( hipblas-clients LANGUAGES CXX Fortran )
 
+# We use C++14 features, this will add compile option: -std=c++14
+set( CMAKE_CXX_STANDARD 14 )
+
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 include( build-options )
@@ -34,7 +37,7 @@ set(hipblas_f90_source_clients_solver
   include/hipblas_fortran_solver.f90
 )
 
-if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_SAMPLES )
+if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_SAMPLES )
   if( BUILD_WITH_SOLVER)
     add_library(hipblas_fortran_client ${hipblas_f90_source_clients} ${hipblas_f90_source_clients_solver})
   else()
@@ -47,6 +50,10 @@ endif( )
 
 if( BUILD_CLIENTS_TESTS )
   add_subdirectory( gtest )
+endif( )
+
+if( BUILD_CLIENTS_BENCHMARKS )
+  add_subdirectory( benchmarks )
 endif( )
 
 if( BUILD_CLIENTS_SAMPLES )
