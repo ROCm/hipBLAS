@@ -8,18 +8,13 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "hipblas.hpp"
-#include "hipblas_fortran.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
-hipblasStatus_t testing_set_get_atomics_mode(Arguments argus)
+hipblasStatus_t testing_set_get_atomics_mode(const Arguments& argus)
 {
     bool FORTRAN                 = argus.fortran;
     auto hipblasSetAtomicsModeFn = FORTRAN ? hipblasSetAtomicsModeFortran : hipblasSetAtomicsMode;

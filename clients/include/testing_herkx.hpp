@@ -8,19 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T, typename U>
-hipblasStatus_t testing_herkx(Arguments argus)
+hipblasStatus_t testing_herkx(const Arguments& argus)
 {
     bool FORTRAN        = argus.fortran;
     auto hipblasHerkxFn = FORTRAN ? hipblasHerkx<T, U, true> : hipblasHerkx<T, U, false>;

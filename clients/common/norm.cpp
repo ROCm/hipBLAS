@@ -124,6 +124,42 @@ double norm_check_general<hipblasDoubleComplex>(
     return error;
 }
 
+template <>
+double norm_check_general<hipblasHalf>(
+    char norm_type, int M, int N, int lda, hipblasHalf* hCPU, hipblasHalf* hGPU)
+{
+    // norm type can be 'M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
+
+    host_vector<double> hCPU_double(N * lda);
+    host_vector<double> hGPU_double(N * lda);
+
+    for(size_t i = 0; i < size_t(N) * lda; i++)
+    {
+        hCPU_double[i] = hCPU[i];
+        hGPU_double[i] = hGPU[i];
+    }
+
+    return norm_check_general<double>(norm_type, M, N, lda, hCPU_double, hGPU_double);
+}
+
+template <>
+double norm_check_general<hipblasBfloat16>(
+    char norm_type, int M, int N, int lda, hipblasBfloat16* hCPU, hipblasBfloat16* hGPU)
+{
+    // norm type can be 'M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
+
+    host_vector<float> hCPU_double(N * lda);
+    host_vector<float> hGPU_double(N * lda);
+
+    for(size_t i = 0; i < size_t(N) * lda; i++)
+    {
+        hCPU_double[i] = bfloat16_to_float(hCPU[i]);
+        hGPU_double[i] = bfloat16_to_float(hGPU[i]);
+    }
+
+    return norm_check_general<float>(norm_type, M, N, lda, hCPU_double, hGPU_double);
+}
+
 /* ============================Norm Check for Symmetric Matrix: float/double/complex template
  * speciliazation ======================================= */
 
