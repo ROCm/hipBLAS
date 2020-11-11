@@ -1,25 +1,13 @@
 # Change Log for hipBLAS
 
-## [(Unreleased) hipBLAS 0.40.0 for ROCm 4.0.0]
+## [hipBLAS 0.40.0 for ROCm 4.0.0]
 ### Added
-__anchor__a
-
-__anchor__t
-- Added hipblas-bench
-
-__anchor__w
-
-__anchor__d
 - Added changelog
+- Added hipblas-bench with support for:
+    - gemv, trsm, gemm
+- Added rocSOLVER as a cpack dependency
 
-__anchor__n
-
-__anchor__l
-
-__ahchor__o
-
-
-## [(Unreleased) hipBLAS 0.38.0 for ROCm 3.10.0]
+## [hipBLAS 0.38.0 for ROCm 3.10.0]
 ### Added
 - Added hipblasSetAtomicsMode and hipblasGetAtomicsMode
 - No longer look for CUDA backend unless --cuda build flag is passed
