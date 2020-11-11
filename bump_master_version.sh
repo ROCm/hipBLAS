@@ -6,8 +6,8 @@
 # - after running this script and merging develop into master, run bump_develop_version.sh in master and
 #   merge master into develop
 
-OLD_HIPBLAS_VERSION="0.37.0"
-NEW_HIPBLAS_VERSION="0.38.0"
+OLD_HIPBLAS_VERSION="0.39.0"
+NEW_HIPBLAS_VERSION="0.40.0"
 
 OLD_MINIMUM_ROCBLAS_VERSION="2.33.0"
 NEW_MINIMUM_ROCBLAS_VERSION="2.34.0"
