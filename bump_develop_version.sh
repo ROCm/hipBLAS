@@ -5,8 +5,8 @@
 # - run this script in master branch
 # - after running this script merge master into develop
 
-OLD_HIPBLAS_VERSION="0.38.0"
-NEW_HIPBLAS_VERSION="0.39.0"
+OLD_HIPBLAS_VERSION="0.40.0"
+NEW_HIPBLAS_VERSION="0.41.0"
 
 OLD_MINIMUM_ROCBLAS_VERSION="2.34.0"
 NEW_MINIMUM_ROCBLAS_VERSION="2.35.0"
