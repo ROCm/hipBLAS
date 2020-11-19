@@ -76,16 +76,19 @@ endif( )
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
-
-# Hip headers required of all clients; clients use hip to allocate device memory
-find_package( HIP REQUIRED )
-
 # Quietly look for CUDA, but if not found it's not an error
 # The presense of hip is not sufficient to determine if we want a rocm or cuda backend
 option(USE_CUDA "Look for CUDA and use that as a backend if found" ON)
 if(USE_CUDA)
     find_package( CUDA QUIET )
 endif()
+
+# Hip headers required of all clients; clients use hip to allocate device memory
+if( USE_CUDA)
+    find_package( HIP REQUIRED )
+else( )
+    find_package(hip REQUIRED CONFIG PATHS ${ROCM_PATH} /opt/rocm)
+endif( )
 
 if( USE_CUDA )
     list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
