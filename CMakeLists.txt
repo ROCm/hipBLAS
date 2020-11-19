@@ -87,6 +87,10 @@ if(USE_CUDA)
     find_package( CUDA QUIET )
 endif()
 
+if( USE_CUDA )
+    list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
+endif( )
+
 # CMake list of machine targets
 set( AMDGPU_TARGETS gfx803;gfx900;gfx906;gfx908 CACHE STRING "List of specific machine types for library to target" )
 
