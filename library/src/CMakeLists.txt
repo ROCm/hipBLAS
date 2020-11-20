@@ -125,13 +125,14 @@ if ( NOT USE_CUDA )
     rocm_export_targets(
         TARGETS roc::hipblas
 	PREFIX hipblas
-	DEPENDS PACKAGE HIP
+	DEPENDS PACKAGE hip
 	NAMESPACE roc::
     )
 else( )
     rocm_export_targets(
         TARGETS roc::hipblas
 	PREFIX hipblas
+	DEPENDS PACKAGE HIP
 	NAMESPACE roc::
     )
 endif( )
