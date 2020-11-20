@@ -52,9 +52,15 @@ include( ROCMInstallSymlinks )
 set ( VERSION_STRING "0.41.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
+if( NOT DEFINED $ENV{HIP_PATH})
+    set( HIP_PATH "/opt/rocm/hip" )
+else( )
+    set (HIP_PATH $ENV{HIP_PATH} )
+endif( )
+
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${HIP_PATH}/cmake)
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
 list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
@@ -70,16 +76,23 @@ endif( )
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
-
-# Hip headers required of all clients; clients use hip to allocate device memory
-find_package( hip REQUIRED CONFIG PATHS ${ROCM_PATH} /opt/rocm)
-
 # Quietly look for CUDA, but if not found it's not an error
 # The presense of hip is not sufficient to determine if we want a rocm or cuda backend
 option(USE_CUDA "Look for CUDA and use that as a backend if found" ON)
 if(USE_CUDA)
     find_package( CUDA QUIET )
 endif()
+
+# Hip headers required of all clients; clients use hip to allocate device memory
+if( USE_CUDA)
+    find_package( HIP REQUIRED )
+else( )
+    find_package(hip REQUIRED CONFIG PATHS ${ROCM_PATH} /opt/rocm)
+endif( )
+
+if( USE_CUDA )
+    list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
+endif( )
 
 # CMake list of machine targets
 set( AMDGPU_TARGETS gfx803;gfx900;gfx906;gfx908 CACHE STRING "List of specific machine types for library to target" )
