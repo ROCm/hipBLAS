@@ -1,5 +1,9 @@
 # Change Log for hipBLAS
 
+## [(Unreleased) hipBLAS 0.42.0 for ROCm 4.1.0]
+### Fixed
+- Fixed complex unit test bug caused by incorrect caxpy and zaxpy function signatures
+
 ## [hipBLAS 0.40.0 for ROCm 4.0.0]
 ### Added
 - Added changelog
