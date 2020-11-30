@@ -8,19 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 template <typename T, typename U>
-hipblasStatus_t testing_getrs(Arguments argus)
+hipblasStatus_t testing_getrs(const Arguments& argus)
 {
-    bool FORTRAN       = argus.fortran;
+    bool FORTRAN        = argus.fortran;
     auto hipblasGetrsFn = FORTRAN ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
 
     int N   = argus.N;
@@ -78,7 +73,7 @@ hipblasStatus_t testing_getrs(Arguments argus)
 
     // Calculate hB = hA*hX;
     hipblasOperation_t op = HIPBLAS_OP_N;
-    cblas_gemm<T>(op, op, N, 1, N, 1, hA.data(), lda, hX.data(), ldb, 0, hB.data(), ldb);
+    cblas_gemm<T>(op, op, N, 1, N, (T)1, hA.data(), lda, hX.data(), ldb, (T)0, hB.data(), ldb);
 
     // LU factorize hA on the CPU
     info = cblas_getrf<T>(N, N, hA.data(), lda, hIpiv.data());

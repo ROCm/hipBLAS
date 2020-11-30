@@ -8,20 +8,16 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 template <typename T, typename U>
-hipblasStatus_t testing_geqrf_strided_batched(Arguments argus)
+hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
 {
-    bool FORTRAN       = argus.fortran;
-    auto hipblasGeqrfStridedBatchedFn = FORTRAN ? hipblasGeqrfStridedBatched<T, true> : hipblasGeqrfStridedBatched<T, false>;
+    bool FORTRAN = argus.fortran;
+    auto hipblasGeqrfStridedBatchedFn
+        = FORTRAN ? hipblasGeqrfStridedBatched<T, true> : hipblasGeqrfStridedBatched<T, false>;
 
     int    M            = argus.M;
     int    N            = argus.N;

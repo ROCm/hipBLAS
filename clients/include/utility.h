@@ -11,6 +11,7 @@
 #ifdef __cplusplus
 #include "cblas_interface.h"
 #include "complex.hpp"
+#include "hipblas_datatype2string.hpp"
 #include <cmath>
 #include <immintrin.h>
 #include <random>
@@ -335,6 +336,23 @@ inline hipblasDoubleComplex random_generator_negative<hipblasDoubleComplex>()
 /* ============================================================================================ */
 
 /* ============================================================================================ */
+/*! \brief Packs strided_batched matricies into groups of 4 in N */
+template <typename T>
+void hipblas_packInt8(
+    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t batch_count = 1, size_t stride_a = 0)
+{
+    std::vector<T> temp(A);
+    for(size_t b = 0; b < batch_count; b++)
+        for(size_t colBase = 0; colBase < N; colBase += 4)
+            for(size_t row = 0; row < lda; row++)
+                for(size_t colOffset = 0; colOffset < 4; colOffset++)
+                    A[(colBase * lda + 4 * row) + colOffset + (stride_a * b)]
+                        = temp[(colBase + colOffset) * lda + row + (stride_a * b)];
+}
+
+/* ============================================================================================ */
+
+/* ============================================================================================ */
 /*! \brief  matrix/vector initialization: */
 // for vector x (M=1, N=lengthX, lda=incx);
 // for complex number, the real/imag part would be initialized with the same value
@@ -626,6 +644,10 @@ void print_matrix(
 
 /* =============================================================================================== */
 
+/* ============================================================================================ */
+// Return path of this executable
+std::string hipblas_exepath();
+
 #endif // __cplusplus
 
 #ifdef __cplusplus
@@ -649,28 +671,6 @@ double get_time_us(void);
 /*! \brief  CPU Timer(in microsecond): synchronize with given queue/stream and return wall time */
 double get_time_us_sync(hipStream_t stream);
 
-/* ============================================================================================ */
-/*  Convert hipblas constants to lapack char. */
-
-char hipblas2char_operation(hipblasOperation_t value);
-
-char hipblas2char_fill(hipblasFillMode_t value);
-
-char hipblas2char_diagonal(hipblasDiagType_t value);
-
-char hipblas2char_side(hipblasSideMode_t value);
-
-/* ============================================================================================ */
-/*  Convert lapack char constants to hipblas type. */
-
-hipblasOperation_t char2hipblas_operation(char value);
-
-hipblasFillMode_t char2hipblas_fill(char value);
-
-hipblasDiagType_t char2hipblas_diagonal(char value);
-
-hipblasSideMode_t char2hipblas_side(char value);
-
 #ifdef __cplusplus
 }
 #endif
@@ -679,127 +679,7 @@ hipblasSideMode_t char2hipblas_side(char value);
 
 #ifdef __cplusplus
 
-/*! \brief Class used to parse command arguments in both client & gtest   */
-class Arguments
-{
-public:
-    int M  = 128;
-    int N  = 128;
-    int K  = 128;
-    int KL = 128;
-    int KU = 128;
-
-    int rows = 128;
-    int cols = 128;
-
-    int lda = 128;
-    int ldb = 128;
-    int ldc = 128;
-
-    hipblasDatatype_t a_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t b_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t c_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t compute_type = HIPBLAS_R_32F;
-
-    int incx = 1;
-    int incy = 1;
-    int incd = 1;
-
-    double stride_scale = 0.0;
-
-    int start = 1024;
-    int end   = 10240;
-    int step  = 1000;
-
-    double alpha  = 1.0;
-    double alphai = 0.0;
-    double beta   = 0.0;
-    double betai  = 0.0;
-
-    char transA_option = 'N';
-    char transB_option = 'N';
-    char side_option   = 'L';
-    char uplo_option   = 'L';
-    char diag_option   = 'N';
-
-    int apiCallCount = 1;
-    int batch_count  = 10;
-
-    bool fortran = false;
-
-    int norm_check = 0;
-    int unit_check = 1;
-    int timing     = 0;
-
-    Arguments& operator=(const Arguments& rhs)
-    {
-        M  = rhs.M;
-        N  = rhs.N;
-        K  = rhs.K;
-        KL = rhs.KL;
-        KU = rhs.KU;
-
-        lda = rhs.lda;
-        ldb = rhs.ldb;
-        ldc = rhs.ldc;
-
-        incx = rhs.incx;
-        incy = rhs.incy;
-        incd = rhs.incd;
-
-        stride_scale = rhs.stride_scale;
-
-        start = rhs.start;
-        end   = rhs.end;
-        step  = rhs.step;
-
-        alpha  = rhs.alpha;
-        alphai = rhs.alphai;
-        beta   = rhs.beta;
-        betai  = rhs.betai;
-
-        transA_option = rhs.transA_option;
-        transB_option = rhs.transB_option;
-        side_option   = rhs.side_option;
-        uplo_option   = rhs.uplo_option;
-        diag_option   = rhs.diag_option;
-
-        apiCallCount = rhs.apiCallCount;
-        batch_count  = rhs.batch_count;
-
-        fortran = rhs.fortran;
-
-        norm_check = rhs.norm_check;
-        unit_check = rhs.unit_check;
-        timing     = rhs.timing;
-
-        return *this;
-    }
-
-    template <typename T, std::enable_if_t<+is_complex<T>, int> = 0>
-    T get_alpha()
-    {
-        return T(alpha, alphai);
-    }
-
-    template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
-    T get_alpha()
-    {
-        return T(alpha);
-    }
-
-    template <typename T, std::enable_if_t<+is_complex<T>, int> = 0>
-    T get_beta()
-    {
-        return T(beta, betai);
-    }
-
-    template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
-    T get_beta()
-    {
-        return T(beta);
-    }
-};
+#include "hipblas_arguments.hpp"
 
 #endif // __cplusplus
 #endif

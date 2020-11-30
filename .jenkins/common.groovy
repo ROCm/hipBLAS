@@ -13,10 +13,7 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
             getDependenciesCommand += auxiliary.getLibrary(libraryName, platform.jenkinsLabel, 'develop', sameOrg)
         }
     }
-    
-    String compiler = jobName.contains('hipclang') ? 'hipcc' : 'hcc'
-    String hipClang = jobName.contains('hipclang') ? '--hip-clang' : ''
-    String sles = platform.jenkinsLabel.contains('sles') ? '/usr/bin/sudo --preserve-env' : ''
+
     String centos = platform.jenkinsLabel.contains('centos') ? 'source scl_source enable devtoolset-7' : ':'
 
     def command = """#!/usr/bin/env bash
@@ -24,7 +21,7 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
                 cd ${project.paths.project_build_prefix}
                 ${getDependenciesCommand}
                 ${centos}
-                ${sles} LD_LIBRARY_PATH=/opt/rocm/lib ${project.paths.build_command} ${hipClang} --compiler g++
+                LD_LIBRARY_PATH=/opt/rocm/lib ${project.paths.build_command}
                 """
     platform.runCommand(this, command)
 }
@@ -42,11 +39,31 @@ def runTestCommand (platform, project)
     junit "${project.paths.project_build_prefix}/build/release/clients/staging/*.xml"
 }
 
-def runPackageCommand(platform, project)
+def runPackageCommand(platform, project, jobName, label='')
 {
-        def packageHelper = platform.makePackage(platform.jenkinsLabel,"${project.paths.project_build_prefix}/build/release")
-        platform.runCommand(this, packageHelper[0])
-        platform.archiveArtifacts(this, packageHelper[1])
+    def command
+
+    label = label != '' ? '-' + label.toLowerCase() : ''
+    String ext = platform.jenkinsLabel.contains('ubuntu') ? "deb" : "rpm"
+    String dir = jobName.contains('Debug') ? "debug" : "release"
+
+    command = """
+            set -x
+            cd ${project.paths.project_build_prefix}/build/${dir}
+            make package
+            mkdir -p package
+            if [ ! -z "$label" ]
+            then
+                for f in hipblas*.$ext
+                do
+                    mv "\$f" "hipblas${label}-\${f#*-}"
+                done
+            fi
+            mv *.${ext} package/
+        """
+
+    platform.runCommand(this, command)
+    platform.archiveArtifacts(this, """${project.paths.project_build_prefix}/build/${dir}/package/*.${ext}""")
 }
 
 return this

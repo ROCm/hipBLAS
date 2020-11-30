@@ -272,6 +272,12 @@ typedef enum
     HIPBLAS_GEMM_DEFAULT = 160,
 } hipblasGemmAlgo_t;
 
+typedef enum
+{
+    HIPBLAS_ATOMICS_NOT_ALLOWED = 0,
+    HIPBLAS_ATOMICS_ALLOWED     = 1,
+} hipblasAtomicsMode_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -325,6 +331,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGetMatrixAsync(int         rows,
                                                      void*       B,
                                                      int         ldb,
                                                      hipStream_t stream);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSetAtomicsMode(hipblasHandle_t      handle,
+                                                     hipblasAtomicsMode_t atomics_mode);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t       handle,
+                                                     hipblasAtomicsMode_t* atomics_mode);
 
 // amax
 HIPBLAS_EXPORT hipblasStatus_t
@@ -7137,35 +7149,35 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
                                                            int                stride_invA,
                                                            hipblasDatatype_t  compute_type);
 
-// syrk_ex
-HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
-                                              hipblasFillMode_t     uplo,
-                                              hipblasOperation_t    trans,
-                                              int                   n,
-                                              int                   k,
-                                              const hipblasComplex* alpha,
-                                              const void*           A,
-                                              hipblasDatatype_t     Atype,
-                                              int                   lda,
-                                              const hipblasComplex* beta,
-                                              hipblasComplex*       C,
-                                              hipblasDatatype_t     Ctype,
-                                              int                   ldc);
+// // syrk_ex
+// HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
+//                                               hipblasFillMode_t     uplo,
+//                                               hipblasOperation_t    trans,
+//                                               int                   n,
+//                                               int                   k,
+//                                               const hipblasComplex* alpha,
+//                                               const void*           A,
+//                                               hipblasDatatype_t     Atype,
+//                                               int                   lda,
+//                                               const hipblasComplex* beta,
+//                                               hipblasComplex*       C,
+//                                               hipblasDatatype_t     Ctype,
+//                                               int                   ldc);
 
-// herk_ex
-HIPBLAS_EXPORT hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
-                                              hipblasFillMode_t  uplo,
-                                              hipblasOperation_t trans,
-                                              int                n,
-                                              int                k,
-                                              const float*       alpha,
-                                              const void*        A,
-                                              hipblasDatatype_t  Atype,
-                                              int                lda,
-                                              const float*       beta,
-                                              hipblasComplex*    C,
-                                              hipblasDatatype_t  Ctype,
-                                              int                ldc);
+// // herk_ex
+// HIPBLAS_EXPORT hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
+//                                               hipblasFillMode_t  uplo,
+//                                               hipblasOperation_t trans,
+//                                               int                n,
+//                                               int                k,
+//                                               const float*       alpha,
+//                                               const void*        A,
+//                                               hipblasDatatype_t  Atype,
+//                                               int                lda,
+//                                               const float*       beta,
+//                                               hipblasComplex*    C,
+//                                               hipblasDatatype_t  Ctype,
+//                                               int                ldc);
 
 // nrm2_ex
 HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,

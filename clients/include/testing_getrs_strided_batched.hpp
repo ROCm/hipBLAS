@@ -8,20 +8,16 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 template <typename T, typename U>
-hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
+hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
 {
-    bool FORTRAN       = argus.fortran;
-    auto hipblasGetrsStridedBatchedFn = FORTRAN ? hipblasGetrsStridedBatched<T, true> : hipblasGetrsStridedBatched<T, false>;
+    bool FORTRAN = argus.fortran;
+    auto hipblasGetrsStridedBatchedFn
+        = FORTRAN ? hipblasGetrsStridedBatched<T, true> : hipblasGetrsStridedBatched<T, false>;
 
     int    N            = argus.N;
     int    lda          = argus.lda;
@@ -94,7 +90,7 @@ hipblasStatus_t testing_getrs_strided_batched(Arguments argus)
         }
 
         // Calculate hB = hA*hX;
-        cblas_gemm<T>(op, op, N, 1, N, 1, hAb, lda, hXb, ldb, 0, hBb, ldb);
+        cblas_gemm<T>(op, op, N, 1, N, (T)1, hAb, lda, hXb, ldb, (T)0, hBb, ldb);
 
         // LU factorize hA on the CPU
         info = cblas_getrf<T>(N, N, hAb, lda, hIpivb);

@@ -44,7 +44,7 @@ hipblasStatus_t testing_rot_ex_template(Arguments arg)
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
-    const CS_TYPE rel_error = std::numeric_limits<CS_TYPE>::epsilon() * 1000;
+    // const CS_TYPE rel_error = std::numeric_limits<CS_TYPE>::epsilon() * 1000;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
@@ -70,9 +70,11 @@ hipblasStatus_t testing_rot_ex_template(Arguments arg)
     host_vector<int> alpha(1);
     hipblas_init<int>(alpha, 1, 1, 1);
 
-    // cos and sin of alpha (in rads)
-    hc[0] = cos(alpha[0]);
-    hs[0] = sin(alpha[0]);
+    hipblas_init<CS_TYPE>(hc, 1, 1, 1);
+    hipblas_init<CS_TYPE>(hs, 1, 1, 1);
+    // // cos and sin of alpha (in rads)
+    // hc[0] = cos(alpha[0]);
+    // hs[0] = sin(alpha[0]);
 
     // CPU BLAS reference data
     host_vector<X_TYPE> cx = hx;
@@ -96,8 +98,8 @@ hipblasStatus_t testing_rot_ex_template(Arguments arg)
             CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(X_TYPE) * size_y, hipMemcpyDeviceToHost));
             if(arg.unit_check)
             {
-                near_check_general(1, N, incx, cx.data(), rx.data(), double(rel_error));
-                near_check_general(1, N, incy, cy.data(), ry.data(), double(rel_error));
+                unit_check_general(1, N, incx, cx.data(), rx.data());
+                unit_check_general(1, N, incy, cy.data(), ry.data());
             }
         }
 
@@ -116,8 +118,8 @@ hipblasStatus_t testing_rot_ex_template(Arguments arg)
             CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(X_TYPE) * size_y, hipMemcpyDeviceToHost));
             if(arg.unit_check)
             {
-                near_check_general(1, N, incx, cx.data(), rx.data(), double(rel_error));
-                near_check_general(1, N, incy, cy.data(), ry.data(), double(rel_error));
+                unit_check_general(1, N, incx, cx.data(), rx.data());
+                unit_check_general(1, N, incy, cy.data(), ry.data());
             }
         }
     }

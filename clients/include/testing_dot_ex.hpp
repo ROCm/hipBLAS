@@ -135,7 +135,7 @@ hipblasStatus_t testing_dot_ex_template(Arguments argus)
         =================================================================== */
         (CONJ ? cblas_dotc<T> : cblas_dot<T>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
 
-        if(unit_check)
+        if(argus.unit_check)
         {
             unit_check_general<T>(1, 1, 1, &cpu_result, &rocblas_result);
         }

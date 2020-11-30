@@ -8,19 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_tpsv_batched(Arguments argus)
+hipblasStatus_t testing_tpsv_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasTpsvBatchedFn
@@ -99,7 +94,19 @@ hipblasStatus_t testing_tpsv_batched(Arguments argus)
         hipblas_init<T>(hA[b], N, N, N);
 
         //  calculate AAT = hA * hA ^ T
-        cblas_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_T, N, N, N, 1.0, hA[b], N, hA[b], N, 0.0, AAT[b], N);
+        cblas_gemm<T>(HIPBLAS_OP_N,
+                      HIPBLAS_OP_T,
+                      N,
+                      N,
+                      N,
+                      (T)1.0,
+                      (T*)hA[b],
+                      N,
+                      (T*)hA[b],
+                      N,
+                      (T)0.0,
+                      (T*)AAT[b],
+                      N);
 
         //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
         for(int i = 0; i < N; i++)

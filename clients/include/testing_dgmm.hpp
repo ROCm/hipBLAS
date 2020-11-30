@@ -8,19 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_dgmm(Arguments argus)
+hipblasStatus_t testing_dgmm(const Arguments& argus)
 {
     bool FORTRAN       = argus.fortran;
     auto hipblasDgmmFn = FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
@@ -37,12 +32,14 @@ hipblasStatus_t testing_dgmm(Arguments argus)
     int C_size = size_t(ldc) * N;
     int k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
     int X_size = size_t(incx) * k;
+    if(!X_size)
+        X_size = 1;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < M || ldc < M || incx == 0)
+    if(M < 0 || N < 0 || lda < M || ldc < M)
     {
         status = HIPBLAS_STATUS_INVALID_VALUE;
         return status;
@@ -110,11 +107,11 @@ hipblasStatus_t testing_dgmm(Arguments argus)
             {
                 if(HIPBLAS_SIDE_RIGHT == side)
                 {
-                    hC_gold[i1 + i2 * ldc] = hA_copy[i1 + i2 * lda] + hx_copy[i2 * incx];
+                    hC_gold[i1 + i2 * ldc] = hA_copy[i1 + i2 * lda] * hx_copy[i2 * incx];
                 }
                 else
                 {
-                    hC_gold[i1 + i2 * ldc] = hA_copy[i1 + i2 * lda] + hx_copy[i1 * incx];
+                    hC_gold[i1 + i2 * ldc] = hA_copy[i1 + i2 * lda] * hx_copy[i1 * incx];
                 }
             }
         }

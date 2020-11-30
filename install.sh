@@ -17,8 +17,8 @@ function display_help()
   echo "    [-n|--no-solver] build library without rocSOLVER dependency"
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
   echo "    [-r]--relocatable] create a package to support relocatable ROCm"
-  echo "    [--cuda] build library for cuda backend"
-  echo "    [--hip-clang] build library with hip-clang"
+  echo "    [--cuda|--use-cuda] build library for cuda backend"
+  echo "    [--[no-]hip-clang] Whether to build library with hip-clang"
   echo "    [--compiler] specify host compiler"
   echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
   echo "    [--custom-target] link against custom target (e.g. host, device)"
@@ -278,7 +278,7 @@ install_prefix=hipblas-install
 build_clients=false
 build_solver=true
 build_cuda=false
-build_hip_clang=false
+build_hip_clang=true
 build_release=true
 build_relocatable=false
 cmake_prefix_path=/opt/rocm
@@ -293,7 +293,7 @@ build_static=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,compiler:,cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -333,10 +333,13 @@ while true; do
     --hip-clang)
         build_hip_clang=true
         shift ;;
+    --no-hip-clang)
+        build_hip_clang=false
+        shift ;;
     --compiler)
         compiler=${2}
         shift 2 ;;
-    --cuda)
+    --cuda|--use-cuda)
         build_cuda=true
         shift ;;
     --static)
@@ -446,9 +449,14 @@ pushd .
     cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Debug"
   fi
 
+  # cuda
+  if [[ "${build_cuda}" == false ]]; then
+    cmake_common_options="${cmake_common_options} -DUSE_CUDA=OFF"
+  fi
+
   # clients
   if [[ "${build_clients}" == true ]]; then
-    cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON"
+    cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON"
   fi
 
   # solver
@@ -468,7 +476,7 @@ pushd .
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
     CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
-    -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;${cmake_prefix_path}" \
+    -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;/usr/local/cuda;${cmake_prefix_path}" \
     -DCMAKE_SHARED_LINKER_FLAGS="${rocm_rpath}" \
     -DCMAKE_EXE_LINKER_FLAGS=" -Wl,--enable-new-dtags -Wl,--rpath,${rocm_path}/lib:${rocm_path}/lib64" \
     -DROCM_DISABLE_LDCONFIG=ON \
@@ -491,7 +499,7 @@ pushd .
 
     case "${ID}" in
       ubuntu)
-        elevate_if_not_root dpkg -i hipblas-*.deb
+        elevate_if_not_root dpkg -i hipblas[-\_]*.deb
       ;;
       centos|rhel)
         elevate_if_not_root yum -y localinstall hipblas-*.rpm

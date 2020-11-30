@@ -8,19 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_dgmm_strided_batched(Arguments argus)
+hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasDgmmStridedBatchedFn
@@ -40,6 +35,8 @@ hipblasStatus_t testing_dgmm_strided_batched(Arguments argus)
     int stride_A = size_t(lda) * N * stride_scale;
     int stride_x = size_t(incx) * k * stride_scale;
     int stride_C = size_t(ldc) * N * stride_scale;
+    if(!stride_x)
+        stride_x = 1;
 
     int A_size = stride_A * batch_count;
     int C_size = stride_C * batch_count;
@@ -49,7 +46,7 @@ hipblasStatus_t testing_dgmm_strided_batched(Arguments argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < M || ldc < M || incx == 0 || batch_count < 0)
+    if(M < 0 || N < 0 || lda < M || ldc < M || batch_count < 0)
     {
         status = HIPBLAS_STATUS_INVALID_VALUE;
         return status;
@@ -123,11 +120,11 @@ hipblasStatus_t testing_dgmm_strided_batched(Arguments argus)
                 {
                     if(HIPBLAS_SIDE_RIGHT == side)
                     {
-                        hC_goldb[i1 + i2 * ldc] = hA_copyb[i1 + i2 * lda] + hx_copyb[i2 * incx];
+                        hC_goldb[i1 + i2 * ldc] = hA_copyb[i1 + i2 * lda] * hx_copyb[i2 * incx];
                     }
                     else
                     {
-                        hC_goldb[i1 + i2 * ldc] = hA_copyb[i1 + i2 * lda] + hx_copyb[i1 * incx];
+                        hC_goldb[i1 + i2 * ldc] = hA_copyb[i1 + i2 * lda] * hx_copyb[i1 * incx];
                     }
                 }
             }

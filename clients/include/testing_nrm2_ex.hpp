@@ -27,15 +27,7 @@ template <>
 constexpr double nrm2_tolerance_multiplier<hipblasDoubleComplex> = 110;
 
 template <typename X_TYPE, typename R_TYPE = X_TYPE, typename E_TYPE = R_TYPE>
-hipblasStatus_t testing_nrm2_ex_template(int               N,
-                                         int               incx,
-                                         hipblasDatatype_t xType,
-                                         hipblasDatatype_t resultType,
-                                         hipblasDatatype_t executionType,
-                                         bool              unit_check,
-                                         bool              norm_check,
-                                         bool              timing,
-                                         bool              FORTRAN)
+hipblasStatus_t testing_nrm2_ex_template(Arguments argus)
 {
     bool FORTRAN         = argus.fortran;
     auto hipblasNrm2ExFn = FORTRAN ? hipblasNrm2ExFortran : hipblasNrm2Ex;
@@ -139,7 +131,7 @@ hipblasStatus_t testing_nrm2_ex(Arguments argus)
 
     if(xType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_nrm2_ex_template<hipblasHalf, float, float>(argus);
+        status = testing_nrm2_ex_template<hipblasHalf, hipblasHalf, float>(argus);
     }
     else if(xType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {
@@ -149,13 +141,13 @@ hipblasStatus_t testing_nrm2_ex(Arguments argus)
     {
         status = testing_nrm2_ex_template<double>(argus);
     }
-    else if(xType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F && executionType == HIPBLAS_C_32F)
+    else if(xType == HIPBLAS_C_32F && resultType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_nrm2_ex_template<hipblasComplex>(argus);
+        status = testing_nrm2_ex_template<hipblasComplex, float>(argus);
     }
-    else if(xType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F && executionType == HIPBLAS_C_64F)
+    else if(xType == HIPBLAS_C_64F && resultType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
     {
-        status = testing_nrm2_ex_template<hipblasDoubleComplex>(argus);
+        status = testing_nrm2_ex_template<hipblasDoubleComplex, double>(argus);
     }
     else
     {

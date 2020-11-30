@@ -7,11 +7,13 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
+
+// #include "cblas_interface.h"
+// #include "hipblas.hpp"
+// #include "norm.h"
+// #include "unit.h"
+// #include "utility.h"
 
 using namespace std;
 
@@ -38,6 +40,7 @@ hipblasStatus_t testing_axpy_ex_template(Arguments argus)
     hipblasDatatype_t xType         = argus.a_type;
     hipblasDatatype_t yType         = argus.b_type;
     hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t alphaType     = xType;
 
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
@@ -76,7 +79,8 @@ hipblasStatus_t testing_axpy_ex_template(Arguments argus)
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasAxpyExFn(handle, N, &alpha, dx, xType, incx, dy, yType, incy, executionType);
+    status = hipblasAxpyExFn(
+        handle, N, &alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         hipblasDestroy(handle);

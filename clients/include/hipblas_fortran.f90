@@ -135,6 +135,30 @@ module hipblas_interface
         res = hipblasGetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream)
     end function hipblasGetMatrixAsyncFortran
 
+    function hipblasSetAtomicsModeFortran(handle, atomics_mode) &
+            result(res) &
+            bind(c, name = 'hipblasSetAtomicsModeFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_ATOMICS_ALLOWED)), value :: atomics_mode
+        integer(c_int) :: res
+        res = hipblasSetAtomicsMode(handle, atomics_mode)
+    end function hipblasSetAtomicsModeFortran
+
+    function hipblasGetAtomicsModeFortran(handle, atomics_mode) &
+            result(res) &
+            bind(c, name = 'hipblasGetAtomicsModeFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        type(c_ptr), value :: atomics_mode
+        integer(c_int) :: res
+        res = hipblasGetAtomicsMode(handle, atomics_mode)
+    end function hipblasGetAtomicsModeFortran
+
     !--------!
     ! blas 1 !
     !--------!
@@ -12331,52 +12355,187 @@ module hipblas_interface
               A, lda, stride_A, B, ldb, stride_B, batch_count, invA, invA_size, stride_invA, compute_type)
     end function hipblasTrsmStridedBatchedExFortran
 
-    ! CsyrkEx
-    function hipblasCsyrkExFortran(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc) &
+    ! AxpyEx
+    function hipblasAxpyExFortran(handle, n, alpha, alphaType, x, xType, incx, y, yType, incy, executionType) &
             result(res) &
-            bind(c, name = 'hipblasCsyrkExFortran')
+            bind(c, name = 'hipblasAxpyExFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
         type(c_ptr), value :: handle
-        integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
-        integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: n
-        integer(c_int), value :: k
         type(c_ptr), value :: alpha
-        type(c_ptr), value :: A
-        integer(kind(HIPBLAS_R_16F)), value :: Atype
-        integer(c_int), value :: lda
-        type(c_ptr), value :: beta
-        type(c_ptr), value :: C
-        integer(kind(HIPBLAS_R_16F)), value :: Ctype
-        integer(c_int), value :: ldc
+        integer(kind(HIPBLAS_R_16F)), value :: alphaType
+        type(c_ptr), value :: x
+        integer(kind(HIPBLAS_R_16F)), value :: xType
+        integer(c_int), value :: incx
+        type(c_ptr), value :: y
+        integer(kind(HIPBLAS_R_16F)), value :: yType
+        integer(c_int), value :: incy
+        integer(kind(HIPBLAS_R_16F)), value :: executionType
         integer(c_int) :: res
-        res = hipblasCsyrkEx(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc)
-    end function hipblasCsyrkExFortran
+        res = hipblasAxpyEx(handle, n, alpha, alphaType, x, xType, incx, y, yType, incy, executionType)
+        return
+    end function hipblasAxpyExFortran
 
-    ! CherkEx
-    function hipblasCherkExFortran(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc) &
+    ! DotEx
+    function hipblasDotExFortran(handle, n, x, xType, incx, y, yType, incy, result, &
+            resultType, executionType) &
+            result(res) &
+            bind(c, name = 'hipblasDotExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(c_int), value :: n
+        type(c_ptr), value :: x
+        integer(kind(HIPBLAS_R_16F)), value :: xType
+        integer(c_int), value :: incx
+        type(c_ptr), value :: y
+        integer(kind(HIPBLAS_R_16F)), value :: yType
+        integer(c_int), value :: incy
+        type(c_ptr), value :: result
+        integer(kind(HIPBLAS_R_16F)), value :: resultType
+        integer(kind(HIPBLAS_R_16F)), value :: executionType
+        integer(c_int) :: res
+        res = hipblasDotEx(handle, n, x, xType, incx, y, yType, incy, result, resultType, executionType)
+        return
+    end function hipblasDotExFortran
+
+    function hipblasDotcExFortran(handle, n, x, xType, incx, y, yType, incy, result, &
+        resultType, executionType) &
         result(res) &
-        bind(c, name = 'hipblasCherkExFortran')
+        bind(c, name = 'hipblasDotcExFortran')
     use iso_c_binding
     use hipblas_enums
     implicit none
     type(c_ptr), value :: handle
-    integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
-    integer(kind(HIPBLAS_OP_N)), value :: trans
     integer(c_int), value :: n
-    integer(c_int), value :: k
-    type(c_ptr), value :: alpha
-    type(c_ptr), value :: A
-    integer(kind(HIPBLAS_R_16F)), value :: Atype
-    integer(c_int), value :: lda
-    type(c_ptr), value :: beta
-    type(c_ptr), value :: C
-    integer(kind(HIPBLAS_R_16F)), value :: Ctype
-    integer(c_int), value :: ldc
+    type(c_ptr), value :: x
+    integer(kind(HIPBLAS_R_16F)), value :: xType
+    integer(c_int), value :: incx
+    type(c_ptr), value :: y
+    integer(kind(HIPBLAS_R_16F)), value :: yType
+    integer(c_int), value :: incy
+    type(c_ptr), value :: result
+    integer(kind(HIPBLAS_R_16F)), value :: resultType
+    integer(kind(HIPBLAS_R_16F)), value :: executionType
     integer(c_int) :: res
-    res = hipblasCherkEx(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc)
-end function hipblasCherkExFortran
+    res = hipblasDotcEx(handle, n, x, xType, incx, y, yType, incy, result, resultType, executionType)
+    return
+end function hipblasDotcExFortran
+
+    ! Nrm2Ex
+    function hipblasNrm2ExFortran(handle, n, x, xType, incx, result, resultType, executionType) &
+            result(res) &
+            bind(c, name = 'hipblasNrm2ExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(c_int), value :: n
+        type(c_ptr), value :: x
+        integer(kind(HIPBLAS_R_16F)), value :: xType
+        integer(c_int), value :: incx
+        type(c_ptr), value :: result
+        integer(kind(HIPBLAS_R_16F)), value :: resultType
+        integer(kind(HIPBLAS_R_16F)), value :: executionType
+        integer(c_int) :: res
+        res = hipblasNrm2Ex(handle, n, x, xType, incx, result, resultType, executionType)
+        return
+    end function hipblasNrm2ExFortran
+
+    ! RotEx
+    function hipblasRotExFortran(handle, n, x, xType, incx, y, yType, incy, c, s, &
+            csType, executionType) &
+            result(res) &
+            bind(c, name = 'hipblasRotExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(c_int), value :: n
+        type(c_ptr), value :: x
+        integer(kind(HIPBLAS_R_16F)), value :: xType
+        integer(c_int), value :: incx
+        type(c_ptr), value :: y
+        integer(kind(HIPBLAS_R_16F)), value :: yType
+        integer(c_int), value :: incy
+        type(c_ptr), value :: c
+        type(c_ptr), value :: s
+        integer(kind(HIPBLAS_R_16F)), value :: csType
+        integer(kind(HIPBLAS_R_16F)), value :: executionType
+        integer(c_int) :: res
+        res = hipblasRotEx(handle, n, x, xType, incx, y, yType, incy, c, s, csType, executionType)
+        return
+    end function hipblasRotExFortran
+
+    ! ScalEx
+    function hipblasScalExFortran(handle, n, alpha, alphaType, x, xType, incx, executionType) &
+            result(res) &
+            bind(c, name = 'hipblasScalExFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(c_int), value :: n
+        type(c_ptr), value :: alpha
+        integer(kind(HIPBLAS_R_16F)), value :: alphaType
+        type(c_ptr), value :: x
+        integer(kind(HIPBLAS_R_16F)), value :: xType
+        integer(c_int), value :: incx
+        integer(kind(HIPBLAS_R_16F)), value :: executionType
+        integer(c_int) :: res
+        res = hipblasScalEx(handle, n, alpha, alphaType, x, xType, incx, executionType)
+        return
+    end function hipblasScalExFortran
+
+!     ! CsyrkEx
+!     function hipblasCsyrkExFortran(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc) &
+!             result(res) &
+!             bind(c, name = 'hipblasCsyrkExFortran')
+!         use iso_c_binding
+!         use hipblas_enums
+!         implicit none
+!         type(c_ptr), value :: handle
+!         integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+!         integer(kind(HIPBLAS_OP_N)), value :: trans
+!         integer(c_int), value :: n
+!         integer(c_int), value :: k
+!         type(c_ptr), value :: alpha
+!         type(c_ptr), value :: A
+!         integer(kind(HIPBLAS_R_16F)), value :: Atype
+!         integer(c_int), value :: lda
+!         type(c_ptr), value :: beta
+!         type(c_ptr), value :: C
+!         integer(kind(HIPBLAS_R_16F)), value :: Ctype
+!         integer(c_int), value :: ldc
+!         integer(c_int) :: res
+!         res = hipblasCsyrkEx(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc)
+!     end function hipblasCsyrkExFortran
+
+!     ! CherkEx
+!     function hipblasCherkExFortran(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc) &
+!         result(res) &
+!         bind(c, name = 'hipblasCherkExFortran')
+!     use iso_c_binding
+!     use hipblas_enums
+!     implicit none
+!     type(c_ptr), value :: handle
+!     integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+!     integer(kind(HIPBLAS_OP_N)), value :: trans
+!     integer(c_int), value :: n
+!     integer(c_int), value :: k
+!     type(c_ptr), value :: alpha
+!     type(c_ptr), value :: A
+!     integer(kind(HIPBLAS_R_16F)), value :: Atype
+!     integer(c_int), value :: lda
+!     type(c_ptr), value :: beta
+!     type(c_ptr), value :: C
+!     integer(kind(HIPBLAS_R_16F)), value :: Ctype
+!     integer(c_int), value :: ldc
+!     integer(c_int) :: res
+!     res = hipblasCherkEx(handle, uplo, trans, n, k, alpha, A, Atype, lda, beta, C, Ctype, ldc)
+! end function hipblasCherkExFortran
 
 end module hipblas_interface

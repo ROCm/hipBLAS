@@ -33,6 +33,17 @@ typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipblasData
 // clang-format off
 // vector of vector, each vector is a {M, N, K, lda, ldb, ldc};
 // add/delete as a group
+const vector<vector<int>> int8_matrix_size_range = {
+
+    { 4,  4,  4,  4,  4,  4},
+    { 8,  8,  8,  8,  8,  8},
+    {12, 12, 12, 12, 12, 12},
+    {16, 16, 16, 16, 16, 16},
+    {20, 20, 20, 20, 20, 20},
+    { 8,  4,  4,  8,  8,  8},
+    { 8, 12, 12, 12, 12, 12},
+};
+
 const vector<vector<int>> small_matrix_size_range = {
     { 1,  1,  1,  1,  1,  1},
     { 1,  2,  3,  4,  5,  6},
@@ -169,6 +180,12 @@ const vector<vector<double>> small_alpha_beta_range = {
 const vector<vector<double>> full_alpha_beta_range = {
     {1.0, 0.0}, {-1.0, -1.0}, {2.0, 1.0}, {0.0, 1.0}};
 
+// For Cuda v < 10.0, only alpha and beta = 1 or = 0 are
+// supported.
+const vector<vector<double>> alpha_beta_range_int8 = {
+    {1.0, 1.0}, {1.0, 0.0},
+};
+
 // vector of vector, each pair is a {transA, transB};
 // add/delete this list in pairs, like {'N', 'T'}
 // for single/double precision, 'C'(conjTranspose) will downgraded to 'T' (transpose) internally in
@@ -201,6 +218,25 @@ const vector<vector<hipblasDatatype_t>> precision_double = {{ HIPBLAS_R_64F,
                                                               HIPBLAS_R_64F,
                                                               HIPBLAS_R_64F  }};
 
+const vector<vector<hipblasDatatype_t>> precision_single_complex = {{ HIPBLAS_C_32F,
+                                                              HIPBLAS_C_32F,
+                                                              HIPBLAS_C_32F,
+                                                              HIPBLAS_C_32F,
+                                                              HIPBLAS_C_32F  }};
+
+const vector<vector<hipblasDatatype_t>> precision_double_complex = {{ HIPBLAS_C_64F,
+                                                              HIPBLAS_C_64F,
+                                                              HIPBLAS_C_64F,
+                                                              HIPBLAS_C_64F,
+                                                              HIPBLAS_C_64F  }};
+
+const vector<vector<hipblasDatatype_t>> precision_int8 = {{ HIPBLAS_R_8I,
+                                                              HIPBLAS_R_8I,
+                                                              HIPBLAS_R_32I,
+                                                              HIPBLAS_R_32I,
+                                                              HIPBLAS_R_32I  }};
+
+
 const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIPBLAS_R_16F,
                                                                  HIPBLAS_R_16F,
                                                                  HIPBLAS_R_16F,
@@ -220,7 +256,22 @@ const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIPBLAS_R_16F,
                                                                  HIPBLAS_R_64F,
                                                                  HIPBLAS_R_64F,
                                                                  HIPBLAS_R_64F,
-                                                                 HIPBLAS_R_64F}};
+                                                                 HIPBLAS_R_64F},
+                                                                {HIPBLAS_C_32F,
+                                                                 HIPBLAS_C_32F,
+                                                                 HIPBLAS_C_32F,
+                                                                 HIPBLAS_C_32F,
+                                                                 HIPBLAS_C_32F},
+                                                                {HIPBLAS_C_64F,
+                                                                 HIPBLAS_C_64F,
+                                                                 HIPBLAS_C_64F,
+                                                                 HIPBLAS_C_64F,
+                                                                 HIPBLAS_C_64F},
+                                                                {HIPBLAS_R_8I,
+                                                                 HIPBLAS_R_8I,
+                                                                 HIPBLAS_R_32I,
+                                                                 HIPBLAS_R_32I,
+                                                                 HIPBLAS_R_32I}};
 
 const int batch_count_range[] = { -1, 1, 5 };
 const int batch_count_range_small[] = { 1 };
@@ -364,12 +415,18 @@ TEST_P(parameterized_gemm_batched_ex, standard_batched)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else
+        else if(status == HIPBLAS_STATUS_ARCH_MISMATCH)
         {
             // Only available in cuda cc >= 5.0.
             // If we want we can change this to call query_device_property() and
             // call this only if cc < 5.0 on a CUDA device, else fail.
             EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+        }
+        else
+        {
+            // cublas/rocblas do not have identical support
+            // (i.e. cublas doesn't support i8/i32 here)
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
         }
     }
 }
@@ -400,12 +457,18 @@ TEST_P(parameterized_gemm_batched_ex, standard_strided_batched)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else
+        else if(status == HIPBLAS_STATUS_ARCH_MISMATCH)
         {
             // Only available in cuda cc >= 5.0.
             // If we want we can change this to call query_device_property() and
             // call this only if cc < 5.0 on a CUDA device, else fail.
             EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+        }
+        else
+        {
+            // cublas/rocblas do not have identical support
+            // (i.e. cublas doesn't support i8/i32 here)
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
         }
     }
 }
@@ -467,111 +530,166 @@ protected:
 // TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
 
 //----small
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_hpa_half,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_hpa_half,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_half,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_half,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_half),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_single,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_ex_small_double,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single_complex,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single_complex),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double_complex),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(int8_matrix_size_range),
+                                 ValuesIn(alpha_beta_range_int8),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_int8),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
+
 //----medium
-INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_hpa_half,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(medium_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
 
-INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_half,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(medium_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_half,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_half),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
 
-INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_float,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(medium_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_float,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
 
-INSTANTIATE_TEST_CASE_P(pre_checkin_blas_ex_medium_double,
-                        parameterized_gemm_ex,
-                        Combine(ValuesIn(medium_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double),
-                                ValuesIn(batch_count_range_small),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_double,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
 
 //----small-batched
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_hpa_half,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_hpa_half),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_half,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_half),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_half,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_half),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_single,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_single),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_CASE_P(quick_blas_batched_ex_small_double,
-                        parameterized_gemm_batched_ex,
-                        Combine(ValuesIn(small_matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(precision_double),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single_complex,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_single_complex),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_double_complex),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(int8_matrix_size_range),
+                                 ValuesIn(alpha_beta_range_int8),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_int8),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

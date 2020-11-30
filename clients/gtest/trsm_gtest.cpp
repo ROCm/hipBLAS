@@ -140,7 +140,7 @@ Arguments setup_trsm_arguments(trsm_tuple tup)
     arg.transA_option = side_uplo_transA_diag[2];
     arg.diag_option   = side_uplo_transA_diag[3];
 
-    arg.timing = 1;
+    arg.timing = 0;
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
@@ -335,22 +335,22 @@ TEST_P(trsm_gtest, trsm_strided_batched_gtest_double_complex)
 // small
 // Testing order: side_uplo_transA_xx first, alpha_range second, full_matrix_size last
 // i.e fix the matrix size and alpha, test all the side_uplo_transA_xx first.
-INSTANTIATE_TEST_CASE_P(hipblasTrsm_matrix_size,
-                        trsm_gtest,
-                        Combine(ValuesIn(full_matrix_size_range),
-                                ValuesIn(alpha_range),
-                                ValuesIn(side_uplo_transA_diag_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasTrsm_matrix_size,
+                         trsm_gtest,
+                         Combine(ValuesIn(full_matrix_size_range),
+                                 ValuesIn(alpha_range),
+                                 ValuesIn(side_uplo_transA_diag_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
 
 // THis function mainly test the scope of  full_side_uplo_transA_diag_range,.the scope of
 // matrix_size_range is small
-INSTANTIATE_TEST_CASE_P(hipblasTrsm_scalar_transpose,
-                        trsm_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(alpha_range),
-                                ValuesIn(full_side_uplo_transA_diag_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran_false)));
+INSTANTIATE_TEST_SUITE_P(hipblasTrsm_scalar_transpose,
+                         trsm_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(alpha_range),
+                                 ValuesIn(full_side_uplo_transA_diag_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran_false)));

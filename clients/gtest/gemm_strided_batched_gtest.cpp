@@ -137,7 +137,7 @@ TEST_P(gemm_strided_batched_gtest, float)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<float>(arg);
+    hipblasStatus_t status = testing_gemm_strided_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -178,7 +178,7 @@ TEST_P(gemm_strided_batched_gtest, double)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<double>(arg);
+    hipblasStatus_t status = testing_gemm_strided_batched<double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -219,7 +219,7 @@ TEST_P(gemm_strided_batched_gtest, hipblasComplex)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_gemm_strided_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -260,7 +260,7 @@ TEST_P(gemm_strided_batched_gtest, hipblasDoubleComplex)
 
     Arguments arg = setup_gemm_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmStridedBatched<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_gemm_strided_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -298,10 +298,10 @@ TEST_P(gemm_strided_batched_gtest, hipblasDoubleComplex)
 // The combinations are  { {M, N, K, lda, ldb, ldc}, {alpha, beta}, {transA, transB}, {batch_count}
 // }
 
-INSTANTIATE_TEST_CASE_P(hipblasGemmStridedBatched,
-                        gemm_strided_batched_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasGemmStridedBatched,
+                         gemm_strided_batched_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

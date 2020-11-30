@@ -8,19 +8,14 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "flops.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_trsv(Arguments argus)
+hipblasStatus_t testing_trsv(const Arguments& argus)
 {
     bool FORTRAN       = argus.fortran;
     auto hipblasTrsvFn = FORTRAN ? hipblasTrsv<T, true> : hipblasTrsv<T, false>;
@@ -87,12 +82,12 @@ hipblasStatus_t testing_trsv(Arguments argus)
                   M,
                   M,
                   M,
-                  1.0,
+                  (T)1.0,
                   hA.data(),
                   lda,
                   hA.data(),
                   lda,
-                  0.0,
+                  (T)0.0,
                   AAT.data(),
                   lda);
 

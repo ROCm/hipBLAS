@@ -5,7 +5,7 @@
 # This is incremented when the ABI to the library changes
 set( hipblas_SOVERSION 0.1 )
 
-list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
+list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${HIP_PATH}/cmake )
 
 # This option only works for make/nmake and the ninja generators, but no reason it shouldn't be on all the time
 # This tells cmake to create a compile_commands.json file that can be used with clang tooling or vim
@@ -60,8 +60,10 @@ add_subdirectory( src )
 # endif( )
 
 # Package specific CPACK vars
-set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 0.10.3)" )
-set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 0.10.3" )
+if( NOT USE_CUDA )
+    set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 2.35.0), rocsolver (>= 3.11.0)" )
+    set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 2.35.0, rocsolver >= 3.11.0" )
+endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md" )
 
@@ -83,7 +85,7 @@ set( HIPBLAS_CONFIG_DIR "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBD
 rocm_create_package(
     NAME ${package_name}
     DESCRIPTION "Radeon Open Compute BLAS marshalling library"
-    MAINTAINER "rocblas-maintainer@amd.com"
+    MAINTAINER "hipBLAS Maintainer <hipblas-maintainer@amd.com>"
     LDCONFIG
     LDCONFIG_DIR ${HIPBLAS_CONFIG_DIR}
 )

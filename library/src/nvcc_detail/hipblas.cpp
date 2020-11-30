@@ -169,6 +169,12 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
     case HIPBLAS_R_64F:
         return CUDA_R_64F;
 
+    case HIPBLAS_R_8I:
+        return CUDA_R_8I;
+
+    case HIPBLAS_R_32I:
+        return CUDA_R_32I;
+
     case HIPBLAS_C_16F:
         return CUDA_C_16F;
 
@@ -197,6 +203,30 @@ cublasGemmAlgo_t HIPGemmAlgoToCudaGemmAlgo(hipblasGemmAlgo_t algo)
     default:
         throw "Non existent GemmAlgo";
     }
+}
+
+cublasAtomicsMode_t HIPAtomicsModeToCudaAtomicsMode(hipblasAtomicsMode_t mode)
+{
+    switch(mode)
+    {
+    case HIPBLAS_ATOMICS_NOT_ALLOWED:
+        return CUBLAS_ATOMICS_NOT_ALLOWED;
+    case HIPBLAS_ATOMICS_ALLOWED:
+        return CUBLAS_ATOMICS_ALLOWED;
+    }
+    throw "Non existent AtomicsMode";
+}
+
+hipblasAtomicsMode_t CudaAtomicsModeToHIPAtomicsMode(cublasAtomicsMode_t mode)
+{
+    switch(mode)
+    {
+    case CUBLAS_ATOMICS_NOT_ALLOWED:
+        return HIPBLAS_ATOMICS_NOT_ALLOWED;
+    case CUBLAS_ATOMICS_ALLOWED:
+        return HIPBLAS_ATOMICS_ALLOWED;
+    }
+    throw "Non existent AtomicsMode";
 }
 
 hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
@@ -313,6 +343,19 @@ hipblasStatus_t hipblasGetMatrixAsync(
 {
     return hipCUBLASStatusToHIPStatus(
         cublasGetMatrixAsync(rows, cols, elemSize, A, lda, B, ldb, stream));
+}
+
+// atomics mode
+hipblasStatus_t hipblasSetAtomicsMode(hipblasHandle_t handle, hipblasAtomicsMode_t atomics_mode)
+{
+    return hipCUBLASStatusToHIPStatus(cublasSetAtomicsMode(
+        (cublasHandle_t)handle, HIPAtomicsModeToCudaAtomicsMode(atomics_mode)));
+}
+
+hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t handle, hipblasAtomicsMode_t* atomics_mode)
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasGetAtomicsMode((cublasHandle_t)handle, (cublasAtomicsMode_t*)atomics_mode));
 }
 
 // amax
@@ -10362,65 +10405,65 @@ extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-// syrk_ex
-extern "C" hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
-                                          hipblasFillMode_t     uplo,
-                                          hipblasOperation_t    trans,
-                                          int                   n,
-                                          int                   k,
-                                          const hipblasComplex* alpha,
-                                          const void*           A,
-                                          hipblasDatatype_t     Atype,
-                                          int                   lda,
-                                          const hipblasComplex* beta,
-                                          hipblasComplex*       C,
-                                          hipblasDatatype_t     Ctype,
-                                          int                   ldc)
-{
-    return hipCUBLASStatusToHIPStatus(cublasCsyrkEx((cublasHandle_t)handle,
-                                                    hipFillToCudaFill(uplo),
-                                                    hipOperationToCudaOperation(trans),
-                                                    n,
-                                                    k,
-                                                    (cuComplex*)alpha,
-                                                    A,
-                                                    HIPDatatypeToCudaDatatype(Atype),
-                                                    lda,
-                                                    (cuComplex*)beta,
-                                                    (cuComplex*)C,
-                                                    HIPDatatypeToCudaDatatype(Ctype),
-                                                    ldc));
-}
+// // syrk_ex
+// extern "C" hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
+//                                           hipblasFillMode_t     uplo,
+//                                           hipblasOperation_t    trans,
+//                                           int                   n,
+//                                           int                   k,
+//                                           const hipblasComplex* alpha,
+//                                           const void*           A,
+//                                           hipblasDatatype_t     Atype,
+//                                           int                   lda,
+//                                           const hipblasComplex* beta,
+//                                           hipblasComplex*       C,
+//                                           hipblasDatatype_t     Ctype,
+//                                           int                   ldc)
+// {
+//     return hipCUBLASStatusToHIPStatus(cublasCsyrkEx((cublasHandle_t)handle,
+//                                                     hipFillToCudaFill(uplo),
+//                                                     hipOperationToCudaOperation(trans),
+//                                                     n,
+//                                                     k,
+//                                                     (cuComplex*)alpha,
+//                                                     A,
+//                                                     HIPDatatypeToCudaDatatype(Atype),
+//                                                     lda,
+//                                                     (cuComplex*)beta,
+//                                                     (cuComplex*)C,
+//                                                     HIPDatatypeToCudaDatatype(Ctype),
+//                                                     ldc));
+// }
 
-// herk_ex
-extern "C" hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t trans,
-                                          int                n,
-                                          int                k,
-                                          const float*       alpha,
-                                          const void*        A,
-                                          hipblasDatatype_t  Atype,
-                                          int                lda,
-                                          const float*       beta,
-                                          hipblasComplex*    C,
-                                          hipblasDatatype_t  Ctype,
-                                          int                ldc)
-{
-    return hipCUBLASStatusToHIPStatus(cublasCherkEx((cublasHandle_t)handle,
-                                                    hipFillToCudaFill(uplo),
-                                                    hipOperationToCudaOperation(trans),
-                                                    n,
-                                                    k,
-                                                    alpha,
-                                                    A,
-                                                    HIPDatatypeToCudaDatatype(Atype),
-                                                    lda,
-                                                    beta,
-                                                    (cuComplex*)C,
-                                                    HIPDatatypeToCudaDatatype(Ctype),
-                                                    ldc));
-}
+// // herk_ex
+// extern "C" hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
+//                                           hipblasFillMode_t  uplo,
+//                                           hipblasOperation_t trans,
+//                                           int                n,
+//                                           int                k,
+//                                           const float*       alpha,
+//                                           const void*        A,
+//                                           hipblasDatatype_t  Atype,
+//                                           int                lda,
+//                                           const float*       beta,
+//                                           hipblasComplex*    C,
+//                                           hipblasDatatype_t  Ctype,
+//                                           int                ldc)
+// {
+//     return hipCUBLASStatusToHIPStatus(cublasCherkEx((cublasHandle_t)handle,
+//                                                     hipFillToCudaFill(uplo),
+//                                                     hipOperationToCudaOperation(trans),
+//                                                     n,
+//                                                     k,
+//                                                     alpha,
+//                                                     A,
+//                                                     HIPDatatypeToCudaDatatype(Atype),
+//                                                     lda,
+//                                                     beta,
+//                                                     (cuComplex*)C,
+//                                                     HIPDatatypeToCudaDatatype(Ctype),
+//                                                     ldc));
+// }
 
 // nrm2_ex
 extern "C" hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,

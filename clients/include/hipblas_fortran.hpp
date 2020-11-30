@@ -39,6 +39,12 @@ hipblasStatus_t hipblasSetMatrixAsyncFortran(
 hipblasStatus_t hipblasGetMatrixAsyncFortran(
     int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb, hipStream_t stream);
 
+hipblasStatus_t hipblasSetAtomicsModeFortran(hipblasHandle_t      handle,
+                                             hipblasAtomicsMode_t atomics_mode);
+
+hipblasStatus_t hipblasGetAtomicsModeFortran(hipblasHandle_t       handle,
+                                             hipblasAtomicsMode_t* atomics_mode);
+
 /* ==========
  *    L1
  * ========== */
@@ -6466,35 +6472,35 @@ hipblasStatus_t hipblasTrsmStridedBatchedExFortran(hipblasHandle_t    handle,
                                                    int                stride_invA,
                                                    hipblasDatatype_t  compute_type);
 
-// syrk_ex
-hipblasStatus_t hipblasCsyrkExFortran(hipblasHandle_t       handle,
-                                      hipblasFillMode_t     uplo,
-                                      hipblasOperation_t    trans,
-                                      int                   n,
-                                      int                   k,
-                                      const hipblasComplex* alpha,
-                                      const void*           A,
-                                      hipblasDatatype_t     Atype,
-                                      int                   lda,
-                                      const hipblasComplex* beta,
-                                      hipblasComplex*       C,
-                                      hipblasDatatype_t     Ctype,
-                                      int                   ldc);
+// // syrk_ex
+// hipblasStatus_t hipblasCsyrkExFortran(hipblasHandle_t       handle,
+//                                       hipblasFillMode_t     uplo,
+//                                       hipblasOperation_t    trans,
+//                                       int                   n,
+//                                       int                   k,
+//                                       const hipblasComplex* alpha,
+//                                       const void*           A,
+//                                       hipblasDatatype_t     Atype,
+//                                       int                   lda,
+//                                       const hipblasComplex* beta,
+//                                       hipblasComplex*       C,
+//                                       hipblasDatatype_t     Ctype,
+//                                       int                   ldc);
 
-// herk_ex
-hipblasStatus_t hipblasCherkExFortran(hipblasHandle_t    handle,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t trans,
-                                      int                n,
-                                      int                k,
-                                      const float*       alpha,
-                                      const void*        A,
-                                      hipblasDatatype_t  Atype,
-                                      int                lda,
-                                      const float*       beta,
-                                      hipblasComplex*    C,
-                                      hipblasDatatype_t  Ctype,
-                                      int                ldc);
+// // herk_ex
+// hipblasStatus_t hipblasCherkExFortran(hipblasHandle_t    handle,
+//                                       hipblasFillMode_t  uplo,
+//                                       hipblasOperation_t trans,
+//                                       int                n,
+//                                       int                k,
+//                                       const float*       alpha,
+//                                       const void*        A,
+//                                       hipblasDatatype_t  Atype,
+//                                       int                lda,
+//                                       const float*       beta,
+//                                       hipblasComplex*    C,
+//                                       hipblasDatatype_t  Ctype,
+//                                       int                ldc);
 
 // nrm2_ex
 hipblasStatus_t hipblasNrm2ExFortran(hipblasHandle_t   handle,

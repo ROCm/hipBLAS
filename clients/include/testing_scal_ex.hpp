@@ -17,7 +17,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T>
+template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 hipblasStatus_t testing_scal_ex_template(Arguments argus)
 {
     bool FORTRAN         = argus.fortran;
@@ -29,7 +29,7 @@ hipblasStatus_t testing_scal_ex_template(Arguments argus)
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     int sizeX = N * incx;
-    T   alpha = argus.alpha;
+    Ta  alpha = argus.alpha;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -38,13 +38,14 @@ hipblasStatus_t testing_scal_ex_template(Arguments argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    hipblasDatatype_t xType         = argus.a_type;
+    hipblasDatatype_t alphaType     = argus.a_type;
+    hipblasDatatype_t xType         = argus.b_type;
     hipblasDatatype_t executionType = argus.compute_type;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T>   hx(sizeX);
-    host_vector<T>   hz(sizeX);
-    device_vector<T> dx(sizeX);
+    host_vector<Tx>   hx(sizeX);
+    host_vector<Tx>   hz(sizeX);
+    device_vector<Tx> dx(sizeX);
 
     double gpu_time_used, cpu_time_used;
     double rocblas_error = 0.0;
@@ -54,18 +55,18 @@ hipblasStatus_t testing_scal_ex_template(Arguments argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx);
+    hipblas_init<Tx>(hx, 1, N, incx);
 
     // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
     hz = hx;
 
     // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * N * incx, hipMemcpyHostToDevice));
 
     /* =====================================================================
          ROCBLAS
     =================================================================== */
-    status = hipblasScalExFn(handle, N, &alpha, dx, xType, incx, executionType);
+    status = hipblasScalExFn(handle, N, &alpha, alphaType, dx, xType, incx, executionType);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         hipblasDestroy(handle);
@@ -73,20 +74,20 @@ hipblasStatus_t testing_scal_ex_template(Arguments argus)
     }
 
     // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * N * incx, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(Tx) * N * incx, hipMemcpyDeviceToHost));
 
     if(argus.unit_check)
     {
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_scal<T, U>(N, alpha, hz.data(), incx);
+        cblas_scal<Tx, Ta>(N, alpha, hz.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, incx, hz.data(), hx.data());
+            unit_check_general<Tx>(1, N, incx, hz.data(), hx.data());
         }
 
     } // end of if unit check
@@ -106,23 +107,23 @@ hipblasStatus_t testing_scal_ex(Arguments argus)
 
     if(xType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_scal<hipblasHalf>(argus);
+        status = testing_scal_ex_template<hipblasHalf>(argus);
     }
     else if(xType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_scal<float>(argus);
+        status = testing_scal_ex_template<float>(argus);
     }
     else if(xType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
     {
-        status = testing_scal<double>(argus);
+        status = testing_scal_ex_template<double>(argus);
     }
     else if(xType == HIPBLAS_C_32F && executionType == HIPBLAS_C_32F)
     {
-        status = testing_scal<hipblasComplex>(argus);
+        status = testing_scal_ex_template<hipblasComplex>(argus);
     }
     else if(xType == HIPBLAS_C_64F && executionType == HIPBLAS_C_64F)
     {
-        status = testing_scal<hipblasDoubleComplex>(argus);
+        status = testing_scal_ex_template<hipblasDoubleComplex>(argus);
     }
     else
     {

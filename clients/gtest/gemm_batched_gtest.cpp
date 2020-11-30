@@ -19,7 +19,7 @@ using namespace std;
 /*
 TEST(hipblas_blas3, gemm_batched_float_bad_arg)
 {
-    testing_GemmBatched_device_array<float>();
+    testing_gemm_batched_device_array<float>();
 }
 */
 
@@ -144,7 +144,7 @@ TEST_P(gemm_batched_gtest, float)
 
     Arguments arg = setup_gemm_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmBatched<float>(arg);
+    hipblasStatus_t status = testing_gemm_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -185,7 +185,7 @@ TEST_P(gemm_batched_gtest, double)
 
     Arguments arg = setup_gemm_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmBatched<double>(arg);
+    hipblasStatus_t status = testing_gemm_batched<double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -226,7 +226,7 @@ TEST_P(gemm_batched_gtest, hipblasComplex)
 
     Arguments arg = setup_gemm_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmBatched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_gemm_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -267,7 +267,7 @@ TEST_P(gemm_batched_gtest, hipblasDoubleComplex)
 
     Arguments arg = setup_gemm_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_GemmBatched<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_gemm_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -305,10 +305,10 @@ TEST_P(gemm_batched_gtest, hipblasDoubleComplex)
 // The combinations are  { {M, N, K, lda, ldb, ldc}, {alpha, beta}, {transA, transB}, {batch_count}
 // }
 
-INSTANTIATE_TEST_CASE_P(hipblasGemmBatched,
-                        gemm_batched_gtest,
-                        Combine(ValuesIn(matrix_size_range),
-                                ValuesIn(alpha_beta_range),
-                                ValuesIn(transA_transB_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasGemmBatched,
+                         gemm_batched_gtest,
+                         Combine(ValuesIn(matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));

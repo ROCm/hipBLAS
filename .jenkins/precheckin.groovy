@@ -9,18 +9,20 @@ import com.amd.project.*
 import com.amd.docker.*
 import java.nio.file.Path
 
-def runCI = 
+def runCI =
 {
-    nodeDetails, jobName->
+    nodeDetails, jobName, buildCommand, label->
 
     def prj  = new rocProject('hipBLAS', 'PreCheckin')
-    prj.paths.build_command = './install.sh -cd -p /opt/rocm/lib/cmake'
+
+    //customize for project
+    prj.paths.build_command = buildCommand
     prj.libraryDependencies = ['rocBLAS-internal', 'rocSOLVER']
 
     // Define test architectures, optional rocm version argument is available
     def nodes = new dockerNodes(nodeDetails, jobName, prj)
 
-    boolean formatCheck = true
+    boolean formatCheck = false
 
     def commonGroovy
 
@@ -42,37 +44,23 @@ def runCI =
     def packageCommand =
     {
         platform, project->
-        
-        commonGroovy.runPackageCommand(platform, project)
+
+        commonGroovy.runPackageCommand(platform, project, jobName, label)
     }
 
     buildProject(prj, formatCheck, nodes.dockerArray, compileCommand, testCommand, packageCommand)
 }
 
-ci: { 
-    String urlJobName = auxiliary.getTopJobName(env.BUILD_URL)
-
-    def propertyList = ["compute-rocm-dkms-no-npi-hipclang":[pipelineTriggers([cron('0 1 * * 0')])],
-                        "rocm-docker":[]]
-    propertyList = auxiliary.appendPropertyList(propertyList)
-
-    def jobNameList = ["compute-rocm-dkms-no-npi-hipclang":([ubuntu18:['gfx900'],centos7:['gfx906'],sles15sp1:['gfx908']]),
-                       "rocm-docker":([ubuntu16:['gfx900'],ubuntu18:['gfx900'],centos7:['gfx906'],sles15sp1:['gfx906']])]
+def setupCI(urlJobName, jobNameList, buildCommand, runCI, label)
+{
     jobNameList = auxiliary.appendJobNameList(jobNameList)
 
-    propertyList.each 
-    {
-        jobName, property->
-        if (urlJobName == jobName)
-            properties(auxiliary.addCommonProperties(property))
-    }
-
-    jobNameList.each 
+    jobNameList.each
     {
         jobName, nodeDetails->
         if (urlJobName == jobName)
-            stage(jobName) {
-                runCI(nodeDetails, jobName)
+            stage(label + ' ' + jobName) {
+                runCI(nodeDetails, jobName, buildCommand, label)
             }
     }
 
@@ -80,8 +68,31 @@ ci: {
     if(!jobNameList.keySet().contains(urlJobName))
     {
         properties(auxiliary.addCommonProperties([pipelineTriggers([cron('0 1 * * *')])]))
-        stage(urlJobName) {
-            runCI([ubuntu16:['gfx906']], urlJobName)
+        stage(label + ' ' + urlJobName) {
+            runCI([ubuntu18:['gfx906']], urlJobName, buildCommand, label)
         }
     }
+
+}
+
+ci: {
+    String urlJobName = auxiliary.getTopJobName(env.BUILD_URL)
+
+    def propertyList = ["compute-rocm-dkms-no-npi-hipclang":[pipelineTriggers([cron('0 1 * * 0')])],
+                        "rocm-docker":[]]
+    propertyList = auxiliary.appendPropertyList(propertyList)
+
+    def jobNameList = ["compute-rocm-dkms-no-npi-hipclang":([ubuntu18:['gfx900'],centos7:['gfx906'],sles15sp1:['gfx908']]),
+                       "rocm-docker":([ubuntu18:['gfx900'],centos7:['gfx906'],sles15sp1:['gfx906']])]
+    jobNameList = auxiliary.appendJobNameList(jobNameList)
+
+    propertyList.each
+    {
+        jobName, property->
+        if (urlJobName == jobName)
+            properties(auxiliary.addCommonProperties(property))
+    }
+
+    String hostBuildCommand = './install.sh -c --compiler=g++'
+    setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
 }

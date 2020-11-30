@@ -42,6 +42,7 @@ set(hipblas_test_source
   set_get_pointer_mode_gtest.cpp
   set_get_vector_gtest.cpp
   set_get_matrix_gtest.cpp
+  set_get_atomics_mode_gtest.cpp
   blas1_gtest.cpp
   blas1_ex_gtest.cpp
   gbmv_gtest.cpp
@@ -109,18 +110,18 @@ if( BUILD_WITH_SOLVER )
   )
 endif( )
 
-set( hipblas_benchmark_common
+set( hipblas_test_common
   ../common/utility.cpp
   ../common/cblas_interface.cpp
-  ../common/flops.cpp
   ../common/norm.cpp
   ../common/unit.cpp
   ../common/near.cpp
   ../common/arg_check.cpp
+  ../common/hipblas_datatype2string.cpp
   ../common/hipblas_template_specialization.cpp
 )
 
-add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_benchmark_common} )
+add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
 
 target_include_directories( hipblas-test
   PRIVATE
@@ -144,26 +145,17 @@ target_include_directories( hipblas-test
 
 target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} hipblas_fortran_client )
 
+# need mf16c flag for float->half convertion
+target_compile_options( hipblas-test PRIVATE -mf16c )
+
 if( NOT CUDA_FOUND )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_HCC__ )
 
-  # Remove following when hcc is fixed; hcc emits following spurious warning
-  # "clang-5.0: warning: argument unused during compilation: '-isystem /opt/rocm/include'"
-  target_compile_options( hipblas-test PRIVATE -mf16c)
 
   if( CUSTOM_TARGET )
     target_link_libraries( hipblas-test PRIVATE hip::${CUSTOM_TARGET} hip::host )
   else( )
-    if ( LIBAMDHIP64_LIBRARY )
-      target_link_libraries( hipblas-test PRIVATE hip::amdhip64 hip::host )
-    else ( )
       target_link_libraries( hipblas-test PRIVATE hip::host )
-    endif ( )
-  endif( )
-
-  if( CMAKE_COMPILER_IS_GNUCXX )
-    # GCC needs specific flag to turn on f16c intrinsics
-    target_compile_options( hipblas-test PRIVATE -mf16c )
   endif( )
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
@@ -172,14 +164,13 @@ if( NOT CUDA_FOUND )
   endif()
 else( )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_NVCC__ )
-  # need mf16c flag for float->half convertion
-  target_compile_options( hipblas-test PRIVATE -mf16c )
+
   target_include_directories( hipblas-test
     PRIVATE
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
   )
 
-  target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} )
+  target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} Threads::Threads )
 endif( )
 
 set_target_properties( hipblas-test PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
