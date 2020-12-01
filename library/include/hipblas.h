@@ -7179,16 +7179,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
 //                                               hipblasDatatype_t  Ctype,
 //                                               int                ldc);
 
-// nrm2_ex
-HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
-                                             int               n,
-                                             const void*       x,
-                                             hipblasDatatype_t xType,
-                                             int               incx,
-                                             void*             result,
-                                             hipblasDatatype_t resultType,
-                                             hipblasDatatype_t executionType);
-
 // axpy_ex
 HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
                                              int               n,
@@ -7201,6 +7191,34 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
                                              hipblasDatatype_t yType,
                                              int               incy,
                                              hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
+                                                    int               n,
+                                                    const void*       alpha,
+                                                    hipblasDatatype_t alphaType,
+                                                    const void*       x,
+                                                    hipblasDatatype_t xType,
+                                                    int               incx,
+                                                    void*             y,
+                                                    hipblasDatatype_t yType,
+                                                    int               incy,
+                                                    int               batch_count,
+                                                    hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   handle,
+                                                           int               n,
+                                                           const void*       alpha,
+                                                           hipblasDatatype_t alphaType,
+                                                           const void*       x,
+                                                           hipblasDatatype_t xType,
+                                                           int               incx,
+                                                           int               stridex,
+                                                           void*             y,
+                                                           hipblasDatatype_t yType,
+                                                           int               incy,
+                                                           int               stridey,
+                                                           int               batch_count,
+                                                           hipblasDatatype_t executionType);
 
 // dot_ex
 HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
@@ -7227,6 +7245,93 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
                                              hipblasDatatype_t resultType,
                                              hipblasDatatype_t executionType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
+                                                   int               n,
+                                                   const void*       x,
+                                                   hipblasDatatype_t xType,
+                                                   int               incx,
+                                                   const void*       y,
+                                                   hipblasDatatype_t yType,
+                                                   int               incy,
+                                                   int               batch_count,
+                                                   void*             result,
+                                                   hipblasDatatype_t resultType,
+                                                   hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
+                                                    int               n,
+                                                    const void*       x,
+                                                    hipblasDatatype_t xType,
+                                                    int               incx,
+                                                    const void*       y,
+                                                    hipblasDatatype_t yType,
+                                                    int               incy,
+                                                    int               batch_count,
+                                                    void*             result,
+                                                    hipblasDatatype_t resultType,
+                                                    hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   handle,
+                                                          int               n,
+                                                          const void*       x,
+                                                          hipblasDatatype_t xType,
+                                                          int               incx,
+                                                          int               stridex,
+                                                          const void*       y,
+                                                          hipblasDatatype_t yType,
+                                                          int               incy,
+                                                          int               stridey,
+                                                          int               batch_count,
+                                                          void*             result,
+                                                          hipblasDatatype_t resultType,
+                                                          hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   handle,
+                                                           int               n,
+                                                           const void*       x,
+                                                           hipblasDatatype_t xType,
+                                                           int               incx,
+                                                           int               stridex,
+                                                           const void*       y,
+                                                           hipblasDatatype_t yType,
+                                                           int               incy,
+                                                           int               stridey,
+                                                           int               batch_count,
+                                                           void*             result,
+                                                           hipblasDatatype_t resultType,
+                                                           hipblasDatatype_t executionType);
+
+// nrm2_ex
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
+                                             int               n,
+                                             const void*       x,
+                                             hipblasDatatype_t xType,
+                                             int               incx,
+                                             void*             result,
+                                             hipblasDatatype_t resultType,
+                                             hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
+                                                    int               n,
+                                                    const void*       x,
+                                                    hipblasDatatype_t xType,
+                                                    int               incx,
+                                                    int               batch_count,
+                                                    void*             result,
+                                                    hipblasDatatype_t resultType,
+                                                    hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   handle,
+                                                           int               n,
+                                                           const void*       x,
+                                                           hipblasDatatype_t xType,
+                                                           int               incx,
+                                                           int               stridex,
+                                                           int               batch_count,
+                                                           void*             result,
+                                                           hipblasDatatype_t resultType,
+                                                           hipblasDatatype_t executionType);
+
 // rot_ex
 HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
                                             int               n,
@@ -7241,6 +7346,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
                                             hipblasDatatype_t csType,
                                             hipblasDatatype_t executionType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
+                                                   int               n,
+                                                   void*             x,
+                                                   hipblasDatatype_t xType,
+                                                   int               incx,
+                                                   void*             y,
+                                                   hipblasDatatype_t yType,
+                                                   int               incy,
+                                                   const void*       c,
+                                                   const void*       s,
+                                                   hipblasDatatype_t csType,
+                                                   int               batch_count,
+                                                   hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
+                                                          int               n,
+                                                          void*             x,
+                                                          hipblasDatatype_t xType,
+                                                          int               incx,
+                                                          int               stridex,
+                                                          void*             y,
+                                                          hipblasDatatype_t yType,
+                                                          int               incy,
+                                                          int               stridey,
+                                                          const void*       c,
+                                                          const void*       s,
+                                                          hipblasDatatype_t csType,
+                                                          int               batch_count,
+                                                          hipblasDatatype_t executionType);
+
 // scal_ex
 HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
                                              int               n,
@@ -7250,6 +7385,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
                                              hipblasDatatype_t xType,
                                              int               incx,
                                              hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
+                                                    int               n,
+                                                    const void*       alpha,
+                                                    hipblasDatatype_t alphaType,
+                                                    void*             x,
+                                                    hipblasDatatype_t xType,
+                                                    int               incx,
+                                                    int               batch_count,
+                                                    hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
+                                                           int               n,
+                                                           const void*       alpha,
+                                                           hipblasDatatype_t alphaType,
+                                                           void*             x,
+                                                           hipblasDatatype_t xType,
+                                                           int               incx,
+                                                           int               stridex,
+                                                           int               batch_count,
+                                                           hipblasDatatype_t executionType);
 
 #ifdef __cplusplus
 }

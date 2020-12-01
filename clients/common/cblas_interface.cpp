@@ -208,8 +208,18 @@ void cblas_axpy<hipblasDoubleComplex>(int                         n,
 template <>
 void cblas_scal<hipblasHalf>(int n, const hipblasHalf alpha, hipblasHalf* x, int incx)
 {
-    // TODO
-    // cblas_sscal(n, alpha, x, incx);
+    if(n <= 0 || incx <= 0)
+        return;
+
+    std::vector<float> x_float(n * incx);
+
+    for(size_t i = 0; i < n; i++)
+        x_float[i * incx] = x[i * incx];
+
+    cblas_sscal(n, alpha, x_float.data(), incx);
+
+    for(size_t i = 0; i < n; i++)
+        x[i * incx] = hipblasHalf(x_float[i * incx]);
 }
 
 template <>
@@ -438,8 +448,15 @@ void cblas_nrm2<hipblasHalf, hipblasHalf>(int                n,
                                           int                incx,
                                           hipblasHalf*       result)
 {
-    // TODO
-    // *result = cblas_snrm2(n, x, incx);
+    if(n <= 0 || incx <= 0)
+        return;
+
+    std::vector<float> x_float(n * incx);
+
+    for(size_t i = 0; i < n; i++)
+        x_float[i * incx] = x[i * incx];
+
+    *result = hipblasHalf(cblas_snrm2(n, x_float.data(), incx));
 }
 
 template <>
@@ -511,7 +528,33 @@ template <>
 void cblas_rot<hipblasHalf>(
     int n, hipblasHalf* x, int incx, hipblasHalf* y, int incy, hipblasHalf c, hipblasHalf s)
 {
-    // TODO
+    size_t abs_incx = incx >= 0 ? incx : -incx;
+    size_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t size_x   = n * abs_incx;
+    size_t size_y   = n * abs_incy;
+    if(!size_x)
+        size_x = 1;
+    if(!size_y)
+        size_y = 1;
+    std::vector<float> x_float(size_x);
+    std::vector<float> y_float(size_y);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = x[i * abs_incx];
+        y_float[i * abs_incy] = y[i * abs_incy];
+    }
+
+    const float c_float = float(c);
+    const float s_float = float(s);
+
+    cblas_srot(n, x_float.data(), incx, y_float.data(), incy, c_float, s_float);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x[i * abs_incx] = x_float[i * abs_incx];
+        y[i * abs_incy] = y_float[i * abs_incy];
+    }
 }
 
 template <>
@@ -523,7 +566,33 @@ void cblas_rot<hipblasBfloat16>(int              n,
                                 hipblasBfloat16  c,
                                 hipblasBfloat16  s)
 {
-    // TODO
+    size_t abs_incx = incx >= 0 ? incx : -incx;
+    size_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t size_x   = n * abs_incx;
+    size_t size_y   = n * abs_incy;
+    if(!size_x)
+        size_x = 1;
+    if(!size_y)
+        size_y = 1;
+    std::vector<float> x_float(size_x);
+    std::vector<float> y_float(size_y);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = bfloat16_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = bfloat16_to_float(y[i * abs_incy]);
+    }
+
+    const float c_float = bfloat16_to_float(c);
+    const float s_float = bfloat16_to_float(s);
+
+    cblas_srot(n, x_float.data(), incx, y_float.data(), incy, c_float, s_float);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x[i * abs_incx] = float_to_bfloat16(x_float[i * abs_incx]);
+        y[i * abs_incy] = float_to_bfloat16(y_float[i * abs_incy]);
+    }
 }
 
 template <>
@@ -547,8 +616,8 @@ void cblas_rot<hipblasComplex>(int             n,
                                hipblasComplex  c,
                                hipblasComplex  s)
 {
-    // TODO
-    // crot_(&n, x, &incx, y, &incx, &c, &s);
+    float c_real = std::real(c);
+    crot_(&n, x, &incx, y, &incx, &c_real, &s);
 }
 
 template <>
@@ -574,8 +643,8 @@ void cblas_rot<hipblasDoubleComplex>(int                   n,
                                      hipblasDoubleComplex  c,
                                      hipblasDoubleComplex  s)
 {
-    // TODO
-    // zrot_(&n, x, &incx, y, &incx, &c, &s);
+    double c_real = std::real(c);
+    zrot_(&n, x, &incx, y, &incx, &c_real, &s);
 }
 
 template <>

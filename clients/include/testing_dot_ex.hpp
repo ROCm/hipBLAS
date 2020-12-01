@@ -17,7 +17,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T, bool CONJ = false>
+template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 hipblasStatus_t testing_dot_ex_template(Arguments argus)
 {
     bool FORTRAN        = argus.fortran;
@@ -47,14 +47,14 @@ hipblasStatus_t testing_dot_ex_template(Arguments argus)
     int sizeY = N * incy;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx(sizeX);
-    host_vector<T> hy(sizeY);
+    host_vector<Tx> hx(sizeX);
+    host_vector<Ty> hy(sizeY);
 
-    device_vector<T> dx(sizeX);
-    device_vector<T> dy(sizeY);
-    device_vector<T> d_rocblas_result(1);
+    device_vector<Tx> dx(sizeX);
+    device_vector<Ty> dy(sizeY);
+    device_vector<Tr> d_rocblas_result(1);
 
-    T   cpu_result, rocblas_result;
+    Tr  cpu_result, rocblas_result;
     int device_pointer = 1;
 
     double gpu_time_used, cpu_time_used;
@@ -65,12 +65,12 @@ hipblasStatus_t testing_dot_ex_template(Arguments argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init_alternating_sign<T>(hx, 1, N, incx);
-    hipblas_init<T>(hy, 1, N, incy);
+    hipblas_init_alternating_sign<Tx>(hx, 1, N, incx);
+    hipblas_init<Ty>(hy, 1, N, incy);
 
     // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
 
     /* =====================================================================
          ROCBLAS
@@ -125,7 +125,7 @@ hipblasStatus_t testing_dot_ex_template(Arguments argus)
 
     if(device_pointer)
         CHECK_HIP_ERROR(
-            hipMemcpy(&rocblas_result, d_rocblas_result, sizeof(T), hipMemcpyDeviceToHost));
+            hipMemcpy(&rocblas_result, d_rocblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
 
     if(argus.unit_check || argus.norm_check)
     {
@@ -133,11 +133,11 @@ hipblasStatus_t testing_dot_ex_template(Arguments argus)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        (CONJ ? cblas_dotc<T> : cblas_dot<T>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
+        (CONJ ? cblas_dotc<Tx> : cblas_dot<Tx>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
 
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, 1, 1, &cpu_result, &rocblas_result);
+            unit_check_general<Tr>(1, 1, 1, &cpu_result, &rocblas_result);
         }
 
     } // end of if unit/norm check
@@ -156,29 +156,53 @@ hipblasStatus_t testing_dot_ex(Arguments argus)
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
-       && executionType == HIPBLAS_R_32F)
+       && executionType == HIPBLAS_R_16F)
     {
-        status = testing_dot_ex_template<hipblasHalf, true>(argus);
+        status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, hipblasHalf, false>(
+            argus);
+    }
+    else if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
+            && executionType == HIPBLAS_R_32F)
+    {
+        status
+            = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, false>(argus);
+    }
+    else if(xType == HIPBLAS_R_16B && yType == HIPBLAS_R_16B && resultType == HIPBLAS_R_16B
+            && executionType == HIPBLAS_R_32F)
+    {
+        status = testing_dot_ex_template<hipblasBfloat16,
+                                         hipblasBfloat16,
+                                         hipblasBfloat16,
+                                         hipblasBfloat16,
+                                         false>(argus);
     }
     else if(xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)
     {
-        status = testing_dot_ex_template<float, true>(argus);
+        status = testing_dot_ex_template<float, float, float, float, false>(argus);
     }
     else if(xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F
             && executionType == HIPBLAS_R_64F)
     {
-        status = testing_dot_ex_template<double, true>(argus);
+        status = testing_dot_ex_template<double, double, double, double, false>(argus);
     }
     else if(xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F
             && executionType == HIPBLAS_C_32F)
     {
-        status = testing_dot_ex_template<hipblasComplex, true>(argus);
+        status = testing_dot_ex_template<hipblasComplex,
+                                         hipblasComplex,
+                                         hipblasComplex,
+                                         hipblasComplex,
+                                         false>(argus);
     }
     else if(xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F
             && executionType == HIPBLAS_C_64F)
     {
-        status = testing_dot_ex_template<hipblasDoubleComplex, true>(argus);
+        status = testing_dot_ex_template<hipblasDoubleComplex,
+                                         hipblasDoubleComplex,
+                                         hipblasDoubleComplex,
+                                         hipblasDoubleComplex,
+                                         false>(argus);
     }
     else
     {
@@ -198,29 +222,52 @@ hipblasStatus_t testing_dotc_ex(Arguments argus)
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
-       && executionType == HIPBLAS_R_32F)
+       && executionType == HIPBLAS_R_16F)
     {
-        status = testing_dot_ex_template<hipblasHalf, false>(argus);
+        status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, hipblasHalf, true>(
+            argus);
+    }
+    else if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
+            && executionType == HIPBLAS_R_32F)
+    {
+        status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, true>(argus);
+    }
+    else if(xType == HIPBLAS_R_16B && yType == HIPBLAS_R_16B && resultType == HIPBLAS_R_16B
+            && executionType == HIPBLAS_R_32F)
+    {
+        status = testing_dot_ex_template<hipblasBfloat16,
+                                         hipblasBfloat16,
+                                         hipblasBfloat16,
+                                         hipblasBfloat16,
+                                         true>(argus);
     }
     else if(xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)
     {
-        status = testing_dot_ex_template<float, false>(argus);
+        status = testing_dot_ex_template<float, float, float, float, true>(argus);
     }
     else if(xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F
             && executionType == HIPBLAS_R_64F)
     {
-        status = testing_dot_ex_template<double, false>(argus);
+        status = testing_dot_ex_template<double, double, double, double, true>(argus);
     }
     else if(xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F
             && executionType == HIPBLAS_C_32F)
     {
-        status = testing_dot_ex_template<hipblasComplex, false>(argus);
+        status = testing_dot_ex_template<hipblasComplex,
+                                         hipblasComplex,
+                                         hipblasComplex,
+                                         hipblasComplex,
+                                         true>(argus);
     }
     else if(xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F
             && executionType == HIPBLAS_C_64F)
     {
-        status = testing_dot_ex_template<hipblasDoubleComplex, false>(argus);
+        status = testing_dot_ex_template<hipblasDoubleComplex,
+                                         hipblasDoubleComplex,
+                                         hipblasDoubleComplex,
+                                         hipblasDoubleComplex,
+                                         true>(argus);
     }
     else
     {

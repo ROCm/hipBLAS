@@ -10203,30 +10203,26 @@ hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t             handle,
                                                                 batchCount));
 }
 
-#ifdef __cplusplus
-}
-#endif
-
 // gemm_ex
-extern "C" hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
-                                         hipblasOperation_t transa,
-                                         hipblasOperation_t transb,
-                                         int                m,
-                                         int                n,
-                                         int                k,
-                                         const void*        alpha,
-                                         const void*        A,
-                                         hipblasDatatype_t  a_type,
-                                         int                lda,
-                                         const void*        B,
-                                         hipblasDatatype_t  b_type,
-                                         int                ldb,
-                                         const void*        beta,
-                                         void*              C,
-                                         hipblasDatatype_t  c_type,
-                                         int                ldc,
-                                         hipblasDatatype_t  compute_type,
-                                         hipblasGemmAlgo_t  algo)
+hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
+                              hipblasOperation_t transa,
+                              hipblasOperation_t transb,
+                              int                m,
+                              int                n,
+                              int                k,
+                              const void*        alpha,
+                              const void*        A,
+                              hipblasDatatype_t  a_type,
+                              int                lda,
+                              const void*        B,
+                              hipblasDatatype_t  b_type,
+                              int                ldb,
+                              const void*        beta,
+                              void*              C,
+                              hipblasDatatype_t  c_type,
+                              int                ldc,
+                              hipblasDatatype_t  compute_type,
+                              hipblasGemmAlgo_t  algo)
 {
     return hipCUBLASStatusToHIPStatus(cublasGemmEx((cublasHandle_t)handle,
                                                    hipOperationToCudaOperation(transa),
@@ -10249,26 +10245,26 @@ extern "C" hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                                    HIPGemmAlgoToCudaGemmAlgo(algo)));
 }
 
-extern "C" hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
-                                                hipblasOperation_t transa,
-                                                hipblasOperation_t transb,
-                                                int                m,
-                                                int                n,
-                                                int                k,
-                                                const void*        alpha,
-                                                const void*        A[],
-                                                hipblasDatatype_t  a_type,
-                                                int                lda,
-                                                const void*        B[],
-                                                hipblasDatatype_t  b_type,
-                                                int                ldb,
-                                                const void*        beta,
-                                                void*              C[],
-                                                hipblasDatatype_t  c_type,
-                                                int                ldc,
-                                                int                batch_count,
-                                                hipblasDatatype_t  compute_type,
-                                                hipblasGemmAlgo_t  algo)
+hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
+                                     hipblasOperation_t transa,
+                                     hipblasOperation_t transb,
+                                     int                m,
+                                     int                n,
+                                     int                k,
+                                     const void*        alpha,
+                                     const void*        A[],
+                                     hipblasDatatype_t  a_type,
+                                     int                lda,
+                                     const void*        B[],
+                                     hipblasDatatype_t  b_type,
+                                     int                ldb,
+                                     const void*        beta,
+                                     void*              C[],
+                                     hipblasDatatype_t  c_type,
+                                     int                ldc,
+                                     int                batch_count,
+                                     hipblasDatatype_t  compute_type,
+                                     hipblasGemmAlgo_t  algo)
 {
     return hipCUBLASStatusToHIPStatus(cublasGemmBatchedEx((cublasHandle_t)handle,
                                                           hipOperationToCudaOperation(transa),
@@ -10292,29 +10288,29 @@ extern "C" hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
                                                           HIPGemmAlgoToCudaGemmAlgo(algo)));
 }
 
-extern "C" hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
-                                                       hipblasOperation_t transa,
-                                                       hipblasOperation_t transb,
-                                                       int                m,
-                                                       int                n,
-                                                       int                k,
-                                                       const void*        alpha,
-                                                       const void*        A,
-                                                       hipblasDatatype_t  a_type,
-                                                       int                lda,
-                                                       int                stride_A,
-                                                       const void*        B,
-                                                       hipblasDatatype_t  b_type,
-                                                       int                ldb,
-                                                       int                stride_B,
-                                                       const void*        beta,
-                                                       void*              C,
-                                                       hipblasDatatype_t  c_type,
-                                                       int                ldc,
-                                                       int                stride_C,
-                                                       int                batch_count,
-                                                       hipblasDatatype_t  compute_type,
-                                                       hipblasGemmAlgo_t  algo)
+hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
+                                            hipblasOperation_t transa,
+                                            hipblasOperation_t transb,
+                                            int                m,
+                                            int                n,
+                                            int                k,
+                                            const void*        alpha,
+                                            const void*        A,
+                                            hipblasDatatype_t  a_type,
+                                            int                lda,
+                                            int                stride_A,
+                                            const void*        B,
+                                            hipblasDatatype_t  b_type,
+                                            int                ldb,
+                                            int                stride_B,
+                                            const void*        beta,
+                                            void*              C,
+                                            hipblasDatatype_t  c_type,
+                                            int                ldc,
+                                            int                stride_C,
+                                            int                batch_count,
+                                            hipblasDatatype_t  compute_type,
+                                            hipblasGemmAlgo_t  algo)
 {
     return hipCUBLASStatusToHIPStatus(
         cublasGemmStridedBatchedEx((cublasHandle_t)handle,
@@ -10343,70 +10339,70 @@ extern "C" hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle
 }
 
 // trsm_ex
-extern "C" hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
-                                         hipblasSideMode_t  side,
-                                         hipblasFillMode_t  uplo,
-                                         hipblasOperation_t transA,
-                                         hipblasDiagType_t  diag,
-                                         int                m,
-                                         int                n,
-                                         const void*        alpha,
-                                         void*              A,
-                                         int                lda,
-                                         void*              B,
-                                         int                ldb,
-                                         const void*        invA,
-                                         int                invA_size,
-                                         hipblasDatatype_t  compute_type)
+hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
+                              hipblasSideMode_t  side,
+                              hipblasFillMode_t  uplo,
+                              hipblasOperation_t transA,
+                              hipblasDiagType_t  diag,
+                              int                m,
+                              int                n,
+                              const void*        alpha,
+                              void*              A,
+                              int                lda,
+                              void*              B,
+                              int                ldb,
+                              const void*        invA,
+                              int                invA_size,
+                              hipblasDatatype_t  compute_type)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-extern "C" hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
-                                                hipblasSideMode_t  side,
-                                                hipblasFillMode_t  uplo,
-                                                hipblasOperation_t transA,
-                                                hipblasDiagType_t  diag,
-                                                int                m,
-                                                int                n,
-                                                const void*        alpha,
-                                                void*              A,
-                                                int                lda,
-                                                void*              B,
-                                                int                ldb,
-                                                int                batch_count,
-                                                const void*        invA,
-                                                int                invA_size,
-                                                hipblasDatatype_t  compute_type)
+hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
+                                     hipblasSideMode_t  side,
+                                     hipblasFillMode_t  uplo,
+                                     hipblasOperation_t transA,
+                                     hipblasDiagType_t  diag,
+                                     int                m,
+                                     int                n,
+                                     const void*        alpha,
+                                     void*              A,
+                                     int                lda,
+                                     void*              B,
+                                     int                ldb,
+                                     int                batch_count,
+                                     const void*        invA,
+                                     int                invA_size,
+                                     hipblasDatatype_t  compute_type)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
-                                                       hipblasSideMode_t  side,
-                                                       hipblasFillMode_t  uplo,
-                                                       hipblasOperation_t transA,
-                                                       hipblasDiagType_t  diag,
-                                                       int                m,
-                                                       int                n,
-                                                       const void*        alpha,
-                                                       void*              A,
-                                                       int                lda,
-                                                       int                stride_A,
-                                                       void*              B,
-                                                       int                ldb,
-                                                       int                stride_B,
-                                                       int                batch_count,
-                                                       const void*        invA,
-                                                       int                invA_size,
-                                                       int                stride_invA,
-                                                       hipblasDatatype_t  compute_type)
+hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
+                                            hipblasSideMode_t  side,
+                                            hipblasFillMode_t  uplo,
+                                            hipblasOperation_t transA,
+                                            hipblasDiagType_t  diag,
+                                            int                m,
+                                            int                n,
+                                            const void*        alpha,
+                                            void*              A,
+                                            int                lda,
+                                            int                stride_A,
+                                            void*              B,
+                                            int                ldb,
+                                            int                stride_B,
+                                            int                batch_count,
+                                            const void*        invA,
+                                            int                invA_size,
+                                            int                stride_invA,
+                                            hipblasDatatype_t  compute_type)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 // // syrk_ex
-// extern "C" hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
+// hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
 //                                           hipblasFillMode_t     uplo,
 //                                           hipblasOperation_t    trans,
 //                                           int                   n,
@@ -10436,7 +10432,7 @@ extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle
 // }
 
 // // herk_ex
-// extern "C" hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
+// hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
 //                                           hipblasFillMode_t  uplo,
 //                                           hipblasOperation_t trans,
 //                                           int                n,
@@ -10465,38 +10461,18 @@ extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle
 //                                                     ldc));
 // }
 
-// nrm2_ex
-extern "C" hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
-                                         int               n,
-                                         const void*       x,
-                                         hipblasDatatype_t xType,
-                                         int               incx,
-                                         void*             result,
-                                         hipblasDatatype_t resultType,
-                                         hipblasDatatype_t executionType)
-{
-    return hipCUBLASStatusToHIPStatus(cublasNrm2Ex((cublasHandlt_t)handle,
-                                                   n,
-                                                   x,
-                                                   HIPDatatypeToCudaDatatype(xType),
-                                                   incx,
-                                                   result,
-                                                   HIPDatatypeToCudaDatatype(resultType),
-                                                   HIPDatatypeToCudaDatatype(executionType)));
-}
-
 // axpy_ex
-extern "C" hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
-                                         int               n,
-                                         const void*       alpha,
-                                         hipblasDatatype_t alphaType,
-                                         const void*       x,
-                                         hipblasDatatype_t xType,
-                                         int               incx,
-                                         void*             y,
-                                         hipblasDatatype_t yType,
-                                         int               incy,
-                                         hipblasDatatype_t executionType)
+hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
+                              int               n,
+                              const void*       alpha,
+                              hipblasDatatype_t alphaType,
+                              const void*       x,
+                              hipblasDatatype_t xType,
+                              int               incx,
+                              void*             y,
+                              hipblasDatatype_t yType,
+                              int               incy,
+                              hipblasDatatype_t executionType)
 {
     return hipCUBLASStatusToHIPStatus(cublasAxpyEx((cublasHandlt_t)handle,
                                                    n,
@@ -10511,18 +10487,52 @@ extern "C" hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
                                                    HIPDatatypeToCudaDatatype(executionType)));
 }
 
+hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
+                                     int               n,
+                                     const void*       alpha,
+                                     hipblasDatatype_t alphaType,
+                                     const void*       x,
+                                     hipblasDatatype_t xType,
+                                     int               incx,
+                                     void*             y,
+                                     hipblasDatatype_t yType,
+                                     int               incy,
+                                     int               batch_count,
+                                     hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       alpha,
+                                            hipblasDatatype_t alphaType,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            int               stridex,
+                                            void*             y,
+                                            hipblasDatatype_t yType,
+                                            int               incy,
+                                            int               stridey,
+                                            int               batch_count,
+                                            hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
 // dot_ex
-extern "C" hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
-                                        int               n,
-                                        const void*       x,
-                                        hipblasDatatype_t xType,
-                                        int               incx,
-                                        const void*       y,
-                                        hipblasDatatype_t yType,
-                                        int               incy,
-                                        void*             result,
-                                        hipblasDatatype_t resultType,
-                                        hipblasDatatype_t executionType)
+hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
+                             int               n,
+                             const void*       x,
+                             hipblasDatatype_t xType,
+                             int               incx,
+                             const void*       y,
+                             hipblasDatatype_t yType,
+                             int               incy,
+                             void*             result,
+                             hipblasDatatype_t resultType,
+                             hipblasDatatype_t executionType)
 {
     return hipCUBLASStatusToHIPStatus(cublasDotEx((cublasHandlt_t)handle,
                                                   n,
@@ -10537,77 +10547,257 @@ extern "C" hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
                                                   HIPDatatypeToCudaDatatype(executionType)));
 }
 
-extern "C" hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
-                                         int               n,
-                                         const void*       x,
-                                         hipblasDatatype_t xType,
-                                         int               incx,
-                                         const void*       y,
-                                         hipblasDatatype_t yType,
-                                         int               incy,
-                                         void*             result,
-                                         hipblasDatatype_t resultType,
-                                         hipblasDatatype_t executionType)
+hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
+                              int               n,
+                              const void*       x,
+                              hipblasDatatype_t xType,
+                              int               incx,
+                              const void*       y,
+                              hipblasDatatype_t yType,
+                              int               incy,
+                              void*             result,
+                              hipblasDatatype_t resultType,
+                              hipblasDatatype_t executionType)
 {
-    return return hipCUBLASStatusToHIPStatus(
-        cublasDotcEx((cublasHandlt_t)handle,
-                     n,
-                     x,
-                     HIPDatatypeToCudaDatatype(xType),
-                     incx,
-                     y,
-                     HIPDatatypeToCudaDatatype(yType),
-                     incy,
-                     result,
-                     HIPDatatypeToCudaDatatype(resultType),
-                     HIPDatatypeToCudaDatatype(executionType)));
+    return hipCUBLASStatusToHIPStatus(cublasDotcEx((cublasHandlt_t)handle,
+                                                   n,
+                                                   x,
+                                                   HIPDatatypeToCudaDatatype(xType),
+                                                   incx,
+                                                   y,
+                                                   HIPDatatypeToCudaDatatype(yType),
+                                                   incy,
+                                                   result,
+                                                   HIPDatatypeToCudaDatatype(resultType),
+                                                   HIPDatatypeToCudaDatatype(executionType)));
+}
+
+hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
+                                    int               n,
+                                    const void*       x,
+                                    hipblasDatatype_t xType,
+                                    int               incx,
+                                    const void*       y,
+                                    hipblasDatatype_t yType,
+                                    int               incy,
+                                    int               batch_count,
+                                    void*             result,
+                                    hipblasDatatype_t resultType,
+                                    hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
+                                     int               n,
+                                     const void*       x,
+                                     hipblasDatatype_t xType,
+                                     int               incx,
+                                     const void*       y,
+                                     hipblasDatatype_t yType,
+                                     int               incy,
+                                     int               batch_count,
+                                     void*             result,
+                                     hipblasDatatype_t resultType,
+                                     hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   handle,
+                                           int               n,
+                                           const void*       x,
+                                           hipblasDatatype_t xType,
+                                           int               incx,
+                                           int               stridex,
+                                           const void*       y,
+                                           hipblasDatatype_t yType,
+                                           int               incy,
+                                           int               stridey,
+                                           int               batch_count,
+                                           void*             result,
+                                           hipblasDatatype_t resultType,
+                                           hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            int               stridex,
+                                            const void*       y,
+                                            hipblasDatatype_t yType,
+                                            int               incy,
+                                            int               stridey,
+                                            int               batch_count,
+                                            void*             result,
+                                            hipblasDatatype_t resultType,
+                                            hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// nrm2_ex
+hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
+                              int               n,
+                              const void*       x,
+                              hipblasDatatype_t xType,
+                              int               incx,
+                              void*             result,
+                              hipblasDatatype_t resultType,
+                              hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasNrm2Ex((cublasHandlt_t)handle,
+                                                   n,
+                                                   x,
+                                                   HIPDatatypeToCudaDatatype(xType),
+                                                   incx,
+                                                   result,
+                                                   HIPDatatypeToCudaDatatype(resultType),
+                                                   HIPDatatypeToCudaDatatype(executionType)));
+}
+
+hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
+                                     int               n,
+                                     const void*       x,
+                                     hipblasDatatype_t xType,
+                                     int               incx,
+                                     int               batch_count,
+                                     void*             result,
+                                     hipblasDatatype_t resultType,
+                                     hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            int               stridex,
+                                            int               batch_count,
+                                            void*             result,
+                                            hipblasDatatype_t resultType,
+                                            hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 // rot_ex
-extern "C" hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
-                                        int               n,
-                                        void*             x,
-                                        hipblasDatatype_t xType,
-                                        int               incx,
-                                        void*             y,
-                                        hipblasDatatype_t yType,
-                                        int               incy,
-                                        const void*       c,
-                                        const void*       s,
-                                        hipblasDatatype_t csType,
-                                        hipblasDatatype_t executionType)
+hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
+                             int               n,
+                             void*             x,
+                             hipblasDatatype_t xType,
+                             int               incx,
+                             void*             y,
+                             hipblasDatatype_t yType,
+                             int               incy,
+                             const void*       c,
+                             const void*       s,
+                             hipblasDatatype_t csType,
+                             hipblasDatatype_t executionType)
 {
-    return return hipCUBLASStatusToHIPStatus(cublasRotEx((cublasHandlt_t)handle,
-                                                         n,
-                                                         x,
-                                                         HIPDatatypeToCudaDatatype(xType),
-                                                         incx,
-                                                         y,
-                                                         HIPDatatypeToCudaDatatype(yType),
-                                                         incy,
-                                                         c,
-                                                         s,
-                                                         HIPDatatypeToCudaDatatype(csType),
-                                                         HIPDatatypeToCudaDatatype(executionType)));
+    return hipCUBLASStatusToHIPStatus(cublasRotEx((cublasHandlt_t)handle,
+                                                  n,
+                                                  x,
+                                                  HIPDatatypeToCudaDatatype(xType),
+                                                  incx,
+                                                  y,
+                                                  HIPDatatypeToCudaDatatype(yType),
+                                                  incy,
+                                                  c,
+                                                  s,
+                                                  HIPDatatypeToCudaDatatype(csType),
+                                                  HIPDatatypeToCudaDatatype(executionType)));
+}
+
+hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
+                                    int               n,
+                                    void*             x,
+                                    hipblasDatatype_t xType,
+                                    int               incx,
+                                    void*             y,
+                                    hipblasDatatype_t yType,
+                                    int               incy,
+                                    const void*       c,
+                                    const void*       s,
+                                    hipblasDatatype_t csType,
+                                    int               batch_count,
+                                    hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
+                                           int               n,
+                                           void*             x,
+                                           hipblasDatatype_t xType,
+                                           int               incx,
+                                           int               stridex,
+                                           void*             y,
+                                           hipblasDatatype_t yType,
+                                           int               incy,
+                                           int               stridey,
+                                           const void*       c,
+                                           const void*       s,
+                                           hipblasDatatype_t csType,
+                                           int               batch_count,
+                                           hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
 // scal_ex
-extern "C" hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
-                                         int               n,
-                                         const void*       alpha,
-                                         hipblasDatatype_t alphaType,
-                                         void*             x,
-                                         hipblasDatatype_t xType,
-                                         int               incx,
-                                         hipblasDatatype_t executionType)
+hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
+                              int               n,
+                              const void*       alpha,
+                              hipblasDatatype_t alphaType,
+                              void*             x,
+                              hipblasDatatype_t xType,
+                              int               incx,
+                              hipblasDatatype_t executionType)
 {
-    return return hipCUBLASStatusToHIPStatus(
-        cublasScalEx((cublasHandlt_t)handle,
-                     n,
-                     alpha,
-                     HIPDatatypeToCudaDatatype(alphaType),
-                     x,
-                     HIPDatatypeToCudaDatatype(xType),
-                     incx,
-                     HIPDatatypeToCudaDatatype(executionType)));
+    return hipCUBLASStatusToHIPStatus(cublasScalEx((cublasHandlt_t)handle,
+                                                   n,
+                                                   alpha,
+                                                   HIPDatatypeToCudaDatatype(alphaType),
+                                                   x,
+                                                   HIPDatatypeToCudaDatatype(xType),
+                                                   incx,
+                                                   HIPDatatypeToCudaDatatype(executionType)));
 }
+
+hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
+                                     int               n,
+                                     const void*       alpha,
+                                     hipblasDatatype_t alphaType,
+                                     void*             x,
+                                     hipblasDatatype_t xType,
+                                     int               incx,
+                                     int               batch_count,
+                                     hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       alpha,
+                                            hipblasDatatype_t alphaType,
+                                            void*             x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            int               stridex,
+                                            int               batch_count,
+                                            hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+#ifdef __cplusplus
+}
+#endif

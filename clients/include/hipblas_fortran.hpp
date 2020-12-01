@@ -6502,16 +6502,6 @@ hipblasStatus_t hipblasTrsmStridedBatchedExFortran(hipblasHandle_t    handle,
 //                                       hipblasDatatype_t  Ctype,
 //                                       int                ldc);
 
-// nrm2_ex
-hipblasStatus_t hipblasNrm2ExFortran(hipblasHandle_t   handle,
-                                     int               n,
-                                     const void*       x,
-                                     hipblasDatatype_t xType,
-                                     int               incx,
-                                     void*             result,
-                                     hipblasDatatype_t resultType,
-                                     hipblasDatatype_t executionType);
-
 // axpy_ex
 hipblasStatus_t hipblasAxpyExFortran(hipblasHandle_t   handle,
                                      int               n,
@@ -6524,6 +6514,34 @@ hipblasStatus_t hipblasAxpyExFortran(hipblasHandle_t   handle,
                                      hipblasDatatype_t yType,
                                      int               incy,
                                      hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasAxpyBatchedExFortran(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       alpha,
+                                            hipblasDatatype_t alphaType,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            void*             y,
+                                            hipblasDatatype_t yType,
+                                            int               incy,
+                                            int               batch_count,
+                                            hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasAxpyStridedBatchedExFortran(hipblasHandle_t   handle,
+                                                   int               n,
+                                                   const void*       alpha,
+                                                   hipblasDatatype_t alphaType,
+                                                   const void*       x,
+                                                   hipblasDatatype_t xType,
+                                                   int               incx,
+                                                   int               stridex,
+                                                   void*             y,
+                                                   hipblasDatatype_t yType,
+                                                   int               incy,
+                                                   int               stridey,
+                                                   int               batch_count,
+                                                   hipblasDatatype_t executionType);
 
 // dot_ex
 hipblasStatus_t hipblasDotExFortran(hipblasHandle_t   handle,
@@ -6550,6 +6568,93 @@ hipblasStatus_t hipblasDotcExFortran(hipblasHandle_t   handle,
                                      hipblasDatatype_t resultType,
                                      hipblasDatatype_t executionType);
 
+hipblasStatus_t hipblasDotBatchedExFortran(hipblasHandle_t   handle,
+                                           int               n,
+                                           const void*       x,
+                                           hipblasDatatype_t xType,
+                                           int               incx,
+                                           const void*       y,
+                                           hipblasDatatype_t yType,
+                                           int               incy,
+                                           int               batch_count,
+                                           void*             result,
+                                           hipblasDatatype_t resultType,
+                                           hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasDotcBatchedExFortran(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            const void*       y,
+                                            hipblasDatatype_t yType,
+                                            int               incy,
+                                            int               batch_count,
+                                            void*             result,
+                                            hipblasDatatype_t resultType,
+                                            hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasDotStridedBatchedExFortran(hipblasHandle_t   handle,
+                                                  int               n,
+                                                  const void*       x,
+                                                  hipblasDatatype_t xType,
+                                                  int               incx,
+                                                  int               stridex,
+                                                  const void*       y,
+                                                  hipblasDatatype_t yType,
+                                                  int               incy,
+                                                  int               stridey,
+                                                  int               batch_count,
+                                                  void*             result,
+                                                  hipblasDatatype_t resultType,
+                                                  hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasDotcStridedBatchedExFortran(hipblasHandle_t   handle,
+                                                   int               n,
+                                                   const void*       x,
+                                                   hipblasDatatype_t xType,
+                                                   int               incx,
+                                                   int               stridex,
+                                                   const void*       y,
+                                                   hipblasDatatype_t yType,
+                                                   int               incy,
+                                                   int               stridey,
+                                                   int               batch_count,
+                                                   void*             result,
+                                                   hipblasDatatype_t resultType,
+                                                   hipblasDatatype_t executionType);
+
+// nrm2_ex
+hipblasStatus_t hipblasNrm2ExFortran(hipblasHandle_t   handle,
+                                     int               n,
+                                     const void*       x,
+                                     hipblasDatatype_t xType,
+                                     int               incx,
+                                     void*             result,
+                                     hipblasDatatype_t resultType,
+                                     hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasNrm2BatchedExFortran(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            int               batch_count,
+                                            void*             result,
+                                            hipblasDatatype_t resultType,
+                                            hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasNrm2StridedBatchedExFortran(hipblasHandle_t   handle,
+                                                   int               n,
+                                                   const void*       x,
+                                                   hipblasDatatype_t xType,
+                                                   int               incx,
+                                                   int               stridex,
+                                                   int               batch_count,
+                                                   void*             result,
+                                                   hipblasDatatype_t resultType,
+                                                   hipblasDatatype_t executionType);
+
 // rot_ex
 hipblasStatus_t hipblasRotExFortran(hipblasHandle_t   handle,
                                     int               n,
@@ -6564,6 +6669,36 @@ hipblasStatus_t hipblasRotExFortran(hipblasHandle_t   handle,
                                     hipblasDatatype_t csType,
                                     hipblasDatatype_t executionType);
 
+hipblasStatus_t hipblasRotBatchedExFortran(hipblasHandle_t   handle,
+                                           int               n,
+                                           void*             x,
+                                           hipblasDatatype_t xType,
+                                           int               incx,
+                                           void*             y,
+                                           hipblasDatatype_t yType,
+                                           int               incy,
+                                           const void*       c,
+                                           const void*       s,
+                                           hipblasDatatype_t csType,
+                                           int               batch_count,
+                                           hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasRotStridedBatchedExFortran(hipblasHandle_t   handle,
+                                                  int               n,
+                                                  void*             x,
+                                                  hipblasDatatype_t xType,
+                                                  int               incx,
+                                                  int               stridex,
+                                                  void*             y,
+                                                  hipblasDatatype_t yType,
+                                                  int               incy,
+                                                  int               stridey,
+                                                  const void*       c,
+                                                  const void*       s,
+                                                  hipblasDatatype_t csType,
+                                                  int               batch_count,
+                                                  hipblasDatatype_t executionType);
+
 // scal_ex
 hipblasStatus_t hipblasScalExFortran(hipblasHandle_t   handle,
                                      int               n,
@@ -6573,6 +6708,27 @@ hipblasStatus_t hipblasScalExFortran(hipblasHandle_t   handle,
                                      hipblasDatatype_t xType,
                                      int               incx,
                                      hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasScalBatchedExFortran(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       alpha,
+                                            hipblasDatatype_t alphaType,
+                                            void*             x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            int               batch_count,
+                                            hipblasDatatype_t executionType);
+
+hipblasStatus_t hipblasScalStridedBatchedExFortran(hipblasHandle_t   handle,
+                                                   int               n,
+                                                   const void*       alpha,
+                                                   hipblasDatatype_t alphaType,
+                                                   void*             x,
+                                                   hipblasDatatype_t xType,
+                                                   int               incx,
+                                                   int               stridex,
+                                                   int               batch_count,
+                                                   hipblasDatatype_t executionType);
 
 /* ==========
  *    Solver

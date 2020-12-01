@@ -12015,25 +12015,6 @@ module hipblas
     !     end function hipblasCherkEx
     ! end interface
 
-    ! nrm2Ex
-    interface
-        function hipblasNrm2Ex(handle, n, x, xType, incx, result, resultType, executionType) &
-                result(c_int) &
-                bind(c, name = 'hipblasNrm2Ex')
-            use iso_c_binding
-            use hipblas_enums
-            implicit none
-            type(c_ptr), value :: handle
-            integer(c_int), value :: n
-            type(c_ptr), value :: x
-            integer(kind(HIPBLAS_R_16F)), value :: xType
-            integer(c_int), value :: incx
-            type(c_ptr), value :: result
-            integer(kind(HIPBLAS_R_16F)), value :: resultType
-            integer(kind(HIPBLAS_R_16F)), value :: executionType
-        end function hipblasNrm2Ex
-    end interface
-
     ! axpyEx
     interface
         function hipblasAxpyEx(handle, n, alpha, alphaType, x, xType, incx, y, yType, incy, executionType) &
@@ -12054,6 +12035,54 @@ module hipblas
             integer(c_int), value :: incy
             integer(kind(HIPBLAS_R_16F)), value :: executionType
         end function hipblasAxpyEx
+    end interface
+
+    interface
+        function hipblasAxpyBatchedEx(handle, n, alpha, alphaType, x, xType, incx, &
+                y, yType, incy, batch_count, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasAxpyBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            integer(c_int), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasAxpyBatchedEx
+    end interface
+
+    interface
+        function hipblasAxpyStridedBatchedEx(handle, n, alpha, alphaType, x, xType, incx, stridex, &
+                y, yType, incy, stridey, batch_count, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasAxpyStridedBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            integer(c_int64_t), value :: stridex
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            integer(c_int64_t), value :: stridey
+            integer(c_int), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasAxpyStridedBatchedEx
     end interface
 
     ! dotEx
@@ -12099,6 +12128,162 @@ module hipblas
         end function hipblasDotcEx
     end interface
 
+    interface
+        function hipblasDotBatchedEx(handle, n, x, xType, incx, &
+                y, yType, incy, batch_count, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasDotBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            integer(c_int), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotBatchedEx
+    end interface
+
+    interface
+        function hipblasDotcBatchedEx(handle, n, x, xType, incx, &
+                y, yType, incy, batch_count, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasDotcBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            integer(c_int), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotcBatchedEx
+    end interface
+
+    interface
+        function hipblasDotStridedBatchedEx(handle, n, x, xType, incx, stridex, &
+                y, yType, incy, stridey, batch_count, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasDotStridedBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            integer(c_int64_t), value :: stridex
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            integer(c_int64_t), value :: stridey
+            integer(c_int), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotStridedBatchedEx
+    end interface
+
+    interface
+        function hipblasDotcStridedBatchedEx(handle, n, x, xType, incx, stridex, &
+                y, yType, incy, stridey, batch_count, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasDotcStridedBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            integer(c_int64_t), value :: stridex
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            integer(c_int64_t), value :: stridey
+            integer(c_int), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotcStridedBatchedEx
+    end interface
+
+    ! nrm2Ex
+    interface
+        function hipblasNrm2Ex(handle, n, x, xType, incx, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasNrm2Ex')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasNrm2Ex
+    end interface
+
+    interface
+        function hipblasNrm2BatchedEx(handle, n, x, xType, incx, &
+                batch_count, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasNrm2BatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            integer(c_int), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasNrm2BatchedEx
+    end interface
+
+    interface
+        function hipblasNrm2StridedBatchedEx(handle, n, x, xType, incx, stridex, &
+                batch_count, result, resultType, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasNrm2StridedBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            integer(c_int64_t), value :: stridex
+            integer(c_int), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasNrm2StridedBatchedEx
+    end interface
+
     ! rotEx
     interface
         function hipblasRotEx(handle, n, x, xType, incx, y, yType, incy, c, s, csType, executionType) &
@@ -12122,6 +12307,56 @@ module hipblas
         end function hipblasRotEx
     end interface
 
+    interface
+        function hipblasRotBatchedEx(handle, n, x, xType, incx, &
+                y, yType, incy, c, s, csType, batch_count, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasRotBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            type(c_ptr), value :: c
+            type(c_ptr), value :: s
+            integer(kind(HIPBLAS_R_16F)), value :: csType
+            integer(c_int), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasRotBatchedEx
+    end interface
+
+    interface
+        function hipblasRotStridedBatchedEx(handle, n, x, xType, incx, stridex, &
+                y, yType, incy, stridey, c, s, csType, batch_count, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasRotStridedBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            integer(c_int64_t), value :: stridex
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int), value :: incy
+            integer(c_int64_t), value :: stridey
+            type(c_ptr), value :: c
+            type(c_ptr), value :: s
+            integer(kind(HIPBLAS_R_16F)), value :: csType
+            integer(c_int), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasRotStridedBatchedEx
+    end interface
+
     ! scalEx
     interface
         function hipblasScalEx(handle, n, alpha, alphaType, x, xType, incx, executionType) &
@@ -12139,6 +12374,47 @@ module hipblas
             integer(c_int), value :: incx
             integer(kind(HIPBLAS_R_16F)), value :: executionType
         end function hipblasScalEx
+    end interface
+
+    interface
+        function hipblasScalBatchedEx(handle, n, alpha, alphaType, x, xType, incx, &
+                batch_count, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasScalBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            integer(c_int), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasScalBatchedEx
+    end interface
+
+    interface
+        function hipblasScalStridedBatchedEx(handle, n, alpha, alphaType, x, xType, incx, stridex, &
+                batch_count, executionType) &
+                result(c_int) &
+                bind(c, name = 'hipblasScalStridedBatchedEx')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(c_int), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int), value :: incx
+            integer(c_int64_t), value :: stridex
+            integer(c_int), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasScalStridedBatchedEx
     end interface
 
     !--------!

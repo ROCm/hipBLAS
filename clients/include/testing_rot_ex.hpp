@@ -18,7 +18,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename E_TYPE, typename X_TYPE = E_TYPE, typename CS_TYPE = X_TYPE>
+template <typename Tex, typename Tx = Tex, typename Tcs = Tx>
 hipblasStatus_t testing_rot_ex_template(Arguments arg)
 {
     bool FORTRAN        = arg.fortran;
@@ -44,7 +44,7 @@ hipblasStatus_t testing_rot_ex_template(Arguments arg)
     hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
-    // const CS_TYPE rel_error = std::numeric_limits<CS_TYPE>::epsilon() * 1000;
+    // const Tcs rel_error = std::numeric_limits<Tcs>::epsilon() * 1000;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
@@ -52,50 +52,50 @@ hipblasStatus_t testing_rot_ex_template(Arguments arg)
     size_t size_x = N * size_t(incx);
     size_t size_y = N * size_t(incy);
 
-    device_vector<X_TYPE>  dx(size_x);
-    device_vector<X_TYPE>  dy(size_y);
-    device_vector<CS_TYPE> dc(1);
-    device_vector<CS_TYPE> ds(1);
+    device_vector<Tx>  dx(size_x);
+    device_vector<Tx>  dy(size_y);
+    device_vector<Tcs> dc(1);
+    device_vector<Tcs> ds(1);
 
     // Initial Data on CPU
-    host_vector<X_TYPE>  hx(size_x);
-    host_vector<X_TYPE>  hy(size_y);
-    host_vector<CS_TYPE> hc(1);
-    host_vector<CS_TYPE> hs(1);
+    host_vector<Tx>  hx(size_x);
+    host_vector<Tx>  hy(size_y);
+    host_vector<Tcs> hc(1);
+    host_vector<Tcs> hs(1);
     srand(1);
-    hipblas_init<X_TYPE>(hx, 1, N, incx);
-    hipblas_init<X_TYPE>(hy, 1, N, incy);
+    hipblas_init<Tx>(hx, 1, N, incx);
+    hipblas_init<Tx>(hy, 1, N, incy);
 
     // Random alpha (0 - 10)
     host_vector<int> alpha(1);
     hipblas_init<int>(alpha, 1, 1, 1);
 
-    hipblas_init<CS_TYPE>(hc, 1, 1, 1);
-    hipblas_init<CS_TYPE>(hs, 1, 1, 1);
+    hipblas_init<Tcs>(hc, 1, 1, 1);
+    hipblas_init<Tcs>(hs, 1, 1, 1);
     // // cos and sin of alpha (in rads)
     // hc[0] = cos(alpha[0]);
     // hs[0] = sin(alpha[0]);
 
     // CPU BLAS reference data
-    host_vector<X_TYPE> cx = hx;
-    host_vector<X_TYPE> cy = hy;
+    host_vector<Tx> cx = hx;
+    host_vector<Tx> cy = hy;
 
-    cblas_rot<X_TYPE, CS_TYPE, CS_TYPE>(N, cx.data(), incx, cy.data(), incy, *hc, *hs);
+    cblas_rot<Tx, Tcs, Tcs>(N, cx.data(), incx, cy.data(), incy, *hc, *hs);
 
     if(arg.unit_check)
     {
         // Test host
         {
             status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(X_TYPE) * size_x, hipMemcpyHostToDevice));
-            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(X_TYPE) * size_y, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * size_x, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(Tx) * size_y, hipMemcpyHostToDevice));
             status_2 = (hipblasRotExFn(
                 handle, N, dx, xType, incx, dy, yType, incy, hc, hs, csType, executionType));
 
-            host_vector<X_TYPE> rx(size_x);
-            host_vector<X_TYPE> ry(size_y);
-            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(X_TYPE) * size_x, hipMemcpyDeviceToHost));
-            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(X_TYPE) * size_y, hipMemcpyDeviceToHost));
+            host_vector<Tx> rx(size_x);
+            host_vector<Tx> ry(size_y);
+            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(Tx) * size_y, hipMemcpyDeviceToHost));
             if(arg.unit_check)
             {
                 unit_check_general(1, N, incx, cx.data(), rx.data());
@@ -106,16 +106,16 @@ hipblasStatus_t testing_rot_ex_template(Arguments arg)
         // Test device
         {
             status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(X_TYPE) * size_x, hipMemcpyHostToDevice));
-            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(X_TYPE) * size_y, hipMemcpyHostToDevice));
-            CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(CS_TYPE), hipMemcpyHostToDevice));
-            CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(CS_TYPE), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * size_x, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(Tx) * size_y, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(Tcs), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(Tcs), hipMemcpyHostToDevice));
             status_3 = (hipblasRotExFn(
                 handle, N, dx, xType, incx, dy, yType, incy, dc, ds, csType, executionType));
-            host_vector<X_TYPE> rx(size_x);
-            host_vector<X_TYPE> ry(size_y);
-            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(X_TYPE) * size_x, hipMemcpyDeviceToHost));
-            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(X_TYPE) * size_y, hipMemcpyDeviceToHost));
+            host_vector<Tx> rx(size_x);
+            host_vector<Tx> ry(size_y);
+            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(Tx) * size_y, hipMemcpyDeviceToHost));
             if(arg.unit_check)
             {
                 unit_check_general(1, N, incx, cx.data(), rx.data());
