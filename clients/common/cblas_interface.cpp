@@ -393,7 +393,8 @@ template <>
 void cblas_dotc<hipblasHalf>(
     int n, const hipblasHalf* x, int incx, const hipblasHalf* y, int incy, hipblasHalf* result)
 {
-    return; // Do nothing
+    // Not complex - call regular dot.
+    cblas_dot(n, x, incx, y, incy, result);
 }
 
 template <>
@@ -404,19 +405,22 @@ void cblas_dotc<hipblasBfloat16>(int                    n,
                                  int                    incy,
                                  hipblasBfloat16*       result)
 {
-    return; // do nothing
+    // Not complex - call regular dot.
+    cblas_dot(n, x, incx, y, incy, result);
 }
 
 template <>
 void cblas_dotc<float>(int n, const float* x, int incx, const float* y, int incy, float* result)
 {
-    return; // Do nothing
+    // Not complex - call regular dot.
+    cblas_dot(n, x, incx, y, incy, result);
 }
 
 template <>
 void cblas_dotc<double>(int n, const double* x, int incx, const double* y, int incy, double* result)
 {
-    return; // Do nothing
+    // Not complex - call regular dot.
+    cblas_dot(n, x, incx, y, incy, result);
 }
 
 template <>

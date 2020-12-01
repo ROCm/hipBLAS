@@ -153,11 +153,7 @@ TEST_P(blas1_ex_gtest, axpy_ex_float)
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(!arg.incx || !arg.incy)
+        if(arg.N < 0 || !arg.incx || !arg.incy)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -175,11 +171,7 @@ TEST_P(blas1_ex_gtest, axpy_batched_ex_float)
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0 || arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(!arg.incx || !arg.incy || !arg.batch_count)
+        if(arg.N < 0 || !arg.incx || !arg.incy || arg.batch_count <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -197,11 +189,7 @@ TEST_P(blas1_ex_gtest, axpy_strided_batched_ex_float)
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0 || arg.batch_count < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(!arg.incx || !arg.incy || !arg.batch_count)
+        if(arg.N < 0 || !arg.incx || !arg.incy || arg.batch_count <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -332,6 +320,73 @@ TEST_P(blas1_ex_gtest, dot_strided_batched_ex_float)
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_ex_arguments(GetParam());
     hipblasStatus_t status = testing_dot_strided_batched_ex(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.incx < 0 || arg.incy < 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+// dotc tests
+TEST_P(blas1_ex_gtest, dotc_ex_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_ex_arguments(GetParam());
+    hipblasStatus_t status = testing_dotc_ex(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.incx < 0 || arg.incy < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_ex_gtest, dotc_batched_ex_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_ex_arguments(GetParam());
+    hipblasStatus_t status = testing_dotc_batched_ex(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.incx < 0 || arg.incy < 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+        }
+    }
+}
+
+TEST_P(blas1_ex_gtest, dotc_strided_batched_ex_float)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_ex_arguments(GetParam());
+    hipblasStatus_t status = testing_dotc_strided_batched_ex(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
