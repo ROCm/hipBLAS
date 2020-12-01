@@ -10474,7 +10474,7 @@ hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
                               int               incy,
                               hipblasDatatype_t executionType)
 {
-    return hipCUBLASStatusToHIPStatus(cublasAxpyEx((cublasHandlt_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasAxpyEx((cublasHandle_t)handle,
                                                    n,
                                                    alpha,
                                                    HIPDatatypeToCudaDatatype(alphaType),
@@ -10534,7 +10534,7 @@ hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
                              hipblasDatatype_t resultType,
                              hipblasDatatype_t executionType)
 {
-    return hipCUBLASStatusToHIPStatus(cublasDotEx((cublasHandlt_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasDotEx((cublasHandle_t)handle,
                                                   n,
                                                   x,
                                                   HIPDatatypeToCudaDatatype(xType),
@@ -10559,7 +10559,7 @@ hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
                               hipblasDatatype_t resultType,
                               hipblasDatatype_t executionType)
 {
-    return hipCUBLASStatusToHIPStatus(cublasDotcEx((cublasHandlt_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasDotcEx((cublasHandle_t)handle,
                                                    n,
                                                    x,
                                                    HIPDatatypeToCudaDatatype(xType),
@@ -10650,7 +10650,7 @@ hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
                               hipblasDatatype_t resultType,
                               hipblasDatatype_t executionType)
 {
-    return hipCUBLASStatusToHIPStatus(cublasNrm2Ex((cublasHandlt_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasNrm2Ex((cublasHandle_t)handle,
                                                    n,
                                                    x,
                                                    HIPDatatypeToCudaDatatype(xType),
@@ -10701,7 +10701,7 @@ hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
                              hipblasDatatype_t csType,
                              hipblasDatatype_t executionType)
 {
-    return hipCUBLASStatusToHIPStatus(cublasRotEx((cublasHandlt_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasRotEx((cublasHandle_t)handle,
                                                   n,
                                                   x,
                                                   HIPDatatypeToCudaDatatype(xType),
@@ -10761,7 +10761,7 @@ hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
                               int               incx,
                               hipblasDatatype_t executionType)
 {
-    return hipCUBLASStatusToHIPStatus(cublasScalEx((cublasHandlt_t)handle,
+    return hipCUBLASStatusToHIPStatus(cublasScalEx((cublasHandle_t)handle,
                                                    n,
                                                    alpha,
                                                    HIPDatatypeToCudaDatatype(alphaType),
