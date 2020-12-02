@@ -136,7 +136,7 @@ TEST_P(axpy_ex_gtest, axpy_ex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // some CUDA configs
         }
     }
 }
