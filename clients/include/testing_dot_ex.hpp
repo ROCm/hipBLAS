@@ -77,7 +77,6 @@ hipblasStatus_t testing_dot_ex_template(Arguments argus)
     // hipblasDot accept both dev/host pointer for the scalar
     if(device_pointer)
     {
-
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
         status_2 = (hipblasDotExFn)(handle,
@@ -94,7 +93,6 @@ hipblasStatus_t testing_dot_ex_template(Arguments argus)
     }
     else
     {
-
         status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
 
         status_2 = (hipblasDotExFn)(handle,

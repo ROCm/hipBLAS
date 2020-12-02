@@ -190,6 +190,9 @@ rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
 {
     switch(type)
     {
+    case HIPBLAS_R_16B:
+        return rocblas_datatype_bf16_r;
+
     case HIPBLAS_R_16F:
         return rocblas_datatype_f16_r;
 
