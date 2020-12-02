@@ -20,6 +20,9 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
+find_package( GTest REQUIRED )
+include_directories(${GTEST_INCLUDE_DIRS})
+
 set( hipblas_benchmark_common
       ../common/utility.cpp
       ../common/cblas_interface.cpp
