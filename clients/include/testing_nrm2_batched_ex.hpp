@@ -7,11 +7,7 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "cblas_interface.h"
-#include "hipblas.hpp"
-#include "norm.h"
-#include "unit.h"
-#include "utility.h"
+#include "testing_common.hpp"
 
 using namespace std;
 
@@ -132,7 +128,7 @@ hipblasStatus_t testing_nrm2_batched_ex_template(Arguments argus)
 
         if(argus.unit_check)
         {
-            Tr tolerance = nrm2_batched_ex_tolerance_multiplier<Tr>;
+            Tr tolerance = Tr(nrm2_batched_ex_tolerance_multiplier<Tr>);
             for(int b = 0; b < batch_count; b++)
             {
                 unit_check_nrm2<Tr>(h_cpu_result[b], h_rocblas_result1[b], tolerance);

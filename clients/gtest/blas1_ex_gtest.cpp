@@ -532,7 +532,6 @@ TEST_P(blas1_ex_gtest, rot_strided_batched_ex_float)
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
-// The combinations are  { N, {alpha, beta}, {incx, incy} }
 INSTANTIATE_TEST_CASE_P(hipblasBlas1Ex,
                         blas1_ex_gtest,
                         Combine(ValuesIn(N_range),

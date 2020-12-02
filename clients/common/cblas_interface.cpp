@@ -458,9 +458,9 @@ void cblas_nrm2<hipblasHalf, hipblasHalf>(int                n,
     std::vector<float> x_float(n * incx);
 
     for(size_t i = 0; i < n; i++)
-        x_float[i * incx] = x[i * incx];
+        x_float[i * incx] = half_to_float(x[i * incx]);
 
-    *result = hipblasHalf(cblas_snrm2(n, x_float.data(), incx));
+    *result = float_to_half(cblas_snrm2(n, x_float.data(), incx));
 }
 
 template <>
@@ -545,19 +545,19 @@ void cblas_rot<hipblasHalf>(
 
     for(size_t i = 0; i < n; i++)
     {
-        x_float[i * abs_incx] = x[i * abs_incx];
-        y_float[i * abs_incy] = y[i * abs_incy];
+        x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
     }
 
-    const float c_float = float(c);
-    const float s_float = float(s);
+    const float c_float = half_to_float(c);
+    const float s_float = half_to_float(s);
 
     cblas_srot(n, x_float.data(), incx, y_float.data(), incy, c_float, s_float);
 
     for(size_t i = 0; i < n; i++)
     {
-        x[i * abs_incx] = x_float[i * abs_incx];
-        y[i * abs_incy] = y_float[i * abs_incy];
+        x[i * abs_incx] = float_to_half(x_float[i * abs_incx]);
+        y[i * abs_incy] = float_to_half(y_float[i * abs_incy]);
     }
 }
 

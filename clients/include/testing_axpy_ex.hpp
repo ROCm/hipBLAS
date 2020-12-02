@@ -13,7 +13,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
+template <typename Ta, typename Tx = Ta, typename Ty = Tx>
 hipblasStatus_t testing_axpy_ex_template(Arguments argus)
 {
     bool            FORTRAN         = argus.fortran;
@@ -49,9 +49,6 @@ hipblasStatus_t testing_axpy_ex_template(Arguments argus)
     host_vector<Tx> hx_cpu(sizeX);
     host_vector<Ty> hy_cpu(sizeY);
 
-    host_vector<Tex> hx_ex(sizeX);
-    host_vector<Tex> hy_gold_ex(sizeY);
-
     device_vector<Tx> dx(sizeX);
     device_vector<Ty> dy(sizeX);
 
@@ -69,13 +66,6 @@ hipblasStatus_t testing_axpy_ex_template(Arguments argus)
     // copy vector is easy in STL; hx_cpu = hx: save a copy in hx_cpu which will be output of CPU BLAS
     hx_cpu = hx;
     hy_cpu = hy;
-
-    for(size_t i = 0; i < sizeY; i++)
-        hy_gold_ex[i] = (Tex)hy_cpu[i];
-    for(size_t i = 0; i < sizeX; i++)
-        hx_ex[i] = (Tex)hx[i];
-
-    Tex h_alpha_ex = (Tex)alpha;
 
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
@@ -100,10 +90,7 @@ hipblasStatus_t testing_axpy_ex_template(Arguments argus)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_axpy<Tex>(N, h_alpha_ex, hx_ex.data(), incx, hy_gold_ex.data(), incy);
-
-        for(size_t i = 0; i < sizeY; i++)
-            hy_cpu[i] = (Ty)hy_gold_ex[i];
+        cblas_axpy<Tx>(N, alpha, hx_cpu.data(), incx, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
@@ -136,7 +123,8 @@ hipblasStatus_t testing_axpy_ex(Arguments argus)
     else if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F
             && executionType == HIPBLAS_R_32F)
     {
-        status = testing_axpy_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float>(argus);
+        // Not testing accumulation here
+        status = testing_axpy_ex_template<hipblasHalf>(argus);
     }
     else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)
@@ -153,7 +141,7 @@ hipblasStatus_t testing_axpy_ex(Arguments argus)
     {
         status = testing_axpy_ex_template<hipblasComplex>(argus);
     }
-    else if(alphaType == HIPBLAS_C_32F && xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F
+    else if(alphaType == HIPBLAS_C_64F && xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F
             && executionType == HIPBLAS_C_64F)
     {
         status = testing_axpy_ex_template<hipblasDoubleComplex>(argus);

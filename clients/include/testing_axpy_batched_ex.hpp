@@ -13,7 +13,7 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
+template <typename Ta, typename Tx = Ta, typename Ty = Tx>
 hipblasStatus_t testing_axpy_batched_ex_template(Arguments argus)
 {
     bool FORTRAN                = argus.fortran;
@@ -49,12 +49,10 @@ hipblasStatus_t testing_axpy_batched_ex_template(Arguments argus)
     Ta  alpha = argus.alpha;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<Tx>  hx_array[batch_count];
-    host_vector<Ty>  hy_array[batch_count];
-    host_vector<Tx>  hx_cpu_array[batch_count];
-    host_vector<Ty>  hy_cpu_array[batch_count];
-    host_vector<Tex> hx_ex_array[batch_count];
-    host_vector<Tex> hy_gold_ex_array[batch_count];
+    host_vector<Tx> hx_array[batch_count];
+    host_vector<Ty> hy_array[batch_count];
+    host_vector<Tx> hx_cpu_array[batch_count];
+    host_vector<Ty> hy_cpu_array[batch_count];
 
     device_batch_vector<Tx> bx_array(batch_count, sizeX);
     device_batch_vector<Ty> by_array(batch_count, sizeY);
@@ -78,12 +76,10 @@ hipblasStatus_t testing_axpy_batched_ex_template(Arguments argus)
     srand(1);
     for(int b = 0; b < batch_count; b++)
     {
-        hx_array[b]         = host_vector<Tx>(sizeX);
-        hy_array[b]         = host_vector<Ty>(sizeY);
-        hx_cpu_array[b]     = host_vector<Tx>(sizeX);
-        hy_cpu_array[b]     = host_vector<Ty>(sizeY);
-        hx_ex_array[b]      = host_vector<Tex>(sizeX);
-        hy_gold_ex_array[b] = host_vector<Tex>(sizeY);
+        hx_array[b]     = host_vector<Tx>(sizeX);
+        hy_array[b]     = host_vector<Ty>(sizeY);
+        hx_cpu_array[b] = host_vector<Tx>(sizeX);
+        hy_cpu_array[b] = host_vector<Ty>(sizeY);
 
         srand(1);
         hipblas_init(hx_array[b], 1, N, abs_incx);
@@ -91,11 +87,6 @@ hipblasStatus_t testing_axpy_batched_ex_template(Arguments argus)
 
         hx_cpu_array[b] = hx_array[b];
         hy_cpu_array[b] = hy_array[b];
-
-        for(size_t i = 0; i < sizeY; i++)
-            hy_gold_ex_array[b][i] = (Tex)hy_cpu_array[b][i];
-        for(size_t i = 0; i < sizeX; i++)
-            hx_ex_array[b][i] = (Tex)hx_array[b][i];
 
         CHECK_HIP_ERROR(
             hipMemcpy(bx_array[b], hx_array[b], sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
@@ -106,8 +97,6 @@ hipblasStatus_t testing_axpy_batched_ex_template(Arguments argus)
         hipMemcpy(dx_array, bx_array, sizeof(Tx*) * batch_count, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(
         hipMemcpy(dy_array, by_array, sizeof(Ty*) * batch_count, hipMemcpyHostToDevice));
-
-    Tex h_alpha_ex = (Tex)alpha;
 
     /* =====================================================================
          ROCBLAS
@@ -146,9 +135,7 @@ hipblasStatus_t testing_axpy_batched_ex_template(Arguments argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_axpy<Tex>(N, h_alpha_ex, hx_ex_array[b], incx, hy_gold_ex_array[b], incy);
-            for(size_t i = 0; i < sizeY; i++)
-                hy_cpu_array[b][i] = (Ty)hy_gold_ex_array[b][i];
+            cblas_axpy<Tx>(N, alpha, hx_cpu_array[b], incx, hy_cpu_array[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -182,8 +169,8 @@ hipblasStatus_t testing_axpy_batched_ex(Arguments argus)
     else if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F
             && executionType == HIPBLAS_R_32F)
     {
-        status
-            = testing_axpy_batched_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float>(argus);
+        // Not testing accumulation here
+        status = testing_axpy_batched_ex_template<hipblasHalf>(argus);
     }
     else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)
@@ -200,7 +187,7 @@ hipblasStatus_t testing_axpy_batched_ex(Arguments argus)
     {
         status = testing_axpy_batched_ex_template<hipblasComplex>(argus);
     }
-    else if(alphaType == HIPBLAS_C_32F && xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F
+    else if(alphaType == HIPBLAS_C_64F && xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F
             && executionType == HIPBLAS_C_64F)
     {
         status = testing_axpy_batched_ex_template<hipblasDoubleComplex>(argus);
