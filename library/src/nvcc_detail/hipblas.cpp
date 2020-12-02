@@ -160,6 +160,9 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
 {
     switch(type)
     {
+    case HIPBLAS_R_16B:
+        return CUDA_R_16BF;
+
     case HIPBLAS_R_16F:
         return CUDA_R_16F;
 

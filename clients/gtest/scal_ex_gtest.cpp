@@ -62,14 +62,23 @@ const double stride_scale_range[] = {1.0, 2.5};
 
 const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
-const vector<vector<hipblasDatatype_t>> precisions{{HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
-                                                   {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
-                                                   {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
-                                                   {HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
-                                                   {HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
-                                                   {HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F},
-                                                   {HIPBLAS_R_32F, HIPBLAS_C_32F, HIPBLAS_C_32F}};
-// {HIPBLAS_R_64F, HIPBLAS_C_64F, HIPBLAS_C_64F}};
+// Supported rocBLAS configs
+const vector<vector<hipblasDatatype_t>> precisions{
+    // Not supported in cuBLAS
+    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
+    {HIPBLAS_R_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
+    {HIPBLAS_R_64F, HIPBLAS_C_64F, HIPBLAS_C_64F}
+
+    // cuBLAS docs ambiguous, cuBLAS returns not supported
+    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
+
+    // Supported in both rocBLAS and cuBLAS
+    {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
+    {HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
+    {HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
+    {HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F},
+
+};
 
 const bool is_fortran[] = {false, true};
 
