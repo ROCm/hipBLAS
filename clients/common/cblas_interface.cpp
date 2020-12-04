@@ -206,6 +206,23 @@ void cblas_axpy<hipblasDoubleComplex>(int                         n,
 
 // scal
 template <>
+void cblas_scal<hipblasHalf>(int n, const hipblasHalf alpha, hipblasHalf* x, int incx)
+{
+    if(n <= 0 || incx <= 0)
+        return;
+
+    std::vector<float> x_float(n * incx);
+
+    for(size_t i = 0; i < n; i++)
+        x_float[i * incx] = half_to_float(x[i * incx]);
+
+    cblas_sscal(n, half_to_float(alpha), x_float.data(), incx);
+
+    for(size_t i = 0; i < n; i++)
+        x[i * incx] = float_to_half(x_float[i * incx]);
+}
+
+template <>
 void cblas_scal<float>(int n, const float alpha, float* x, int incx)
 {
     cblas_sscal(n, alpha, x, incx);
@@ -373,6 +390,40 @@ void cblas_dot<hipblasDoubleComplex>(int                         n,
 }
 
 template <>
+void cblas_dotc<hipblasHalf>(
+    int n, const hipblasHalf* x, int incx, const hipblasHalf* y, int incy, hipblasHalf* result)
+{
+    // Not complex - call regular dot.
+    cblas_dot(n, x, incx, y, incy, result);
+}
+
+template <>
+void cblas_dotc<hipblasBfloat16>(int                    n,
+                                 const hipblasBfloat16* x,
+                                 int                    incx,
+                                 const hipblasBfloat16* y,
+                                 int                    incy,
+                                 hipblasBfloat16*       result)
+{
+    // Not complex - call regular dot.
+    cblas_dot(n, x, incx, y, incy, result);
+}
+
+template <>
+void cblas_dotc<float>(int n, const float* x, int incx, const float* y, int incy, float* result)
+{
+    // Not complex - call regular dot.
+    cblas_dot(n, x, incx, y, incy, result);
+}
+
+template <>
+void cblas_dotc<double>(int n, const double* x, int incx, const double* y, int incy, double* result)
+{
+    // Not complex - call regular dot.
+    cblas_dot(n, x, incx, y, incy, result);
+}
+
+template <>
 void cblas_dotc<hipblasComplex>(int                   n,
                                 const hipblasComplex* x,
                                 int                   incx,
@@ -395,6 +446,23 @@ void cblas_dotc<hipblasDoubleComplex>(int                         n,
 }
 
 // nrm2
+template <>
+void cblas_nrm2<hipblasHalf, hipblasHalf>(int                n,
+                                          const hipblasHalf* x,
+                                          int                incx,
+                                          hipblasHalf*       result)
+{
+    if(n <= 0 || incx <= 0)
+        return;
+
+    std::vector<float> x_float(n * incx);
+
+    for(size_t i = 0; i < n; i++)
+        x_float[i * incx] = half_to_float(x[i * incx]);
+
+    *result = float_to_half(cblas_snrm2(n, x_float.data(), incx));
+}
+
 template <>
 void cblas_nrm2<float, float>(int n, const float* x, int incx, float* result)
 {
@@ -441,11 +509,96 @@ void csrot_(const int*      n,
             const int*      incy,
             const float*    c,
             const float*    s);
+void zrot_(const int*                  n,
+           hipblasDoubleComplex*       cx,
+           const int*                  incx,
+           hipblasDoubleComplex*       cy,
+           const int*                  incy,
+           const double*               c,
+           const hipblasDoubleComplex* s);
+void zdrot_(const int*            n,
+            hipblasDoubleComplex* cx,
+            const int*            incx,
+            hipblasDoubleComplex* cy,
+            const int*            incy,
+            const double*         c,
+            const double*         s);
 
 void crotg_(hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s);
 }
 
 // rot
+template <>
+void cblas_rot<hipblasHalf>(
+    int n, hipblasHalf* x, int incx, hipblasHalf* y, int incy, hipblasHalf c, hipblasHalf s)
+{
+    size_t abs_incx = incx >= 0 ? incx : -incx;
+    size_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t size_x   = n * abs_incx;
+    size_t size_y   = n * abs_incy;
+    if(!size_x)
+        size_x = 1;
+    if(!size_y)
+        size_y = 1;
+    std::vector<float> x_float(size_x);
+    std::vector<float> y_float(size_y);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
+    }
+
+    const float c_float = half_to_float(c);
+    const float s_float = half_to_float(s);
+
+    cblas_srot(n, x_float.data(), incx, y_float.data(), incy, c_float, s_float);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x[i * abs_incx] = float_to_half(x_float[i * abs_incx]);
+        y[i * abs_incy] = float_to_half(y_float[i * abs_incy]);
+    }
+}
+
+template <>
+void cblas_rot<hipblasBfloat16>(int              n,
+                                hipblasBfloat16* x,
+                                int              incx,
+                                hipblasBfloat16* y,
+                                int              incy,
+                                hipblasBfloat16  c,
+                                hipblasBfloat16  s)
+{
+    size_t abs_incx = incx >= 0 ? incx : -incx;
+    size_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t size_x   = n * abs_incx;
+    size_t size_y   = n * abs_incy;
+    if(!size_x)
+        size_x = 1;
+    if(!size_y)
+        size_y = 1;
+    std::vector<float> x_float(size_x);
+    std::vector<float> y_float(size_y);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = bfloat16_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = bfloat16_to_float(y[i * abs_incy]);
+    }
+
+    const float c_float = bfloat16_to_float(c);
+    const float s_float = bfloat16_to_float(s);
+
+    cblas_srot(n, x_float.data(), incx, y_float.data(), incy, c_float, s_float);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x[i * abs_incx] = float_to_bfloat16(x_float[i * abs_incx]);
+        y[i * abs_incy] = float_to_bfloat16(y_float[i * abs_incy]);
+    }
+}
+
 template <>
 void cblas_rot<float>(int n, float* x, int incx, float* y, int incy, float c, float s)
 {
@@ -456,6 +609,19 @@ template <>
 void cblas_rot<double>(int n, double* x, int incx, double* y, int incy, double c, double s)
 {
     cblas_drot(n, x, incx, y, incy, c, s);
+}
+
+template <>
+void cblas_rot<hipblasComplex>(int             n,
+                               hipblasComplex* x,
+                               int             incx,
+                               hipblasComplex* y,
+                               int             incy,
+                               hipblasComplex  c,
+                               hipblasComplex  s)
+{
+    float c_real = std::real(c);
+    crot_(&n, x, &incx, y, &incx, &c_real, &s);
 }
 
 template <>
@@ -470,6 +636,38 @@ void cblas_rot<hipblasComplex, float, float>(
     int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy, float c, float s)
 {
     csrot_(&n, x, &incx, y, &incx, &c, &s);
+}
+
+template <>
+void cblas_rot<hipblasDoubleComplex>(int                   n,
+                                     hipblasDoubleComplex* x,
+                                     int                   incx,
+                                     hipblasDoubleComplex* y,
+                                     int                   incy,
+                                     hipblasDoubleComplex  c,
+                                     hipblasDoubleComplex  s)
+{
+    double c_real = std::real(c);
+    zrot_(&n, x, &incx, y, &incx, &c_real, &s);
+}
+
+template <>
+void cblas_rot<hipblasDoubleComplex, double>(int                   n,
+                                             hipblasDoubleComplex* x,
+                                             int                   incx,
+                                             hipblasDoubleComplex* y,
+                                             int                   incy,
+                                             double                c,
+                                             hipblasDoubleComplex  s)
+{
+    zrot_(&n, x, &incx, y, &incx, &c, &s);
+}
+
+template <>
+void cblas_rot<hipblasDoubleComplex, double, double>(
+    int n, hipblasDoubleComplex* x, int incx, hipblasDoubleComplex* y, int incy, double c, double s)
+{
+    zdrot_(&n, x, &incx, y, &incx, &c, &s);
 }
 
 // rotg
