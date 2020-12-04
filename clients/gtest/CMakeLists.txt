@@ -44,6 +44,11 @@ set(hipblas_test_source
   set_get_matrix_gtest.cpp
   set_get_atomics_mode_gtest.cpp
   blas1_gtest.cpp
+  axpy_ex_gtest.cpp
+  dot_ex_gtest.cpp
+  nrm2_ex_gtest.cpp
+  rot_ex_gtest.cpp
+  scal_ex_gtest.cpp
   gbmv_gtest.cpp
   gbmv_batched_gtest.cpp
   gbmv_strided_batched_gtest.cpp

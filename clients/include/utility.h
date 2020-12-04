@@ -240,6 +240,12 @@ public:
     {
         return {double(*this), double(*this)};
     }
+
+    // Random complex integers
+    explicit operator hipblasInt8Complex()
+    {
+        return {int8_t(*this), int8_t(*this)};
+    }
 };
 
 /* ============================================================================================ */
