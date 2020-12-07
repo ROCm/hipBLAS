@@ -16,13 +16,13 @@ using namespace std;
 template <typename T1, typename T2>
 hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
 {
-    int           N            = argus.N;
-    int           incx         = argus.incx;
-    hipblasStride stride_scale = argus.stride_scale;
-    int           batch_count  = argus.batch_count;
+    int    N            = argus.N;
+    int    incx         = argus.incx;
+    double stride_scale = argus.stride_scale;
+    int    batch_count  = argus.batch_count;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    int           sizeX   = stridex * batch_count;
+    double stridex = N * incx * stride_scale;
+    int    sizeX   = stridex * batch_count;
 
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
