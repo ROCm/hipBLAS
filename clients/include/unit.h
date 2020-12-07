@@ -35,7 +35,8 @@ template <typename T>
 void unit_check_general(int M, int N, int lda, T* hCPU, T* hGPU);
 
 template <typename T>
-void unit_check_general(int M, int N, int batch_count, int lda, int stride_A, T* hCPU, T* hGPU);
+void unit_check_general(
+    int M, int N, int batch_count, int lda, hipblasStride stride_A, T* hCPU, T* hGPU);
 
 template <typename T>
 void unit_check_general(int M, int N, int batch_count, int lda, T** hCPU, T** hGPU);

@@ -34,8 +34,8 @@ hipblasStatus_t testing_nrm2_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    int stridex = N * incx * stride_scale;
-    int sizeX   = stridex * batch_count;
+    hipblasStride stridex = N * incx * stride_scale;
+    int           sizeX   = stridex * batch_count;
 
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;

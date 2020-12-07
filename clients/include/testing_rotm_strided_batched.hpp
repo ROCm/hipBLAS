@@ -22,13 +22,13 @@ hipblasStatus_t testing_rotm_strided_batched(const Arguments& arg)
 
     double stride_scale = arg.stride_scale;
 
-    int N            = arg.N;
-    int incx         = arg.incx;
-    int incy         = arg.incy;
-    int stride_x     = N * incx * stride_scale;
-    int stride_y     = N * incy * stride_scale;
-    int stride_param = 5 * stride_scale;
-    int batch_count  = arg.batch_count;
+    int           N            = arg.N;
+    int           incx         = arg.incx;
+    int           incy         = arg.incy;
+    hipblasStride stride_x     = N * incx * stride_scale;
+    hipblasStride stride_y     = N * incy * stride_scale;
+    hipblasStride stride_param = 5 * stride_scale;
+    int           batch_count  = arg.batch_count;
 
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;

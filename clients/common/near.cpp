@@ -103,34 +103,40 @@ void near_check_general(
 }
 
 template <>
-void near_check_general(
-    int M, int N, int batch_count, int lda, int strideA, float* hCPU, float* hGPU, double abs_error)
+void near_check_general(int           M,
+                        int           N,
+                        int           batch_count,
+                        int           lda,
+                        hipblasStride strideA,
+                        float*        hCPU,
+                        float*        hGPU,
+                        double        abs_error)
 {
     NEAR_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, abs_error, ASSERT_NEAR);
 }
 
 template <>
-void near_check_general(int     M,
-                        int     N,
-                        int     batch_count,
-                        int     lda,
-                        int     strideA,
-                        double* hCPU,
-                        double* hGPU,
-                        double  abs_error)
+void near_check_general(int           M,
+                        int           N,
+                        int           batch_count,
+                        int           lda,
+                        hipblasStride strideA,
+                        double*       hCPU,
+                        double*       hGPU,
+                        double        abs_error)
 {
     NEAR_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, abs_error, ASSERT_NEAR);
 }
 
 template <>
-void near_check_general(int          M,
-                        int          N,
-                        int          batch_count,
-                        int          lda,
-                        int          strideA,
-                        hipblasHalf* hCPU,
-                        hipblasHalf* hGPU,
-                        double       abs_error)
+void near_check_general(int           M,
+                        int           N,
+                        int           batch_count,
+                        int           lda,
+                        hipblasStride strideA,
+                        hipblasHalf*  hCPU,
+                        hipblasHalf*  hGPU,
+                        double        abs_error)
 {
     NEAR_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, abs_error, NEAR_ASSERT_HALF);
 }
@@ -140,7 +146,7 @@ void near_check_general(int             M,
                         int             N,
                         int             batch_count,
                         int             lda,
-                        int             strideA,
+                        hipblasStride   strideA,
                         hipblasComplex* hCPU,
                         hipblasComplex* hGPU,
                         double          abs_error)
@@ -154,7 +160,7 @@ void near_check_general(int                   M,
                         int                   N,
                         int                   batch_count,
                         int                   lda,
-                        int                   strideA,
+                        hipblasStride         strideA,
                         hipblasDoubleComplex* hCPU,
                         hipblasDoubleComplex* hGPU,
                         double                abs_error)

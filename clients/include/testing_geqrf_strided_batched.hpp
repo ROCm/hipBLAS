@@ -25,10 +25,10 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
     int    batch_count  = argus.batch_count;
     double stride_scale = argus.stride_scale;
 
-    int strideA   = lda * N * stride_scale;
-    int strideP   = min(M, N) * stride_scale;
-    int A_size    = strideA * batch_count;
-    int Ipiv_size = strideP * batch_count;
+    hipblasStride strideA   = lda * N * stride_scale;
+    hipblasStride strideP   = min(M, N) * stride_scale;
+    int           A_size    = strideA * batch_count;
+    int           Ipiv_size = strideP * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

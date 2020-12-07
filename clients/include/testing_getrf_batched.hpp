@@ -24,9 +24,9 @@ hipblasStatus_t testing_getrf_batched(const Arguments& argus)
     int lda         = argus.lda;
     int batch_count = argus.batch_count;
 
-    int strideP   = min(M, N);
-    int A_size    = lda * N;
-    int Ipiv_size = strideP * batch_count;
+    hipblasStride strideP   = min(M, N);
+    int           A_size    = lda * N;
+    int           Ipiv_size = strideP * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

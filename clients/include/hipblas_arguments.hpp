@@ -50,13 +50,13 @@ struct Arguments
     int incd = 1;
     int incb = 1;
 
-    double stride_scale = 1.0;
-    int    stride_a; //  stride_a > transA == 'N' ? lda * K : lda * M
-    int    stride_b; //  stride_b > transB == 'N' ? ldb * N : ldb * K
-    int    stride_c; //  stride_c > ldc * N
-    int    stride_d; //  stride_d > ldd * N
-    int    stride_x;
-    int    stride_y;
+    double        stride_scale = 1.0;
+    hipblasStride stride_a; //  stride_a > transA == 'N' ? lda * K : lda * M
+    hipblasStride stride_b; //  stride_b > transB == 'N' ? ldb * N : ldb * K
+    hipblasStride stride_c; //  stride_c > ldc * N
+    hipblasStride stride_d; //  stride_d > ldd * N
+    hipblasStride stride_x;
+    hipblasStride stride_y;
 
     int start = 1024;
     int end   = 10240;

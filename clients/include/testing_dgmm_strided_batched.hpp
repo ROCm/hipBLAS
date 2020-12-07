@@ -23,18 +23,18 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
 
     hipblasSideMode_t side = char2hipblas_side(argus.side_option);
 
-    int M            = argus.M;
-    int N            = argus.N;
-    int lda          = argus.lda;
-    int incx         = argus.incx;
-    int ldc          = argus.ldc;
-    int batch_count  = argus.batch_count;
-    int stride_scale = argus.stride_scale;
-    int k            = (side == HIPBLAS_SIDE_RIGHT ? N : M);
+    int           M            = argus.M;
+    int           N            = argus.N;
+    int           lda          = argus.lda;
+    int           incx         = argus.incx;
+    int           ldc          = argus.ldc;
+    int           batch_count  = argus.batch_count;
+    hipblasStride stride_scale = argus.stride_scale;
+    int           k            = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
-    int stride_A = size_t(lda) * N * stride_scale;
-    int stride_x = size_t(incx) * k * stride_scale;
-    int stride_C = size_t(ldc) * N * stride_scale;
+    hipblasStride stride_A = size_t(lda) * N * stride_scale;
+    hipblasStride stride_x = size_t(incx) * k * stride_scale;
+    hipblasStride stride_C = size_t(ldc) * N * stride_scale;
     if(!stride_x)
         stride_x = 1;
 
