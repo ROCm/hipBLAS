@@ -13,15 +13,6 @@ using namespace std;
 
 /* ============================================================================================ */
 
-// Tolerance of 100 fails for complex,
-// TODO: something better than arbitrary tolerance.
-template <typename T>
-constexpr double nrm2_tolerance_multiplier = 100;
-template <>
-constexpr double nrm2_tolerance_multiplier<hipblasComplex> = 110;
-template <>
-constexpr double nrm2_tolerance_multiplier<hipblasDoubleComplex> = 110;
-
 template <typename T1, typename T2>
 hipblasStatus_t testing_nrm2(const Arguments& argus)
 {
@@ -111,7 +102,7 @@ hipblasStatus_t testing_nrm2(const Arguments& argus)
 
         if(argus.unit_check)
         {
-            T2 tolerance = nrm2_tolerance_multiplier<T1>;
+            T2 tolerance = 2.0 * N;
             unit_check_nrm2<T2>(cpu_result, rocblas_result_1, tolerance);
             unit_check_nrm2<T2>(cpu_result, rocblas_result_2, tolerance);
         }

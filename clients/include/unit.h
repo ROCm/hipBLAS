@@ -63,4 +63,21 @@ void unit_check_nrm2(T cpu_result, T gpu_result, T tolerance)
 #endif
 }
 
+template <typename T>
+void unit_check_nrm2(int            batch_count,
+                     host_vector<T> cpu_result,
+                     host_vector<T> gpu_result,
+                     T              tolerance)
+{
+    for(int b = 0; b < batch_count; b++)
+    {
+        T allowable_error = tolerance * std::numeric_limits<T>::epsilon() * cpu_result[b];
+        if(allowable_error == 0)
+            allowable_error = tolerance * std::numeric_limits<T>::epsilon();
+#ifdef GOOGLE_TEST
+        ASSERT_NEAR(cpu_result[b], gpu_result[b], allowable_error);
+#endif
+    }
+}
+
 #endif
