@@ -32,9 +32,9 @@ hipblasStatus_t testing_her2k_strided_batched(const Arguments& argus)
     hipblasFillMode_t  uplo     = char2hipblas_fill(argus.uplo_option);
     hipblasOperation_t transA   = char2hipblas_operation(argus.transA_option);
     int                K1       = (transA == HIPBLAS_OP_N ? K : N);
-    int                stride_A = lda * K1 * stride_scale;
-    int                stride_B = ldb * K1 * stride_scale;
-    int                stride_C = ldc * N * stride_scale;
+    hipblasStride      stride_A = lda * K1 * stride_scale;
+    hipblasStride      stride_B = ldb * K1 * stride_scale;
+    hipblasStride      stride_C = ldc * N * stride_scale;
     int                A_size   = stride_A * batch_count;
     int                B_size   = stride_B * batch_count;
     int                C_size   = stride_C * batch_count;

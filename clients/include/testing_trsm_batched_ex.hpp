@@ -155,9 +155,9 @@ hipblasStatus_t testing_trsm_batched_ex(const Arguments& argus)
            HIPBLAS
     =================================================================== */
 
-    int stride_A    = TRSM_BLOCK * lda + TRSM_BLOCK;
-    int stride_invA = TRSM_BLOCK * TRSM_BLOCK;
-    int blocks      = K / TRSM_BLOCK;
+    hipblasStride stride_A    = TRSM_BLOCK * lda + TRSM_BLOCK;
+    hipblasStride stride_invA = TRSM_BLOCK * TRSM_BLOCK;
+    int           blocks      = K / TRSM_BLOCK;
 
     for(int b = 0; b < batch_count; b++)
     {

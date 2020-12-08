@@ -25,8 +25,8 @@ hipblasStatus_t testing_scal_strided_batched_ex_template(Arguments argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    int stridex = N * incx * stride_scale;
-    int sizeX   = stridex * batch_count;
+    hipblasStride stridex = N * incx * stride_scale;
+    int           sizeX   = stridex * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

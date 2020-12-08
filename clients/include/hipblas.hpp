@@ -32,8 +32,13 @@ hipblasStatus_t hipblasScalBatched(
     hipblasHandle_t handle, int n, const U* alpha, T* const x[], int incx, int batch_count);
 
 template <typename T, typename U = T, bool FORTRAN = false>
-hipblasStatus_t hipblasScalStridedBatched(
-    hipblasHandle_t handle, int n, const U* alpha, T* x, int incx, int stridex, int batch_count);
+hipblasStatus_t hipblasScalStridedBatched(hipblasHandle_t handle,
+                                          int             n,
+                                          const U*        alpha,
+                                          T*              x,
+                                          int             incx,
+                                          hipblasStride   stridex,
+                                          int             batch_count);
 
 template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasCopy(hipblasHandle_t handle, int n, const T* x, int incx, T* y, int incy);
@@ -52,10 +57,10 @@ hipblasStatus_t hipblasCopyStridedBatched(hipblasHandle_t handle,
                                           int             n,
                                           const T*        x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           T*              y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           int             batch_count);
 
 template <typename T, bool FORTRAN = false>
@@ -70,10 +75,10 @@ hipblasStatus_t hipblasSwapStridedBatched(hipblasHandle_t handle,
                                           int             n,
                                           T*              x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           T*              y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           int             batch_count);
 
 template <typename T, bool FORTRAN = false>
@@ -109,10 +114,10 @@ hipblasStatus_t hipblasDotStridedBatched(hipblasHandle_t handle,
                                          int             n,
                                          const T*        x,
                                          int             incx,
-                                         int             stridex,
+                                         hipblasStride   stridex,
                                          const T*        y,
                                          int             incy,
-                                         int             stridey,
+                                         hipblasStride   stridey,
                                          int             batch_count,
                                          T*              result);
 
@@ -121,10 +126,10 @@ hipblasStatus_t hipblasDotcStridedBatched(hipblasHandle_t handle,
                                           int             n,
                                           const T*        x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           const T*        y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           int             batch_count,
                                           T*              result);
 
@@ -136,8 +141,13 @@ hipblasStatus_t hipblasAsumBatched(
     hipblasHandle_t handle, int n, const T1* const x[], int incx, int batch_count, T2* result);
 
 template <typename T1, typename T2, bool FORTRAN = false>
-hipblasStatus_t hipblasAsumStridedBatched(
-    hipblasHandle_t handle, int n, const T1* x, int incx, int stridex, int batch_count, T2* result);
+hipblasStatus_t hipblasAsumStridedBatched(hipblasHandle_t handle,
+                                          int             n,
+                                          const T1*       x,
+                                          int             incx,
+                                          hipblasStride   stridex,
+                                          int             batch_count,
+                                          T2*             result);
 
 template <typename T1, typename T2, bool FORTRAN = false>
 hipblasStatus_t hipblasNrm2(hipblasHandle_t handle, int n, const T1* x, int incx, T2* result);
@@ -147,8 +157,13 @@ hipblasStatus_t hipblasNrm2Batched(
     hipblasHandle_t handle, int n, const T1* const x[], int incx, int batch_count, T2* result);
 
 template <typename T1, typename T2, bool FORTRAN = false>
-hipblasStatus_t hipblasNrm2StridedBatched(
-    hipblasHandle_t handle, int n, const T1* x, int incx, int stridex, int batch_count, T2* result);
+hipblasStatus_t hipblasNrm2StridedBatched(hipblasHandle_t handle,
+                                          int             n,
+                                          const T1*       x,
+                                          int             incx,
+                                          hipblasStride   stridex,
+                                          int             batch_count,
+                                          T2*             result);
 
 template <typename T1, typename T2, typename T3 = T1, bool FORTRAN = false>
 hipblasStatus_t hipblasRot(
@@ -170,10 +185,10 @@ hipblasStatus_t hipblasRotStridedBatched(hipblasHandle_t handle,
                                          int             n,
                                          T1*             x,
                                          int             incx,
-                                         int             stridex,
+                                         hipblasStride   stridex,
                                          T1*             y,
                                          int             incy,
-                                         int             stridey,
+                                         hipblasStride   stridey,
                                          const T2*       c,
                                          const T3*       s,
                                          int             batch_count);
@@ -192,13 +207,13 @@ hipblasStatus_t hipblasRotgBatched(hipblasHandle_t handle,
 template <typename T1, typename T2 = T1, bool FORTRAN = false>
 hipblasStatus_t hipblasRotgStridedBatched(hipblasHandle_t handle,
                                           T1*             a,
-                                          int             stridea,
+                                          hipblasStride   stridea,
                                           T1*             b,
-                                          int             strideb,
+                                          hipblasStride   strideb,
                                           T2*             c,
-                                          int             stridec,
+                                          hipblasStride   stridec,
                                           T1*             s,
-                                          int             strides,
+                                          hipblasStride   strides,
                                           int             batch_count);
 
 template <typename T, bool FORTRAN = false>
@@ -220,12 +235,12 @@ hipblasStatus_t hipblasRotmStridedBatched(hipblasHandle_t handle,
                                           int             n,
                                           T*              x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           T*              y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           const T*        param,
-                                          int             strideparam,
+                                          hipblasStride   strideparam,
                                           int             batch_count);
 
 template <typename T, bool FORTRAN = false>
@@ -243,15 +258,15 @@ hipblasStatus_t hipblasRotmgBatched(hipblasHandle_t handle,
 template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasRotmgStridedBatched(hipblasHandle_t handle,
                                            T*              d1,
-                                           int             stride_d1,
+                                           hipblasStride   stride_d1,
                                            T*              d2,
-                                           int             stride_d2,
+                                           hipblasStride   stride_d2,
                                            T*              x1,
-                                           int             stride_x1,
+                                           hipblasStride   stride_x1,
                                            const T*        y1,
-                                           int             stride_y1,
+                                           hipblasStride   stride_y1,
                                            T*              param,
-                                           int             strideparam,
+                                           hipblasStride   strideparam,
                                            int             batch_count);
 
 template <typename T, bool FORTRAN = false>
@@ -262,8 +277,13 @@ hipblasStatus_t hipblasIamaxBatched(
     hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
 
 template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasIamaxStridedBatched(
-    hipblasHandle_t handle, int n, const T* x, int incx, int stridex, int batch_count, int* result);
+hipblasStatus_t hipblasIamaxStridedBatched(hipblasHandle_t handle,
+                                           int             n,
+                                           const T*        x,
+                                           int             incx,
+                                           hipblasStride   stridex,
+                                           int             batch_count,
+                                           int*            result);
 
 template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasIamin(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
@@ -273,8 +293,13 @@ hipblasStatus_t hipblasIaminBatched(
     hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
 
 template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasIaminStridedBatched(
-    hipblasHandle_t handle, int n, const T* x, int incx, int stridex, int batch_count, int* result);
+hipblasStatus_t hipblasIaminStridedBatched(hipblasHandle_t handle,
+                                           int             n,
+                                           const T*        x,
+                                           int             incx,
+                                           hipblasStride   stridex,
+                                           int             batch_count,
+                                           int*            result);
 
 template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasAxpy(
@@ -296,10 +321,10 @@ hipblasStatus_t hipblasAxpyStridedBatched(hipblasHandle_t handle,
                                           const T*        alpha,
                                           const T*        x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           T*              y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           int             batch_count);
 
 // ger
@@ -335,13 +360,13 @@ hipblasStatus_t hipblasGerStridedBatched(hipblasHandle_t handle,
                                          const T*        alpha,
                                          const T*        x,
                                          int             incx,
-                                         int             stridex,
+                                         hipblasStride   stridex,
                                          const T*        y,
                                          int             incy,
-                                         int             stridey,
+                                         hipblasStride   stridey,
                                          T*              A,
                                          int             lda,
-                                         int             strideA,
+                                         hipblasStride   strideA,
                                          int             batch_count);
 
 // hbmv
@@ -382,14 +407,14 @@ hipblasStatus_t hipblasHbmvStridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const T*          x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const T*          beta,
                                           T*                y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount);
 
 // hemv
@@ -427,14 +452,14 @@ hipblasStatus_t hipblasHemvStridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          A,
                                           int               lda,
-                                          int               stride_a,
+                                          hipblasStride     stride_a,
                                           const T*          x,
                                           int               incx,
-                                          int               stride_x,
+                                          hipblasStride     stride_x,
                                           const T*          beta,
                                           T*                y,
                                           int               incy,
-                                          int               stride_y,
+                                          hipblasStride     stride_y,
                                           int               batch_count);
 
 // her
@@ -466,10 +491,10 @@ hipblasStatus_t hipblasHerStridedBatched(hipblasHandle_t   handle,
                                          const U*          alpha,
                                          const T*          x,
                                          int               incx,
-                                         int               stridex,
+                                         hipblasStride     stridex,
                                          T*                A,
                                          int               lda,
-                                         int               strideA,
+                                         hipblasStride     strideA,
                                          int               batchCount);
 
 // her2
@@ -505,13 +530,13 @@ hipblasStatus_t hipblasHer2StridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const T*          y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           T*                A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           int               batchCount);
 
 // hpmv
@@ -546,14 +571,14 @@ hipblasStatus_t hipblasHpmvStridedBatched(hipblasHandle_t   handle,
                                           int               n,
                                           const T*          alpha,
                                           const T*          AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           const T*          x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const T*          beta,
                                           T*                y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount);
 
 // hpr
@@ -583,9 +608,9 @@ hipblasStatus_t hipblasHprStridedBatched(hipblasHandle_t   handle,
                                          const U*          alpha,
                                          const T*          x,
                                          int               incx,
-                                         int               stridex,
+                                         hipblasStride     stridex,
                                          T*                AP,
-                                         int               strideAP,
+                                         hipblasStride     strideAP,
                                          int               batchCount);
 
 // hpr2
@@ -619,12 +644,12 @@ hipblasStatus_t hipblasHpr2StridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const T*          y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           T*                AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           int               batchCount);
 
 // sbmv
@@ -665,14 +690,14 @@ hipblasStatus_t hipblasSbmvStridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const T*          x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const T*          beta,
                                           T*                y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount);
 
 // spmv
@@ -707,14 +732,14 @@ hipblasStatus_t hipblasSpmvStridedBatched(hipblasHandle_t   handle,
                                           int               n,
                                           const T*          alpha,
                                           const T*          AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           const T*          x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const T*          beta,
                                           T*                y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount);
 
 // spr
@@ -744,9 +769,9 @@ hipblasStatus_t hipblasSprStridedBatched(hipblasHandle_t   handle,
                                          const T*          alpha,
                                          const T*          x,
                                          int               incx,
-                                         int               stridex,
+                                         hipblasStride     stridex,
                                          T*                AP,
-                                         int               strideAP,
+                                         hipblasStride     strideAP,
                                          int               batchCount);
 
 template <typename T, bool FORTRAN = false>
@@ -779,12 +804,12 @@ hipblasStatus_t hipblasSpr2StridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const T*          y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           T*                AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           int               batchCount);
 
 // symv
@@ -822,14 +847,14 @@ hipblasStatus_t hipblasSymvStridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const T*          x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const T*          beta,
                                           T*                y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount);
 
 // syr
@@ -861,10 +886,10 @@ hipblasStatus_t hipblasSyrStridedBatched(hipblasHandle_t   handle,
                                          const T*          alpha,
                                          const T*          x,
                                          int               incx,
-                                         int               stridex,
+                                         hipblasStride     stridex,
                                          T*                A,
                                          int               lda,
-                                         int               strideA,
+                                         hipblasStride     strideA,
                                          int               batch_count);
 
 // syr2
@@ -900,13 +925,13 @@ hipblasStatus_t hipblasSyr2StridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const T*          y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           T*                A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           int               batchCount);
 
 // tbmv
@@ -944,10 +969,10 @@ hipblasStatus_t hipblasTbmvStridedBatched(hipblasHandle_t    handle,
                                           int                k,
                                           const T*           A,
                                           int                lda,
-                                          int                stride_a,
+                                          hipblasStride      stride_a,
                                           T*                 x,
                                           int                incx,
-                                          int                stride_x,
+                                          hipblasStride      stride_x,
                                           int                batch_count);
 
 // tbsv
@@ -985,10 +1010,10 @@ hipblasStatus_t hipblasTbsvStridedBatched(hipblasHandle_t    handle,
                                           int                k,
                                           const T*           A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           T*                 x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batchCount);
 
 // tpmv
@@ -1020,10 +1045,10 @@ hipblasStatus_t hipblasTpmvStridedBatched(hipblasHandle_t    handle,
                                           hipblasDiagType_t  diag,
                                           int                m,
                                           const T*           AP,
-                                          int                strideAP,
+                                          hipblasStride      strideAP,
                                           T*                 x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batchCount);
 
 // tpsv
@@ -1055,10 +1080,10 @@ hipblasStatus_t hipblasTpsvStridedBatched(hipblasHandle_t    handle,
                                           hipblasDiagType_t  diag,
                                           int                m,
                                           const T*           AP,
-                                          int                strideAP,
+                                          hipblasStride      strideAP,
                                           T*                 x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batchCount);
 
 // trmv
@@ -1093,10 +1118,10 @@ hipblasStatus_t hipblasTrmvStridedBatched(hipblasHandle_t    handle,
                                           int                m,
                                           const T*           A,
                                           int                lda,
-                                          int                stride_a,
+                                          hipblasStride      stride_a,
                                           T*                 x,
                                           int                incx,
-                                          int                stride_x,
+                                          hipblasStride      stride_x,
                                           int                batch_count);
 
 // trsv
@@ -1133,10 +1158,10 @@ hipblasStatus_t hipblasTrsvStridedBatched(hipblasHandle_t    handle,
                                           int                m,
                                           const T*           A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           T*                 x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batch_count);
 
 // gbmv
@@ -1183,14 +1208,14 @@ hipblasStatus_t hipblasGbmvStridedBatched(hipblasHandle_t    handle,
                                           const T*           alpha,
                                           const T*           A,
                                           int                lda,
-                                          int                stride_a,
+                                          hipblasStride      stride_a,
                                           const T*           x,
                                           int                incx,
-                                          int                stride_x,
+                                          hipblasStride      stride_x,
                                           const T*           beta,
                                           T*                 y,
                                           int                incy,
-                                          int                stride_y,
+                                          hipblasStride      stride_y,
                                           int                batch_count);
 
 // gemv
@@ -1231,14 +1256,14 @@ hipblasStatus_t hipblasGemvStridedBatched(hipblasHandle_t    handle,
                                           const T*           alpha,
                                           const T*           A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           const T*           x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           const T*           beta,
                                           T*                 y,
                                           int                incy,
-                                          int                stridey,
+                                          hipblasStride      stridey,
                                           int                batch_count);
 
 template <typename T, bool FORTRAN = false>
@@ -1331,11 +1356,11 @@ hipblasStatus_t hipblasHerkStridedBatched(hipblasHandle_t    handle,
                                           const U*           alpha,
                                           const T*           A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           const U*           beta,
                                           T*                 C,
                                           int                ldc,
-                                          int                strideC,
+                                          hipblasStride      strideC,
                                           int                batchCount);
 
 // her2k
@@ -1379,14 +1404,14 @@ hipblasStatus_t hipblasHer2kStridedBatched(hipblasHandle_t    handle,
                                            const T*           alpha,
                                            const T*           A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const T*           B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            const U*           beta,
                                            T*                 C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount);
 
 // herkx
@@ -1430,14 +1455,14 @@ hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t    handle,
                                            const T*           alpha,
                                            const T*           A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const T*           B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            const U*           beta,
                                            T*                 C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount);
 
 // symm
@@ -1481,14 +1506,14 @@ hipblasStatus_t hipblasSymmStridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const T*          B,
                                           int               ldb,
-                                          int               strideB,
+                                          hipblasStride     strideB,
                                           const T*          beta,
                                           T*                C,
                                           int               ldc,
-                                          int               strideC,
+                                          hipblasStride     strideC,
                                           int               batchCount);
 
 // syrk
@@ -1528,11 +1553,11 @@ hipblasStatus_t hipblasSyrkStridedBatched(hipblasHandle_t    handle,
                                           const T*           alpha,
                                           const T*           A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           const T*           beta,
                                           T*                 C,
                                           int                ldc,
-                                          int                strideC,
+                                          hipblasStride      strideC,
                                           int                batchCount);
 
 // syr2k
@@ -1576,14 +1601,14 @@ hipblasStatus_t hipblasSyr2kStridedBatched(hipblasHandle_t    handle,
                                            const T*           alpha,
                                            const T*           A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const T*           B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            const T*           beta,
                                            T*                 C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount);
 
 // syrkx
@@ -1627,14 +1652,14 @@ hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t    handle,
                                            const T*           alpha,
                                            const T*           A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const T*           B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            const T*           beta,
                                            T*                 C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount);
 
 // geam
@@ -1678,14 +1703,14 @@ hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t    handle,
                                           const T*           alpha,
                                           const T*           A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           const T*           beta,
                                           const T*           B,
                                           int                ldb,
-                                          int                strideB,
+                                          hipblasStride      strideB,
                                           T*                 C,
                                           int                ldc,
-                                          int                strideC,
+                                          hipblasStride      strideC,
                                           int                batchCount);
 
 // hemm
@@ -1729,14 +1754,14 @@ hipblasStatus_t hipblasHemmStridedBatched(hipblasHandle_t   handle,
                                           const T*          alpha,
                                           const T*          A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const T*          B,
                                           int               ldb,
-                                          int               strideB,
+                                          hipblasStride     strideB,
                                           const T*          beta,
                                           T*                C,
                                           int               ldc,
-                                          int               strideC,
+                                          hipblasStride     strideC,
                                           int               batchCount);
 
 // trmm
@@ -1780,10 +1805,10 @@ hipblasStatus_t hipblasTrmmStridedBatched(hipblasHandle_t    handle,
                                           const T*           alpha,
                                           const T*           A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           T*                 B,
                                           int                ldb,
-                                          int                strideB,
+                                          hipblasStride      strideB,
                                           int                batchCount);
 
 // trsm
@@ -1827,10 +1852,10 @@ hipblasStatus_t hipblasTrsmStridedBatched(hipblasHandle_t    handle,
                                           const T*           alpha,
                                           T*                 A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           T*                 B,
                                           int                ldb,
-                                          int                strideB,
+                                          hipblasStride      strideB,
                                           int                batch_count);
 
 // getrf
@@ -1848,15 +1873,15 @@ hipblasStatus_t hipblasGetrfBatched(hipblasHandle_t handle,
                                     const int       batchCount);
 
 template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasGetrfStridedBatched(hipblasHandle_t handle,
-                                           const int       n,
-                                           T*              A,
-                                           const int       lda,
-                                           const int       strideA,
-                                           int*            ipiv,
-                                           const int       strideP,
-                                           int*            info,
-                                           const int       batchCount);
+hipblasStatus_t hipblasGetrfStridedBatched(hipblasHandle_t     handle,
+                                           const int           n,
+                                           T*                  A,
+                                           const int           lda,
+                                           const hipblasStride strideA,
+                                           int*                ipiv,
+                                           const hipblasStride strideP,
+                                           int*                info,
+                                           const int           batchCount);
 
 // getrs
 template <typename T, bool FORTRAN = false>
@@ -1891,12 +1916,12 @@ hipblasStatus_t hipblasGetrsStridedBatched(hipblasHandle_t          handle,
                                            const int                nrhs,
                                            T*                       A,
                                            const int                lda,
-                                           const int                strideA,
+                                           const hipblasStride      strideA,
                                            const int*               ipiv,
-                                           const int                strideP,
+                                           const hipblasStride      strideP,
                                            T*                       B,
                                            const int                ldb,
-                                           const int                strideB,
+                                           const hipblasStride      strideB,
                                            int*                     info,
                                            const int                batchCount);
 
@@ -1928,16 +1953,16 @@ hipblasStatus_t hipblasGeqrfBatched(hipblasHandle_t handle,
                                     const int       batchCount);
 
 template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasGeqrfStridedBatched(hipblasHandle_t handle,
-                                           const int       m,
-                                           const int       n,
-                                           T*              A,
-                                           const int       lda,
-                                           const int       strideA,
-                                           T*              ipiv,
-                                           const int       strideP,
-                                           int*            info,
-                                           const int       batchCount);
+hipblasStatus_t hipblasGeqrfStridedBatched(hipblasHandle_t     handle,
+                                           const int           m,
+                                           const int           n,
+                                           T*                  A,
+                                           const int           lda,
+                                           const hipblasStride strideA,
+                                           T*                  ipiv,
+                                           const hipblasStride strideP,
+                                           int*                info,
+                                           const int           batchCount);
 
 // dgmm
 template <typename T, bool FORTRAN = false>
@@ -1972,13 +1997,13 @@ hipblasStatus_t hipblasDgmmStridedBatched(hipblasHandle_t   handle,
                                           int               n,
                                           const T*          A,
                                           int               lda,
-                                          int               stride_A,
+                                          hipblasStride     stride_A,
                                           const T*          x,
                                           int               incx,
-                                          int               stride_x,
+                                          hipblasStride     stride_x,
                                           T*                C,
                                           int               ldc,
-                                          int               stride_C,
+                                          hipblasStride     stride_C,
                                           int               batch_count);
 
 // trtri
@@ -2010,10 +2035,10 @@ hipblasStatus_t hipblasTrtriStridedBatched(hipblasHandle_t   handle,
                                            int               n,
                                            T*                A,
                                            int               lda,
-                                           int               stride_A,
+                                           hipblasStride     stride_A,
                                            T*                invA,
                                            int               ldinvA,
-                                           int               stride_invA,
+                                           hipblasStride     stride_invA,
                                            int               batch_count);
 
 template <typename T, int NB>

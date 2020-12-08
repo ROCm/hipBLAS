@@ -26,8 +26,8 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(Arguments arg)
     double stride_scale = arg.stride_scale;
     int    batch_count  = arg.batch_count;
 
-    int stridex = N * incx * stride_scale;
-    int stridey = N * incy * stride_scale;
+    hipblasStride stridex = N * incx * stride_scale;
+    hipblasStride stridey = N * incy * stride_scale;
 
     int size_x = stridex * batch_count;
     int size_y = stridey * batch_count;
