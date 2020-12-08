@@ -12,8 +12,13 @@
 using namespace std;
 
 template <typename T>
-using hipblas_iamax_iamin_strided_batched_t = hipblasStatus_t (*)(
-    hipblasHandle_t handle, int n, const T* x, int incx, int stridex, int batch_count, int* result);
+using hipblas_iamax_iamin_strided_batched_t = hipblasStatus_t (*)(hipblasHandle_t handle,
+                                                                  int             n,
+                                                                  const T*        x,
+                                                                  int             incx,
+                                                                  hipblasStride   stridex,
+                                                                  int             batch_count,
+                                                                  int*            result);
 
 template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
 hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&                         argus,
@@ -24,8 +29,8 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    int stridex = N * incx * stride_scale;
-    int sizeX   = stridex * batch_count;
+    hipblasStride stridex = N * incx * stride_scale;
+    int           sizeX   = stridex * batch_count;
 
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;

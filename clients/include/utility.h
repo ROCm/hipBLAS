@@ -357,7 +357,8 @@ void hipblas_packInt8(
 // for vector x (M=1, N=lengthX, lda=incx);
 // for complex number, the real/imag part would be initialized with the same value
 template <typename T>
-void hipblas_init(std::vector<T>& A, int M, int N, int lda, int stride = 0, int batch_count = 1)
+void hipblas_init(
+    std::vector<T>& A, int M, int N, int lda, hipblasStride stride = 0, int batch_count = 1)
 {
     for(int b = 0; b < batch_count; b++)
         for(int i = 0; i < M; ++i)
@@ -366,7 +367,7 @@ void hipblas_init(std::vector<T>& A, int M, int N, int lda, int stride = 0, int 
 }
 
 template <typename T>
-void hipblas_init(T* A, int M, int N, int lda, int stride = 0, int batch_count = 1)
+void hipblas_init(T* A, int M, int N, int lda, hipblasStride stride = 0, int batch_count = 1)
 {
     for(int b = 0; b < batch_count; b++)
         for(int i = 0; i < M; ++i)
@@ -394,7 +395,7 @@ void hipblas_init_alternating_sign(std::vector<T>& A, int M, int N, int lda)
 
 template <typename T>
 void hipblas_init_alternating_sign(
-    std::vector<T>& A, int M, int N, int lda, int stride, int batch_count)
+    std::vector<T>& A, int M, int N, int lda, hipblasStride stride, int batch_count)
 {
     // Initialize matrix so adjacent entries have alternating sign.
     // In gemm if either A or B are initialized with alernating
@@ -428,7 +429,8 @@ void hipblas_init_symmetric(std::vector<T>& A, int N, int lda)
 
 /*! \brief symmetric matrix initialization for strided_batched matricies: */
 template <typename T>
-void hipblas_init_symmetric(std::vector<T>& A, int N, int lda, int strideA, int batch_count)
+void hipblas_init_symmetric(
+    std::vector<T>& A, int N, int lda, hipblasStride strideA, int batch_count)
 {
     for(int b = 0; b < batch_count; b++)
         for(int off = b * strideA, i = 0; i < N; ++i)

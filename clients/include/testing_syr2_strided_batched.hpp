@@ -33,12 +33,12 @@ hipblasStatus_t testing_syr2_strided_batched(const Arguments& argus)
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
 
-    int strideA = lda * N * stride_scale;
-    int stridex = abs_incx * N * stride_scale;
-    int stridey = abs_incy * N * stride_scale;
-    int A_size  = strideA * batch_count;
-    int x_size  = stridex * batch_count;
-    int y_size  = stridey * batch_count;
+    hipblasStride strideA = lda * N * stride_scale;
+    hipblasStride stridex = abs_incx * N * stride_scale;
+    hipblasStride stridey = abs_incy * N * stride_scale;
+    int           A_size  = strideA * batch_count;
+    int           x_size  = stridex * batch_count;
+    int           y_size  = stridey * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

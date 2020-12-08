@@ -46,8 +46,8 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(Arguments argus)
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
 
-    int stridex = N * abs_incx * stride_scale;
-    int stridey = N * abs_incy * stride_scale;
+    hipblasStride stridex = N * abs_incx * stride_scale;
+    hipblasStride stridey = N * abs_incy * stride_scale;
 
     int sizeX = stridex * batch_count;
     int sizeY = stridey * batch_count;

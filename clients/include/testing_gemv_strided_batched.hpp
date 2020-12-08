@@ -29,9 +29,9 @@ hipblasStatus_t testing_gemvStridedBatched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    int stride_A = lda * N * stride_scale;
-    int stride_x;
-    int stride_y;
+    hipblasStride stride_A = lda * N * stride_scale;
+    hipblasStride stride_x;
+    hipblasStride stride_y;
 
     int A_size = stride_A * batch_count;
     int X_size;
