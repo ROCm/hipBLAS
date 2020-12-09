@@ -46,42 +46,24 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     hipblasCreate(&handle);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx_array[batch_count];
-    host_vector<T> hz_array[batch_count];
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hz(N, incx, batch_count);
 
-    device_batch_vector<T> bx_array(batch_count, sizeX);
-    device_batch_vector<T> bz_array(batch_count, sizeX);
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dz(N, incx, batch_count);
+    CHECK_HIP_ERROR(dx.memcheck());
+    CHECK_HIP_ERROR(dz.memcheck());
 
-    device_vector<T*, 0, T> dx_array(batch_count);
-    device_vector<T*, 0, T> dz_array(batch_count);
+    hipblas_init(hx, true);
+    hz.copy_from(hx);
 
-    int last = batch_count - 1;
-    if(!dx_array || !dz_array || (!bx_array[last] && sizeX) || (!bz_array[last] && sizeX))
-    {
-        hipblasDestroy(handle);
-        return HIPBLAS_STATUS_ALLOC_FAILED;
-    }
-
-    srand(1);
-    for(int b = 0; b < batch_count; b++)
-    {
-        hx_array[b] = host_vector<T>(sizeX);
-        hz_array[b] = host_vector<T>(sizeX);
-
-        srand(1);
-        hipblas_init<T>(hx_array[b], 1, N, incx);
-        hz_array[b] = hx_array[b];
-
-        CHECK_HIP_ERROR(
-            hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    }
-
-    CHECK_HIP_ERROR(hipMemcpy(dx_array, bx_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dz.transfer_from(hx));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
-    status = hipblasScalBatchedFn(handle, N, &alpha, dx_array, incx, batch_count);
+    status = hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         hipblasDestroy(handle);
@@ -89,11 +71,7 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     }
 
     // copy output from device to CPU
-    for(int b = 0; b < batch_count; b++)
-    {
-        CHECK_HIP_ERROR(
-            hipMemcpy(hx_array[b], bx_array[b], sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-    }
+    CHECK_HIP_ERROR(hx.transfer_from(dx));
 
     if(argus.unit_check)
     {
@@ -102,14 +80,14 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_scal<T, U>(N, alpha, hz_array[b], incx);
+            cblas_scal<T, U>(N, alpha, hz[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incx, hz_array, hx_array);
+            unit_check_general<T>(1, N, batch_count, incx, hz, hx);
         }
 
     } // end of if unit check
