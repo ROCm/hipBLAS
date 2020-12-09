@@ -97,9 +97,8 @@ hipblasStatus_t testing_nrm2_ex_template(Arguments argus)
 
         if(argus.unit_check)
         {
-            Tr tolerance = 2.0 * N;
-            unit_check_nrm2<Tr>(cpu_result, rocblas_result_1, tolerance);
-            unit_check_nrm2<Tr>(cpu_result, rocblas_result_2, tolerance);
+            unit_check_nrm2<Tr>(cpu_result, rocblas_result_1, N);
+            unit_check_nrm2<Tr>(cpu_result, rocblas_result_2, N);
         }
 
     } // end of if unit/norm check

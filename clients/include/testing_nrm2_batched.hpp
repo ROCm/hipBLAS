@@ -116,9 +116,8 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
 
         if(argus.unit_check)
         {
-            T2 tolerance = 2.0 * N;
-            unit_check_nrm2<T2>(batch_count, h_cpu_result, h_rocblas_result_1, tolerance);
-            unit_check_nrm2<T2>(batch_count, h_cpu_result, h_rocblas_result_2, tolerance);
+            unit_check_nrm2<T2>(batch_count, h_cpu_result, h_rocblas_result_1, N);
+            unit_check_nrm2<T2>(batch_count, h_cpu_result, h_rocblas_result_2, N);
         }
 
     } // end of if unit/norm check

@@ -124,9 +124,8 @@ hipblasStatus_t testing_nrm2_strided_batched_ex_template(Arguments argus)
 
         if(argus.unit_check)
         {
-            Tr tolerance = 2.0 * N;
-            unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_rocblas_result1, tolerance);
-            unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_rocblas_result2, tolerance);
+            unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_rocblas_result1, N);
+            unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_rocblas_result2, N);
         }
 
     } // end of if unit/norm check
