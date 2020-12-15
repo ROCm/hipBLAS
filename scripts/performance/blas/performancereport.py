@@ -530,15 +530,25 @@ class FlopsComparison(HipBlasYamlComparison):
                 mhz_str = "Mhz"
                 mem_clk_str = "mclk"
                 sys_clk_str = "sclk"
+                mhz_str_cuda = "MHz"
+                mem_clk_str_cuda = "memory"
+                sys_clk_str_cuda = "sm"
                 if cuda:
-                    mhz_str = "MHz"
-                    mem_clk_str = "memory"
-                    sys_clk_str = "sm"
-                mclk = 1200.0
-                sclk = 1087.0
-                # mclk = run_configuration.load_specifications()['Card0']["Start " + mem_clk_str].split(mhz_str)[0]
-                # sclk = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str].split(mhz_str)[0]
-                sclk_cuda = 1530.0
+                    mhz_str = mhz_str_cuda
+                    mem_clk_str = mem_clk_str_cuda
+                    sys_clk_str = sys_clk_str_cuda
+                # Reference: MI-100 clocks by default
+                # mclk = 1200.0
+                # sclk = 1087.0
+                mclk = run_configuration.load_specifications()['Card0']["Start " + mem_clk_str].split(mhz_str)[0]
+                sclk = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str].split(mhz_str)[0]
+
+                # Reference: V-100 clock by default
+                # sclk_cuda = 1530.0
+                if compare:
+                    sclk_cuda = run_configuration.load_specifications_compare()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
+                else:
+                    sclk_cuda = 0
                 theoMax = 0
                 theoMax_cuda = 0
                 precisionBits = int(re.search(r'\d+', precision).group())
@@ -687,15 +697,25 @@ class EfficiencyComparison(HipBlasYamlComparison):
                 mhz_str = "Mhz"
                 mem_clk_str = "mclk"
                 sys_clk_str = "sclk"
+                mhz_str_cuda = "MHz"
+                mem_clk_str_cuda = "memory"
+                sys_clk_str_cuda = "sm"
                 if cuda:
-                    mhz_str = "MHz"
-                    mem_clk_str = "memory"
-                    sys_clk_str = "sm"
-                mclk = 1200.0
-                sclk = 1087.0
-                # mclk = run_configuration.load_specifications()['Card0']["Start " + mem_clk_str].split(mhz_str)[0]
-                # sclk = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str].split(mhz_str)[0]
-                sclk_cuda = 1530.0
+                    mhz_str = mhz_str_cuda
+                    mem_clk_str = mem_clk_str_cuda
+                    sys_clk_str = sys_clk_str_cuda
+                # Reference: MI-100 clocks by default
+                # mclk = 1200.0
+                # sclk = 1087.0
+                mclk = run_configuration.load_specifications()['Card0']["Start " + mem_clk_str].split(mhz_str)[0]
+                sclk = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str].split(mhz_str)[0]
+
+                # Reference: V-100 clock by default
+                # sclk_cuda = 1530.0
+                if compare:
+                    sclk_cuda = run_configuration.load_specifications_compare()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
+                else:
+                    sclk_cuda = 0
                 theoMax = 0
                 theoMax_cuda = 0
                 precisionBits = int(re.search(r'\d+', precision).group())

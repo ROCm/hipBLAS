@@ -708,6 +708,9 @@ class RunConfiguration(object):
     def _machine_specs_filename(self):
         return os.path.join(self.output_directory, "specs.json")
 
+    def _machine_specs_filanem_compare(self):
+        return os.path.join(self.output_directory_compare, "specs.json")
+
     def save_specifications(self, device_num, cuda):
         filename = self._machine_specs_filename()
         MachineSpecs.collect_specs([device_num], cuda, self.user_args.install_path).save(filename)
@@ -716,6 +719,9 @@ class RunConfiguration(object):
 
     def load_specifications(self):
         return MachineSpecs.from_file(self._machine_specs_filename())
+
+    def load_specifications_compare(self):
+        return MachineSpecs.from_file(self._machine_specs_filanem_compare())
 
 class RunConfigurationsList(list):
     def group_by_label(self):
