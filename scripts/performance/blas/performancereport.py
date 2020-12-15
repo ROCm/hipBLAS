@@ -427,7 +427,7 @@ class FlopsComparison(HipBlasYamlComparison):
             print('{} does not exist'.format(output_filename))
         return rv
 
-    def plot(self, run_configurations, axes):
+    def plot(self, run_configurations, axes, cuda):
         num_argument_sets = len(self.argument_sets)
         if num_argument_sets == 0:
             return
@@ -480,8 +480,15 @@ class FlopsComparison(HipBlasYamlComparison):
 
         for group_label, run_configuration_group in grouped_run_configurations.items():
             for run_configuration in run_configuration_group:
-                mclk = run_configuration.load_specifications()['ROCm Card0']["Start mclk"].split("Mhz")[0]
-                sclk = run_configuration.load_specifications()['ROCm Card0']["Start sclk"].split("Mhz")[0]
+                mhz_str = "Mhz"
+                mem_clk_str = "mclk"
+                sys_clk_str = "sclk"
+                if cuda:
+                    mhz_str = "MHz"
+                    mem_clk_str = "memory"
+                    sys_clk_str = "sm"
+                mclk = run_configuration.load_specifications()['Card0']["Start " + mem_clk_str].split(mhz_str)[0]
+                sclk = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str].split(mhz_str)[0]
                 theoMax = 0
                 precisionBits = int(re.search(r'\d+', precision).group())
                 if(function == 'gemm' and precisionBits == 32): #xdlops
