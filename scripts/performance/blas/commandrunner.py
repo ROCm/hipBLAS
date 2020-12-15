@@ -410,6 +410,9 @@ class ArgumentSetABC(object):
     def get_output_file(self, run_configuration):
         return os.path.join(run_configuration.output_directory, self.get_output_basename())
 
+    def get_output_file_compare(self, run_configuration):
+        return os.path.join(run_configuration.output_directory_compare, self.get_output_basename())
+
     def get_caption(self, similar_keys):
         '''Override this function to make a more meaninful caption based off a subset of keys.'''
         return None
@@ -674,10 +677,11 @@ class RunConfiguration(object):
     An instance of RunConfiguration is passed into ArgumentSetABC.get_full_command. That is where the
     information stored in this class is translated into actual commandline arguments.
     '''
-    def __init__(self, user_args, executable_directory, output_directory, label, run_number = None):
+    def __init__(self, user_args, executable_directory, output_directory, output_directory_compare, label, run_number = None):
         self.user_args = user_args
         self.executable_directory = executable_directory
         self.output_directory = output_directory
+        self.output_directory_compare = output_directory_compare
         self.label = label
         if run_number is not None:
             self.output_directory = os.path.join(output_directory, 'run{0:02d}'.format(run_number))
@@ -1003,6 +1007,10 @@ class CommandRunner(object):
         output_directories = user_args.output_directories
         labels = user_args.labels
         cuda = user_args.cuda
+        compare_hip_cuda = user_args.compare_hip_cuda
+        output_directory_compare = user_args.output_directory_compare_cuda
+        if len(output_directory_compare) == 1:
+            output_directory_compare = output_directory_compare[0]
 
         print('Excecutable directories: ', executable_directories)
 
@@ -1010,6 +1018,9 @@ class CommandRunner(object):
             for i in range(len(output_directories), len(executable_directories)):
                 output_directories.append('dir' + str(i))
         print('Output directories: ', output_directories)
+
+        if compare_hip_cuda:
+            print('Output directory compare: ', output_directory_compare)
 
         if len(output_directories) > len(labels):
             for i in range(len(labels), len(output_directories)):
@@ -1024,11 +1035,16 @@ class CommandRunner(object):
         self.output_directories = output_directories
         self.labels = labels
         self.cuda = cuda
+        self.compare_hip_cuda = compare_hip_cuda
+        self.output_directory_compare = output_directory_compare
 
         if self.cuda:
             print('Running for a CUDA system')
         else:
             print('Not running for a CUDA system')
+
+        if self.compare_hip_cuda:
+            print('Comparing data from a HIP run and a CUDA run')
 
         self.run_configurations = RunConfigurationsList()
         for exec_dir, out_dir, label in zip(executable_directories, output_directories, labels):
@@ -1037,6 +1053,7 @@ class CommandRunner(object):
                         user_args = user_args,
                         executable_directory = exec_dir,
                         output_directory = out_dir,
+                        output_directory_compare = output_directory_compare,
                         label = label,
                         run_number = run_number,
                         ))
@@ -1081,7 +1098,7 @@ class CommandRunner(object):
 
     def main(self):
         self.execute()
-        self.show_plots(self.cuda)
+        self.show_plots(self.cuda, self.compare_hip_cuda)
         self.get_system_summary()
         self.output_summary()
 
@@ -1180,7 +1197,7 @@ class CommandRunner(object):
         if self.is_run_tool() or self.is_dry_run():
             command_list.execute_shuffled(overwrite = self.is_overwrite(), dry_run = self.is_dry_run())
 
-    def show_plots(self, cuda):
+    def show_plots(self, cuda, compare):
         if self.is_dry_run():
             return
         grouped_run_configurations = self.run_configurations.group_by_label()
@@ -1216,11 +1233,12 @@ class CommandRunner(object):
             # Add any Matplotlib plots using Comparison.plot()
             if self.is_use_matplotlib():
                 figure, axes = plt.subplots(figsize = (7, 7))
-                plot_success = comparison.plot(self.run_configurations, axes, cuda)
+                plot_success = comparison.plot(self.run_configurations, axes, cuda, compare)
                 print(comparison.get_caption(self.run_configurations))
                 if plot_success:
+                    # TODO:
                     axes.legend(fontsize = 10, bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
-                                ncol=2, mode='expand', borderaxespad=0.)
+                                 mode='expand', borderaxespad=0.)
                     figure.tight_layout(rect=(0,0.05,1.0,1.0))
 
                     if self.is_use_pylatex():
@@ -1306,6 +1324,7 @@ def parse_input_arguments(parser):
         return to_multiple_choices(all_test_methods, s)
 
     parser.add_argument('--cuda', default=False, action='store_true', help='Run on a CUDA device.')
+    parser.add_argument('--compare-hip-cuda', default=False, action='store_true', help='Compare data from a HIP run and a CUDA run')
     parser.add_argument('-i', '--input-executables', action='append', required=True,
                         help='Input executable location, can be added multiple times.')
     parser.add_argument('-o', '--output-directories', action='append', default=[],
@@ -1313,6 +1332,8 @@ def parse_input_arguments(parser):
                              +' then an output directory must be specified for each.'
                              #+' If a single executable was used for multiple runs, outputs can still be multiply specified.'
                              ))
+    parser.add_argument('--output-directory-compare-cuda', action='append', default=[],
+                        help=('Output direcotry containing CUDA data to compare to.'))
     parser.add_argument('-l', '--labels', action='append', default=[],
                         help=('Labels for comparing multiple runs. If more than one output is specified,'
                              +' then a label may be specified for each.'
