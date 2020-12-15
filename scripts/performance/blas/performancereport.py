@@ -5,7 +5,7 @@ import os
 import re
 import sys
 
-from matplotlib.ticker import (AutoMinorLocator, MultipleLocator)
+from matplotlib.ticker import (AutoMinorLocator)
 
 import hipblas_gentest as gt
 
@@ -139,7 +139,7 @@ class HipBlasArgumentSet(cr.ArgumentSetABC):
     def collect_timing(self, run_configuration, data_type='gflops'):
         output_filename = self.get_output_file(run_configuration)
         rv = {}
-        print('Processing AMD {}'.format(output_filename))
+        print('Processing {}'.format(output_filename))
         if os.path.exists(output_filename):
             lines = open(output_filename, 'r').readlines()
             us_vals = []
@@ -174,7 +174,7 @@ class HipBlasArgumentSet(cr.ArgumentSetABC):
     def collect_timing_compare(self, run_configuration, data_type='gflops'):
         output_filename = self.get_output_file_compare(run_configuration)
         rv = {}
-        print('Processing CUDA {}'.format(output_filename))
+        print('Processing {}'.format(output_filename))
         if os.path.exists(output_filename):
             lines = open(output_filename, 'r').readlines()
             us_vals = []

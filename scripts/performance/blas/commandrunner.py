@@ -708,7 +708,7 @@ class RunConfiguration(object):
     def _machine_specs_filename(self):
         return os.path.join(self.output_directory, "specs.json")
 
-    def _machine_specs_filanem_compare(self):
+    def _machine_specs_filename_compare(self):
         return os.path.join(self.output_directory_compare, "specs.json")
 
     def save_specifications(self, device_num, cuda):
@@ -721,7 +721,7 @@ class RunConfiguration(object):
         return MachineSpecs.from_file(self._machine_specs_filename())
 
     def load_specifications_compare(self):
-        return MachineSpecs.from_file(self._machine_specs_filanem_compare())
+        return MachineSpecs.from_file(self._machine_specs_filename_compare())
 
 class RunConfigurationsList(list):
     def group_by_label(self):
@@ -1242,7 +1242,6 @@ class CommandRunner(object):
                 plot_success = comparison.plot(self.run_configurations, axes, cuda, compare)
                 print(comparison.get_caption(self.run_configurations))
                 if plot_success:
-                    # TODO:
                     axes.legend(fontsize = 10, bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
                                  mode='expand', borderaxespad=0.)
                     figure.tight_layout(rect=(0,0.05,1.0,1.0))
