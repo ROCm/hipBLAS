@@ -74,7 +74,7 @@ ci: {
     def propertyList = []
     propertyList = auxiliary.appendPropertyList(propertyList)
 
-    def jobNameList = []
+    def jobNameList = [:]
     jobNameList = auxiliary.appendJobNameList(jobNameList)
 
     propertyList.each
