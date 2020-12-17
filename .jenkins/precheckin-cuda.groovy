@@ -13,7 +13,7 @@ def runCI =
 {
     nodeDetails, jobName, buildCommand, label->
 
-    def prj  = new rocProject('hipBLAS', 'PreCheckin')
+    def prj  = new rocProject('hipBLAS', 'PreCheckin-CUDA')
 
     //customize for project
     prj.paths.build_command = buildCommand
