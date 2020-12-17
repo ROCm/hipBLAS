@@ -62,7 +62,7 @@ def setupCI(urlJobName, jobNameList, buildCommand, runCI, label)
     {
         properties(auxiliary.addCommonProperties([pipelineTriggers([cron('0 1 * * *')])]))
         stage(label + ' ' + urlJobName) {
-            runCI([ubuntu20-cuda11:['anycuda']], urlJobName, buildCommand, label)
+            runCI(['ubuntu20-cuda11':['anycuda']], urlJobName, buildCommand, label)
         }
     }
 
