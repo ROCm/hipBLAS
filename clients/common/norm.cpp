@@ -138,10 +138,13 @@ double norm_check_general<hipblasHalf>(
     host_vector<double> hCPU_double(N * lda);
     host_vector<double> hGPU_double(N * lda);
 
-    for(size_t i = 0; i < size_t(N) * lda; i++)
+    for(int i = 0; i < M; i++)
     {
-        hCPU_double[i] = hCPU[i];
-        hGPU_double[i] = hGPU[i];
+        for(int j = 0; j < N; j++)
+        {
+            hCPU_double[i + j * lda] = hCPU[i + j * lda];
+            hGPU_double[i + j * lda] = hGPU[i + j * lda];
+        }
     }
 
     return norm_check_general<double>(norm_type, M, N, lda, hCPU_double, hGPU_double);
@@ -156,10 +159,13 @@ double norm_check_general<hipblasBfloat16>(
     host_vector<float> hCPU_double(N * lda);
     host_vector<float> hGPU_double(N * lda);
 
-    for(size_t i = 0; i < size_t(N) * lda; i++)
+    for(int i = 0; i < M; i++)
     {
-        hCPU_double[i] = bfloat16_to_float(hCPU[i]);
-        hGPU_double[i] = bfloat16_to_float(hGPU[i]);
+        for(int j = 0; j < N; j++)
+        {
+            hCPU_double[i + j * lda] = bfloat16_to_float(hCPU[i + j * lda]);
+            hGPU_double[i + j * lda] = bfloat16_to_float(hGPU[i + j * lda]);
+        }
     }
 
     return norm_check_general<float>(norm_type, M, N, lda, hCPU_double, hGPU_double);
