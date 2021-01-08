@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -32,8 +32,21 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
     int ldb = argus.ldb;
     int ldc = argus.ldc;
 
-    T h_alpha = argus.alpha;
-    T h_beta  = argus.beta;
+    float alpha_float = argus.alpha;
+    float beta_float  = argus.beta;
+
+    T alpha, beta;
+
+    if(is_same<T, hipblasHalf>::value)
+    {
+        alpha = float_to_half(alpha_float);
+        beta  = float_to_half(beta_float);
+    }
+    else
+    {
+        alpha = static_cast<T>(alpha_float);
+        beta  = static_cast<T>(beta_float);
+    }
 
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);

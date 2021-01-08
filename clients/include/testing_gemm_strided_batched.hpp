@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -44,8 +44,22 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
 
     int A_size, B_size, C_size, A_row, A_col, B_row, B_col;
     int bsa, bsb, bsc; // batch size A, B, C
-    T   alpha = argus.alpha;
-    T   beta  = argus.beta;
+
+    float alpha_float = argus.alpha;
+    float beta_float  = argus.beta;
+
+    T alpha, beta;
+
+    if(is_same<T, hipblasHalf>::value)
+    {
+        alpha = float_to_half(alpha_float);
+        beta  = float_to_half(beta_float);
+    }
+    else
+    {
+        alpha = static_cast<T>(alpha_float);
+        beta  = static_cast<T>(beta_float);
+    }
 
     double hipblas_error;
     double gpu_time_used, cpu_time_used;
