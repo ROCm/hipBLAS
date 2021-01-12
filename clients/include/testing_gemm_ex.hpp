@@ -265,16 +265,7 @@ hipblasStatus_t testing_gemm_ex_template(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA_option,
-                      e_transA_option,
-                      e_M,
-                      e_N,
-                      e_K,
-                      e_alpha,
-                      e_lda,
-                      e_ldb,
-                      e_beta,
-                      e_ldc>{}
+        ArgumentModel<e_transA_option, e_transA_option, e_M, e_N, e_K, e_lda, e_ldb, e_ldc>{}
             .log_args<Tc>(std::cout,
                           argus,
                           gpu_time_used,
@@ -306,6 +297,12 @@ hipblasStatus_t testing_gemm_ex(const Arguments& argus)
             && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_32F)
     {
         status = testing_gemm_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float>(argus);
+    }
+    else if(a_type == HIPBLAS_R_16B && b_type == HIPBLAS_R_16B && c_type == HIPBLAS_R_16B
+            && c_type == HIPBLAS_R_16B && compute_type == HIPBLAS_R_32F)
+    {
+        status = testing_gemm_ex_template<hipblasBfloat16, hipblasBfloat16, hipblasBfloat16, float>(
+            argus);
     }
     else if(a_type == HIPBLAS_R_32F && b_type == HIPBLAS_R_32F && c_type == HIPBLAS_R_32F
             && c_type == HIPBLAS_R_32F && compute_type == HIPBLAS_R_32F)

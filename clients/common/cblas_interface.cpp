@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************/
 
@@ -2342,6 +2342,68 @@ void cblas_gemm<hipblasHalf, hipblasHalf, float>(hipblasOperation_t transA,
     for(int i = 0; i < sizeC; i++)
     {
         C[i] = float_to_half(C_float[i]);
+    }
+}
+
+template <>
+void cblas_gemm<hipblasBfloat16, hipblasBfloat16, float>(hipblasOperation_t transA,
+                                                         hipblasOperation_t transB,
+                                                         int                m,
+                                                         int                n,
+                                                         int                k,
+                                                         float              alpha_float,
+                                                         hipblasBfloat16*   A,
+                                                         int                lda,
+                                                         hipblasBfloat16*   B,
+                                                         int                ldb,
+                                                         float              beta_float,
+                                                         hipblasBfloat16*   C,
+                                                         int                ldc)
+{
+    // cblas does not support hipblasBfloat16, so convert to higher precision float
+    // This will give more precise result which is acceptable for testing
+
+    int sizeA = transA == HIPBLAS_OP_N ? k * lda : m * lda;
+    int sizeB = transB == HIPBLAS_OP_N ? n * ldb : k * ldb;
+    int sizeC = n * ldc;
+
+    std::unique_ptr<float[]> A_float(new float[sizeA]());
+    std::unique_ptr<float[]> B_float(new float[sizeB]());
+    std::unique_ptr<float[]> C_float(new float[sizeC]());
+
+    for(int i = 0; i < sizeA; i++)
+    {
+        A_float[i] = bfloat16_to_float(A[i]);
+    }
+    for(int i = 0; i < sizeB; i++)
+    {
+        B_float[i] = bfloat16_to_float(B[i]);
+    }
+    for(int i = 0; i < sizeC; i++)
+    {
+        C_float[i] = bfloat16_to_float(C[i]);
+    }
+
+    // just directly cast, since transA, transB are integers in the enum
+    // printf("transA: rocblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
+    cblas_sgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha_float,
+                const_cast<const float*>(A_float.get()),
+                lda,
+                const_cast<const float*>(B_float.get()),
+                ldb,
+                beta_float,
+                static_cast<float*>(C_float.get()),
+                ldc);
+
+    for(int i = 0; i < sizeC; i++)
+    {
+        C[i] = float_to_bfloat16(C_float[i]);
     }
 }
 
