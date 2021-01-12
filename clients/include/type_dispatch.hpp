@@ -128,17 +128,17 @@ auto hipblas_gemm_dispatch(const Arguments& arg)
         if(Ti != To)
         {
             if(Ti == HIPBLAS_R_8I && To == HIPBLAS_R_32I && Tc == To)
-                return TEST<int8_t, int8_t, int32_t, int32_t>{}(arg);
+                return TEST<int8_t, int32_t, int32_t>{}(arg);
         }
         else if(Tc != To)
         {
             if(To == HIPBLAS_R_16F && Tc == HIPBLAS_R_32F)
             {
-                return TEST<hipblasHalf, hipblasHalf, hipblasHalf, float>{}(arg);
+                return TEST<hipblasHalf, hipblasHalf, float>{}(arg);
             }
             else if(To == HIPBLAS_R_16B && Tc == HIPBLAS_R_32F)
             {
-                return TEST<hipblasBfloat16, hipblasBfloat16, hipblasBfloat16, float>{}(arg);
+                return TEST<hipblasBfloat16, hipblasBfloat16, float>{}(arg);
             }
         }
         else
