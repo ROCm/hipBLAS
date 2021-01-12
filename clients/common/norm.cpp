@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -165,6 +165,27 @@ double norm_check_general<hipblasBfloat16>(
         {
             hCPU_double[i + j * lda] = bfloat16_to_float(hCPU[i + j * lda]);
             hGPU_double[i + j * lda] = bfloat16_to_float(hGPU[i + j * lda]);
+        }
+    }
+
+    return norm_check_general<float>(norm_type, M, N, lda, hCPU_double, hGPU_double);
+}
+
+template <>
+double
+    norm_check_general<int32_t>(char norm_type, int M, int N, int lda, int32_t* hCPU, int32_t* hGPU)
+{
+    // norm type can be 'M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
+
+    host_vector<float> hCPU_double(N * lda);
+    host_vector<float> hGPU_double(N * lda);
+
+    for(int i = 0; i < M; i++)
+    {
+        for(int j = 0; j < N; j++)
+        {
+            hCPU_double[i + j * lda] = (hCPU[i + j * lda]);
+            hGPU_double[i + j * lda] = (hGPU[i + j * lda]);
         }
     }
 

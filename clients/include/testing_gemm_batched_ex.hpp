@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include <fstream>
@@ -18,30 +18,39 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename Ta, typename Tb = Ta, typename Tc = Tb, typename Tex = Tc>
-hipblasStatus_t testing_gemm_batched_ex_template(hipblasOperation_t transA,
-                                                 hipblasOperation_t transB,
-                                                 int                M,
-                                                 int                N,
-                                                 int                K,
-                                                 float              alpha_float,
-                                                 int                lda,
-                                                 int                ldb,
-                                                 float              beta_float,
-                                                 int                ldc,
-                                                 int                norm_check,
-                                                 int                unit_check,
-                                                 hipblasDatatype_t  a_type,
-                                                 hipblasDatatype_t  b_type,
-                                                 hipblasDatatype_t  c_type,
-                                                 int                batch_count,
-                                                 hipblasDatatype_t  compute_type,
-                                                 bool               FORTRAN)
+hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& argus)
 {
+    bool FORTRAN                = argus.fortran;
     auto hipblasGemmBatchedExFn = FORTRAN ? hipblasGemmBatchedExFortran : hipblasGemmBatchedEx;
 
     hipblasGemmAlgo_t algo           = HIPBLAS_GEMM_DEFAULT;
     uint32_t          solution_index = 0;
     uint32_t          flags          = 0;
+
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
+
+    int M = argus.M;
+    int N = argus.N;
+    int K = argus.K;
+
+    int lda = argus.lda;
+    int ldb = argus.ldb;
+    int ldc = argus.ldc;
+
+    int batch_count = argus.batch_count;
+
+    hipblasDatatype_t a_type       = argus.a_type;
+    hipblasDatatype_t b_type       = argus.b_type;
+    hipblasDatatype_t c_type       = argus.c_type;
+    hipblasDatatype_t compute_type = argus.compute_type;
+
+    float alpha_float = argus.alpha;
+    float beta_float  = argus.beta;
+
+    int norm_check = argus.norm_check;
+    int unit_check = argus.unit_check;
+    int timing     = argus.timing;
 
     Tex h_alpha_Tc;
     Tex h_beta_Tc;
@@ -225,12 +234,88 @@ hipblasStatus_t testing_gemm_batched_ex_template(hipblasOperation_t transA,
                                 ldc);
     }
 
+    double hipblas_error = 0.0;
+    double gpu_time_used = 0.0;
     // enable unit check, notice unit check is not invasive, but norm check is,
     // unit check and norm check can not be interchanged their order
     if(unit_check)
     {
         for(int b = 0; b < batch_count; b++)
             unit_check_general<Tc>(M, N, ldc, hC_gold[b].data(), hC[b].data());
+    }
+    if(norm_check)
+    {
+        hipblas_error = std::abs(norm_check_general<Tc>('F', M, N, lda, hC_gold, hC, batch_count));
+    }
+
+    if(timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status = hipblasGemmBatchedExFn(handle,
+                                            transA,
+                                            transB,
+                                            M,
+                                            N,
+                                            K,
+                                            &h_alpha_Tc,
+                                            (const void**)(Ta**)dA,
+                                            a_type,
+                                            lda,
+                                            (const void**)(Tb**)dB,
+                                            b_type,
+                                            ldb,
+                                            &h_beta_Tc,
+                                            (void**)(Tc**)dC,
+                                            c_type,
+                                            ldc,
+                                            batch_count,
+                                            compute_type,
+                                            algo);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_transA_option,
+                      e_transB_option,
+                      e_M,
+                      e_N,
+                      e_K,
+                      e_alpha,
+                      e_lda,
+                      e_ldb,
+                      e_beta,
+                      e_ldc,
+                      e_batch_count>{}
+            .log_args<Tc>(std::cout,
+                          argus,
+                          gpu_time_used,
+                          gemm_gflop_count<Tex>(M, N, K),
+                          gemm_gbyte_count<Tex>(M, N, K),
+                          hipblas_error);
     }
 
     hipblasDestroy(handle);
@@ -240,186 +325,48 @@ hipblasStatus_t testing_gemm_batched_ex_template(hipblasOperation_t transA,
 
 hipblasStatus_t testing_gemm_batched_ex(const Arguments& argus)
 {
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
-
-    int M = argus.M;
-    int N = argus.N;
-    int K = argus.K;
-
-    int lda = argus.lda;
-    int ldb = argus.ldb;
-    int ldc = argus.ldc;
-
-    int batch_count = argus.batch_count;
-
     hipblasDatatype_t a_type       = argus.a_type;
     hipblasDatatype_t b_type       = argus.b_type;
     hipblasDatatype_t c_type       = argus.c_type;
     hipblasDatatype_t compute_type = argus.compute_type;
 
-    float alpha = argus.alpha;
-    float beta  = argus.beta;
-
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-
-    int norm_check = argus.norm_check;
-    int unit_check = argus.unit_check;
 
     if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
        && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_16F)
     {
-        status = testing_gemm_batched_ex_template<hipblasHalf>(transA,
-                                                               transB,
-                                                               M,
-                                                               N,
-                                                               K,
-                                                               alpha,
-                                                               lda,
-                                                               ldb,
-                                                               beta,
-                                                               ldc,
-                                                               norm_check,
-                                                               unit_check,
-                                                               a_type,
-                                                               b_type,
-                                                               c_type,
-                                                               batch_count,
-                                                               compute_type,
-                                                               argus.fortran);
+        status = testing_gemm_batched_ex_template<hipblasHalf>(argus);
     }
     else if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
             && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_32F)
     {
-        status = testing_gemm_batched_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float>(
-            transA,
-            transB,
-            M,
-            N,
-            K,
-            alpha,
-            lda,
-            ldb,
-            beta,
-            ldc,
-            norm_check,
-            unit_check,
-            a_type,
-            b_type,
-            c_type,
-            batch_count,
-            compute_type,
-            argus.fortran);
+        status
+            = testing_gemm_batched_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float>(argus);
     }
     else if(a_type == HIPBLAS_R_32F && b_type == HIPBLAS_R_32F && c_type == HIPBLAS_R_32F
             && c_type == HIPBLAS_R_32F && compute_type == HIPBLAS_R_32F)
     {
-        status = testing_gemm_batched_ex_template<float>(transA,
-                                                         transB,
-                                                         M,
-                                                         N,
-                                                         K,
-                                                         alpha,
-                                                         lda,
-                                                         ldb,
-                                                         beta,
-                                                         ldc,
-                                                         norm_check,
-                                                         unit_check,
-                                                         a_type,
-                                                         b_type,
-                                                         c_type,
-                                                         batch_count,
-                                                         compute_type,
-                                                         argus.fortran);
+        status = testing_gemm_batched_ex_template<float>(argus);
     }
     else if(a_type == HIPBLAS_R_64F && b_type == HIPBLAS_R_64F && c_type == HIPBLAS_R_64F
             && c_type == HIPBLAS_R_64F && compute_type == HIPBLAS_R_64F)
     {
-        status = testing_gemm_batched_ex_template<double>(transA,
-                                                          transB,
-                                                          M,
-                                                          N,
-                                                          K,
-                                                          alpha,
-                                                          lda,
-                                                          ldb,
-                                                          beta,
-                                                          ldc,
-                                                          norm_check,
-                                                          unit_check,
-                                                          a_type,
-                                                          b_type,
-                                                          c_type,
-                                                          batch_count,
-                                                          compute_type,
-                                                          argus.fortran);
+        status = testing_gemm_batched_ex_template<double>(argus);
     }
     else if(a_type == HIPBLAS_C_32F && b_type == HIPBLAS_C_32F && c_type == HIPBLAS_C_32F
             && c_type == HIPBLAS_C_32F && compute_type == HIPBLAS_C_32F)
     {
-        status = testing_gemm_batched_ex_template<hipblasComplex>(transA,
-                                                                  transB,
-                                                                  M,
-                                                                  N,
-                                                                  K,
-                                                                  alpha,
-                                                                  lda,
-                                                                  ldb,
-                                                                  beta,
-                                                                  ldc,
-                                                                  norm_check,
-                                                                  unit_check,
-                                                                  a_type,
-                                                                  b_type,
-                                                                  c_type,
-                                                                  batch_count,
-                                                                  compute_type,
-                                                                  argus.fortran);
+        status = testing_gemm_batched_ex_template<hipblasComplex>(argus);
     }
     else if(a_type == HIPBLAS_C_64F && b_type == HIPBLAS_C_64F && c_type == HIPBLAS_C_64F
             && c_type == HIPBLAS_C_64F && compute_type == HIPBLAS_C_64F)
     {
-        status = testing_gemm_batched_ex_template<hipblasDoubleComplex>(transA,
-                                                                        transB,
-                                                                        M,
-                                                                        N,
-                                                                        K,
-                                                                        alpha,
-                                                                        lda,
-                                                                        ldb,
-                                                                        beta,
-                                                                        ldc,
-                                                                        norm_check,
-                                                                        unit_check,
-                                                                        a_type,
-                                                                        b_type,
-                                                                        c_type,
-                                                                        batch_count,
-                                                                        compute_type,
-                                                                        argus.fortran);
+        status = testing_gemm_batched_ex_template<hipblasDoubleComplex>(argus);
     }
     else if(a_type == HIPBLAS_R_8I && b_type == HIPBLAS_R_8I && c_type == HIPBLAS_R_32I
             && c_type == HIPBLAS_R_32I && compute_type == HIPBLAS_R_32I)
     {
-        status = testing_gemm_batched_ex_template<int8_t, int8_t, int32_t, int32_t>(transA,
-                                                                                    transB,
-                                                                                    M,
-                                                                                    N,
-                                                                                    K,
-                                                                                    alpha,
-                                                                                    lda,
-                                                                                    ldb,
-                                                                                    beta,
-                                                                                    ldc,
-                                                                                    norm_check,
-                                                                                    unit_check,
-                                                                                    a_type,
-                                                                                    b_type,
-                                                                                    c_type,
-                                                                                    batch_count,
-                                                                                    compute_type,
-                                                                                    argus.fortran);
+        status = testing_gemm_batched_ex_template<int8_t, int8_t, int32_t, int32_t>(argus);
     }
     else
     {

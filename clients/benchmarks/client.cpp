@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "program_options.hpp"
@@ -255,7 +255,6 @@ void run_function(const func_map& map, const Arguments& arg, const std::string& 
 #include "testing_trtri.hpp"
 #include "testing_trtri_batched.hpp"
 #include "testing_trtri_strided_batched.hpp"
-/*
 // Template to dispatch testing_gemm_ex for performance tests
 // When Ti == void or Ti == To == Tc == bfloat16, the test is marked invalid
 template <typename Ti, typename To = Ti, typename Tc = To, typename = void>
@@ -275,8 +274,8 @@ struct perf_gemm_ex<Ti,
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"gemm_ex", testing_gemm_ex<Ti, To, Tc>},
-            {"gemm_batched_ex", testing_gemm_batched_ex<Ti, To, Tc>},
+            {"gemm_ex", testing_gemm_ex_template<Ti, Ti, To, Tc>},
+            {"gemm_batched_ex", testing_gemm_batched_ex_template<Ti, Ti, To, Tc>},
         };
         run_function(map, arg);
     }
@@ -301,12 +300,12 @@ struct perf_gemm_strided_batched_ex<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"gemm_strided_batched_ex", testing_gemm_strided_batched_ex<Ti, To, Tc>},
+            {"gemm_strided_batched_ex", testing_gemm_strided_batched_ex_template<Ti, Ti, To, Tc>},
         };
         run_function(map, arg);
     }
 };
-*/
+
 template <typename T, typename U = T, typename = void>
 struct perf_blas : hipblas_test_invalid
 {
@@ -888,7 +887,7 @@ int run_bench_test(Arguments& arg)
             arg.stride_c = min_stride_c;
         }
     }
-    /*
+
     if(!strcmp(function, "gemm_ex") || !strcmp(function, "gemm_batched_ex"))
     {
         // adjust dimension for GEMM routines
@@ -955,9 +954,8 @@ int run_bench_test(Arguments& arg)
         }
 
         hipblas_gemm_dispatch<perf_gemm_strided_batched_ex>(arg);
-
     }
-    else*/
+    else
     {
         /*
         if(!strcmp(function, "scal") || !strcmp(function, "scal_batched")
