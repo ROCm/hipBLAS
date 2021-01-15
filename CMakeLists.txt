@@ -85,7 +85,7 @@ endif()
 
 # Hip headers required of all clients; clients use hip to allocate device memory
 if( USE_CUDA)
-    find_package( HIP REQUIRED )
+    find_package( HIP REQUIRED MODULE )
 else( )
     find_package(hip REQUIRED CONFIG PATHS ${ROCM_PATH} /opt/rocm)
 endif( )
