@@ -79,8 +79,8 @@ option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 # Quietly look for CUDA, but if not found it's not an error
 # The presense of hip is not sufficient to determine if we want a rocm or cuda backend
 option(USE_CUDA "Look for CUDA and use that as a backend if found" OFF)
-if(USE_CUDA)
-    find_package( CUDA QUIET )
+if (USE_CUDA)
+    find_package( CUDA REQUIRED )
 endif()
 
 # Hip headers required of all clients; clients use hip to allocate device memory
