@@ -87,7 +87,7 @@ endif()
 if( USE_CUDA)
     find_package( HIP REQUIRED MODULE )
 else( )
-    find_package(hip REQUIRED CONFIG PATHS ${ROCM_PATH} /opt/rocm)
+    find_package( hip REQUIRED CONFIG PATHS ${ROCM_PATH} /opt/rocm)
 endif( )
 
 if( USE_CUDA )
