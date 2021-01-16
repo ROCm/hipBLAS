@@ -85,24 +85,24 @@ Yet, the goal of this file is to verify result correctness not argument-checkers
 Representative sampling is sufficient, endless brute-force sampling is not necessary
 =================================================================== */
 
-int N_range[] = {-1, 10, 500, 1000, 7111, 10000};
+const int N_range[] = {-1, 10, 500, 1000, 7111, 10000};
 
 // vector of vector, each pair is a {alpha, beta};
 // add/delete this list in pairs, like {2.0, 4.0}
-vector<vector<double>> alpha_beta_range = {{1.0, 0.0}, {2.0, -1.0}};
+const vector<vector<double>> alpha_beta_range = {{1.0, 0.0}, {2.0, -1.0}};
 
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 2}
 // incx , incy must > 0, otherwise there is no real computation taking place,
 // but throw a message, which will still be detected by gtest
-vector<vector<int>> incx_incy_range = {
+const vector<vector<int>> incx_incy_range = {
     {1, 1},
     {-1, -1},
 };
 
-double stride_scale_range[] = {1.0, 2.5};
+const double stride_scale_range[] = {1.0, 2.5};
 
-int batch_count_range[] = {-1, 0, 1, 2, 10};
+const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 const bool is_fortran[] = {false, true};
 

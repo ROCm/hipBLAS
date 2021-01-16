@@ -20,13 +20,13 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
     auto hipblasRotStridedBatchedFn = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
                                               : hipblasRotStridedBatched<T, U, V, false>;
 
-    int    N            = arg.N;
-    int    incx         = arg.incx;
-    int    incy         = arg.incy;
-    double stride_scale = arg.stride_scale;
-    int    stride_x     = N * incx * stride_scale;
-    int    stride_y     = N * incy * stride_scale;
-    int    batch_count  = arg.batch_count;
+    int           N            = arg.N;
+    int           incx         = arg.incx;
+    int           incy         = arg.incy;
+    double        stride_scale = arg.stride_scale;
+    hipblasStride stride_x     = N * incx * stride_scale;
+    hipblasStride stride_y     = N * incy * stride_scale;
+    int           batch_count  = arg.batch_count;
 
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;

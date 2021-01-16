@@ -27,10 +27,10 @@ hipblasStatus_t testing_hpmv_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    int dim_A    = N * (N + 1) / 2;
-    int stride_A = dim_A * stride_scale;
-    int stride_x;
-    int stride_y;
+    int           dim_A    = N * (N + 1) / 2;
+    hipblasStride stride_A = dim_A * stride_scale;
+    hipblasStride stride_x;
+    hipblasStride stride_y;
 
     int               A_size = stride_A * batch_count;
     int               X_size;

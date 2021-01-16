@@ -38,9 +38,14 @@ double dlansy_(char* norm_type, char* uplo, int* n, double* A, int* lda, double*
 
 void saxpy_(int* n, float* alpha, float* x, int* incx, float* y, int* incy);
 void daxpy_(int* n, double* alpha, double* x, int* incx, double* y, int* incy);
-void caxpy_(int* n, float* alpha, hipblasComplex* x, int* incx, hipblasComplex* y, int* incy);
-void zaxpy_(
-    int* n, double* alpha, hipblasDoubleComplex* x, int* incx, hipblasDoubleComplex* y, int* incy);
+void caxpy_(
+    int* n, hipblasComplex* alpha, hipblasComplex* x, int* incx, hipblasComplex* y, int* incy);
+void zaxpy_(int*                  n,
+            hipblasDoubleComplex* alpha,
+            hipblasDoubleComplex* x,
+            int*                  incx,
+            hipblasDoubleComplex* y,
+            int*                  incy);
 
 #ifdef __cplusplus
 }
@@ -92,10 +97,10 @@ double norm_check_general<hipblasComplex>(
 {
     //norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
 
-    float work[1];
-    int   incx  = 1;
-    float alpha = -1.0f;
-    int   size  = lda * N;
+    float          work[1];
+    int            incx  = 1;
+    hipblasComplex alpha = -1.0f;
+    int            size  = lda * N;
 
     float cpu_norm = clange_(&norm_type, &M, &N, hCPU, &lda, work);
     caxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
@@ -111,10 +116,10 @@ double norm_check_general<hipblasDoubleComplex>(
 {
     //norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
 
-    double work[1];
-    int    incx  = 1;
-    double alpha = -1.0;
-    int    size  = lda * N;
+    double               work[1];
+    int                  incx  = 1;
+    hipblasDoubleComplex alpha = -1.0;
+    int                  size  = lda * N;
 
     double cpu_norm = zlange_(&norm_type, &M, &N, hCPU, &lda, work);
     zaxpy_(&size, &alpha, hCPU, &incx, hGPU, &incx);
@@ -133,10 +138,13 @@ double norm_check_general<hipblasHalf>(
     host_vector<double> hCPU_double(N * lda);
     host_vector<double> hGPU_double(N * lda);
 
-    for(size_t i = 0; i < size_t(N) * lda; i++)
+    for(int i = 0; i < M; i++)
     {
-        hCPU_double[i] = hCPU[i];
-        hGPU_double[i] = hGPU[i];
+        for(int j = 0; j < N; j++)
+        {
+            hCPU_double[i + j * lda] = hCPU[i + j * lda];
+            hGPU_double[i + j * lda] = hGPU[i + j * lda];
+        }
     }
 
     return norm_check_general<double>(norm_type, M, N, lda, hCPU_double, hGPU_double);
@@ -151,10 +159,13 @@ double norm_check_general<hipblasBfloat16>(
     host_vector<float> hCPU_double(N * lda);
     host_vector<float> hGPU_double(N * lda);
 
-    for(size_t i = 0; i < size_t(N) * lda; i++)
+    for(int i = 0; i < M; i++)
     {
-        hCPU_double[i] = bfloat16_to_float(hCPU[i]);
-        hGPU_double[i] = bfloat16_to_float(hGPU[i]);
+        for(int j = 0; j < N; j++)
+        {
+            hCPU_double[i + j * lda] = bfloat16_to_float(hCPU[i + j * lda]);
+            hGPU_double[i + j * lda] = bfloat16_to_float(hGPU[i + j * lda]);
+        }
     }
 
     return norm_check_general<float>(norm_type, M, N, lda, hCPU_double, hGPU_double);
@@ -211,7 +222,7 @@ double norm_check_symmetric<double>(
 //
 //    float work[1];
 //    int incx = 1;
-//    float alpha = -1.0f;
+//    hipblasComplex alpha = -1.0f;
 //    int size = lda * N;
 //
 //    float cpu_norm = clanhe_(&norm_type, &uplo, &N, hCPU, &lda, work);
@@ -230,7 +241,7 @@ double norm_check_symmetric<double>(
 //
 //    double work[1];
 //    int incx = 1;
-//    double alpha = -1.0;
+//    hipblasDoubleComplex alpha = -1.0;
 //    int size = lda * N;
 //
 //    double cpu_norm = zlanhe_(&norm_type, &uplo, &N, hCPU, &lda, work);

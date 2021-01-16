@@ -43,12 +43,12 @@ hipblasStatus_t testing_trsm_strided_batched_ex(const Arguments& argus)
 
     int K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
-    int strideA     = lda * K * stride_scale;
-    int strideB     = ldb * N * stride_scale;
-    int stride_invA = TRSM_BLOCK * K;
-    int A_size      = strideA * batch_count;
-    int B_size      = strideB * batch_count;
-    int invA_size   = stride_invA * batch_count;
+    hipblasStride strideA     = lda * K * stride_scale;
+    hipblasStride strideB     = ldb * N * stride_scale;
+    hipblasStride stride_invA = TRSM_BLOCK * K;
+    int           A_size      = strideA * batch_count;
+    int           B_size      = strideB * batch_count;
+    int           invA_size   = stride_invA * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

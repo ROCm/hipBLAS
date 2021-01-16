@@ -28,8 +28,8 @@ hipblasStatus_t testing_trtri_strided_batched(const Arguments& argus)
     int ldinvA      = lda;
     int batch_count = argus.batch_count;
 
-    int strideA = lda * N;
-    int A_size  = strideA * batch_count;
+    hipblasStride strideA = lda * N;
+    int           A_size  = strideA * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

@@ -147,10 +147,10 @@ hipblasStatus_t hipblasAxpyStridedBatched<hipblasHalf>(hipblasHandle_t    handle
                                                        const hipblasHalf* alpha,
                                                        const hipblasHalf* x,
                                                        int                incx,
-                                                       int                stridex,
+                                                       hipblasStride      stridex,
                                                        hipblasHalf*       y,
                                                        int                incy,
-                                                       int                stridey,
+                                                       hipblasStride      stridey,
                                                        int                batch_count)
 {
     return hipblasHaxpyStridedBatched(
@@ -163,10 +163,10 @@ hipblasStatus_t hipblasAxpyStridedBatched<float>(hipblasHandle_t handle,
                                                  const float*    alpha,
                                                  const float*    x,
                                                  int             incx,
-                                                 int             stridex,
+                                                 hipblasStride   stridex,
                                                  float*          y,
                                                  int             incy,
-                                                 int             stridey,
+                                                 hipblasStride   stridey,
                                                  int             batch_count)
 {
     return hipblasSaxpyStridedBatched(
@@ -179,10 +179,10 @@ hipblasStatus_t hipblasAxpyStridedBatched<double>(hipblasHandle_t handle,
                                                   const double*   alpha,
                                                   const double*   x,
                                                   int             incx,
-                                                  int             stridex,
+                                                  hipblasStride   stridex,
                                                   double*         y,
                                                   int             incy,
-                                                  int             stridey,
+                                                  hipblasStride   stridey,
                                                   int             batch_count)
 {
     return hipblasDaxpyStridedBatched(
@@ -195,10 +195,10 @@ hipblasStatus_t hipblasAxpyStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           const hipblasComplex* alpha,
                                                           const hipblasComplex* x,
                                                           int                   incx,
-                                                          int                   stridex,
+                                                          hipblasStride         stridex,
                                                           hipblasComplex*       y,
                                                           int                   incy,
-                                                          int                   stridey,
+                                                          hipblasStride         stridey,
                                                           int                   batch_count)
 {
     return hipblasCaxpyStridedBatched(
@@ -211,10 +211,10 @@ hipblasStatus_t hipblasAxpyStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* alpha,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 hipblasDoubleComplex*       y,
                                                                 int                         incy,
-                                                                int                         stridey,
+                                                                hipblasStride               stridey,
                                                                 int batch_count)
 {
     return hipblasZaxpyStridedBatched(
@@ -337,7 +337,7 @@ hipblasStatus_t hipblasScalStridedBatched<float>(hipblasHandle_t handle,
                                                  const float*    alpha,
                                                  float*          x,
                                                  int             incx,
-                                                 int             stridex,
+                                                 hipblasStride   stridex,
                                                  int             batch_count)
 {
     return hipblasSscalStridedBatched(handle, n, alpha, x, incx, stridex, batch_count);
@@ -349,7 +349,7 @@ hipblasStatus_t hipblasScalStridedBatched<double>(hipblasHandle_t handle,
                                                   const double*   alpha,
                                                   double*         x,
                                                   int             incx,
-                                                  int             stridex,
+                                                  hipblasStride   stridex,
                                                   int             batch_count)
 {
     return hipblasDscalStridedBatched(handle, n, alpha, x, incx, stridex, batch_count);
@@ -361,7 +361,7 @@ hipblasStatus_t hipblasScalStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           const hipblasComplex* alpha,
                                                           hipblasComplex*       x,
                                                           int                   incx,
-                                                          int                   stridex,
+                                                          hipblasStride         stridex,
                                                           int                   batch_count)
 {
     return hipblasCscalStridedBatched(handle, n, alpha, x, incx, stridex, batch_count);
@@ -373,7 +373,7 @@ hipblasStatus_t hipblasScalStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* alpha,
                                                                 hipblasDoubleComplex*       x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 int batch_count)
 {
     return hipblasZscalStridedBatched(handle, n, alpha, x, incx, stridex, batch_count);
@@ -385,7 +385,7 @@ hipblasStatus_t hipblasScalStridedBatched<hipblasComplex, float>(hipblasHandle_t
                                                                  const float*    alpha,
                                                                  hipblasComplex* x,
                                                                  int             incx,
-                                                                 int             stridex,
+                                                                 hipblasStride   stridex,
                                                                  int             batch_count)
 {
     return hipblasCsscalStridedBatched(handle, n, alpha, x, incx, stridex, batch_count);
@@ -397,8 +397,8 @@ hipblasStatus_t hipblasScalStridedBatched<hipblasDoubleComplex, double>(hipblasH
                                                                         const double*   alpha,
                                                                         hipblasDoubleComplex* x,
                                                                         int                   incx,
-                                                                        int stridex,
-                                                                        int batch_count)
+                                                                        hipblasStride stridex,
+                                                                        int           batch_count)
 {
     return hipblasZdscalStridedBatched(handle, n, alpha, x, incx, stridex, batch_count);
 }
@@ -481,10 +481,10 @@ hipblasStatus_t hipblasSwapStridedBatched<float>(hipblasHandle_t handle,
                                                  int             n,
                                                  float*          x,
                                                  int             incx,
-                                                 int             stridex,
+                                                 hipblasStride   stridex,
                                                  float*          y,
                                                  int             incy,
-                                                 int             stridey,
+                                                 hipblasStride   stridey,
                                                  int             batch_count)
 {
     return hipblasSswapStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
@@ -495,10 +495,10 @@ hipblasStatus_t hipblasSwapStridedBatched<double>(hipblasHandle_t handle,
                                                   int             n,
                                                   double*         x,
                                                   int             incx,
-                                                  int             stridex,
+                                                  hipblasStride   stridex,
                                                   double*         y,
                                                   int             incy,
-                                                  int             stridey,
+                                                  hipblasStride   stridey,
                                                   int             batch_count)
 {
     return hipblasDswapStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
@@ -509,10 +509,10 @@ hipblasStatus_t hipblasSwapStridedBatched<hipblasComplex>(hipblasHandle_t handle
                                                           int             n,
                                                           hipblasComplex* x,
                                                           int             incx,
-                                                          int             stridex,
+                                                          hipblasStride   stridex,
                                                           hipblasComplex* y,
                                                           int             incy,
-                                                          int             stridey,
+                                                          hipblasStride   stridey,
                                                           int             batch_count)
 {
     return hipblasCswapStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
@@ -523,10 +523,10 @@ hipblasStatus_t hipblasSwapStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 int                   n,
                                                                 hipblasDoubleComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 hipblasDoubleComplex* y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 int                   batch_count)
 {
     return hipblasZswapStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
@@ -620,10 +620,10 @@ hipblasStatus_t hipblasCopyStridedBatched<float>(hipblasHandle_t handle,
                                                  int             n,
                                                  const float*    x,
                                                  int             incx,
-                                                 int             stridex,
+                                                 hipblasStride   stridex,
                                                  float*          y,
                                                  int             incy,
-                                                 int             stridey,
+                                                 hipblasStride   stridey,
                                                  int             batch_count)
 {
     return hipblasScopyStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
@@ -634,10 +634,10 @@ hipblasStatus_t hipblasCopyStridedBatched<double>(hipblasHandle_t handle,
                                                   int             n,
                                                   const double*   x,
                                                   int             incx,
-                                                  int             stridex,
+                                                  hipblasStride   stridex,
                                                   double*         y,
                                                   int             incy,
-                                                  int             stridey,
+                                                  hipblasStride   stridey,
                                                   int             batch_count)
 {
     return hipblasDcopyStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
@@ -648,10 +648,10 @@ hipblasStatus_t hipblasCopyStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           int                   n,
                                                           const hipblasComplex* x,
                                                           int                   incx,
-                                                          int                   stridex,
+                                                          hipblasStride         stridex,
                                                           hipblasComplex*       y,
                                                           int                   incy,
-                                                          int                   stridey,
+                                                          hipblasStride         stridey,
                                                           int                   batch_count)
 {
     return hipblasCcopyStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
@@ -662,10 +662,10 @@ hipblasStatus_t hipblasCopyStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 int                         n,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 hipblasDoubleComplex*       y,
                                                                 int                         incy,
-                                                                int                         stridey,
+                                                                hipblasStride               stridey,
                                                                 int batch_count)
 {
     return hipblasZcopyStridedBatched(handle, n, x, incx, stridex, y, incy, stridey, batch_count);
@@ -879,10 +879,10 @@ hipblasStatus_t hipblasDotStridedBatched<hipblasHalf>(hipblasHandle_t    handle,
                                                       int                n,
                                                       const hipblasHalf* x,
                                                       int                incx,
-                                                      int                stridex,
+                                                      hipblasStride      stridex,
                                                       const hipblasHalf* y,
                                                       int                incy,
-                                                      int                stridey,
+                                                      hipblasStride      stridey,
                                                       int                batch_count,
                                                       hipblasHalf*       result)
 {
@@ -895,10 +895,10 @@ hipblasStatus_t hipblasDotStridedBatched<hipblasBfloat16>(hipblasHandle_t       
                                                           int                    n,
                                                           const hipblasBfloat16* x,
                                                           int                    incx,
-                                                          int                    stridex,
+                                                          hipblasStride          stridex,
                                                           const hipblasBfloat16* y,
                                                           int                    incy,
-                                                          int                    stridey,
+                                                          hipblasStride          stridey,
                                                           int                    batch_count,
                                                           hipblasBfloat16*       result)
 {
@@ -911,10 +911,10 @@ hipblasStatus_t hipblasDotStridedBatched<float>(hipblasHandle_t handle,
                                                 int             n,
                                                 const float*    x,
                                                 int             incx,
-                                                int             stridex,
+                                                hipblasStride   stridex,
                                                 const float*    y,
                                                 int             incy,
-                                                int             stridey,
+                                                hipblasStride   stridey,
                                                 int             batch_count,
                                                 float*          result)
 {
@@ -927,10 +927,10 @@ hipblasStatus_t hipblasDotStridedBatched<double>(hipblasHandle_t handle,
                                                  int             n,
                                                  const double*   x,
                                                  int             incx,
-                                                 int             stridex,
+                                                 hipblasStride   stridex,
                                                  const double*   y,
                                                  int             incy,
-                                                 int             stridey,
+                                                 hipblasStride   stridey,
                                                  int             batch_count,
                                                  double*         result)
 {
@@ -943,10 +943,10 @@ hipblasStatus_t hipblasDotStridedBatched<hipblasComplex>(hipblasHandle_t       h
                                                          int                   n,
                                                          const hipblasComplex* x,
                                                          int                   incx,
-                                                         int                   stridex,
+                                                         hipblasStride         stridex,
                                                          const hipblasComplex* y,
                                                          int                   incy,
-                                                         int                   stridey,
+                                                         hipblasStride         stridey,
                                                          int                   batch_count,
                                                          hipblasComplex*       result)
 {
@@ -959,10 +959,10 @@ hipblasStatus_t hipblasDotcStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           int                   n,
                                                           const hipblasComplex* x,
                                                           int                   incx,
-                                                          int                   stridex,
+                                                          hipblasStride         stridex,
                                                           const hipblasComplex* y,
                                                           int                   incy,
-                                                          int                   stridey,
+                                                          hipblasStride         stridey,
                                                           int                   batch_count,
                                                           hipblasComplex*       result)
 {
@@ -975,10 +975,10 @@ hipblasStatus_t hipblasDotStridedBatched<hipblasDoubleComplex>(hipblasHandle_t  
                                                                int                         n,
                                                                const hipblasDoubleComplex* x,
                                                                int                         incx,
-                                                               int                         stridex,
+                                                               hipblasStride               stridex,
                                                                const hipblasDoubleComplex* y,
                                                                int                         incy,
-                                                               int                         stridey,
+                                                               hipblasStride               stridey,
                                                                int                   batch_count,
                                                                hipblasDoubleComplex* result)
 {
@@ -991,10 +991,10 @@ hipblasStatus_t hipblasDotcStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 int                         n,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 const hipblasDoubleComplex* y,
                                                                 int                         incy,
-                                                                int                         stridey,
+                                                                hipblasStride               stridey,
                                                                 int                   batch_count,
                                                                 hipblasDoubleComplex* result)
 {
@@ -1087,7 +1087,7 @@ hipblasStatus_t hipblasAsumStridedBatched<float, float>(hipblasHandle_t handle,
                                                         int             n,
                                                         const float*    x,
                                                         int             incx,
-                                                        int             stridex,
+                                                        hipblasStride   stridex,
                                                         int             batch_count,
                                                         float*          result)
 {
@@ -1100,7 +1100,7 @@ hipblasStatus_t hipblasAsumStridedBatched<double, double>(hipblasHandle_t handle
                                                           int             n,
                                                           const double*   x,
                                                           int             incx,
-                                                          int             stridex,
+                                                          hipblasStride   stridex,
                                                           int             batch_count,
                                                           double*         result)
 {
@@ -1113,7 +1113,7 @@ hipblasStatus_t hipblasAsumStridedBatched<hipblasComplex, float>(hipblasHandle_t
                                                                  int                   n,
                                                                  const hipblasComplex* x,
                                                                  int                   incx,
-                                                                 int                   stridex,
+                                                                 hipblasStride         stridex,
                                                                  int                   batch_count,
                                                                  float*                result)
 {
@@ -1127,7 +1127,7 @@ hipblasStatus_t
                                                             int                         n,
                                                             const hipblasDoubleComplex* x,
                                                             int                         incx,
-                                                            int                         stridex,
+                                                            hipblasStride               stridex,
                                                             int                         batch_count,
                                                             double*                     result)
 {
@@ -1220,7 +1220,7 @@ hipblasStatus_t hipblasNrm2StridedBatched<float, float>(hipblasHandle_t handle,
                                                         int             n,
                                                         const float*    x,
                                                         int             incx,
-                                                        int             stridex,
+                                                        hipblasStride   stridex,
                                                         int             batch_count,
                                                         float*          result)
 {
@@ -1233,7 +1233,7 @@ hipblasStatus_t hipblasNrm2StridedBatched<double, double>(hipblasHandle_t handle
                                                           int             n,
                                                           const double*   x,
                                                           int             incx,
-                                                          int             stridex,
+                                                          hipblasStride   stridex,
                                                           int             batch_count,
                                                           double*         result)
 {
@@ -1246,7 +1246,7 @@ hipblasStatus_t hipblasNrm2StridedBatched<hipblasComplex, float>(hipblasHandle_t
                                                                  int                   n,
                                                                  const hipblasComplex* x,
                                                                  int                   incx,
-                                                                 int                   stridex,
+                                                                 hipblasStride         stridex,
                                                                  int                   batch_count,
                                                                  float*                result)
 {
@@ -1260,7 +1260,7 @@ hipblasStatus_t
                                                             int                         n,
                                                             const hipblasDoubleComplex* x,
                                                             int                         incx,
-                                                            int                         stridex,
+                                                            hipblasStride               stridex,
                                                             int                         batch_count,
                                                             double*                     result)
 {
@@ -1439,10 +1439,10 @@ hipblasStatus_t hipblasRotStridedBatched<float>(hipblasHandle_t handle,
                                                 int             n,
                                                 float*          x,
                                                 int             incx,
-                                                int             stridex,
+                                                hipblasStride   stridex,
                                                 float*          y,
                                                 int             incy,
-                                                int             stridey,
+                                                hipblasStride   stridey,
                                                 const float*    c,
                                                 const float*    s,
                                                 int             batch_count)
@@ -1456,10 +1456,10 @@ hipblasStatus_t hipblasRotStridedBatched<double>(hipblasHandle_t handle,
                                                  int             n,
                                                  double*         x,
                                                  int             incx,
-                                                 int             stridex,
+                                                 hipblasStride   stridex,
                                                  double*         y,
                                                  int             incy,
-                                                 int             stridey,
+                                                 hipblasStride   stridey,
                                                  const double*   c,
                                                  const double*   s,
                                                  int             batch_count)
@@ -1473,10 +1473,10 @@ hipblasStatus_t hipblasRotStridedBatched<hipblasComplex, float>(hipblasHandle_t 
                                                                 int                   n,
                                                                 hipblasComplex*       x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 hipblasComplex*       y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 const float*          c,
                                                                 const hipblasComplex* s,
                                                                 int                   batch_count)
@@ -1490,10 +1490,10 @@ hipblasStatus_t hipblasRotStridedBatched<hipblasComplex, float, float>(hipblasHa
                                                                        int             n,
                                                                        hipblasComplex* x,
                                                                        int             incx,
-                                                                       int             stridex,
+                                                                       hipblasStride   stridex,
                                                                        hipblasComplex* y,
                                                                        int             incy,
-                                                                       int             stridey,
+                                                                       hipblasStride   stridey,
                                                                        const float*    c,
                                                                        const float*    s,
                                                                        int             batch_count)
@@ -1508,10 +1508,10 @@ hipblasStatus_t
                                                            int                         n,
                                                            hipblasDoubleComplex*       x,
                                                            int                         incx,
-                                                           int                         stridex,
+                                                           hipblasStride               stridex,
                                                            hipblasDoubleComplex*       y,
                                                            int                         incy,
-                                                           int                         stridey,
+                                                           hipblasStride               stridey,
                                                            const double*               c,
                                                            const hipblasDoubleComplex* s,
                                                            int                         batch_count)
@@ -1526,10 +1526,10 @@ hipblasStatus_t
                                                                    int                   n,
                                                                    hipblasDoubleComplex* x,
                                                                    int                   incx,
-                                                                   int                   stridex,
+                                                                   hipblasStride         stridex,
                                                                    hipblasDoubleComplex* y,
                                                                    int                   incy,
-                                                                   int                   stridey,
+                                                                   hipblasStride         stridey,
                                                                    const double*         c,
                                                                    const double*         s,
                                                                    int batch_count)
@@ -1618,13 +1618,13 @@ hipblasStatus_t hipblasRotgBatched<hipblasDoubleComplex, double>(hipblasHandle_t
 template <>
 hipblasStatus_t hipblasRotgStridedBatched<float>(hipblasHandle_t handle,
                                                  float*          a,
-                                                 int             stridea,
+                                                 hipblasStride   stridea,
                                                  float*          b,
-                                                 int             strideb,
+                                                 hipblasStride   strideb,
                                                  float*          c,
-                                                 int             stridec,
+                                                 hipblasStride   stridec,
                                                  float*          s,
-                                                 int             strides,
+                                                 hipblasStride   strides,
                                                  int             batch_count)
 {
     return hipblasSrotgStridedBatched(
@@ -1634,13 +1634,13 @@ hipblasStatus_t hipblasRotgStridedBatched<float>(hipblasHandle_t handle,
 template <>
 hipblasStatus_t hipblasRotgStridedBatched<double>(hipblasHandle_t handle,
                                                   double*         a,
-                                                  int             stridea,
+                                                  hipblasStride   stridea,
                                                   double*         b,
-                                                  int             strideb,
+                                                  hipblasStride   strideb,
                                                   double*         c,
-                                                  int             stridec,
+                                                  hipblasStride   stridec,
                                                   double*         s,
-                                                  int             strides,
+                                                  hipblasStride   strides,
                                                   int             batch_count)
 {
     return hipblasDrotgStridedBatched(
@@ -1650,13 +1650,13 @@ hipblasStatus_t hipblasRotgStridedBatched<double>(hipblasHandle_t handle,
 template <>
 hipblasStatus_t hipblasRotgStridedBatched<hipblasComplex, float>(hipblasHandle_t handle,
                                                                  hipblasComplex* a,
-                                                                 int             stridea,
+                                                                 hipblasStride   stridea,
                                                                  hipblasComplex* b,
-                                                                 int             strideb,
+                                                                 hipblasStride   strideb,
                                                                  float*          c,
-                                                                 int             stridec,
+                                                                 hipblasStride   stridec,
                                                                  hipblasComplex* s,
-                                                                 int             strides,
+                                                                 hipblasStride   strides,
                                                                  int             batch_count)
 {
     return hipblasCrotgStridedBatched(
@@ -1666,14 +1666,14 @@ hipblasStatus_t hipblasRotgStridedBatched<hipblasComplex, float>(hipblasHandle_t
 template <>
 hipblasStatus_t hipblasRotgStridedBatched<hipblasDoubleComplex, double>(hipblasHandle_t handle,
                                                                         hipblasDoubleComplex* a,
-                                                                        int stridea,
+                                                                        hipblasStride stridea,
                                                                         hipblasDoubleComplex* b,
-                                                                        int     strideb,
-                                                                        double* c,
-                                                                        int     stridec,
+                                                                        hipblasStride strideb,
+                                                                        double*       c,
+                                                                        hipblasStride stridec,
                                                                         hipblasDoubleComplex* s,
-                                                                        int strides,
-                                                                        int batch_count)
+                                                                        hipblasStride strides,
+                                                                        int           batch_count)
 {
     return hipblasZrotgStridedBatched(
         handle, a, stridea, b, strideb, c, stridec, s, strides, batch_count);
@@ -1727,12 +1727,12 @@ hipblasStatus_t hipblasRotmStridedBatched<float>(hipblasHandle_t handle,
                                                  int             n,
                                                  float*          x,
                                                  int             incx,
-                                                 int             stridex,
+                                                 hipblasStride   stridex,
                                                  float*          y,
                                                  int             incy,
-                                                 int             stridey,
+                                                 hipblasStride   stridey,
                                                  const float*    param,
-                                                 int             strideparam,
+                                                 hipblasStride   strideparam,
                                                  int             batch_count)
 {
     return hipblasSrotmStridedBatched(
@@ -1744,12 +1744,12 @@ hipblasStatus_t hipblasRotmStridedBatched<double>(hipblasHandle_t handle,
                                                   int             n,
                                                   double*         x,
                                                   int             incx,
-                                                  int             stridex,
+                                                  hipblasStride   stridex,
                                                   double*         y,
                                                   int             incy,
-                                                  int             stridey,
+                                                  hipblasStride   stridey,
                                                   const double*   param,
-                                                  int             strideparam,
+                                                  hipblasStride   strideparam,
                                                   int             batch_count)
 {
     return hipblasDrotmStridedBatched(
@@ -1800,15 +1800,15 @@ hipblasStatus_t hipblasRotmgBatched<double>(hipblasHandle_t     handle,
 template <>
 hipblasStatus_t hipblasRotmgStridedBatched<float>(hipblasHandle_t handle,
                                                   float*          d1,
-                                                  int             stride_d1,
+                                                  hipblasStride   stride_d1,
                                                   float*          d2,
-                                                  int             stride_d2,
+                                                  hipblasStride   stride_d2,
                                                   float*          x1,
-                                                  int             stride_x1,
+                                                  hipblasStride   stride_x1,
                                                   const float*    y1,
-                                                  int             stride_y1,
+                                                  hipblasStride   stride_y1,
                                                   float*          param,
-                                                  int             strideparam,
+                                                  hipblasStride   strideparam,
                                                   int             batch_count)
 {
     return hipblasSrotmgStridedBatched(handle,
@@ -1828,15 +1828,15 @@ hipblasStatus_t hipblasRotmgStridedBatched<float>(hipblasHandle_t handle,
 template <>
 hipblasStatus_t hipblasRotmgStridedBatched<double>(hipblasHandle_t handle,
                                                    double*         d1,
-                                                   int             stride_d1,
+                                                   hipblasStride   stride_d1,
                                                    double*         d2,
-                                                   int             stride_d2,
+                                                   hipblasStride   stride_d2,
                                                    double*         x1,
-                                                   int             stride_x1,
+                                                   hipblasStride   stride_x1,
                                                    const double*   y1,
-                                                   int             stride_y1,
+                                                   hipblasStride   stride_y1,
                                                    double*         param,
-                                                   int             strideparam,
+                                                   hipblasStride   strideparam,
                                                    int             batch_count)
 {
     return hipblasDrotmgStridedBatched(handle,
@@ -1925,7 +1925,7 @@ hipblasStatus_t hipblasIamaxStridedBatched<float>(hipblasHandle_t handle,
                                                   int             n,
                                                   const float*    x,
                                                   int             incx,
-                                                  int             stridex,
+                                                  hipblasStride   stridex,
                                                   int             batch_count,
                                                   int*            result)
 {
@@ -1937,7 +1937,7 @@ hipblasStatus_t hipblasIamaxStridedBatched<double>(hipblasHandle_t handle,
                                                    int             n,
                                                    const double*   x,
                                                    int             incx,
-                                                   int             stridex,
+                                                   hipblasStride   stridex,
                                                    int             batch_count,
                                                    int*            result)
 {
@@ -1949,7 +1949,7 @@ hipblasStatus_t hipblasIamaxStridedBatched<hipblasComplex>(hipblasHandle_t      
                                                            int                   n,
                                                            const hipblasComplex* x,
                                                            int                   incx,
-                                                           int                   stridex,
+                                                           hipblasStride         stridex,
                                                            int                   batch_count,
                                                            int*                  result)
 {
@@ -1961,9 +1961,9 @@ hipblasStatus_t hipblasIamaxStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
                                                                  int                         n,
                                                                  const hipblasDoubleComplex* x,
                                                                  int                         incx,
-                                                                 int  stridex,
-                                                                 int  batch_count,
-                                                                 int* result)
+                                                                 hipblasStride stridex,
+                                                                 int           batch_count,
+                                                                 int*          result)
 {
     return hipblasIzamaxStridedBatched(handle, n, x, incx, stridex, batch_count, result);
 }
@@ -2040,7 +2040,7 @@ hipblasStatus_t hipblasIaminStridedBatched<float>(hipblasHandle_t handle,
                                                   int             n,
                                                   const float*    x,
                                                   int             incx,
-                                                  int             stridex,
+                                                  hipblasStride   stridex,
                                                   int             batch_count,
                                                   int*            result)
 {
@@ -2052,7 +2052,7 @@ hipblasStatus_t hipblasIaminStridedBatched<double>(hipblasHandle_t handle,
                                                    int             n,
                                                    const double*   x,
                                                    int             incx,
-                                                   int             stridex,
+                                                   hipblasStride   stridex,
                                                    int             batch_count,
                                                    int*            result)
 {
@@ -2064,7 +2064,7 @@ hipblasStatus_t hipblasIaminStridedBatched<hipblasComplex>(hipblasHandle_t      
                                                            int                   n,
                                                            const hipblasComplex* x,
                                                            int                   incx,
-                                                           int                   stridex,
+                                                           hipblasStride         stridex,
                                                            int                   batch_count,
                                                            int*                  result)
 {
@@ -2076,9 +2076,9 @@ hipblasStatus_t hipblasIaminStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
                                                                  int                         n,
                                                                  const hipblasDoubleComplex* x,
                                                                  int                         incx,
-                                                                 int  stridex,
-                                                                 int  batch_count,
-                                                                 int* result)
+                                                                 hipblasStride stridex,
+                                                                 int           batch_count,
+                                                                 int*          result)
 {
     return hipblasIzaminStridedBatched(handle, n, x, incx, stridex, batch_count, result);
 }
@@ -2262,14 +2262,14 @@ hipblasStatus_t hipblasGbmvStridedBatched<float>(hipblasHandle_t    handle,
                                                  const float*       alpha,
                                                  const float*       A,
                                                  int                lda,
-                                                 int                stride_a,
+                                                 hipblasStride      stride_a,
                                                  const float*       x,
                                                  int                incx,
-                                                 int                stride_x,
+                                                 hipblasStride      stride_x,
                                                  const float*       beta,
                                                  float*             y,
                                                  int                incy,
-                                                 int                stride_y,
+                                                 hipblasStride      stride_y,
                                                  int                batch_count)
 {
     return hipblasSgbmvStridedBatched(handle,
@@ -2302,14 +2302,14 @@ hipblasStatus_t hipblasGbmvStridedBatched<double>(hipblasHandle_t    handle,
                                                   const double*      alpha,
                                                   const double*      A,
                                                   int                lda,
-                                                  int                stride_a,
+                                                  hipblasStride      stride_a,
                                                   const double*      x,
                                                   int                incx,
-                                                  int                stride_x,
+                                                  hipblasStride      stride_x,
                                                   const double*      beta,
                                                   double*            y,
                                                   int                incy,
-                                                  int                stride_y,
+                                                  hipblasStride      stride_y,
                                                   int                batch_count)
 {
     return hipblasDgbmvStridedBatched(handle,
@@ -2342,14 +2342,14 @@ hipblasStatus_t hipblasGbmvStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           const hipblasComplex* alpha,
                                                           const hipblasComplex* A,
                                                           int                   lda,
-                                                          int                   stride_a,
+                                                          hipblasStride         stride_a,
                                                           const hipblasComplex* x,
                                                           int                   incx,
-                                                          int                   stride_x,
+                                                          hipblasStride         stride_x,
                                                           const hipblasComplex* beta,
                                                           hipblasComplex*       y,
                                                           int                   incy,
-                                                          int                   stride_y,
+                                                          hipblasStride         stride_y,
                                                           int                   batch_count)
 {
     return hipblasCgbmvStridedBatched(handle,
@@ -2382,15 +2382,15 @@ hipblasStatus_t hipblasGbmvStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* alpha,
                                                                 const hipblasDoubleComplex* A,
                                                                 int                         lda,
-                                                                int stride_a,
+                                                                hipblasStride stride_a,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int stride_x,
+                                                                hipblasStride stride_x,
                                                                 const hipblasDoubleComplex* beta,
                                                                 hipblasDoubleComplex*       y,
                                                                 int                         incy,
-                                                                int stride_y,
-                                                                int batch_count)
+                                                                hipblasStride stride_y,
+                                                                int           batch_count)
 {
     return hipblasZgbmvStridedBatched(handle,
                                       transA,
@@ -2567,14 +2567,14 @@ hipblasStatus_t hipblasGemvStridedBatched<float>(hipblasHandle_t    handle,
                                                  const float*       alpha,
                                                  const float*       A,
                                                  int                lda,
-                                                 int                strideA,
+                                                 hipblasStride      strideA,
                                                  const float*       x,
                                                  int                incx,
-                                                 int                stridex,
+                                                 hipblasStride      stridex,
                                                  const float*       beta,
                                                  float*             y,
                                                  int                incy,
-                                                 int                stridey,
+                                                 hipblasStride      stridey,
                                                  int                batch_count)
 {
     return hipblasSgemvStridedBatched(handle,
@@ -2603,14 +2603,14 @@ hipblasStatus_t hipblasGemvStridedBatched<double>(hipblasHandle_t    handle,
                                                   const double*      alpha,
                                                   const double*      A,
                                                   int                lda,
-                                                  int                strideA,
+                                                  hipblasStride      strideA,
                                                   const double*      x,
                                                   int                incx,
-                                                  int                stridex,
+                                                  hipblasStride      stridex,
                                                   const double*      beta,
                                                   double*            y,
                                                   int                incy,
-                                                  int                stridey,
+                                                  hipblasStride      stridey,
                                                   int                batch_count)
 {
     return hipblasDgemvStridedBatched(handle,
@@ -2639,14 +2639,14 @@ hipblasStatus_t hipblasGemvStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           const hipblasComplex* alpha,
                                                           const hipblasComplex* A,
                                                           int                   lda,
-                                                          int                   strideA,
+                                                          hipblasStride         strideA,
                                                           const hipblasComplex* x,
                                                           int                   incx,
-                                                          int                   stridex,
+                                                          hipblasStride         stridex,
                                                           const hipblasComplex* beta,
                                                           hipblasComplex*       y,
                                                           int                   incy,
-                                                          int                   stridey,
+                                                          hipblasStride         stridey,
                                                           int                   batch_count)
 {
     return hipblasCgemvStridedBatched(handle,
@@ -2675,14 +2675,14 @@ hipblasStatus_t hipblasGemvStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* alpha,
                                                                 const hipblasDoubleComplex* A,
                                                                 int                         lda,
-                                                                int                         strideA,
+                                                                hipblasStride               strideA,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 const hipblasDoubleComplex* beta,
                                                                 hipblasDoubleComplex*       y,
                                                                 int                         incy,
-                                                                int                         stridey,
+                                                                hipblasStride               stridey,
                                                                 int batch_count)
 {
     return hipblasZgemvStridedBatched(handle,
@@ -2912,13 +2912,13 @@ hipblasStatus_t hipblasGerStridedBatched<float, false>(hipblasHandle_t handle,
                                                        const float*    alpha,
                                                        const float*    x,
                                                        int             incx,
-                                                       int             stridex,
+                                                       hipblasStride   stridex,
                                                        const float*    y,
                                                        int             incy,
-                                                       int             stridey,
+                                                       hipblasStride   stridey,
                                                        float*          A,
                                                        int             lda,
-                                                       int             strideA,
+                                                       hipblasStride   strideA,
                                                        int             batch_count)
 {
 
@@ -2933,13 +2933,13 @@ hipblasStatus_t hipblasGerStridedBatched<double, false>(hipblasHandle_t handle,
                                                         const double*   alpha,
                                                         const double*   x,
                                                         int             incx,
-                                                        int             stridex,
+                                                        hipblasStride   stridex,
                                                         const double*   y,
                                                         int             incy,
-                                                        int             stridey,
+                                                        hipblasStride   stridey,
                                                         double*         A,
                                                         int             lda,
-                                                        int             strideA,
+                                                        hipblasStride   strideA,
                                                         int             batch_count)
 {
 
@@ -2954,13 +2954,13 @@ hipblasStatus_t hipblasGerStridedBatched<hipblasComplex, false>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 const hipblasComplex* y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 hipblasComplex*       A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 int                   batch_count)
 {
 
@@ -2975,13 +2975,13 @@ hipblasStatus_t hipblasGerStridedBatched<hipblasComplex, true>(hipblasHandle_t  
                                                                const hipblasComplex* alpha,
                                                                const hipblasComplex* x,
                                                                int                   incx,
-                                                               int                   stridex,
+                                                               hipblasStride         stridex,
                                                                const hipblasComplex* y,
                                                                int                   incy,
-                                                               int                   stridey,
+                                                               hipblasStride         stridey,
                                                                hipblasComplex*       A,
                                                                int                   lda,
-                                                               int                   strideA,
+                                                               hipblasStride         strideA,
                                                                int                   batch_count)
 {
 
@@ -2997,13 +2997,13 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           const hipblasDoubleComplex* y,
                                                           int                         incy,
-                                                          int                         stridey,
+                                                          hipblasStride               stridey,
                                                           hipblasDoubleComplex*       A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           int                         batch_count)
 {
 
@@ -3019,13 +3019,13 @@ hipblasStatus_t
                                                          const hipblasDoubleComplex* alpha,
                                                          const hipblasDoubleComplex* x,
                                                          int                         incx,
-                                                         int                         stridex,
+                                                         hipblasStride               stridex,
                                                          const hipblasDoubleComplex* y,
                                                          int                         incy,
-                                                         int                         stridey,
+                                                         hipblasStride               stridey,
                                                          hipblasDoubleComplex*       A,
                                                          int                         lda,
-                                                         int                         strideA,
+                                                         hipblasStride               strideA,
                                                          int                         batch_count)
 {
 
@@ -3116,14 +3116,14 @@ hipblasStatus_t hipblasHbmvStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           const hipblasComplex* alpha,
                                                           const hipblasComplex* A,
                                                           int                   lda,
-                                                          int                   strideA,
+                                                          hipblasStride         strideA,
                                                           const hipblasComplex* x,
                                                           int                   incx,
-                                                          int                   stridex,
+                                                          hipblasStride         stridex,
                                                           const hipblasComplex* beta,
                                                           hipblasComplex*       y,
                                                           int                   incy,
-                                                          int                   stridey,
+                                                          hipblasStride         stridey,
                                                           int                   batchCount)
 {
     return hipblasChbmvStridedBatched(handle,
@@ -3152,14 +3152,14 @@ hipblasStatus_t hipblasHbmvStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* alpha,
                                                                 const hipblasDoubleComplex* A,
                                                                 int                         lda,
-                                                                int                         strideA,
+                                                                hipblasStride               strideA,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 const hipblasDoubleComplex* beta,
                                                                 hipblasDoubleComplex*       y,
                                                                 int                         incy,
-                                                                int                         stridey,
+                                                                hipblasStride               stridey,
                                                                 int batchCount)
 {
     return hipblasZhbmvStridedBatched(handle,
@@ -3256,14 +3256,14 @@ hipblasStatus_t hipblasHemvStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           const hipblasComplex* alpha,
                                                           const hipblasComplex* A,
                                                           int                   lda,
-                                                          int                   stride_a,
+                                                          hipblasStride         stride_a,
                                                           const hipblasComplex* x,
                                                           int                   incx,
-                                                          int                   stride_x,
+                                                          hipblasStride         stride_x,
                                                           const hipblasComplex* beta,
                                                           hipblasComplex*       y,
                                                           int                   incy,
-                                                          int                   stride_y,
+                                                          hipblasStride         stride_y,
                                                           int                   batch_count)
 {
     return hipblasChemvStridedBatched(handle,
@@ -3290,15 +3290,15 @@ hipblasStatus_t hipblasHemvStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* alpha,
                                                                 const hipblasDoubleComplex* A,
                                                                 int                         lda,
-                                                                int stride_a,
+                                                                hipblasStride stride_a,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int stride_x,
+                                                                hipblasStride stride_x,
                                                                 const hipblasDoubleComplex* beta,
                                                                 hipblasDoubleComplex*       y,
                                                                 int                         incy,
-                                                                int stride_y,
-                                                                int batch_count)
+                                                                hipblasStride stride_y,
+                                                                int           batch_count)
 {
     return hipblasZhemvStridedBatched(handle,
                                       uplo,
@@ -3382,10 +3382,10 @@ hipblasStatus_t hipblasHerStridedBatched<hipblasComplex, float>(hipblasHandle_t 
                                                                 const float*          alpha,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 hipblasComplex*       A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 int                   batchCount)
 {
     return hipblasCherStridedBatched(
@@ -3400,10 +3400,10 @@ hipblasStatus_t
                                                            const double*               alpha,
                                                            const hipblasDoubleComplex* x,
                                                            int                         incx,
-                                                           int                         stridex,
+                                                           hipblasStride               stridex,
                                                            hipblasDoubleComplex*       A,
                                                            int                         lda,
-                                                           int                         strideA,
+                                                           hipblasStride               strideA,
                                                            int                         batchCount)
 {
     return hipblasZherStridedBatched(
@@ -3482,13 +3482,13 @@ hipblasStatus_t hipblasHer2StridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           const hipblasComplex* alpha,
                                                           const hipblasComplex* x,
                                                           int                   incx,
-                                                          int                   stridex,
+                                                          hipblasStride         stridex,
                                                           const hipblasComplex* y,
                                                           int                   incy,
-                                                          int                   stridey,
+                                                          hipblasStride         stridey,
                                                           hipblasComplex*       A,
                                                           int                   lda,
-                                                          int                   strideA,
+                                                          hipblasStride         strideA,
                                                           int                   batchCount)
 {
     return hipblasCher2StridedBatched(
@@ -3502,13 +3502,13 @@ hipblasStatus_t hipblasHer2StridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* alpha,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 const hipblasDoubleComplex* y,
                                                                 int                         incy,
-                                                                int                         stridey,
+                                                                hipblasStride               stridey,
                                                                 hipblasDoubleComplex*       A,
                                                                 int                         lda,
-                                                                int                         strideA,
+                                                                hipblasStride               strideA,
                                                                 int batchCount)
 {
     return hipblasZher2StridedBatched(
@@ -3586,14 +3586,14 @@ hipblasStatus_t hipblasHpmvStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           int                   n,
                                                           const hipblasComplex* alpha,
                                                           const hipblasComplex* AP,
-                                                          int                   strideAP,
+                                                          hipblasStride         strideAP,
                                                           const hipblasComplex* x,
                                                           int                   incx,
-                                                          int                   stridex,
+                                                          hipblasStride         stridex,
                                                           const hipblasComplex* beta,
                                                           hipblasComplex*       y,
                                                           int                   incy,
-                                                          int                   stridey,
+                                                          hipblasStride         stridey,
                                                           int                   batchCount)
 {
     return hipblasChpmvStridedBatched(
@@ -3606,14 +3606,14 @@ hipblasStatus_t hipblasHpmvStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 int                         n,
                                                                 const hipblasDoubleComplex* alpha,
                                                                 const hipblasDoubleComplex* AP,
-                                                                int strideAP,
+                                                                hipblasStride strideAP,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 const hipblasDoubleComplex* beta,
                                                                 hipblasDoubleComplex*       y,
                                                                 int                         incy,
-                                                                int                         stridey,
+                                                                hipblasStride               stridey,
                                                                 int batchCount)
 {
     return hipblasZhpmvStridedBatched(
@@ -3681,9 +3681,9 @@ hipblasStatus_t hipblasHprStridedBatched<hipblasComplex, float>(hipblasHandle_t 
                                                                 const float*          alpha,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 hipblasComplex*       AP,
-                                                                int                   strideAP,
+                                                                hipblasStride         strideAP,
                                                                 int                   batchCount)
 {
     return hipblasChprStridedBatched(
@@ -3698,9 +3698,9 @@ hipblasStatus_t
                                                            const double*               alpha,
                                                            const hipblasDoubleComplex* x,
                                                            int                         incx,
-                                                           int                         stridex,
+                                                           hipblasStride               stridex,
                                                            hipblasDoubleComplex*       AP,
-                                                           int                         strideAP,
+                                                           hipblasStride               strideAP,
                                                            int                         batchCount)
 {
     return hipblasZhprStridedBatched(
@@ -3775,12 +3775,12 @@ hipblasStatus_t hipblasHpr2StridedBatched(hipblasHandle_t       handle,
                                           const hipblasComplex* alpha,
                                           const hipblasComplex* x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           const hipblasComplex* y,
                                           int                   incy,
-                                          int                   stridey,
+                                          hipblasStride         stridey,
                                           hipblasComplex*       AP,
-                                          int                   strideAP,
+                                          hipblasStride         strideAP,
                                           int                   batchCount)
 {
     return hipblasChpr2StridedBatched(
@@ -3794,12 +3794,12 @@ hipblasStatus_t hipblasHpr2StridedBatched(hipblasHandle_t             handle,
                                           const hipblasDoubleComplex* alpha,
                                           const hipblasDoubleComplex* x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           const hipblasDoubleComplex* y,
                                           int                         incy,
-                                          int                         stridey,
+                                          hipblasStride               stridey,
                                           hipblasDoubleComplex*       AP,
-                                          int                         strideAP,
+                                          hipblasStride               strideAP,
                                           int                         batchCount)
 {
     return hipblasZhpr2StridedBatched(
@@ -3889,14 +3889,14 @@ hipblasStatus_t hipblasSbmvStridedBatched(hipblasHandle_t   handle,
                                           const float*      alpha,
                                           const float*      A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const float*      x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const float*      beta,
                                           float*            y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount)
 {
     return hipblasSsbmvStridedBatched(handle,
@@ -3925,14 +3925,14 @@ hipblasStatus_t hipblasSbmvStridedBatched(hipblasHandle_t   handle,
                                           const double*     alpha,
                                           const double*     A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const double*     x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const double*     beta,
                                           double*           y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount)
 {
     return hipblasDsbmvStridedBatched(handle,
@@ -4024,14 +4024,14 @@ hipblasStatus_t hipblasSpmvStridedBatched(hipblasHandle_t   handle,
                                           int               n,
                                           const float*      alpha,
                                           const float*      AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           const float*      x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const float*      beta,
                                           float*            y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount)
 {
     return hipblasSspmvStridedBatched(
@@ -4044,14 +4044,14 @@ hipblasStatus_t hipblasSpmvStridedBatched(hipblasHandle_t   handle,
                                           int               n,
                                           const double*     alpha,
                                           const double*     AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           const double*     x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const double*     beta,
                                           double*           y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount)
 {
     return hipblasDspmvStridedBatched(
@@ -4168,9 +4168,9 @@ hipblasStatus_t hipblasSprStridedBatched<float, true>(hipblasHandle_t   handle,
                                                       const float*      alpha,
                                                       const float*      x,
                                                       int               incx,
-                                                      int               stridex,
+                                                      hipblasStride     stridex,
                                                       float*            AP,
-                                                      int               strideAP,
+                                                      hipblasStride     strideAP,
                                                       int               batchCount)
 {
     return hipblasSsprStridedBatched(
@@ -4184,9 +4184,9 @@ hipblasStatus_t hipblasSprStridedBatched<double, true>(hipblasHandle_t   handle,
                                                        const double*     alpha,
                                                        const double*     x,
                                                        int               incx,
-                                                       int               stridex,
+                                                       hipblasStride     stridex,
                                                        double*           AP,
-                                                       int               strideAP,
+                                                       hipblasStride     strideAP,
                                                        int               batchCount)
 {
     return hipblasDsprStridedBatched(
@@ -4200,9 +4200,9 @@ hipblasStatus_t hipblasSprStridedBatched<hipblasComplex, true>(hipblasHandle_t  
                                                                const hipblasComplex* alpha,
                                                                const hipblasComplex* x,
                                                                int                   incx,
-                                                               int                   stridex,
+                                                               hipblasStride         stridex,
                                                                hipblasComplex*       AP,
-                                                               int                   strideAP,
+                                                               hipblasStride         strideAP,
                                                                int                   batchCount)
 {
     return hipblasCsprStridedBatched(
@@ -4217,9 +4217,9 @@ hipblasStatus_t
                                                          const hipblasDoubleComplex* alpha,
                                                          const hipblasDoubleComplex* x,
                                                          int                         incx,
-                                                         int                         stridex,
+                                                         hipblasStride               stridex,
                                                          hipblasDoubleComplex*       AP,
-                                                         int                         strideAP,
+                                                         hipblasStride               strideAP,
                                                          int                         batchCount)
 {
     return hipblasZsprStridedBatched(
@@ -4294,12 +4294,12 @@ hipblasStatus_t hipblasSpr2StridedBatched(hipblasHandle_t   handle,
                                           const float*      alpha,
                                           const float*      x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const float*      y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           float*            AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           int               batchCount)
 {
     return hipblasSspr2StridedBatched(
@@ -4313,12 +4313,12 @@ hipblasStatus_t hipblasSpr2StridedBatched(hipblasHandle_t   handle,
                                           const double*     alpha,
                                           const double*     x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const double*     y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           double*           AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           int               batchCount)
 {
     return hipblasDspr2StridedBatched(
@@ -4468,14 +4468,14 @@ hipblasStatus_t hipblasSymvStridedBatched<float, true>(hipblasHandle_t   handle,
                                                        const float*      alpha,
                                                        const float*      A,
                                                        int               lda,
-                                                       int               strideA,
+                                                       hipblasStride     strideA,
                                                        const float*      x,
                                                        int               incx,
-                                                       int               stridex,
+                                                       hipblasStride     stridex,
                                                        const float*      beta,
                                                        float*            y,
                                                        int               incy,
-                                                       int               stridey,
+                                                       hipblasStride     stridey,
                                                        int               batchCount)
 {
     return hipblasSsymvStridedBatched(handle,
@@ -4502,14 +4502,14 @@ hipblasStatus_t hipblasSymvStridedBatched<double, true>(hipblasHandle_t   handle
                                                         const double*     alpha,
                                                         const double*     A,
                                                         int               lda,
-                                                        int               strideA,
+                                                        hipblasStride     strideA,
                                                         const double*     x,
                                                         int               incx,
-                                                        int               stridex,
+                                                        hipblasStride     stridex,
                                                         const double*     beta,
                                                         double*           y,
                                                         int               incy,
-                                                        int               stridey,
+                                                        hipblasStride     stridey,
                                                         int               batchCount)
 {
     return hipblasDsymvStridedBatched(handle,
@@ -4536,14 +4536,14 @@ hipblasStatus_t hipblasSymvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 const hipblasComplex* beta,
                                                                 hipblasComplex*       y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 int                   batchCount)
 {
     return hipblasCsymvStridedBatched(handle,
@@ -4571,14 +4571,14 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       y,
                                                           int                         incy,
-                                                          int                         stridey,
+                                                          hipblasStride               stridey,
                                                           int                         batchCount)
 {
     return hipblasZsymvStridedBatched(handle,
@@ -4716,10 +4716,10 @@ hipblasStatus_t hipblasSyrStridedBatched<float>(hipblasHandle_t   handle,
                                                 const float*      alpha,
                                                 const float*      x,
                                                 int               incx,
-                                                int               stridex,
+                                                hipblasStride     stridex,
                                                 float*            A,
                                                 int               lda,
-                                                int               strideA,
+                                                hipblasStride     strideA,
                                                 int               batch_count)
 {
     return hipblasSsyrStridedBatched(
@@ -4733,10 +4733,10 @@ hipblasStatus_t hipblasSyrStridedBatched<double>(hipblasHandle_t   handle,
                                                  const double*     alpha,
                                                  const double*     x,
                                                  int               incx,
-                                                 int               stridex,
+                                                 hipblasStride     stridex,
                                                  double*           A,
                                                  int               lda,
-                                                 int               strideA,
+                                                 hipblasStride     strideA,
                                                  int               batch_count)
 {
     return hipblasDsyrStridedBatched(
@@ -4750,10 +4750,10 @@ hipblasStatus_t hipblasSyrStridedBatched<hipblasComplex>(hipblasHandle_t       h
                                                          const hipblasComplex* alpha,
                                                          const hipblasComplex* x,
                                                          int                   incx,
-                                                         int                   stridex,
+                                                         hipblasStride         stridex,
                                                          hipblasComplex*       A,
                                                          int                   lda,
-                                                         int                   strideA,
+                                                         hipblasStride         strideA,
                                                          int                   batch_count)
 {
     return hipblasCsyrStridedBatched(
@@ -4767,10 +4767,10 @@ hipblasStatus_t hipblasSyrStridedBatched<hipblasDoubleComplex>(hipblasHandle_t  
                                                                const hipblasDoubleComplex* alpha,
                                                                const hipblasDoubleComplex* x,
                                                                int                         incx,
-                                                               int                         stridex,
+                                                               hipblasStride               stridex,
                                                                hipblasDoubleComplex*       A,
                                                                int                         lda,
-                                                               int                         strideA,
+                                                               hipblasStride               strideA,
                                                                int batch_count)
 {
     return hipblasZsyrStridedBatched(
@@ -4911,13 +4911,13 @@ hipblasStatus_t hipblasSyr2StridedBatched(hipblasHandle_t   handle,
                                           const float*      alpha,
                                           const float*      x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const float*      y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           float*            A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           int               batchCount)
 {
     return hipblasSsyr2StridedBatched(
@@ -4931,13 +4931,13 @@ hipblasStatus_t hipblasSyr2StridedBatched(hipblasHandle_t   handle,
                                           const double*     alpha,
                                           const double*     x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const double*     y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           double*           A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           int               batchCount)
 {
     return hipblasDsyr2StridedBatched(
@@ -4951,13 +4951,13 @@ hipblasStatus_t hipblasSyr2StridedBatched(hipblasHandle_t       handle,
                                           const hipblasComplex* alpha,
                                           const hipblasComplex* x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           const hipblasComplex* y,
                                           int                   incy,
-                                          int                   stridey,
+                                          hipblasStride         stridey,
                                           hipblasComplex*       A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           int                   batchCount)
 {
     return hipblasCsyr2StridedBatched(
@@ -4971,13 +4971,13 @@ hipblasStatus_t hipblasSyr2StridedBatched(hipblasHandle_t             handle,
                                           const hipblasDoubleComplex* alpha,
                                           const hipblasDoubleComplex* x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           const hipblasDoubleComplex* y,
                                           int                         incy,
-                                          int                         stridey,
+                                          hipblasStride               stridey,
                                           hipblasDoubleComplex*       A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           int                         batchCount)
 {
     return hipblasZsyr2StridedBatched(
@@ -5111,10 +5111,10 @@ hipblasStatus_t hipblasTrsvStridedBatched<float>(hipblasHandle_t    handle,
                                                  int                m,
                                                  const float*       A,
                                                  int                lda,
-                                                 int                strideA,
+                                                 hipblasStride      strideA,
                                                  float*             x,
                                                  int                incx,
-                                                 int                stridex,
+                                                 hipblasStride      stridex,
                                                  int                batch_count)
 {
     return hipblasStrsvStridedBatched(
@@ -5129,10 +5129,10 @@ hipblasStatus_t hipblasTrsvStridedBatched<double>(hipblasHandle_t    handle,
                                                   int                m,
                                                   const double*      A,
                                                   int                lda,
-                                                  int                strideA,
+                                                  hipblasStride      strideA,
                                                   double*            x,
                                                   int                incx,
-                                                  int                stridex,
+                                                  hipblasStride      stridex,
                                                   int                batch_count)
 {
     return hipblasDtrsvStridedBatched(
@@ -5147,10 +5147,10 @@ hipblasStatus_t hipblasTrsvStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           int                   m,
                                                           const hipblasComplex* A,
                                                           int                   lda,
-                                                          int                   strideA,
+                                                          hipblasStride         strideA,
                                                           hipblasComplex*       x,
                                                           int                   incx,
-                                                          int                   stridex,
+                                                          hipblasStride         stridex,
                                                           int                   batch_count)
 {
     return hipblasCtrsvStridedBatched(
@@ -5165,10 +5165,10 @@ hipblasStatus_t hipblasTrsvStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 int                         m,
                                                                 const hipblasDoubleComplex* A,
                                                                 int                         lda,
-                                                                int                         strideA,
+                                                                hipblasStride               strideA,
                                                                 hipblasDoubleComplex*       x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 int batch_count)
 {
     return hipblasZtrsvStridedBatched(
@@ -5299,10 +5299,10 @@ hipblasStatus_t hipblasTrtriStridedBatched<float>(hipblasHandle_t   handle,
                                                   int               n,
                                                   float*            A,
                                                   int               lda,
-                                                  int               stride_A,
+                                                  hipblasStride     stride_A,
                                                   float*            invA,
                                                   int               ldinvA,
-                                                  int               stride_invA,
+                                                  hipblasStride     stride_invA,
                                                   int               batch_count)
 {
     return hipblasStrtriStridedBatched(
@@ -5316,10 +5316,10 @@ hipblasStatus_t hipblasTrtriStridedBatched<double>(hipblasHandle_t   handle,
                                                    int               n,
                                                    double*           A,
                                                    int               lda,
-                                                   int               stride_A,
+                                                   hipblasStride     stride_A,
                                                    double*           invA,
                                                    int               ldinvA,
-                                                   int               stride_invA,
+                                                   hipblasStride     stride_invA,
                                                    int               batch_count)
 {
     return hipblasDtrtriStridedBatched(
@@ -5333,10 +5333,10 @@ hipblasStatus_t hipblasTrtriStridedBatched<hipblasComplex>(hipblasHandle_t   han
                                                            int               n,
                                                            hipblasComplex*   A,
                                                            int               lda,
-                                                           int               stride_A,
+                                                           hipblasStride     stride_A,
                                                            hipblasComplex*   invA,
                                                            int               ldinvA,
-                                                           int               stride_invA,
+                                                           hipblasStride     stride_invA,
                                                            int               batch_count)
 {
     return hipblasCtrtriStridedBatched(
@@ -5350,10 +5350,10 @@ hipblasStatus_t hipblasTrtriStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
                                                                  int                   n,
                                                                  hipblasDoubleComplex* A,
                                                                  int                   lda,
-                                                                 int                   stride_A,
+                                                                 hipblasStride         stride_A,
                                                                  hipblasDoubleComplex* invA,
                                                                  int                   ldinvA,
-                                                                 int                   stride_invA,
+                                                                 hipblasStride         stride_invA,
                                                                  int                   batch_count)
 {
     return hipblasZtrtriStridedBatched(
@@ -5494,13 +5494,13 @@ hipblasStatus_t hipblasDgmmStridedBatched(hipblasHandle_t   handle,
                                           int               n,
                                           const float*      A,
                                           int               lda,
-                                          int               stride_A,
+                                          hipblasStride     stride_A,
                                           const float*      x,
                                           int               incx,
-                                          int               stride_x,
+                                          hipblasStride     stride_x,
                                           float*            C,
                                           int               ldc,
-                                          int               stride_C,
+                                          hipblasStride     stride_C,
                                           int               batch_count)
 {
     return hipblasSdgmmStridedBatched(
@@ -5514,13 +5514,13 @@ hipblasStatus_t hipblasDgmmStridedBatched(hipblasHandle_t   handle,
                                           int               n,
                                           const double*     A,
                                           int               lda,
-                                          int               stride_A,
+                                          hipblasStride     stride_A,
                                           const double*     x,
                                           int               incx,
-                                          int               stride_x,
+                                          hipblasStride     stride_x,
                                           double*           C,
                                           int               ldc,
-                                          int               stride_C,
+                                          hipblasStride     stride_C,
                                           int               batch_count)
 {
     return hipblasDdgmmStridedBatched(
@@ -5534,13 +5534,13 @@ hipblasStatus_t hipblasDgmmStridedBatched(hipblasHandle_t       handle,
                                           int                   n,
                                           const hipblasComplex* A,
                                           int                   lda,
-                                          int                   stride_A,
+                                          hipblasStride         stride_A,
                                           const hipblasComplex* x,
                                           int                   incx,
-                                          int                   stride_x,
+                                          hipblasStride         stride_x,
                                           hipblasComplex*       C,
                                           int                   ldc,
-                                          int                   stride_C,
+                                          hipblasStride         stride_C,
                                           int                   batch_count)
 {
     return hipblasCdgmmStridedBatched(
@@ -5554,13 +5554,13 @@ hipblasStatus_t hipblasDgmmStridedBatched(hipblasHandle_t             handle,
                                           int                         n,
                                           const hipblasDoubleComplex* A,
                                           int                         lda,
-                                          int                         stride_A,
+                                          hipblasStride               stride_A,
                                           const hipblasDoubleComplex* x,
                                           int                         incx,
-                                          int                         stride_x,
+                                          hipblasStride               stride_x,
                                           hipblasDoubleComplex*       C,
                                           int                         ldc,
-                                          int                         stride_C,
+                                          hipblasStride               stride_C,
                                           int                         batch_count)
 {
     return hipblasZdgmmStridedBatched(
@@ -6053,11 +6053,11 @@ hipblasStatus_t hipblasHerkStridedBatched(hipblasHandle_t       handle,
                                           const float*          alpha,
                                           const hipblasComplex* A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           const float*          beta,
                                           hipblasComplex*       C,
                                           int                   ldc,
-                                          int                   strideC,
+                                          hipblasStride         strideC,
                                           int                   batchCount)
 {
     return hipblasCherkStridedBatched(
@@ -6073,11 +6073,11 @@ hipblasStatus_t hipblasHerkStridedBatched(hipblasHandle_t             handle,
                                           const double*               alpha,
                                           const hipblasDoubleComplex* A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           const double*               beta,
                                           hipblasDoubleComplex*       C,
                                           int                         ldc,
-                                          int                         strideC,
+                                          hipblasStride               strideC,
                                           int                         batchCount)
 {
     return hipblasZherkStridedBatched(
@@ -6172,14 +6172,14 @@ hipblasStatus_t hipblasHer2kStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* B,
                                            int                   ldb,
-                                           int                   strideB,
+                                           hipblasStride         strideB,
                                            const float*          beta,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   strideC,
+                                           hipblasStride         strideC,
                                            int                   batchCount)
 {
     return hipblasCher2kStridedBatched(handle,
@@ -6210,14 +6210,14 @@ hipblasStatus_t hipblasHer2kStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* B,
                                            int                         ldb,
-                                           int                         strideB,
+                                           hipblasStride               strideB,
                                            const double*               beta,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         strideC,
+                                           hipblasStride               strideC,
                                            int                         batchCount)
 {
     return hipblasZher2kStridedBatched(handle,
@@ -6327,14 +6327,14 @@ hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* B,
                                            int                   ldb,
-                                           int                   strideB,
+                                           hipblasStride         strideB,
                                            const float*          beta,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   strideC,
+                                           hipblasStride         strideC,
                                            int                   batchCount)
 {
     return hipblasCherkxStridedBatched(handle,
@@ -6365,14 +6365,14 @@ hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* B,
                                            int                         ldb,
-                                           int                         strideB,
+                                           hipblasStride               strideB,
                                            const double*               beta,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         strideC,
+                                           hipblasStride               strideC,
                                            int                         batchCount)
 {
     return hipblasZherkxStridedBatched(handle,
@@ -6558,14 +6558,14 @@ hipblasStatus_t hipblasSymmStridedBatched(hipblasHandle_t   handle,
                                           const float*      alpha,
                                           const float*      A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const float*      B,
                                           int               ldb,
-                                          int               strideB,
+                                          hipblasStride     strideB,
                                           const float*      beta,
                                           float*            C,
                                           int               ldc,
-                                          int               strideC,
+                                          hipblasStride     strideC,
                                           int               batchCount)
 {
     return hipblasSsymmStridedBatched(handle,
@@ -6596,14 +6596,14 @@ hipblasStatus_t hipblasSymmStridedBatched(hipblasHandle_t   handle,
                                           const double*     alpha,
                                           const double*     A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const double*     B,
                                           int               ldb,
-                                          int               strideB,
+                                          hipblasStride     strideB,
                                           const double*     beta,
                                           double*           C,
                                           int               ldc,
-                                          int               strideC,
+                                          hipblasStride     strideC,
                                           int               batchCount)
 {
     return hipblasDsymmStridedBatched(handle,
@@ -6634,14 +6634,14 @@ hipblasStatus_t hipblasSymmStridedBatched(hipblasHandle_t       handle,
                                           const hipblasComplex* alpha,
                                           const hipblasComplex* A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           const hipblasComplex* B,
                                           int                   ldb,
-                                          int                   strideB,
+                                          hipblasStride         strideB,
                                           const hipblasComplex* beta,
                                           hipblasComplex*       C,
                                           int                   ldc,
-                                          int                   strideC,
+                                          hipblasStride         strideC,
                                           int                   batchCount)
 {
     return hipblasCsymmStridedBatched(handle,
@@ -6672,14 +6672,14 @@ hipblasStatus_t hipblasSymmStridedBatched(hipblasHandle_t             handle,
                                           const hipblasDoubleComplex* alpha,
                                           const hipblasDoubleComplex* A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           const hipblasDoubleComplex* B,
                                           int                         ldb,
-                                          int                         strideB,
+                                          hipblasStride               strideB,
                                           const hipblasDoubleComplex* beta,
                                           hipblasDoubleComplex*       C,
                                           int                         ldc,
-                                          int                         strideC,
+                                          hipblasStride               strideC,
                                           int                         batchCount)
 {
     return hipblasZsymmStridedBatched(handle,
@@ -6845,11 +6845,11 @@ hipblasStatus_t hipblasSyrkStridedBatched(hipblasHandle_t    handle,
                                           const float*       alpha,
                                           const float*       A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           const float*       beta,
                                           float*             C,
                                           int                ldc,
-                                          int                strideC,
+                                          hipblasStride      strideC,
                                           int                batchCount)
 {
     return hipblasSsyrkStridedBatched(
@@ -6865,11 +6865,11 @@ hipblasStatus_t hipblasSyrkStridedBatched(hipblasHandle_t    handle,
                                           const double*      alpha,
                                           const double*      A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           const double*      beta,
                                           double*            C,
                                           int                ldc,
-                                          int                strideC,
+                                          hipblasStride      strideC,
                                           int                batchCount)
 {
     return hipblasDsyrkStridedBatched(
@@ -6885,11 +6885,11 @@ hipblasStatus_t hipblasSyrkStridedBatched(hipblasHandle_t       handle,
                                           const hipblasComplex* alpha,
                                           const hipblasComplex* A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           const hipblasComplex* beta,
                                           hipblasComplex*       C,
                                           int                   ldc,
-                                          int                   strideC,
+                                          hipblasStride         strideC,
                                           int                   batchCount)
 {
     return hipblasCsyrkStridedBatched(
@@ -6905,11 +6905,11 @@ hipblasStatus_t hipblasSyrkStridedBatched(hipblasHandle_t             handle,
                                           const hipblasDoubleComplex* alpha,
                                           const hipblasDoubleComplex* A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           const hipblasDoubleComplex* beta,
                                           hipblasDoubleComplex*       C,
                                           int                         ldc,
-                                          int                         strideC,
+                                          hipblasStride               strideC,
                                           int                         batchCount)
 {
     return hipblasZsyrkStridedBatched(
@@ -7080,14 +7080,14 @@ hipblasStatus_t hipblasSyr2kStridedBatched(hipblasHandle_t    handle,
                                            const float*       alpha,
                                            const float*       A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const float*       B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            const float*       beta,
                                            float*             C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount)
 {
     return hipblasSsyr2kStridedBatched(handle,
@@ -7118,14 +7118,14 @@ hipblasStatus_t hipblasSyr2kStridedBatched(hipblasHandle_t    handle,
                                            const double*      alpha,
                                            const double*      A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const double*      B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            const double*      beta,
                                            double*            C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount)
 {
     return hipblasDsyr2kStridedBatched(handle,
@@ -7156,14 +7156,14 @@ hipblasStatus_t hipblasSyr2kStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* B,
                                            int                   ldb,
-                                           int                   strideB,
+                                           hipblasStride         strideB,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   strideC,
+                                           hipblasStride         strideC,
                                            int                   batchCount)
 {
     return hipblasCsyr2kStridedBatched(handle,
@@ -7194,14 +7194,14 @@ hipblasStatus_t hipblasSyr2kStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* B,
                                            int                         ldb,
-                                           int                         strideB,
+                                           hipblasStride               strideB,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         strideC,
+                                           hipblasStride               strideC,
                                            int                         batchCount)
 {
     return hipblasZsyr2kStridedBatched(handle,
@@ -7387,14 +7387,14 @@ hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t    handle,
                                            const float*       alpha,
                                            const float*       A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const float*       B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            const float*       beta,
                                            float*             C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount)
 {
     return hipblasSsyrkxStridedBatched(handle,
@@ -7425,14 +7425,14 @@ hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t    handle,
                                            const double*      alpha,
                                            const double*      A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const double*      B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            const double*      beta,
                                            double*            C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount)
 {
     return hipblasDsyrkxStridedBatched(handle,
@@ -7463,14 +7463,14 @@ hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* B,
                                            int                   ldb,
-                                           int                   strideB,
+                                           hipblasStride         strideB,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   strideC,
+                                           hipblasStride         strideC,
                                            int                   batchCount)
 {
     return hipblasCsyrkxStridedBatched(handle,
@@ -7501,14 +7501,14 @@ hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* B,
                                            int                         ldb,
-                                           int                         strideB,
+                                           hipblasStride               strideB,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         strideC,
+                                           hipblasStride               strideC,
                                            int                         batchCount)
 {
     return hipblasZsyrkxStridedBatched(handle,
@@ -7618,14 +7618,14 @@ hipblasStatus_t hipblasHemmStridedBatched(hipblasHandle_t       handle,
                                           const hipblasComplex* alpha,
                                           const hipblasComplex* A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           const hipblasComplex* B,
                                           int                   ldb,
-                                          int                   strideB,
+                                          hipblasStride         strideB,
                                           const hipblasComplex* beta,
                                           hipblasComplex*       C,
                                           int                   ldc,
-                                          int                   strideC,
+                                          hipblasStride         strideC,
                                           int                   batchCount)
 {
     return hipblasChemmStridedBatched(handle,
@@ -7656,14 +7656,14 @@ hipblasStatus_t hipblasHemmStridedBatched(hipblasHandle_t             handle,
                                           const hipblasDoubleComplex* alpha,
                                           const hipblasDoubleComplex* A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           const hipblasDoubleComplex* B,
                                           int                         ldb,
-                                          int                         strideB,
+                                          hipblasStride               strideB,
                                           const hipblasDoubleComplex* beta,
                                           hipblasDoubleComplex*       C,
                                           int                         ldc,
-                                          int                         strideC,
+                                          hipblasStride               strideC,
                                           int                         batchCount)
 {
     return hipblasZhemmStridedBatched(handle,
@@ -7843,10 +7843,10 @@ hipblasStatus_t hipblasTrmmStridedBatched<float>(hipblasHandle_t    handle,
                                                  const float*       alpha,
                                                  const float*       A,
                                                  int                lda,
-                                                 int                strideA,
+                                                 hipblasStride      strideA,
                                                  float*             B,
                                                  int                ldb,
-                                                 int                strideB,
+                                                 hipblasStride      strideB,
                                                  int                batchCount)
 {
     return hipblasStrmmStridedBatched(handle,
@@ -7877,10 +7877,10 @@ hipblasStatus_t hipblasTrmmStridedBatched<double>(hipblasHandle_t    handle,
                                                   const double*      alpha,
                                                   const double*      A,
                                                   int                lda,
-                                                  int                strideA,
+                                                  hipblasStride      strideA,
                                                   double*            B,
                                                   int                ldb,
-                                                  int                strideB,
+                                                  hipblasStride      strideB,
                                                   int                batchCount)
 {
     return hipblasDtrmmStridedBatched(handle,
@@ -7911,10 +7911,10 @@ hipblasStatus_t hipblasTrmmStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           const hipblasComplex* alpha,
                                                           const hipblasComplex* A,
                                                           int                   lda,
-                                                          int                   strideA,
+                                                          hipblasStride         strideA,
                                                           hipblasComplex*       B,
                                                           int                   ldb,
-                                                          int                   strideB,
+                                                          hipblasStride         strideB,
                                                           int                   batchCount)
 {
     return hipblasCtrmmStridedBatched(handle,
@@ -7945,10 +7945,10 @@ hipblasStatus_t hipblasTrmmStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* alpha,
                                                                 const hipblasDoubleComplex* A,
                                                                 int                         lda,
-                                                                int                         strideA,
+                                                                hipblasStride               strideA,
                                                                 hipblasDoubleComplex*       B,
                                                                 int                         ldb,
-                                                                int                         strideB,
+                                                                hipblasStride               strideB,
                                                                 int batchCount)
 {
     return hipblasZtrmmStridedBatched(handle,
@@ -8104,10 +8104,10 @@ hipblasStatus_t hipblasTbmvStridedBatched<float>(hipblasHandle_t    handle,
                                                  int                k,
                                                  const float*       A,
                                                  int                lda,
-                                                 int                stride_a,
+                                                 hipblasStride      stride_a,
                                                  float*             x,
                                                  int                incx,
-                                                 int                stride_x,
+                                                 hipblasStride      stride_x,
                                                  int                batch_count)
 {
     return hipblasStbmvStridedBatched(
@@ -8123,10 +8123,10 @@ hipblasStatus_t hipblasTbmvStridedBatched<double>(hipblasHandle_t    handle,
                                                   int                k,
                                                   const double*      A,
                                                   int                lda,
-                                                  int                stride_a,
+                                                  hipblasStride      stride_a,
                                                   double*            x,
                                                   int                incx,
-                                                  int                stride_x,
+                                                  hipblasStride      stride_x,
                                                   int                batch_count)
 {
     return hipblasDtbmvStridedBatched(
@@ -8142,10 +8142,10 @@ hipblasStatus_t hipblasTbmvStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           int                   k,
                                                           const hipblasComplex* A,
                                                           int                   lda,
-                                                          int                   stride_a,
+                                                          hipblasStride         stride_a,
                                                           hipblasComplex*       x,
                                                           int                   incx,
-                                                          int                   stride_x,
+                                                          hipblasStride         stride_x,
                                                           int                   batch_count)
 {
     return hipblasCtbmvStridedBatched(
@@ -8161,10 +8161,10 @@ hipblasStatus_t hipblasTbmvStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 int                         k,
                                                                 const hipblasDoubleComplex* A,
                                                                 int                         lda,
-                                                                int                   stride_a,
+                                                                hipblasStride         stride_a,
                                                                 hipblasDoubleComplex* x,
                                                                 int                   incx,
-                                                                int                   stride_x,
+                                                                hipblasStride         stride_x,
                                                                 int                   batch_count)
 {
     return hipblasZtbmvStridedBatched(
@@ -8307,10 +8307,10 @@ hipblasStatus_t hipblasTbsvStridedBatched(hipblasHandle_t    handle,
                                           int                k,
                                           const float*       A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           float*             x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batchCount)
 {
     return hipblasStbsvStridedBatched(
@@ -8326,10 +8326,10 @@ hipblasStatus_t hipblasTbsvStridedBatched(hipblasHandle_t    handle,
                                           int                k,
                                           const double*      A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           double*            x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batchCount)
 {
     return hipblasDtbsvStridedBatched(
@@ -8345,10 +8345,10 @@ hipblasStatus_t hipblasTbsvStridedBatched(hipblasHandle_t       handle,
                                           int                   k,
                                           const hipblasComplex* A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           hipblasComplex*       x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           int                   batchCount)
 {
     return hipblasCtbsvStridedBatched(
@@ -8364,10 +8364,10 @@ hipblasStatus_t hipblasTbsvStridedBatched(hipblasHandle_t             handle,
                                           int                         k,
                                           const hipblasDoubleComplex* A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           hipblasDoubleComplex*       x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           int                         batchCount)
 {
     return hipblasZtbsvStridedBatched(
@@ -8492,10 +8492,10 @@ hipblasStatus_t hipblasTpmvStridedBatched(hipblasHandle_t    handle,
                                           hipblasDiagType_t  diag,
                                           int                m,
                                           const float*       AP,
-                                          int                strideAP,
+                                          hipblasStride      strideAP,
                                           float*             x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batchCount)
 {
     return hipblasStpmvStridedBatched(
@@ -8509,10 +8509,10 @@ hipblasStatus_t hipblasTpmvStridedBatched(hipblasHandle_t    handle,
                                           hipblasDiagType_t  diag,
                                           int                m,
                                           const double*      AP,
-                                          int                strideAP,
+                                          hipblasStride      strideAP,
                                           double*            x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batchCount)
 {
     return hipblasDtpmvStridedBatched(
@@ -8526,10 +8526,10 @@ hipblasStatus_t hipblasTpmvStridedBatched(hipblasHandle_t       handle,
                                           hipblasDiagType_t     diag,
                                           int                   m,
                                           const hipblasComplex* AP,
-                                          int                   strideAP,
+                                          hipblasStride         strideAP,
                                           hipblasComplex*       x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           int                   batchCount)
 {
     return hipblasCtpmvStridedBatched(
@@ -8543,10 +8543,10 @@ hipblasStatus_t hipblasTpmvStridedBatched(hipblasHandle_t             handle,
                                           hipblasDiagType_t           diag,
                                           int                         m,
                                           const hipblasDoubleComplex* AP,
-                                          int                         strideAP,
+                                          hipblasStride               strideAP,
                                           hipblasDoubleComplex*       x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           int                         batchCount)
 {
     return hipblasZtpmvStridedBatched(
@@ -8671,10 +8671,10 @@ hipblasStatus_t hipblasTpsvStridedBatched(hipblasHandle_t    handle,
                                           hipblasDiagType_t  diag,
                                           int                m,
                                           const float*       AP,
-                                          int                strideAP,
+                                          hipblasStride      strideAP,
                                           float*             x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batchCount)
 {
     return hipblasStpsvStridedBatched(
@@ -8688,10 +8688,10 @@ hipblasStatus_t hipblasTpsvStridedBatched(hipblasHandle_t    handle,
                                           hipblasDiagType_t  diag,
                                           int                m,
                                           const double*      AP,
-                                          int                strideAP,
+                                          hipblasStride      strideAP,
                                           double*            x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           int                batchCount)
 {
     return hipblasDtpsvStridedBatched(
@@ -8705,10 +8705,10 @@ hipblasStatus_t hipblasTpsvStridedBatched(hipblasHandle_t       handle,
                                           hipblasDiagType_t     diag,
                                           int                   m,
                                           const hipblasComplex* AP,
-                                          int                   strideAP,
+                                          hipblasStride         strideAP,
                                           hipblasComplex*       x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           int                   batchCount)
 {
     return hipblasCtpsvStridedBatched(
@@ -8722,10 +8722,10 @@ hipblasStatus_t hipblasTpsvStridedBatched(hipblasHandle_t             handle,
                                           hipblasDiagType_t           diag,
                                           int                         m,
                                           const hipblasDoubleComplex* AP,
-                                          int                         strideAP,
+                                          hipblasStride               strideAP,
                                           hipblasDoubleComplex*       x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           int                         batchCount)
 {
     return hipblasZtpsvStridedBatched(
@@ -8859,10 +8859,10 @@ hipblasStatus_t hipblasTrmvStridedBatched<float>(hipblasHandle_t    handle,
                                                  int                m,
                                                  const float*       A,
                                                  int                lda,
-                                                 int                stride_a,
+                                                 hipblasStride      stride_a,
                                                  float*             x,
                                                  int                incx,
-                                                 int                stride_x,
+                                                 hipblasStride      stride_x,
                                                  int                batch_count)
 {
     return hipblasStrmvStridedBatched(
@@ -8877,10 +8877,10 @@ hipblasStatus_t hipblasTrmvStridedBatched<double>(hipblasHandle_t    handle,
                                                   int                m,
                                                   const double*      A,
                                                   int                lda,
-                                                  int                stride_a,
+                                                  hipblasStride      stride_a,
                                                   double*            x,
                                                   int                incx,
-                                                  int                stride_x,
+                                                  hipblasStride      stride_x,
                                                   int                batch_count)
 {
     return hipblasDtrmvStridedBatched(
@@ -8895,10 +8895,10 @@ hipblasStatus_t hipblasTrmvStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           int                   m,
                                                           const hipblasComplex* A,
                                                           int                   lda,
-                                                          int                   stride_a,
+                                                          hipblasStride         stride_a,
                                                           hipblasComplex*       x,
                                                           int                   incx,
-                                                          int                   stride_x,
+                                                          hipblasStride         stride_x,
                                                           int                   batch_count)
 {
     return hipblasCtrmvStridedBatched(
@@ -8913,10 +8913,10 @@ hipblasStatus_t hipblasTrmvStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 int                         m,
                                                                 const hipblasDoubleComplex* A,
                                                                 int                         lda,
-                                                                int                   stride_a,
+                                                                hipblasStride         stride_a,
                                                                 hipblasDoubleComplex* x,
                                                                 int                   incx,
-                                                                int                   stride_x,
+                                                                hipblasStride         stride_x,
                                                                 int                   batch_count)
 {
     return hipblasZtrmvStridedBatched(
@@ -9081,10 +9081,10 @@ hipblasStatus_t hipblasTrsmStridedBatched<float>(hipblasHandle_t    handle,
                                                  const float*       alpha,
                                                  float*             A,
                                                  int                lda,
-                                                 int                strideA,
+                                                 hipblasStride      strideA,
                                                  float*             B,
                                                  int                ldb,
-                                                 int                strideB,
+                                                 hipblasStride      strideB,
                                                  int                batch_count)
 {
     return hipblasStrsmStridedBatched(handle,
@@ -9115,10 +9115,10 @@ hipblasStatus_t hipblasTrsmStridedBatched<double>(hipblasHandle_t    handle,
                                                   const double*      alpha,
                                                   double*            A,
                                                   int                lda,
-                                                  int                strideA,
+                                                  hipblasStride      strideA,
                                                   double*            B,
                                                   int                ldb,
-                                                  int                strideB,
+                                                  hipblasStride      strideB,
                                                   int                batch_count)
 {
     return hipblasDtrsmStridedBatched(handle,
@@ -9149,10 +9149,10 @@ hipblasStatus_t hipblasTrsmStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           const hipblasComplex* alpha,
                                                           hipblasComplex*       A,
                                                           int                   lda,
-                                                          int                   strideA,
+                                                          hipblasStride         strideA,
                                                           hipblasComplex*       B,
                                                           int                   ldb,
-                                                          int                   strideB,
+                                                          hipblasStride         strideB,
                                                           int                   batch_count)
 {
     return hipblasCtrsmStridedBatched(handle,
@@ -9183,10 +9183,10 @@ hipblasStatus_t hipblasTrsmStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* alpha,
                                                                 hipblasDoubleComplex*       A,
                                                                 int                         lda,
-                                                                int                         strideA,
+                                                                hipblasStride               strideA,
                                                                 hipblasDoubleComplex*       B,
                                                                 int                         ldb,
-                                                                int                         strideB,
+                                                                hipblasStride               strideB,
                                                                 int batch_count)
 {
     return hipblasZtrsmStridedBatched(handle,
@@ -9370,14 +9370,14 @@ hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t    handle,
                                           const float*       alpha,
                                           const float*       A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           const float*       beta,
                                           const float*       B,
                                           int                ldb,
-                                          int                strideB,
+                                          hipblasStride      strideB,
                                           float*             C,
                                           int                ldc,
-                                          int                strideC,
+                                          hipblasStride      strideC,
                                           int                batchCount)
 {
     return hipblasSgeamStridedBatched(handle,
@@ -9408,14 +9408,14 @@ hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t    handle,
                                           const double*      alpha,
                                           const double*      A,
                                           int                lda,
-                                          int                strideA,
+                                          hipblasStride      strideA,
                                           const double*      beta,
                                           const double*      B,
                                           int                ldb,
-                                          int                strideB,
+                                          hipblasStride      strideB,
                                           double*            C,
                                           int                ldc,
-                                          int                strideC,
+                                          hipblasStride      strideC,
                                           int                batchCount)
 {
     return hipblasDgeamStridedBatched(handle,
@@ -9446,14 +9446,14 @@ hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t       handle,
                                           const hipblasComplex* alpha,
                                           const hipblasComplex* A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           const hipblasComplex* beta,
                                           const hipblasComplex* B,
                                           int                   ldb,
-                                          int                   strideB,
+                                          hipblasStride         strideB,
                                           hipblasComplex*       C,
                                           int                   ldc,
-                                          int                   strideC,
+                                          hipblasStride         strideC,
                                           int                   batchCount)
 {
     return hipblasCgeamStridedBatched(handle,
@@ -9484,14 +9484,14 @@ hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t             handle,
                                           const hipblasDoubleComplex* alpha,
                                           const hipblasDoubleComplex* A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           const hipblasDoubleComplex* beta,
                                           const hipblasDoubleComplex* B,
                                           int                         ldb,
-                                          int                         strideB,
+                                          hipblasStride               strideB,
                                           hipblasDoubleComplex*       C,
                                           int                         ldc,
-                                          int                         strideC,
+                                          hipblasStride               strideC,
                                           int                         batchCount)
 {
     return hipblasZgeamStridedBatched(handle,
@@ -9599,43 +9599,43 @@ hipblasStatus_t hipblasGetrfBatched<hipblasDoubleComplex>(hipblasHandle_t       
 
 // getrf_strided_batched
 template <>
-hipblasStatus_t hipblasGetrfStridedBatched<float>(hipblasHandle_t handle,
-                                                  const int       n,
-                                                  float*          A,
-                                                  const int       lda,
-                                                  const int       strideA,
-                                                  int*            ipiv,
-                                                  const int       strideP,
-                                                  int*            info,
-                                                  const int       batchCount)
+hipblasStatus_t hipblasGetrfStridedBatched<float>(hipblasHandle_t     handle,
+                                                  const int           n,
+                                                  float*              A,
+                                                  const int           lda,
+                                                  const hipblasStride strideA,
+                                                  int*                ipiv,
+                                                  const hipblasStride strideP,
+                                                  int*                info,
+                                                  const int           batchCount)
 {
     return hipblasSgetrfStridedBatched(handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
 
 template <>
-hipblasStatus_t hipblasGetrfStridedBatched<double>(hipblasHandle_t handle,
-                                                   const int       n,
-                                                   double*         A,
-                                                   const int       lda,
-                                                   const int       strideA,
-                                                   int*            ipiv,
-                                                   const int       strideP,
-                                                   int*            info,
-                                                   const int       batchCount)
+hipblasStatus_t hipblasGetrfStridedBatched<double>(hipblasHandle_t     handle,
+                                                   const int           n,
+                                                   double*             A,
+                                                   const int           lda,
+                                                   const hipblasStride strideA,
+                                                   int*                ipiv,
+                                                   const hipblasStride strideP,
+                                                   int*                info,
+                                                   const int           batchCount)
 {
     return hipblasDgetrfStridedBatched(handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
 
 template <>
-hipblasStatus_t hipblasGetrfStridedBatched<hipblasComplex>(hipblasHandle_t handle,
-                                                           const int       n,
-                                                           hipblasComplex* A,
-                                                           const int       lda,
-                                                           const int       strideA,
-                                                           int*            ipiv,
-                                                           const int       strideP,
-                                                           int*            info,
-                                                           const int       batchCount)
+hipblasStatus_t hipblasGetrfStridedBatched<hipblasComplex>(hipblasHandle_t     handle,
+                                                           const int           n,
+                                                           hipblasComplex*     A,
+                                                           const int           lda,
+                                                           const hipblasStride strideA,
+                                                           int*                ipiv,
+                                                           const hipblasStride strideP,
+                                                           int*                info,
+                                                           const int           batchCount)
 {
     return hipblasCgetrfStridedBatched(handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
@@ -9645,9 +9645,9 @@ hipblasStatus_t hipblasGetrfStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
                                                                  const int             n,
                                                                  hipblasDoubleComplex* A,
                                                                  const int             lda,
-                                                                 const int             strideA,
+                                                                 const hipblasStride   strideA,
                                                                  int*                  ipiv,
-                                                                 const int             strideP,
+                                                                 const hipblasStride   strideP,
                                                                  int*                  info,
                                                                  const int             batchCount)
 {
@@ -9788,12 +9788,12 @@ hipblasStatus_t hipblasGetrsStridedBatched<float>(hipblasHandle_t          handl
                                                   const int                nrhs,
                                                   float*                   A,
                                                   const int                lda,
-                                                  const int                strideA,
+                                                  const hipblasStride      strideA,
                                                   const int*               ipiv,
-                                                  const int                strideP,
+                                                  const hipblasStride      strideP,
                                                   float*                   B,
                                                   const int                ldb,
-                                                  const int                strideB,
+                                                  const hipblasStride      strideB,
                                                   int*                     info,
                                                   const int                batchCount)
 {
@@ -9808,12 +9808,12 @@ hipblasStatus_t hipblasGetrsStridedBatched<double>(hipblasHandle_t          hand
                                                    const int                nrhs,
                                                    double*                  A,
                                                    const int                lda,
-                                                   const int                strideA,
+                                                   const hipblasStride      strideA,
                                                    const int*               ipiv,
-                                                   const int                strideP,
+                                                   const hipblasStride      strideP,
                                                    double*                  B,
                                                    const int                ldb,
-                                                   const int                strideB,
+                                                   const hipblasStride      strideB,
                                                    int*                     info,
                                                    const int                batchCount)
 {
@@ -9828,12 +9828,12 @@ hipblasStatus_t hipblasGetrsStridedBatched<hipblasComplex>(hipblasHandle_t      
                                                            const int                nrhs,
                                                            hipblasComplex*          A,
                                                            const int                lda,
-                                                           const int                strideA,
+                                                           const hipblasStride      strideA,
                                                            const int*               ipiv,
-                                                           const int                strideP,
+                                                           const hipblasStride      strideP,
                                                            hipblasComplex*          B,
                                                            const int                ldb,
-                                                           const int                strideB,
+                                                           const hipblasStride      strideB,
                                                            int*                     info,
                                                            const int                batchCount)
 {
@@ -9848,12 +9848,12 @@ hipblasStatus_t hipblasGetrsStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
                                                                  const int                nrhs,
                                                                  hipblasDoubleComplex*    A,
                                                                  const int                lda,
-                                                                 const int                strideA,
+                                                                 const hipblasStride      strideA,
                                                                  const int*               ipiv,
-                                                                 const int                strideP,
+                                                                 const hipblasStride      strideP,
                                                                  hipblasDoubleComplex*    B,
                                                                  const int                ldb,
-                                                                 const int                strideB,
+                                                                 const hipblasStride      strideB,
                                                                  int*                     info,
                                                                  const int batchCount)
 {
@@ -10022,48 +10022,48 @@ hipblasStatus_t hipblasGeqrfBatched<hipblasDoubleComplex>(hipblasHandle_t       
 
 // geqrf_strided_batched
 template <>
-hipblasStatus_t hipblasGeqrfStridedBatched<float>(hipblasHandle_t handle,
-                                                  const int       m,
-                                                  const int       n,
-                                                  float*          A,
-                                                  const int       lda,
-                                                  const int       strideA,
-                                                  float*          ipiv,
-                                                  const int       strideP,
-                                                  int*            info,
-                                                  const int       batchCount)
+hipblasStatus_t hipblasGeqrfStridedBatched<float>(hipblasHandle_t     handle,
+                                                  const int           m,
+                                                  const int           n,
+                                                  float*              A,
+                                                  const int           lda,
+                                                  const hipblasStride strideA,
+                                                  float*              ipiv,
+                                                  const hipblasStride strideP,
+                                                  int*                info,
+                                                  const int           batchCount)
 {
     return hipblasSgeqrfStridedBatched(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
 
 template <>
-hipblasStatus_t hipblasGeqrfStridedBatched<double>(hipblasHandle_t handle,
-                                                   const int       m,
-                                                   const int       n,
-                                                   double*         A,
-                                                   const int       lda,
-                                                   const int       strideA,
-                                                   double*         ipiv,
-                                                   const int       strideP,
-                                                   int*            info,
-                                                   const int       batchCount)
+hipblasStatus_t hipblasGeqrfStridedBatched<double>(hipblasHandle_t     handle,
+                                                   const int           m,
+                                                   const int           n,
+                                                   double*             A,
+                                                   const int           lda,
+                                                   const hipblasStride strideA,
+                                                   double*             ipiv,
+                                                   const hipblasStride strideP,
+                                                   int*                info,
+                                                   const int           batchCount)
 {
     return hipblasDgeqrfStridedBatched(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
 
 template <>
-hipblasStatus_t hipblasGeqrfStridedBatched<hipblasComplex>(hipblasHandle_t handle,
-                                                           const int       m,
-                                                           const int       n,
-                                                           hipblasComplex* A,
-                                                           const int       lda,
-                                                           const int       strideA,
-                                                           hipblasComplex* ipiv,
-                                                           const int       strideP,
-                                                           int*            info,
-                                                           const int       batchCount)
+hipblasStatus_t hipblasGeqrfStridedBatched<hipblasComplex>(hipblasHandle_t     handle,
+                                                           const int           m,
+                                                           const int           n,
+                                                           hipblasComplex*     A,
+                                                           const int           lda,
+                                                           const hipblasStride strideA,
+                                                           hipblasComplex*     ipiv,
+                                                           const hipblasStride strideP,
+                                                           int*                info,
+                                                           const int           batchCount)
 {
     return hipblasCgeqrfStridedBatched(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
@@ -10075,9 +10075,9 @@ hipblasStatus_t hipblasGeqrfStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
                                                                  const int             n,
                                                                  hipblasDoubleComplex* A,
                                                                  const int             lda,
-                                                                 const int             strideA,
+                                                                 const hipblasStride   strideA,
                                                                  hipblasDoubleComplex* ipiv,
-                                                                 const int             strideP,
+                                                                 const hipblasStride   strideP,
                                                                  int*                  info,
                                                                  const int             batchCount)
 {
@@ -10220,10 +10220,10 @@ hipblasStatus_t hipblasAxpyStridedBatched<hipblasHalf, true>(hipblasHandle_t    
                                                              const hipblasHalf* alpha,
                                                              const hipblasHalf* x,
                                                              int                incx,
-                                                             int                stridex,
+                                                             hipblasStride      stridex,
                                                              hipblasHalf*       y,
                                                              int                incy,
-                                                             int                stridey,
+                                                             hipblasStride      stridey,
                                                              int                batch_count)
 {
     return hipblasHaxpyStridedBatchedFortran(
@@ -10236,10 +10236,10 @@ hipblasStatus_t hipblasAxpyStridedBatched<float, true>(hipblasHandle_t handle,
                                                        const float*    alpha,
                                                        const float*    x,
                                                        int             incx,
-                                                       int             stridex,
+                                                       hipblasStride   stridex,
                                                        float*          y,
                                                        int             incy,
-                                                       int             stridey,
+                                                       hipblasStride   stridey,
                                                        int             batch_count)
 {
     return hipblasSaxpyStridedBatchedFortran(
@@ -10252,10 +10252,10 @@ hipblasStatus_t hipblasAxpyStridedBatched<double, true>(hipblasHandle_t handle,
                                                         const double*   alpha,
                                                         const double*   x,
                                                         int             incx,
-                                                        int             stridex,
+                                                        hipblasStride   stridex,
                                                         double*         y,
                                                         int             incy,
-                                                        int             stridey,
+                                                        hipblasStride   stridey,
                                                         int             batch_count)
 {
     return hipblasDaxpyStridedBatchedFortran(
@@ -10268,10 +10268,10 @@ hipblasStatus_t hipblasAxpyStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 hipblasComplex*       y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 int                   batch_count)
 {
     return hipblasCaxpyStridedBatchedFortran(
@@ -10285,10 +10285,10 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           hipblasDoubleComplex*       y,
                                                           int                         incy,
-                                                          int                         stridey,
+                                                          hipblasStride               stridey,
                                                           int                         batch_count)
 {
     return hipblasZaxpyStridedBatchedFortran(
@@ -10415,7 +10415,7 @@ hipblasStatus_t hipblasScalStridedBatched<float, float, true>(hipblasHandle_t ha
                                                               const float*    alpha,
                                                               float*          x,
                                                               int             incx,
-                                                              int             stridex,
+                                                              hipblasStride   stridex,
                                                               int             batch_count)
 {
     return hipblasSscalStridedBatchedFortran(handle, n, alpha, x, incx, stridex, batch_count);
@@ -10427,7 +10427,7 @@ hipblasStatus_t hipblasScalStridedBatched<double, double, true>(hipblasHandle_t 
                                                                 const double*   alpha,
                                                                 double*         x,
                                                                 int             incx,
-                                                                int             stridex,
+                                                                hipblasStride   stridex,
                                                                 int             batch_count)
 {
     return hipblasDscalStridedBatchedFortran(handle, n, alpha, x, incx, stridex, batch_count);
@@ -10440,7 +10440,7 @@ hipblasStatus_t
                                                                     const hipblasComplex* alpha,
                                                                     hipblasComplex*       x,
                                                                     int                   incx,
-                                                                    int                   stridex,
+                                                                    hipblasStride         stridex,
                                                                     int batch_count)
 {
     return hipblasCscalStridedBatchedFortran(handle, n, alpha, x, incx, stridex, batch_count);
@@ -10453,7 +10453,7 @@ hipblasStatus_t hipblasScalStridedBatched<hipblasDoubleComplex, hipblasDoubleCom
     const hipblasDoubleComplex* alpha,
     hipblasDoubleComplex*       x,
     int                         incx,
-    int                         stridex,
+    hipblasStride               stridex,
     int                         batch_count)
 {
     return hipblasZscalStridedBatchedFortran(handle, n, alpha, x, incx, stridex, batch_count);
@@ -10465,7 +10465,7 @@ hipblasStatus_t hipblasScalStridedBatched<hipblasComplex, float, true>(hipblasHa
                                                                        const float*    alpha,
                                                                        hipblasComplex* x,
                                                                        int             incx,
-                                                                       int             stridex,
+                                                                       hipblasStride   stridex,
                                                                        int             batch_count)
 {
     return hipblasCsscalStridedBatchedFortran(handle, n, alpha, x, incx, stridex, batch_count);
@@ -10478,7 +10478,7 @@ hipblasStatus_t
                                                                   const double*         alpha,
                                                                   hipblasDoubleComplex* x,
                                                                   int                   incx,
-                                                                  int                   stridex,
+                                                                  hipblasStride         stridex,
                                                                   int                   batch_count)
 {
     return hipblasZdscalStridedBatchedFortran(handle, n, alpha, x, incx, stridex, batch_count);
@@ -10562,10 +10562,10 @@ hipblasStatus_t hipblasSwapStridedBatched<float, true>(hipblasHandle_t handle,
                                                        int             n,
                                                        float*          x,
                                                        int             incx,
-                                                       int             stridex,
+                                                       hipblasStride   stridex,
                                                        float*          y,
                                                        int             incy,
-                                                       int             stridey,
+                                                       hipblasStride   stridey,
                                                        int             batch_count)
 {
     return hipblasSswapStridedBatchedFortran(
@@ -10577,10 +10577,10 @@ hipblasStatus_t hipblasSwapStridedBatched<double, true>(hipblasHandle_t handle,
                                                         int             n,
                                                         double*         x,
                                                         int             incx,
-                                                        int             stridex,
+                                                        hipblasStride   stridex,
                                                         double*         y,
                                                         int             incy,
-                                                        int             stridey,
+                                                        hipblasStride   stridey,
                                                         int             batch_count)
 {
     return hipblasDswapStridedBatchedFortran(
@@ -10592,10 +10592,10 @@ hipblasStatus_t hipblasSwapStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int             n,
                                                                 hipblasComplex* x,
                                                                 int             incx,
-                                                                int             stridex,
+                                                                hipblasStride   stridex,
                                                                 hipblasComplex* y,
                                                                 int             incy,
-                                                                int             stridey,
+                                                                hipblasStride   stridey,
                                                                 int             batch_count)
 {
     return hipblasCswapStridedBatchedFortran(
@@ -10607,10 +10607,10 @@ hipblasStatus_t hipblasSwapStridedBatched<hipblasDoubleComplex, true>(hipblasHan
                                                                       int                   n,
                                                                       hipblasDoubleComplex* x,
                                                                       int                   incx,
-                                                                      int                   stridex,
+                                                                      hipblasStride         stridex,
                                                                       hipblasDoubleComplex* y,
                                                                       int                   incy,
-                                                                      int                   stridey,
+                                                                      hipblasStride         stridey,
                                                                       int batch_count)
 {
     return hipblasZswapStridedBatchedFortran(
@@ -10706,10 +10706,10 @@ hipblasStatus_t hipblasCopyStridedBatched<float, true>(hipblasHandle_t handle,
                                                        int             n,
                                                        const float*    x,
                                                        int             incx,
-                                                       int             stridex,
+                                                       hipblasStride   stridex,
                                                        float*          y,
                                                        int             incy,
-                                                       int             stridey,
+                                                       hipblasStride   stridey,
                                                        int             batch_count)
 {
     return hipblasScopyStridedBatchedFortran(
@@ -10721,10 +10721,10 @@ hipblasStatus_t hipblasCopyStridedBatched<double, true>(hipblasHandle_t handle,
                                                         int             n,
                                                         const double*   x,
                                                         int             incx,
-                                                        int             stridex,
+                                                        hipblasStride   stridex,
                                                         double*         y,
                                                         int             incy,
-                                                        int             stridey,
+                                                        hipblasStride   stridey,
                                                         int             batch_count)
 {
     return hipblasDcopyStridedBatchedFortran(
@@ -10736,10 +10736,10 @@ hipblasStatus_t hipblasCopyStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int                   n,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 hipblasComplex*       y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 int                   batch_count)
 {
     return hipblasCcopyStridedBatchedFortran(
@@ -10751,10 +10751,10 @@ hipblasStatus_t hipblasCopyStridedBatched<hipblasDoubleComplex, true>(hipblasHan
                                                                       int             n,
                                                                       const hipblasDoubleComplex* x,
                                                                       int                   incx,
-                                                                      int                   stridex,
+                                                                      hipblasStride         stridex,
                                                                       hipblasDoubleComplex* y,
                                                                       int                   incy,
-                                                                      int                   stridey,
+                                                                      hipblasStride         stridey,
                                                                       int batch_count)
 {
     return hipblasZcopyStridedBatchedFortran(
@@ -10970,10 +10970,10 @@ hipblasStatus_t hipblasDotStridedBatched<hipblasHalf, true>(hipblasHandle_t    h
                                                             int                n,
                                                             const hipblasHalf* x,
                                                             int                incx,
-                                                            int                stridex,
+                                                            hipblasStride      stridex,
                                                             const hipblasHalf* y,
                                                             int                incy,
-                                                            int                stridey,
+                                                            hipblasStride      stridey,
                                                             int                batch_count,
                                                             hipblasHalf*       result)
 {
@@ -10986,10 +10986,10 @@ hipblasStatus_t hipblasDotStridedBatched<hipblasBfloat16, true>(hipblasHandle_t 
                                                                 int                    n,
                                                                 const hipblasBfloat16* x,
                                                                 int                    incx,
-                                                                int                    stridex,
+                                                                hipblasStride          stridex,
                                                                 const hipblasBfloat16* y,
                                                                 int                    incy,
-                                                                int                    stridey,
+                                                                hipblasStride          stridey,
                                                                 int                    batch_count,
                                                                 hipblasBfloat16*       result)
 {
@@ -11002,10 +11002,10 @@ hipblasStatus_t hipblasDotStridedBatched<float, true>(hipblasHandle_t handle,
                                                       int             n,
                                                       const float*    x,
                                                       int             incx,
-                                                      int             stridex,
+                                                      hipblasStride   stridex,
                                                       const float*    y,
                                                       int             incy,
-                                                      int             stridey,
+                                                      hipblasStride   stridey,
                                                       int             batch_count,
                                                       float*          result)
 {
@@ -11018,10 +11018,10 @@ hipblasStatus_t hipblasDotStridedBatched<double, true>(hipblasHandle_t handle,
                                                        int             n,
                                                        const double*   x,
                                                        int             incx,
-                                                       int             stridex,
+                                                       hipblasStride   stridex,
                                                        const double*   y,
                                                        int             incy,
-                                                       int             stridey,
+                                                       hipblasStride   stridey,
                                                        int             batch_count,
                                                        double*         result)
 {
@@ -11034,10 +11034,10 @@ hipblasStatus_t hipblasDotStridedBatched<hipblasComplex, true>(hipblasHandle_t  
                                                                int                   n,
                                                                const hipblasComplex* x,
                                                                int                   incx,
-                                                               int                   stridex,
+                                                               hipblasStride         stridex,
                                                                const hipblasComplex* y,
                                                                int                   incy,
-                                                               int                   stridey,
+                                                               hipblasStride         stridey,
                                                                int                   batch_count,
                                                                hipblasComplex*       result)
 {
@@ -11050,10 +11050,10 @@ hipblasStatus_t hipblasDotcStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int                   n,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 const hipblasComplex* y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 int                   batch_count,
                                                                 hipblasComplex*       result)
 {
@@ -11065,12 +11065,12 @@ template <>
 hipblasStatus_t hipblasDotStridedBatched<hipblasDoubleComplex, true>(hipblasHandle_t handle,
                                                                      int             n,
                                                                      const hipblasDoubleComplex* x,
-                                                                     int incx,
-                                                                     int stridex,
+                                                                     int           incx,
+                                                                     hipblasStride stridex,
                                                                      const hipblasDoubleComplex* y,
-                                                                     int incy,
-                                                                     int stridey,
-                                                                     int batch_count,
+                                                                     int           incy,
+                                                                     hipblasStride stridey,
+                                                                     int           batch_count,
                                                                      hipblasDoubleComplex* result)
 {
     return hipblasZdotuStridedBatchedFortran(
@@ -11081,12 +11081,12 @@ template <>
 hipblasStatus_t hipblasDotcStridedBatched<hipblasDoubleComplex, true>(hipblasHandle_t handle,
                                                                       int             n,
                                                                       const hipblasDoubleComplex* x,
-                                                                      int incx,
-                                                                      int stridex,
+                                                                      int           incx,
+                                                                      hipblasStride stridex,
                                                                       const hipblasDoubleComplex* y,
-                                                                      int incy,
-                                                                      int stridey,
-                                                                      int batch_count,
+                                                                      int           incy,
+                                                                      hipblasStride stridey,
+                                                                      int           batch_count,
                                                                       hipblasDoubleComplex* result)
 {
     return hipblasZdotcStridedBatchedFortran(
@@ -11178,7 +11178,7 @@ hipblasStatus_t hipblasAsumStridedBatched<float, float, true>(hipblasHandle_t ha
                                                               int             n,
                                                               const float*    x,
                                                               int             incx,
-                                                              int             stridex,
+                                                              hipblasStride   stridex,
                                                               int             batch_count,
                                                               float*          result)
 {
@@ -11191,7 +11191,7 @@ hipblasStatus_t hipblasAsumStridedBatched<double, double, true>(hipblasHandle_t 
                                                                 int             n,
                                                                 const double*   x,
                                                                 int             incx,
-                                                                int             stridex,
+                                                                hipblasStride   stridex,
                                                                 int             batch_count,
                                                                 double*         result)
 {
@@ -11204,9 +11204,9 @@ hipblasStatus_t hipblasAsumStridedBatched<hipblasComplex, float, true>(hipblasHa
                                                                        int                   n,
                                                                        const hipblasComplex* x,
                                                                        int                   incx,
-                                                                       int    stridex,
-                                                                       int    batch_count,
-                                                                       float* result)
+                                                                       hipblasStride stridex,
+                                                                       int           batch_count,
+                                                                       float*        result)
 {
 
     return hipblasScasumStridedBatchedFortran(handle, n, x, incx, stridex, batch_count, result);
@@ -11218,9 +11218,9 @@ hipblasStatus_t
                                                                   int             n,
                                                                   const hipblasDoubleComplex* x,
                                                                   int                         incx,
-                                                                  int     stridex,
-                                                                  int     batch_count,
-                                                                  double* result)
+                                                                  hipblasStride stridex,
+                                                                  int           batch_count,
+                                                                  double*       result)
 {
 
     return hipblasDzasumStridedBatchedFortran(handle, n, x, incx, stridex, batch_count, result);
@@ -11311,7 +11311,7 @@ hipblasStatus_t hipblasNrm2StridedBatched<float, float, true>(hipblasHandle_t ha
                                                               int             n,
                                                               const float*    x,
                                                               int             incx,
-                                                              int             stridex,
+                                                              hipblasStride   stridex,
                                                               int             batch_count,
                                                               float*          result)
 {
@@ -11324,7 +11324,7 @@ hipblasStatus_t hipblasNrm2StridedBatched<double, double, true>(hipblasHandle_t 
                                                                 int             n,
                                                                 const double*   x,
                                                                 int             incx,
-                                                                int             stridex,
+                                                                hipblasStride   stridex,
                                                                 int             batch_count,
                                                                 double*         result)
 {
@@ -11337,9 +11337,9 @@ hipblasStatus_t hipblasNrm2StridedBatched<hipblasComplex, float, true>(hipblasHa
                                                                        int                   n,
                                                                        const hipblasComplex* x,
                                                                        int                   incx,
-                                                                       int    stridex,
-                                                                       int    batch_count,
-                                                                       float* result)
+                                                                       hipblasStride stridex,
+                                                                       int           batch_count,
+                                                                       float*        result)
 {
 
     return hipblasScnrm2StridedBatchedFortran(handle, n, x, incx, stridex, batch_count, result);
@@ -11351,9 +11351,9 @@ hipblasStatus_t
                                                                   int             n,
                                                                   const hipblasDoubleComplex* x,
                                                                   int                         incx,
-                                                                  int     stridex,
-                                                                  int     batch_count,
-                                                                  double* result)
+                                                                  hipblasStride stridex,
+                                                                  int           batch_count,
+                                                                  double*       result)
 {
 
     return hipblasDznrm2StridedBatchedFortran(handle, n, x, incx, stridex, batch_count, result);
@@ -11533,10 +11533,10 @@ hipblasStatus_t hipblasRotStridedBatched<float, float, float, true>(hipblasHandl
                                                                     int             n,
                                                                     float*          x,
                                                                     int             incx,
-                                                                    int             stridex,
+                                                                    hipblasStride   stridex,
                                                                     float*          y,
                                                                     int             incy,
-                                                                    int             stridey,
+                                                                    hipblasStride   stridey,
                                                                     const float*    c,
                                                                     const float*    s,
                                                                     int             batch_count)
@@ -11550,10 +11550,10 @@ hipblasStatus_t hipblasRotStridedBatched<double, double, double, true>(hipblasHa
                                                                        int             n,
                                                                        double*         x,
                                                                        int             incx,
-                                                                       int             stridex,
+                                                                       hipblasStride   stridex,
                                                                        double*         y,
                                                                        int             incy,
-                                                                       int             stridey,
+                                                                       hipblasStride   stridey,
                                                                        const double*   c,
                                                                        const double*   s,
                                                                        int             batch_count)
@@ -11568,10 +11568,10 @@ hipblasStatus_t
                                                                           int             n,
                                                                           hipblasComplex* x,
                                                                           int             incx,
-                                                                          int             stridex,
+                                                                          hipblasStride   stridex,
                                                                           hipblasComplex* y,
                                                                           int             incy,
-                                                                          int             stridey,
+                                                                          hipblasStride   stridey,
                                                                           const float*    c,
                                                                           const hipblasComplex* s,
                                                                           int batch_count)
@@ -11585,12 +11585,12 @@ hipblasStatus_t hipblasRotStridedBatched<hipblasComplex, float, float, true>(hip
                                                                              int             n,
                                                                              hipblasComplex* x,
                                                                              int             incx,
-                                                                             int stridex,
+                                                                             hipblasStride stridex,
                                                                              hipblasComplex* y,
                                                                              int             incy,
-                                                                             int          stridey,
-                                                                             const float* c,
-                                                                             const float* s,
+                                                                             hipblasStride stridey,
+                                                                             const float*  c,
+                                                                             const float*  s,
                                                                              int batch_count)
 {
     return hipblasCsrotStridedBatchedFortran(
@@ -11603,10 +11603,10 @@ hipblasStatus_t hipblasRotStridedBatched<hipblasDoubleComplex, double, hipblasDo
     int                         n,
     hipblasDoubleComplex*       x,
     int                         incx,
-    int                         stridex,
+    hipblasStride               stridex,
     hipblasDoubleComplex*       y,
     int                         incy,
-    int                         stridey,
+    hipblasStride               stridey,
     const double*               c,
     const hipblasDoubleComplex* s,
     int                         batch_count)
@@ -11621,10 +11621,10 @@ hipblasStatus_t
                                                                          int             n,
                                                                          hipblasDoubleComplex* x,
                                                                          int                   incx,
-                                                                         int stridex,
+                                                                         hipblasStride stridex,
                                                                          hipblasDoubleComplex* y,
                                                                          int                   incy,
-                                                                         int           stridey,
+                                                                         hipblasStride stridey,
                                                                          const double* c,
                                                                          const double* s,
                                                                          int           batch_count)
@@ -11715,13 +11715,13 @@ hipblasStatus_t
 template <>
 hipblasStatus_t hipblasRotgStridedBatched<float, float, true>(hipblasHandle_t handle,
                                                               float*          a,
-                                                              int             stridea,
+                                                              hipblasStride   stridea,
                                                               float*          b,
-                                                              int             strideb,
+                                                              hipblasStride   strideb,
                                                               float*          c,
-                                                              int             stridec,
+                                                              hipblasStride   stridec,
                                                               float*          s,
-                                                              int             strides,
+                                                              hipblasStride   strides,
                                                               int             batch_count)
 {
     return hipblasSrotgStridedBatchedFortran(
@@ -11731,13 +11731,13 @@ hipblasStatus_t hipblasRotgStridedBatched<float, float, true>(hipblasHandle_t ha
 template <>
 hipblasStatus_t hipblasRotgStridedBatched<double, double, true>(hipblasHandle_t handle,
                                                                 double*         a,
-                                                                int             stridea,
+                                                                hipblasStride   stridea,
                                                                 double*         b,
-                                                                int             strideb,
+                                                                hipblasStride   strideb,
                                                                 double*         c,
-                                                                int             stridec,
+                                                                hipblasStride   stridec,
                                                                 double*         s,
-                                                                int             strides,
+                                                                hipblasStride   strides,
                                                                 int             batch_count)
 {
     return hipblasDrotgStridedBatchedFortran(
@@ -11747,13 +11747,13 @@ hipblasStatus_t hipblasRotgStridedBatched<double, double, true>(hipblasHandle_t 
 template <>
 hipblasStatus_t hipblasRotgStridedBatched<hipblasComplex, float, true>(hipblasHandle_t handle,
                                                                        hipblasComplex* a,
-                                                                       int             stridea,
+                                                                       hipblasStride   stridea,
                                                                        hipblasComplex* b,
-                                                                       int             strideb,
+                                                                       hipblasStride   strideb,
                                                                        float*          c,
-                                                                       int             stridec,
+                                                                       hipblasStride   stridec,
                                                                        hipblasComplex* s,
-                                                                       int             strides,
+                                                                       hipblasStride   strides,
                                                                        int             batch_count)
 {
     return hipblasCrotgStridedBatchedFortran(
@@ -11764,13 +11764,13 @@ template <>
 hipblasStatus_t
     hipblasRotgStridedBatched<hipblasDoubleComplex, double, true>(hipblasHandle_t       handle,
                                                                   hipblasDoubleComplex* a,
-                                                                  int                   stridea,
+                                                                  hipblasStride         stridea,
                                                                   hipblasDoubleComplex* b,
-                                                                  int                   strideb,
+                                                                  hipblasStride         strideb,
                                                                   double*               c,
-                                                                  int                   stridec,
+                                                                  hipblasStride         stridec,
                                                                   hipblasDoubleComplex* s,
-                                                                  int                   strides,
+                                                                  hipblasStride         strides,
                                                                   int                   batch_count)
 {
     return hipblasZrotgStridedBatchedFortran(
@@ -11825,12 +11825,12 @@ hipblasStatus_t hipblasRotmStridedBatched<float, true>(hipblasHandle_t handle,
                                                        int             n,
                                                        float*          x,
                                                        int             incx,
-                                                       int             stridex,
+                                                       hipblasStride   stridex,
                                                        float*          y,
                                                        int             incy,
-                                                       int             stridey,
+                                                       hipblasStride   stridey,
                                                        const float*    param,
-                                                       int             strideparam,
+                                                       hipblasStride   strideparam,
                                                        int             batch_count)
 {
     return hipblasSrotmStridedBatchedFortran(
@@ -11842,12 +11842,12 @@ hipblasStatus_t hipblasRotmStridedBatched<double, true>(hipblasHandle_t handle,
                                                         int             n,
                                                         double*         x,
                                                         int             incx,
-                                                        int             stridex,
+                                                        hipblasStride   stridex,
                                                         double*         y,
                                                         int             incy,
-                                                        int             stridey,
+                                                        hipblasStride   stridey,
                                                         const double*   param,
-                                                        int             strideparam,
+                                                        hipblasStride   strideparam,
                                                         int             batch_count)
 {
     return hipblasDrotmStridedBatchedFortran(
@@ -11898,15 +11898,15 @@ hipblasStatus_t hipblasRotmgBatched<double, true>(hipblasHandle_t     handle,
 template <>
 hipblasStatus_t hipblasRotmgStridedBatched<float, true>(hipblasHandle_t handle,
                                                         float*          d1,
-                                                        int             stride_d1,
+                                                        hipblasStride   stride_d1,
                                                         float*          d2,
-                                                        int             stride_d2,
+                                                        hipblasStride   stride_d2,
                                                         float*          x1,
-                                                        int             stride_x1,
+                                                        hipblasStride   stride_x1,
                                                         const float*    y1,
-                                                        int             stride_y1,
+                                                        hipblasStride   stride_y1,
                                                         float*          param,
-                                                        int             strideparam,
+                                                        hipblasStride   strideparam,
                                                         int             batch_count)
 {
     return hipblasSrotmgStridedBatchedFortran(handle,
@@ -11926,15 +11926,15 @@ hipblasStatus_t hipblasRotmgStridedBatched<float, true>(hipblasHandle_t handle,
 template <>
 hipblasStatus_t hipblasRotmgStridedBatched<double, true>(hipblasHandle_t handle,
                                                          double*         d1,
-                                                         int             stride_d1,
+                                                         hipblasStride   stride_d1,
                                                          double*         d2,
-                                                         int             stride_d2,
+                                                         hipblasStride   stride_d2,
                                                          double*         x1,
-                                                         int             stride_x1,
+                                                         hipblasStride   stride_x1,
                                                          const double*   y1,
-                                                         int             stride_y1,
+                                                         hipblasStride   stride_y1,
                                                          double*         param,
-                                                         int             strideparam,
+                                                         hipblasStride   strideparam,
                                                          int             batch_count)
 {
     return hipblasDrotmgStridedBatchedFortran(handle,
@@ -12024,7 +12024,7 @@ hipblasStatus_t hipblasIamaxStridedBatched<float, true>(hipblasHandle_t handle,
                                                         int             n,
                                                         const float*    x,
                                                         int             incx,
-                                                        int             stridex,
+                                                        hipblasStride   stridex,
                                                         int             batch_count,
                                                         int*            result)
 {
@@ -12036,7 +12036,7 @@ hipblasStatus_t hipblasIamaxStridedBatched<double, true>(hipblasHandle_t handle,
                                                          int             n,
                                                          const double*   x,
                                                          int             incx,
-                                                         int             stridex,
+                                                         hipblasStride   stridex,
                                                          int             batch_count,
                                                          int*            result)
 {
@@ -12048,7 +12048,7 @@ hipblasStatus_t hipblasIamaxStridedBatched<hipblasComplex, true>(hipblasHandle_t
                                                                  int                   n,
                                                                  const hipblasComplex* x,
                                                                  int                   incx,
-                                                                 int                   stridex,
+                                                                 hipblasStride         stridex,
                                                                  int                   batch_count,
                                                                  int*                  result)
 {
@@ -12061,7 +12061,7 @@ hipblasStatus_t
                                                            int                         n,
                                                            const hipblasDoubleComplex* x,
                                                            int                         incx,
-                                                           int                         stridex,
+                                                           hipblasStride               stridex,
                                                            int                         batch_count,
                                                            int*                        result)
 {
@@ -12141,7 +12141,7 @@ hipblasStatus_t hipblasIaminStridedBatched<float, true>(hipblasHandle_t handle,
                                                         int             n,
                                                         const float*    x,
                                                         int             incx,
-                                                        int             stridex,
+                                                        hipblasStride   stridex,
                                                         int             batch_count,
                                                         int*            result)
 {
@@ -12153,7 +12153,7 @@ hipblasStatus_t hipblasIaminStridedBatched<double, true>(hipblasHandle_t handle,
                                                          int             n,
                                                          const double*   x,
                                                          int             incx,
-                                                         int             stridex,
+                                                         hipblasStride   stridex,
                                                          int             batch_count,
                                                          int*            result)
 {
@@ -12165,7 +12165,7 @@ hipblasStatus_t hipblasIaminStridedBatched<hipblasComplex, true>(hipblasHandle_t
                                                                  int                   n,
                                                                  const hipblasComplex* x,
                                                                  int                   incx,
-                                                                 int                   stridex,
+                                                                 hipblasStride         stridex,
                                                                  int                   batch_count,
                                                                  int*                  result)
 {
@@ -12178,7 +12178,7 @@ hipblasStatus_t
                                                            int                         n,
                                                            const hipblasDoubleComplex* x,
                                                            int                         incx,
-                                                           int                         stridex,
+                                                           hipblasStride               stridex,
                                                            int                         batch_count,
                                                            int*                        result)
 {
@@ -12365,14 +12365,14 @@ hipblasStatus_t hipblasGbmvStridedBatched<float, true>(hipblasHandle_t    handle
                                                        const float*       alpha,
                                                        const float*       A,
                                                        int                lda,
-                                                       int                stride_a,
+                                                       hipblasStride      stride_a,
                                                        const float*       x,
                                                        int                incx,
-                                                       int                stride_x,
+                                                       hipblasStride      stride_x,
                                                        const float*       beta,
                                                        float*             y,
                                                        int                incy,
-                                                       int                stride_y,
+                                                       hipblasStride      stride_y,
                                                        int                batch_count)
 {
     return hipblasSgbmvStridedBatchedFortran(handle,
@@ -12405,14 +12405,14 @@ hipblasStatus_t hipblasGbmvStridedBatched<double, true>(hipblasHandle_t    handl
                                                         const double*      alpha,
                                                         const double*      A,
                                                         int                lda,
-                                                        int                stride_a,
+                                                        hipblasStride      stride_a,
                                                         const double*      x,
                                                         int                incx,
-                                                        int                stride_x,
+                                                        hipblasStride      stride_x,
                                                         const double*      beta,
                                                         double*            y,
                                                         int                incy,
-                                                        int                stride_y,
+                                                        hipblasStride      stride_y,
                                                         int                batch_count)
 {
     return hipblasDgbmvStridedBatchedFortran(handle,
@@ -12445,14 +12445,14 @@ hipblasStatus_t hipblasGbmvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   stride_a,
+                                                                hipblasStride         stride_a,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stride_x,
+                                                                hipblasStride         stride_x,
                                                                 const hipblasComplex* beta,
                                                                 hipblasComplex*       y,
                                                                 int                   incy,
-                                                                int                   stride_y,
+                                                                hipblasStride         stride_y,
                                                                 int                   batch_count)
 {
     return hipblasCgbmvStridedBatchedFortran(handle,
@@ -12486,14 +12486,14 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         stride_a,
+                                                          hipblasStride               stride_a,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stride_x,
+                                                          hipblasStride               stride_x,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       y,
                                                           int                         incy,
-                                                          int                         stride_y,
+                                                          hipblasStride               stride_y,
                                                           int                         batch_count)
 {
     return hipblasZgbmvStridedBatchedFortran(handle,
@@ -12672,14 +12672,14 @@ hipblasStatus_t hipblasGemvStridedBatched<float, true>(hipblasHandle_t    handle
                                                        const float*       alpha,
                                                        const float*       A,
                                                        int                lda,
-                                                       int                strideA,
+                                                       hipblasStride      strideA,
                                                        const float*       x,
                                                        int                incx,
-                                                       int                stridex,
+                                                       hipblasStride      stridex,
                                                        const float*       beta,
                                                        float*             y,
                                                        int                incy,
-                                                       int                stridey,
+                                                       hipblasStride      stridey,
                                                        int                batch_count)
 {
     return hipblasSgemvStridedBatchedFortran(handle,
@@ -12708,14 +12708,14 @@ hipblasStatus_t hipblasGemvStridedBatched<double, true>(hipblasHandle_t    handl
                                                         const double*      alpha,
                                                         const double*      A,
                                                         int                lda,
-                                                        int                strideA,
+                                                        hipblasStride      strideA,
                                                         const double*      x,
                                                         int                incx,
-                                                        int                stridex,
+                                                        hipblasStride      stridex,
                                                         const double*      beta,
                                                         double*            y,
                                                         int                incy,
-                                                        int                stridey,
+                                                        hipblasStride      stridey,
                                                         int                batch_count)
 {
     return hipblasDgemvStridedBatchedFortran(handle,
@@ -12744,14 +12744,14 @@ hipblasStatus_t hipblasGemvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 const hipblasComplex* beta,
                                                                 hipblasComplex*       y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 int                   batch_count)
 {
     return hipblasCgemvStridedBatchedFortran(handle,
@@ -12781,14 +12781,14 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       y,
                                                           int                         incy,
-                                                          int                         stridey,
+                                                          hipblasStride               stridey,
                                                           int                         batch_count)
 {
     return hipblasZgemvStridedBatchedFortran(handle,
@@ -13019,13 +13019,13 @@ hipblasStatus_t hipblasGerStridedBatched<float, false, true>(hipblasHandle_t han
                                                              const float*    alpha,
                                                              const float*    x,
                                                              int             incx,
-                                                             int             stridex,
+                                                             hipblasStride   stridex,
                                                              const float*    y,
                                                              int             incy,
-                                                             int             stridey,
+                                                             hipblasStride   stridey,
                                                              float*          A,
                                                              int             lda,
-                                                             int             strideA,
+                                                             hipblasStride   strideA,
                                                              int             batch_count)
 {
 
@@ -13040,13 +13040,13 @@ hipblasStatus_t hipblasGerStridedBatched<double, false, true>(hipblasHandle_t ha
                                                               const double*   alpha,
                                                               const double*   x,
                                                               int             incx,
-                                                              int             stridex,
+                                                              hipblasStride   stridex,
                                                               const double*   y,
                                                               int             incy,
-                                                              int             stridey,
+                                                              hipblasStride   stridey,
                                                               double*         A,
                                                               int             lda,
-                                                              int             strideA,
+                                                              hipblasStride   strideA,
                                                               int             batch_count)
 {
 
@@ -13061,13 +13061,13 @@ hipblasStatus_t hipblasGerStridedBatched<hipblasComplex, false, true>(hipblasHan
                                                                       const hipblasComplex* alpha,
                                                                       const hipblasComplex* x,
                                                                       int                   incx,
-                                                                      int                   stridex,
+                                                                      hipblasStride         stridex,
                                                                       const hipblasComplex* y,
                                                                       int                   incy,
-                                                                      int                   stridey,
+                                                                      hipblasStride         stridey,
                                                                       hipblasComplex*       A,
                                                                       int                   lda,
-                                                                      int                   strideA,
+                                                                      hipblasStride         strideA,
                                                                       int batch_count)
 {
 
@@ -13082,13 +13082,13 @@ hipblasStatus_t hipblasGerStridedBatched<hipblasComplex, true, true>(hipblasHand
                                                                      const hipblasComplex* alpha,
                                                                      const hipblasComplex* x,
                                                                      int                   incx,
-                                                                     int                   stridex,
+                                                                     hipblasStride         stridex,
                                                                      const hipblasComplex* y,
                                                                      int                   incy,
-                                                                     int                   stridey,
+                                                                     hipblasStride         stridey,
                                                                      hipblasComplex*       A,
                                                                      int                   lda,
-                                                                     int                   strideA,
+                                                                     hipblasStride         strideA,
                                                                      int batch_count)
 {
 
@@ -13104,13 +13104,13 @@ hipblasStatus_t
                                                                 const hipblasDoubleComplex* alpha,
                                                                 const hipblasDoubleComplex* x,
                                                                 int                         incx,
-                                                                int                         stridex,
+                                                                hipblasStride               stridex,
                                                                 const hipblasDoubleComplex* y,
                                                                 int                         incy,
-                                                                int                         stridey,
+                                                                hipblasStride               stridey,
                                                                 hipblasDoubleComplex*       A,
                                                                 int                         lda,
-                                                                int                         strideA,
+                                                                hipblasStride               strideA,
                                                                 int batch_count)
 {
 
@@ -13126,13 +13126,13 @@ hipblasStatus_t
                                                                const hipblasDoubleComplex* alpha,
                                                                const hipblasDoubleComplex* x,
                                                                int                         incx,
-                                                               int                         stridex,
+                                                               hipblasStride               stridex,
                                                                const hipblasDoubleComplex* y,
                                                                int                         incy,
-                                                               int                         stridey,
+                                                               hipblasStride               stridey,
                                                                hipblasDoubleComplex*       A,
                                                                int                         lda,
-                                                               int                         strideA,
+                                                               hipblasStride               strideA,
                                                                int batch_count)
 {
 
@@ -13224,14 +13224,14 @@ hipblasStatus_t hipblasHbmvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 const hipblasComplex* beta,
                                                                 hipblasComplex*       y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 int                   batchCount)
 {
     return hipblasChbmvStridedBatchedFortran(handle,
@@ -13261,14 +13261,14 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       y,
                                                           int                         incy,
-                                                          int                         stridey,
+                                                          hipblasStride               stridey,
                                                           int                         batchCount)
 {
     return hipblasZhbmvStridedBatchedFortran(handle,
@@ -13368,14 +13368,14 @@ hipblasStatus_t hipblasHemvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   stride_a,
+                                                                hipblasStride         stride_a,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stride_x,
+                                                                hipblasStride         stride_x,
                                                                 const hipblasComplex* beta,
                                                                 hipblasComplex*       y,
                                                                 int                   incy,
-                                                                int                   stride_y,
+                                                                hipblasStride         stride_y,
                                                                 int                   batch_count)
 {
     return hipblasChemvStridedBatchedFortran(handle,
@@ -13403,14 +13403,14 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         stride_a,
+                                                          hipblasStride               stride_a,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stride_x,
+                                                          hipblasStride               stride_x,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       y,
                                                           int                         incy,
-                                                          int                         stride_y,
+                                                          hipblasStride               stride_y,
                                                           int                         batch_count)
 {
     return hipblasZhemvStridedBatchedFortran(handle,
@@ -13495,10 +13495,10 @@ hipblasStatus_t hipblasHerStridedBatched<hipblasComplex, float, true>(hipblasHan
                                                                       const float*          alpha,
                                                                       const hipblasComplex* x,
                                                                       int                   incx,
-                                                                      int                   stridex,
+                                                                      hipblasStride         stridex,
                                                                       hipblasComplex*       A,
                                                                       int                   lda,
-                                                                      int                   strideA,
+                                                                      hipblasStride         strideA,
                                                                       int batchCount)
 {
     return hipblasCherStridedBatchedFortran(
@@ -13513,10 +13513,10 @@ hipblasStatus_t
                                                                  const double*               alpha,
                                                                  const hipblasDoubleComplex* x,
                                                                  int                         incx,
-                                                                 int                   stridex,
+                                                                 hipblasStride         stridex,
                                                                  hipblasDoubleComplex* A,
                                                                  int                   lda,
-                                                                 int                   strideA,
+                                                                 hipblasStride         strideA,
                                                                  int                   batchCount)
 {
     return hipblasZherStridedBatchedFortran(
@@ -13596,13 +13596,13 @@ hipblasStatus_t hipblasHer2StridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 const hipblasComplex* y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 hipblasComplex*       A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 int                   batchCount)
 {
     return hipblasCher2StridedBatchedFortran(
@@ -13617,13 +13617,13 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           const hipblasDoubleComplex* y,
                                                           int                         incy,
-                                                          int                         stridey,
+                                                          hipblasStride               stridey,
                                                           hipblasDoubleComplex*       A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           int                         batchCount)
 {
     return hipblasZher2StridedBatchedFortran(
@@ -13704,14 +13704,14 @@ hipblasStatus_t hipblasHpmvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int                   n,
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* AP,
-                                                                int                   strideAP,
+                                                                hipblasStride         strideAP,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 const hipblasComplex* beta,
                                                                 hipblasComplex*       y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 int                   batchCount)
 {
     return hipblasChpmvStridedBatchedFortran(
@@ -13725,14 +13725,14 @@ hipblasStatus_t
                                                           int                         n,
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* AP,
-                                                          int                         strideAP,
+                                                          hipblasStride               strideAP,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       y,
                                                           int                         incy,
-                                                          int                         stridey,
+                                                          hipblasStride               stridey,
                                                           int                         batchCount)
 {
     return hipblasZhpmvStridedBatchedFortran(
@@ -13800,10 +13800,10 @@ hipblasStatus_t hipblasHprStridedBatched<hipblasComplex, float, true>(hipblasHan
                                                                       const float*          alpha,
                                                                       const hipblasComplex* x,
                                                                       int                   incx,
-                                                                      int                   stridex,
+                                                                      hipblasStride         stridex,
                                                                       hipblasComplex*       AP,
-                                                                      int strideAP,
-                                                                      int batchCount)
+                                                                      hipblasStride strideAP,
+                                                                      int           batchCount)
 {
     return hipblasChprStridedBatchedFortran(
         handle, uplo, n, alpha, x, incx, stridex, AP, strideAP, batchCount);
@@ -13817,9 +13817,9 @@ hipblasStatus_t
                                                                  const double*               alpha,
                                                                  const hipblasDoubleComplex* x,
                                                                  int                         incx,
-                                                                 int                   stridex,
+                                                                 hipblasStride         stridex,
                                                                  hipblasDoubleComplex* AP,
-                                                                 int                   strideAP,
+                                                                 hipblasStride         strideAP,
                                                                  int                   batchCount)
 {
     return hipblasZhprStridedBatchedFortran(
@@ -13895,12 +13895,12 @@ hipblasStatus_t hipblasHpr2StridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 const hipblasComplex* y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 hipblasComplex*       AP,
-                                                                int                   strideAP,
+                                                                hipblasStride         strideAP,
                                                                 int                   batchCount)
 {
     return hipblasChpr2StridedBatchedFortran(
@@ -13915,12 +13915,12 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           const hipblasDoubleComplex* y,
                                                           int                         incy,
-                                                          int                         stridey,
+                                                          hipblasStride               stridey,
                                                           hipblasDoubleComplex*       AP,
-                                                          int                         strideAP,
+                                                          hipblasStride               strideAP,
                                                           int                         batchCount)
 {
     return hipblasZhpr2StridedBatchedFortran(
@@ -14010,14 +14010,14 @@ hipblasStatus_t hipblasSbmvStridedBatched<float, true>(hipblasHandle_t   handle,
                                                        const float*      alpha,
                                                        const float*      A,
                                                        int               lda,
-                                                       int               strideA,
+                                                       hipblasStride     strideA,
                                                        const float*      x,
                                                        int               incx,
-                                                       int               stridex,
+                                                       hipblasStride     stridex,
                                                        const float*      beta,
                                                        float*            y,
                                                        int               incy,
-                                                       int               stridey,
+                                                       hipblasStride     stridey,
                                                        int               batchCount)
 {
     return hipblasSsbmvStridedBatchedFortran(handle,
@@ -14046,14 +14046,14 @@ hipblasStatus_t hipblasSbmvStridedBatched<double, true>(hipblasHandle_t   handle
                                                         const double*     alpha,
                                                         const double*     A,
                                                         int               lda,
-                                                        int               strideA,
+                                                        hipblasStride     strideA,
                                                         const double*     x,
                                                         int               incx,
-                                                        int               stridex,
+                                                        hipblasStride     stridex,
                                                         const double*     beta,
                                                         double*           y,
                                                         int               incy,
-                                                        int               stridey,
+                                                        hipblasStride     stridey,
                                                         int               batchCount)
 {
     return hipblasDsbmvStridedBatchedFortran(handle,
@@ -14147,14 +14147,14 @@ hipblasStatus_t hipblasSpmvStridedBatched<float, true>(hipblasHandle_t   handle,
                                                        int               n,
                                                        const float*      alpha,
                                                        const float*      AP,
-                                                       int               strideAP,
+                                                       hipblasStride     strideAP,
                                                        const float*      x,
                                                        int               incx,
-                                                       int               stridex,
+                                                       hipblasStride     stridex,
                                                        const float*      beta,
                                                        float*            y,
                                                        int               incy,
-                                                       int               stridey,
+                                                       hipblasStride     stridey,
                                                        int               batchCount)
 {
     return hipblasSspmvStridedBatchedFortran(
@@ -14167,14 +14167,14 @@ hipblasStatus_t hipblasSpmvStridedBatched<double, true>(hipblasHandle_t   handle
                                                         int               n,
                                                         const double*     alpha,
                                                         const double*     AP,
-                                                        int               strideAP,
+                                                        hipblasStride     strideAP,
                                                         const double*     x,
                                                         int               incx,
-                                                        int               stridex,
+                                                        hipblasStride     stridex,
                                                         const double*     beta,
                                                         double*           y,
                                                         int               incy,
-                                                        int               stridey,
+                                                        hipblasStride     stridey,
                                                         int               batchCount)
 {
     return hipblasDspmvStridedBatchedFortran(
@@ -14291,9 +14291,9 @@ hipblasStatus_t hipblasSprStridedBatched(hipblasHandle_t   handle,
                                          const float*      alpha,
                                          const float*      x,
                                          int               incx,
-                                         int               stridex,
+                                         hipblasStride     stridex,
                                          float*            AP,
-                                         int               strideAP,
+                                         hipblasStride     strideAP,
                                          int               batchCount)
 {
     return hipblasSsprStridedBatchedFortran(
@@ -14307,9 +14307,9 @@ hipblasStatus_t hipblasSprStridedBatched(hipblasHandle_t   handle,
                                          const double*     alpha,
                                          const double*     x,
                                          int               incx,
-                                         int               stridex,
+                                         hipblasStride     stridex,
                                          double*           AP,
-                                         int               strideAP,
+                                         hipblasStride     strideAP,
                                          int               batchCount)
 {
     return hipblasDsprStridedBatchedFortran(
@@ -14323,9 +14323,9 @@ hipblasStatus_t hipblasSprStridedBatched(hipblasHandle_t       handle,
                                          const hipblasComplex* alpha,
                                          const hipblasComplex* x,
                                          int                   incx,
-                                         int                   stridex,
+                                         hipblasStride         stridex,
                                          hipblasComplex*       AP,
-                                         int                   strideAP,
+                                         hipblasStride         strideAP,
                                          int                   batchCount)
 {
     return hipblasCsprStridedBatchedFortran(
@@ -14339,9 +14339,9 @@ hipblasStatus_t hipblasSprStridedBatched(hipblasHandle_t             handle,
                                          const hipblasDoubleComplex* alpha,
                                          const hipblasDoubleComplex* x,
                                          int                         incx,
-                                         int                         stridex,
+                                         hipblasStride               stridex,
                                          hipblasDoubleComplex*       AP,
-                                         int                         strideAP,
+                                         hipblasStride               strideAP,
                                          int                         batchCount)
 {
     return hipblasZsprStridedBatchedFortran(
@@ -14416,12 +14416,12 @@ hipblasStatus_t hipblasSpr2StridedBatched<float, true>(hipblasHandle_t   handle,
                                                        const float*      alpha,
                                                        const float*      x,
                                                        int               incx,
-                                                       int               stridex,
+                                                       hipblasStride     stridex,
                                                        const float*      y,
                                                        int               incy,
-                                                       int               stridey,
+                                                       hipblasStride     stridey,
                                                        float*            AP,
-                                                       int               strideAP,
+                                                       hipblasStride     strideAP,
                                                        int               batchCount)
 {
     return hipblasSspr2StridedBatchedFortran(
@@ -14435,12 +14435,12 @@ hipblasStatus_t hipblasSpr2StridedBatched<double, true>(hipblasHandle_t   handle
                                                         const double*     alpha,
                                                         const double*     x,
                                                         int               incx,
-                                                        int               stridex,
+                                                        hipblasStride     stridex,
                                                         const double*     y,
                                                         int               incy,
-                                                        int               stridey,
+                                                        hipblasStride     stridey,
                                                         double*           AP,
-                                                        int               strideAP,
+                                                        hipblasStride     strideAP,
                                                         int               batchCount)
 {
     return hipblasDspr2StridedBatchedFortran(
@@ -14593,14 +14593,14 @@ hipblasStatus_t hipblasSymvStridedBatched(hipblasHandle_t   handle,
                                           const float*      alpha,
                                           const float*      A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const float*      x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const float*      beta,
                                           float*            y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount)
 {
     return hipblasSsymvStridedBatchedFortran(handle,
@@ -14627,14 +14627,14 @@ hipblasStatus_t hipblasSymvStridedBatched(hipblasHandle_t   handle,
                                           const double*     alpha,
                                           const double*     A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           const double*     x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           const double*     beta,
                                           double*           y,
                                           int               incy,
-                                          int               stridey,
+                                          hipblasStride     stridey,
                                           int               batchCount)
 {
     return hipblasDsymvStridedBatchedFortran(handle,
@@ -14661,14 +14661,14 @@ hipblasStatus_t hipblasSymvStridedBatched(hipblasHandle_t       handle,
                                           const hipblasComplex* alpha,
                                           const hipblasComplex* A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           const hipblasComplex* x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           const hipblasComplex* beta,
                                           hipblasComplex*       y,
                                           int                   incy,
-                                          int                   stridey,
+                                          hipblasStride         stridey,
                                           int                   batchCount)
 {
     return hipblasCsymvStridedBatchedFortran(handle,
@@ -14695,14 +14695,14 @@ hipblasStatus_t hipblasSymvStridedBatched(hipblasHandle_t             handle,
                                           const hipblasDoubleComplex* alpha,
                                           const hipblasDoubleComplex* A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           const hipblasDoubleComplex* x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           const hipblasDoubleComplex* beta,
                                           hipblasDoubleComplex*       y,
                                           int                         incy,
-                                          int                         stridey,
+                                          hipblasStride               stridey,
                                           int                         batchCount)
 {
     return hipblasZsymvStridedBatchedFortran(handle,
@@ -14840,10 +14840,10 @@ hipblasStatus_t hipblasSyrStridedBatched<float, true>(hipblasHandle_t   handle,
                                                       const float*      alpha,
                                                       const float*      x,
                                                       int               incx,
-                                                      int               stridex,
+                                                      hipblasStride     stridex,
                                                       float*            A,
                                                       int               lda,
-                                                      int               strideA,
+                                                      hipblasStride     strideA,
                                                       int               batch_count)
 {
     return hipblasSsyrStridedBatchedFortran(
@@ -14857,10 +14857,10 @@ hipblasStatus_t hipblasSyrStridedBatched<double, true>(hipblasHandle_t   handle,
                                                        const double*     alpha,
                                                        const double*     x,
                                                        int               incx,
-                                                       int               stridex,
+                                                       hipblasStride     stridex,
                                                        double*           A,
                                                        int               lda,
-                                                       int               strideA,
+                                                       hipblasStride     strideA,
                                                        int               batch_count)
 {
     return hipblasDsyrStridedBatchedFortran(
@@ -14874,10 +14874,10 @@ hipblasStatus_t hipblasSyrStridedBatched<hipblasComplex, true>(hipblasHandle_t  
                                                                const hipblasComplex* alpha,
                                                                const hipblasComplex* x,
                                                                int                   incx,
-                                                               int                   stridex,
+                                                               hipblasStride         stridex,
                                                                hipblasComplex*       A,
                                                                int                   lda,
-                                                               int                   strideA,
+                                                               hipblasStride         strideA,
                                                                int                   batch_count)
 {
     return hipblasCsyrStridedBatchedFortran(
@@ -14892,10 +14892,10 @@ hipblasStatus_t
                                                          const hipblasDoubleComplex* alpha,
                                                          const hipblasDoubleComplex* x,
                                                          int                         incx,
-                                                         int                         stridex,
+                                                         hipblasStride               stridex,
                                                          hipblasDoubleComplex*       A,
                                                          int                         lda,
-                                                         int                         strideA,
+                                                         hipblasStride               strideA,
                                                          int                         batch_count)
 {
     return hipblasZsyrStridedBatchedFortran(
@@ -15037,13 +15037,13 @@ hipblasStatus_t hipblasSyr2StridedBatched<float, true>(hipblasHandle_t   handle,
                                                        const float*      alpha,
                                                        const float*      x,
                                                        int               incx,
-                                                       int               stridex,
+                                                       hipblasStride     stridex,
                                                        const float*      y,
                                                        int               incy,
-                                                       int               stridey,
+                                                       hipblasStride     stridey,
                                                        float*            A,
                                                        int               lda,
-                                                       int               strideA,
+                                                       hipblasStride     strideA,
                                                        int               batchCount)
 {
     return hipblasSsyr2StridedBatchedFortran(
@@ -15057,13 +15057,13 @@ hipblasStatus_t hipblasSyr2StridedBatched<double, true>(hipblasHandle_t   handle
                                                         const double*     alpha,
                                                         const double*     x,
                                                         int               incx,
-                                                        int               stridex,
+                                                        hipblasStride     stridex,
                                                         const double*     y,
                                                         int               incy,
-                                                        int               stridey,
+                                                        hipblasStride     stridey,
                                                         double*           A,
                                                         int               lda,
-                                                        int               strideA,
+                                                        hipblasStride     strideA,
                                                         int               batchCount)
 {
     return hipblasDsyr2StridedBatchedFortran(
@@ -15077,13 +15077,13 @@ hipblasStatus_t hipblasSyr2StridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 const hipblasComplex* y,
                                                                 int                   incy,
-                                                                int                   stridey,
+                                                                hipblasStride         stridey,
                                                                 hipblasComplex*       A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 int                   batchCount)
 {
     return hipblasCsyr2StridedBatchedFortran(
@@ -15098,13 +15098,13 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           const hipblasDoubleComplex* y,
                                                           int                         incy,
-                                                          int                         stridey,
+                                                          hipblasStride               stridey,
                                                           hipblasDoubleComplex*       A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           int                         batchCount)
 {
     return hipblasZsyr2StridedBatchedFortran(
@@ -15239,10 +15239,10 @@ hipblasStatus_t hipblasTrsvStridedBatched<float, true>(hipblasHandle_t    handle
                                                        int                m,
                                                        const float*       A,
                                                        int                lda,
-                                                       int                strideA,
+                                                       hipblasStride      strideA,
                                                        float*             x,
                                                        int                incx,
-                                                       int                stridex,
+                                                       hipblasStride      stridex,
                                                        int                batch_count)
 {
     return hipblasStrsvStridedBatchedFortran(
@@ -15257,10 +15257,10 @@ hipblasStatus_t hipblasTrsvStridedBatched<double, true>(hipblasHandle_t    handl
                                                         int                m,
                                                         const double*      A,
                                                         int                lda,
-                                                        int                strideA,
+                                                        hipblasStride      strideA,
                                                         double*            x,
                                                         int                incx,
-                                                        int                stridex,
+                                                        hipblasStride      stridex,
                                                         int                batch_count)
 {
     return hipblasDtrsvStridedBatchedFortran(
@@ -15275,10 +15275,10 @@ hipblasStatus_t hipblasTrsvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int                   m,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 hipblasComplex*       x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 int                   batch_count)
 {
     return hipblasCtrsvStridedBatchedFortran(
@@ -15293,10 +15293,10 @@ hipblasStatus_t hipblasTrsvStridedBatched<hipblasDoubleComplex, true>(hipblasHan
                                                                       int                m,
                                                                       const hipblasDoubleComplex* A,
                                                                       int                   lda,
-                                                                      int                   strideA,
+                                                                      hipblasStride         strideA,
                                                                       hipblasDoubleComplex* x,
                                                                       int                   incx,
-                                                                      int                   stridex,
+                                                                      hipblasStride         stridex,
                                                                       int batch_count)
 {
     return hipblasZtrsvStridedBatchedFortran(
@@ -15444,10 +15444,10 @@ hipblasStatus_t hipblasTbmvStridedBatched<float, true>(hipblasHandle_t    handle
                                                        int                k,
                                                        const float*       A,
                                                        int                lda,
-                                                       int                stride_a,
+                                                       hipblasStride      stride_a,
                                                        float*             x,
                                                        int                incx,
-                                                       int                stride_x,
+                                                       hipblasStride      stride_x,
                                                        int                batch_count)
 {
     return hipblasStbmvStridedBatchedFortran(
@@ -15463,10 +15463,10 @@ hipblasStatus_t hipblasTbmvStridedBatched<double, true>(hipblasHandle_t    handl
                                                         int                k,
                                                         const double*      A,
                                                         int                lda,
-                                                        int                stride_a,
+                                                        hipblasStride      stride_a,
                                                         double*            x,
                                                         int                incx,
-                                                        int                stride_x,
+                                                        hipblasStride      stride_x,
                                                         int                batch_count)
 {
     return hipblasDtbmvStridedBatchedFortran(
@@ -15482,10 +15482,10 @@ hipblasStatus_t hipblasTbmvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int                   k,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   stride_a,
+                                                                hipblasStride         stride_a,
                                                                 hipblasComplex*       x,
                                                                 int                   incx,
-                                                                int                   stride_x,
+                                                                hipblasStride         stride_x,
                                                                 int                   batch_count)
 {
     return hipblasCtbmvStridedBatchedFortran(
@@ -15500,12 +15500,12 @@ hipblasStatus_t hipblasTbmvStridedBatched<hipblasDoubleComplex, true>(hipblasHan
                                                                       int                m,
                                                                       int                k,
                                                                       const hipblasDoubleComplex* A,
-                                                                      int lda,
-                                                                      int stride_a,
+                                                                      int           lda,
+                                                                      hipblasStride stride_a,
                                                                       hipblasDoubleComplex* x,
                                                                       int                   incx,
-                                                                      int stride_x,
-                                                                      int batch_count)
+                                                                      hipblasStride stride_x,
+                                                                      int           batch_count)
 {
     return hipblasZtbmvStridedBatchedFortran(
         handle, uplo, transA, diag, m, k, A, lda, stride_a, x, incx, stride_x, batch_count);
@@ -15652,10 +15652,10 @@ hipblasStatus_t hipblasTbsvStridedBatched<float, true>(hipblasHandle_t    handle
                                                        int                k,
                                                        const float*       A,
                                                        int                lda,
-                                                       int                strideA,
+                                                       hipblasStride      strideA,
                                                        float*             x,
                                                        int                incx,
-                                                       int                stridex,
+                                                       hipblasStride      stridex,
                                                        int                batchCount)
 {
     return hipblasStbsvStridedBatchedFortran(
@@ -15671,10 +15671,10 @@ hipblasStatus_t hipblasTbsvStridedBatched<double, true>(hipblasHandle_t    handl
                                                         int                k,
                                                         const double*      A,
                                                         int                lda,
-                                                        int                strideA,
+                                                        hipblasStride      strideA,
                                                         double*            x,
                                                         int                incx,
-                                                        int                stridex,
+                                                        hipblasStride      stridex,
                                                         int                batchCount)
 {
     return hipblasDtbsvStridedBatchedFortran(
@@ -15690,10 +15690,10 @@ hipblasStatus_t hipblasTbsvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int                   k,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 hipblasComplex*       x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 int                   batchCount)
 {
     return hipblasCtbsvStridedBatchedFortran(
@@ -15709,10 +15709,10 @@ hipblasStatus_t hipblasTbsvStridedBatched<hipblasDoubleComplex, true>(hipblasHan
                                                                       int                k,
                                                                       const hipblasDoubleComplex* A,
                                                                       int                   lda,
-                                                                      int                   strideA,
+                                                                      hipblasStride         strideA,
                                                                       hipblasDoubleComplex* x,
                                                                       int                   incx,
-                                                                      int                   stridex,
+                                                                      hipblasStride         stridex,
                                                                       int batchCount)
 {
     return hipblasZtbsvStridedBatchedFortran(
@@ -15838,10 +15838,10 @@ hipblasStatus_t hipblasTpmvStridedBatched<float, true>(hipblasHandle_t    handle
                                                        hipblasDiagType_t  diag,
                                                        int                m,
                                                        const float*       AP,
-                                                       int                strideAP,
+                                                       hipblasStride      strideAP,
                                                        float*             x,
                                                        int                incx,
-                                                       int                stridex,
+                                                       hipblasStride      stridex,
                                                        int                batchCount)
 {
     return hipblasStpmvStridedBatchedFortran(
@@ -15855,10 +15855,10 @@ hipblasStatus_t hipblasTpmvStridedBatched<double, true>(hipblasHandle_t    handl
                                                         hipblasDiagType_t  diag,
                                                         int                m,
                                                         const double*      AP,
-                                                        int                strideAP,
+                                                        hipblasStride      strideAP,
                                                         double*            x,
                                                         int                incx,
-                                                        int                stridex,
+                                                        hipblasStride      stridex,
                                                         int                batchCount)
 {
     return hipblasDtpmvStridedBatchedFortran(
@@ -15872,10 +15872,10 @@ hipblasStatus_t hipblasTpmvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 hipblasDiagType_t     diag,
                                                                 int                   m,
                                                                 const hipblasComplex* AP,
-                                                                int                   strideAP,
+                                                                hipblasStride         strideAP,
                                                                 hipblasComplex*       x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 int                   batchCount)
 {
     return hipblasCtpmvStridedBatchedFortran(
@@ -15890,10 +15890,10 @@ hipblasStatus_t
                                                           hipblasDiagType_t           diag,
                                                           int                         m,
                                                           const hipblasDoubleComplex* AP,
-                                                          int                         strideAP,
+                                                          hipblasStride               strideAP,
                                                           hipblasDoubleComplex*       x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           int                         batchCount)
 {
     return hipblasZtpmvStridedBatchedFortran(
@@ -16019,10 +16019,10 @@ hipblasStatus_t hipblasTpsvStridedBatched<float, true>(hipblasHandle_t    handle
                                                        hipblasDiagType_t  diag,
                                                        int                m,
                                                        const float*       AP,
-                                                       int                strideAP,
+                                                       hipblasStride      strideAP,
                                                        float*             x,
                                                        int                incx,
-                                                       int                stridex,
+                                                       hipblasStride      stridex,
                                                        int                batchCount)
 {
     return hipblasStpsvStridedBatchedFortran(
@@ -16036,10 +16036,10 @@ hipblasStatus_t hipblasTpsvStridedBatched<double, true>(hipblasHandle_t    handl
                                                         hipblasDiagType_t  diag,
                                                         int                m,
                                                         const double*      AP,
-                                                        int                strideAP,
+                                                        hipblasStride      strideAP,
                                                         double*            x,
                                                         int                incx,
-                                                        int                stridex,
+                                                        hipblasStride      stridex,
                                                         int                batchCount)
 {
     return hipblasDtpsvStridedBatchedFortran(
@@ -16053,10 +16053,10 @@ hipblasStatus_t hipblasTpsvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 hipblasDiagType_t     diag,
                                                                 int                   m,
                                                                 const hipblasComplex* AP,
-                                                                int                   strideAP,
+                                                                hipblasStride         strideAP,
                                                                 hipblasComplex*       x,
                                                                 int                   incx,
-                                                                int                   stridex,
+                                                                hipblasStride         stridex,
                                                                 int                   batchCount)
 {
     return hipblasCtpsvStridedBatchedFortran(
@@ -16071,10 +16071,10 @@ hipblasStatus_t
                                                           hipblasDiagType_t           diag,
                                                           int                         m,
                                                           const hipblasDoubleComplex* AP,
-                                                          int                         strideAP,
+                                                          hipblasStride               strideAP,
                                                           hipblasDoubleComplex*       x,
                                                           int                         incx,
-                                                          int                         stridex,
+                                                          hipblasStride               stridex,
                                                           int                         batchCount)
 {
     return hipblasZtpsvStridedBatchedFortran(
@@ -16209,10 +16209,10 @@ hipblasStatus_t hipblasTrmvStridedBatched<float, true>(hipblasHandle_t    handle
                                                        int                m,
                                                        const float*       A,
                                                        int                lda,
-                                                       int                stride_a,
+                                                       hipblasStride      stride_a,
                                                        float*             x,
                                                        int                incx,
-                                                       int                stride_x,
+                                                       hipblasStride      stride_x,
                                                        int                batch_count)
 {
     return hipblasStrmvStridedBatchedFortran(
@@ -16227,10 +16227,10 @@ hipblasStatus_t hipblasTrmvStridedBatched<double, true>(hipblasHandle_t    handl
                                                         int                m,
                                                         const double*      A,
                                                         int                lda,
-                                                        int                stride_a,
+                                                        hipblasStride      stride_a,
                                                         double*            x,
                                                         int                incx,
-                                                        int                stride_x,
+                                                        hipblasStride      stride_x,
                                                         int                batch_count)
 {
     return hipblasDtrmvStridedBatchedFortran(
@@ -16245,10 +16245,10 @@ hipblasStatus_t hipblasTrmvStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int                   m,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   stride_a,
+                                                                hipblasStride         stride_a,
                                                                 hipblasComplex*       x,
                                                                 int                   incx,
-                                                                int                   stride_x,
+                                                                hipblasStride         stride_x,
                                                                 int                   batch_count)
 {
     return hipblasCtrmvStridedBatchedFortran(
@@ -16262,12 +16262,12 @@ hipblasStatus_t hipblasTrmvStridedBatched<hipblasDoubleComplex, true>(hipblasHan
                                                                       hipblasDiagType_t  diag,
                                                                       int                m,
                                                                       const hipblasDoubleComplex* A,
-                                                                      int lda,
-                                                                      int stride_a,
+                                                                      int           lda,
+                                                                      hipblasStride stride_a,
                                                                       hipblasDoubleComplex* x,
                                                                       int                   incx,
-                                                                      int stride_x,
-                                                                      int batch_count)
+                                                                      hipblasStride stride_x,
+                                                                      int           batch_count)
 {
     return hipblasZtrmvStridedBatchedFortran(
         handle, uplo, transA, diag, m, A, lda, stride_a, x, incx, stride_x, batch_count);
@@ -16397,10 +16397,10 @@ hipblasStatus_t hipblasTrtriStridedBatched<float, true>(hipblasHandle_t   handle
                                                         int               n,
                                                         float*            A,
                                                         int               lda,
-                                                        int               stride_A,
+                                                        hipblasStride     stride_A,
                                                         float*            invA,
                                                         int               ldinvA,
-                                                        int               stride_invA,
+                                                        hipblasStride     stride_invA,
                                                         int               batch_count)
 {
     return hipblasStrtriStridedBatchedFortran(
@@ -16414,10 +16414,10 @@ hipblasStatus_t hipblasTrtriStridedBatched<double, true>(hipblasHandle_t   handl
                                                          int               n,
                                                          double*           A,
                                                          int               lda,
-                                                         int               stride_A,
+                                                         hipblasStride     stride_A,
                                                          double*           invA,
                                                          int               ldinvA,
-                                                         int               stride_invA,
+                                                         hipblasStride     stride_invA,
                                                          int               batch_count)
 {
     return hipblasDtrtriStridedBatchedFortran(
@@ -16431,10 +16431,10 @@ hipblasStatus_t hipblasTrtriStridedBatched<hipblasComplex, true>(hipblasHandle_t
                                                                  int               n,
                                                                  hipblasComplex*   A,
                                                                  int               lda,
-                                                                 int               stride_A,
+                                                                 hipblasStride     stride_A,
                                                                  hipblasComplex*   invA,
                                                                  int               ldinvA,
-                                                                 int               stride_invA,
+                                                                 hipblasStride     stride_invA,
                                                                  int               batch_count)
 {
     return hipblasCtrtriStridedBatchedFortran(
@@ -16448,11 +16448,11 @@ hipblasStatus_t hipblasTrtriStridedBatched<hipblasDoubleComplex, true>(hipblasHa
                                                                        int                   n,
                                                                        hipblasDoubleComplex* A,
                                                                        int                   lda,
-                                                                       int stride_A,
+                                                                       hipblasStride stride_A,
                                                                        hipblasDoubleComplex* invA,
                                                                        int                   ldinvA,
-                                                                       int stride_invA,
-                                                                       int batch_count)
+                                                                       hipblasStride stride_invA,
+                                                                       int           batch_count)
 {
     return hipblasZtrtriStridedBatchedFortran(
         handle, uplo, diag, n, A, lda, stride_A, invA, ldinvA, stride_invA, batch_count);
@@ -16593,13 +16593,13 @@ hipblasStatus_t hipblasDgmmStridedBatched<float, true>(hipblasHandle_t   handle,
                                                        int               n,
                                                        const float*      A,
                                                        int               lda,
-                                                       int               stride_A,
+                                                       hipblasStride     stride_A,
                                                        const float*      x,
                                                        int               incx,
-                                                       int               stride_x,
+                                                       hipblasStride     stride_x,
                                                        float*            C,
                                                        int               ldc,
-                                                       int               stride_C,
+                                                       hipblasStride     stride_C,
                                                        int               batch_count)
 {
     return hipblasSdgmmStridedBatchedFortran(
@@ -16613,13 +16613,13 @@ hipblasStatus_t hipblasDgmmStridedBatched<double, true>(hipblasHandle_t   handle
                                                         int               n,
                                                         const double*     A,
                                                         int               lda,
-                                                        int               stride_A,
+                                                        hipblasStride     stride_A,
                                                         const double*     x,
                                                         int               incx,
-                                                        int               stride_x,
+                                                        hipblasStride     stride_x,
                                                         double*           C,
                                                         int               ldc,
-                                                        int               stride_C,
+                                                        hipblasStride     stride_C,
                                                         int               batch_count)
 {
     return hipblasDdgmmStridedBatchedFortran(
@@ -16633,13 +16633,13 @@ hipblasStatus_t hipblasDgmmStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int                   n,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   stride_A,
+                                                                hipblasStride         stride_A,
                                                                 const hipblasComplex* x,
                                                                 int                   incx,
-                                                                int                   stride_x,
+                                                                hipblasStride         stride_x,
                                                                 hipblasComplex*       C,
                                                                 int                   ldc,
-                                                                int                   stride_C,
+                                                                hipblasStride         stride_C,
                                                                 int                   batch_count)
 {
     return hipblasCdgmmStridedBatchedFortran(
@@ -16652,15 +16652,15 @@ hipblasStatus_t hipblasDgmmStridedBatched<hipblasDoubleComplex, true>(hipblasHan
                                                                       int               m,
                                                                       int               n,
                                                                       const hipblasDoubleComplex* A,
-                                                                      int lda,
-                                                                      int stride_A,
+                                                                      int           lda,
+                                                                      hipblasStride stride_A,
                                                                       const hipblasDoubleComplex* x,
-                                                                      int incx,
-                                                                      int stride_x,
+                                                                      int           incx,
+                                                                      hipblasStride stride_x,
                                                                       hipblasDoubleComplex* C,
                                                                       int                   ldc,
-                                                                      int stride_C,
-                                                                      int batch_count)
+                                                                      hipblasStride stride_C,
+                                                                      int           batch_count)
 {
     return hipblasZdgmmStridedBatchedFortran(
         handle, side, m, n, A, lda, stride_A, x, incx, stride_x, C, ldc, stride_C, batch_count);
@@ -17162,11 +17162,11 @@ hipblasStatus_t hipblasHerkStridedBatched<hipblasComplex, float, true>(hipblasHa
                                                                        const float*          alpha,
                                                                        const hipblasComplex* A,
                                                                        int                   lda,
-                                                                       int             strideA,
+                                                                       hipblasStride   strideA,
                                                                        const float*    beta,
                                                                        hipblasComplex* C,
                                                                        int             ldc,
-                                                                       int             strideC,
+                                                                       hipblasStride   strideC,
                                                                        int             batchCount)
 {
     return hipblasCherkStridedBatchedFortran(
@@ -17183,11 +17183,11 @@ hipblasStatus_t
                                                                   const double*      alpha,
                                                                   const hipblasDoubleComplex* A,
                                                                   int                         lda,
-                                                                  int                   strideA,
+                                                                  hipblasStride         strideA,
                                                                   const double*         beta,
                                                                   hipblasDoubleComplex* C,
                                                                   int                   ldc,
-                                                                  int                   strideC,
+                                                                  hipblasStride         strideC,
                                                                   int                   batchCount)
 {
     return hipblasZherkStridedBatchedFortran(
@@ -17283,14 +17283,14 @@ hipblasStatus_t hipblasHer2kStridedBatched<hipblasComplex, float, true>(hipblasH
                                                                         const hipblasComplex* alpha,
                                                                         const hipblasComplex* A,
                                                                         int                   lda,
-                                                                        int strideA,
+                                                                        hipblasStride strideA,
                                                                         const hipblasComplex* B,
                                                                         int                   ldb,
-                                                                        int             strideB,
+                                                                        hipblasStride   strideB,
                                                                         const float*    beta,
                                                                         hipblasComplex* C,
                                                                         int             ldc,
-                                                                        int             strideC,
+                                                                        hipblasStride   strideC,
                                                                         int             batchCount)
 {
     return hipblasCher2kStridedBatchedFortran(handle,
@@ -17322,14 +17322,14 @@ hipblasStatus_t hipblasHer2kStridedBatched<hipblasDoubleComplex, double, true>(
     const hipblasDoubleComplex* alpha,
     const hipblasDoubleComplex* A,
     int                         lda,
-    int                         strideA,
+    hipblasStride               strideA,
     const hipblasDoubleComplex* B,
     int                         ldb,
-    int                         strideB,
+    hipblasStride               strideB,
     const double*               beta,
     hipblasDoubleComplex*       C,
     int                         ldc,
-    int                         strideC,
+    hipblasStride               strideC,
     int                         batchCount)
 {
     return hipblasZher2kStridedBatchedFortran(handle,
@@ -17440,14 +17440,14 @@ hipblasStatus_t hipblasHerkxStridedBatched<hipblasComplex, float, true>(hipblasH
                                                                         const hipblasComplex* alpha,
                                                                         const hipblasComplex* A,
                                                                         int                   lda,
-                                                                        int strideA,
+                                                                        hipblasStride strideA,
                                                                         const hipblasComplex* B,
                                                                         int                   ldb,
-                                                                        int             strideB,
+                                                                        hipblasStride   strideB,
                                                                         const float*    beta,
                                                                         hipblasComplex* C,
                                                                         int             ldc,
-                                                                        int             strideC,
+                                                                        hipblasStride   strideC,
                                                                         int             batchCount)
 {
     return hipblasCherkxStridedBatchedFortran(handle,
@@ -17479,14 +17479,14 @@ hipblasStatus_t hipblasHerkxStridedBatched<hipblasDoubleComplex, double, true>(
     const hipblasDoubleComplex* alpha,
     const hipblasDoubleComplex* A,
     int                         lda,
-    int                         strideA,
+    hipblasStride               strideA,
     const hipblasDoubleComplex* B,
     int                         ldb,
-    int                         strideB,
+    hipblasStride               strideB,
     const double*               beta,
     hipblasDoubleComplex*       C,
     int                         ldc,
-    int                         strideC,
+    hipblasStride               strideC,
     int                         batchCount)
 {
     return hipblasZherkxStridedBatchedFortran(handle,
@@ -17673,14 +17673,14 @@ hipblasStatus_t hipblasSymmStridedBatched<float, true>(hipblasHandle_t   handle,
                                                        const float*      alpha,
                                                        const float*      A,
                                                        int               lda,
-                                                       int               strideA,
+                                                       hipblasStride     strideA,
                                                        const float*      B,
                                                        int               ldb,
-                                                       int               strideB,
+                                                       hipblasStride     strideB,
                                                        const float*      beta,
                                                        float*            C,
                                                        int               ldc,
-                                                       int               strideC,
+                                                       hipblasStride     strideC,
                                                        int               batchCount)
 {
     return hipblasSsymmStridedBatchedFortran(handle,
@@ -17711,14 +17711,14 @@ hipblasStatus_t hipblasSymmStridedBatched<double, true>(hipblasHandle_t   handle
                                                         const double*     alpha,
                                                         const double*     A,
                                                         int               lda,
-                                                        int               strideA,
+                                                        hipblasStride     strideA,
                                                         const double*     B,
                                                         int               ldb,
-                                                        int               strideB,
+                                                        hipblasStride     strideB,
                                                         const double*     beta,
                                                         double*           C,
                                                         int               ldc,
-                                                        int               strideC,
+                                                        hipblasStride     strideC,
                                                         int               batchCount)
 {
     return hipblasDsymmStridedBatchedFortran(handle,
@@ -17749,14 +17749,14 @@ hipblasStatus_t hipblasSymmStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 const hipblasComplex* B,
                                                                 int                   ldb,
-                                                                int                   strideB,
+                                                                hipblasStride         strideB,
                                                                 const hipblasComplex* beta,
                                                                 hipblasComplex*       C,
                                                                 int                   ldc,
-                                                                int                   strideC,
+                                                                hipblasStride         strideC,
                                                                 int                   batchCount)
 {
     return hipblasCsymmStridedBatchedFortran(handle,
@@ -17788,14 +17788,14 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           const hipblasDoubleComplex* B,
                                                           int                         ldb,
-                                                          int                         strideB,
+                                                          hipblasStride               strideB,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       C,
                                                           int                         ldc,
-                                                          int                         strideC,
+                                                          hipblasStride               strideC,
                                                           int                         batchCount)
 {
     return hipblasZsymmStridedBatchedFortran(handle,
@@ -17966,11 +17966,11 @@ hipblasStatus_t hipblasSyrkStridedBatched<float, true>(hipblasHandle_t    handle
                                                        const float*       alpha,
                                                        const float*       A,
                                                        int                lda,
-                                                       int                strideA,
+                                                       hipblasStride      strideA,
                                                        const float*       beta,
                                                        float*             C,
                                                        int                ldc,
-                                                       int                strideC,
+                                                       hipblasStride      strideC,
                                                        int                batchCount)
 {
     return hipblasSsyrkStridedBatchedFortran(
@@ -17986,11 +17986,11 @@ hipblasStatus_t hipblasSyrkStridedBatched<double, true>(hipblasHandle_t    handl
                                                         const double*      alpha,
                                                         const double*      A,
                                                         int                lda,
-                                                        int                strideA,
+                                                        hipblasStride      strideA,
                                                         const double*      beta,
                                                         double*            C,
                                                         int                ldc,
-                                                        int                strideC,
+                                                        hipblasStride      strideC,
                                                         int                batchCount)
 {
     return hipblasDsyrkStridedBatchedFortran(
@@ -18006,11 +18006,11 @@ hipblasStatus_t hipblasSyrkStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 const hipblasComplex* beta,
                                                                 hipblasComplex*       C,
                                                                 int                   ldc,
-                                                                int                   strideC,
+                                                                hipblasStride         strideC,
                                                                 int                   batchCount)
 {
     return hipblasCsyrkStridedBatchedFortran(
@@ -18027,11 +18027,11 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       C,
                                                           int                         ldc,
-                                                          int                         strideC,
+                                                          hipblasStride               strideC,
                                                           int                         batchCount)
 {
     return hipblasZsyrkStridedBatchedFortran(
@@ -18203,14 +18203,14 @@ hipblasStatus_t hipblasSyr2kStridedBatched<float, true>(hipblasHandle_t    handl
                                                         const float*       alpha,
                                                         const float*       A,
                                                         int                lda,
-                                                        int                strideA,
+                                                        hipblasStride      strideA,
                                                         const float*       B,
                                                         int                ldb,
-                                                        int                strideB,
+                                                        hipblasStride      strideB,
                                                         const float*       beta,
                                                         float*             C,
                                                         int                ldc,
-                                                        int                strideC,
+                                                        hipblasStride      strideC,
                                                         int                batchCount)
 {
     return hipblasSsyr2kStridedBatchedFortran(handle,
@@ -18241,14 +18241,14 @@ hipblasStatus_t hipblasSyr2kStridedBatched<double, true>(hipblasHandle_t    hand
                                                          const double*      alpha,
                                                          const double*      A,
                                                          int                lda,
-                                                         int                strideA,
+                                                         hipblasStride      strideA,
                                                          const double*      B,
                                                          int                ldb,
-                                                         int                strideB,
+                                                         hipblasStride      strideB,
                                                          const double*      beta,
                                                          double*            C,
                                                          int                ldc,
-                                                         int                strideC,
+                                                         hipblasStride      strideC,
                                                          int                batchCount)
 {
     return hipblasDsyr2kStridedBatchedFortran(handle,
@@ -18279,14 +18279,14 @@ hipblasStatus_t hipblasSyr2kStridedBatched<hipblasComplex, true>(hipblasHandle_t
                                                                  const hipblasComplex* alpha,
                                                                  const hipblasComplex* A,
                                                                  int                   lda,
-                                                                 int                   strideA,
+                                                                 hipblasStride         strideA,
                                                                  const hipblasComplex* B,
                                                                  int                   ldb,
-                                                                 int                   strideB,
+                                                                 hipblasStride         strideB,
                                                                  const hipblasComplex* beta,
                                                                  hipblasComplex*       C,
                                                                  int                   ldc,
-                                                                 int                   strideC,
+                                                                 hipblasStride         strideC,
                                                                  int                   batchCount)
 {
     return hipblasCsyr2kStridedBatchedFortran(handle,
@@ -18318,14 +18318,14 @@ hipblasStatus_t
                                                            const hipblasDoubleComplex* alpha,
                                                            const hipblasDoubleComplex* A,
                                                            int                         lda,
-                                                           int                         strideA,
+                                                           hipblasStride               strideA,
                                                            const hipblasDoubleComplex* B,
                                                            int                         ldb,
-                                                           int                         strideB,
+                                                           hipblasStride               strideB,
                                                            const hipblasDoubleComplex* beta,
                                                            hipblasDoubleComplex*       C,
                                                            int                         ldc,
-                                                           int                         strideC,
+                                                           hipblasStride               strideC,
                                                            int                         batchCount)
 {
     return hipblasZsyr2kStridedBatchedFortran(handle,
@@ -18512,14 +18512,14 @@ hipblasStatus_t hipblasSyrkxStridedBatched<float, true>(hipblasHandle_t    handl
                                                         const float*       alpha,
                                                         const float*       A,
                                                         int                lda,
-                                                        int                strideA,
+                                                        hipblasStride      strideA,
                                                         const float*       B,
                                                         int                ldb,
-                                                        int                strideB,
+                                                        hipblasStride      strideB,
                                                         const float*       beta,
                                                         float*             C,
                                                         int                ldc,
-                                                        int                strideC,
+                                                        hipblasStride      strideC,
                                                         int                batchCount)
 {
     return hipblasSsyrkxStridedBatchedFortran(handle,
@@ -18550,14 +18550,14 @@ hipblasStatus_t hipblasSyrkxStridedBatched<double, true>(hipblasHandle_t    hand
                                                          const double*      alpha,
                                                          const double*      A,
                                                          int                lda,
-                                                         int                strideA,
+                                                         hipblasStride      strideA,
                                                          const double*      B,
                                                          int                ldb,
-                                                         int                strideB,
+                                                         hipblasStride      strideB,
                                                          const double*      beta,
                                                          double*            C,
                                                          int                ldc,
-                                                         int                strideC,
+                                                         hipblasStride      strideC,
                                                          int                batchCount)
 {
     return hipblasDsyrkxStridedBatchedFortran(handle,
@@ -18588,14 +18588,14 @@ hipblasStatus_t hipblasSyrkxStridedBatched<hipblasComplex, true>(hipblasHandle_t
                                                                  const hipblasComplex* alpha,
                                                                  const hipblasComplex* A,
                                                                  int                   lda,
-                                                                 int                   strideA,
+                                                                 hipblasStride         strideA,
                                                                  const hipblasComplex* B,
                                                                  int                   ldb,
-                                                                 int                   strideB,
+                                                                 hipblasStride         strideB,
                                                                  const hipblasComplex* beta,
                                                                  hipblasComplex*       C,
                                                                  int                   ldc,
-                                                                 int                   strideC,
+                                                                 hipblasStride         strideC,
                                                                  int                   batchCount)
 {
     return hipblasCsyrkxStridedBatchedFortran(handle,
@@ -18627,14 +18627,14 @@ hipblasStatus_t
                                                            const hipblasDoubleComplex* alpha,
                                                            const hipblasDoubleComplex* A,
                                                            int                         lda,
-                                                           int                         strideA,
+                                                           hipblasStride               strideA,
                                                            const hipblasDoubleComplex* B,
                                                            int                         ldb,
-                                                           int                         strideB,
+                                                           hipblasStride               strideB,
                                                            const hipblasDoubleComplex* beta,
                                                            hipblasDoubleComplex*       C,
                                                            int                         ldc,
-                                                           int                         strideC,
+                                                           hipblasStride               strideC,
                                                            int                         batchCount)
 {
     return hipblasZsyrkxStridedBatchedFortran(handle,
@@ -18745,14 +18745,14 @@ hipblasStatus_t hipblasHemmStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 const hipblasComplex* B,
                                                                 int                   ldb,
-                                                                int                   strideB,
+                                                                hipblasStride         strideB,
                                                                 const hipblasComplex* beta,
                                                                 hipblasComplex*       C,
                                                                 int                   ldc,
-                                                                int                   strideC,
+                                                                hipblasStride         strideC,
                                                                 int                   batchCount)
 {
     return hipblasChemmStridedBatchedFortran(handle,
@@ -18784,14 +18784,14 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           const hipblasDoubleComplex* B,
                                                           int                         ldb,
-                                                          int                         strideB,
+                                                          hipblasStride               strideB,
                                                           const hipblasDoubleComplex* beta,
                                                           hipblasDoubleComplex*       C,
                                                           int                         ldc,
-                                                          int                         strideC,
+                                                          hipblasStride               strideC,
                                                           int                         batchCount)
 {
     return hipblasZhemmStridedBatchedFortran(handle,
@@ -18972,10 +18972,10 @@ hipblasStatus_t hipblasTrmmStridedBatched<float, true>(hipblasHandle_t    handle
                                                        const float*       alpha,
                                                        const float*       A,
                                                        int                lda,
-                                                       int                strideA,
+                                                       hipblasStride      strideA,
                                                        float*             B,
                                                        int                ldb,
-                                                       int                strideB,
+                                                       hipblasStride      strideB,
                                                        int                batchCount)
 {
     return hipblasStrmmStridedBatchedFortran(handle,
@@ -19006,10 +19006,10 @@ hipblasStatus_t hipblasTrmmStridedBatched<double, true>(hipblasHandle_t    handl
                                                         const double*      alpha,
                                                         const double*      A,
                                                         int                lda,
-                                                        int                strideA,
+                                                        hipblasStride      strideA,
                                                         double*            B,
                                                         int                ldb,
-                                                        int                strideB,
+                                                        hipblasStride      strideB,
                                                         int                batchCount)
 {
     return hipblasDtrmmStridedBatchedFortran(handle,
@@ -19040,10 +19040,10 @@ hipblasStatus_t hipblasTrmmStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 hipblasComplex*       B,
                                                                 int                   ldb,
-                                                                int                   strideB,
+                                                                hipblasStride         strideB,
                                                                 int                   batchCount)
 {
     return hipblasCtrmmStridedBatchedFortran(handle,
@@ -19075,10 +19075,10 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           hipblasDoubleComplex*       B,
                                                           int                         ldb,
-                                                          int                         strideB,
+                                                          hipblasStride               strideB,
                                                           int                         batchCount)
 {
     return hipblasZtrmmStridedBatchedFortran(handle,
@@ -19256,10 +19256,10 @@ hipblasStatus_t hipblasTrsmStridedBatched<float, true>(hipblasHandle_t    handle
                                                        const float*       alpha,
                                                        float*             A,
                                                        int                lda,
-                                                       int                strideA,
+                                                       hipblasStride      strideA,
                                                        float*             B,
                                                        int                ldb,
-                                                       int                strideB,
+                                                       hipblasStride      strideB,
                                                        int                batch_count)
 {
     return hipblasStrsmStridedBatchedFortran(handle,
@@ -19290,10 +19290,10 @@ hipblasStatus_t hipblasTrsmStridedBatched<double, true>(hipblasHandle_t    handl
                                                         const double*      alpha,
                                                         double*            A,
                                                         int                lda,
-                                                        int                strideA,
+                                                        hipblasStride      strideA,
                                                         double*            B,
                                                         int                ldb,
-                                                        int                strideB,
+                                                        hipblasStride      strideB,
                                                         int                batch_count)
 {
     return hipblasDtrsmStridedBatchedFortran(handle,
@@ -19324,10 +19324,10 @@ hipblasStatus_t hipblasTrsmStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 hipblasComplex*       A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 hipblasComplex*       B,
                                                                 int                   ldb,
-                                                                int                   strideB,
+                                                                hipblasStride         strideB,
                                                                 int                   batch_count)
 {
     return hipblasCtrsmStridedBatchedFortran(handle,
@@ -19359,10 +19359,10 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           hipblasDoubleComplex*       A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           hipblasDoubleComplex*       B,
                                                           int                         ldb,
-                                                          int                         strideB,
+                                                          hipblasStride               strideB,
                                                           int                         batch_count)
 {
     return hipblasZtrsmStridedBatchedFortran(handle,
@@ -19547,14 +19547,14 @@ hipblasStatus_t hipblasGeamStridedBatched<float, true>(hipblasHandle_t    handle
                                                        const float*       alpha,
                                                        const float*       A,
                                                        int                lda,
-                                                       int                strideA,
+                                                       hipblasStride      strideA,
                                                        const float*       beta,
                                                        const float*       B,
                                                        int                ldb,
-                                                       int                strideB,
+                                                       hipblasStride      strideB,
                                                        float*             C,
                                                        int                ldc,
-                                                       int                strideC,
+                                                       hipblasStride      strideC,
                                                        int                batchCount)
 {
     return hipblasSgeamStridedBatchedFortran(handle,
@@ -19585,14 +19585,14 @@ hipblasStatus_t hipblasGeamStridedBatched<double, true>(hipblasHandle_t    handl
                                                         const double*      alpha,
                                                         const double*      A,
                                                         int                lda,
-                                                        int                strideA,
+                                                        hipblasStride      strideA,
                                                         const double*      beta,
                                                         const double*      B,
                                                         int                ldb,
-                                                        int                strideB,
+                                                        hipblasStride      strideB,
                                                         double*            C,
                                                         int                ldc,
-                                                        int                strideC,
+                                                        hipblasStride      strideC,
                                                         int                batchCount)
 {
     return hipblasDgeamStridedBatchedFortran(handle,
@@ -19623,14 +19623,14 @@ hipblasStatus_t hipblasGeamStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 const hipblasComplex* alpha,
                                                                 const hipblasComplex* A,
                                                                 int                   lda,
-                                                                int                   strideA,
+                                                                hipblasStride         strideA,
                                                                 const hipblasComplex* beta,
                                                                 const hipblasComplex* B,
                                                                 int                   ldb,
-                                                                int                   strideB,
+                                                                hipblasStride         strideB,
                                                                 hipblasComplex*       C,
                                                                 int                   ldc,
-                                                                int                   strideC,
+                                                                hipblasStride         strideC,
                                                                 int                   batchCount)
 {
     return hipblasCgeamStridedBatchedFortran(handle,
@@ -19662,14 +19662,14 @@ hipblasStatus_t
                                                           const hipblasDoubleComplex* alpha,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          int                         strideA,
+                                                          hipblasStride               strideA,
                                                           const hipblasDoubleComplex* beta,
                                                           const hipblasDoubleComplex* B,
                                                           int                         ldb,
-                                                          int                         strideB,
+                                                          hipblasStride               strideB,
                                                           hipblasDoubleComplex*       C,
                                                           int                         ldc,
-                                                          int                         strideC,
+                                                          hipblasStride               strideC,
                                                           int                         batchCount)
 {
     return hipblasZgeamStridedBatchedFortran(handle,
@@ -19777,45 +19777,45 @@ hipblasStatus_t hipblasGetrfBatched<hipblasDoubleComplex, true>(hipblasHandle_t 
 
 // getrf_strided_batched
 template <>
-hipblasStatus_t hipblasGetrfStridedBatched<float, true>(hipblasHandle_t handle,
-                                                        const int       n,
-                                                        float*          A,
-                                                        const int       lda,
-                                                        const int       strideA,
-                                                        int*            ipiv,
-                                                        const int       strideP,
-                                                        int*            info,
-                                                        const int       batchCount)
+hipblasStatus_t hipblasGetrfStridedBatched<float, true>(hipblasHandle_t     handle,
+                                                        const int           n,
+                                                        float*              A,
+                                                        const int           lda,
+                                                        const hipblasStride strideA,
+                                                        int*                ipiv,
+                                                        const hipblasStride strideP,
+                                                        int*                info,
+                                                        const int           batchCount)
 {
     return hipblasSgetrfStridedBatchedFortran(
         handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
 
 template <>
-hipblasStatus_t hipblasGetrfStridedBatched<double, true>(hipblasHandle_t handle,
-                                                         const int       n,
-                                                         double*         A,
-                                                         const int       lda,
-                                                         const int       strideA,
-                                                         int*            ipiv,
-                                                         const int       strideP,
-                                                         int*            info,
-                                                         const int       batchCount)
+hipblasStatus_t hipblasGetrfStridedBatched<double, true>(hipblasHandle_t     handle,
+                                                         const int           n,
+                                                         double*             A,
+                                                         const int           lda,
+                                                         const hipblasStride strideA,
+                                                         int*                ipiv,
+                                                         const hipblasStride strideP,
+                                                         int*                info,
+                                                         const int           batchCount)
 {
     return hipblasDgetrfStridedBatchedFortran(
         handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
 
 template <>
-hipblasStatus_t hipblasGetrfStridedBatched<hipblasComplex, true>(hipblasHandle_t handle,
-                                                                 const int       n,
-                                                                 hipblasComplex* A,
-                                                                 const int       lda,
-                                                                 const int       strideA,
-                                                                 int*            ipiv,
-                                                                 const int       strideP,
-                                                                 int*            info,
-                                                                 const int       batchCount)
+hipblasStatus_t hipblasGetrfStridedBatched<hipblasComplex, true>(hipblasHandle_t     handle,
+                                                                 const int           n,
+                                                                 hipblasComplex*     A,
+                                                                 const int           lda,
+                                                                 const hipblasStride strideA,
+                                                                 int*                ipiv,
+                                                                 const hipblasStride strideP,
+                                                                 int*                info,
+                                                                 const int           batchCount)
 {
     return hipblasCgetrfStridedBatchedFortran(
         handle, n, A, lda, strideA, ipiv, strideP, info, batchCount);
@@ -19826,10 +19826,10 @@ hipblasStatus_t hipblasGetrfStridedBatched<hipblasDoubleComplex, true>(hipblasHa
                                                                        const int             n,
                                                                        hipblasDoubleComplex* A,
                                                                        const int             lda,
-                                                                       const int strideA,
-                                                                       int*      ipiv,
-                                                                       const int strideP,
-                                                                       int*      info,
+                                                                       const hipblasStride strideA,
+                                                                       int*                ipiv,
+                                                                       const hipblasStride strideP,
+                                                                       int*                info,
                                                                        const int batchCount)
 {
     return hipblasZgetrfStridedBatchedFortran(
@@ -19974,12 +19974,12 @@ hipblasStatus_t hipblasGetrsStridedBatched<float, true>(hipblasHandle_t         
                                                         const int                nrhs,
                                                         float*                   A,
                                                         const int                lda,
-                                                        const int                strideA,
+                                                        const hipblasStride      strideA,
                                                         const int*               ipiv,
-                                                        const int                strideP,
+                                                        const hipblasStride      strideP,
                                                         float*                   B,
                                                         const int                ldb,
-                                                        const int                strideB,
+                                                        const hipblasStride      strideB,
                                                         int*                     info,
                                                         const int                batchCount)
 {
@@ -19994,12 +19994,12 @@ hipblasStatus_t hipblasGetrsStridedBatched<double, true>(hipblasHandle_t        
                                                          const int                nrhs,
                                                          double*                  A,
                                                          const int                lda,
-                                                         const int                strideA,
+                                                         const hipblasStride      strideA,
                                                          const int*               ipiv,
-                                                         const int                strideP,
+                                                         const hipblasStride      strideP,
                                                          double*                  B,
                                                          const int                ldb,
-                                                         const int                strideB,
+                                                         const hipblasStride      strideB,
                                                          int*                     info,
                                                          const int                batchCount)
 {
@@ -20014,12 +20014,12 @@ hipblasStatus_t hipblasGetrsStridedBatched<hipblasComplex, true>(hipblasHandle_t
                                                                  const int                nrhs,
                                                                  hipblasComplex*          A,
                                                                  const int                lda,
-                                                                 const int                strideA,
+                                                                 const hipblasStride      strideA,
                                                                  const int*               ipiv,
-                                                                 const int                strideP,
+                                                                 const hipblasStride      strideP,
                                                                  hipblasComplex*          B,
                                                                  const int                ldb,
-                                                                 const int                strideB,
+                                                                 const hipblasStride      strideB,
                                                                  int*                     info,
                                                                  const int batchCount)
 {
@@ -20035,12 +20035,12 @@ hipblasStatus_t
                                                            const int                nrhs,
                                                            hipblasDoubleComplex*    A,
                                                            const int                lda,
-                                                           const int                strideA,
+                                                           const hipblasStride      strideA,
                                                            const int*               ipiv,
-                                                           const int                strideP,
+                                                           const hipblasStride      strideP,
                                                            hipblasDoubleComplex*    B,
                                                            const int                ldb,
-                                                           const int                strideB,
+                                                           const hipblasStride      strideB,
                                                            int*                     info,
                                                            const int                batchCount)
 {
@@ -20209,48 +20209,48 @@ hipblasStatus_t hipblasGeqrfBatched<hipblasDoubleComplex, true>(hipblasHandle_t 
 
 // geqrf_strided_batched
 template <>
-hipblasStatus_t hipblasGeqrfStridedBatched<float, true>(hipblasHandle_t handle,
-                                                        const int       m,
-                                                        const int       n,
-                                                        float*          A,
-                                                        const int       lda,
-                                                        const int       strideA,
-                                                        float*          ipiv,
-                                                        const int       strideP,
-                                                        int*            info,
-                                                        const int       batchCount)
+hipblasStatus_t hipblasGeqrfStridedBatched<float, true>(hipblasHandle_t     handle,
+                                                        const int           m,
+                                                        const int           n,
+                                                        float*              A,
+                                                        const int           lda,
+                                                        const hipblasStride strideA,
+                                                        float*              ipiv,
+                                                        const hipblasStride strideP,
+                                                        int*                info,
+                                                        const int           batchCount)
 {
     return hipblasSgeqrfStridedBatchedFortran(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
 
 template <>
-hipblasStatus_t hipblasGeqrfStridedBatched<double, true>(hipblasHandle_t handle,
-                                                         const int       m,
-                                                         const int       n,
-                                                         double*         A,
-                                                         const int       lda,
-                                                         const int       strideA,
-                                                         double*         ipiv,
-                                                         const int       strideP,
-                                                         int*            info,
-                                                         const int       batchCount)
+hipblasStatus_t hipblasGeqrfStridedBatched<double, true>(hipblasHandle_t     handle,
+                                                         const int           m,
+                                                         const int           n,
+                                                         double*             A,
+                                                         const int           lda,
+                                                         const hipblasStride strideA,
+                                                         double*             ipiv,
+                                                         const hipblasStride strideP,
+                                                         int*                info,
+                                                         const int           batchCount)
 {
     return hipblasDgeqrfStridedBatchedFortran(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
 
 template <>
-hipblasStatus_t hipblasGeqrfStridedBatched<hipblasComplex, true>(hipblasHandle_t handle,
-                                                                 const int       m,
-                                                                 const int       n,
-                                                                 hipblasComplex* A,
-                                                                 const int       lda,
-                                                                 const int       strideA,
-                                                                 hipblasComplex* ipiv,
-                                                                 const int       strideP,
-                                                                 int*            info,
-                                                                 const int       batchCount)
+hipblasStatus_t hipblasGeqrfStridedBatched<hipblasComplex, true>(hipblasHandle_t     handle,
+                                                                 const int           m,
+                                                                 const int           n,
+                                                                 hipblasComplex*     A,
+                                                                 const int           lda,
+                                                                 const hipblasStride strideA,
+                                                                 hipblasComplex*     ipiv,
+                                                                 const hipblasStride strideP,
+                                                                 int*                info,
+                                                                 const int           batchCount)
 {
     return hipblasCgeqrfStridedBatchedFortran(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
@@ -20262,10 +20262,10 @@ hipblasStatus_t hipblasGeqrfStridedBatched<hipblasDoubleComplex, true>(hipblasHa
                                                                        const int             n,
                                                                        hipblasDoubleComplex* A,
                                                                        const int             lda,
-                                                                       const int strideA,
+                                                                       const hipblasStride strideA,
                                                                        hipblasDoubleComplex* ipiv,
-                                                                       const int strideP,
-                                                                       int*      info,
+                                                                       const hipblasStride strideP,
+                                                                       int*                info,
                                                                        const int batchCount)
 {
     return hipblasZgeqrfStridedBatchedFortran(

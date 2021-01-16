@@ -160,6 +160,9 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
 {
     switch(type)
     {
+    case HIPBLAS_R_16B:
+        return CUDA_R_16BF;
+
     case HIPBLAS_R_16F:
         return CUDA_R_16F;
 
@@ -183,6 +186,9 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
 
     case HIPBLAS_C_64F:
         return CUDA_C_64F;
+
+    case HIPBLAS_C_8I:
+        return CUDA_C_8I;
 
     default:
         throw "Non existent DataType";
@@ -418,7 +424,7 @@ hipblasStatus_t hipblasIsamaxStridedBatched(hipblasHandle_t handle,
                                             int             n,
                                             const float*    x,
                                             int             incx,
-                                            int             stridex,
+                                            hipblasStride   stridex,
                                             int             batch_count,
                                             int*            result)
 {
@@ -429,7 +435,7 @@ hipblasStatus_t hipblasIdamaxStridedBatched(hipblasHandle_t handle,
                                             int             n,
                                             const double*   x,
                                             int             incx,
-                                            int             stridex,
+                                            hipblasStride   stridex,
                                             int             batch_count,
                                             int*            result)
 {
@@ -440,7 +446,7 @@ hipblasStatus_t hipblasIcamaxStridedBatched(hipblasHandle_t       handle,
                                             int                   n,
                                             const hipblasComplex* x,
                                             int                   incx,
-                                            int                   stridex,
+                                            hipblasStride         stridex,
                                             int                   batch_count,
                                             int*                  result)
 {
@@ -451,7 +457,7 @@ hipblasStatus_t hipblasIzamaxStridedBatched(hipblasHandle_t             handle,
                                             int                         n,
                                             const hipblasDoubleComplex* x,
                                             int                         incx,
-                                            int                         stridex,
+                                            hipblasStride               stridex,
                                             int                         batch_count,
                                             int*                        result)
 {
@@ -521,7 +527,7 @@ hipblasStatus_t hipblasIsaminStridedBatched(hipblasHandle_t handle,
                                             int             n,
                                             const float*    x,
                                             int             incx,
-                                            int             stridex,
+                                            hipblasStride   stridex,
                                             int             batch_count,
                                             int*            result)
 {
@@ -532,7 +538,7 @@ hipblasStatus_t hipblasIdaminStridedBatched(hipblasHandle_t handle,
                                             int             n,
                                             const double*   x,
                                             int             incx,
-                                            int             stridex,
+                                            hipblasStride   stridex,
                                             int             batch_count,
                                             int*            result)
 {
@@ -543,7 +549,7 @@ hipblasStatus_t hipblasIcaminStridedBatched(hipblasHandle_t       handle,
                                             int                   n,
                                             const hipblasComplex* x,
                                             int                   incx,
-                                            int                   stridex,
+                                            hipblasStride         stridex,
                                             int                   batch_count,
                                             int*                  result)
 {
@@ -554,7 +560,7 @@ hipblasStatus_t hipblasIzaminStridedBatched(hipblasHandle_t             handle,
                                             int                         n,
                                             const hipblasDoubleComplex* x,
                                             int                         incx,
-                                            int                         stridex,
+                                            hipblasStride               stridex,
                                             int                         batch_count,
                                             int*                        result)
 {
@@ -631,7 +637,7 @@ hipblasStatus_t hipblasSasumStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            const float*    x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            int             batchCount,
                                            float*          result)
 {
@@ -642,7 +648,7 @@ hipblasStatus_t hipblasDasumStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            const double*   x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            int             batchCount,
                                            double*         result)
 {
@@ -653,7 +659,7 @@ hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t       handle,
                                             int                   n,
                                             const hipblasComplex* x,
                                             int                   incx,
-                                            int                   stridex,
+                                            hipblasStride         stridex,
                                             int                   batchCount,
                                             float*                result)
 {
@@ -664,7 +670,7 @@ hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t             handle,
                                             int                         n,
                                             const hipblasDoubleComplex* x,
                                             int                         incx,
-                                            int                         stridex,
+                                            hipblasStride               stridex,
                                             int                         batchCount,
                                             double*                     result)
 {
@@ -801,10 +807,10 @@ hipblasStatus_t hipblasHaxpyStridedBatched(hipblasHandle_t    handle,
                                            const hipblasHalf* alpha,
                                            const hipblasHalf* x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            hipblasHalf*       y,
                                            int                incy,
-                                           int                stridey,
+                                           hipblasStride      stridey,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -815,10 +821,10 @@ hipblasStatus_t hipblasSaxpyStridedBatched(hipblasHandle_t handle,
                                            const float*    alpha,
                                            const float*    x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            float*          y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            int             batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -829,10 +835,10 @@ hipblasStatus_t hipblasDaxpyStridedBatched(hipblasHandle_t handle,
                                            const double*   alpha,
                                            const double*   x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            double*         y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            int             batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -843,10 +849,10 @@ hipblasStatus_t hipblasCaxpyStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            hipblasComplex*       y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            int                   batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -857,10 +863,10 @@ hipblasStatus_t hipblasZaxpyStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            hipblasDoubleComplex*       y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            int                         batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -947,10 +953,10 @@ hipblasStatus_t hipblasScopyStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            const float*    x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            float*          y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -960,10 +966,10 @@ hipblasStatus_t hipblasDcopyStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            const double*   x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            double*         y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -973,10 +979,10 @@ hipblasStatus_t hipblasCcopyStridedBatched(hipblasHandle_t       handle,
                                            int                   n,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            hipblasComplex*       y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -986,10 +992,10 @@ hipblasStatus_t hipblasZcopyStridedBatched(hipblasHandle_t             handle,
                                            int                         n,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            hipblasDoubleComplex*       y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -1208,10 +1214,10 @@ hipblasStatus_t hipblasHdotStridedBatched(hipblasHandle_t    handle,
                                           int                n,
                                           const hipblasHalf* x,
                                           int                incx,
-                                          int                stridex,
+                                          hipblasStride      stridex,
                                           const hipblasHalf* y,
                                           int                incy,
-                                          int                stridey,
+                                          hipblasStride      stridey,
                                           int                batchCount,
                                           hipblasHalf*       result)
 {
@@ -1222,10 +1228,10 @@ hipblasStatus_t hipblasBfdotStridedBatched(hipblasHandle_t        handle,
                                            int                    n,
                                            const hipblasBfloat16* x,
                                            int                    incx,
-                                           int                    stridex,
+                                           hipblasStride          stridex,
                                            const hipblasBfloat16* y,
                                            int                    incy,
-                                           int                    stridey,
+                                           hipblasStride          stridey,
                                            int                    batchCount,
                                            hipblasBfloat16*       result)
 {
@@ -1236,10 +1242,10 @@ hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,
                                           int             n,
                                           const float*    x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           const float*    y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           int             batchCount,
                                           float*          result)
 {
@@ -1250,10 +1256,10 @@ hipblasStatus_t hipblasDdotStridedBatched(hipblasHandle_t handle,
                                           int             n,
                                           const double*   x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           const double*   y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           int             batchCount,
                                           double*         result)
 {
@@ -1264,10 +1270,10 @@ hipblasStatus_t hipblasCdotcStridedBatched(hipblasHandle_t       handle,
                                            int                   n,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            int                   batchCount,
                                            hipblasComplex*       result)
 {
@@ -1278,10 +1284,10 @@ hipblasStatus_t hipblasCdotuStridedBatched(hipblasHandle_t       handle,
                                            int                   n,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            int                   batchCount,
                                            hipblasComplex*       result)
 {
@@ -1292,10 +1298,10 @@ hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t             handle,
                                            int                         n,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            int                         batchCount,
                                            hipblasDoubleComplex*       result)
 {
@@ -1306,10 +1312,10 @@ hipblasStatus_t hipblasZdotuStridedBatched(hipblasHandle_t             handle,
                                            int                         n,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            int                         batchCount,
                                            hipblasDoubleComplex*       result)
 {
@@ -1384,7 +1390,7 @@ hipblasStatus_t hipblasSnrm2StridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            const float*    x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            int             batchCount,
                                            float*          result)
 {
@@ -1395,7 +1401,7 @@ hipblasStatus_t hipblasDnrm2StridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            const double*   x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            int             batchCount,
                                            double*         result)
 {
@@ -1406,7 +1412,7 @@ hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t       handle,
                                             int                   n,
                                             const hipblasComplex* x,
                                             int                   incx,
-                                            int                   stridex,
+                                            hipblasStride         stridex,
                                             int                   batchCount,
                                             float*                result)
 {
@@ -1417,7 +1423,7 @@ hipblasStatus_t hipblasDznrm2StridedBatched(hipblasHandle_t             handle,
                                             int                         n,
                                             const hipblasDoubleComplex* x,
                                             int                         incx,
-                                            int                         stridex,
+                                            hipblasStride               stridex,
                                             int                         batchCount,
                                             double*                     result)
 {
@@ -1593,10 +1599,10 @@ hipblasStatus_t hipblasSrotStridedBatched(hipblasHandle_t handle,
                                           int             n,
                                           float*          x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           float*          y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           const float*    c,
                                           const float*    s,
                                           int             batchCount)
@@ -1608,10 +1614,10 @@ hipblasStatus_t hipblasDrotStridedBatched(hipblasHandle_t handle,
                                           int             n,
                                           double*         x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           double*         y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           const double*   c,
                                           const double*   s,
                                           int             batchCount)
@@ -1623,10 +1629,10 @@ hipblasStatus_t hipblasCrotStridedBatched(hipblasHandle_t       handle,
                                           int                   n,
                                           hipblasComplex*       x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           hipblasComplex*       y,
                                           int                   incy,
-                                          int                   stridey,
+                                          hipblasStride         stridey,
                                           const float*          c,
                                           const hipblasComplex* s,
                                           int                   batchCount)
@@ -1638,10 +1644,10 @@ hipblasStatus_t hipblasCsrotStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            hipblasComplex* x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            hipblasComplex* y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            const float*    c,
                                            const float*    s,
                                            int             batchCount)
@@ -1653,10 +1659,10 @@ hipblasStatus_t hipblasZrotStridedBatched(hipblasHandle_t             handle,
                                           int                         n,
                                           hipblasDoubleComplex*       x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           hipblasDoubleComplex*       y,
                                           int                         incy,
-                                          int                         stridey,
+                                          hipblasStride               stridey,
                                           const double*               c,
                                           const hipblasDoubleComplex* s,
                                           int                         batchCount)
@@ -1668,10 +1674,10 @@ hipblasStatus_t hipblasZdrotStridedBatched(hipblasHandle_t       handle,
                                            int                   n,
                                            hipblasDoubleComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            hipblasDoubleComplex* y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            const double*         c,
                                            const double*         s,
                                            int                   batchCount)
@@ -1751,13 +1757,13 @@ hipblasStatus_t hipblasZrotgBatched(hipblasHandle_t             handle,
 // rotg_strided_batched
 hipblasStatus_t hipblasSrotgStridedBatched(hipblasHandle_t handle,
                                            float*          a,
-                                           int             stride_a,
+                                           hipblasStride   stride_a,
                                            float*          b,
-                                           int             stride_b,
+                                           hipblasStride   stride_b,
                                            float*          c,
-                                           int             stride_c,
+                                           hipblasStride   stride_c,
                                            float*          s,
-                                           int             stride_s,
+                                           hipblasStride   stride_s,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -1765,13 +1771,13 @@ hipblasStatus_t hipblasSrotgStridedBatched(hipblasHandle_t handle,
 
 hipblasStatus_t hipblasDrotgStridedBatched(hipblasHandle_t handle,
                                            double*         a,
-                                           int             stride_a,
+                                           hipblasStride   stride_a,
                                            double*         b,
-                                           int             stride_b,
+                                           hipblasStride   stride_b,
                                            double*         c,
-                                           int             stride_c,
+                                           hipblasStride   stride_c,
                                            double*         s,
-                                           int             stride_s,
+                                           hipblasStride   stride_s,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -1779,13 +1785,13 @@ hipblasStatus_t hipblasDrotgStridedBatched(hipblasHandle_t handle,
 
 hipblasStatus_t hipblasCrotgStridedBatched(hipblasHandle_t handle,
                                            hipblasComplex* a,
-                                           int             stride_a,
+                                           hipblasStride   stride_a,
                                            hipblasComplex* b,
-                                           int             stride_b,
+                                           hipblasStride   stride_b,
                                            float*          c,
-                                           int             stride_c,
+                                           hipblasStride   stride_c,
                                            hipblasComplex* s,
-                                           int             stride_s,
+                                           hipblasStride   stride_s,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -1793,13 +1799,13 @@ hipblasStatus_t hipblasCrotgStridedBatched(hipblasHandle_t handle,
 
 hipblasStatus_t hipblasZrotgStridedBatched(hipblasHandle_t       handle,
                                            hipblasDoubleComplex* a,
-                                           int                   stride_a,
+                                           hipblasStride         stride_a,
                                            hipblasDoubleComplex* b,
-                                           int                   stride_b,
+                                           hipblasStride         stride_b,
                                            double*               c,
-                                           int                   stride_c,
+                                           hipblasStride         stride_c,
                                            hipblasDoubleComplex* s,
-                                           int                   stride_s,
+                                           hipblasStride         stride_s,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -1850,12 +1856,12 @@ hipblasStatus_t hipblasSrotmStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            float*          x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            float*          y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            const float*    param,
-                                           int             strideparam,
+                                           hipblasStride   strideparam,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -1865,12 +1871,12 @@ hipblasStatus_t hipblasDrotmStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            double*         x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            double*         y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            const double*   param,
-                                           int             strideparam,
+                                           hipblasStride   strideparam,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -1915,15 +1921,15 @@ hipblasStatus_t hipblasDrotmgBatched(hipblasHandle_t     handle,
 // rotmg_strided_batched
 hipblasStatus_t hipblasSrotmgStridedBatched(hipblasHandle_t handle,
                                             float*          d1,
-                                            int             stride_d1,
+                                            hipblasStride   stride_d1,
                                             float*          d2,
-                                            int             stride_d2,
+                                            hipblasStride   stride_d2,
                                             float*          x1,
-                                            int             stride_x1,
+                                            hipblasStride   stride_x1,
                                             const float*    y1,
-                                            int             stride_y1,
+                                            hipblasStride   stride_y1,
                                             float*          param,
-                                            int             strideparam,
+                                            hipblasStride   strideparam,
                                             int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -1931,15 +1937,15 @@ hipblasStatus_t hipblasSrotmgStridedBatched(hipblasHandle_t handle,
 
 hipblasStatus_t hipblasDrotmgStridedBatched(hipblasHandle_t handle,
                                             double*         d1,
-                                            int             stride_d1,
+                                            hipblasStride   stride_d1,
                                             double*         d2,
-                                            int             stride_d2,
+                                            hipblasStride   stride_d2,
                                             double*         x1,
-                                            int             stride_x1,
+                                            hipblasStride   stride_x1,
                                             const double*   y1,
-                                            int             stride_y1,
+                                            hipblasStride   stride_y1,
                                             double*         param,
-                                            int             strideparam,
+                                            hipblasStride   strideparam,
                                             int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2048,7 +2054,7 @@ hipblasStatus_t hipblasSscalStridedBatched(hipblasHandle_t handle,
                                            const float*    alpha,
                                            float*          x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2059,7 +2065,7 @@ hipblasStatus_t hipblasDscalStridedBatched(hipblasHandle_t handle,
                                            const double*   alpha,
                                            double*         x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2070,7 +2076,7 @@ hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            hipblasComplex*       x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2081,7 +2087,7 @@ hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            hipblasDoubleComplex*       x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2092,7 +2098,7 @@ hipblasStatus_t hipblasCsscalStridedBatched(hipblasHandle_t handle,
                                             const float*    alpha,
                                             hipblasComplex* x,
                                             int             incx,
-                                            int             stridex,
+                                            hipblasStride   stridex,
                                             int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2103,7 +2109,7 @@ hipblasStatus_t hipblasZdscalStridedBatched(hipblasHandle_t       handle,
                                             const double*         alpha,
                                             hipblasDoubleComplex* x,
                                             int                   incx,
-                                            int                   stridex,
+                                            hipblasStride         stridex,
                                             int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2179,10 +2185,10 @@ hipblasStatus_t hipblasSswapStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            float*          x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            float*          y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2192,10 +2198,10 @@ hipblasStatus_t hipblasDswapStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            double*         x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            double*         y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2205,10 +2211,10 @@ hipblasStatus_t hipblasCswapStridedBatched(hipblasHandle_t handle,
                                            int             n,
                                            hipblasComplex* x,
                                            int             incx,
-                                           int             stridex,
+                                           hipblasStride   stridex,
                                            hipblasComplex* y,
                                            int             incy,
-                                           int             stridey,
+                                           hipblasStride   stridey,
                                            int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2218,10 +2224,10 @@ hipblasStatus_t hipblasZswapStridedBatched(hipblasHandle_t       handle,
                                            int                   n,
                                            hipblasDoubleComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            hipblasDoubleComplex* y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2439,14 +2445,14 @@ hipblasStatus_t hipblasSgbmvStridedBatched(hipblasHandle_t    handle,
                                            const float*       alpha,
                                            const float*       A,
                                            int                lda,
-                                           int                stride_a,
+                                           hipblasStride      stride_a,
                                            const float*       x,
                                            int                incx,
-                                           int                stride_x,
+                                           hipblasStride      stride_x,
                                            const float*       beta,
                                            float*             y,
                                            int                incy,
-                                           int                stride_y,
+                                           hipblasStride      stride_y,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2461,14 +2467,14 @@ hipblasStatus_t hipblasDgbmvStridedBatched(hipblasHandle_t    handle,
                                            const double*      alpha,
                                            const double*      A,
                                            int                lda,
-                                           int                stride_a,
+                                           hipblasStride      stride_a,
                                            const double*      x,
                                            int                incx,
-                                           int                stride_x,
+                                           hipblasStride      stride_x,
                                            const double*      beta,
                                            double*            y,
                                            int                incy,
-                                           int                stride_y,
+                                           hipblasStride      stride_y,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2483,14 +2489,14 @@ hipblasStatus_t hipblasCgbmvStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   stride_a,
+                                           hipblasStride         stride_a,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stride_x,
+                                           hipblasStride         stride_x,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       y,
                                            int                   incy,
-                                           int                   stride_y,
+                                           hipblasStride         stride_y,
                                            int                   batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2505,14 +2511,14 @@ hipblasStatus_t hipblasZgbmvStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         stride_a,
+                                           hipblasStride               stride_a,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stride_x,
+                                           hipblasStride               stride_x,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       y,
                                            int                         incy,
-                                           int                         stride_y,
+                                           hipblasStride               stride_y,
                                            int                         batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2730,14 +2736,14 @@ hipblasStatus_t hipblasSgemvStridedBatched(hipblasHandle_t    handle,
                                            const float*       alpha,
                                            const float*       A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const float*       x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            const float*       beta,
                                            float*             y,
                                            int                incy,
-                                           int                stridey,
+                                           hipblasStride      stridey,
                                            int                batchCount)
 {
     // TODO warn user that function was demoted to ignore batch
@@ -2763,14 +2769,14 @@ hipblasStatus_t hipblasDgemvStridedBatched(hipblasHandle_t    handle,
                                            const double*      alpha,
                                            const double*      A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const double*      x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            const double*      beta,
                                            double*            y,
                                            int                incy,
-                                           int                stridey,
+                                           hipblasStride      stridey,
                                            int                batchCount)
 {
     // TODO warn user that function was demoted to ignore batch
@@ -2796,14 +2802,14 @@ hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -2816,14 +2822,14 @@ hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3050,13 +3056,13 @@ hipblasStatus_t hipblasSgerStridedBatched(hipblasHandle_t handle,
                                           const float*    alpha,
                                           const float*    x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           const float*    y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           float*          A,
                                           int             lda,
-                                          int             strideA,
+                                          hipblasStride   strideA,
                                           int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3068,13 +3074,13 @@ hipblasStatus_t hipblasDgerStridedBatched(hipblasHandle_t handle,
                                           const double*   alpha,
                                           const double*   x,
                                           int             incx,
-                                          int             stridex,
+                                          hipblasStride   stridex,
                                           const double*   y,
                                           int             incy,
-                                          int             stridey,
+                                          hipblasStride   stridey,
                                           double*         A,
                                           int             lda,
-                                          int             strideA,
+                                          hipblasStride   strideA,
                                           int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3086,13 +3092,13 @@ hipblasStatus_t hipblasCgeruStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            hipblasComplex*       A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3104,13 +3110,13 @@ hipblasStatus_t hipblasCgercStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            hipblasComplex*       A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3122,13 +3128,13 @@ hipblasStatus_t hipblasZgeruStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            hipblasDoubleComplex*       A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3140,13 +3146,13 @@ hipblasStatus_t hipblasZgercStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            hipblasDoubleComplex*       A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3250,14 +3256,14 @@ hipblasStatus_t hipblasChbmvStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3270,14 +3276,14 @@ hipblasStatus_t hipblasZhbmvStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3374,14 +3380,14 @@ hipblasStatus_t hipblasChemvStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   stride_a,
+                                           hipblasStride         stride_a,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stride_x,
+                                           hipblasStride         stride_x,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       y,
                                            int                   incy,
-                                           int                   stride_y,
+                                           hipblasStride         stride_y,
                                            int                   batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3393,14 +3399,14 @@ hipblasStatus_t hipblasZhemvStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         stride_a,
+                                           hipblasStride               stride_a,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stride_x,
+                                           hipblasStride               stride_x,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       y,
                                            int                         incy,
-                                           int                         stride_y,
+                                           hipblasStride               stride_y,
                                            int                         batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3479,10 +3485,10 @@ hipblasStatus_t hipblasCherStridedBatched(hipblasHandle_t       handle,
                                           const float*          alpha,
                                           const hipblasComplex* x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           hipblasComplex*       A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3494,10 +3500,10 @@ hipblasStatus_t hipblasZherStridedBatched(hipblasHandle_t             handle,
                                           const double*               alpha,
                                           const hipblasDoubleComplex* x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           hipblasDoubleComplex*       A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3588,13 +3594,13 @@ hipblasStatus_t hipblasCher2StridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            hipblasComplex*       A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3606,13 +3612,13 @@ hipblasStatus_t hipblasZher2StridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            hipblasDoubleComplex*       A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3702,14 +3708,14 @@ hipblasStatus_t hipblasChpmvStridedBatched(hipblasHandle_t       handle,
                                            int                   n,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* AP,
-                                           int                   strideAP,
+                                           hipblasStride         strideAP,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3720,14 +3726,14 @@ hipblasStatus_t hipblasZhpmvStridedBatched(hipblasHandle_t             handle,
                                            int                         n,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* AP,
-                                           int                         strideAP,
+                                           hipblasStride               strideAP,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3800,9 +3806,9 @@ hipblasStatus_t hipblasChprStridedBatched(hipblasHandle_t       handle,
                                           const float*          alpha,
                                           const hipblasComplex* x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           hipblasComplex*       AP,
-                                          int                   strideAP,
+                                          hipblasStride         strideAP,
                                           int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3814,9 +3820,9 @@ hipblasStatus_t hipblasZhprStridedBatched(hipblasHandle_t             handle,
                                           const double*               alpha,
                                           const hipblasDoubleComplex* x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           hipblasDoubleComplex*       AP,
-                                          int                         strideAP,
+                                          hipblasStride               strideAP,
                                           int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3901,12 +3907,12 @@ hipblasStatus_t hipblasChpr2StridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            hipblasComplex*       AP,
-                                           int                   strideAP,
+                                           hipblasStride         strideAP,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -3918,12 +3924,12 @@ hipblasStatus_t hipblasZhpr2StridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            hipblasDoubleComplex*       AP,
-                                           int                         strideAP,
+                                           hipblasStride               strideAP,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4027,14 +4033,14 @@ hipblasStatus_t hipblasSsbmvStridedBatched(hipblasHandle_t   handle,
                                            const float*      alpha,
                                            const float*      A,
                                            int               lda,
-                                           int               strideA,
+                                           hipblasStride     strideA,
                                            const float*      x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const float*      beta,
                                            float*            y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4047,14 +4053,14 @@ hipblasStatus_t hipblasDsbmvStridedBatched(hipblasHandle_t   handle,
                                            const double*     alpha,
                                            const double*     A,
                                            int               lda,
-                                           int               strideA,
+                                           hipblasStride     strideA,
                                            const double*     x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const double*     beta,
                                            double*           y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4128,14 +4134,14 @@ hipblasStatus_t hipblasSspmvStridedBatched(hipblasHandle_t   handle,
                                            int               n,
                                            const float*      alpha,
                                            const float*      AP,
-                                           int               strideAP,
+                                           hipblasStride     strideAP,
                                            const float*      x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const float*      beta,
                                            float*            y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4146,14 +4152,14 @@ hipblasStatus_t hipblasDspmvStridedBatched(hipblasHandle_t   handle,
                                            int               n,
                                            const double*     alpha,
                                            const double*     AP,
-                                           int               strideAP,
+                                           hipblasStride     strideAP,
                                            const double*     x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const double*     beta,
                                            double*           y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4262,9 +4268,9 @@ hipblasStatus_t hipblasSsprStridedBatched(hipblasHandle_t   handle,
                                           const float*      alpha,
                                           const float*      x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           float*            AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4276,9 +4282,9 @@ hipblasStatus_t hipblasDsprStridedBatched(hipblasHandle_t   handle,
                                           const double*     alpha,
                                           const double*     x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           double*           AP,
-                                          int               strideAP,
+                                          hipblasStride     strideAP,
                                           int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4290,9 +4296,9 @@ hipblasStatus_t hipblasCsprStridedBatched(hipblasHandle_t       handle,
                                           const hipblasComplex* alpha,
                                           const hipblasComplex* x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           hipblasComplex*       AP,
-                                          int                   strideAP,
+                                          hipblasStride         strideAP,
                                           int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4304,9 +4310,9 @@ hipblasStatus_t hipblasZsprStridedBatched(hipblasHandle_t             handle,
                                           const hipblasDoubleComplex* alpha,
                                           const hipblasDoubleComplex* x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           hipblasDoubleComplex*       AP,
-                                          int                         strideAP,
+                                          hipblasStride               strideAP,
                                           int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4377,12 +4383,12 @@ hipblasStatus_t hipblasSspr2StridedBatched(hipblasHandle_t   handle,
                                            const float*      alpha,
                                            const float*      x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const float*      y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            float*            AP,
-                                           int               strideAP,
+                                           hipblasStride     strideAP,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4394,12 +4400,12 @@ hipblasStatus_t hipblasDspr2StridedBatched(hipblasHandle_t   handle,
                                            const double*     alpha,
                                            const double*     x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const double*     y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            double*           AP,
-                                           int               strideAP,
+                                           hipblasStride     strideAP,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4560,14 +4566,14 @@ hipblasStatus_t hipblasSsymvStridedBatched(hipblasHandle_t   handle,
                                            const float*      alpha,
                                            const float*      A,
                                            int               lda,
-                                           int               strideA,
+                                           hipblasStride     strideA,
                                            const float*      x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const float*      beta,
                                            float*            y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4579,14 +4585,14 @@ hipblasStatus_t hipblasDsymvStridedBatched(hipblasHandle_t   handle,
                                            const double*     alpha,
                                            const double*     A,
                                            int               lda,
-                                           int               strideA,
+                                           hipblasStride     strideA,
                                            const double*     x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const double*     beta,
                                            double*           y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4598,14 +4604,14 @@ hipblasStatus_t hipblasCsymvStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4617,14 +4623,14 @@ hipblasStatus_t hipblasZsymvStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4755,10 +4761,10 @@ hipblasStatus_t hipblasSsyrStridedBatched(hipblasHandle_t   handle,
                                           const float*      alpha,
                                           const float*      x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           float*            A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4770,10 +4776,10 @@ hipblasStatus_t hipblasDsyrStridedBatched(hipblasHandle_t   handle,
                                           const double*     alpha,
                                           const double*     x,
                                           int               incx,
-                                          int               stridex,
+                                          hipblasStride     stridex,
                                           double*           A,
                                           int               lda,
-                                          int               strideA,
+                                          hipblasStride     strideA,
                                           int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4785,10 +4791,10 @@ hipblasStatus_t hipblasCsyrStridedBatched(hipblasHandle_t       handle,
                                           const hipblasComplex* alpha,
                                           const hipblasComplex* x,
                                           int                   incx,
-                                          int                   stridex,
+                                          hipblasStride         stridex,
                                           hipblasComplex*       A,
                                           int                   lda,
-                                          int                   strideA,
+                                          hipblasStride         strideA,
                                           int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4800,10 +4806,10 @@ hipblasStatus_t hipblasZsyrStridedBatched(hipblasHandle_t             handle,
                                           const hipblasDoubleComplex* alpha,
                                           const hipblasDoubleComplex* x,
                                           int                         incx,
-                                          int                         stridex,
+                                          hipblasStride               stridex,
                                           hipblasDoubleComplex*       A,
                                           int                         lda,
-                                          int                         strideA,
+                                          hipblasStride               strideA,
                                           int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4954,13 +4960,13 @@ hipblasStatus_t hipblasSsyr2StridedBatched(hipblasHandle_t   handle,
                                            const float*      alpha,
                                            const float*      x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const float*      y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            float*            A,
                                            int               lda,
-                                           int               strideA,
+                                           hipblasStride     strideA,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4972,13 +4978,13 @@ hipblasStatus_t hipblasDsyr2StridedBatched(hipblasHandle_t   handle,
                                            const double*     alpha,
                                            const double*     x,
                                            int               incx,
-                                           int               stridex,
+                                           hipblasStride     stridex,
                                            const double*     y,
                                            int               incy,
-                                           int               stridey,
+                                           hipblasStride     stridey,
                                            double*           A,
                                            int               lda,
-                                           int               strideA,
+                                           hipblasStride     strideA,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -4990,13 +4996,13 @@ hipblasStatus_t hipblasCsyr2StridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            const hipblasComplex* y,
                                            int                   incy,
-                                           int                   stridey,
+                                           hipblasStride         stridey,
                                            hipblasComplex*       A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5008,13 +5014,13 @@ hipblasStatus_t hipblasZsyr2StridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            const hipblasDoubleComplex* y,
                                            int                         incy,
-                                           int                         stridey,
+                                           hipblasStride               stridey,
                                            hipblasDoubleComplex*       A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5183,10 +5189,10 @@ hipblasStatus_t hipblasStbmvStridedBatched(hipblasHandle_t    handle,
                                            int                k,
                                            const float*       A,
                                            int                lda,
-                                           int                stride_a,
+                                           hipblasStride      stride_a,
                                            float*             x,
                                            int                incx,
-                                           int                stride_x,
+                                           hipblasStride      stride_x,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5200,10 +5206,10 @@ hipblasStatus_t hipblasDtbmvStridedBatched(hipblasHandle_t    handle,
                                            int                k,
                                            const double*      A,
                                            int                lda,
-                                           int                stride_a,
+                                           hipblasStride      stride_a,
                                            double*            x,
                                            int                incx,
-                                           int                stride_x,
+                                           hipblasStride      stride_x,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5217,10 +5223,10 @@ hipblasStatus_t hipblasCtbmvStridedBatched(hipblasHandle_t       handle,
                                            int                   k,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   stride_a,
+                                           hipblasStride         stride_a,
                                            hipblasComplex*       x,
                                            int                   incx,
-                                           int                   stride_x,
+                                           hipblasStride         stride_x,
                                            int                   batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5234,10 +5240,10 @@ hipblasStatus_t hipblasZtbmvStridedBatched(hipblasHandle_t             handle,
                                            int                         k,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         stride_a,
+                                           hipblasStride               stride_a,
                                            hipblasDoubleComplex*       x,
                                            int                         incx,
-                                           int                         stride_x,
+                                           hipblasStride               stride_x,
                                            int                         batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5406,10 +5412,10 @@ hipblasStatus_t hipblasStbsvStridedBatched(hipblasHandle_t    handle,
                                            int                k,
                                            const float*       A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            float*             x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5423,10 +5429,10 @@ hipblasStatus_t hipblasDtbsvStridedBatched(hipblasHandle_t    handle,
                                            int                k,
                                            const double*      A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            double*            x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5440,10 +5446,10 @@ hipblasStatus_t hipblasCtbsvStridedBatched(hipblasHandle_t       handle,
                                            int                   k,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            hipblasComplex*       x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5457,10 +5463,10 @@ hipblasStatus_t hipblasZtbsvStridedBatched(hipblasHandle_t             handle,
                                            int                         k,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            hipblasDoubleComplex*       x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5603,10 +5609,10 @@ hipblasStatus_t hipblasStpmvStridedBatched(hipblasHandle_t    handle,
                                            hipblasDiagType_t  diag,
                                            int                m,
                                            const float*       AP,
-                                           int                strideAP,
+                                           hipblasStride      strideAP,
                                            float*             x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5618,10 +5624,10 @@ hipblasStatus_t hipblasDtpmvStridedBatched(hipblasHandle_t    handle,
                                            hipblasDiagType_t  diag,
                                            int                m,
                                            const double*      AP,
-                                           int                strideAP,
+                                           hipblasStride      strideAP,
                                            double*            x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5633,10 +5639,10 @@ hipblasStatus_t hipblasCtpmvStridedBatched(hipblasHandle_t       handle,
                                            hipblasDiagType_t     diag,
                                            int                   m,
                                            const hipblasComplex* AP,
-                                           int                   strideAP,
+                                           hipblasStride         strideAP,
                                            hipblasComplex*       x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5648,10 +5654,10 @@ hipblasStatus_t hipblasZtpmvStridedBatched(hipblasHandle_t             handle,
                                            hipblasDiagType_t           diag,
                                            int                         m,
                                            const hipblasDoubleComplex* AP,
-                                           int                         strideAP,
+                                           hipblasStride               strideAP,
                                            hipblasDoubleComplex*       x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5794,10 +5800,10 @@ hipblasStatus_t hipblasStpsvStridedBatched(hipblasHandle_t    handle,
                                            hipblasDiagType_t  diag,
                                            int                m,
                                            const float*       AP,
-                                           int                strideAP,
+                                           hipblasStride      strideAP,
                                            float*             x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5809,10 +5815,10 @@ hipblasStatus_t hipblasDtpsvStridedBatched(hipblasHandle_t    handle,
                                            hipblasDiagType_t  diag,
                                            int                m,
                                            const double*      AP,
-                                           int                strideAP,
+                                           hipblasStride      strideAP,
                                            double*            x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5824,10 +5830,10 @@ hipblasStatus_t hipblasCtpsvStridedBatched(hipblasHandle_t       handle,
                                            hipblasDiagType_t     diag,
                                            int                   m,
                                            const hipblasComplex* AP,
-                                           int                   strideAP,
+                                           hipblasStride         strideAP,
                                            hipblasComplex*       x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5839,10 +5845,10 @@ hipblasStatus_t hipblasZtpsvStridedBatched(hipblasHandle_t             handle,
                                            hipblasDiagType_t           diag,
                                            int                         m,
                                            const hipblasDoubleComplex* AP,
-                                           int                         strideAP,
+                                           hipblasStride               strideAP,
                                            hipblasDoubleComplex*       x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -5998,10 +6004,10 @@ hipblasStatus_t hipblasStrmvStridedBatched(hipblasHandle_t    handle,
                                            int                m,
                                            const float*       A,
                                            int                lda,
-                                           int                stride_a,
+                                           hipblasStride      stride_a,
                                            float*             x,
                                            int                incx,
-                                           int                stride_x,
+                                           hipblasStride      stride_x,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6014,10 +6020,10 @@ hipblasStatus_t hipblasDtrmvStridedBatched(hipblasHandle_t    handle,
                                            int                m,
                                            const double*      A,
                                            int                lda,
-                                           int                stride_a,
+                                           hipblasStride      stride_a,
                                            double*            x,
                                            int                incx,
-                                           int                stride_x,
+                                           hipblasStride      stride_x,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6030,10 +6036,10 @@ hipblasStatus_t hipblasCtrmvStridedBatched(hipblasHandle_t       handle,
                                            int                   m,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   stride_a,
+                                           hipblasStride         stride_a,
                                            hipblasComplex*       x,
                                            int                   incx,
-                                           int                   stride_x,
+                                           hipblasStride         stride_x,
                                            int                   batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6046,10 +6052,10 @@ hipblasStatus_t hipblasZtrmvStridedBatched(hipblasHandle_t             handle,
                                            int                         m,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         stride_a,
+                                           hipblasStride               stride_a,
                                            hipblasDoubleComplex*       x,
                                            int                         incx,
-                                           int                         stride_x,
+                                           hipblasStride               stride_x,
                                            int                         batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6205,10 +6211,10 @@ hipblasStatus_t hipblasStrsvStridedBatched(hipblasHandle_t    handle,
                                            int                m,
                                            const float*       A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            float*             x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6221,10 +6227,10 @@ hipblasStatus_t hipblasDtrsvStridedBatched(hipblasHandle_t    handle,
                                            int                m,
                                            const double*      A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            double*            x,
                                            int                incx,
-                                           int                stridex,
+                                           hipblasStride      stridex,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6237,10 +6243,10 @@ hipblasStatus_t hipblasCtrsvStridedBatched(hipblasHandle_t       handle,
                                            int                   m,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            hipblasComplex*       x,
                                            int                   incx,
-                                           int                   stridex,
+                                           hipblasStride         stridex,
                                            int                   batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6253,10 +6259,10 @@ hipblasStatus_t hipblasZtrsvStridedBatched(hipblasHandle_t             handle,
                                            int                         m,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            hipblasDoubleComplex*       x,
                                            int                         incx,
-                                           int                         stridex,
+                                           hipblasStride               stridex,
                                            int                         batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6357,11 +6363,11 @@ hipblasStatus_t hipblasCherkStridedBatched(hipblasHandle_t       handle,
                                            const float*          alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const float*          beta,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   strideC,
+                                           hipblasStride         strideC,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6375,11 +6381,11 @@ hipblasStatus_t hipblasZherkStridedBatched(hipblasHandle_t             handle,
                                            const double*               alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const double*               beta,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         strideC,
+                                           hipblasStride               strideC,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6490,14 +6496,14 @@ hipblasStatus_t hipblasCherkxStridedBatched(hipblasHandle_t       handle,
                                             const hipblasComplex* alpha,
                                             const hipblasComplex* A,
                                             int                   lda,
-                                            int                   strideA,
+                                            hipblasStride         strideA,
                                             const hipblasComplex* B,
                                             int                   ldb,
-                                            int                   strideB,
+                                            hipblasStride         strideB,
                                             const float*          beta,
                                             hipblasComplex*       C,
                                             int                   ldc,
-                                            int                   strideC,
+                                            hipblasStride         strideC,
                                             int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6511,14 +6517,14 @@ hipblasStatus_t hipblasZherkxStridedBatched(hipblasHandle_t             handle,
                                             const hipblasDoubleComplex* alpha,
                                             const hipblasDoubleComplex* A,
                                             int                         lda,
-                                            int                         strideA,
+                                            hipblasStride               strideA,
                                             const hipblasDoubleComplex* B,
                                             int                         ldb,
-                                            int                         strideB,
+                                            hipblasStride               strideB,
                                             const double*               beta,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc,
-                                            int                         strideC,
+                                            hipblasStride               strideC,
                                             int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6629,14 +6635,14 @@ hipblasStatus_t hipblasCher2kStridedBatched(hipblasHandle_t       handle,
                                             const hipblasComplex* alpha,
                                             const hipblasComplex* A,
                                             int                   lda,
-                                            int                   strideA,
+                                            hipblasStride         strideA,
                                             const hipblasComplex* B,
                                             int                   ldb,
-                                            int                   strideB,
+                                            hipblasStride         strideB,
                                             const float*          beta,
                                             hipblasComplex*       C,
                                             int                   ldc,
-                                            int                   strideC,
+                                            hipblasStride         strideC,
                                             int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6650,14 +6656,14 @@ hipblasStatus_t hipblasZher2kStridedBatched(hipblasHandle_t             handle,
                                             const hipblasDoubleComplex* alpha,
                                             const hipblasDoubleComplex* A,
                                             int                         lda,
-                                            int                         strideA,
+                                            hipblasStride               strideA,
                                             const hipblasDoubleComplex* B,
                                             int                         ldb,
-                                            int                         strideB,
+                                            hipblasStride               strideB,
                                             const double*               beta,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc,
-                                            int                         strideC,
+                                            hipblasStride               strideC,
                                             int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6862,14 +6868,14 @@ hipblasStatus_t hipblasSsymmStridedBatched(hipblasHandle_t   handle,
                                            const float*      alpha,
                                            const float*      A,
                                            int               lda,
-                                           int               strideA,
+                                           hipblasStride     strideA,
                                            const float*      B,
                                            int               ldb,
-                                           int               strideB,
+                                           hipblasStride     strideB,
                                            const float*      beta,
                                            float*            C,
                                            int               ldc,
-                                           int               strideC,
+                                           hipblasStride     strideC,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6883,14 +6889,14 @@ hipblasStatus_t hipblasDsymmStridedBatched(hipblasHandle_t   handle,
                                            const double*     alpha,
                                            const double*     A,
                                            int               lda,
-                                           int               strideA,
+                                           hipblasStride     strideA,
                                            const double*     B,
                                            int               ldb,
-                                           int               strideB,
+                                           hipblasStride     strideB,
                                            const double*     beta,
                                            double*           C,
                                            int               ldc,
-                                           int               strideC,
+                                           hipblasStride     strideC,
                                            int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6904,14 +6910,14 @@ hipblasStatus_t hipblasCsymmStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* B,
                                            int                   ldb,
-                                           int                   strideB,
+                                           hipblasStride         strideB,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   strideC,
+                                           hipblasStride         strideC,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -6925,14 +6931,14 @@ hipblasStatus_t hipblasZsymmStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* B,
                                            int                         ldb,
-                                           int                         strideB,
+                                           hipblasStride               strideB,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         strideC,
+                                           hipblasStride               strideC,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7113,11 +7119,11 @@ hipblasStatus_t hipblasSsyrkStridedBatched(hipblasHandle_t    handle,
                                            const float*       alpha,
                                            const float*       A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const float*       beta,
                                            float*             C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7131,11 +7137,11 @@ hipblasStatus_t hipblasDsyrkStridedBatched(hipblasHandle_t    handle,
                                            const double*      alpha,
                                            const double*      A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const double*      beta,
                                            double*            C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7149,11 +7155,11 @@ hipblasStatus_t hipblasCsyrkStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   strideC,
+                                           hipblasStride         strideC,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7167,11 +7173,11 @@ hipblasStatus_t hipblasZsyrkStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         strideC,
+                                           hipblasStride               strideC,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7376,14 +7382,14 @@ hipblasStatus_t hipblasSsyr2kStridedBatched(hipblasHandle_t    handle,
                                             const float*       alpha,
                                             const float*       A,
                                             int                lda,
-                                            int                strideA,
+                                            hipblasStride      strideA,
                                             const float*       B,
                                             int                ldb,
-                                            int                strideB,
+                                            hipblasStride      strideB,
                                             const float*       beta,
                                             float*             C,
                                             int                ldc,
-                                            int                strideC,
+                                            hipblasStride      strideC,
                                             int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7397,14 +7403,14 @@ hipblasStatus_t hipblasDsyr2kStridedBatched(hipblasHandle_t    handle,
                                             const double*      alpha,
                                             const double*      A,
                                             int                lda,
-                                            int                strideA,
+                                            hipblasStride      strideA,
                                             const double*      B,
                                             int                ldb,
-                                            int                strideB,
+                                            hipblasStride      strideB,
                                             const double*      beta,
                                             double*            C,
                                             int                ldc,
-                                            int                strideC,
+                                            hipblasStride      strideC,
                                             int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7418,14 +7424,14 @@ hipblasStatus_t hipblasCsyr2kStridedBatched(hipblasHandle_t       handle,
                                             const hipblasComplex* alpha,
                                             const hipblasComplex* A,
                                             int                   lda,
-                                            int                   strideA,
+                                            hipblasStride         strideA,
                                             const hipblasComplex* B,
                                             int                   ldb,
-                                            int                   strideB,
+                                            hipblasStride         strideB,
                                             const hipblasComplex* beta,
                                             hipblasComplex*       C,
                                             int                   ldc,
-                                            int                   strideC,
+                                            hipblasStride         strideC,
                                             int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7439,14 +7445,14 @@ hipblasStatus_t hipblasZsyr2kStridedBatched(hipblasHandle_t             handle,
                                             const hipblasDoubleComplex* alpha,
                                             const hipblasDoubleComplex* A,
                                             int                         lda,
-                                            int                         strideA,
+                                            hipblasStride               strideA,
                                             const hipblasDoubleComplex* B,
                                             int                         ldb,
-                                            int                         strideB,
+                                            hipblasStride               strideB,
                                             const hipblasDoubleComplex* beta,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc,
-                                            int                         strideC,
+                                            hipblasStride               strideC,
                                             int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7651,14 +7657,14 @@ hipblasStatus_t hipblasSsyrkxStridedBatched(hipblasHandle_t    handle,
                                             const float*       alpha,
                                             const float*       A,
                                             int                lda,
-                                            int                strideA,
+                                            hipblasStride      strideA,
                                             const float*       B,
                                             int                ldb,
-                                            int                strideB,
+                                            hipblasStride      strideB,
                                             const float*       beta,
                                             float*             C,
                                             int                ldc,
-                                            int                strideC,
+                                            hipblasStride      strideC,
                                             int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7672,14 +7678,14 @@ hipblasStatus_t hipblasDsyrkxStridedBatched(hipblasHandle_t    handle,
                                             const double*      alpha,
                                             const double*      A,
                                             int                lda,
-                                            int                strideA,
+                                            hipblasStride      strideA,
                                             const double*      B,
                                             int                ldb,
-                                            int                strideB,
+                                            hipblasStride      strideB,
                                             const double*      beta,
                                             double*            C,
                                             int                ldc,
-                                            int                strideC,
+                                            hipblasStride      strideC,
                                             int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7693,14 +7699,14 @@ hipblasStatus_t hipblasCsyrkxStridedBatched(hipblasHandle_t       handle,
                                             const hipblasComplex* alpha,
                                             const hipblasComplex* A,
                                             int                   lda,
-                                            int                   strideA,
+                                            hipblasStride         strideA,
                                             const hipblasComplex* B,
                                             int                   ldb,
-                                            int                   strideB,
+                                            hipblasStride         strideB,
                                             const hipblasComplex* beta,
                                             hipblasComplex*       C,
                                             int                   ldc,
-                                            int                   strideC,
+                                            hipblasStride         strideC,
                                             int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7714,14 +7720,14 @@ hipblasStatus_t hipblasZsyrkxStridedBatched(hipblasHandle_t             handle,
                                             const hipblasDoubleComplex* alpha,
                                             const hipblasDoubleComplex* A,
                                             int                         lda,
-                                            int                         strideA,
+                                            hipblasStride               strideA,
                                             const hipblasDoubleComplex* B,
                                             int                         ldb,
-                                            int                         strideB,
+                                            hipblasStride               strideB,
                                             const hipblasDoubleComplex* beta,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc,
-                                            int                         strideC,
+                                            hipblasStride               strideC,
                                             int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7926,14 +7932,14 @@ hipblasStatus_t hipblasSgeamStridedBatched(hipblasHandle_t    handle,
                                            const float*       alpha,
                                            const float*       A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const float*       beta,
                                            const float*       B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            float*             C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7947,14 +7953,14 @@ hipblasStatus_t hipblasDgeamStridedBatched(hipblasHandle_t    handle,
                                            const double*      alpha,
                                            const double*      A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            const double*      beta,
                                            const double*      B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            double*            C,
                                            int                ldc,
-                                           int                strideC,
+                                           hipblasStride      strideC,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7968,14 +7974,14 @@ hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* beta,
                                            const hipblasComplex* B,
                                            int                   ldb,
-                                           int                   strideB,
+                                           hipblasStride         strideB,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   strideC,
+                                           hipblasStride         strideC,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -7989,14 +7995,14 @@ hipblasStatus_t hipblasZgeamStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* beta,
                                            const hipblasDoubleComplex* B,
                                            int                         ldb,
-                                           int                         strideB,
+                                           hipblasStride               strideB,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         strideC,
+                                           hipblasStride               strideC,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8107,14 +8113,14 @@ hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            const hipblasComplex* B,
                                            int                   ldb,
-                                           int                   strideB,
+                                           hipblasStride         strideB,
                                            const hipblasComplex* beta,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   strideC,
+                                           hipblasStride         strideC,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8128,14 +8134,14 @@ hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            const hipblasDoubleComplex* B,
                                            int                         ldb,
-                                           int                         strideB,
+                                           hipblasStride               strideB,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         strideC,
+                                           hipblasStride               strideC,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8341,10 +8347,10 @@ hipblasStatus_t hipblasStrmmStridedBatched(hipblasHandle_t    handle,
                                            const float*       alpha,
                                            const float*       A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            float*             B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8360,10 +8366,10 @@ hipblasStatus_t hipblasDtrmmStridedBatched(hipblasHandle_t    handle,
                                            const double*      alpha,
                                            const double*      A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            double*            B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            int                batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8379,10 +8385,10 @@ hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            hipblasComplex*       B,
                                            int                   ldb,
-                                           int                   strideB,
+                                           hipblasStride         strideB,
                                            int                   batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8398,10 +8404,10 @@ hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            hipblasDoubleComplex*       B,
                                            int                         ldb,
-                                           int                         strideB,
+                                           hipblasStride               strideB,
                                            int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8644,10 +8650,10 @@ hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    handle,
                                            const float*       alpha,
                                            float*             A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            float*             B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8663,10 +8669,10 @@ hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
                                            const double*      alpha,
                                            double*            A,
                                            int                lda,
-                                           int                strideA,
+                                           hipblasStride      strideA,
                                            double*            B,
                                            int                ldb,
-                                           int                strideB,
+                                           hipblasStride      strideB,
                                            int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8682,10 +8688,10 @@ hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       handle,
                                            const hipblasComplex* alpha,
                                            hipblasComplex*       A,
                                            int                   lda,
-                                           int                   strideA,
+                                           hipblasStride         strideA,
                                            hipblasComplex*       B,
                                            int                   ldb,
-                                           int                   strideB,
+                                           hipblasStride         strideB,
                                            int                   batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8701,10 +8707,10 @@ hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t             handle,
                                            const hipblasDoubleComplex* alpha,
                                            hipblasDoubleComplex*       A,
                                            int                         lda,
-                                           int                         strideA,
+                                           hipblasStride               strideA,
                                            hipblasDoubleComplex*       B,
                                            int                         ldb,
-                                           int                         strideB,
+                                           hipblasStride               strideB,
                                            int                         batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8819,10 +8825,10 @@ hipblasStatus_t hipblasStrtriStridedBatched(hipblasHandle_t   handle,
                                             int               n,
                                             const float*      A,
                                             int               lda,
-                                            int               stride_A,
+                                            hipblasStride     stride_A,
                                             float*            invA,
                                             int               ldinvA,
-                                            int               stride_invA,
+                                            hipblasStride     stride_invA,
                                             int               batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8834,10 +8840,10 @@ hipblasStatus_t hipblasDtrtriStridedBatched(hipblasHandle_t   handle,
                                             int               n,
                                             const double*     A,
                                             int               lda,
-                                            int               stride_A,
+                                            hipblasStride     stride_A,
                                             double*           invA,
                                             int               ldinvA,
-                                            int               stride_invA,
+                                            hipblasStride     stride_invA,
                                             int               batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8849,10 +8855,10 @@ hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t       handle,
                                             int                   n,
                                             const hipblasComplex* A,
                                             int                   lda,
-                                            int                   stride_A,
+                                            hipblasStride         stride_A,
                                             hipblasComplex*       invA,
                                             int                   ldinvA,
-                                            int                   stride_invA,
+                                            hipblasStride         stride_invA,
                                             int                   batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -8864,10 +8870,10 @@ hipblasStatus_t hipblasZtrtriStridedBatched(hipblasHandle_t             handle,
                                             int                         n,
                                             const hipblasDoubleComplex* A,
                                             int                         lda,
-                                            int                         stride_A,
+                                            hipblasStride               stride_A,
                                             hipblasDoubleComplex*       invA,
                                             int                         ldinvA,
-                                            int                         stride_invA,
+                                            hipblasStride               stride_invA,
                                             int                         batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -9018,13 +9024,13 @@ hipblasStatus_t hipblasSdgmmStridedBatched(hipblasHandle_t   handle,
                                            int               n,
                                            const float*      A,
                                            int               lda,
-                                           int               stride_A,
+                                           hipblasStride     stride_A,
                                            const float*      x,
                                            int               incx,
-                                           int               stride_x,
+                                           hipblasStride     stride_x,
                                            float*            C,
                                            int               ldc,
-                                           int               stride_C,
+                                           hipblasStride     stride_C,
                                            int               batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -9036,13 +9042,13 @@ hipblasStatus_t hipblasDdgmmStridedBatched(hipblasHandle_t   handle,
                                            int               n,
                                            const double*     A,
                                            int               lda,
-                                           int               stride_A,
+                                           hipblasStride     stride_A,
                                            const double*     x,
                                            int               incx,
-                                           int               stride_x,
+                                           hipblasStride     stride_x,
                                            double*           C,
                                            int               ldc,
-                                           int               stride_C,
+                                           hipblasStride     stride_C,
                                            int               batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -9054,13 +9060,13 @@ hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       handle,
                                            int                   n,
                                            const hipblasComplex* A,
                                            int                   lda,
-                                           int                   stride_A,
+                                           hipblasStride         stride_A,
                                            const hipblasComplex* x,
                                            int                   incx,
-                                           int                   stride_x,
+                                           hipblasStride         stride_x,
                                            hipblasComplex*       C,
                                            int                   ldc,
-                                           int                   stride_C,
+                                           hipblasStride         stride_C,
                                            int                   batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -9072,13 +9078,13 @@ hipblasStatus_t hipblasZdgmmStridedBatched(hipblasHandle_t             handle,
                                            int                         n,
                                            const hipblasDoubleComplex* A,
                                            int                         lda,
-                                           int                         stride_A,
+                                           hipblasStride               stride_A,
                                            const hipblasDoubleComplex* x,
                                            int                         incx,
-                                           int                         stride_x,
+                                           hipblasStride               stride_x,
                                            hipblasDoubleComplex*       C,
                                            int                         ldc,
-                                           int                         stride_C,
+                                           hipblasStride               stride_C,
                                            int                         batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -9165,41 +9171,41 @@ hipblasStatus_t hipblasZgetrfBatched(hipblasHandle_t             handle,
 }
 
 // getrf_strided_batched
-hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t handle,
-                                            const int       n,
-                                            float*          A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            int*            ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
+hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t     handle,
+                                            const int           n,
+                                            float*              A,
+                                            const int           lda,
+                                            const hipblasStride strideA,
+                                            int*                ipiv,
+                                            const hipblasStride strideP,
+                                            int*                info,
+                                            const int           batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t handle,
-                                            const int       n,
-                                            double*         A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            int*            ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
+hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t     handle,
+                                            const int           n,
+                                            double*             A,
+                                            const int           lda,
+                                            const hipblasStride strideA,
+                                            int*                ipiv,
+                                            const hipblasStride strideP,
+                                            int*                info,
+                                            const int           batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t handle,
-                                            const int       n,
-                                            hipblasComplex* A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            int*            ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
+hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     handle,
+                                            const int           n,
+                                            hipblasComplex*     A,
+                                            const int           lda,
+                                            const hipblasStride strideA,
+                                            int*                ipiv,
+                                            const hipblasStride strideP,
+                                            int*                info,
+                                            const int           batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -9208,9 +9214,9 @@ hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
                                             const int             n,
                                             hipblasDoubleComplex* A,
                                             const int             lda,
-                                            const int             strideA,
+                                            const hipblasStride   strideA,
                                             int*                  ipiv,
-                                            const int             strideP,
+                                            const hipblasStride   strideP,
                                             int*                  info,
                                             const int             batch_count)
 {
@@ -9382,12 +9388,12 @@ hipblasStatus_t hipblasSgetrsStridedBatched(hipblasHandle_t          handle,
                                             const int                nrhs,
                                             float*                   A,
                                             const int                lda,
-                                            const int                strideA,
+                                            const hipblasStride      strideA,
                                             const int*               ipiv,
-                                            const int                strideP,
+                                            const hipblasStride      strideP,
                                             float*                   B,
                                             const int                ldb,
-                                            const int                strideB,
+                                            const hipblasStride      strideB,
                                             int*                     info,
                                             const int                batch_count)
 {
@@ -9400,12 +9406,12 @@ hipblasStatus_t hipblasDgetrsStridedBatched(hipblasHandle_t          handle,
                                             const int                nrhs,
                                             double*                  A,
                                             const int                lda,
-                                            const int                strideA,
+                                            const hipblasStride      strideA,
                                             const int*               ipiv,
-                                            const int                strideP,
+                                            const hipblasStride      strideP,
                                             double*                  B,
                                             const int                ldb,
-                                            const int                strideB,
+                                            const hipblasStride      strideB,
                                             int*                     info,
                                             const int                batch_count)
 {
@@ -9418,12 +9424,12 @@ hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t          handle,
                                             const int                nrhs,
                                             hipblasComplex*          A,
                                             const int                lda,
-                                            const int                strideA,
+                                            const hipblasStride      strideA,
                                             const int*               ipiv,
-                                            const int                strideP,
+                                            const hipblasStride      strideP,
                                             hipblasComplex*          B,
                                             const int                ldb,
-                                            const int                strideB,
+                                            const hipblasStride      strideB,
                                             int*                     info,
                                             const int                batch_count)
 {
@@ -9436,12 +9442,12 @@ hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
                                             const int                nrhs,
                                             hipblasDoubleComplex*    A,
                                             const int                lda,
-                                            const int                strideA,
+                                            const hipblasStride      strideA,
                                             const int*               ipiv,
-                                            const int                strideP,
+                                            const hipblasStride      strideP,
                                             hipblasDoubleComplex*    B,
                                             const int                ldb,
-                                            const int                strideB,
+                                            const hipblasStride      strideB,
                                             int*                     info,
                                             const int                batch_count)
 {
@@ -9624,44 +9630,44 @@ hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             handle,
 }
 
 // geqrf_strided_batched
-hipblasStatus_t hipblasSgeqrfStridedBatched(hipblasHandle_t handle,
-                                            const int       m,
-                                            const int       n,
-                                            float*          A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            float*          ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
+hipblasStatus_t hipblasSgeqrfStridedBatched(hipblasHandle_t     handle,
+                                            const int           m,
+                                            const int           n,
+                                            float*              A,
+                                            const int           lda,
+                                            const hipblasStride strideA,
+                                            float*              ipiv,
+                                            const hipblasStride strideP,
+                                            int*                info,
+                                            const int           batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t handle,
-                                            const int       m,
-                                            const int       n,
-                                            double*         A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            double*         ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
+hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t     handle,
+                                            const int           m,
+                                            const int           n,
+                                            double*             A,
+                                            const int           lda,
+                                            const hipblasStride strideA,
+                                            double*             ipiv,
+                                            const hipblasStride strideP,
+                                            int*                info,
+                                            const int           batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t handle,
-                                            const int       m,
-                                            const int       n,
-                                            hipblasComplex* A,
-                                            const int       lda,
-                                            const int       strideA,
-                                            hipblasComplex* ipiv,
-                                            const int       strideP,
-                                            int*            info,
-                                            const int       batch_count)
+hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t     handle,
+                                            const int           m,
+                                            const int           n,
+                                            hipblasComplex*     A,
+                                            const int           lda,
+                                            const hipblasStride strideA,
+                                            hipblasComplex*     ipiv,
+                                            const hipblasStride strideP,
+                                            int*                info,
+                                            const int           batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -9671,9 +9677,9 @@ hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
                                             const int             n,
                                             hipblasDoubleComplex* A,
                                             const int             lda,
-                                            const int             strideA,
+                                            const hipblasStride   strideA,
                                             hipblasDoubleComplex* ipiv,
-                                            const int             strideP,
+                                            const hipblasStride   strideP,
                                             int*                  info,
                                             const int             batch_count)
 {
@@ -10200,30 +10206,26 @@ hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t             handle,
                                                                 batchCount));
 }
 
-#ifdef __cplusplus
-}
-#endif
-
 // gemm_ex
-extern "C" hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
-                                         hipblasOperation_t transa,
-                                         hipblasOperation_t transb,
-                                         int                m,
-                                         int                n,
-                                         int                k,
-                                         const void*        alpha,
-                                         const void*        A,
-                                         hipblasDatatype_t  a_type,
-                                         int                lda,
-                                         const void*        B,
-                                         hipblasDatatype_t  b_type,
-                                         int                ldb,
-                                         const void*        beta,
-                                         void*              C,
-                                         hipblasDatatype_t  c_type,
-                                         int                ldc,
-                                         hipblasDatatype_t  compute_type,
-                                         hipblasGemmAlgo_t  algo)
+hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
+                              hipblasOperation_t transa,
+                              hipblasOperation_t transb,
+                              int                m,
+                              int                n,
+                              int                k,
+                              const void*        alpha,
+                              const void*        A,
+                              hipblasDatatype_t  a_type,
+                              int                lda,
+                              const void*        B,
+                              hipblasDatatype_t  b_type,
+                              int                ldb,
+                              const void*        beta,
+                              void*              C,
+                              hipblasDatatype_t  c_type,
+                              int                ldc,
+                              hipblasDatatype_t  compute_type,
+                              hipblasGemmAlgo_t  algo)
 {
     return hipCUBLASStatusToHIPStatus(cublasGemmEx((cublasHandle_t)handle,
                                                    hipOperationToCudaOperation(transa),
@@ -10246,26 +10248,26 @@ extern "C" hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                                    HIPGemmAlgoToCudaGemmAlgo(algo)));
 }
 
-extern "C" hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
-                                                hipblasOperation_t transa,
-                                                hipblasOperation_t transb,
-                                                int                m,
-                                                int                n,
-                                                int                k,
-                                                const void*        alpha,
-                                                const void*        A[],
-                                                hipblasDatatype_t  a_type,
-                                                int                lda,
-                                                const void*        B[],
-                                                hipblasDatatype_t  b_type,
-                                                int                ldb,
-                                                const void*        beta,
-                                                void*              C[],
-                                                hipblasDatatype_t  c_type,
-                                                int                ldc,
-                                                int                batch_count,
-                                                hipblasDatatype_t  compute_type,
-                                                hipblasGemmAlgo_t  algo)
+hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
+                                     hipblasOperation_t transa,
+                                     hipblasOperation_t transb,
+                                     int                m,
+                                     int                n,
+                                     int                k,
+                                     const void*        alpha,
+                                     const void*        A[],
+                                     hipblasDatatype_t  a_type,
+                                     int                lda,
+                                     const void*        B[],
+                                     hipblasDatatype_t  b_type,
+                                     int                ldb,
+                                     const void*        beta,
+                                     void*              C[],
+                                     hipblasDatatype_t  c_type,
+                                     int                ldc,
+                                     int                batch_count,
+                                     hipblasDatatype_t  compute_type,
+                                     hipblasGemmAlgo_t  algo)
 {
     return hipCUBLASStatusToHIPStatus(cublasGemmBatchedEx((cublasHandle_t)handle,
                                                           hipOperationToCudaOperation(transa),
@@ -10289,29 +10291,29 @@ extern "C" hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
                                                           HIPGemmAlgoToCudaGemmAlgo(algo)));
 }
 
-extern "C" hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
-                                                       hipblasOperation_t transa,
-                                                       hipblasOperation_t transb,
-                                                       int                m,
-                                                       int                n,
-                                                       int                k,
-                                                       const void*        alpha,
-                                                       const void*        A,
-                                                       hipblasDatatype_t  a_type,
-                                                       int                lda,
-                                                       int                stride_A,
-                                                       const void*        B,
-                                                       hipblasDatatype_t  b_type,
-                                                       int                ldb,
-                                                       int                stride_B,
-                                                       const void*        beta,
-                                                       void*              C,
-                                                       hipblasDatatype_t  c_type,
-                                                       int                ldc,
-                                                       int                stride_C,
-                                                       int                batch_count,
-                                                       hipblasDatatype_t  compute_type,
-                                                       hipblasGemmAlgo_t  algo)
+hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
+                                            hipblasOperation_t transa,
+                                            hipblasOperation_t transb,
+                                            int                m,
+                                            int                n,
+                                            int                k,
+                                            const void*        alpha,
+                                            const void*        A,
+                                            hipblasDatatype_t  a_type,
+                                            int                lda,
+                                            hipblasStride      stride_A,
+                                            const void*        B,
+                                            hipblasDatatype_t  b_type,
+                                            int                ldb,
+                                            hipblasStride      stride_B,
+                                            const void*        beta,
+                                            void*              C,
+                                            hipblasDatatype_t  c_type,
+                                            int                ldc,
+                                            hipblasStride      stride_C,
+                                            int                batch_count,
+                                            hipblasDatatype_t  compute_type,
+                                            hipblasGemmAlgo_t  algo)
 {
     return hipCUBLASStatusToHIPStatus(
         cublasGemmStridedBatchedEx((cublasHandle_t)handle,
@@ -10340,64 +10342,465 @@ extern "C" hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle
 }
 
 // trsm_ex
-extern "C" hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
-                                         hipblasSideMode_t  side,
-                                         hipblasFillMode_t  uplo,
-                                         hipblasOperation_t transA,
-                                         hipblasDiagType_t  diag,
-                                         int                m,
-                                         int                n,
-                                         const void*        alpha,
-                                         void*              A,
-                                         int                lda,
-                                         void*              B,
-                                         int                ldb,
-                                         const void*        invA,
-                                         int                invA_size,
-                                         hipblasDatatype_t  compute_type)
+hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
+                              hipblasSideMode_t  side,
+                              hipblasFillMode_t  uplo,
+                              hipblasOperation_t transA,
+                              hipblasDiagType_t  diag,
+                              int                m,
+                              int                n,
+                              const void*        alpha,
+                              void*              A,
+                              int                lda,
+                              void*              B,
+                              int                ldb,
+                              const void*        invA,
+                              int                invA_size,
+                              hipblasDatatype_t  compute_type)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-extern "C" hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
-                                                hipblasSideMode_t  side,
-                                                hipblasFillMode_t  uplo,
-                                                hipblasOperation_t transA,
-                                                hipblasDiagType_t  diag,
-                                                int                m,
-                                                int                n,
-                                                const void*        alpha,
-                                                void*              A,
-                                                int                lda,
-                                                void*              B,
-                                                int                ldb,
-                                                int                batch_count,
-                                                const void*        invA,
-                                                int                invA_size,
-                                                hipblasDatatype_t  compute_type)
+hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
+                                     hipblasSideMode_t  side,
+                                     hipblasFillMode_t  uplo,
+                                     hipblasOperation_t transA,
+                                     hipblasDiagType_t  diag,
+                                     int                m,
+                                     int                n,
+                                     const void*        alpha,
+                                     void*              A,
+                                     int                lda,
+                                     void*              B,
+                                     int                ldb,
+                                     int                batch_count,
+                                     const void*        invA,
+                                     int                invA_size,
+                                     hipblasDatatype_t  compute_type)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-extern "C" hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
-                                                       hipblasSideMode_t  side,
-                                                       hipblasFillMode_t  uplo,
-                                                       hipblasOperation_t transA,
-                                                       hipblasDiagType_t  diag,
-                                                       int                m,
-                                                       int                n,
-                                                       const void*        alpha,
-                                                       void*              A,
-                                                       int                lda,
-                                                       int                stride_A,
-                                                       void*              B,
-                                                       int                ldb,
-                                                       int                stride_B,
-                                                       int                batch_count,
-                                                       const void*        invA,
-                                                       int                invA_size,
-                                                       int                stride_invA,
-                                                       hipblasDatatype_t  compute_type)
+hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
+                                            hipblasSideMode_t  side,
+                                            hipblasFillMode_t  uplo,
+                                            hipblasOperation_t transA,
+                                            hipblasDiagType_t  diag,
+                                            int                m,
+                                            int                n,
+                                            const void*        alpha,
+                                            void*              A,
+                                            int                lda,
+                                            hipblasStride      stride_A,
+                                            void*              B,
+                                            int                ldb,
+                                            hipblasStride      stride_B,
+                                            int                batch_count,
+                                            const void*        invA,
+                                            int                invA_size,
+                                            hipblasStride      stride_invA,
+                                            hipblasDatatype_t  compute_type)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
+
+// // syrk_ex
+// hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
+//                                           hipblasFillMode_t     uplo,
+//                                           hipblasOperation_t    trans,
+//                                           int                   n,
+//                                           int                   k,
+//                                           const hipblasComplex* alpha,
+//                                           const void*           A,
+//                                           hipblasDatatype_t     Atype,
+//                                           int                   lda,
+//                                           const hipblasComplex* beta,
+//                                           hipblasComplex*       C,
+//                                           hipblasDatatype_t     Ctype,
+//                                           int                   ldc)
+// {
+//     return hipCUBLASStatusToHIPStatus(cublasCsyrkEx((cublasHandle_t)handle,
+//                                                     hipFillToCudaFill(uplo),
+//                                                     hipOperationToCudaOperation(trans),
+//                                                     n,
+//                                                     k,
+//                                                     (cuComplex*)alpha,
+//                                                     A,
+//                                                     HIPDatatypeToCudaDatatype(Atype),
+//                                                     lda,
+//                                                     (cuComplex*)beta,
+//                                                     (cuComplex*)C,
+//                                                     HIPDatatypeToCudaDatatype(Ctype),
+//                                                     ldc));
+// }
+
+// // herk_ex
+// hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
+//                                           hipblasFillMode_t  uplo,
+//                                           hipblasOperation_t trans,
+//                                           int                n,
+//                                           int                k,
+//                                           const float*       alpha,
+//                                           const void*        A,
+//                                           hipblasDatatype_t  Atype,
+//                                           int                lda,
+//                                           const float*       beta,
+//                                           hipblasComplex*    C,
+//                                           hipblasDatatype_t  Ctype,
+//                                           int                ldc)
+// {
+//     return hipCUBLASStatusToHIPStatus(cublasCherkEx((cublasHandle_t)handle,
+//                                                     hipFillToCudaFill(uplo),
+//                                                     hipOperationToCudaOperation(trans),
+//                                                     n,
+//                                                     k,
+//                                                     alpha,
+//                                                     A,
+//                                                     HIPDatatypeToCudaDatatype(Atype),
+//                                                     lda,
+//                                                     beta,
+//                                                     (cuComplex*)C,
+//                                                     HIPDatatypeToCudaDatatype(Ctype),
+//                                                     ldc));
+// }
+
+// axpy_ex
+hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
+                              int               n,
+                              const void*       alpha,
+                              hipblasDatatype_t alphaType,
+                              const void*       x,
+                              hipblasDatatype_t xType,
+                              int               incx,
+                              void*             y,
+                              hipblasDatatype_t yType,
+                              int               incy,
+                              hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasAxpyEx((cublasHandle_t)handle,
+                                                   n,
+                                                   alpha,
+                                                   HIPDatatypeToCudaDatatype(alphaType),
+                                                   x,
+                                                   HIPDatatypeToCudaDatatype(xType),
+                                                   incx,
+                                                   y,
+                                                   HIPDatatypeToCudaDatatype(yType),
+                                                   incy,
+                                                   HIPDatatypeToCudaDatatype(executionType)));
+}
+
+hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
+                                     int               n,
+                                     const void*       alpha,
+                                     hipblasDatatype_t alphaType,
+                                     const void*       x,
+                                     hipblasDatatype_t xType,
+                                     int               incx,
+                                     void*             y,
+                                     hipblasDatatype_t yType,
+                                     int               incy,
+                                     int               batch_count,
+                                     hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       alpha,
+                                            hipblasDatatype_t alphaType,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            hipblasStride     stridex,
+                                            void*             y,
+                                            hipblasDatatype_t yType,
+                                            int               incy,
+                                            hipblasStride     stridey,
+                                            int               batch_count,
+                                            hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// dot_ex
+hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
+                             int               n,
+                             const void*       x,
+                             hipblasDatatype_t xType,
+                             int               incx,
+                             const void*       y,
+                             hipblasDatatype_t yType,
+                             int               incy,
+                             void*             result,
+                             hipblasDatatype_t resultType,
+                             hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDotEx((cublasHandle_t)handle,
+                                                  n,
+                                                  x,
+                                                  HIPDatatypeToCudaDatatype(xType),
+                                                  incx,
+                                                  y,
+                                                  HIPDatatypeToCudaDatatype(yType),
+                                                  incy,
+                                                  result,
+                                                  HIPDatatypeToCudaDatatype(resultType),
+                                                  HIPDatatypeToCudaDatatype(executionType)));
+}
+
+hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
+                              int               n,
+                              const void*       x,
+                              hipblasDatatype_t xType,
+                              int               incx,
+                              const void*       y,
+                              hipblasDatatype_t yType,
+                              int               incy,
+                              void*             result,
+                              hipblasDatatype_t resultType,
+                              hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasDotcEx((cublasHandle_t)handle,
+                                                   n,
+                                                   x,
+                                                   HIPDatatypeToCudaDatatype(xType),
+                                                   incx,
+                                                   y,
+                                                   HIPDatatypeToCudaDatatype(yType),
+                                                   incy,
+                                                   result,
+                                                   HIPDatatypeToCudaDatatype(resultType),
+                                                   HIPDatatypeToCudaDatatype(executionType)));
+}
+
+hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
+                                    int               n,
+                                    const void*       x,
+                                    hipblasDatatype_t xType,
+                                    int               incx,
+                                    const void*       y,
+                                    hipblasDatatype_t yType,
+                                    int               incy,
+                                    int               batch_count,
+                                    void*             result,
+                                    hipblasDatatype_t resultType,
+                                    hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
+                                     int               n,
+                                     const void*       x,
+                                     hipblasDatatype_t xType,
+                                     int               incx,
+                                     const void*       y,
+                                     hipblasDatatype_t yType,
+                                     int               incy,
+                                     int               batch_count,
+                                     void*             result,
+                                     hipblasDatatype_t resultType,
+                                     hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   handle,
+                                           int               n,
+                                           const void*       x,
+                                           hipblasDatatype_t xType,
+                                           int               incx,
+                                           hipblasStride     stridex,
+                                           const void*       y,
+                                           hipblasDatatype_t yType,
+                                           int               incy,
+                                           hipblasStride     stridey,
+                                           int               batch_count,
+                                           void*             result,
+                                           hipblasDatatype_t resultType,
+                                           hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            hipblasStride     stridex,
+                                            const void*       y,
+                                            hipblasDatatype_t yType,
+                                            int               incy,
+                                            hipblasStride     stridey,
+                                            int               batch_count,
+                                            void*             result,
+                                            hipblasDatatype_t resultType,
+                                            hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// nrm2_ex
+hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
+                              int               n,
+                              const void*       x,
+                              hipblasDatatype_t xType,
+                              int               incx,
+                              void*             result,
+                              hipblasDatatype_t resultType,
+                              hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasNrm2Ex((cublasHandle_t)handle,
+                                                   n,
+                                                   x,
+                                                   HIPDatatypeToCudaDatatype(xType),
+                                                   incx,
+                                                   result,
+                                                   HIPDatatypeToCudaDatatype(resultType),
+                                                   HIPDatatypeToCudaDatatype(executionType)));
+}
+
+hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
+                                     int               n,
+                                     const void*       x,
+                                     hipblasDatatype_t xType,
+                                     int               incx,
+                                     int               batch_count,
+                                     void*             result,
+                                     hipblasDatatype_t resultType,
+                                     hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            hipblasStride     stridex,
+                                            int               batch_count,
+                                            void*             result,
+                                            hipblasDatatype_t resultType,
+                                            hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// rot_ex
+hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
+                             int               n,
+                             void*             x,
+                             hipblasDatatype_t xType,
+                             int               incx,
+                             void*             y,
+                             hipblasDatatype_t yType,
+                             int               incy,
+                             const void*       c,
+                             const void*       s,
+                             hipblasDatatype_t csType,
+                             hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasRotEx((cublasHandle_t)handle,
+                                                  n,
+                                                  x,
+                                                  HIPDatatypeToCudaDatatype(xType),
+                                                  incx,
+                                                  y,
+                                                  HIPDatatypeToCudaDatatype(yType),
+                                                  incy,
+                                                  c,
+                                                  s,
+                                                  HIPDatatypeToCudaDatatype(csType),
+                                                  HIPDatatypeToCudaDatatype(executionType)));
+}
+
+hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
+                                    int               n,
+                                    void*             x,
+                                    hipblasDatatype_t xType,
+                                    int               incx,
+                                    void*             y,
+                                    hipblasDatatype_t yType,
+                                    int               incy,
+                                    const void*       c,
+                                    const void*       s,
+                                    hipblasDatatype_t csType,
+                                    int               batch_count,
+                                    hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
+                                           int               n,
+                                           void*             x,
+                                           hipblasDatatype_t xType,
+                                           int               incx,
+                                           hipblasStride     stridex,
+                                           void*             y,
+                                           hipblasDatatype_t yType,
+                                           int               incy,
+                                           hipblasStride     stridey,
+                                           const void*       c,
+                                           const void*       s,
+                                           hipblasDatatype_t csType,
+                                           int               batch_count,
+                                           hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// scal_ex
+hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
+                              int               n,
+                              const void*       alpha,
+                              hipblasDatatype_t alphaType,
+                              void*             x,
+                              hipblasDatatype_t xType,
+                              int               incx,
+                              hipblasDatatype_t executionType)
+{
+    return hipCUBLASStatusToHIPStatus(cublasScalEx((cublasHandle_t)handle,
+                                                   n,
+                                                   alpha,
+                                                   HIPDatatypeToCudaDatatype(alphaType),
+                                                   x,
+                                                   HIPDatatypeToCudaDatatype(xType),
+                                                   incx,
+                                                   HIPDatatypeToCudaDatatype(executionType)));
+}
+
+hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
+                                     int               n,
+                                     const void*       alpha,
+                                     hipblasDatatype_t alphaType,
+                                     void*             x,
+                                     hipblasDatatype_t xType,
+                                     int               incx,
+                                     int               batch_count,
+                                     hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       alpha,
+                                            hipblasDatatype_t alphaType,
+                                            void*             x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            hipblasStride     stridex,
+                                            int               batch_count,
+                                            hipblasDatatype_t executionType)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,5 +1,17 @@
 # Change Log for hipBLAS
 
+## [hipBLAS 0.42.0 for ROCm 4.1.0]
+### Added
+- Added the following functions. All added functions include batched and strided-batched support with rocBLAS backend:
+    - axpy_ex
+    - dot_ex
+    - nrm2_ex
+    - rot_ex
+    - scal_ex
+
+### Fixed
+- Fixed complex unit test bug caused by incorrect caxpy and zaxpy function signatures
+
 ## [hipBLAS 0.40.0 for ROCm 4.0.0]
 ### Added
 - Added changelog
