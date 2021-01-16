@@ -27,8 +27,8 @@ hipblasStatus_t testing_hpr_strided_batched(const Arguments& argus)
     int    batch_count  = argus.batch_count;
 
     int               dim_A    = N * (N + 1) / 2;
-    int               stride_A = dim_A * stride_scale;
-    int               stride_x = N * incx * stride_scale;
+    hipblasStride     stride_A = dim_A * stride_scale;
+    hipblasStride     stride_x = N * incx * stride_scale;
     int               A_size   = stride_A * batch_count;
     int               x_size   = stride_x * batch_count;
     hipblasFillMode_t uplo     = char2hipblas_fill(argus.uplo_option);

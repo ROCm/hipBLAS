@@ -171,6 +171,41 @@ class HipBlasArgumentSet(cr.ArgumentSetABC):
             print('{} does not exist'.format(output_filename))
         return rv
 
+    def collect_timing_compare(self, run_configuration, data_type='gflops'):
+        output_filename = self.get_output_file_compare(run_configuration)
+        rv = {}
+        print('Processing {}'.format(output_filename))
+        if os.path.exists(output_filename):
+            lines = open(output_filename, 'r').readlines()
+            us_vals = []
+            gf_vals = []
+            bw_vals = []
+            gf_string = "hipblas-Gflops"
+            bw_string = "hipblas-GB/s"
+            us_string = "us"
+            for i in range(0, len(lines)):
+                if re.search(r"\b" + re.escape(us_string) + r"\b", lines[i]) is not None:
+                    us_line = lines[i].strip().split(",")
+                    index = [idx for idx, s in enumerate(us_line) if us_string in s][0] #us_line.index()
+                    us_vals.append(float(re.split(r',\s*(?![^()]*\))', lines[i+1])[index]))
+                if gf_string in lines[i]:
+                    gf_line = lines[i].split(",")
+                    index = gf_line.index(gf_string)
+                    gf_vals.append(float(re.split(r',\s*(?![^()]*\))', lines[i+1])[index]))
+                if bw_string in lines[i]:
+                    bw_line = lines[i].split(",")
+                    index = bw_line.index(bw_string)
+                    bw_vals.append(float(re.split(r',\s*(?![^()]*\))', lines[i+1])[index]))
+            if len(us_vals) > 0 and data_type == 'time':
+                rv['Time (microseconds)'] = us_vals
+            if len(bw_vals) > 0 and data_type == 'bandwidth':
+                rv['Bandwidth (GB/s)'] = bw_vals
+            if len(gf_vals) > 0 and data_type == 'gflops':
+                rv['GFLOP/s'] = gf_vals
+        else:
+            print('{} does not exist'.format(output_filename))
+        return rv
+
 
 class YamlData:
 
@@ -427,7 +462,7 @@ class FlopsComparison(HipBlasYamlComparison):
             print('{} does not exist'.format(output_filename))
         return rv
 
-    def plot(self, run_configurations, axes):
+    def plot(self, run_configurations, axes, cuda, compare):
         num_argument_sets = len(self.argument_sets)
         if num_argument_sets == 0:
             return
@@ -458,15 +493,18 @@ class FlopsComparison(HipBlasYamlComparison):
 
         # loop over independent outputs
         y_scatter_by_group = OrderedDict()
+        y_scatter_by_group_cuda = OrderedDict()
         for group_label, run_configuration_group in grouped_run_configurations.items():
             # x_scatter_by_group[group_label] = []
             y_scatter_by_group[group_label] = []
+            y_scatter_by_group_cuda[group_label] = []
             # loop over argument sets that differ other than the swept variable(s)
             for subset_label, partial_argument_sets in sorted_argument_sets.items():
                 if len(partial_argument_sets) != 1:
                     raise ValueError('Assumed that sorting argument sets with no keys has a single element per sort.')
                 argument_set = partial_argument_sets[0]
                 y_list_by_metric = OrderedDict() # One array of y values for each metric
+                y_list_by_metric_cuda = OrderedDict()
                 # loop over number of coarse grain runs and concatenate results
                 for run_configuration in run_configuration_group:
                     results = argument_set.collect_timing(run_configuration)
@@ -474,22 +512,55 @@ class FlopsComparison(HipBlasYamlComparison):
                         if not metric_label in y_list_by_metric:
                             y_list_by_metric[metric_label] = []
                         y_list_by_metric[metric_label].extend(results[metric_label])
+                    if compare:
+                        results_cuda = argument_set.collect_timing_compare(run_configuration)
+                        for metric_label in results_cuda:
+                            if not metric_label in y_list_by_metric_cuda:
+                                y_list_by_metric_cuda[metric_label] = []
+                            y_list_by_metric_cuda[metric_label].extend(results_cuda[metric_label])
                 # For each metric, add a set of bars in the bar chart.
                 for metric_label, y_list in y_list_by_metric.items():
                     y_scatter_by_group[group_label].extend(sorted(y_list))
+                if compare:
+                    for metric_label, y_list in y_list_by_metric_cuda.items():
+                        y_scatter_by_group_cuda[group_label].extend(sorted(y_list))
 
         for group_label, run_configuration_group in grouped_run_configurations.items():
             for run_configuration in run_configuration_group:
-                mclk = run_configuration.load_specifications()['ROCm Card0']["Start mclk"].split("Mhz")[0]
-                sclk = run_configuration.load_specifications()['ROCm Card0']["Start sclk"].split("Mhz")[0]
+                mhz_str = "Mhz"
+                mem_clk_str = "mclk"
+                sys_clk_str = "sclk"
+                mhz_str_cuda = "MHz"
+                mem_clk_str_cuda = "memory"
+                sys_clk_str_cuda = "sm"
+                if cuda:
+                    mhz_str = mhz_str_cuda
+                    mem_clk_str = mem_clk_str_cuda
+                    sys_clk_str = sys_clk_str_cuda
+                # Reference: MI-100 clocks by default
+                # mclk = 1200.0
+                # sclk = 1087.0
+                mclk = run_configuration.load_specifications()['Card0']["Start " + mem_clk_str].split(mhz_str)[0]
+                sclk = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str].split(mhz_str)[0]
+
+                # Reference: V-100 clock by default
+                # sclk_cuda = 1530.0
+                if compare:
+                    sclk_cuda = run_configuration.load_specifications_compare()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
+                else:
+                    sclk_cuda = 0
                 theoMax = 0
+                theoMax_cuda = 0
                 precisionBits = int(re.search(r'\d+', precision).group())
                 if(function == 'gemm' and precisionBits == 32): #xdlops
                     theoMax = float(sclk)/1000.00 * 256 * 120 #scaling to appropriate precision
+                    theoMax_cuda = float(sclk_cuda)/1000.00 * 128 * 80
                 elif(function == 'trsm' or function == 'gemm'):  #TODO better logic to decide memory bound vs compute bound
                     theoMax = float(sclk)/1000.00 * 128 * 120  * 32.00 / precisionBits #scaling to appropriate precision
+                    theoMax_cuda = float(sclk_cuda)/1000.00 * 128 * 80 * 32.00 / precisionBits
                 elif self.flops and self.mem:
                     try:
+                        # TODO: Add calculation for theoMax_cuda
                         n=100000
                         flops = eval(self.flops)
                         mem = eval(self.mem)
@@ -500,7 +571,12 @@ class FlopsComparison(HipBlasYamlComparison):
                     theoMax = round(theoMax)
                     x_co = (test[0], test[len(test)-1])
                     y_co = (theoMax, theoMax)
-                    axes.plot(x_co, y_co, label = "Theoretical Peak Performance: "+str(theoMax)+" GFLOP/s")
+                    theo_amd, = axes.plot(x_co, y_co, color='#ED1C24', label = "Theoretical Peak Performance MI-100: "+str(theoMax)+" GFLOP/s")
+                    if compare:
+                        theoMax_cuda = round(theoMax_cuda)
+                        x_co_cuda = (test[0], test[len(test)-1])
+                        y_co_cuda = (theoMax_cuda, theoMax_cuda)
+                        theo_cuda, = axes.plot(x_co_cuda, y_co_cuda, color='#76B900', label = "Theoretical Peak Performance V-100: "+ str(theoMax_cuda)+" GFLOP/s")
 
         for group_label in y_scatter_by_group:
             axes.scatter(
@@ -508,7 +584,8 @@ class FlopsComparison(HipBlasYamlComparison):
                     test,
                     y_scatter_by_group[group_label],
                     # gap_scalar * width,
-                    color='black',
+                    color='#ED1C24',
+                    label = 'MI-100 Performance'
                     # label = group_label,
                     )
             axes.plot(
@@ -517,7 +594,28 @@ class FlopsComparison(HipBlasYamlComparison):
                     y_scatter_by_group[group_label],
                     # 'k*',
                     '-ok',
+                    color='#ED1C24',
                     )
+
+        if compare:
+            for group_label in y_scatter_by_group:
+                axes.scatter(
+                        # x_bar_by_group[group_label],
+                        test,
+                        y_scatter_by_group_cuda[group_label],
+                        # gap_scalar * width,
+                        color='#76B900',
+                        label = "V-100 Performance"
+                        # label = group_label,
+                        )
+                axes.plot(
+                        # x_scatter_by_group[group_label],
+                        test,
+                        y_scatter_by_group_cuda[group_label],
+                        # 'k*',
+                        '-ok',
+                        color='#76B900',
+                        )
 
         axes.xaxis.set_minor_locator(AutoMinorLocator())
         axes.yaxis.set_minor_locator(AutoMinorLocator())
@@ -526,7 +624,137 @@ class FlopsComparison(HipBlasYamlComparison):
         axes.set_xlabel('='.join(xLabel))
         return True
 
+class EfficiencyComparison(HipBlasYamlComparison):
+    def __init__(self, **kwargs):
+        HipBlasYamlComparison.__init__(self, data_type='gflops', **kwargs)
+
+    def plot(self, run_configurations, axes, cuda, compare):
+        num_argument_sets = len(self.argument_sets)
+        if num_argument_sets == 0:
+            return
+
+        sorted_argument_sets = self.sort_argument_sets(isolate_keys=[]) # No sort applied, but labels provided
+        argument_diff = cr.ArgumentSetDifference(self.argument_sets, ignore_keys=self._get_sweep_keys())
+        differences = argument_diff.get_differences()
+        test = []
+        xLabel = []
+        for key in differences:
+            xLabel.append(key)
+        for argument_set_hash, argument_sets in sorted_argument_sets.items():
+            argument_set = argument_sets[0]
+            precision = argument_set.get("compute_type").get_value()
+            function = argument_set.get("function").get_value()
+            for key in differences:
+                argument = argument_set.get(key)
+                test.append(argument.get_value() if argument.is_set() else 'DEFAULT')
+                break;
+
+        grouped_run_configurations = run_configurations.group_by_label()
+
+        num_groups = len(grouped_run_configurations)
+        metric_labels = [key for key in self.argument_sets[0].collect_timing(run_configurations[0])]
+        num_metrics = len(metric_labels)
+        if num_metrics == 0:
+            return
+
+        # loop over independent outputs
+        y_scatter_by_group = OrderedDict()
+        y_scatter_by_group_cuda = OrderedDict()
+        for group_label, run_configuration_group in grouped_run_configurations.items():
+            # x_scatter_by_group[group_label] = []
+            y_scatter_by_group[group_label] = []
+            if compare:
+                y_scatter_by_group_cuda[group_label] = []
+            # loop over argument sets that differ other than the swept variable(s)
+            for subset_label, partial_argument_sets in sorted_argument_sets.items():
+                if len(partial_argument_sets) != 1:
+                    raise ValueError('Assumed that sorting argument sets with no keys has a single element per sort.')
+                argument_set = partial_argument_sets[0]
+                y_list_by_metric = OrderedDict() # One array of y values for each metric
+                y_list_by_metric_cuda = OrderedDict()
+                # loop over number of coarse grain runs and concatenate results
+                for run_configuration in run_configuration_group:
+                    results = argument_set.collect_timing(run_configuration)
+                    for metric_label in results:
+                        if not metric_label in y_list_by_metric:
+                            y_list_by_metric[metric_label] = []
+                        y_list_by_metric[metric_label].extend(results[metric_label])
+                    if compare:
+                        results_cuda = argument_set.collect_timing_compare(run_configuration)
+                        for metric_label in results_cuda:
+                            if not metric_label in y_list_by_metric_cuda:
+                                y_list_by_metric_cuda[metric_label] = []
+                            y_list_by_metric_cuda[metric_label].extend(results_cuda[metric_label])
+                # For each metric, add a set of bars in the bar chart.
+                for metric_label, y_list in y_list_by_metric.items():
+                    y_scatter_by_group[group_label].extend(sorted(y_list))
+                if compare:
+                    for metric_label, y_list in y_list_by_metric_cuda.items():
+                        y_scatter_by_group_cuda[group_label].extend(sorted(y_list))
+
+        for group_label, run_configuration_group in grouped_run_configurations.items():
+            for run_configuration in run_configuration_group:
+                mhz_str = "Mhz"
+                mem_clk_str = "mclk"
+                sys_clk_str = "sclk"
+                mhz_str_cuda = "MHz"
+                mem_clk_str_cuda = "memory"
+                sys_clk_str_cuda = "sm"
+                if cuda:
+                    mhz_str = mhz_str_cuda
+                    mem_clk_str = mem_clk_str_cuda
+                    sys_clk_str = sys_clk_str_cuda
+                # Reference: MI-100 clocks by default
+                # mclk = 1200.0
+                # sclk = 1087.0
+                mclk = run_configuration.load_specifications()['Card0']["Start " + mem_clk_str].split(mhz_str)[0]
+                sclk = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str].split(mhz_str)[0]
+
+                # Reference: V-100 clock by default
+                # sclk_cuda = 1530.0
+                if compare:
+                    sclk_cuda = run_configuration.load_specifications_compare()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
+                else:
+                    sclk_cuda = 0
+                theoMax = 0
+                theoMax_cuda = 0
+                precisionBits = int(re.search(r'\d+', precision).group())
+                if(function == 'gemm' and precisionBits == 32): #xdlops
+                    theoMax = float(sclk)/1000.00 * 256 * 120 #scaling to appropriate precision
+                    theoMax_cuda = float(sclk_cuda)/1000.00 * 128 * 80
+                elif(function == 'trsm' or function == 'gemm'):  #TODO better logic to decide memory bound vs compute bound
+                    theoMax = float(sclk)/1000.00 * 128 * 120  * 32.00 / precisionBits #scaling to appropriate precision
+                    theoMax_cuda = float(sclk_cuda)/1000.00 * 128 * 80 * 32.00 / precisionBits
+                elif self.flops and self.mem:
+                    # TODO: cuda here
+                    try:
+                        n=100000
+                        flops = eval(self.flops)
+                        mem = eval(self.mem)
+                        theoMax = float(mclk) / float(eval(self.mem)) * eval(self.flops) * 32 / precisionBits / 4
+                    except:
+                        print("flops and mem equations produce errors")
+
+                # Comparing efficiency
+                amd_performance_eff = OrderedDict()
+                cuda_performance_eff = OrderedDict()
+                amd_perf_list = [x / theoMax for x in y_scatter_by_group[group_label]]
+                axes.plot(test, amd_perf_list, color='#ED1C24', label = "MI-100 Efficiency")
+                if compare:
+                    cuda_perf_list = [x / theoMax_cuda for x in y_scatter_by_group_cuda[group_label]]
+                    axes.plot(test, cuda_perf_list, color='#76B900', label = "V-100 Efficiency")
+                axes.grid(True, which='major')
+                axes.grid(True, which='minor')
+                axes.yaxis.set_minor_locator(AutoMinorLocator(2))
+                axes.set_ylim([0, 1])
+                axes.set_ylabel('Efficiency')
+
+        axes.set_ylabel(metric_labels[0] if len(metric_labels) == 1 else 'Time (s)' )
+        axes.set_xlabel('='.join(xLabel))
+        return True
+
 data_type_classes['gflops'] = FlopsComparison
+data_type_classes['efficiency'] = EfficiencyComparison
 class BandwidthComparison(HipBlasYamlComparison):
     def __init__(self, **kwargs):
         HipBlasYamlComparison.__init__(self, data_type='bandwidth', **kwargs)

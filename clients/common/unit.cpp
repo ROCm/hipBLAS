@@ -249,8 +249,13 @@ void unit_check_general(int                               M,
 
 // strided_batched checks
 template <>
-void unit_check_general(
-    int M, int N, int batch_count, int lda, int strideA, hipblasHalf* hCPU, hipblasHalf* hGPU)
+void unit_check_general(int           M,
+                        int           N,
+                        int           batch_count,
+                        int           lda,
+                        hipblasStride strideA,
+                        hipblasHalf*  hCPU,
+                        hipblasHalf*  hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_HALF_EQ);
 }
@@ -260,7 +265,7 @@ void unit_check_general(int              M,
                         int              N,
                         int              batch_count,
                         int              lda,
-                        int              strideA,
+                        hipblasStride    strideA,
                         hipblasBfloat16* hCPU,
                         hipblasBfloat16* hGPU)
 {
@@ -269,21 +274,26 @@ void unit_check_general(int              M,
 
 template <>
 void unit_check_general(
-    int M, int N, int batch_count, int lda, int strideA, float* hCPU, float* hGPU)
+    int M, int N, int batch_count, int lda, hipblasStride strideA, float* hCPU, float* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_FLOAT_EQ);
 }
 
 template <>
 void unit_check_general(
-    int M, int N, int batch_count, int lda, int strideA, double* hCPU, double* hGPU)
+    int M, int N, int batch_count, int lda, hipblasStride strideA, double* hCPU, double* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_DOUBLE_EQ);
 }
 
 template <>
-void unit_check_general(
-    int M, int N, int batch_count, int lda, int strideA, hipblasComplex* hCPU, hipblasComplex* hGPU)
+void unit_check_general(int             M,
+                        int             N,
+                        int             batch_count,
+                        int             lda,
+                        hipblasStride   strideA,
+                        hipblasComplex* hCPU,
+                        hipblasComplex* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_FLOAT_COMPLEX_EQ);
 }
@@ -293,7 +303,7 @@ void unit_check_general(int                   M,
                         int                   N,
                         int                   batch_count,
                         int                   lda,
-                        int                   strideA,
+                        hipblasStride         strideA,
                         hipblasDoubleComplex* hCPU,
                         hipblasDoubleComplex* hGPU)
 {
@@ -301,7 +311,8 @@ void unit_check_general(int                   M,
 }
 
 template <>
-void unit_check_general(int M, int N, int batch_count, int lda, int strideA, int* hCPU, int* hGPU)
+void unit_check_general(
+    int M, int N, int batch_count, int lda, hipblasStride strideA, int* hCPU, int* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_EQ);
 }

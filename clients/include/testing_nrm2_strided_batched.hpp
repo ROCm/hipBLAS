@@ -13,15 +13,6 @@ using namespace std;
 
 /* ============================================================================================ */
 
-// Tolerance of 100 fails for complex,
-// TODO: something better than arbitrary tolerance.
-template <typename T>
-constexpr double nrm2_strided_batched_tolerance_multiplier = 100;
-template <>
-constexpr double nrm2_strided_batched_tolerance_multiplier<hipblasComplex> = 110;
-template <>
-constexpr double nrm2_strided_batched_tolerance_multiplier<hipblasDoubleComplex> = 110;
-
 template <typename T1, typename T2>
 hipblasStatus_t testing_nrm2_strided_batched(const Arguments& argus)
 {
@@ -34,8 +25,8 @@ hipblasStatus_t testing_nrm2_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    int stridex = N * incx * stride_scale;
-    int sizeX   = stridex * batch_count;
+    hipblasStride stridex = N * incx * stride_scale;
+    int           sizeX   = stridex * batch_count;
 
     hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
@@ -113,12 +104,8 @@ hipblasStatus_t testing_nrm2_strided_batched(const Arguments& argus)
 
         if(argus.unit_check)
         {
-            T2 tolerance = nrm2_tolerance_multiplier<T1>;
-            for(int b = 0; b < batch_count; b++)
-            {
-                unit_check_nrm2<T2>(h_cpu_result[b], h_rocblas_result_1[b], tolerance);
-                unit_check_nrm2<T2>(h_cpu_result[b], h_rocblas_result_2[b], tolerance);
-            }
+            unit_check_nrm2<T2>(batch_count, h_cpu_result, h_rocblas_result_1, N);
+            unit_check_nrm2<T2>(batch_count, h_cpu_result, h_rocblas_result_2, N);
         }
 
     } // end of if unit/norm check

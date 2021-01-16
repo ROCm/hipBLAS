@@ -35,7 +35,8 @@ template <typename T>
 void unit_check_general(int M, int N, int lda, T* hCPU, T* hGPU);
 
 template <typename T>
-void unit_check_general(int M, int N, int batch_count, int lda, int stride_A, T* hCPU, T* hGPU);
+void unit_check_general(
+    int M, int N, int batch_count, int lda, hipblasStride stride_A, T* hCPU, T* hGPU);
 
 template <typename T>
 void unit_check_general(int M, int N, int batch_count, int lda, T** hCPU, T** hGPU);
@@ -53,14 +54,31 @@ void unit_check_error(T error, T tolerance)
 }
 
 template <typename T>
-void unit_check_nrm2(T cpu_result, T gpu_result, T tolerance)
+void unit_check_nrm2(T cpu_result, T gpu_result, int vector_length)
 {
-    T allowable_error = tolerance * std::numeric_limits<T>::epsilon() * cpu_result;
+    T allowable_error = vector_length * std::numeric_limits<T>::epsilon() * cpu_result;
     if(allowable_error == 0)
-        allowable_error = tolerance * std::numeric_limits<T>::epsilon();
+        allowable_error = vector_length * std::numeric_limits<T>::epsilon();
 #ifdef GOOGLE_TEST
     ASSERT_NEAR(cpu_result, gpu_result, allowable_error);
 #endif
+}
+
+template <typename T>
+void unit_check_nrm2(int            batch_count,
+                     host_vector<T> cpu_result,
+                     host_vector<T> gpu_result,
+                     int            vector_length)
+{
+    for(int b = 0; b < batch_count; b++)
+    {
+        T allowable_error = vector_length * std::numeric_limits<T>::epsilon() * cpu_result[b];
+        if(allowable_error == 0)
+            allowable_error = vector_length * std::numeric_limits<T>::epsilon();
+#ifdef GOOGLE_TEST
+        ASSERT_NEAR(cpu_result[b], gpu_result[b], allowable_error);
+#endif
+    }
 }
 
 #endif

@@ -33,11 +33,11 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
     double             stride_scale = argus.stride_scale;
     int                batch_count  = argus.batch_count;
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int strideA  = lda * M * stride_scale;
-    int stridex  = abs_incx * M * stride_scale;
-    int size_A   = strideA * batch_count;
-    int size_x   = stridex * batch_count;
+    int           abs_incx = incx < 0 ? -incx : incx;
+    hipblasStride strideA  = lda * M * stride_scale;
+    hipblasStride stridex  = abs_incx * M * stride_scale;
+    int           size_A   = strideA * batch_count;
+    int           size_x   = stridex * batch_count;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

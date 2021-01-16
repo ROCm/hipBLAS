@@ -39,8 +39,14 @@ void near_check_general(
     int M, int N, int lda, host_vector<T> hCPU, host_vector<T> hGPU, double abs_error);
 
 template <typename T>
-void near_check_general(
-    int M, int N, int batch_count, int lda, int stride_A, T* hCPU, T* hGPU, double abs_error);
+void near_check_general(int           M,
+                        int           N,
+                        int           batch_count,
+                        int           lda,
+                        hipblasStride stride_A,
+                        T*            hCPU,
+                        T*            hGPU,
+                        double        abs_error);
 
 template <typename T>
 void near_check_general(
