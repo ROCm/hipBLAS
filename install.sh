@@ -450,7 +450,9 @@ pushd .
   fi
 
   # cuda
-  if [[ "${build_cuda}" == false ]]; then
+  if [[ "${build_cuda}" == true ]]; then
+    cmake_common_options="${cmake_common_options} -DUSE_CUDA=ON"
+  else
     cmake_common_options="${cmake_common_options} -DUSE_CUDA=OFF"
   fi
 

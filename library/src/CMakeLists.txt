@@ -21,7 +21,7 @@ endfunction( )
 # ########################################################################
 prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
 
-if( NOT CUDA_FOUND )
+if( NOT USE_CUDA )
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/hcc_detail/hipblas.cpp" )
 else( )
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvcc_detail/hipblas.cpp" )
@@ -47,7 +47,7 @@ target_include_directories( hipblas
 )
 
 # Build hipblas from source on AMD platform
-if( NOT CUDA_FOUND )
+if( NOT USE_CUDA )
   if( NOT TARGET rocblas )
     if( CUSTOM_ROCBLAS )
       set ( ENV{rocblas_DIR} ${CUSTOM_ROCBLAS})
@@ -57,9 +57,7 @@ if( NOT CUDA_FOUND )
     endif( )
   endif( )
 
-  target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_HCC__ )
-
-  target_link_libraries( hipblas PRIVATE roc::rocblas )
+  target_link_libraries( hipblas PRIVATE roc::rocblas hip::host )
 
   # Add rocSOLVER as a dependency if BUILD_WITH_SOLVER is on
   if( BUILD_WITH_SOLVER )
@@ -71,8 +69,6 @@ if( NOT CUDA_FOUND )
 
   if( CUSTOM_TARGET )
     target_link_libraries( hipblas PRIVATE hip::${CUSTOM_TARGET} )
-  else( )
-    target_link_libraries( hipblas PRIVATE hip::host )
   endif( )
 
 else( )

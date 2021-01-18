@@ -74,7 +74,7 @@ endif( )
 set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/include" "\${CPACK_PACKAGING_INSTALL_PREFIX}/lib" )
 
 # Give hipblas compiled for CUDA backend a different name
-if( NOT CUDA_FOUND )
+if( NOT USE_CUDA )
     set( package_name hipblas )
 else( )
     set( package_name hipblas-alt )
