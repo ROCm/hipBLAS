@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -26,6 +26,9 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
+    int unit_check = argus.unit_check;
+    int timing     = argus.timing;
+
     hipblasStride stridex = N * incx * stride_scale;
     hipblasStride stridey = N * incy * stride_scale;
     int           sizeX   = stridex * batch_count;
@@ -49,8 +52,8 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     device_vector<T> dx(sizeX);
     device_vector<T> dy(sizeY);
 
-    double gpu_time_used, cpu_time_used;
-    double rocblas_error = 0.0;
+    double gpu_time_used = 0.0;
+    double hipblas_error = 0.0;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
@@ -81,9 +84,9 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
 
-    if(argus.unit_check)
+    if(unit_check)
     {
-        /* =====================================================================
+        /*=====================================================================
                     CPU BLAS
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
@@ -95,14 +98,47 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incx, stridex, hx_cpu.data(), hx.data());
             unit_check_general<T>(1, N, batch_count, incy, stridey, hy_cpu.data(), hy.data());
         }
 
     } // end of if unit check
 
-    //  BLAS_1_RESULT_PRINT
+    if(timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status = hipblasCopyStridedBatchedFn(
+                handle, N, dx, incx, stridex, dy, incy, stridey, batch_count);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_incx, e_incy, e_stride_x, e_stride_y, e_batch_count>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            copy_gflop_count<T>(N),
+            copy_gbyte_count<T>(N),
+            hipblas_error);
+    }
 
     hipblasDestroy(handle);
-    return HIPBLAS_STATUS_SUCCESS;
+    return status;
 }

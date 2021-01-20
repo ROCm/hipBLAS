@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "program_options.hpp"
@@ -319,6 +319,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
     void operator()(const Arguments& arg)
     {
         static const func_map fmap = {
+            {"copy", testing_copy<T>},
+            {"copy_batched", testing_copy_batched<T>},
+            {"copy_strided_batched", testing_copy_strided_batched<T>},
             /*{"set_get_vector", testing_set_get_vector<T>},
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
@@ -329,9 +332,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"axpy", testing_axpy<T>},
                 {"axpy_batched", testing_axpy_batched<T>},
                 {"axpy_strided_batched", testing_axpy_strided_batched<T>},
-                {"copy", testing_copy<T>},
-                {"copy_batched", testing_copy_batched<T>},
-                {"copy_strided_batched", testing_copy_strided_batched<T>},
                 {"dot", testing_dot<T>},
                 {"dot_batched", testing_dot_batched<T>},
                 {"dot_strided_batched", testing_dot_strided_batched<T>},
@@ -494,15 +494,15 @@ struct perf_blas<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
+            {"copy", testing_copy<T>},
+            {"copy_batched", testing_copy_batched<T>},
+            {"copy_strided_batched", testing_copy_strided_batched<T>},
             /* {"asum", testing_asum<T>},
                 {"asum_batched", testing_asum_batched<T>},
                 {"asum_strided_batched", testing_asum_strided_batched<T>},
                 {"axpy", testing_axpy<T>},
                 {"axpy_batched", testing_axpy_batched<T>},
                 {"axpy_strided_batched", testing_axpy_strided_batched<T>},
-                {"copy", testing_copy<T>},
-                {"copy_batched", testing_copy_batched<T>},
-                {"copy_strided_batched", testing_copy_strided_batched<T>},
                 {"dot", testing_dot<T>},
                 {"dot_batched", testing_dot_batched<T>},
                 {"dot_strided_batched", testing_dot_strided_batched<T>},
