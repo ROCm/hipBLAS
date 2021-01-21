@@ -177,19 +177,19 @@ double
 {
     // norm type can be 'M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
 
-    host_vector<float> hCPU_double(N * lda);
-    host_vector<float> hGPU_double(N * lda);
+    host_vector<float> hCPU_float(N * lda);
+    host_vector<float> hGPU_float(N * lda);
 
     for(int i = 0; i < M; i++)
     {
         for(int j = 0; j < N; j++)
         {
-            hCPU_double[i + j * lda] = (hCPU[i + j * lda]);
-            hGPU_double[i + j * lda] = (hGPU[i + j * lda]);
+            hCPU_float[i + j * lda] = (hCPU[i + j * lda]);
+            hGPU_float[i + j * lda] = (hGPU[i + j * lda]);
         }
     }
 
-    return norm_check_general<float>(norm_type, M, N, lda, hCPU_double, hGPU_double);
+    return norm_check_general<float>(norm_type, M, N, lda, hCPU_float, hGPU_float);
 }
 
 /* ============================Norm Check for Symmetric Matrix: float/double/complex template
