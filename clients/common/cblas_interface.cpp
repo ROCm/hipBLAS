@@ -223,6 +223,23 @@ void cblas_scal<hipblasHalf>(int n, const hipblasHalf alpha, hipblasHalf* x, int
 }
 
 template <>
+void cblas_scal<hipblasHalf, float>(int n, const float alpha, hipblasHalf* x, int incx)
+{
+    if(n <= 0 || incx <= 0)
+        return;
+
+    std::vector<float> x_float(n * incx);
+
+    for(size_t i = 0; i < n; i++)
+        x_float[i * incx] = half_to_float(x[i * incx]);
+
+    cblas_sscal(n, alpha, x_float.data(), incx);
+
+    for(size_t i = 0; i < n; i++)
+        x[i * incx] = float_to_half(x_float[i * incx]);
+}
+
+template <>
 void cblas_scal<float>(int n, const float alpha, float* x, int incx)
 {
     cblas_sscal(n, alpha, x, incx);
