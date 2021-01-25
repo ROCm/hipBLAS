@@ -112,7 +112,7 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(Arguments argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_axpy<Tx>(N, alpha, hx_cpu.data() + b * stridex, incx, hy_cpu + b * stridey, incy);
+            cblas_axpy(N, alpha, hx_cpu.data() + b * stridex, incx, hy_cpu + b * stridey, incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

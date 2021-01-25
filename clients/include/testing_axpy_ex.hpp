@@ -90,7 +90,7 @@ hipblasStatus_t testing_axpy_ex_template(Arguments argus)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_axpy<Tx>(N, alpha, hx_cpu.data(), incx, hy_cpu.data(), incy);
+        cblas_axpy(N, alpha, hx_cpu.data(), incx, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
