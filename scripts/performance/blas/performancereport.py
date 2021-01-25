@@ -493,18 +493,19 @@ class FlopsComparison(HipBlasYamlComparison):
 
         # loop over independent outputs
         y_scatter_by_group = OrderedDict()
-        y_scatter_by_group_cuda = OrderedDict()
+        # for comparison runs
+        y_scatter_by_group2 = OrderedDict()
         for group_label, run_configuration_group in grouped_run_configurations.items():
             # x_scatter_by_group[group_label] = []
             y_scatter_by_group[group_label] = []
-            y_scatter_by_group_cuda[group_label] = []
+            y_scatter_by_group2[group_label] = []
             # loop over argument sets that differ other than the swept variable(s)
             for subset_label, partial_argument_sets in sorted_argument_sets.items():
                 if len(partial_argument_sets) != 1:
                     raise ValueError('Assumed that sorting argument sets with no keys has a single element per sort.')
                 argument_set = partial_argument_sets[0]
                 y_list_by_metric = OrderedDict() # One array of y values for each metric
-                y_list_by_metric_cuda = OrderedDict()
+                y_list_by_metric2 = OrderedDict() # For comparison runs
                 # loop over number of coarse grain runs and concatenate results
                 for run_configuration in run_configuration_group:
                     results = argument_set.collect_timing(run_configuration)
@@ -513,17 +514,17 @@ class FlopsComparison(HipBlasYamlComparison):
                             y_list_by_metric[metric_label] = []
                         y_list_by_metric[metric_label].extend(results[metric_label])
                     if compare:
-                        results_cuda = argument_set.collect_timing_compare(run_configuration)
-                        for metric_label in results_cuda:
-                            if not metric_label in y_list_by_metric_cuda:
-                                y_list_by_metric_cuda[metric_label] = []
-                            y_list_by_metric_cuda[metric_label].extend(results_cuda[metric_label])
+                        results2 = argument_set.collect_timing_compare(run_configuration)
+                        for metric_label in results2:
+                            if not metric_label in y_list_by_metric2:
+                                y_list_by_metric2[metric_label] = []
+                            y_list_by_metric2[metric_label].extend(results2[metric_label])
                 # For each metric, add a set of bars in the bar chart.
                 for metric_label, y_list in y_list_by_metric.items():
                     y_scatter_by_group[group_label].extend(sorted(y_list))
                 if compare:
-                    for metric_label, y_list in y_list_by_metric_cuda.items():
-                        y_scatter_by_group_cuda[group_label].extend(sorted(y_list))
+                    for metric_label, y_list in y_list_by_metric2.items():
+                        y_scatter_by_group2[group_label].extend(sorted(y_list))
 
         for group_label, run_configuration_group in grouped_run_configurations.items():
             for run_configuration in run_configuration_group:
@@ -545,7 +546,7 @@ class FlopsComparison(HipBlasYamlComparison):
 
                 # Reference: V-100 clock by default
                 # sclk_cuda = 1530.0
-                if compare:
+                if compare or cuda:
                     sclk_cuda = run_configuration.load_specifications_compare()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
                 else:
                     sclk_cuda = 0
@@ -571,38 +572,61 @@ class FlopsComparison(HipBlasYamlComparison):
                     theoMax = round(theoMax)
                     x_co = (test[0], test[len(test)-1])
                     y_co = (theoMax, theoMax)
-                    theo_amd, = axes.plot(x_co, y_co, color='#ED1C24', label = "Theoretical Peak Performance MI-100: "+str(theoMax)+" GFLOP/s")
-                    if compare:
+                    if not cuda:
+                        theo_amd, = axes.plot(x_co, y_co, color='#ED1C24', label = "Theoretical Peak Performance MI-100: "+str(theoMax)+" GFLOP/s")
+
+                    if compare or cuda:
                         theoMax_cuda = round(theoMax_cuda)
                         x_co_cuda = (test[0], test[len(test)-1])
                         y_co_cuda = (theoMax_cuda, theoMax_cuda)
                         theo_cuda, = axes.plot(x_co_cuda, y_co_cuda, color='#76B900', label = "Theoretical Peak Performance V-100: "+ str(theoMax_cuda)+" GFLOP/s")
 
-        for group_label in y_scatter_by_group:
-            axes.scatter(
-                    # x_bar_by_group[group_label],
-                    test,
-                    y_scatter_by_group[group_label],
-                    # gap_scalar * width,
-                    color='#ED1C24',
-                    label = 'MI-100 Performance'
-                    # label = group_label,
-                    )
-            axes.plot(
-                    # x_scatter_by_group[group_label],
-                    test,
-                    y_scatter_by_group[group_label],
-                    # 'k*',
-                    '-ok',
-                    color='#ED1C24',
-                    )
+        if not cuda:
+            for group_label in y_scatter_by_group:
+                axes.scatter(
+                        # x_bar_by_group[group_label],
+                        test,
+                        y_scatter_by_group[group_label],
+                        # gap_scalar * width,
+                        color='#ED1C24',
+                        label = 'MI-100 Performance'
+                        # label = group_label,
+                        )
+                axes.plot(
+                        # x_scatter_by_group[group_label],
+                        test,
+                        y_scatter_by_group[group_label],
+                        # 'k*',
+                        '-ok',
+                        color='#ED1C24',
+                        )
+        else:
+            for group_label in y_scatter_by_group:
+                axes.scatter(
+                        # x_bar_by_group[group_label],
+                        test,
+                        y_scatter_by_group[group_label],
+                        # gap_scalar * width,
+                        color='#76B900',
+                        label = 'V-100 Performance'
+                        # label = group_label,
+                        )
+                axes.plot(
+                        # x_scatter_by_group[group_label],
+                        test,
+                        y_scatter_by_group[group_label],
+                        # 'k*',
+                        '-ok',
+                        color='#76B900',
+                        )
 
+        # if compare - already plotted AMD above
         if compare:
             for group_label in y_scatter_by_group:
                 axes.scatter(
                         # x_bar_by_group[group_label],
                         test,
-                        y_scatter_by_group_cuda[group_label],
+                        y_scatter_by_group2[group_label],
                         # gap_scalar * width,
                         color='#76B900',
                         label = "V-100 Performance"
@@ -611,7 +635,7 @@ class FlopsComparison(HipBlasYamlComparison):
                 axes.plot(
                         # x_scatter_by_group[group_label],
                         test,
-                        y_scatter_by_group_cuda[group_label],
+                        y_scatter_by_group2[group_label],
                         # 'k*',
                         '-ok',
                         color='#76B900',
@@ -659,19 +683,20 @@ class EfficiencyComparison(HipBlasYamlComparison):
 
         # loop over independent outputs
         y_scatter_by_group = OrderedDict()
-        y_scatter_by_group_cuda = OrderedDict()
+        # For comparison runs
+        y_scatter_by_group2 = OrderedDict()
         for group_label, run_configuration_group in grouped_run_configurations.items():
             # x_scatter_by_group[group_label] = []
             y_scatter_by_group[group_label] = []
             if compare:
-                y_scatter_by_group_cuda[group_label] = []
+                y_scatter_by_group2[group_label] = []
             # loop over argument sets that differ other than the swept variable(s)
             for subset_label, partial_argument_sets in sorted_argument_sets.items():
                 if len(partial_argument_sets) != 1:
                     raise ValueError('Assumed that sorting argument sets with no keys has a single element per sort.')
                 argument_set = partial_argument_sets[0]
                 y_list_by_metric = OrderedDict() # One array of y values for each metric
-                y_list_by_metric_cuda = OrderedDict()
+                y_list_by_metric2 = OrderedDict() # For comparison runs
                 # loop over number of coarse grain runs and concatenate results
                 for run_configuration in run_configuration_group:
                     results = argument_set.collect_timing(run_configuration)
@@ -680,17 +705,17 @@ class EfficiencyComparison(HipBlasYamlComparison):
                             y_list_by_metric[metric_label] = []
                         y_list_by_metric[metric_label].extend(results[metric_label])
                     if compare:
-                        results_cuda = argument_set.collect_timing_compare(run_configuration)
-                        for metric_label in results_cuda:
-                            if not metric_label in y_list_by_metric_cuda:
-                                y_list_by_metric_cuda[metric_label] = []
-                            y_list_by_metric_cuda[metric_label].extend(results_cuda[metric_label])
+                        results2 = argument_set.collect_timing_compare(run_configuration)
+                        for metric_label in results2:
+                            if not metric_label in y_list_by_metric2:
+                                y_list_by_metric2[metric_label] = []
+                            y_list_by_metric2[metric_label].extend(results2[metric_label])
                 # For each metric, add a set of bars in the bar chart.
                 for metric_label, y_list in y_list_by_metric.items():
                     y_scatter_by_group[group_label].extend(sorted(y_list))
                 if compare:
-                    for metric_label, y_list in y_list_by_metric_cuda.items():
-                        y_scatter_by_group_cuda[group_label].extend(sorted(y_list))
+                    for metric_label, y_list in y_list_by_metric2.items():
+                        y_scatter_by_group2[group_label].extend(sorted(y_list))
 
         for group_label, run_configuration_group in grouped_run_configurations.items():
             for run_configuration in run_configuration_group:
@@ -712,7 +737,7 @@ class EfficiencyComparison(HipBlasYamlComparison):
 
                 # Reference: V-100 clock by default
                 # sclk_cuda = 1530.0
-                if compare:
+                if compare or cuda:
                     sclk_cuda = run_configuration.load_specifications_compare()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
                 else:
                     sclk_cuda = 0
@@ -738,10 +763,18 @@ class EfficiencyComparison(HipBlasYamlComparison):
                 # Comparing efficiency
                 amd_performance_eff = OrderedDict()
                 cuda_performance_eff = OrderedDict()
-                amd_perf_list = [x / theoMax for x in y_scatter_by_group[group_label]]
-                axes.plot(test, amd_perf_list, color='#ED1C24', label = "MI-100 Efficiency")
+
+
+                if not cuda:
+                    amd_perf_list = [x / theoMax for x in y_scatter_by_group[group_label]]
+                    axes.plot(test, amd_perf_list, color='#ED1C24', label = "MI-100 Efficiency")
+                else:
+                    cuda_perf_list = [x / theoMax_cuda for x in y_scatter_by_group2[group_label]]
+                    axes.plot(test, cuda_perf_list, color='#76B900', label = "V-100 Efficiency")
+
+                # Already plotted AMD, use second list for CUDA results
                 if compare:
-                    cuda_perf_list = [x / theoMax_cuda for x in y_scatter_by_group_cuda[group_label]]
+                    cuda_perf_list = [x / theoMax_cuda for x in y_scatter_by_group2[group_label]]
                     axes.plot(test, cuda_perf_list, color='#76B900', label = "V-100 Efficiency")
                 axes.grid(True, which='major')
                 axes.grid(True, which='minor')

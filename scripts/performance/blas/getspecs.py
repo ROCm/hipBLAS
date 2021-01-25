@@ -251,7 +251,7 @@ def listdevices(cuda, smi=None):
         return list(range(0, int(cout)))
         # something
     elif smi is not None:
-        return smi.listDevices(showall=False)
+        return smi.listDevices()
 
 def getbus(devicenum, cuda, smi=None):
     if cuda:

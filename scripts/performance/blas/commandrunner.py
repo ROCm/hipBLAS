@@ -96,6 +96,9 @@ def import_rocm_smi(install_path):
             sys.path.append(os.path.join(install_path, 'bin'))
             import rocm_smi
             smi = rocm_smi
+
+            # The following is needed to call rsmi_init() before other calls as documented in /opt/rocm/rocm_smi/docs/README.md
+            smi.initializeRsmi()
         except ImportError:
             print('WARNING - rocm_smi.py not found!')
     return smi
