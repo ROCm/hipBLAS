@@ -553,6 +553,7 @@ class FlopsComparison(HipBlasYamlComparison):
                     sclk_cuda = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
                 theoMax = 0
                 theoMax_cuda = 0
+                print(sclk_cuda)
                 precisionBits = int(re.search(r'\d+', precision).group())
                 if(function == 'gemm' and precisionBits == 32): #xdlops
                     theoMax = float(sclk)/1000.00 * 256 * 120 #scaling to appropriate precision
@@ -576,11 +577,11 @@ class FlopsComparison(HipBlasYamlComparison):
                     if not cuda:
                         theo_amd, = axes.plot(x_co, y_co, color='#ED1C24', label = "Theoretical Peak Performance MI-100: "+str(theoMax)+" GFLOP/s")
 
-                    if compare or cuda:
-                        theoMax_cuda = round(theoMax_cuda)
-                        x_co_cuda = (test[0], test[len(test)-1])
-                        y_co_cuda = (theoMax_cuda, theoMax_cuda)
-                        theo_cuda, = axes.plot(x_co_cuda, y_co_cuda, color='#76B900', label = "Theoretical Peak Performance V-100: "+ str(theoMax_cuda)+" GFLOP/s")
+                if compare or cuda:
+                    theoMax_cuda = round(theoMax_cuda)
+                    x_co_cuda = (test[0], test[len(test)-1])
+                    y_co_cuda = (theoMax_cuda, theoMax_cuda)
+                    theo_cuda, = axes.plot(x_co_cuda, y_co_cuda, color='#76B900', label = "Theoretical Peak Performance V-100: "+ str(theoMax_cuda)+" GFLOP/s")
 
         if not cuda:
             for group_label in y_scatter_by_group:
