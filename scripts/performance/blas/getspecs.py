@@ -264,12 +264,25 @@ def getbus(devicenum, cuda, smi=None):
         if smi is not None:
             return smi.getBus(devicenum)
 
-def getprofile(devicenum, cuda, smi=None):
+def getprofile(devicenum, cuda):
+    import re
     if cuda:
         return "N/A"
     else:
-        if smi is not None:
-            return smi.getProfile(devicenum)
+        cmd = [get_smi_exec(cuda), "-l", "-d", str(devicenum)]
+        success, cout = _subprocess_helper(cmd)
+
+        if not success:
+            return "N/A"
+
+        searchstr = "GPU["+str(devicenum)+"]"
+        for line in cout.split("\n"):
+            if line.startswith(searchstr) and "*" in line:
+                line = line[len(searchstr):].strip()
+                line = re.sub(":", "", line).strip()
+                return line[0]
+
+        return "N/A"
 
 def getfanspeedpercent(devicenum, cuda, smi=None):
     if cuda:
@@ -288,32 +301,83 @@ def validclocknames(cuda, smi=None):
         return smi.validClockNames
 
 def getcurrentclockfreq(devicenum, clock, cuda, smi=None):
+    import re
     if cuda:
         cmd = [get_smi_exec(cuda), "--query-gpu=clocks.current." + clock, "--format=csv,noheader", "-i", str(devicenum)]
         success, cout = _subprocess_helper(cmd)
         if not success:
             return "N/A"
         return cout
-    elif smi is not None:
-        return smi.getCurrentClock(devicenum, clock, 'freq')
+    else:
+        cmd = [get_smi_exec(cuda), "--showclocks", "-d", str(devicenum)]
+        success, cout = _subprocess_helper(cmd)
+        if not success:
+            return "N/A"
 
-def getcurrentclocklevel(devicenum, clock, cuda, smi=None):
+        for line in cout.split("\n"):
+            m = re.search(clock, line)
+            if m != None:
+                p0 = line.find("(")
+                p1 = line.find(")")
+                return line[p0+1:p1]
+
+    return "N/A"
+
+def getcurrentclocklevel(devicenum, clock, cuda):
+    import re
     if cuda:
         return "N/A"
-    elif smi is not None:
-        return smi.getCurrentClock(devicenum, clock, 'level')
+    else:
+        cmd = [get_smi_exec(cuda), "--showclocks", "-d", str(devicenum)]
+        success, cout = _subprocess_helper(cmd)
+        if not success:
+            return "N/A"
 
-def getmaxlevel(devicenum, clock, cuda, smi=None):
+        searchstr = clock + " clock level: "
+        for line in cout.split("\n"):
+            m = re.search(searchstr, line)
+            if m != None:
+                p0 = line.find(searchstr)
+                line = line[p0 + len(searchstr):]
+                p1 = line.find(":")
+                line = line[:p1]
+                return line
+
+    return "N/A"
+
+def getmaxlevel(devicenum, clock, cuda):
+    import re
     if cuda:
         return "N/A"
-    elif smi is not None:
-        return smi.getMaxLevel(devicenum, clock)
+    else:
+        cmd = [get_smi_exec(cuda), "-s", "-d", str(devicenum)]
+        success, cout = _subprocess_helper(cmd)
+        if not success:
+            return "N/A"
+
+        maxlevel = -1
+        searchstr = "Supported " + clock + " frequencies on GPU" + str(devicenum)
+        idstr = "GPU["+str(devicenum)+"]"
+        p0 = cout.find(searchstr)
+        if p0 != -1:
+            cout = cout[p0:]
+            for line in cout.split("\n"):
+                line=line[len(idstr):].strip()
+                line=re.sub(":","",line).strip()
+                if line:
+                    maxlevel = line[0]
+                else:
+                    break
+            return maxlevel
+    return "N/A"
+
 
 def validmemtypes(cuda, smi=None):
     if cuda:
         return ["vram"]
     elif smi is not None:
-        return smi.validMemTypes
+        # Hardcoded in /opt/rocm/rocm_smi/bindings/rsmiBindings.py
+        return ["VRAM", "VIS_VRAM", "GTT"]
 
 def getmeminfo(devicenum, mem_type, cuda, smi=None):
     if cuda:
@@ -335,8 +399,9 @@ def getmeminfo(devicenum, mem_type, cuda, smi=None):
 def validversioncomponents(cuda, smi=None):
     if cuda:
         return ['driver']
-    elif smi is not None:
-        return smi.validVersionComponents
+    else:
+        # currently only driver according to /opt/rocm/bin/rocm_smi.py
+        return ['driver']
 
 def getversion(devicenum, component, cuda, smi=None):
     if cuda:

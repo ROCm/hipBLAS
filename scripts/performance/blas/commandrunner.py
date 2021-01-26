@@ -137,7 +137,7 @@ class SystemMonitor(object):
             return int(getspecs.getcurrentclockfreq(device, metric.split('_')[0], cuda, smi).strip('Mhz'))
         elif 'used_memory_percent':
             used_bytes, total_bytes = getspecs.getmeminfo(device, 'vram', cuda, smi)
-            return int(used_bytes.split()[0])*100.0/int(total_bytes.split()[0])
+            return int(used_bytes)*100.0/int(total_bytes)
         else:
             raise ValueError('Unrecognized metric requested: {}'.format(metric))
 
@@ -613,12 +613,12 @@ class MachineSpecs(dict):
         for device in devices:
             smi_info = {}
             smi_info['Bus'] = getspecs.getbus(device, cuda, smi)
-            smi_info['Profile'] = getspecs.getprofile(device, cuda, smi)
+            smi_info['Profile'] = getspecs.getprofile(device, cuda)
             smi_info['Start Fan Speed'] = getspecs.getfanspeedpercent(device, cuda, smi) + '%'
             for clock in getspecs.validclocknames(cuda, smi):
-                freq = getspecs.getcurrentclockfreq(device, clock, cuda, smi)
-                measured_level = getspecs.getcurrentclocklevel(device, clock, cuda, smi)
-                max_level = getspecs.getmaxlevel(device, clock, cuda, smi)
+                freq = getspecs.getcurrentclockfreq(device, clock, cuda)
+                measured_level = getspecs.getcurrentclocklevel(device, clock, cuda)
+                max_level = getspecs.getmaxlevel(device, clock, cuda)
                 smi_info['Start ' + clock] = '{} - Level {}/{}'.format(freq, measured_level, max_level)
             for mem_type in getspecs.validmemtypes(cuda, smi):
                 key = 'Start {} Memory'.format(mem_type)
@@ -626,13 +626,10 @@ class MachineSpecs(dict):
                 print('used, total')
                 print (used_bytes)
                 print (total_bytes)
-                smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes.split()[0]), to_mem_units(total_bytes.split()[0]))
+                smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes), to_mem_units(total_bytes))
             for component in getspecs.validversioncomponents(cuda, smi):
                 smi_info[component.capitalize() + ' Version'] = getspecs.getversion(device, component, cuda, smi)
-            if cuda:
-                rv['Card' + str(device)] = smi_info
-            else:
-                rv[device.capitalize()] = smi_info
+            rv['Card' + str(device)] = smi_info
 
         return rv
 
