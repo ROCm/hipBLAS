@@ -546,10 +546,11 @@ class FlopsComparison(HipBlasYamlComparison):
 
                 # Reference: V-100 clock by default
                 # sclk_cuda = 1530.0
-                if compare or cuda:
+                sclk = 0
+                if compare:
                     sclk_cuda = run_configuration.load_specifications_compare()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
-                else:
-                    sclk_cuda = 0
+                elif cuda:
+                    sclk_cuda = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
                 theoMax = 0
                 theoMax_cuda = 0
                 precisionBits = int(re.search(r'\d+', precision).group())
@@ -804,9 +805,7 @@ if __name__ == '__main__':
     parser.add_argument('-I', '--input-yaml', required=True,
                         help='hipBLAS input yaml config.')
     user_args = cr.parse_input_arguments(parser)
-
     command_runner = cr.CommandRunner(user_args)
-
     command_runner.setup_system()
 
     #load yaml then create fig for every test

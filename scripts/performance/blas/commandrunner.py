@@ -113,8 +113,8 @@ class SystemMonitor(object):
             # 'dcefclk_megahertz',
             'fan_speed_percent',
             ]
-    def __init__(self, metrics = supported_metrics):
-        if not smi_imported:
+    def __init__(self, metrics = supported_metrics, cuda = False):
+        if not smi_imported and not cuda:
             raise RuntimeError('import_rocm_smi(install_path) must be called before consturcting a SystemMonitor')
         if len(metrics) == 0:
             raise ValueError('SystemMonitor must record at least one metric')
@@ -478,8 +478,9 @@ class ArgumentSetABC(object):
                     out_file.write(cmd_str + '\n')
                     out_file.flush()
 
-                import_rocm_smi(self.user_args.install_path)
-                system_monitor = SystemMonitor()
+                if not self.user_args.cuda:
+                    import_rocm_smi(self.user_args.install_path)
+                system_monitor = SystemMonitor(cuda = self.user_args.cuda)
 
                 is_shell_only = self.is_shell_only()
                 if is_shell_only:
@@ -589,9 +590,11 @@ class MachineSpecs(dict):
                 if num_bytes / divisor < 1024.0:
                     break
             return '{:.1f}{}'.format(num_bytes / divisor, unit)
+
         rv = cls()
         host_info = {}
         host_info['hostname'] = getspecs.gethostname()
+
         host_info['cpu info'] = getspecs.getcpu()
         host_info['ram'] = getspecs.getram()
         host_info['distro'] = getspecs.getdistro()
@@ -607,8 +610,9 @@ class MachineSpecs(dict):
             device_info['system clock'] = getspecs.getsclk(device_num, cuda)
             device_info['memory clock'] = getspecs.getmclk(device_num, cuda)
             rv['Device {0:2d}'.format(device_num)] = device_info
-
-        smi = import_rocm_smi(install_path)
+        smi = None
+        if not cuda:
+            smi = import_rocm_smi(install_path)
         devices = getspecs.listdevices(cuda, smi)
         for device in devices:
             smi_info = {}
@@ -626,7 +630,9 @@ class MachineSpecs(dict):
                 print('used, total')
                 print (used_bytes)
                 print (total_bytes)
-                smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes), to_mem_units(total_bytes))
+                used_bytes_int = used_bytes.split()[0] if cuda else used_bytes
+                total_bytes_int = total_bytes.split()[0] if cuda else total_bytes
+                smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes_int), to_mem_units(total_bytes_int))
             for component in getspecs.validversioncomponents(cuda, smi):
                 smi_info[component.capitalize() + ' Version'] = getspecs.getversion(device, component, cuda, smi)
             rv['Card' + str(device)] = smi_info
