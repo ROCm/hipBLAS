@@ -546,7 +546,7 @@ class FlopsComparison(HipBlasYamlComparison):
 
                 # Reference: V-100 clock by default
                 # sclk_cuda = 1530.0
-                sclk = 0
+                sclk_cuda = 0
                 if compare:
                     sclk_cuda = run_configuration.load_specifications_compare()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
                 elif cuda:
@@ -739,10 +739,12 @@ class EfficiencyComparison(HipBlasYamlComparison):
 
                 # Reference: V-100 clock by default
                 # sclk_cuda = 1530.0
-                if compare or cuda:
+
+                sclk_cuda = 0
+                if compare:
                     sclk_cuda = run_configuration.load_specifications_compare()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
-                else:
-                    sclk_cuda = 0
+                elif cuda:
+                    sclk_cuda = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
                 theoMax = 0
                 theoMax_cuda = 0
                 precisionBits = int(re.search(r'\d+', precision).group())
@@ -771,7 +773,7 @@ class EfficiencyComparison(HipBlasYamlComparison):
                     amd_perf_list = [x / theoMax for x in y_scatter_by_group[group_label]]
                     axes.plot(test, amd_perf_list, color='#ED1C24', label = "MI-100 Efficiency")
                 else:
-                    cuda_perf_list = [x / theoMax_cuda for x in y_scatter_by_group2[group_label]]
+                    cuda_perf_list = [x / theoMax_cuda for x in y_scatter_by_group[group_label]]
                     axes.plot(test, cuda_perf_list, color='#76B900', label = "V-100 Efficiency")
 
                 # Already plotted AMD, use second list for CUDA results
