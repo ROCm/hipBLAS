@@ -63,22 +63,18 @@ const double stride_scale_range[] = {1.0, 2.5};
 const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 // Supported rocBLAS configs
-const vector<vector<hipblasDatatype_t>> precisions{
-    // Not supported in cuBLAS
-    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
-    {HIPBLAS_R_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
+const vector<vector<hipblasDatatype_t>> precisions{// Not supported in cuBLAS
+                                                   {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
+                                                   {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
+                                                   {HIPBLAS_R_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
+                                                   {HIPBLAS_R_64F, HIPBLAS_C_64F, HIPBLAS_C_64F},
 
-    // Currently broken in rocBLAS
-    // {HIPBLAS_R_64F, HIPBLAS_C_64F, HIPBLAS_C_64F},
-
-    // cuBLAS docs ambiguous, cuBLAS returns not supported
-    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
-
-    // Supported in both rocBLAS and cuBLAS
-    {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
-    {HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
-    {HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
-    {HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F}
+                                                   // Supported in both rocBLAS and cuBLAS
+                                                   {HIPBLAS_R_32F, HIPBLAS_R_16F, HIPBLAS_R_32F},
+                                                   {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
+                                                   {HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
+                                                   {HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
+                                                   {HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F}
 
 };
 
@@ -132,9 +128,15 @@ TEST_P(scal_ex_gtest, scal_ex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else if(arg.a_type == HIPBLAS_R_16F
+                || (arg.a_type == HIPBLAS_R_32F && arg.b_type == HIPBLAS_C_32F)
+                || (arg.a_type == HIPBLAS_R_64F && arg.b_type == HIPBLAS_C_64F))
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // unsupported CUDA configs
+        }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // some CUDA configs
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
