@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -90,7 +90,7 @@ hipblasStatus_t testing_axpy_ex_template(Arguments argus)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_axpy<Tx>(N, alpha, hx_cpu.data(), incx, hy_cpu.data(), incy);
+        cblas_axpy(N, alpha, hx_cpu.data(), incx, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
@@ -125,6 +125,12 @@ hipblasStatus_t testing_axpy_ex(Arguments argus)
     {
         // Not testing accumulation here
         status = testing_axpy_ex_template<hipblasHalf>(argus);
+    }
+    else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F
+            && executionType == HIPBLAS_R_32F)
+    {
+        // Not testing accumulation here
+        status = testing_axpy_ex_template<float, hipblasHalf>(argus);
     }
     else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)

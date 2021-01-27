@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -109,6 +109,10 @@ hipblasStatus_t testing_scal_ex(Arguments argus)
     else if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
     {
         status = testing_scal_ex_template<hipblasHalf, hipblasHalf, float>(argus);
+    }
+    else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
+    {
+        status = testing_scal_ex_template<float, hipblasHalf, float>(argus);
     }
     else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {

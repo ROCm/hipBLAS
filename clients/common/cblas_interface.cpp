@@ -148,7 +148,7 @@ void zsymv_(char*                 uplo,
 
 // axpy
 template <>
-void cblas_axpy<hipblasHalf>(
+void cblas_axpy<hipblasHalf, hipblasHalf>(
     int n, const hipblasHalf alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
 {
     size_t             abs_incx = incx >= 0 ? incx : -incx;
@@ -166,40 +166,65 @@ void cblas_axpy<hipblasHalf>(
 
     for(size_t i = 0; i < n; i++)
     {
-        y[i * abs_incx] = float_to_half(y_float[i * abs_incx]);
+        y[i * abs_incy] = float_to_half(y_float[i * abs_incy]);
     }
 }
 
 template <>
-void cblas_axpy<float>(int n, const float alpha, const float* x, int incx, float* y, int incy)
+void cblas_axpy<float, hipblasHalf>(
+    int n, const float alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
+{
+    size_t             abs_incx = incx >= 0 ? incx : -incx;
+    size_t             abs_incy = incy >= 0 ? incy : -incy;
+    std::vector<float> x_float(n * abs_incx);
+    std::vector<float> y_float(n * abs_incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
+    }
+
+    cblas_saxpy(n, alpha, x_float.data(), incx, y_float.data(), incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        y[i * abs_incy] = float_to_half(y_float[i * abs_incy]);
+    }
+}
+
+template <>
+void cblas_axpy<float, float>(
+    int n, const float alpha, const float* x, int incx, float* y, int incy)
 {
     cblas_saxpy(n, alpha, x, incx, y, incy);
 }
 
 template <>
-void cblas_axpy<double>(int n, const double alpha, const double* x, int incx, double* y, int incy)
+void cblas_axpy<double, double>(
+    int n, const double alpha, const double* x, int incx, double* y, int incy)
 {
     cblas_daxpy(n, alpha, x, incx, y, incy);
 }
 
 template <>
-void cblas_axpy<hipblasComplex>(int                   n,
-                                const hipblasComplex  alpha,
-                                const hipblasComplex* x,
-                                int                   incx,
-                                hipblasComplex*       y,
-                                int                   incy)
+void cblas_axpy<hipblasComplex, hipblasComplex>(int                   n,
+                                                const hipblasComplex  alpha,
+                                                const hipblasComplex* x,
+                                                int                   incx,
+                                                hipblasComplex*       y,
+                                                int                   incy)
 {
     cblas_caxpy(n, &alpha, x, incx, y, incy);
 }
 
 template <>
-void cblas_axpy<hipblasDoubleComplex>(int                         n,
-                                      const hipblasDoubleComplex  alpha,
-                                      const hipblasDoubleComplex* x,
-                                      int                         incx,
-                                      hipblasDoubleComplex*       y,
-                                      int                         incy)
+void cblas_axpy<hipblasDoubleComplex, hipblasDoubleComplex>(int                         n,
+                                                            const hipblasDoubleComplex  alpha,
+                                                            const hipblasDoubleComplex* x,
+                                                            int                         incx,
+                                                            hipblasDoubleComplex*       y,
+                                                            int                         incy)
 {
     cblas_zaxpy(n, &alpha, x, incx, y, incy);
 }
@@ -217,6 +242,23 @@ void cblas_scal<hipblasHalf>(int n, const hipblasHalf alpha, hipblasHalf* x, int
         x_float[i * incx] = half_to_float(x[i * incx]);
 
     cblas_sscal(n, half_to_float(alpha), x_float.data(), incx);
+
+    for(size_t i = 0; i < n; i++)
+        x[i * incx] = float_to_half(x_float[i * incx]);
+}
+
+template <>
+void cblas_scal<hipblasHalf, float>(int n, const float alpha, hipblasHalf* x, int incx)
+{
+    if(n <= 0 || incx <= 0)
+        return;
+
+    std::vector<float> x_float(n * incx);
+
+    for(size_t i = 0; i < n; i++)
+        x_float[i * incx] = half_to_float(x[i * incx]);
+
+    cblas_sscal(n, alpha, x_float.data(), incx);
 
     for(size_t i = 0; i < n; i++)
         x[i * incx] = float_to_half(x_float[i * incx]);
