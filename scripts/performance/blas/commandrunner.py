@@ -137,7 +137,9 @@ class SystemMonitor(object):
             return int(getspecs.getcurrentclockfreq(device, metric.split('_')[0], cuda, smi).strip('Mhz'))
         elif 'used_memory_percent':
             used_bytes, total_bytes = getspecs.getmeminfo(device, 'vram', cuda, smi)
-            return int(used_bytes)*100.0/int(total_bytes)
+            used_bytes_int = used_bytes.split()[0] if cuda else used_bytes
+            total_bytes_int = total_bytes.split()[0] if cuda else total_bytes
+            return int(used_bytes_int)*100.0/int(total_bytes_int)
         else:
             raise ValueError('Unrecognized metric requested: {}'.format(metric))
 

@@ -553,7 +553,6 @@ class FlopsComparison(HipBlasYamlComparison):
                     sclk_cuda = run_configuration.load_specifications()['Card0']["Start " + sys_clk_str_cuda].split(mhz_str_cuda)[0]
                 theoMax = 0
                 theoMax_cuda = 0
-                print(sclk_cuda)
                 precisionBits = int(re.search(r'\d+', precision).group())
                 if(function == 'gemm' and precisionBits == 32): #xdlops
                     theoMax = float(sclk)/1000.00 * 256 * 120 #scaling to appropriate precision
