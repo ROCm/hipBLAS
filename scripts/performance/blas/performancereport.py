@@ -770,15 +770,15 @@ class EfficiencyComparison(HipBlasYamlComparison):
 
                 if not cuda:
                     amd_perf_list = [x / theoMax for x in y_scatter_by_group[group_label]]
-                    axes.plot(test, amd_perf_list, color='#ED1C24', label = "MI-100 Efficiency")
+                    axes.plot(test, amd_perf_list, color='#ED1C24', label = "MI-100")
                 else:
                     cuda_perf_list = [x / theoMax_cuda for x in y_scatter_by_group[group_label]]
-                    axes.plot(test, cuda_perf_list, color='#76B900', label = "V-100 Efficiency")
+                    axes.plot(test, cuda_perf_list, color='#76B900', label = "V-100")
 
                 # Already plotted AMD, use second list for CUDA results
                 if compare:
                     cuda_perf_list = [x / theoMax_cuda for x in y_scatter_by_group2[group_label]]
-                    axes.plot(test, cuda_perf_list, color='#76B900', label = "V-100 Efficiency")
+                    axes.plot(test, cuda_perf_list, color='#76B900', label = "V-100")
                 axes.grid(True, which='major')
                 axes.grid(True, which='minor')
                 axes.yaxis.set_minor_locator(AutoMinorLocator(2))
