@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2020 Advanced Micro Devices, Inc.
+ * Copyright 2020-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************/
 
@@ -160,6 +160,13 @@ constexpr double syr2_gbyte_count(int n)
 /* \brief byte counts of TPSV */
 template <typename T>
 constexpr double tpsv_gbyte_count(int n)
+{
+    return (sizeof(T) * (tri_count(n) + n)) / 1e9;
+}
+
+/* \brief byte c ounts or TRSV */
+template <typename T>
+constexpr double trsv_gbyte_count(int n)
 {
     return (sizeof(T) * (tri_count(n) + n)) / 1e9;
 }
