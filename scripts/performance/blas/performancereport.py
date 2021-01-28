@@ -783,9 +783,8 @@ class EfficiencyComparison(HipBlasYamlComparison):
                 axes.grid(True, which='minor')
                 axes.yaxis.set_minor_locator(AutoMinorLocator(2))
                 axes.set_ylim([0, 1])
-                axes.set_ylabel('Efficiency')
 
-        axes.set_ylabel(metric_labels[0] if len(metric_labels) == 1 else 'Time (s)' )
+        axes.set_ylabel('Efficiency')
         axes.set_xlabel('='.join(xLabel))
         return True
 
