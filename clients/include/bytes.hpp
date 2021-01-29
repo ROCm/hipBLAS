@@ -157,6 +157,14 @@ constexpr double syr2_gbyte_count(int n)
     return (sizeof(T) * (tri_count(n) + 2 * n)) / 1e9;
 }
 
+/* \brief byte coutns of TBSV */
+template <typename T>
+constexpr double tbsv_gbyte_count(int n, int k)
+{
+    int k1 = k < n ? k : n;
+    return (sizeof(T) * (n * k1 - ((k1 * (k1 + 1)) / 2.0) + 2 * n)) / 1e9;
+}
+
 /* \brief byte counts of TPSV */
 template <typename T>
 constexpr double tpsv_gbyte_count(int n)
