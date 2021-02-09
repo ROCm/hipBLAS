@@ -51,7 +51,7 @@ constexpr double axpy_gbyte_count(int n)
 template <typename T>
 constexpr double copy_gbyte_count(int n)
 {
-    return (sizeof(T) * n) / 1e9;
+    return (sizeof(T) * 2.0 * n) / 1e9;
 }
 
 /* \brief byte counts of DOT */
@@ -73,6 +73,13 @@ template <typename T>
 constexpr double scal_gbyte_count(int n)
 {
     return (sizeof(T) * 2.0 * n) / 1e9;
+}
+
+/* \brief byte counts of SWAP */
+template <typename T>
+constexpr double swap_gbyte_count(int n)
+{
+    return (sizeof(T) * 4.0 * n) / 1e9;
 }
 
 /*

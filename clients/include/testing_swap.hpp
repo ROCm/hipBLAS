@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -19,9 +19,11 @@ hipblasStatus_t testing_swap(const Arguments& argus)
     bool FORTRAN       = argus.fortran;
     auto hipblasSwapFn = FORTRAN ? hipblasSwap<T, true> : hipblasSwap<T, false>;
 
-    int N    = argus.N;
-    int incx = argus.incx;
-    int incy = argus.incy;
+    int N          = argus.N;
+    int incx       = argus.incx;
+    int incy       = argus.incy;
+    int unit_check = argus.unit_check;
+    int timing     = argus.timing;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -52,18 +54,16 @@ hipblasStatus_t testing_swap(const Arguments& argus)
     vector<T> hx_cpu(sizeX);
     vector<T> hy_cpu(sizeY);
 
-    T * dx, *dy;
-    int device_pointer = 1;
+    // allocate memory on device
+    device_vector<T> dx(sizeX);
+    device_vector<T> dy(sizeY);
+    int              device_pointer = 1;
 
-    double gpu_time_used, cpu_time_used;
-    double rocblas_error;
+    double gpu_time_used = 0.0, cpu_time_used = 0.0;
+    double hipblas_error = 0.0;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
-
-    // allocate memory on device
-    CHECK_HIP_ERROR(hipMalloc(&dx, sizeX * sizeof(T)));
-    CHECK_HIP_ERROR(hipMalloc(&dy, sizeY * sizeof(T)));
 
     // Initial Data on CPU
     srand(1);
@@ -83,8 +83,6 @@ hipblasStatus_t testing_swap(const Arguments& argus)
 
     if((status != HIPBLAS_STATUS_SUCCESS))
     {
-        CHECK_HIP_ERROR(hipFree(dx));
-        CHECK_HIP_ERROR(hipFree(dy));
         hipblasDestroy(handle);
         return status;
     }
@@ -93,7 +91,7 @@ hipblasStatus_t testing_swap(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
 
-    if(argus.unit_check || argus.norm_check)
+    if(unit_check)
     {
 
         /* =====================================================================
@@ -104,15 +102,44 @@ hipblasStatus_t testing_swap(const Arguments& argus)
         if(argus.unit_check)
         {
             unit_check_general<T>(1, N, incx, hx_cpu.data(), hx.data());
-            unit_check_general<T>(1, N, incy, hy_cpu.data(), hy.data());
         }
 
     } // end of if unit/norm check
 
-    //  BLAS_1_RESULT_PRINT
+    if(timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
 
-    CHECK_HIP_ERROR(hipFree(dx));
-    CHECK_HIP_ERROR(hipFree(dy));
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status = hipblasSwapFn(handle, N, dx, incx, dy, incy);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_incx, e_incy>{}.log_args<T>(std::cout,
+                                                         argus,
+                                                         gpu_time_used,
+                                                         swap_gflop_count<T>(N),
+                                                         swap_gbyte_count<T>(N),
+                                                         hipblas_error);
+    }
+
     hipblasDestroy(handle);
-    return HIPBLAS_STATUS_SUCCESS;
+    return status;
 }
