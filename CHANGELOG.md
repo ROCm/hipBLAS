@@ -1,6 +1,6 @@
 # Change Log for hipBLAS
 
-## [hipBLAS 0.44 for ROCm 4.2.0]
+## [hipBLAS 0.44.0 for ROCm 4.2.0]
 ### Added
 - Made necessary changes to work with rocBLAS' gemm_ex changes. When using rocBLAS backend, hipBLAS will query the preferable
   layout of int8 data to be passed to gemm_ex, and will pass in the resulting flag. Users must be sure to use the preferable
