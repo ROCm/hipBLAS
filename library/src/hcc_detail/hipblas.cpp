@@ -14239,8 +14239,9 @@ hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t             handle,
 }
 
 // gemm_ex
-// First, we are querying the intended int8 layout from rocBLAS and passing in the result.
-// Users should ensure that they are passing in the correct data layout for this function.
+// Note for int8 users - For rocBLAS backend, please read rocblas_gemm_ex documentation on int8
+// data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
+// format for a given device as documented in rocBLAS.
 hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                               hipblasOperation_t transa,
                               hipblasOperation_t transb,
