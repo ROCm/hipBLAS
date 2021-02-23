@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 #include "hipblas.h"
 #include "limits.h"
@@ -14239,6 +14239,8 @@ hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t             handle,
 }
 
 // gemm_ex
+// First, we are querying the intended int8 layout from rocBLAS and passing in the result.
+// Users should ensure that they are passing in the correct data layout for this function.
 hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                               hipblasOperation_t transa,
                               hipblasOperation_t transb,
@@ -14259,8 +14261,12 @@ hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                               hipblasDatatype_t  compute_type,
                               hipblasGemmAlgo_t  algo)
 {
-    uint32_t solution_index = 0;
-    uint32_t flags          = 0;
+    uint32_t           solution_index = 0;
+    rocblas_gemm_flags flags          = rocblas_gemm_flags_none;
+
+    rocblas_status status = rocblas_query_int8_layout_flag((rocblas_handle)handle, &flags);
+    if(status != rocblas_status_success)
+        return rocBLASStatusToHIPStatus(status);
 
     return rocBLASStatusToHIPStatus(rocblas_gemm_ex((rocblas_handle)handle,
                                                     hipOperationToHCCOperation(transa),
