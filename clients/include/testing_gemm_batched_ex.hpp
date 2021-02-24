@@ -150,7 +150,7 @@ hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& argus)
         CHECK_HIP_ERROR(hipMemcpy(bA[b], hA[b].data(), sizeof(Ta) * size_A, hipMemcpyHostToDevice));
         CHECK_HIP_ERROR(hipMemcpy(bB[b], hB[b].data(), sizeof(Tb) * size_B, hipMemcpyHostToDevice));
 #else
-        if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N)
+        if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N && layout_pack_int8())
         {
             vector<Ta> hA_packed(hA[b]);
             hipblas_packInt8(hA_packed, M, K, lda);
@@ -163,7 +163,7 @@ hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& argus)
                 hipMemcpy(bA[b], hA[b].data(), sizeof(Ta) * size_A, hipMemcpyHostToDevice));
         }
 
-        if(std::is_same<Tb, int8_t>{} && transB != HIPBLAS_OP_N)
+        if(std::is_same<Tb, int8_t>{} && transB != HIPBLAS_OP_N && layout_pack_int8())
         {
             vector<Tb> hB_packed(hB[b]);
             hipblas_packInt8(hB_packed, N, K, ldb);
