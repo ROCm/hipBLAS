@@ -324,6 +324,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"swap", testing_swap<T>},
             {"swap_batched", testing_swap_batched<T>},
             {"swap_strided_batched", testing_swap_strided_batched<T>},
+            {"scal", testing_scal<T>},
+            {"scal_batched", testing_scal_batched<T>},
+            {"scal_strided_batched", testing_scal_strided_batched<T>},
             /*{"set_get_vector", testing_set_get_vector<T>},
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
@@ -498,6 +501,9 @@ struct perf_blas<
             {"swap", testing_swap<T>},
             {"swap_batched", testing_swap_batched<T>},
             {"swap_strided_batched", testing_swap_strided_batched<T>},
+            {"scal", testing_scal<T>},
+            {"scal_batched", testing_scal_batched<T>},
+            {"scal_strided_batched", testing_scal_strided_batched<T>},
             /* {"asum", testing_asum<T>},
                 {"asum_batched", testing_asum_batched<T>},
                 {"asum_strided_batched", testing_asum_strided_batched<T>},
@@ -726,9 +732,9 @@ struct perf_blas_scal<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            // {"scal", testing_scal<Ta, Tb>},
-            // {"scal_batched", testing_scal_batched<Ta, Tb>},
-            // {"scal_strided_batched", testing_scal_strided_batched<Ta, Tb>},
+            {"scal", testing_scal<Ta, Tb>},
+            {"scal_batched", testing_scal_batched<Ta, Tb>},
+            {"scal_strided_batched", testing_scal_strided_batched<Ta, Tb>},
         };
         run_function(map, arg);
     }

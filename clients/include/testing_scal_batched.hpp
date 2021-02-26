@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -23,6 +23,8 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     int N           = argus.N;
     int incx        = argus.incx;
     int batch_count = argus.batch_count;
+    int unit_check  = argus.unit_check;
+    int timing      = argus.timing;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -37,10 +39,10 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int    sizeX = N * incx;
-    U      alpha = argus.alpha;
-    double gpu_time_used, cpu_time_used;
-    double rocblas_error = 0.0;
+    int    sizeX         = N * incx;
+    U      alpha         = argus.alpha;
+    double gpu_time_used = 0.0, cpu_time_used = 0.0;
+    double hipblas_error = 0.0;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
@@ -73,7 +75,7 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     // copy output from device to CPU
     CHECK_HIP_ERROR(hx.transfer_from(dx));
 
-    if(argus.unit_check)
+    if(unit_check)
     {
         /* =====================================================================
                     CPU BLAS
@@ -85,15 +87,46 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(unit_check)
         {
             unit_check_general<T>(1, N, batch_count, incx, hz, hx);
         }
 
     } // end of if unit check
 
-    //  BLAS_1_RESULT_PRINT
+    if(timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
 
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status = hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_incx, e_batch_count>{}.log_args<T>(std::cout,
+                                                                argus,
+                                                                gpu_time_used,
+                                                                scal_gflop_count<T, U>(N),
+                                                                scal_gbyte_count<T>(N),
+                                                                hipblas_error);
+    }
     hipblasDestroy(handle);
-    return HIPBLAS_STATUS_SUCCESS;
+    return status;
 }
