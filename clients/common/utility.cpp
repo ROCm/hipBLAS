@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -157,6 +157,28 @@ void set_device(int device_id)
         printf("Set device error: cannot set device ID %d, there may not be such device ID\n",
                (int)device_id);
     }
+}
+
+/*******************************************************************************
+ * GPU architecture-related functions
+ ******************************************************************************/
+
+int getArch()
+{
+    int device;
+    hipGetDevice(&device);
+    hipDeviceProp_t deviceProperties;
+    hipGetDeviceProperties(&deviceProperties, device);
+    return deviceProperties.gcnArch;
+}
+
+/*******************************************************************************
+ * gemm_ex int8 layout
+ ******************************************************************************/
+bool layout_pack_int8()
+{
+    int arch = getArch();
+    return arch != 908;
 }
 
 #ifdef __cplusplus

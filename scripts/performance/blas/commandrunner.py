@@ -96,6 +96,9 @@ def import_rocm_smi(install_path):
             sys.path.append(os.path.join(install_path, 'bin'))
             import rocm_smi
             smi = rocm_smi
+
+            # The following is needed to call rsmi_init() before other calls as documented in /opt/rocm/rocm_smi/docs/README.md
+            smi.initializeRsmi()
         except ImportError:
             print('WARNING - rocm_smi.py not found!')
     return smi
@@ -110,8 +113,8 @@ class SystemMonitor(object):
             # 'dcefclk_megahertz',
             'fan_speed_percent',
             ]
-    def __init__(self, metrics = supported_metrics):
-        if not smi_imported:
+    def __init__(self, metrics = supported_metrics, cuda = False):
+        if not smi_imported and not cuda:
             raise RuntimeError('import_rocm_smi(install_path) must be called before consturcting a SystemMonitor')
         if len(metrics) == 0:
             raise ValueError('SystemMonitor must record at least one metric')
@@ -134,7 +137,9 @@ class SystemMonitor(object):
             return int(getspecs.getcurrentclockfreq(device, metric.split('_')[0], cuda, smi).strip('Mhz'))
         elif 'used_memory_percent':
             used_bytes, total_bytes = getspecs.getmeminfo(device, 'vram', cuda, smi)
-            return int(used_bytes.split()[0])*100.0/int(total_bytes.split()[0])
+            used_bytes_int = used_bytes.split()[0] if cuda else used_bytes
+            total_bytes_int = total_bytes.split()[0] if cuda else total_bytes
+            return int(used_bytes_int)*100.0/int(total_bytes_int)
         else:
             raise ValueError('Unrecognized metric requested: {}'.format(metric))
 
@@ -475,8 +480,9 @@ class ArgumentSetABC(object):
                     out_file.write(cmd_str + '\n')
                     out_file.flush()
 
-                import_rocm_smi(self.user_args.install_path)
-                system_monitor = SystemMonitor()
+                if not self.user_args.cuda:
+                    import_rocm_smi(self.user_args.install_path)
+                system_monitor = SystemMonitor(cuda = self.user_args.cuda)
 
                 is_shell_only = self.is_shell_only()
                 if is_shell_only:
@@ -586,9 +592,11 @@ class MachineSpecs(dict):
                 if num_bytes / divisor < 1024.0:
                     break
             return '{:.1f}{}'.format(num_bytes / divisor, unit)
+
         rv = cls()
         host_info = {}
         host_info['hostname'] = getspecs.gethostname()
+
         host_info['cpu info'] = getspecs.getcpu()
         host_info['ram'] = getspecs.getram()
         host_info['distro'] = getspecs.getdistro()
@@ -604,18 +612,19 @@ class MachineSpecs(dict):
             device_info['system clock'] = getspecs.getsclk(device_num, cuda)
             device_info['memory clock'] = getspecs.getmclk(device_num, cuda)
             rv['Device {0:2d}'.format(device_num)] = device_info
-
-        smi = import_rocm_smi(install_path)
+        smi = None
+        if not cuda:
+            smi = import_rocm_smi(install_path)
         devices = getspecs.listdevices(cuda, smi)
         for device in devices:
             smi_info = {}
             smi_info['Bus'] = getspecs.getbus(device, cuda, smi)
-            smi_info['Profile'] = getspecs.getprofile(device, cuda, smi)
+            smi_info['Profile'] = getspecs.getprofile(device, cuda)
             smi_info['Start Fan Speed'] = getspecs.getfanspeedpercent(device, cuda, smi) + '%'
             for clock in getspecs.validclocknames(cuda, smi):
-                freq = getspecs.getcurrentclockfreq(device, clock, cuda, smi)
-                measured_level = getspecs.getcurrentclocklevel(device, clock, cuda, smi)
-                max_level = getspecs.getmaxlevel(device, clock, cuda, smi)
+                freq = getspecs.getcurrentclockfreq(device, clock, cuda)
+                measured_level = getspecs.getcurrentclocklevel(device, clock, cuda)
+                max_level = getspecs.getmaxlevel(device, clock, cuda)
                 smi_info['Start ' + clock] = '{} - Level {}/{}'.format(freq, measured_level, max_level)
             for mem_type in getspecs.validmemtypes(cuda, smi):
                 key = 'Start {} Memory'.format(mem_type)
@@ -623,13 +632,12 @@ class MachineSpecs(dict):
                 print('used, total')
                 print (used_bytes)
                 print (total_bytes)
-                smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes.split()[0]), to_mem_units(total_bytes.split()[0]))
+                used_bytes_int = used_bytes.split()[0] if cuda else used_bytes
+                total_bytes_int = total_bytes.split()[0] if cuda else total_bytes
+                smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes_int), to_mem_units(total_bytes_int))
             for component in getspecs.validversioncomponents(cuda, smi):
                 smi_info[component.capitalize() + ' Version'] = getspecs.getversion(device, component, cuda, smi)
-            if cuda:
-                rv['Card' + str(device)] = smi_info
-            else:
-                rv[device.capitalize()] = smi_info
+            rv['Card' + str(device)] = smi_info
 
         return rv
 

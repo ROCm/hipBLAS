@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -20,12 +20,14 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
     auto hipblasSwapBatchedFn
         = FORTRAN ? hipblasSwapBatched<T, true> : hipblasSwapBatched<T, false>;
 
-    int N           = argus.N;
-    int incx        = argus.incx;
-    int incy        = argus.incy;
-    int batch_count = argus.batch_count;
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    int             N           = argus.N;
+    int             incx        = argus.incx;
+    int             incy        = argus.incy;
+    int             batch_count = argus.batch_count;
+    int             unit_check  = argus.unit_check;
+    int             norm_check  = argus.norm_check;
+    int             timing      = argus.timing;
+    hipblasStatus_t status      = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -43,8 +45,8 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
 
     int device_pointer = 1;
 
-    double gpu_time_used, cpu_time_used;
-    double rocblas_error;
+    double hipblas_error = 0.0;
+    double gpu_time_used = 0.0;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
@@ -112,7 +114,7 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
             hipMemcpy(hy_array[b], by_array[b], sizeof(T) * sizeY, hipMemcpyDeviceToHost));
     }
 
-    if(argus.unit_check || argus.norm_check)
+    if(unit_check || norm_check)
     {
         /* =====================================================================
                     CPU BLAS
@@ -122,16 +124,46 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
             cblas_swap<T>(N, hx_cpu_array[b], incx, hy_cpu_array[b], incy);
         }
 
-        if(argus.unit_check)
+        if(unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incx, hx_cpu_array, hx_array);
             unit_check_general<T>(1, N, batch_count, incy, hy_cpu_array, hy_array);
         }
 
     } // end of if unit/norm check
 
-    //  BLAS_1_RESULT_PRINT
+    if(timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
 
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status = hipblasSwapBatchedFn(handle, N, dx_array, incx, dy_array, incy, batch_count);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.log_args<T>(std::cout,
+                                                                        argus,
+                                                                        gpu_time_used,
+                                                                        swap_gflop_count<T>(N),
+                                                                        swap_gbyte_count<T>(N),
+                                                                        hipblas_error);
+    }
     hipblasDestroy(handle);
-    return HIPBLAS_STATUS_SUCCESS;
+    return status;
 }

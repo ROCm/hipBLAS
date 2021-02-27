@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2018-2020 Advanced Micro Devices, Inc.
+ * Copyright 2018-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************/
 
@@ -137,6 +137,13 @@ template <>
 constexpr double scal_gflop_count<hipblasDoubleComplex, double>(int n)
 {
     return (2.0 * n) / 1e9;
+}
+
+// swap
+template <typename T>
+constexpr double swap_gflop_count(int n)
+{
+    return (n) / 1e9; // no actual operations but reporting to be consistent
 }
 
 /*

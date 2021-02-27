@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -57,6 +57,7 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     device_vector<T> dx_or_b(size_x);
 
     double gpu_time_used, cpu_time_used;
+    double hipblas_error;
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
 
     hipblasHandle_t handle;
@@ -130,45 +131,74 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     hipMemcpy(dx_or_b, hx_or_b_1.data(), sizeof(T) * size_x, hipMemcpyHostToDevice);
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
-    if(argus.timing)
+    if(argus.unit_check || argus.norm_check)
     {
-        gpu_time_used = get_time_us(); // in microseconds
-    }
-
-    for(int iter = 0; iter < 1; iter++)
-    {
-        status = hipblasTpsvFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx);
-
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
             hipblasDestroy(handle);
             return status;
         }
+        status = hipblasTpsvFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        // copy output from device to CPU
+        hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost);
+
+        // Calculating error
+        hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
+
+        if(argus.unit_check)
+        {
+            double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
+            unit_check_error(hipblas_error, tolerance);
+        }
     }
 
-    // copy output from device to CPU
-    hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost);
-
-    if(argus.unit_check)
+    if(argus.timing)
     {
-        real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
-        double    tolerance = eps * 40 * N;
-
-        double error = 0.0, max_err_scal = 0.0, max_err = 0.0;
-        for(int i = 0; i < N; i++)
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
         {
-            T diff = (hx[i * abs_incx] - hx_or_b_1[i * abs_incx]);
-            if(diff != T(0))
-            {
-                max_err += abs(diff);
-            }
-            max_err_scal += abs(hx_or_b_1[i * abs_incx]);
+            hipblasDestroy(handle);
+            return status;
         }
-        error = max_err / max_err_scal;
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
 
-        unit_check_error(error, tolerance);
+            status = hipblasTpsvFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
+
+        ArgumentModel<e_uplo_option, e_transA_option, e_diag_option, e_N, e_incx>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            tpsv_gflop_count<T>(N),
+            tpsv_gbyte_count<T>(N),
+            hipblas_error);
     }
 
     hipblasDestroy(handle);

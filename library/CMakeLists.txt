@@ -61,8 +61,8 @@ add_subdirectory( src )
 
 # Package specific CPACK vars
 if( NOT USE_CUDA )
-    set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 2.36.0), rocsolver (>= 3.11.0)" )
-    set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 2.36.0, rocsolver >= 3.11.0" )
+    set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 2.38.0), rocsolver (>= 3.12.0)" )
+    set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 2.38.0, rocsolver >= 3.12.0" )
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md" )
@@ -74,7 +74,7 @@ endif( )
 set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/include" "\${CPACK_PACKAGING_INSTALL_PREFIX}/lib" )
 
 # Give hipblas compiled for CUDA backend a different name
-if( NOT CUDA_FOUND )
+if( NOT USE_CUDA )
     set( package_name hipblas )
 else( )
     set( package_name hipblas-alt )

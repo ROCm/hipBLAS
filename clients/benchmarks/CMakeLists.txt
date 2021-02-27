@@ -58,14 +58,12 @@ target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client roc::hipblas
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c)
 
-if( NOT CUDA_FOUND )
-  target_compile_definitions( hipblas-bench PRIVATE __HIP_PLATFORM_HCC__ )
+if( NOT USE_CUDA )
+  target_link_libraries( hipblas-bench PRIVATE hip::host )
 
   if( CUSTOM_TARGET )
-    target_link_libraries( hipblas-bench PRIVATE hip::${CUSTOM_TARGET} hip::host )
-  else( )
-    target_link_libraries( hipblas-bench PRIVATE hip::host )
-  endif( )
+    target_link_libraries( hipblas-bench PRIVATE hip::${CUSTOM_TARGET} )
+  endif()
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
     # hip-clang needs specific flag to turn on pthread and m

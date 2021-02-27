@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2018-2020 Advanced Micro Devices, Inc.
+ * Copyright 2018-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #ifndef _HIPBLAS_TYPE_DISPATCH_
@@ -75,6 +75,7 @@ auto hipblas_blas1_dispatch(const Arguments& arg)
 }
 
 // BLAS1_ex functions
+// TODO: Update this when adding these functions to hipblas-bench
 template <template <typename...> class TEST>
 auto hipblas_blas1_ex_dispatch(const Arguments& arg)
 {

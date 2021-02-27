@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -119,7 +119,7 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_axpy<T>(N, alpha, hx_cpu_array[b], incx, hy_cpu_array[b], incy);
+            cblas_axpy<T>(N, alpha, hx_cpu_array[b].data(), incx, hy_cpu_array[b].data(), incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

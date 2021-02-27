@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************/
 
@@ -20,8 +20,8 @@
  * ===========================================================================
  */
 
-template <typename T>
-void cblas_axpy(int n, const T alpha, const T* x, int incx, T* y, int incy);
+template <typename Ta, typename Tx = Ta>
+void cblas_axpy(int n, const Ta alpha, const Tx* x, int incx, Tx* y, int incy);
 template <typename T, typename U = T>
 void cblas_scal(int n, const U alpha, T* x, int incx);
 template <typename T>

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -64,6 +64,7 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
     device_vector<T> dx_or_b(size_x);
 
     double gpu_time_used, cpu_time_used;
+    double hipblas_error, cumulative_hipblas_error = 0;
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
 
     hipblasHandle_t handle;
@@ -132,51 +133,87 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
     hipMemcpy(dx_or_b, hx_or_b_1.data(), sizeof(T) * size_x, hipMemcpyHostToDevice);
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
-    if(argus.timing)
+    if(argus.unit_check || argus.norm_check)
     {
-        gpu_time_used = get_time_us(); // in microseconds
-    }
-
-    for(int iter = 0; iter < 1; iter++)
-    {
-        status = hipblasTpsvStridedBatchedFn(
-            handle, uplo, transA, diag, N, dAP, strideAP, dx_or_b, incx, stridex, batch_count);
-
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
         if(status != HIPBLAS_STATUS_SUCCESS)
         {
             hipblasDestroy(handle);
             return status;
         }
-    }
+        status = hipblasTpsvStridedBatchedFn(
+            handle, uplo, transA, diag, N, dAP, strideAP, dx_or_b, incx, stridex, batch_count);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
 
-    // copy output from device to CPU
-    hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost);
+        // copy output from device to CPU
+        hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost);
 
-    if(argus.unit_check)
-    {
+        // Calculating error
+        // For norm_check/bench, currently taking the cumulative sum of errors over all batches
         for(int b = 0; b < batch_count; b++)
         {
-            real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
-            double    tolerance = eps * 40 * N;
-
-            T*     hxb        = hx + b * stridex;
-            T*     hx_or_b_1b = hx_or_b_1 + b * stridex;
-            double error = 0.0, max_err_scal = 0.0, max_err = 0.0;
-            for(int i = 0; i < N; i++)
+            hipblas_error = std::abs(vector_norm_1<T>(
+                N, abs_incx, hx.data() + b * stridex, hx_or_b_1.data() + b * stridex));
+            if(argus.unit_check)
             {
-                T diff = (hxb[i * abs_incx] - hx_or_b_1b[i * abs_incx]);
-                if(diff != T(0))
-                {
-                    max_err += abs(diff);
-                }
-                max_err_scal += abs(hx_or_b_1b[i * abs_incx]);
+                double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
+                unit_check_error(hipblas_error, tolerance);
             }
-            error = max_err / max_err_scal;
 
-            unit_check_error(error, tolerance);
+            cumulative_hipblas_error += hipblas_error;
         }
+    }
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status = hipblasTpsvStridedBatchedFn(
+                handle, uplo, transA, diag, N, dAP, strideAP, dx_or_b, incx, stridex, batch_count);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
+
+        ArgumentModel<e_uplo_option,
+                      e_transA_option,
+                      e_diag_option,
+                      e_N,
+                      e_incx,
+                      e_stride_x,
+                      e_batch_count>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         tpsv_gflop_count<T>(N),
+                         tpsv_gbyte_count<T>(N),
+                         cumulative_hipblas_error);
     }
 
     hipblasDestroy(handle);

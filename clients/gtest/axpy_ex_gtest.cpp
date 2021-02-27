@@ -74,12 +74,11 @@ const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 // Supported rocBLAS configs
 const vector<vector<hipblasDatatype_t>> precisions{
-    // No cuBLAS support for solely half precision
+    // No cuBLAS support
     {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
-
-    // cuBLAS docs ambiguous, cuBLAS returns not supported
     {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
 
+    {HIPBLAS_R_32F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
     {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
     {HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
     {HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
@@ -134,9 +133,13 @@ TEST_P(axpy_ex_gtest, axpy_ex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
+        else if(arg.a_type == HIPBLAS_R_16F)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // unsupported CUDA configs
+        }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // some CUDA configs
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
