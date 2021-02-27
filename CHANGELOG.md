@@ -7,6 +7,7 @@
   data format when calling gemm_ex with a rocBLAS backend.
 - Added hipblas-bench with support for:
     - copy, swap, scal
+
 ## [hipBLAS 0.42.0 for ROCm 4.1.0]
 ### Added
 - Added the following functions. All added functions include batched and strided-batched support with rocBLAS backend:
