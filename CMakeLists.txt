@@ -49,7 +49,7 @@ include( ROCMInstallTargets )
 include( ROCMPackageConfigHelpers )
 include( ROCMInstallSymlinks )
 
-set ( VERSION_STRING "0.43.0" )
+set ( VERSION_STRING "0.45.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 if( NOT DEFINED $ENV{HIP_PATH})
