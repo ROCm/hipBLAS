@@ -1,5 +1,13 @@
 # Change Log for hipBLAS
 
+## [hipBLAS 0.44.0 for ROCm 4.2.0]
+### Added
+- Made necessary changes to work with rocBLAS' gemm_ex changes. When using rocBLAS backend, hipBLAS will query the preferable
+  layout of int8 data to be passed to gemm_ex, and will pass in the resulting flag. Users must be sure to use the preferable
+  data format when calling gemm_ex with a rocBLAS backend.
+- Added hipblas-bench with support for:
+    - copy, swap, scal
+
 ## [hipBLAS 0.42.0 for ROCm 4.1.0]
 ### Added
 - Added the following functions. All added functions include batched and strided-batched support with rocBLAS backend:

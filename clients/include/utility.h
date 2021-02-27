@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #pragma once
@@ -7,6 +7,7 @@
 #define _TESTING_UTILITY_H_
 
 #include "hipblas.h"
+#include <stdbool.h>
 
 #ifdef __cplusplus
 #include "cblas_interface.h"
@@ -662,6 +663,14 @@ int query_device_property();
 
 /*  set current device to device_id */
 void set_device(int device_id);
+
+/* get architecture number */
+int getArch();
+
+/* query what rocBLAS recommends for int8 layout. We are /always/ passing in the flag which
+/* rocBLAS recommends, thus we need to know what layout to format our data in our tests.
+/* returns true if should be packed. */
+bool layout_pack_int8();
 
 /* ============================================================================================ */
 /*  timing: HIP only provides very limited timers function clock() and not general;

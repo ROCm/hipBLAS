@@ -150,14 +150,11 @@ target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LI
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-test PRIVATE -mf16c )
 
-if( NOT CUDA_FOUND )
-  target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_HCC__ )
-
+if( NOT USE_CUDA )
+  target_link_libraries( hipblas-test PRIVATE hip::host )
 
   if( CUSTOM_TARGET )
-    target_link_libraries( hipblas-test PRIVATE hip::${CUSTOM_TARGET} hip::host )
-  else( )
-      target_link_libraries( hipblas-test PRIVATE hip::host )
+    target_link_libraries( hipblas-test PRIVATE hip::${CUSTOM_TARGET} )
   endif( )
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )

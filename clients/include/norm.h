@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -104,6 +104,20 @@ double norm_check_general(
     }
 
     return cumulative_error;
+}
+
+template <typename T>
+double vector_norm_1(int M, int incx, T* hx_gold, T* hx)
+{
+    double max_err_scal = 0.0;
+    double max_err      = 0.0;
+    for(int i = 0; i < M; i++)
+    {
+        max_err += std::abs((hx_gold[i * incx] - hx[i * incx]));
+        max_err_scal += std::abs(hx_gold[i * incx]);
+    }
+
+    return max_err / max_err_scal;
 }
 
 #endif

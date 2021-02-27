@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "program_options.hpp"
@@ -255,7 +255,6 @@ void run_function(const func_map& map, const Arguments& arg, const std::string& 
 #include "testing_trtri.hpp"
 #include "testing_trtri_batched.hpp"
 #include "testing_trtri_strided_batched.hpp"
-/*
 // Template to dispatch testing_gemm_ex for performance tests
 // When Ti == void or Ti == To == Tc == bfloat16, the test is marked invalid
 template <typename Ti, typename To = Ti, typename Tc = To, typename = void>
@@ -275,8 +274,8 @@ struct perf_gemm_ex<Ti,
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"gemm_ex", testing_gemm_ex<Ti, To, Tc>},
-            {"gemm_batched_ex", testing_gemm_batched_ex<Ti, To, Tc>},
+            {"gemm_ex", testing_gemm_ex_template<Ti, Ti, To, Tc>},
+            {"gemm_batched_ex", testing_gemm_batched_ex_template<Ti, Ti, To, Tc>},
         };
         run_function(map, arg);
     }
@@ -301,12 +300,12 @@ struct perf_gemm_strided_batched_ex<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"gemm_strided_batched_ex", testing_gemm_strided_batched_ex<Ti, To, Tc>},
+            {"gemm_strided_batched_ex", testing_gemm_strided_batched_ex_template<Ti, Ti, To, Tc>},
         };
         run_function(map, arg);
     }
 };
-*/
+
 template <typename T, typename U = T, typename = void>
 struct perf_blas : hipblas_test_invalid
 {
@@ -319,6 +318,15 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
     void operator()(const Arguments& arg)
     {
         static const func_map fmap = {
+            {"copy", testing_copy<T>},
+            {"copy_batched", testing_copy_batched<T>},
+            {"copy_strided_batched", testing_copy_strided_batched<T>},
+            {"swap", testing_swap<T>},
+            {"swap_batched", testing_swap_batched<T>},
+            {"swap_strided_batched", testing_swap_strided_batched<T>},
+            {"scal", testing_scal<T>},
+            {"scal_batched", testing_scal_batched<T>},
+            {"scal_strided_batched", testing_scal_strided_batched<T>},
             /*{"set_get_vector", testing_set_get_vector<T>},
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
@@ -329,9 +337,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"axpy", testing_axpy<T>},
                 {"axpy_batched", testing_axpy_batched<T>},
                 {"axpy_strided_batched", testing_axpy_strided_batched<T>},
-                {"copy", testing_copy<T>},
-                {"copy_batched", testing_copy_batched<T>},
-                {"copy_strided_batched", testing_copy_strided_batched<T>},
                 {"dot", testing_dot<T>},
                 {"dot_batched", testing_dot_batched<T>},
                 {"dot_strided_batched", testing_dot_strided_batched<T>},
@@ -350,9 +355,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"rotmg", testing_rotmg<T>},
                 {"rotmg_batched", testing_rotmg_batched<T>},
                 {"rotmg_strided_batched", testing_rotmg_strided_batched<T>},
-                {"swap", testing_swap<T>},
-                {"swap_batched", testing_swap_batched<T>},
-                {"swap_strided_batched", testing_swap_strided_batched<T>},
                 // L2
                 {"gbmv", testing_gbmv<T>},
                 {"gbmv_batched", testing_gbmv_batched<T>},
@@ -392,15 +394,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"tbmv", testing_tbmv<T>},
                 {"tbmv_batched", testing_tbmv_batched<T>},
                 {"tbmv_strided_batched", testing_tbmv_strided_batched<T>},
-                {"tbsv", testing_tbsv<T>},
-                {"tbsv_batched", testing_tbsv_batched<T>},
-                {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
                 {"tpmv", testing_tpmv<T>},
                 {"tpmv_batched", testing_tpmv_batched<T>},
                 {"tpmv_strided_batched", testing_tpmv_strided_batched<T>},
-                {"tpsv", testing_tpsv<T>},
-                {"tpsv_batched", testing_tpsv_batched<T>},
-                {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
                 {"trmv", testing_trmv<T>},
                 {"trmv_batched", testing_trmv_batched<T>},
                 {"trmv_strided_batched", testing_trmv_strided_batched<T>},
@@ -437,10 +433,15 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             //{"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
             //{"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
-            /*                {"trsv", testing_trsv<T>},
-                {"trsv_batched", testing_trsv_batched<T>},
-                {"trsv_strided_batched", testing_trsv_strided_batched<T>},
-*/
+            {"tbsv", testing_tbsv<T>},
+            {"tbsv_batched", testing_tbsv_batched<T>},
+            {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
+            {"tpsv", testing_tpsv<T>},
+            {"tpsv_batched", testing_tpsv_batched<T>},
+            {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
+            {"trsv", testing_trsv<T>},
+            {"trsv_batched", testing_trsv_batched<T>},
+            {"trsv_strided_batched", testing_trsv_strided_batched<T>},
         };
         run_function(fmap, arg);
     }
@@ -494,15 +495,21 @@ struct perf_blas<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
+            {"copy", testing_copy<T>},
+            {"copy_batched", testing_copy_batched<T>},
+            {"copy_strided_batched", testing_copy_strided_batched<T>},
+            {"swap", testing_swap<T>},
+            {"swap_batched", testing_swap_batched<T>},
+            {"swap_strided_batched", testing_swap_strided_batched<T>},
+            {"scal", testing_scal<T>},
+            {"scal_batched", testing_scal_batched<T>},
+            {"scal_strided_batched", testing_scal_strided_batched<T>},
             /* {"asum", testing_asum<T>},
                 {"asum_batched", testing_asum_batched<T>},
                 {"asum_strided_batched", testing_asum_strided_batched<T>},
                 {"axpy", testing_axpy<T>},
                 {"axpy_batched", testing_axpy_batched<T>},
                 {"axpy_strided_batched", testing_axpy_strided_batched<T>},
-                {"copy", testing_copy<T>},
-                {"copy_batched", testing_copy_batched<T>},
-                {"copy_strided_batched", testing_copy_strided_batched<T>},
                 {"dot", testing_dot<T>},
                 {"dot_batched", testing_dot_batched<T>},
                 {"dot_strided_batched", testing_dot_strided_batched<T>},
@@ -518,9 +525,6 @@ struct perf_blas<
                 {"nrm2", testing_nrm2<T>},
                 {"nrm2_batched", testing_nrm2_batched<T>},
                 {"nrm2_strided_batched", testing_nrm2_strided_batched<T>},
-                {"swap", testing_swap<T>},
-                {"swap_batched", testing_swap_batched<T>},
-                {"swap_strided_batched", testing_swap_strided_batched<T>},
                 // L2
                 {"gbmv", testing_gbmv<T>},
                 {"gbmv_batched", testing_gbmv_batched<T>},
@@ -567,15 +571,10 @@ struct perf_blas<
                 {"tbmv", testing_tbmv<T>},
                 {"tbmv_batched", testing_tbmv_batched<T>},
                 {"tbmv_strided_batched", testing_tbmv_strided_batched<T>},
-                {"tbsv", testing_tbsv<T>},
-                {"tbsv_batched", testing_tbsv_batched<T>},
-                {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
                 {"tpmv", testing_tpmv<T>},
                 {"tpmv_batched", testing_tpmv_batched<T>},
                 {"tpmv_strided_batched", testing_tpmv_strided_batched<T>},
-                {"tpsv", testing_tpsv<T>},
-                {"tpsv_batched", testing_tpsv_batched<T>},
-                {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
+
                 {"symv", testing_symv<T>},
                 {"symv_batched", testing_symv_batched<T>},
                 {"symv_strided_batched", testing_symv_strided_batched<T>},
@@ -626,11 +625,16 @@ struct perf_blas<
             //{"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
             //{"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
-            /*
-	    {"trsv", testing_trsv<T>},
+            {"tbsv", testing_tbsv<T>},
+            {"tbsv_batched", testing_tbsv_batched<T>},
+            {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
+            {"tpsv", testing_tpsv<T>},
+            {"tpsv_batched", testing_tpsv_batched<T>},
+            {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
+            {"trsv", testing_trsv<T>},
             {"trsv_batched", testing_trsv_batched<T>},
             {"trsv_strided_batched", testing_trsv_strided_batched<T>},
-            {"trmm", testing_trmm<T>},
+            /*{"trmm", testing_trmm<T>},
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
 	    */
@@ -728,9 +732,9 @@ struct perf_blas_scal<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            // {"scal", testing_scal<Ta, Tb>},
-            // {"scal_batched", testing_scal_batched<Ta, Tb>},
-            // {"scal_strided_batched", testing_scal_strided_batched<Ta, Tb>},
+            {"scal", testing_scal<Ta, Tb>},
+            {"scal_batched", testing_scal_batched<Ta, Tb>},
+            {"scal_strided_batched", testing_scal_strided_batched<Ta, Tb>},
         };
         run_function(map, arg);
     }
@@ -888,7 +892,7 @@ int run_bench_test(Arguments& arg)
             arg.stride_c = min_stride_c;
         }
     }
-    /*
+
     if(!strcmp(function, "gemm_ex") || !strcmp(function, "gemm_batched_ex"))
     {
         // adjust dimension for GEMM routines
@@ -955,9 +959,8 @@ int run_bench_test(Arguments& arg)
         }
 
         hipblas_gemm_dispatch<perf_gemm_strided_batched_ex>(arg);
-
     }
-    else*/
+    else
     {
         /*
         if(!strcmp(function, "scal") || !strcmp(function, "scal_batched")

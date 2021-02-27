@@ -38,13 +38,11 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c
 
   target_link_libraries( ${exe} PRIVATE roc::hipblas )
 
-  if( NOT CUDA_FOUND )
-    target_compile_definitions( ${exe} PRIVATE __HIP_PLATFORM_HCC__ )
+  if( NOT USE_CUDA )
+    target_link_libraries( ${exe} PRIVATE hip::host )
 
     if( CUSTOM_TARGET )
-      target_link_libraries( ${exe} PRIVATE hip::${CUSTOM_TARGET} hip::host )
-    else( )
-      target_link_libraries( ${exe} PRIVATE hip::host )
+      target_link_libraries( ${exe} PRIVATE hip::${CUSTOM_TARGET} )
     endif( )
 
   else( )
