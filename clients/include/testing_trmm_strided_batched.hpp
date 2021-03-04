@@ -132,8 +132,11 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
         {
             unit_check_general<T>(M, N, batch_count, ldb, stride_B, hB, hB_copy);
         }
-        hipblas_error = norm_check_general<T>(
-            'F', M, N, ldb, stride_B, hB_copy.data(), hB.data(), batch_count);
+        if(argus.norm_check)
+        {
+            hipblas_error = norm_check_general<T>(
+                'F', M, N, ldb, stride_B, hB_copy.data(), hB.data(), batch_count);
+        }
     }
 
     if(argus.timing)

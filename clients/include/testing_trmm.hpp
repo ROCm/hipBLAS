@@ -99,7 +99,10 @@ hipblasStatus_t testing_trmm(const Arguments& argus)
         {
             unit_check_general<T>(M, N, ldb, hB_copy.data(), hB.data());
         }
-        hipblas_error = norm_check_general<T>('F', M, N, ldb, hB_copy.data(), hB.data());
+        if(argus.norm_check)
+        {
+            hipblas_error = norm_check_general<T>('F', M, N, ldb, hB_copy.data(), hB.data());
+        }
     }
 
     if(argus.timing)

@@ -148,7 +148,11 @@ hipblasStatus_t testing_trmm_batched(const Arguments& argus)
         {
             unit_check_general<T>(M, N, batch_count, ldb, hB_array, hB_copy_array);
         }
-        hipblas_error = norm_check_general<T>('F', M, N, ldb, hB_copy_array, hB_array, batch_count);
+        if(argus.norm_check)
+        {
+            hipblas_error
+                = norm_check_general<T>('F', M, N, ldb, hB_copy_array, hB_array, batch_count);
+        }
     }
 
     if(argus.timing)
