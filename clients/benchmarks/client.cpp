@@ -416,13 +416,14 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"syrkx", testing_syr2k<T, false>},
                 {"syrkx_batched", testing_syr2k_batched<T, false>},
                 {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
-                {"trmm", testing_trmm<T>},
-                {"trmm_batched", testing_trmm_batched<T>},
-                {"trmm_strided_batched", testing_trmm_strided_batched<T>},
+
                 {"trtri", testing_trtri<T>},
                 {"trtri_batched", testing_trtri_batched<T>},
                 {"trtri_strided_batched", testing_trtri_strided_batched<T>},
 */
+            {"trmm", testing_trmm<T>},
+            {"trmm_batched", testing_trmm_batched<T>},
+            {"trmm_strided_batched", testing_trmm_strided_batched<T>},
             {"gemm", testing_gemm<T>},
             {"gemm_batched", testing_gemm_batched<T>},
             {"gemm_strided_batched", testing_gemm_strided_batched<T>},
@@ -634,10 +635,9 @@ struct perf_blas<
             {"trsv", testing_trsv<T>},
             {"trsv_batched", testing_trsv_batched<T>},
             {"trsv_strided_batched", testing_trsv_strided_batched<T>},
-            /*{"trmm", testing_trmm<T>},
+            {"trmm", testing_trmm<T>},
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
-	    */
         };
         run_function(map, arg);
     }
