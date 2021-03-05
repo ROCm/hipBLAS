@@ -722,19 +722,19 @@ constexpr double syrkx_gflop_count<hipblasDoubleComplex>(int n, int k)
 template <typename T>
 constexpr double trmm_gflop_count(int m, int n, int k)
 {
-    return (1.0 * m * n * (k + 1)) / 1e9;
+    return (1.0 * m * n * k) / 1e9;
 }
 
 template <>
 constexpr double trmm_gflop_count<hipblasComplex>(int m, int n, int k)
 {
-    return 4 * (1.0 * m * n * (k + 1)) / 1e9;
+    return 4 * (1.0 * m * n * k) / 1e9;
 }
 
 template <>
 constexpr double trmm_gflop_count<hipblasDoubleComplex>(int m, int n, int k)
 {
-    return 4 * (1.0 * m * n * (k + 1)) / 1e9;
+    return 4 * (1.0 * m * n * k) / 1e9;
 }
 
 /* \brief floating point counts of TRSM */
