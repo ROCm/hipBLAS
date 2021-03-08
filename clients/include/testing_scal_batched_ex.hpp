@@ -24,6 +24,7 @@ hipblasStatus_t testing_scal_batched_ex_template(const Arguments& argus)
     int batch_count = argus.batch_count;
     int unit_check  = argus.unit_check;
     int timing      = argus.timing;
+    int norm_check  = argus.norm_check;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -100,7 +101,7 @@ hipblasStatus_t testing_scal_batched_ex_template(const Arguments& argus)
         CHECK_HIP_ERROR(hipMemcpy(hx[b], bx[b], sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
     }
 
-    if(unit_check)
+    if(unit_check || norm_check)
     {
         /* =====================================================================
                     CPU BLAS
@@ -115,6 +116,11 @@ hipblasStatus_t testing_scal_batched_ex_template(const Arguments& argus)
         if(unit_check)
         {
             unit_check_general<Tx>(1, N, batch_count, incx, hz, hx);
+        }
+
+        if(norm_check)
+        {
+            hipblas_error = norm_check_general<Tx>('F', 1, N, incx, hz, hx, batch_count);
         }
 
     } // end of if unit check

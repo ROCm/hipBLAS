@@ -26,6 +26,7 @@ hipblasStatus_t testing_scal_strided_batched_ex_template(const Arguments& argus)
     int    batch_count  = argus.batch_count;
     int    unit_check   = argus.unit_check;
     int    timing       = argus.timing;
+    int    norm_check   = argus.norm_check;
 
     hipblasStride stridex = N * incx * stride_scale;
     int           sizeX   = stridex * batch_count;
@@ -84,7 +85,7 @@ hipblasStatus_t testing_scal_strided_batched_ex_template(const Arguments& argus)
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
 
-    if(unit_check)
+    if(unit_check || norm_check)
     {
         /* =====================================================================
                     CPU BLAS
@@ -99,6 +100,11 @@ hipblasStatus_t testing_scal_strided_batched_ex_template(const Arguments& argus)
         if(unit_check)
         {
             unit_check_general<Tx>(1, N, batch_count, incx, stridex, hz, hx);
+        }
+
+        if(norm_check)
+        {
+            hipblas_error = norm_check_general<Tx>('F', 1, N, incx, stridex, hz, hx, batch_count);
         }
 
     } // end of if unit check

@@ -23,6 +23,7 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
     int incx       = argus.incx;
     int unit_check = argus.unit_check;
     int timing     = argus.timing;
+    int norm_check = argus.norm_check;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -74,7 +75,7 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(Tx) * N * incx, hipMemcpyDeviceToHost));
 
-    if(unit_check)
+    if(unit_check || norm_check)
     {
         /* =====================================================================
                     CPU BLAS
@@ -86,6 +87,11 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
         if(unit_check)
         {
             unit_check_general<Tx>(1, N, incx, hz.data(), hx.data());
+        }
+
+        if(norm_check)
+        {
+            hipblas_error = norm_check_general<Tx>('F', 1, N, incx, hz.data(), hx.data());
         }
 
     } // end of if unit check
