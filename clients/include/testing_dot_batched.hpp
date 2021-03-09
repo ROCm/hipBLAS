@@ -51,57 +51,46 @@ hipblasStatus_t testing_dot_batched(const Arguments& argus)
     hipblasCreate(&handle);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx_array[batch_count];
-    host_vector<T> hy_array[batch_count];
-    host_vector<T> h_cpu_result(batch_count);
-    host_vector<T> h_hipblas_result1(batch_count);
-    host_vector<T> h_hipblas_result2(batch_count);
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hy(N, incy, batch_count);
+    host_vector<T>       h_cpu_result(batch_count);
+    host_vector<T>       h_hipblas_result1(batch_count);
+    host_vector<T>       h_hipblas_result2(batch_count);
 
-    device_batch_vector<T> bx_array(batch_count, sizeX);
-    device_batch_vector<T> by_array(batch_count, sizeY);
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
+    device_vector<T>       d_hipblas_result(batch_count);
+    CHECK_HIP_ERROR(dx.memcheck());
+    CHECK_HIP_ERROR(dy.memcheck());
 
-    device_vector<T*, 0, T> dx_array(batch_count);
-    device_vector<T*, 0, T> dy_array(batch_count);
-    device_vector<T>        d_hipblas_result(batch_count);
-
-    int last = batch_count - 1;
-    if(!dx_array || !dy_array || !d_hipblas_result || (!bx_array[last] && sizeX)
-       || (!by_array[last] && sizeY))
-    {
-        hipblasDestroy(handle);
-        return HIPBLAS_STATUS_ALLOC_FAILED;
-    }
-
-    // Initial Data on CPU
-    srand(1);
-    for(int b = 0; b < batch_count; b++)
-    {
-        hx_array[b] = host_vector<T>(sizeX);
-        hy_array[b] = host_vector<T>(sizeY);
-
-        srand(1);
-        hipblas_init_alternating_sign<T>(hx_array[b], 1, N, incx);
-        hipblas_init<T>(hy_array[b], 1, N, incy);
-
-        CHECK_HIP_ERROR(
-            hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * sizeX, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(
-            hipMemcpy(by_array[b], hy_array[b], sizeof(T) * sizeY, hipMemcpyHostToDevice));
-    }
-    CHECK_HIP_ERROR(hipMemcpy(dx_array, bx_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy_array, by_array, batch_count * sizeof(T*), hipMemcpyHostToDevice));
+    hipblas_init_alternating_sign(hx, true);
+    hipblas_init(hy, false);
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     /* =====================================================================
          HIPBLAS
     =================================================================== */
     // hipblasDot accept both dev/host pointer for the scalar
     status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-    status_2 = (hipblasDotBatchedFn)(
-        handle, N, dx_array, incx, dy_array, incy, batch_count, d_hipblas_result);
+    status_2 = (hipblasDotBatchedFn)(handle,
+                                     N,
+                                     dx.ptr_on_device(),
+                                     incx,
+                                     dy.ptr_on_device(),
+                                     incy,
+                                     batch_count,
+                                     d_hipblas_result);
 
     status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-    status_4 = (hipblasDotBatchedFn)(
-        handle, N, dx_array, incx, dy_array, incy, batch_count, h_hipblas_result1);
+    status_4 = (hipblasDotBatchedFn)(handle,
+                                     N,
+                                     dx.ptr_on_device(),
+                                     incx,
+                                     dy.ptr_on_device(),
+                                     incy,
+                                     batch_count,
+                                     h_hipblas_result1);
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
        || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
@@ -127,8 +116,7 @@ hipblasStatus_t testing_dot_batched(const Arguments& argus)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            (CONJ ? cblas_dotc<T>
-                  : cblas_dot<T>)(N, hx_array[b], incx, hy_array[b], incy, &(h_cpu_result[b]));
+            (CONJ ? cblas_dotc<T> : cblas_dot<T>)(N, hx[b], incx, hy[b], incy, &(h_cpu_result[b]));
         }
 
         if(argus.unit_check)
@@ -166,8 +154,14 @@ hipblasStatus_t testing_dot_batched(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status_1 = (hipblasDotBatchedFn)(
-                handle, N, dx_array, incx, dy_array, incy, batch_count, d_hipblas_result);
+            status_1 = (hipblasDotBatchedFn)(handle,
+                                             N,
+                                             dx.ptr_on_device(),
+                                             incx,
+                                             dy.ptr_on_device(),
+                                             incy,
+                                             batch_count,
+                                             d_hipblas_result);
 
             if(status_1 != HIPBLAS_STATUS_SUCCESS)
             {
