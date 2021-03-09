@@ -321,6 +321,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"asum", testing_asum<T>},
             {"asum_batched", testing_asum_batched<T>},
             {"asum_strided_batched", testing_asum_strided_batched<T>},
+            {"axpy", testing_axpy<T>},
+            {"axpy_batched", testing_axpy_batched<T>},
+            {"axpy_strided_batched", testing_axpy_strided_batched<T>},
             {"copy", testing_copy<T>},
             {"copy_batched", testing_copy_batched<T>},
             {"copy_strided_batched", testing_copy_strided_batched<T>},
@@ -337,9 +340,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
                 // L1
-                {"axpy", testing_axpy<T>},
-                {"axpy_batched", testing_axpy_batched<T>},
-                {"axpy_strided_batched", testing_axpy_strided_batched<T>},
                 {"iamax", testing_iamax<T>},
                 {"iamax_batched", testing_iamax_batched<T>},
                 {"iamax_strided_batched", testing_iamax_strided_batched<T>},
@@ -468,10 +468,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, hipblasHalf>{}>> : hipbl
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            /*{"axpy", testing_axpy<T>},
-                {"axpy_batched", testing_axpy_batched<T>},
-                {"axpy_strided_batched", testing_axpy_strided_batched<T>},
-            */
+            {"axpy", testing_axpy<T>},
+            {"axpy_batched", testing_axpy_batched<T>},
+            {"axpy_strided_batched", testing_axpy_strided_batched<T>},
             {"dot", testing_dot<T>},
             {"dot_batched", testing_dot_batched<T>},
             {"dot_strided_batched", testing_dot_strided_batched<T>},
@@ -497,6 +496,9 @@ struct perf_blas<
             {"asum", testing_asum<T>},
             {"asum_batched", testing_asum_batched<T>},
             {"asum_strided_batched", testing_asum_strided_batched<T>},
+            {"axpy", testing_axpy<T>},
+            {"axpy_batched", testing_axpy_batched<T>},
+            {"axpy_strided_batched", testing_axpy_strided_batched<T>},
             {"copy", testing_copy<T>},
             {"copy_batched", testing_copy_batched<T>},
             {"copy_strided_batched", testing_copy_strided_batched<T>},
@@ -513,9 +515,6 @@ struct perf_blas<
             {"scal_batched", testing_scal_batched<T>},
             {"scal_strided_batched", testing_scal_strided_batched<T>},
             /*
-                {"axpy", testing_axpy<T>},
-                {"axpy_batched", testing_axpy_batched<T>},
-                {"axpy_strided_batched", testing_axpy_strided_batched<T>},
                 {"iamax", testing_iamax<T>},
                 {"iamax_batched", testing_iamax_batched<T>},
                 {"iamax_strided_batched", testing_iamax_strided_batched<T>},
