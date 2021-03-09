@@ -16,7 +16,10 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_asum_batched(const Arguments& argus)
 {
-    using Tr = real_t<T>;
+    using Tr     = real_t<T>;
+    bool FORTRAN = argus.fortran;
+    auto hipblasAsumBatchedFn
+        = FORTRAN ? hipblasAsumBatched<T, Tr, true> : hipblasAsumBatched<T, Tr, false>;
 
     int N           = argus.N;
     int incx        = argus.incx;
@@ -63,11 +66,11 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
     =================================================================== */
     // hipblasAsum accept both dev/host pointer for the scalar
     status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-    status_2 = hipblasAsumBatched<T, Tr>(
-        handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result);
+    status_2
+        = hipblasAsumBatchedFn(handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result);
 
     status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-    status_4 = hipblasAsumBatched<T, Tr>(
+    status_4 = hipblasAsumBatchedFn(
         handle, N, dx.ptr_on_device(), incx, batch_count, h_hipblas_result_host);
 
     if((status_1 != HIPBLAS_STATUS_SUCCESS)
@@ -135,7 +138,7 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status_1 = hipblasAsumBatched<T, Tr>(
+            status_1 = hipblasAsumBatchedFn(
                 handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result);
 
             if(status_1 != HIPBLAS_STATUS_SUCCESS)
