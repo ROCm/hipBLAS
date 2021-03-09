@@ -62,10 +62,10 @@
 #include "testing_rotmg_strided_batched.hpp"
 #include "testing_scal.hpp"
 #include "testing_scal_batched.hpp"
-// #include "testing_scal_batched_ex.hpp"
-// #include "testing_scal_ex.hpp"
+#include "testing_scal_batched_ex.hpp"
+#include "testing_scal_ex.hpp"
 #include "testing_scal_strided_batched.hpp"
-// #include "testing_scal_strided_batched_ex.hpp"
+#include "testing_scal_strided_batched_ex.hpp"
 #include "testing_swap.hpp"
 #include "testing_swap_batched.hpp"
 #include "testing_swap_strided_batched.hpp"
@@ -758,6 +758,7 @@ struct perf_blas_scal_ex<
         || (std::is_same<Ta, hipblasDoubleComplex>{} && std::is_same<Ta, Tx>{}
             && std::is_same<Tx, Tex>{})
         || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{} && std::is_same<Tex, float>{})
+        || (std::is_same<Ta, float>{} && std::is_same<Tx, hipblasHalf>{} && std::is_same<Ta, Tex>{})
         || (std::is_same<Ta, float>{} && std::is_same<Tx, hipblasComplex>{}
             && std::is_same<Tx, Tex>{})
         || (std::is_same<Ta, double>{} && std::is_same<Tx, hipblasDoubleComplex>{}
@@ -766,9 +767,9 @@ struct perf_blas_scal_ex<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            // {"scal_ex", testing_scal_ex<Ta, Tx, Tex>},
-            // {"scal_batched_ex", testing_scal_batched_ex<Ta, Tx, Tex>},
-            // {"scal_strided_batched_ex", testing_scal_strided_batched_ex<Ta, Tx, Tex>},
+            {"scal_ex", testing_scal_ex_template<Ta, Tx, Tex>},
+            {"scal_batched_ex", testing_scal_batched_ex_template<Ta, Tx, Tex>},
+            {"scal_strided_batched_ex", testing_scal_strided_batched_ex_template<Ta, Tx, Tex>},
         };
         run_function(map, arg);
     }
@@ -962,6 +963,9 @@ int run_bench_test(Arguments& arg)
     }
     else
     {
+        if(!strcmp(function, "scal_ex") || !strcmp(function, "scal_batched_ex")
+           || !strcmp(function, "scal_strided_batched_ex"))
+            hipblas_blas1_ex_dispatch<perf_blas_scal_ex>(arg);
         /*
         if(!strcmp(function, "scal") || !strcmp(function, "scal_batched")
            || !strcmp(function, "scal_strided_batched"))
@@ -974,13 +978,10 @@ int run_bench_test(Arguments& arg)
             hipblas_blas1_dispatch<perf_blas_rot>(arg);
         else if(!strcmp(function, "axpy_ex") || !strcmp(function, "axpy_batched_ex")
                 || !strcmp(function, "axpy_strided_batched_ex"))
-            hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);
-        else if(!strcmp(function, "scal_ex") || !strcmp(function, "scal_batched_ex")
-                || !strcmp(function, "scal_strided_batched_ex"))
-            hipblas_blas1_ex_dispatch<perf_blas_scal_ex>(arg);
+            hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);*/
+
         else
-            */
-        hipblas_simple_dispatch<perf_blas>(arg);
+            hipblas_simple_dispatch<perf_blas>(arg);
     }
     return 0;
 }
