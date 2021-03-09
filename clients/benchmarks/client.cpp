@@ -318,6 +318,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
     void operator()(const Arguments& arg)
     {
         static const func_map fmap = {
+            {"asum", testing_asum<T>},
+            {"asum_batched", testing_asum_batched<T>},
+            {"asum_strided_batched", testing_asum_strided_batched<T>},
             {"copy", testing_copy<T>},
             {"copy_batched", testing_copy_batched<T>},
             {"copy_strided_batched", testing_copy_strided_batched<T>},
@@ -334,9 +337,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
                 // L1
-                {"asum", testing_asum<T>},
-                {"asum_batched", testing_asum_batched<T>},
-                {"asum_strided_batched", testing_asum_strided_batched<T>},
                 {"axpy", testing_axpy<T>},
                 {"axpy_batched", testing_axpy_batched<T>},
                 {"axpy_strided_batched", testing_axpy_strided_batched<T>},
@@ -494,6 +494,9 @@ struct perf_blas<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
+            {"asum", testing_asum<T>},
+            {"asum_batched", testing_asum_batched<T>},
+            {"asum_strided_batched", testing_asum_strided_batched<T>},
             {"copy", testing_copy<T>},
             {"copy_batched", testing_copy_batched<T>},
             {"copy_strided_batched", testing_copy_strided_batched<T>},
@@ -509,9 +512,7 @@ struct perf_blas<
             {"scal", testing_scal<T>},
             {"scal_batched", testing_scal_batched<T>},
             {"scal_strided_batched", testing_scal_strided_batched<T>},
-            /* {"asum", testing_asum<T>},
-                {"asum_batched", testing_asum_batched<T>},
-                {"asum_strided_batched", testing_asum_strided_batched<T>},
+            /*
                 {"axpy", testing_axpy<T>},
                 {"axpy_batched", testing_axpy_batched<T>},
                 {"axpy_strided_batched", testing_axpy_strided_batched<T>},
