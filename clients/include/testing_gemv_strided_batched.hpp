@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -84,8 +84,7 @@ hipblasStatus_t testing_gemvStridedBatched(const Arguments& argus)
     T alpha = (T)argus.alpha;
     T beta  = (T)argus.beta;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -107,29 +106,22 @@ hipblasStatus_t testing_gemvStridedBatched(const Arguments& argus)
             HIPBLAS
         =================================================================== */
 
-        status = hipblasGemvStridedBatchedFn(handle,
-                                             transA,
-                                             M,
-                                             N,
-                                             (T*)&alpha,
-                                             dA,
-                                             lda,
-                                             stride_A,
-                                             dx,
-                                             incx,
-                                             stride_x,
-                                             (T*)&beta,
-                                             dy,
-                                             incy,
-                                             stride_y,
-                                             batch_count);
-
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            // here in cuda
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGemvStridedBatchedFn(handle,
+                                                        transA,
+                                                        M,
+                                                        N,
+                                                        (T*)&alpha,
+                                                        dA,
+                                                        lda,
+                                                        stride_A,
+                                                        dx,
+                                                        incx,
+                                                        stride_x,
+                                                        (T*)&beta,
+                                                        dy,
+                                                        incy,
+                                                        stride_y,
+                                                        batch_count));
 
         /* =====================================================================
            CPU BLAS
@@ -168,12 +160,8 @@ hipblasStatus_t testing_gemvStridedBatched(const Arguments& argus)
     if(argus.timing)
     {
         hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
         {
@@ -181,29 +169,22 @@ hipblasStatus_t testing_gemvStridedBatched(const Arguments& argus)
             {
                 gpu_time_used = get_time_us_sync(stream);
             }
-            status = hipblasGemvStridedBatchedFn(handle,
-                                                 transA,
-                                                 M,
-                                                 N,
-                                                 (T*)&alpha,
-                                                 dA,
-                                                 lda,
-                                                 stride_A,
-                                                 dx,
-                                                 incx,
-                                                 stride_x,
-                                                 (T*)&beta,
-                                                 dy,
-                                                 incy,
-                                                 stride_y,
-                                                 batch_count);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                // here in cuda
-                hipblasDestroy(handle);
-                return status;
-            }
+            CHECK_HIPBLAS_ERROR(hipblasGemvStridedBatchedFn(handle,
+                                                            transA,
+                                                            M,
+                                                            N,
+                                                            (T*)&alpha,
+                                                            dA,
+                                                            lda,
+                                                            stride_A,
+                                                            dx,
+                                                            incx,
+                                                            stride_x,
+                                                            (T*)&beta,
+                                                            dy,
+                                                            incy,
+                                                            stride_y,
+                                                            batch_count));
         }
 
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -228,6 +209,5 @@ hipblasStatus_t testing_gemvStridedBatched(const Arguments& argus)
                          rocblas_error);
     }
 
-    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

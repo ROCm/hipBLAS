@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -63,8 +63,7 @@ hipblasStatus_t testing_gemvBatched(const Arguments& argus)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     double gpu_time_used, cpu_time_used;
     double hipblasGflops, cblas_gflops, hipblasBandwidth;
@@ -93,7 +92,6 @@ hipblasStatus_t testing_gemvBatched(const Arguments& argus)
     if(!dA_array || !dx_array || !dy_array || (!bA_array[last] && A_size)
        || (!bx_array[last] && X_size) || (!by_array[last] && Y_size))
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_ALLOC_FAILED;
     }
 
@@ -120,7 +118,6 @@ hipblasStatus_t testing_gemvBatched(const Arguments& argus)
 
         if(err_A != hipSuccess || err_x != hipSuccess || err_y != hipSuccess)
         {
-            hipblasDestroy(handle);
             return HIPBLAS_STATUS_MAPPING_ERROR;
         }
     }
@@ -130,7 +127,6 @@ hipblasStatus_t testing_gemvBatched(const Arguments& argus)
     err_y = hipMemcpy(dy_array, by_array, batch_count * sizeof(T*), hipMemcpyHostToDevice);
     if(err_A != hipSuccess || err_x != hipSuccess || err_y != hipSuccess)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_MAPPING_ERROR;
     }
 
@@ -139,26 +135,19 @@ hipblasStatus_t testing_gemvBatched(const Arguments& argus)
     =================================================================== */
     if(argus.unit_check || argus.norm_check)
     {
-        status = hipblasGemvBatchedFn(handle,
-                                      transA,
-                                      M,
-                                      N,
-                                      (T*)&alpha,
-                                      dA_array,
-                                      lda,
-                                      dx_array,
-                                      incx,
-                                      (T*)&beta,
-                                      dy_array,
-                                      incy,
-                                      batch_count);
-
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            // here in cuda
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGemvBatchedFn(handle,
+                                                 transA,
+                                                 M,
+                                                 N,
+                                                 (T*)&alpha,
+                                                 dA_array,
+                                                 lda,
+                                                 dx_array,
+                                                 incx,
+                                                 (T*)&beta,
+                                                 dy_array,
+                                                 incy,
+                                                 batch_count));
 
         /* =====================================================================
            CPU BLAS
@@ -192,12 +181,8 @@ hipblasStatus_t testing_gemvBatched(const Arguments& argus)
     if(argus.timing)
     {
         hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
         {
@@ -205,26 +190,19 @@ hipblasStatus_t testing_gemvBatched(const Arguments& argus)
             {
                 gpu_time_used = get_time_us_sync(stream);
             }
-            status = hipblasGemvBatchedFn(handle,
-                                          transA,
-                                          M,
-                                          N,
-                                          (T*)&alpha,
-                                          dA_array,
-                                          lda,
-                                          dx_array,
-                                          incx,
-                                          (T*)&beta,
-                                          dy_array,
-                                          incy,
-                                          batch_count);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                // here in cuda
-                hipblasDestroy(handle);
-                return status;
-            }
+            CHECK_HIPBLAS_ERROR(hipblasGemvBatchedFn(handle,
+                                                     transA,
+                                                     M,
+                                                     N,
+                                                     (T*)&alpha,
+                                                     dA_array,
+                                                     lda,
+                                                     dx_array,
+                                                     incx,
+                                                     (T*)&beta,
+                                                     dy_array,
+                                                     incy,
+                                                     batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -245,6 +223,5 @@ hipblasStatus_t testing_gemvBatched(const Arguments& argus)
                          rocblas_error);
     }
 
-    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
