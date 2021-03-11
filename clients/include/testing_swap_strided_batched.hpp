@@ -34,8 +34,6 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
     int           sizeX   = stridex * batch_count;
     int           sizeY   = stridey * batch_count;
 
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N < 0 || incx < 0 || incy < 0 || batch_count < 0)
@@ -57,8 +55,7 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -72,16 +69,10 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
-    status
-        = hipblasSwapStridedBatchedFn(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count);
-
-    if((status != HIPBLAS_STATUS_SUCCESS))
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(
+        hipblasSwapStridedBatchedFn(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
@@ -107,12 +98,7 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
     if(timing)
     {
         hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -120,14 +106,8 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status = hipblasSwapStridedBatchedFn(
-                handle, N, dx, incx, stridex, dy, incy, stridey, batch_count);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status;
-            }
+            CHECK_HIPBLAS_ERROR(hipblasSwapStridedBatchedFn(
+                handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -140,6 +120,5 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
             hipblas_error);
     }
 
-    hipblasDestroy(handle);
     return status;
 }

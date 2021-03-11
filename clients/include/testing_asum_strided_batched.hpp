@@ -29,11 +29,6 @@ hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
     hipblasStride stridex = N * incx * stride_scale;
     int           sizeX   = stridex * batch_count;
 
-    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
-
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // check to prevent undefined memory allocation error
@@ -47,8 +42,7 @@ hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T>  hx(sizeX);
@@ -70,27 +64,13 @@ hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
          HIPBLAS
     =================================================================== */
     // hipblasAsum accept both dev/host pointer for the scalar
-    status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-    status_2
-        = hipblasAsumStridedBatchedFn(handle, N, dx, incx, stridex, batch_count, d_hipblas_result);
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+    CHECK_HIPBLAS_ERROR(
+        hipblasAsumStridedBatchedFn(handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
 
-    status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-    status_4 = hipblasAsumStridedBatchedFn(
-        handle, N, dx, incx, stridex, batch_count, hipblas_result_host);
-
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
-       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
-    {
-        hipblasDestroy(handle);
-        if(status_1 != HIPBLAS_STATUS_SUCCESS)
-            return status_1;
-        if(status_2 != HIPBLAS_STATUS_SUCCESS)
-            return status_2;
-        if(status_3 != HIPBLAS_STATUS_SUCCESS)
-            return status_3;
-        if(status_4 != HIPBLAS_STATUS_SUCCESS)
-            return status_4;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+    CHECK_HIPBLAS_ERROR(hipblasAsumStridedBatchedFn(
+        handle, N, dx, incx, stridex, batch_count, hipblas_result_host));
 
     CHECK_HIP_ERROR(hipMemcpy(
         hipblas_result_device, d_hipblas_result, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
@@ -123,16 +103,8 @@ hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
     if(argus.timing)
     {
         hipStream_t stream;
-        status_1 = hipblasGetStream(handle, &stream);
-        status_2 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        if(status_1 != HIPBLAS_STATUS_SUCCESS || status_2 != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            if(status_1 != HIPBLAS_STATUS_SUCCESS)
-                return status_1;
-            if(status_2 != HIPBLAS_STATUS_SUCCESS)
-                return status_2;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -140,14 +112,8 @@ hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status_1 = hipblasAsumStridedBatchedFn(
-                handle, N, dx, incx, stridex, batch_count, d_hipblas_result);
-
-            if(status_1 != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status_1;
-            }
+            CHECK_HIPBLAS_ERROR(hipblasAsumStridedBatchedFn(
+                handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -160,6 +126,5 @@ hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
                                                                             hipblas_error_device);
     }
 
-    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
