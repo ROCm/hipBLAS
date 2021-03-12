@@ -120,5 +120,5 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
             hipblas_error);
     }
 
-    return status;
+    return HIPBLAS_STATUS_SUCCESS;
 }
