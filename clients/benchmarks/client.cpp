@@ -968,10 +968,10 @@ int run_bench_test(Arguments& arg)
         if(!strcmp(function, "scal") || !strcmp(function, "scal_batched")
            || !strcmp(function, "scal_strided_batched"))
             hipblas_blas1_dispatch<perf_blas_scal>(arg);
+
         else if(!strcmp(function, "rotg") || !strcmp(function, "rotg_batched")
                 || !strcmp(function, "rotg_strided_batched"))
-            hipblas_blas1_dispatch<perf_blas_rotg>(arg);
-        */
+            hipblas_blas1_dispatch<perf_blas_rotg>(arg);*/
         else if(!strcmp(function, "rot") || !strcmp(function, "rot_batched")
                 || !strcmp(function, "rot_strided_batched"))
             hipblas_rot_dispatch<perf_blas_rot>(arg);
