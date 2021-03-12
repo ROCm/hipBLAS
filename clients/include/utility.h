@@ -28,30 +28,40 @@
  * \brief provide data initialization, timing, hipblas type <-> lapack char conversion utilities.
  */
 
-#define CHECK_HIP_ERROR(error)                    \
-    do                                            \
-    {                                             \
-        if(error != hipSuccess)                   \
-        {                                         \
-            fprintf(stderr,                       \
-                    "error: '%s'(%d) at %s:%d\n", \
-                    hipGetErrorString(error),     \
-                    error,                        \
-                    __FILE__,                     \
-                    __LINE__);                    \
-            exit(EXIT_FAILURE);                   \
-        }                                         \
+#define CHECK_HIP_ERROR(error)                        \
+    do                                                \
+    {                                                 \
+        hipError_t error__ = (error);                 \
+        if(error__ != hipSuccess)                     \
+        {                                             \
+            fprintf(stderr,                           \
+                    "hip error: '%s'(%d) at %s:%d\n", \
+                    hipGetErrorString(error__),       \
+                    error__,                          \
+                    __FILE__,                         \
+                    __LINE__);                        \
+            exit(EXIT_FAILURE);                       \
+        }                                             \
     } while(0)
 
 #ifdef __cplusplus
 
 #ifndef CHECK_HIPBLAS_ERROR
-#define CHECK_HIPBLAS_ERROR(error)                                            \
-    if(error != HIPBLAS_STATUS_SUCCESS)                                       \
-    {                                                                         \
-        fprintf(stderr, "hipBLAS error: %s\n", hipblasStatusToString(error)); \
-        return (error);                                                       \
-    }
+#define EXPECT_HIPBLAS_STATUS(status, expected)      \
+    do                                               \
+    {                                                \
+        hipblasStatus_t status__ = (status);         \
+        if(status__ != expected)                     \
+        {                                            \
+            fprintf(stderr,                          \
+                    "hipBLAS error: %s at %s:%d\n",  \
+                    hipblasStatusToString(status__), \
+                    __FILE__,                        \
+                    __LINE__);                       \
+            return (status__);                       \
+        }                                            \
+    } while(0)
+#define CHECK_HIPBLAS_ERROR(STATUS) EXPECT_HIPBLAS_STATUS(STATUS, HIPBLAS_STATUS_SUCCESS)
 #endif
 
 #define BLAS_1_RESULT_PRINT                                \
