@@ -61,6 +61,13 @@ constexpr double dot_gbyte_count(int n)
     return (sizeof(T) * 2.0 * n) / 1e9;
 }
 
+/* \brief byte counts of iamax/iamin */
+template <typename T>
+constexpr double iamax_gbyte_count(int n)
+{
+    return (sizeof(T) * 2.0 * n) / 1e9;
+}
+
 /* \brief byte counts of NRM2 */
 template <typename T>
 constexpr double nrm2_gbyte_count(int n)
