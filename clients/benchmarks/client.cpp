@@ -702,9 +702,9 @@ struct perf_blas_rot<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            // {"rot", testing_rot<Ti, To, Tc>},
-            // {"rot_batched", testing_rot_batched<Ti, To, Tc>},
-            // {"rot_strided_batched", testing_rot_strided_batched<Ti, To, Tc>},
+            {"rot", testing_rot<Ti, To, Tc>},
+            {"rot_batched", testing_rot_batched<Ti, To, Tc>},
+            {"rot_strided_batched", testing_rot_strided_batched<Ti, To, Tc>},
         };
         run_function(map, arg);
     }
@@ -971,13 +971,14 @@ int run_bench_test(Arguments& arg)
         else if(!strcmp(function, "rotg") || !strcmp(function, "rotg_batched")
                 || !strcmp(function, "rotg_strided_batched"))
             hipblas_blas1_dispatch<perf_blas_rotg>(arg);
+        */
         else if(!strcmp(function, "rot") || !strcmp(function, "rot_batched")
                 || !strcmp(function, "rot_strided_batched"))
-            hipblas_blas1_dispatch<perf_blas_rot>(arg);
+            hipblas_rot_dispatch<perf_blas_rot>(arg);
+        /*
         else if(!strcmp(function, "axpy_ex") || !strcmp(function, "axpy_batched_ex")
                 || !strcmp(function, "axpy_strided_batched_ex"))
             hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);*/
-
         else
             hipblas_simple_dispatch<perf_blas>(arg);
     }

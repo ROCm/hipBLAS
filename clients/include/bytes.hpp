@@ -75,6 +75,13 @@ constexpr double nrm2_gbyte_count(int n)
     return (sizeof(T) * n) / 1e9;
 }
 
+/* \brief byte counts of ROT */
+template <typename T>
+constexpr double rot_gbyte_count(int n)
+{
+    return (sizeof(T) * 4.0 * n) / 1e9; // 2 loads and 2 stores
+}
+
 /* \brief byte counts of SCAL */
 template <typename T>
 constexpr double scal_gbyte_count(int n)

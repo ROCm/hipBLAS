@@ -119,6 +119,35 @@ constexpr double nrm2_gflop_count<hipblasDoubleComplex>(int n)
     return nrm2_gflop_count<hipblasComplex>(n);
 }
 
+// rot
+template <typename Tx, typename Ty, typename Tc, typename Ts>
+constexpr double rot_gflop_count(int n)
+{
+    return (6.0 * n) / 1e9; //4 real multiplication, 1 addition , 1 subtraction
+}
+template <>
+constexpr double rot_gflop_count<hipblasComplex, hipblasComplex, float, hipblasComplex>(int n)
+{
+    return (20.0 * n)
+           / 1e9; // (6*2 n for c-c multiply)+(2*2 n for real-complex multiply) + 2n for c-c add + 2n for c-c sub
+}
+template <>
+constexpr double rot_gflop_count<hipblasComplex, hipblasComplex, float, float>(int n)
+{
+    return (12.0 * n) / 1e9; // (2*4 n for real-complex multiply) + 2n for c-c add + 2n for c-c sub
+}
+template <>
+constexpr double
+    rot_gflop_count<hipblasDoubleComplex, hipblasDoubleComplex, double, hipblasDoubleComplex>(int n)
+{
+    return (20.0 * n) / 1e9;
+}
+template <>
+constexpr double rot_gflop_count<hipblasDoubleComplex, hipblasDoubleComplex, double, double>(int n)
+{
+    return (12.0 * n) / 1e9;
+}
+
 // scal
 template <typename T, typename U>
 constexpr double scal_gflop_count(int n)
