@@ -82,6 +82,37 @@ constexpr double rot_gbyte_count(int n)
     return (sizeof(T) * 4.0 * n) / 1e9; // 2 loads and 2 stores
 }
 
+/* \brief byte counts of ROTG */
+template <typename T, typename U>
+constexpr double rotg_gbyte_count()
+{
+    // 1 load and 1 store for each element
+    return sizeof(T) * 3 * 2 + sizeof(U) * 2;
+}
+
+/* \brief byte counts of ROTM */
+template <typename T>
+constexpr double rotm_gbyte_count(int n, T flag)
+{
+    //No load and store operations when flag is set to -2.0
+    if(flag != -2.0)
+    {
+        return (sizeof(T) * 4.0 * n) / 1e9; //2 loads and 2 stores
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+/* \brief byte counts of ROTMG */
+template <typename T>
+constexpr double rotmg_gbyte_count()
+{
+    // TODO
+    return 0;
+}
+
 /* \brief byte counts of SCAL */
 template <typename T>
 constexpr double scal_gbyte_count(int n)

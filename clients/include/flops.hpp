@@ -148,6 +148,39 @@ constexpr double rot_gflop_count<hipblasDoubleComplex, hipblasDoubleComplex, dou
     return (12.0 * n) / 1e9;
 }
 
+// rotg
+template <typename T, typename U>
+constexpr double rotg_gflop_count()
+{
+    return 12;
+}
+
+// rotm
+template <typename Tx>
+constexpr double rotm_gflop_count(int n, Tx flag)
+{
+    //No floating point operations when flag is set to -2.0
+    if(flag != -2.0)
+    {
+        if(flag < 0)
+            return (6.0 * n) / 1e9; // 4 real multiplication, 2 addition
+        else
+            return (4.0 * n) / 1e9; // 2 real multiplication, 2 addition
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+// rotmg
+template <typename T>
+constexpr double rotmg_gflop_count()
+{
+    // TODO
+    return 0;
+}
+
 // scal
 template <typename T, typename U>
 constexpr double scal_gflop_count(int n)

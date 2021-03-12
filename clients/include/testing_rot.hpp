@@ -44,22 +44,13 @@ hipblasStatus_t testing_rot(const Arguments& arg)
     device_vector<V> ds(1);
 
     // Initial Data on CPU
+    host_vector<T> hx(size_x);
+    host_vector<T> hy(size_y);
     host_vector<U> hc(1);
     host_vector<V> hs(1);
-    host_vector<T> hx_host(size_x);
-    host_vector<T> hy_host(size_y);
-    host_vector<T> hx_device(size_x);
-    host_vector<T> hy_device(size_y);
-    host_vector<T> hx_cpu;
-    host_vector<T> hy_cpu;
-
     srand(1);
-    hipblas_init<T>(hx_host, 1, N, incx);
-    hipblas_init<T>(hy_host, 1, N, incy);
-    hx_device = hx_host;
-    hy_device = hy_host;
-    hx_cpu    = hx_host;
-    hy_cpu    = hy_host;
+    hipblas_init<T>(hx, 1, N, incx);
+    hipblas_init<T>(hy, 1, N, incy);
 
     // Random alpha (0 - 10)
     host_vector<int> alpha(1);
@@ -69,51 +60,68 @@ hipblasStatus_t testing_rot(const Arguments& arg)
     hc[0] = cos(alpha[0]);
     hs[0] = sin(alpha[0]);
 
-    // Test host
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx_host, sizeof(T) * size_x, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_host, sizeof(T) * size_y, hipMemcpyHostToDevice));
+    // CPU BLAS reference data
+    host_vector<T> cx = hx;
+    host_vector<T> cy = hy;
 
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, hc, hs));
-
-    CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
-
-    // Test device
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx_device, sizeof(T) * size_x, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(T) * size_y, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, dc, ds));
-
-    CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
+    cblas_rot<T, U, V>(N, cx.data(), incx, cy.data(), incy, *hc, *hs);
 
     if(arg.unit_check || arg.norm_check)
     {
-        cblas_rot<T, U, V>(N, hx_cpu.data(), incx, hy_cpu.data(), incy, *hc, *hs);
+        // Test host
+        {
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
+            CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, hc, hs));
 
-        if(arg.unit_check)
-        {
-            near_check_general(1, N, incx, hx_cpu.data(), hx_device.data(), double(rel_error));
-            near_check_general(1, N, incy, hy_cpu.data(), hy_device.data(), double(rel_error));
-            near_check_general(1, N, incx, hx_cpu.data(), hx_host.data(), double(rel_error));
-            near_check_general(1, N, incy, hy_cpu.data(), hy_host.data(), double(rel_error));
+            host_vector<T> rx(size_x);
+            host_vector<T> ry(size_y);
+            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
+            if(arg.unit_check)
+            {
+                near_check_general(1, N, incx, cx.data(), rx.data(), double(rel_error));
+                near_check_general(1, N, incy, cy.data(), ry.data(), double(rel_error));
+            }
+            if(arg.norm_check)
+            {
+                hipblas_error_host = norm_check_general<T>('F', 1, N, incx, cx, rx);
+                hipblas_error_host += norm_check_general<T>('F', 1, N, incy, cy, ry);
+            }
         }
-        if(arg.norm_check)
+
+        // Test device
         {
-            hipblas_error_host = std::max(norm_check_general<T>('F', 1, N, incx, hx_cpu, hx_host),
-                                          norm_check_general<T>('F', 1, N, incy, hy_cpu, hy_host));
-            hipblas_error_device
-                = std::max(norm_check_general<T>('F', 1, N, incx, hx_cpu, hx_device),
-                           norm_check_general<T>('F', 1, N, incy, hy_cpu, hy_device));
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
+            CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, dc, ds));
+            host_vector<T> rx(size_x);
+            host_vector<T> ry(size_y);
+            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
+            if(arg.unit_check)
+            {
+                near_check_general(1, N, incx, cx.data(), rx.data(), double(rel_error));
+                near_check_general(1, N, incy, cy.data(), ry.data(), double(rel_error));
+            }
+            if(arg.norm_check)
+            {
+                hipblas_error_device = norm_check_general<T>('F', 1, N, incx, cx, rx);
+                hipblas_error_device += norm_check_general<T>('F', 1, N, incy, cy, ry);
+            }
         }
     }
 
     if(arg.timing)
     {
+        CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));

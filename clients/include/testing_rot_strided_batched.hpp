@@ -53,21 +53,13 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
     device_vector<V> ds(1);
 
     // Initial Data on CPU
-    host_vector<T> hx_host(size_x);
-    host_vector<T> hy_host(size_y);
-    host_vector<T> hx_device(size_x);
-    host_vector<T> hy_device(size_y);
-    host_vector<T> hx_cpu(size_x);
-    host_vector<T> hy_cpu(size_y);
+    host_vector<T> hx(size_x);
+    host_vector<T> hy(size_y);
     host_vector<U> hc(1);
     host_vector<V> hs(1);
     srand(1);
-    hipblas_init<T>(hx_host, 1, N, incx, stride_x, batch_count);
-    hipblas_init<T>(hy_host, 1, N, incy, stride_y, batch_count);
-    hx_device = hx_host;
-    hx_cpu    = hx_host;
-    hy_device = hy_host;
-    hy_cpu    = hy_host;
+    hipblas_init<T>(hx, 1, N, incx, stride_x, batch_count);
+    hipblas_init<T>(hy, 1, N, incy, stride_y, batch_count);
 
     // Random alpha (0 - 10)
     host_vector<int> alpha(1);
@@ -77,54 +69,81 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
     hc[0] = cos(alpha[0]);
     hs[0] = sin(alpha[0]);
 
-    // Test host
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx_host, sizeof(T) * size_x, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_host, sizeof(T) * size_y, hipMemcpyHostToDevice));
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR((hipblasRotStridedBatchedFn(
-        handle, N, dx, incx, stride_x, dy, incy, stride_y, hc, hs, batch_count)));
-    CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
-
-    // Test device
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx_device, sizeof(T) * size_x, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(T) * size_y, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR((hipblasRotStridedBatchedFn(
-        handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count)));
-    CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
-
+    // CPU BLAS reference data
+    host_vector<T> cx = hx;
+    host_vector<T> cy = hy;
+    // cblas_rotg<T, U>(cx, cy, hc, hs);
+    // cx[0] = hx[0];
+    // cy[0] = hy[0];
     for(int b = 0; b < batch_count; b++)
     {
         cblas_rot<T, U, V>(
-            N, hx_cpu.data() + b * stride_x, incx, hy_cpu.data() + b * stride_y, incy, *hc, *hs);
+            N, cx.data() + b * stride_x, incx, cy.data() + b * stride_y, incy, *hc, *hs);
     }
 
     if(arg.unit_check || arg.norm_check)
     {
-        if(arg.unit_check)
+        // Test host
         {
-            near_check_general<T>(1, N, batch_count, incx, stride_x, hx_cpu, hx_host, rel_error);
-            near_check_general<T>(1, N, batch_count, incy, stride_y, hy_cpu, hy_host, rel_error);
-            near_check_general<T>(1, N, batch_count, incx, stride_x, hx_cpu, hx_device, rel_error);
-            near_check_general<T>(1, N, batch_count, incy, stride_y, hy_cpu, hy_device, rel_error);
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
+            CHECK_HIPBLAS_ERROR((hipblasRotStridedBatchedFn(
+                handle, N, dx, incx, stride_x, dy, incy, stride_y, hc, hs, batch_count)));
+
+            host_vector<T> rx(size_x);
+            host_vector<T> ry(size_y);
+            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
+            if(arg.unit_check)
+            {
+                near_check_general<T>(1, N, batch_count, incx, stride_x, cx, rx, rel_error);
+                near_check_general<T>(1, N, batch_count, incy, stride_y, cy, ry, rel_error);
+            }
+            if(arg.norm_check)
+            {
+                hipblas_error_host
+                    = norm_check_general<T>('F', 1, N, incx, stride_x, cx, rx, batch_count);
+                hipblas_error_host
+                    += norm_check_general<T>('F', 1, N, incy, stride_y, cy, ry, batch_count);
+            }
         }
-        if(arg.norm_check)
+
+        // Test device
         {
-            hipblas_error_host = std::max(
-                norm_check_general<T>('F', 1, N, incx, stride_x, hx_cpu, hx_host, batch_count),
-                norm_check_general<T>('F', 1, N, incy, stride_y, hy_cpu, hy_host, batch_count));
-            hipblas_error_device = std::max(
-                norm_check_general<T>('F', 1, N, incx, stride_x, hx_cpu, hx_device, batch_count),
-                norm_check_general<T>('F', 1, N, incy, stride_y, hy_cpu, hy_device, batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
+            CHECK_HIPBLAS_ERROR((hipblasRotStridedBatchedFn(
+                handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count)));
+
+            host_vector<T> rx(size_x);
+            host_vector<T> ry(size_y);
+            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
+            if(arg.unit_check)
+            {
+                near_check_general<T>(1, N, batch_count, incx, stride_x, cx, rx, rel_error);
+                near_check_general<T>(1, N, batch_count, incy, stride_y, cy, ry, rel_error);
+            }
+            if(arg.norm_check)
+            {
+                hipblas_error_device
+                    = norm_check_general<T>('F', 1, N, incx, stride_x, cx, rx, batch_count);
+                hipblas_error_device
+                    += norm_check_general<T>('F', 1, N, incy, stride_y, cy, ry, batch_count);
+            }
         }
     }
 
     if(arg.timing)
     {
+        CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
@@ -140,7 +159,7 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_x, e_batch_count>{}.log_args<T>(
+        ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_y>{}.log_args<T>(
             std::cout,
             arg,
             gpu_time_used,
