@@ -2,7 +2,6 @@
  * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
-#pragma once
 
 #include "utility.h"
 #include <gtest/gtest.h>

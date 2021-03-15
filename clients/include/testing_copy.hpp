@@ -23,31 +23,28 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    int             unit_check = argus.unit_check;
-    int             timing     = argus.timing;
-    hipblasStatus_t status     = HIPBLAS_STATUS_SUCCESS;
+    int unit_check = argus.unit_check;
+    int timing     = argus.timing;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N < 0)
     {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
     else if(incx < 0)
     {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     int sizeX = N * incx;
     int sizeY = N * incy;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    vector<T> hx(sizeX);
-    vector<T> hy(sizeY);
-    vector<T> hx_cpu(sizeX);
-    vector<T> hy_cpu(sizeY);
+    host_vector<T> hx(sizeX);
+    host_vector<T> hy(sizeY);
+    host_vector<T> hx_cpu(sizeX);
+    host_vector<T> hy_cpu(sizeY);
 
     // allocate memory on device
     device_vector<T> dx(sizeX);
@@ -56,9 +53,7 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
 
-    hipblasHandle_t handle;
-
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -72,14 +67,9 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
-    status = hipblasCopyFn(handle, N, dx, incx, dy, incy);
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, dx, incx, dy, incy));
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
@@ -105,12 +95,7 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     if(timing)
     {
         hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -118,13 +103,7 @@ hipblasStatus_t testing_copy(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status = hipblasCopyFn(handle, N, dx, incx, dy, incy);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status;
-            }
+            CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, dx, incx, dy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -136,6 +115,5 @@ hipblasStatus_t testing_copy(const Arguments& argus)
                                                          hipblas_error);
     }
 
-    hipblasDestroy(handle);
-    return status;
+    return HIPBLAS_STATUS_SUCCESS;
 }
