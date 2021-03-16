@@ -199,6 +199,13 @@ constexpr double gemm_gbyte_count(int m, int n, int k)
     return (sizeof(T) * (m * k + n * k + m * n)) / 1e9;
 }
 
+/* \brief byte counts of TRMM */
+template <typename T>
+constexpr double trmm_gbyte_count(int m, int n, int k)
+{
+    return (sizeof(T) * (m * n * 2 + k * k / 2)) / 1e9;
+}
+
 /* \brief byte counts of TRSM */
 template <typename T>
 constexpr double trsm_gbyte_count(int m, int n, int k)
