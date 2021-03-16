@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -52,9 +52,8 @@ hipblasStatus_t testing_trmm_batched(const Arguments& argus)
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops, hipblasBandwidth;
-    double rocblas_error;
+    double gpu_time_used = 0.0;
+    double hipblas_error = 0.0;
 
     T alpha = argus.get_alpha<T>();
     T beta  = argus.get_beta<T>();
@@ -114,29 +113,15 @@ hipblasStatus_t testing_trmm_batched(const Arguments& argus)
     }
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
-    for(int iter = 0; iter < 1; iter++)
-    {
-        status = hipblasTrmmBatchedFn(handle,
-                                      side,
-                                      uplo,
-                                      transA,
-                                      diag,
-                                      M,
-                                      N,
-                                      &alpha,
-                                      dA_array,
-                                      lda,
-                                      dB_array,
-                                      ldb,
-                                      batch_count);
+    status = hipblasTrmmBatchedFn(
+        handle, side, uplo, transA, diag, M, N, &alpha, dA_array, lda, dB_array, ldb, batch_count);
 
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipblasDestroy(handle);
+        return status;
     }
 
     // copy output from device to CPU
@@ -145,7 +130,7 @@ hipblasStatus_t testing_trmm_batched(const Arguments& argus)
         hipMemcpy(hB_copy_array[b], bB_array[b], sizeof(T) * B_size, hipMemcpyDeviceToHost);
     }
 
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU BLAS
@@ -163,6 +148,66 @@ hipblasStatus_t testing_trmm_batched(const Arguments& argus)
         {
             unit_check_general<T>(M, N, batch_count, ldb, hB_array, hB_copy_array);
         }
+        if(argus.norm_check)
+        {
+            hipblas_error
+                = norm_check_general<T>('F', M, N, ldb, hB_copy_array, hB_array, batch_count);
+        }
+    }
+
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status = hipblasTrmmBatchedFn(handle,
+                                          side,
+                                          uplo,
+                                          transA,
+                                          diag,
+                                          M,
+                                          N,
+                                          &alpha,
+                                          dA_array,
+                                          lda,
+                                          dB_array,
+                                          ldb,
+                                          batch_count);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_side_option,
+                      e_uplo_option,
+                      e_transA_option,
+                      e_diag_option,
+                      e_M,
+                      e_N,
+                      e_lda,
+                      e_ldb,
+                      e_batch_count>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         trmm_gflop_count<T>(M, N, K),
+                         trmm_gbyte_count<T>(M, N, K),
+                         hipblas_error);
     }
 
     hipblasDestroy(handle);
