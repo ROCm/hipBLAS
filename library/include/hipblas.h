@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 //! HIP = Heterogeneous-compute Interface for Portability
@@ -7408,6 +7408,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   han
                                                            hipblasStride     stridex,
                                                            int               batch_count,
                                                            hipblasDatatype_t executionType);
+
+/*! HIPBLAS Auxiliary API
+
+    \details
+    hipblasStatusToString
+
+    Returns string representing hipblasStatus_t value
+
+    @param[in]
+    status  [hipblasStatus_t]
+            hipBLAS status to convert to string
+*/
+
+HIPBLAS_EXPORT const char* hipblasStatusToString(hipblasStatus_t status);
 
 #ifdef __cplusplus
 }
