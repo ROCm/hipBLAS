@@ -89,19 +89,11 @@ auto hipblas_blas1_ex_dispatch(const Arguments& arg)
     // Currently for axpy we're only supporting a limited number of variants,
     // specifically alpha_type == x_type == y_type, however I'm trying to leave
     // this open to expansion.
-    const auto        Ta = arg.a_type, Tx = arg.b_type, Ty = arg.c_type, Tex = arg.compute_type;
-    const std::string function = arg.function;
-    const bool        is_scal  = function == "scal_ex" || function == "scal_batched_ex"
-                         || function == "scal_strided_batched_ex";
+    const auto Ta = arg.a_type, Tx = arg.b_type, Ty = arg.c_type, Tex = arg.compute_type;
 
     if(Ta == Tx && Tx == Ty && Ty == Tex)
     {
         return hipblas_simple_dispatch<TEST>(arg); // Ta == Tx == Ty == Tex
-    }
-    else if(Ta == Tx && Tx == Tex && is_scal)
-    {
-        // hscal with f16_r compute (scal doesn't care about Ty)
-        return hipblas_simple_dispatch<TEST>(arg);
     }
     else if(Ta == Tx && Tx == Ty && Ta == HIPBLAS_R_16F && Tex == HIPBLAS_R_32F)
     {
@@ -111,11 +103,6 @@ auto hipblas_blas1_ex_dispatch(const Arguments& arg)
     {
         // scal half
         return TEST<hipblasHalf, hipblasHalf, float>{}(arg);
-    }
-    else if(Ta == HIPBLAS_R_32F && Tx == HIPBLAS_R_16F && Tex == HIPBLAS_R_32F && is_scal)
-    {
-        // scal half with float alpha
-        return TEST<float, hipblasHalf, float>{}(arg);
     }
     else if(Ta == HIPBLAS_R_32F && Tx == HIPBLAS_C_32F && Tex == HIPBLAS_C_32F)
     {
