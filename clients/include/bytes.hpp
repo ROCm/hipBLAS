@@ -107,6 +107,20 @@ constexpr double gemv_gbyte_count(hipblasOperation_t transA, int m, int n)
     return (sizeof(T) * (m * n + 2 * (transA == HIPBLAS_OP_N ? n : m))) / 1e9;
 }
 
+/* \brief byte counts of GBMV */
+template <typename T>
+constexpr double gbmv_gbyte_count(hipblasOperation_t transA, int m, int n, int kl, int ku)
+{
+    size_t dim_x = transA == HIPBLAS_OP_N ? n : m;
+
+    int    k1      = dim_x < kl ? dim_x : kl;
+    int    k2      = dim_x < ku ? dim_x : ku;
+    int    d1      = ((k1 * dim_x) - (k1 * (k1 + 1) / 2));
+    int    d2      = ((k2 * dim_x) - (k2 * (k2 + 1) / 2));
+    double num_els = double(d1 + d2 + dim_x);
+    return (sizeof(T) * (num_els)) / 1e9;
+}
+
 /* \brief byte counts of GER */
 template <typename T>
 constexpr double ger_gbyte_count(int m, int n)
