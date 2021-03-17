@@ -14,21 +14,18 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
-hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
+hipblasStatus_t testing_scal_ex_template(Arguments argus)
 {
     bool FORTRAN         = argus.fortran;
     auto hipblasScalExFn = FORTRAN ? hipblasScalExFortran : hipblasScalEx;
 
-    int N          = argus.N;
-    int incx       = argus.incx;
-    int unit_check = argus.unit_check;
-    int timing     = argus.timing;
-    int norm_check = argus.norm_check;
+    int N    = argus.N;
+    int incx = argus.incx;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     int sizeX = N * incx;
-    Ta  alpha = argus.get_alpha<Ta>();
+    Ta  alpha = argus.alpha;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -46,8 +43,8 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
     host_vector<Tx>   hz(sizeX);
     device_vector<Tx> dx(sizeX);
 
-    double gpu_time_used = 0.0, cpu_time_used = 0.0;
-    double hipblas_error = 0.0;
+    double gpu_time_used, cpu_time_used;
+    double rocblas_error = 0.0;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
@@ -75,7 +72,7 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(Tx) * N * incx, hipMemcpyDeviceToHost));
 
-    if(unit_check || norm_check)
+    if(argus.unit_check)
     {
         /* =====================================================================
                     CPU BLAS
@@ -84,56 +81,20 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(unit_check)
+        if(argus.unit_check)
         {
             unit_check_general<Tx>(1, N, incx, hz.data(), hx.data());
         }
 
-        if(norm_check)
-        {
-            hipblas_error = norm_check_general<Tx>('F', 1, N, incx, hz.data(), hx.data());
-        }
-
     } // end of if unit check
 
-    if(timing)
-    {
-        hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+    //  BLAS_1_RESULT_PRINT
 
-        int runs = argus.cold_iters + argus.iters;
-        for(int iter = 0; iter < runs; iter++)
-        {
-            if(iter == argus.cold_iters)
-                gpu_time_used = get_time_us_sync(stream);
-
-            status = hipblasScalExFn(handle, N, &alpha, alphaType, dx, xType, incx, executionType);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status;
-            }
-        }
-        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
-
-        ArgumentModel<e_N, e_alpha, e_incx>{}.log_args<Tx>(std::cout,
-                                                           argus,
-                                                           gpu_time_used,
-                                                           scal_gflop_count<Tx, Ta>(N),
-                                                           scal_gbyte_count<Tx>(N),
-                                                           hipblas_error);
-    }
     hipblasDestroy(handle);
-    return status;
+    return HIPBLAS_STATUS_SUCCESS;
 }
 
-hipblasStatus_t testing_scal_ex(const Arguments& argus)
+hipblasStatus_t testing_scal_ex(Arguments argus)
 {
     hipblasDatatype_t alphaType     = argus.a_type;
     hipblasDatatype_t xType         = argus.b_type;
