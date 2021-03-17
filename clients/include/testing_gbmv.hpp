@@ -80,7 +80,7 @@ hipblasStatus_t testing_gbmv(const Arguments& argus)
     hipblas_init<T>(hy, 1, Y_size, incy);
 
     // copy vector is easy in STL; hy_cpu = hy: save a copy in hy_cpu which will be output of CPU BLAS
-    hy_cpu = hy_host = hy_device = hy;
+    hy_cpu = hy;
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * lda * N, hipMemcpyHostToDevice));

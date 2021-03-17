@@ -92,8 +92,6 @@ hipblasStatus_t testing_gbmv_batched(const Arguments& argus)
     hipblas_init(hA, true);
     hipblas_init(hx);
     hipblas_init(hy);
-    hy_host.copy_from(hy);
-    hy_device.copy_from(hy);
     hy_cpu.copy_from(hy);
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));

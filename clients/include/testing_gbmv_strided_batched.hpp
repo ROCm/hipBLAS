@@ -98,7 +98,7 @@ hipblasStatus_t testing_gbmv_strided_batched(const Arguments& argus)
     hipblas_init<T>(hy, 1, y_els, incy, stride_y, batch_count);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
-    hy_cpu = hy_host = hy_device = hy;
+    hy_cpu = hy;
 
     // copy data from CPU to device
     hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice);
