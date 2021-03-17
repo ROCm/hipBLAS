@@ -720,21 +720,42 @@ constexpr double syrkx_gflop_count<hipblasDoubleComplex>(int n, int k)
 
 /* \brief floating point counts of TRSM */
 template <typename T>
-constexpr double trmm_gflop_count(int m, int n, int k)
+constexpr double trmm_gflop_count(int m, int n, hipblasSideMode_t side)
 {
-    return (1.0 * m * n * k) / 1e9;
+    if(HIPBLAS_SIDE_LEFT == side)
+    {
+        return (1.0 * m * n * (m + 1)) / 1e9;
+    }
+    else
+    {
+        return (1.0 * m * n * (n + 1)) / 1e9;
+    }
 }
 
 template <>
-constexpr double trmm_gflop_count<hipblasComplex>(int m, int n, int k)
+constexpr double trmm_gflop_count<hipblasComplex>(int m, int n, hipblasSideMode_t side)
 {
-    return 4 * (1.0 * m * n * k) / 1e9;
+    if(HIPBLAS_SIDE_LEFT == side)
+    {
+        return 4 * (1.0 * m * n * (m + 1)) / 1e9;
+    }
+    else
+    {
+        return 4 * (1.0 * m * n * (n + 1)) / 1e9;
+    }
 }
 
 template <>
-constexpr double trmm_gflop_count<hipblasDoubleComplex>(int m, int n, int k)
+constexpr double trmm_gflop_count<hipblasDoubleComplex>(int m, int n, hipblasSideMode_t side)
 {
-    return 4 * (1.0 * m * n * k) / 1e9;
+    if(HIPBLAS_SIDE_LEFT == side)
+    {
+        return (1.0 * m * n * (m + 1)) / 1e9;
+    }
+    else
+    {
+        return (1.0 * m * n * (n + 1)) / 1e9;
+    }
 }
 
 /* \brief floating point counts of TRSM */

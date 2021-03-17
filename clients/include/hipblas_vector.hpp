@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2018-2021 Advanced Micro Devices, Inc.
+ * Copyright 2018-2020 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #ifndef HIPBLAS_VECTOR_H_
@@ -112,44 +112,6 @@ template <typename T>
 inline void hipblas_init(host_batch_vector<T>& that, bool seedReset = false)
 {
     hipblas_init_template(that, random_generator<T>, seedReset);
-}
-
-//!
-//! @brief Template for initializing a host (non_batched|batched|strided_batched)vector.
-//! @param that That vector.
-//! @param rand_gen The random number generator for odd elements
-//! @param rand_gen_alt The random number generator for even elements
-//! @param seedReset Reset the seed if true, do not reset the seed otherwise.
-//!
-template <typename U, typename T>
-void hipblas_init_alternating_template(U& that, T rand_gen(), T rand_gen_alt(), bool seedReset)
-{
-    if(seedReset)
-        hipblas_seedrand();
-
-    for(int b = 0; b < that.batch_count(); ++b)
-    {
-        auto*     batched_data = that[b];
-        ptrdiff_t inc          = that.inc();
-        auto      n            = that.n();
-        if(inc < 0)
-            batched_data -= (n - 1) * inc;
-
-        for(int i = 0; i < n; ++i)
-        {
-            if(i % 2)
-                batched_data[i * inc] = rand_gen();
-            else
-                batched_data[i * inc] = rand_gen_alt();
-        }
-    }
-}
-
-template <typename T>
-void hipblas_init_alternating_sign(host_batch_vector<T>& that, bool seedReset = false)
-{
-    hipblas_init_alternating_template(
-        that, random_generator<T>, random_generator_negative<T>, seedReset);
 }
 
 #endif

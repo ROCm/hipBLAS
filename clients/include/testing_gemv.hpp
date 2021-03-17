@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -90,7 +90,8 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
     T alpha = (T)argus.alpha;
     T beta  = (T)argus.beta;
 
-    hipblasLocalHandle handle(argus);
+    hipblasHandle_t handle;
+    hipblasCreate(&handle);
 
     // Initial Data on CPU
     srand(1);
@@ -112,8 +113,14 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
 
     if(argus.unit_check || argus.norm_check)
     {
-        CHECK_HIPBLAS_ERROR(hipblasGemvFn(
-            handle, transA, M, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy));
+        status = hipblasGemvFn(
+            handle, transA, M, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy);
+
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
 
         /* =====================================================================
            CPU BLAS
@@ -139,8 +146,12 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
     if(argus.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
-
+        status = hipblasGetStream(handle, &stream);
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
         {
@@ -149,8 +160,14 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
                 gpu_time_used = get_time_us_sync(stream);
             }
 
-            CHECK_HIPBLAS_ERROR(hipblasGemvFn(
-                handle, transA, M, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy));
+            status = hipblasGemvFn(
+                handle, transA, M, N, (T*)&alpha, dA, lda, dx, incx, (T*)&beta, dy, incy);
+
+            if(status != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status;
+            }
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -163,5 +180,6 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
                          rocblas_error);
     }
 
+    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

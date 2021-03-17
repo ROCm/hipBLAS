@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2020 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -140,7 +140,7 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     arg.transA_option = side_uplo_transA_diag[2];
     arg.diag_option   = side_uplo_transA_diag[3];
 
-    arg.timing = 0;
+    arg.timing = 1;
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
