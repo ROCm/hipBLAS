@@ -62,10 +62,10 @@
 #include "testing_rotmg_strided_batched.hpp"
 #include "testing_scal.hpp"
 #include "testing_scal_batched.hpp"
-#include "testing_scal_batched_ex.hpp"
-#include "testing_scal_ex.hpp"
+// #include "testing_scal_batched_ex.hpp"
+// #include "testing_scal_ex.hpp"
 #include "testing_scal_strided_batched.hpp"
-#include "testing_scal_strided_batched_ex.hpp"
+// #include "testing_scal_strided_batched_ex.hpp"
 #include "testing_swap.hpp"
 #include "testing_swap_batched.hpp"
 #include "testing_swap_strided_batched.hpp"
@@ -318,18 +318,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
     void operator()(const Arguments& arg)
     {
         static const func_map fmap = {
-            {"asum", testing_asum<T>},
-            {"asum_batched", testing_asum_batched<T>},
-            {"asum_strided_batched", testing_asum_strided_batched<T>},
-            {"axpy", testing_axpy<T>},
-            {"axpy_batched", testing_axpy_batched<T>},
-            {"axpy_strided_batched", testing_axpy_strided_batched<T>},
             {"copy", testing_copy<T>},
             {"copy_batched", testing_copy_batched<T>},
             {"copy_strided_batched", testing_copy_strided_batched<T>},
-            {"dot", testing_dot<T>},
-            {"dot_batched", testing_dot_batched<T>},
-            {"dot_strided_batched", testing_dot_strided_batched<T>},
             {"swap", testing_swap<T>},
             {"swap_batched", testing_swap_batched<T>},
             {"swap_strided_batched", testing_swap_strided_batched<T>},
@@ -340,6 +331,15 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
                 // L1
+                {"asum", testing_asum<T>},
+                {"asum_batched", testing_asum_batched<T>},
+                {"asum_strided_batched", testing_asum_strided_batched<T>},
+                {"axpy", testing_axpy<T>},
+                {"axpy_batched", testing_axpy_batched<T>},
+                {"axpy_strided_batched", testing_axpy_strided_batched<T>},
+                {"dot", testing_dot<T>},
+                {"dot_batched", testing_dot_batched<T>},
+                {"dot_strided_batched", testing_dot_strided_batched<T>},
                 {"iamax", testing_iamax<T>},
                 {"iamax_batched", testing_iamax_batched<T>},
                 {"iamax_strided_batched", testing_iamax_strided_batched<T>},
@@ -416,14 +416,13 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"syrkx", testing_syr2k<T, false>},
                 {"syrkx_batched", testing_syr2k_batched<T, false>},
                 {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
-
+                {"trmm", testing_trmm<T>},
+                {"trmm_batched", testing_trmm_batched<T>},
+                {"trmm_strided_batched", testing_trmm_strided_batched<T>},
                 {"trtri", testing_trtri<T>},
                 {"trtri_batched", testing_trtri_batched<T>},
                 {"trtri_strided_batched", testing_trtri_strided_batched<T>},
 */
-            {"trmm", testing_trmm<T>},
-            {"trmm_batched", testing_trmm_batched<T>},
-            {"trmm_strided_batched", testing_trmm_strided_batched<T>},
             {"gemm", testing_gemm<T>},
             {"gemm_batched", testing_gemm_batched<T>},
             {"gemm_strided_batched", testing_gemm_strided_batched<T>},
@@ -454,9 +453,11 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, hipblasBfloat16>{}>> : h
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
+            /*
             {"dot", testing_dot<T>},
             {"dot_batched", testing_dot_batched<T>},
             {"dot_strided_batched", testing_dot_strided_batched<T>},
+            */
         };
         run_function(map, arg);
     }
@@ -468,12 +469,13 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, hipblasHalf>{}>> : hipbl
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"axpy", testing_axpy<T>},
-            {"axpy_batched", testing_axpy_batched<T>},
-            {"axpy_strided_batched", testing_axpy_strided_batched<T>},
-            {"dot", testing_dot<T>},
-            {"dot_batched", testing_dot_batched<T>},
-            {"dot_strided_batched", testing_dot_strided_batched<T>},
+            /*{"axpy", testing_axpy<T>},
+                {"axpy_batched", testing_axpy_batched<T>},
+                {"axpy_strided_batched", testing_axpy_strided_batched<T>},
+                {"dot", testing_dot<T>},
+                {"dot_batched", testing_dot_batched<T>},
+                {"dot_strided_batched", testing_dot_strided_batched<T>},
+              */
             {"gemm", testing_gemm<T>},
             {"gemm_batched", testing_gemm_batched<T>},
             {"gemm_strided_batched", testing_gemm_strided_batched<T>},
@@ -493,28 +495,27 @@ struct perf_blas<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"asum", testing_asum<T>},
-            {"asum_batched", testing_asum_batched<T>},
-            {"asum_strided_batched", testing_asum_strided_batched<T>},
-            {"axpy", testing_axpy<T>},
-            {"axpy_batched", testing_axpy_batched<T>},
-            {"axpy_strided_batched", testing_axpy_strided_batched<T>},
             {"copy", testing_copy<T>},
             {"copy_batched", testing_copy_batched<T>},
             {"copy_strided_batched", testing_copy_strided_batched<T>},
-            {"dot", testing_dot<T>},
-            {"dot_batched", testing_dot_batched<T>},
-            {"dot_strided_batched", testing_dot_strided_batched<T>},
-            {"dotc", testing_dotc<T>},
-            {"dotc_batched", testing_dotc_batched<T>},
-            {"dotc_strided_batched", testing_dotc_strided_batched<T>},
             {"swap", testing_swap<T>},
             {"swap_batched", testing_swap_batched<T>},
             {"swap_strided_batched", testing_swap_strided_batched<T>},
             {"scal", testing_scal<T>},
             {"scal_batched", testing_scal_batched<T>},
             {"scal_strided_batched", testing_scal_strided_batched<T>},
-            /*
+            /* {"asum", testing_asum<T>},
+                {"asum_batched", testing_asum_batched<T>},
+                {"asum_strided_batched", testing_asum_strided_batched<T>},
+                {"axpy", testing_axpy<T>},
+                {"axpy_batched", testing_axpy_batched<T>},
+                {"axpy_strided_batched", testing_axpy_strided_batched<T>},
+                {"dot", testing_dot<T>},
+                {"dot_batched", testing_dot_batched<T>},
+                {"dot_strided_batched", testing_dot_strided_batched<T>},
+                {"dotc", testing_dotc<T>},
+                {"dotc_batched", testing_dotc_batched<T>},
+                {"dotc_strided_batched", testing_dotc_strided_batched<T>},
                 {"iamax", testing_iamax<T>},
                 {"iamax_batched", testing_iamax_batched<T>},
                 {"iamax_strided_batched", testing_iamax_strided_batched<T>},
@@ -633,9 +634,10 @@ struct perf_blas<
             {"trsv", testing_trsv<T>},
             {"trsv_batched", testing_trsv_batched<T>},
             {"trsv_strided_batched", testing_trsv_strided_batched<T>},
-            {"trmm", testing_trmm<T>},
+            /*{"trmm", testing_trmm<T>},
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
+	    */
         };
         run_function(map, arg);
     }
@@ -756,7 +758,6 @@ struct perf_blas_scal_ex<
         || (std::is_same<Ta, hipblasDoubleComplex>{} && std::is_same<Ta, Tx>{}
             && std::is_same<Tx, Tex>{})
         || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{} && std::is_same<Tex, float>{})
-        || (std::is_same<Ta, float>{} && std::is_same<Tx, hipblasHalf>{} && std::is_same<Ta, Tex>{})
         || (std::is_same<Ta, float>{} && std::is_same<Tx, hipblasComplex>{}
             && std::is_same<Tx, Tex>{})
         || (std::is_same<Ta, double>{} && std::is_same<Tx, hipblasDoubleComplex>{}
@@ -765,9 +766,9 @@ struct perf_blas_scal_ex<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"scal_ex", testing_scal_ex_template<Ta, Tx, Tex>},
-            {"scal_batched_ex", testing_scal_batched_ex_template<Ta, Tx, Tex>},
-            {"scal_strided_batched_ex", testing_scal_strided_batched_ex_template<Ta, Tx, Tex>},
+            // {"scal_ex", testing_scal_ex<Ta, Tx, Tex>},
+            // {"scal_batched_ex", testing_scal_batched_ex<Ta, Tx, Tex>},
+            // {"scal_strided_batched_ex", testing_scal_strided_batched_ex<Ta, Tx, Tex>},
         };
         run_function(map, arg);
     }
@@ -961,9 +962,6 @@ int run_bench_test(Arguments& arg)
     }
     else
     {
-        if(!strcmp(function, "scal_ex") || !strcmp(function, "scal_batched_ex")
-           || !strcmp(function, "scal_strided_batched_ex"))
-            hipblas_blas1_ex_dispatch<perf_blas_scal_ex>(arg);
         /*
         if(!strcmp(function, "scal") || !strcmp(function, "scal_batched")
            || !strcmp(function, "scal_strided_batched"))
@@ -976,10 +974,13 @@ int run_bench_test(Arguments& arg)
             hipblas_blas1_dispatch<perf_blas_rot>(arg);
         else if(!strcmp(function, "axpy_ex") || !strcmp(function, "axpy_batched_ex")
                 || !strcmp(function, "axpy_strided_batched_ex"))
-            hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);*/
-
+            hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);
+        else if(!strcmp(function, "scal_ex") || !strcmp(function, "scal_batched_ex")
+                || !strcmp(function, "scal_strided_batched_ex"))
+            hipblas_blas1_ex_dispatch<perf_blas_scal_ex>(arg);
         else
-            hipblas_simple_dispatch<perf_blas>(arg);
+            */
+        hipblas_simple_dispatch<perf_blas>(arg);
     }
     return 0;
 }

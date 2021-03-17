@@ -1934,7 +1934,7 @@ TEST_P(blas1_gtest, asum_float)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum<float>(arg);
+    hipblasStatus_t status = testing_asum<float, float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1956,7 +1956,7 @@ TEST_P(blas1_gtest, asum_float)
 TEST_P(blas1_gtest, asum_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_asum<hipblasComplex, float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1978,7 +1978,7 @@ TEST_P(blas1_gtest, asum_float_complex)
 TEST_P(blas1_gtest, asum_double_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_asum<hipblasDoubleComplex, double>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2001,7 +2001,7 @@ TEST_P(blas1_gtest, asum_double_complex)
 TEST_P(blas1_gtest, asum_batched_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_batched<float>(arg);
+    hipblasStatus_t status = testing_asum_batched<float, float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2027,7 +2027,7 @@ TEST_P(blas1_gtest, asum_batched_float)
 TEST_P(blas1_gtest, asum_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_batched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_asum_batched<hipblasComplex, float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2053,7 +2053,7 @@ TEST_P(blas1_gtest, asum_batched_float_complex)
 TEST_P(blas1_gtest, asum_batched_double_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_batched<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_asum_batched<hipblasDoubleComplex, double>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2080,7 +2080,7 @@ TEST_P(blas1_gtest, asum_batched_double_complex)
 TEST_P(blas1_gtest, asum_strided_batched_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_strided_batched<float>(arg);
+    hipblasStatus_t status = testing_asum_strided_batched<float, float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2106,7 +2106,7 @@ TEST_P(blas1_gtest, asum_strided_batched_float)
 TEST_P(blas1_gtest, asum_strided_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_strided_batched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_asum_strided_batched<hipblasComplex, float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2132,7 +2132,7 @@ TEST_P(blas1_gtest, asum_strided_batched_float_complex)
 TEST_P(blas1_gtest, asum_strided_batched_double_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_strided_batched<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_asum_strided_batched<hipblasDoubleComplex, double>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
