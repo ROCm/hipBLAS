@@ -15,7 +15,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename T>
-hipblasStatus_t testing_gemvBatched(const Arguments& argus)
+hipblasStatus_t testing_gemv_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasGemvBatchedFn

@@ -128,6 +128,14 @@ constexpr double ger_gbyte_count(int m, int n)
     return (sizeof(T) * (m * n + m + n)) / 1e9;
 }
 
+/* \brief byte counts of HBMV */
+template <typename T>
+constexpr double hbmv_gbyte_count(int n, int k)
+{
+    int k1 = k < n ? k : n;
+    return (sizeof(T) * (n * k1 - ((k1 * (k1 + 1)) / 2.0) + 3 * n)) / 1e9;
+}
+
 /* \brief byte counts of HPR */
 template <typename T>
 constexpr double hpr_gbyte_count(int n)
