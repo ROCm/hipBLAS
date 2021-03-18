@@ -318,6 +318,7 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
     void operator()(const Arguments& arg)
     {
         static const func_map fmap = {
+            // L1
             {"asum", testing_asum<T>},
             {"asum_batched", testing_asum_batched<T>},
             {"asum_strided_batched", testing_asum_strided_batched<T>},
@@ -345,6 +346,17 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"scal", testing_scal<T>},
             {"scal_batched", testing_scal_batched<T>},
             {"scal_strided_batched", testing_scal_strided_batched<T>},
+
+            // L2
+            {"gbmv", testing_gbmv<T>},
+            {"gbmv_batched", testing_gbmv_batched<T>},
+            {"gbmv_strided_batched", testing_gbmv_strided_batched<T>},
+            {"gemv", testing_gemv<T>},
+            {"gemv_batched", testing_gemv_batched<T>},
+            {"gemv_strided_batched", testing_gemv_strided_batched<T>},
+            {"ger", testing_ger<T, false>},
+            {"ger_batched", testing_ger_batched<T, false>},
+            {"ger_strided_batched", testing_ger_strided_batched<T, false>},
             /*{"set_get_vector", testing_set_get_vector<T>},
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
@@ -356,20 +368,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"rotmg_batched", testing_rotmg_batched<T>},
                 {"rotmg_strided_batched", testing_rotmg_strided_batched<T>},
                 // L2
-                {"gbmv", testing_gbmv<T>},
-                {"gbmv_batched", testing_gbmv_batched<T>},
-                {"gbmv_strided_batched", testing_gbmv_strided_batched<T>},
-                {"geam", testing_geam<T>},
-                {"geam_batched", testing_geam_batched<T>},
-                {"geam_strided_batched", testing_geam_strided_batched<T>},
-                */
-            {"gemv", testing_gemv<T>},
-            {"gemv_batched", testing_gemvBatched<T>},
-            {"gemv_strided_batched", testing_gemvStridedBatched<T>},
-            /*
-                {"ger", testing_ger<T, false>},
-                {"ger_batched", testing_ger_batched<T, false>},
-                {"ger_strided_batched", testing_ger_strided_batched<T, false>},
                 {"spr", testing_spr<T>},
                 {"spr_batched", testing_spr_batched<T>},
                 {"spr_strided_batched", testing_spr_strided_batched<T>},
@@ -401,6 +399,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"trmv_batched", testing_trmv_batched<T>},
                 {"trmv_strided_batched", testing_trmv_strided_batched<T>},
                 // L3
+                {"geam", testing_geam<T>},
+                {"geam_batched", testing_geam_batched<T>},
+                {"geam_strided_batched", testing_geam_strided_batched<T>},
                 {"dgmm", testing_dgmm<T>},
                 {"dgmm_batched", testing_dgmm_batched<T>},
                 {"dgmm_strided_batched", testing_dgmm_strided_batched<T>},
@@ -493,6 +494,7 @@ struct perf_blas<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
+            // L1
             {"asum", testing_asum<T>},
             {"asum_batched", testing_asum_batched<T>},
             {"asum_strided_batched", testing_asum_strided_batched<T>},
@@ -523,23 +525,25 @@ struct perf_blas<
             {"scal", testing_scal<T>},
             {"scal_batched", testing_scal_batched<T>},
             {"scal_strided_batched", testing_scal_strided_batched<T>},
+
+            // L2
+            {"gemv", testing_gemv<T>},
+            {"gemv_batched", testing_gemv_batched<T>},
+            {"gemv_strided_batched", testing_gemv_strided_batched<T>},
+            {"gbmv", testing_gbmv<T>},
+            {"gbmv_batched", testing_gbmv_batched<T>},
+            {"gbmv_strided_batched", testing_gbmv_strided_batched<T>},
+            {"geru", testing_ger<T, false>},
+            {"geru_batched", testing_ger_batched<T, false>},
+            {"geru_strided_batched", testing_ger_strided_batched<T, false>},
+            {"gerc", testing_ger<T, true>},
+            {"gerc_batched", testing_ger_batched<T, true>},
+            {"gerc_strided_batched", testing_ger_strided_batched<T, true>},
+            {"hbmv", testing_hbmv<T>},
+            {"hbmv_batched", testing_hbmv_batched<T>},
+            {"hbmv_strided_batched", testing_hbmv_strided_batched<T>},
             /*
                 // L2
-                {"gbmv", testing_gbmv<T>},
-                {"gbmv_batched", testing_gbmv_batched<T>},
-                {"gbmv_strided_batched", testing_gbmv_strided_batched<T>},
-                {"gemv", testing_gemv<T>},
-                {"gemv_batched", testing_gemv_batched<T>},
-                {"gemv_strided_batched", testing_gemv_strided_batched<T>},
-                {"geru", testing_ger<T, false>},
-                {"geru_batched", testing_ger_batched<T, false>},
-                {"geru_strided_batched", testing_ger_strided_batched<T, false>},
-                {"gerc", testing_ger<T, true>},
-                {"gerc_batched", testing_ger_batched<T, true>},
-                {"gerc_strided_batched", testing_ger_strided_batched<T, true>},
-                {"hbmv", testing_hbmv<T>},
-                {"hbmv_batched", testing_hbmv_batched<T>},
-                {"hbmv_strided_batched", testing_hbmv_strided_batched<T>},
                 {"hemv", testing_hemv<T>},
                 {"hemv_batched", testing_hemv_batched<T>},
                 {"hemv_strided_batched", testing_hemv_strided_batched<T>},

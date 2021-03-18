@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -157,7 +157,7 @@ TEST_P(gemv_gtest_strided_batched, gemv_gtest_float)
 {
     Arguments arg = setup_gemv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_gemvStridedBatched<float>(arg);
+    hipblasStatus_t status = testing_gemv_strided_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -195,7 +195,7 @@ TEST_P(gemv_gtest_strided_batched, gemv_gtest_float_complex)
 {
     Arguments arg = setup_gemv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_gemvStridedBatched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_gemv_strided_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
