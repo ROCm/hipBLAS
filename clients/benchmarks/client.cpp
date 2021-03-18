@@ -542,11 +542,11 @@ struct perf_blas<
             {"hbmv", testing_hbmv<T>},
             {"hbmv_batched", testing_hbmv_batched<T>},
             {"hbmv_strided_batched", testing_hbmv_strided_batched<T>},
+            {"hemv", testing_hemv<T>},
+            {"hemv_batched", testing_hemv_batched<T>},
+            {"hemv_strided_batched", testing_hemv_strided_batched<T>},
             /*
                 // L2
-                {"hemv", testing_hemv<T>},
-                {"hemv_batched", testing_hemv_batched<T>},
-                {"hemv_strided_batched", testing_hemv_strided_batched<T>},
                 {"her", testing_her<T>},
                 {"her_batched", testing_her_batched<T>},
                 {"her_strided_batched", testing_her_strided_batched<T>},

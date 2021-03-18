@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -156,7 +156,7 @@ TEST_P(hemv_gtest_strided_batched, hemv_gtest_float_complex)
 {
     Arguments arg = setup_hemv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_hemvStridedBatched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_hemv_strided_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
