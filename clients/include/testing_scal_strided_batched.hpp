@@ -32,8 +32,6 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
 
     U alpha = argus.alpha;
 
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N < 0 || incx < 0 || batch_count < 0)
@@ -50,8 +48,7 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -64,14 +61,10 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
-    status = hipblasScalStridedBatchedFn(handle, N, &alpha, dx, incx, stridex, batch_count);
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(
+        hipblasScalStridedBatchedFn(handle, N, &alpha, dx, incx, stridex, batch_count));
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
@@ -99,12 +92,7 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
     if(timing)
     {
         hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -112,13 +100,8 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status = hipblasScalStridedBatchedFn(handle, N, &alpha, dx, incx, stridex, batch_count);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status;
-            }
+            CHECK_HIPBLAS_ERROR(
+                hipblasScalStridedBatchedFn(handle, N, &alpha, dx, incx, stridex, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -131,6 +114,5 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
             hipblas_error);
     }
 
-    hipblasDestroy(handle);
-    return status;
+    return HIPBLAS_STATUS_SUCCESS;
 }
