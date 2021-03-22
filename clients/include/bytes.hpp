@@ -143,6 +143,13 @@ constexpr double hemv_gbyte_count(int n)
     return (8.0 * n * n + 8.0 * n) / 1e9;
 }
 
+/* \brief byte counts of HPMV */
+template <typename T>
+constexpr double hpmv_gbyte_count(int n)
+{
+    return (sizeof(T) * ((n * (n + 1.0)) / 2.0) + 3.0 * n) / 1e9;
+}
+
 /* \brief byte counts of HPR */
 template <typename T>
 constexpr double hpr_gbyte_count(int n)
