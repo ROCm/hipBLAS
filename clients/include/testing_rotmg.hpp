@@ -86,8 +86,8 @@ hipblasStatus_t testing_rotmg(const Arguments& arg)
         ArgumentModel<e_N>{}.log_args<T>(std::cout,
                                          arg,
                                          gpu_time_used,
-                                         rotmg_gflop_count<T>(),
-                                         rotmg_gbyte_count<T>(),
+                                         ArgumentLogging::NA_value,
+                                         ArgumentLogging::NA_value,
                                          hipblas_error_host,
                                          hipblas_error_device);
     }

@@ -174,8 +174,8 @@ hipblasStatus_t testing_rotg_batched(const Arguments& arg)
         ArgumentModel<e_batch_count>{}.log_args<T>(std::cout,
                                                    arg,
                                                    gpu_time_used,
-                                                   rotg_gflop_count<T, U>(),
-                                                   rotg_gbyte_count<T, U>(),
+                                                   ArgumentLogging::NA_value,
+                                                   ArgumentLogging::NA_value,
                                                    hipblas_error_host,
                                                    hipblas_error_device);
     }

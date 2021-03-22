@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2020 Advanced Micro Devices, Inc.
+ * Copyright 2020-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #ifndef _ARGUMENT_MODEL_HPP_
@@ -8,6 +8,11 @@
 #include "hipblas_arguments.hpp"
 #include <iostream>
 #include <sstream>
+
+namespace ArgumentLogging
+{
+    const double NA_value = -1.0; // invalid for time, GFlop, GB
+}
 
 // ArgumentModel template has a variadic list of argument enums
 template <hipblas_argument... Args>
