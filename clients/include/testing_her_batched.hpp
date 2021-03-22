@@ -46,8 +46,7 @@ hipblasStatus_t testing_her_batched(const Arguments& argus)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(A_size, 1, batch_count);
