@@ -46,8 +46,7 @@ hipblasStatus_t testing_hpmv_batched(const Arguments& argus)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 

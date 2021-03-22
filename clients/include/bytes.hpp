@@ -140,7 +140,7 @@ constexpr double hbmv_gbyte_count(int n, int k)
 template <typename T>
 constexpr double hemv_gbyte_count(int n)
 {
-    return (8.0 * n * n + 8.0 * n) / 1e9;
+    return (sizeof(T) * (((n * (n + 1.0)) / 2.0) + 3.0 * n)) / 1e9;
 }
 
 /* \brief byte counts of HPMV */
