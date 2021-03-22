@@ -31,8 +31,7 @@ hipblasStatus_t testing_rotm(const Arguments& arg)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    double gpu_time_used, hipblas_error_host_x, hipblas_error_host_y, hipblas_error_device_x,
-        hipblas_error_device_y;
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     hipblasLocalHandle handle(arg);
 
@@ -83,8 +82,8 @@ hipblasStatus_t testing_rotm(const Arguments& arg)
                 }
                 if(arg.norm_check)
                 {
-                    hipblas_error_host_x = norm_check_general<T>('F', 1, N, incx, cx, rx);
-                    hipblas_error_host_y = norm_check_general<T>('F', 1, N, incy, cy, ry);
+                    hipblas_error_host = norm_check_general<T>('F', 1, N, incx, cx, rx);
+                    hipblas_error_host += norm_check_general<T>('F', 1, N, incy, cy, ry);
                 }
             }
 
@@ -106,8 +105,8 @@ hipblasStatus_t testing_rotm(const Arguments& arg)
                 }
                 if(arg.norm_check)
                 {
-                    hipblas_error_device_x = norm_check_general<T>('F', 1, N, incx, cx, rx);
-                    hipblas_error_device_y = norm_check_general<T>('F', 1, N, incy, cy, ry);
+                    hipblas_error_device = norm_check_general<T>('F', 1, N, incx, cx, rx);
+                    hipblas_error_device += norm_check_general<T>('F', 1, N, incy, cy, ry);
                 }
             }
         }
@@ -138,10 +137,8 @@ hipblasStatus_t testing_rotm(const Arguments& arg)
                                                          gpu_time_used,
                                                          rotm_gflop_count<T>(N, hparam[0]),
                                                          rotm_gbyte_count<T>(N, hparam[0]),
-                                                         //  hipblas_error_host_x,
-                                                         //  hipblas_error_host_y,
-                                                         hipblas_error_device_x,
-                                                         hipblas_error_device_y);
+                                                         hipblas_error_host,
+                                                         hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

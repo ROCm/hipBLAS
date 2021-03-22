@@ -175,7 +175,6 @@ hipblasStatus_t testing_rotmg_strided_batched(const Arguments& arg)
         }
         if(arg.norm_check)
         {
-            std::cout << "rd1[0]: " << rd1[0] << ", cd1[0]: " << cd1[0] << "\n";
             hipblas_error_device
                 = norm_check_general<T>('F', 1, 1, 1, stride_d1, cd1, rd1, batch_count);
             hipblas_error_device

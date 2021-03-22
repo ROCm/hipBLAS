@@ -148,13 +148,6 @@ constexpr double rot_gflop_count<hipblasDoubleComplex, hipblasDoubleComplex, dou
     return (12.0 * n) / 1e9;
 }
 
-// rotg
-template <typename T, typename U>
-constexpr double rotg_gflop_count()
-{
-    return 12;
-}
-
 // rotm
 template <typename Tx>
 constexpr double rotm_gflop_count(int n, Tx flag)
@@ -171,14 +164,6 @@ constexpr double rotm_gflop_count(int n, Tx flag)
     {
         return 0;
     }
-}
-
-// rotmg
-template <typename T>
-constexpr double rotmg_gflop_count()
-{
-    // TODO
-    return 0;
 }
 
 // scal

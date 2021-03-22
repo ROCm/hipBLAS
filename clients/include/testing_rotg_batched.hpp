@@ -56,6 +56,10 @@ hipblasStatus_t testing_rotg_batched(const Arguments& arg)
     hipblas_init(hb, false);
     hipblas_init(hc, false);
     hipblas_init(hs, false);
+    ca.copy_from(ha);
+    cb.copy_from(hb);
+    cc.copy_from(hc);
+    cs.copy_from(hs);
 
     for(int b = 0; b < batch_count; b++)
     {
@@ -80,18 +84,18 @@ hipblasStatus_t testing_rotg_batched(const Arguments& arg)
         {
             for(int b = 0; b < batch_count; b++)
             {
-                near_check_general<T>(1, 1, 1, ra[b], ca[b], rel_error);
-                near_check_general<T>(1, 1, 1, rb[b], cb[b], rel_error);
-                near_check_general<U>(1, 1, 1, rc[b], cc[b], rel_error);
-                near_check_general<T>(1, 1, 1, rs[b], cs[b], rel_error);
+                near_check_general<T>(1, 1, 1, ca[b], ra[b], rel_error);
+                near_check_general<T>(1, 1, 1, cb[b], rb[b], rel_error);
+                near_check_general<U>(1, 1, 1, cc[b], rc[b], rel_error);
+                near_check_general<T>(1, 1, 1, cs[b], rs[b], rel_error);
             }
         }
         if(arg.norm_check)
         {
-            hipblas_error_host = norm_check_general<T>('F', 1, 1, 1, ra, ca, batch_count);
-            hipblas_error_host += norm_check_general<T>('F', 1, 1, 1, rb, cb, batch_count);
-            hipblas_error_host += norm_check_general<U>('F', 1, 1, 1, rc, cc, batch_count);
-            hipblas_error_host += norm_check_general<T>('F', 1, 1, 1, rs, cs, batch_count);
+            hipblas_error_host = norm_check_general<T>('F', 1, 1, 1, ca, ra, batch_count);
+            hipblas_error_host += norm_check_general<T>('F', 1, 1, 1, cb, rb, batch_count);
+            hipblas_error_host += norm_check_general<U>('F', 1, 1, 1, cc, rc, batch_count);
+            hipblas_error_host += norm_check_general<T>('F', 1, 1, 1, cs, rs, batch_count);
         }
     }
 
@@ -118,27 +122,27 @@ hipblasStatus_t testing_rotg_batched(const Arguments& arg)
         host_batch_vector<T> rb(1, 1, batch_count);
         host_batch_vector<U> rc(1, 1, batch_count);
         host_batch_vector<T> rs(1, 1, batch_count);
-        CHECK_HIP_ERROR(ha.transfer_from(da));
-        CHECK_HIP_ERROR(hb.transfer_from(db));
-        CHECK_HIP_ERROR(hc.transfer_from(dc));
-        CHECK_HIP_ERROR(hs.transfer_from(ds));
+        CHECK_HIP_ERROR(ra.transfer_from(da));
+        CHECK_HIP_ERROR(rb.transfer_from(db));
+        CHECK_HIP_ERROR(rc.transfer_from(dc));
+        CHECK_HIP_ERROR(rs.transfer_from(ds));
 
         if(arg.unit_check)
         {
             for(int b = 0; b < batch_count; b++)
             {
-                near_check_general<T>(1, 1, 1, ra[b], ca[b], rel_error);
-                near_check_general<T>(1, 1, 1, rb[b], cb[b], rel_error);
-                near_check_general<U>(1, 1, 1, rc[b], cc[b], rel_error);
-                near_check_general<T>(1, 1, 1, rs[b], cs[b], rel_error);
+                near_check_general<T>(1, 1, 1, ca[b], ra[b], rel_error);
+                near_check_general<T>(1, 1, 1, cb[b], rb[b], rel_error);
+                near_check_general<U>(1, 1, 1, cc[b], rc[b], rel_error);
+                near_check_general<T>(1, 1, 1, cs[b], rs[b], rel_error);
             }
         }
         if(arg.norm_check)
         {
-            hipblas_error_device = norm_check_general<T>('F', 1, 1, 1, ra, ca, batch_count);
-            hipblas_error_device += norm_check_general<T>('F', 1, 1, 1, rb, cb, batch_count);
-            hipblas_error_device += norm_check_general<U>('F', 1, 1, 1, rc, cc, batch_count);
-            hipblas_error_device += norm_check_general<T>('F', 1, 1, 1, rs, cs, batch_count);
+            hipblas_error_device = norm_check_general<T>('F', 1, 1, 1, ca, ra, batch_count);
+            hipblas_error_device += norm_check_general<T>('F', 1, 1, 1, cb, rb, batch_count);
+            hipblas_error_device += norm_check_general<U>('F', 1, 1, 1, cc, rc, batch_count);
+            hipblas_error_device += norm_check_general<T>('F', 1, 1, 1, cs, rs, batch_count);
         }
     }
 

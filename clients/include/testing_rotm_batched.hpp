@@ -110,8 +110,9 @@ hipblasStatus_t testing_rotm_batched(const Arguments& arg)
                 if(arg.norm_check)
                 {
                     hipblas_error_device
-                        = std::max(norm_check_general<T>('F', 1, N, incx, cx, rx, batch_count),
-                                   norm_check_general<T>('F', 1, N, incy, cy, ry, batch_count));
+                        = norm_check_general<T>('F', 1, N, incx, cx, rx, batch_count);
+                    hipblas_error_device
+                        += norm_check_general<T>('F', 1, N, incy, cy, ry, batch_count);
                 }
             }
         }
