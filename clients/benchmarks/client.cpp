@@ -557,11 +557,11 @@ struct perf_blas<
             {"hpr", testing_hpr<T>},
             {"hpr_batched", testing_hpr_batched<T>},
             {"hpr_strided_batched", testing_hpr_strided_batched<T>},
+            {"hpr2", testing_hpr2<T>},
+            {"hpr2_batched", testing_hpr2_batched<T>},
+            {"hpr2_strided_batched", testing_hpr2_strided_batched<T>},
             /*
                 // L2
-                {"hpr2", testing_hpr2<T>},
-                {"hpr2_batched", testing_hpr2_batched<T>},
-                {"hpr2_strided_batched", testing_hpr2_strided_batched<T>},
                 {"spr", testing_spr<T>},
                 {"spr_batched", testing_spr_batched<T>},
                 {"spr_strided_batched", testing_spr_strided_batched<T>},
