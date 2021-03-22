@@ -105,8 +105,8 @@ hipblasStatus_t testing_hpmv_strided_batched(const Arguments& argus)
                                                     stride_y,
                                                     batch_count));
 
-    CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * N * incy, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * N * incy, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
     CHECK_HIPBLAS_ERROR(hipblasHpmvStridedBatchedFn(handle,
@@ -124,7 +124,7 @@ hipblasStatus_t testing_hpmv_strided_batched(const Arguments& argus)
                                                     stride_y,
                                                     batch_count));
 
-    CHECK_HIP_ERROR(hipMemcpy(hy_device.data(), dy, sizeof(T) * N * incy, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hy_device.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
 
     if(argus.unit_check || argus.norm_check)
     {
