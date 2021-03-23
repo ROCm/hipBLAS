@@ -183,7 +183,14 @@ hipblasStatus_t testing_hpr2_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_y, e_stride_a, e_batch_count>{}
+        ArgumentModel<e_N,
+                      e_alpha,
+                      e_incx,
+                      e_stride_x,
+                      e_incy,
+                      e_stride_y,
+                      e_stride_a,
+                      e_batch_count>{}
             .log_args<T>(std::cout,
                          argus,
                          gpu_time_used,
