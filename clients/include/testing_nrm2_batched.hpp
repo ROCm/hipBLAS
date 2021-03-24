@@ -40,8 +40,7 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
     double gpu_time_used;
     double hipblas_error_host = 0, hipblas_error_device = 0;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);
