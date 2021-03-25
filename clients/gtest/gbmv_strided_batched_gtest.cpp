@@ -155,6 +155,8 @@ protected:
     virtual void TearDown() {}
 };
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float)
 {
     Arguments arg = setup_gbmv_arguments(GetParam());
@@ -199,6 +201,8 @@ TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float_complex)
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,

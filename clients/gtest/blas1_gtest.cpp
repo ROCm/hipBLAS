@@ -1,5 +1,5 @@
 /* ************************************************************************
- * dotright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -223,6 +223,8 @@ TEST_P(blas1_gtest, axpy_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // axpy_batched
 TEST_P(blas1_gtest, axpy_batched_float)
 {
@@ -329,6 +331,8 @@ TEST_P(blas1_gtest, axpy_strided_batched_float_complex)
     }
 }
 
+#endif
+
 // copy tests
 TEST_P(blas1_gtest, copy_float)
 {
@@ -373,6 +377,8 @@ TEST_P(blas1_gtest, copy_float_complex)
         }
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // copy_batched tests
 TEST_P(blas1_gtest, copy_batched_float)
@@ -480,6 +486,8 @@ TEST_P(blas1_gtest, copy_strided_batched_float_complex)
     }
 }
 
+#endif
+
 // scal tests
 TEST_P(blas1_gtest, scal_float)
 {
@@ -559,6 +567,8 @@ TEST_P(blas1_gtest, scal_float_complex_float)
         }
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // scal_batched tests
 TEST_P(blas1_gtest, scal_batched_float)
@@ -748,6 +758,8 @@ TEST_P(blas1_gtest, scal_strided_batched_float_complex_float)
     }
 }
 
+#endif
+
 // swap tests
 TEST_P(blas1_gtest, swap_float)
 {
@@ -792,6 +804,8 @@ TEST_P(blas1_gtest, swap_float_complex)
         }
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // swap_batched tests
 TEST_P(blas1_gtest, swap_batched_float)
@@ -898,6 +912,8 @@ TEST_P(blas1_gtest, swap_strided_batched_float_complex)
         }
     }
 }
+
+#endif
 
 // dot tests
 TEST_P(blas1_gtest, dot_half)
@@ -1043,6 +1059,8 @@ TEST_P(blas1_gtest, dotc_float_complex)
         }
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // dot_batched tests
 TEST_P(blas1_gtest, dot_batched_half)
@@ -1374,6 +1392,8 @@ TEST_P(blas1_gtest, dotc_strided_batched_float_complex)
     }
 }
 
+#endif
+
 // nrm2 tests
 TEST_P(blas1_gtest, nrm2_float)
 {
@@ -1426,6 +1446,8 @@ TEST_P(blas1_gtest, nrm2_float_complex)
         }
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // nrm2_batched tests
 TEST_P(blas1_gtest, nrm2_batched_float)
@@ -1549,6 +1571,8 @@ TEST_P(blas1_gtest, nrm2_strided_batched_float_complex)
     }
 }
 
+#endif
+
 // rot
 TEST_P(blas1_gtest, rot_float)
 {
@@ -1594,6 +1618,8 @@ TEST_P(blas1_gtest, rot_float_complex_float)
         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // rot_batched
 TEST_P(blas1_gtest, rot_batched_float)
@@ -1729,6 +1755,8 @@ TEST_P(blas1_gtest, rot_strided_batched_float_complex_float)
     }
 }
 
+#endif
+
 // rotg
 TEST_P(blas1_gtest, rotg_float)
 {
@@ -1751,6 +1779,8 @@ TEST_P(blas1_gtest, rotg_float_complex)
         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // rotg_batched
 TEST_P(blas1_gtest, rotg_batched_float)
@@ -1826,6 +1856,8 @@ TEST_P(blas1_gtest, rotg_strided_batched_float_complex)
     }
 }
 
+#endif
+
 // rotm
 TEST_P(blas1_gtest, rotm_float)
 {
@@ -1837,6 +1869,8 @@ TEST_P(blas1_gtest, rotm_float)
         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // rotm_batched
 TEST_P(blas1_gtest, rotm_batched_float)
@@ -1876,6 +1910,8 @@ TEST_P(blas1_gtest, rotm_strided_batched_float)
     }
 }
 
+#endif
+
 // rotmg
 TEST_P(blas1_gtest, rotmg_float)
 {
@@ -1887,6 +1923,8 @@ TEST_P(blas1_gtest, rotmg_float)
         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // rotmg_batched
 TEST_P(blas1_gtest, rotmg_batched_float)
@@ -1925,6 +1963,8 @@ TEST_P(blas1_gtest, rotmg_strided_batched_float)
         }
     }
 }
+
+#endif
 
 // asum
 TEST_P(blas1_gtest, asum_float)
@@ -1996,6 +2036,8 @@ TEST_P(blas1_gtest, asum_double_complex)
         }
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // asum_batched
 TEST_P(blas1_gtest, asum_batched_float)
@@ -2155,6 +2197,8 @@ TEST_P(blas1_gtest, asum_strided_batched_double_complex)
     }
 }
 
+#endif
+
 // amax
 TEST_P(blas1_gtest, amax_float)
 {
@@ -2183,6 +2227,8 @@ TEST_P(blas1_gtest, amax_float_complex)
 
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // amax_batched
 TEST_P(blas1_gtest, amax_batched_float)
@@ -2258,6 +2304,8 @@ TEST_P(blas1_gtest, amax_strided_batched_float_complex)
     }
 }
 
+#endif
+
 // amin
 TEST_P(blas1_gtest, amin_float)
 {
@@ -2276,6 +2324,8 @@ TEST_P(blas1_gtest, amin_float_complex)
 
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // amin_batched
 TEST_P(blas1_gtest, amin_batched_float)
@@ -2350,6 +2400,8 @@ TEST_P(blas1_gtest, amin_strided_batched_float_complex)
         }
     }
 }
+
+#endif
 
 // Values is for a single item; ValuesIn is for an array
 // notice we are using vector of vector
