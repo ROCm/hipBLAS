@@ -64,10 +64,12 @@ const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 // Supported rocBLAS configs
 const vector<vector<hipblasDatatype_t>> precisions{// Not supported in cuBLAS
+#ifndef __HIP_PLATFORM_NVCC__
                                                    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
                                                    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
                                                    {HIPBLAS_R_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
                                                    {HIPBLAS_R_64F, HIPBLAS_C_64F, HIPBLAS_C_64F},
+#endif
 
                                                    // Supported in both rocBLAS and cuBLAS
                                                    {HIPBLAS_R_32F, HIPBLAS_R_16F, HIPBLAS_R_32F},
@@ -141,6 +143,8 @@ TEST_P(scal_ex_gtest, scal_ex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(scal_ex_gtest, scal_batched_ex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -184,6 +188,8 @@ TEST_P(scal_ex_gtest, scal_strided_batched_ex)
         }
     }
 }
+
+#endif
 
 // Values is for a single item; ValuesIn is for an array
 // notice we are using vector of vector

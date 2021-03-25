@@ -125,6 +125,8 @@ TEST_P(nrm2_ex_gtest, nrm2_ex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(nrm2_ex_gtest, nrm2_batched_ex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -168,6 +170,8 @@ TEST_P(nrm2_ex_gtest, nrm2_strided_batched_ex)
         }
     }
 }
+
+#endif
 
 // Values is for a single item; ValuesIn is for an array
 // notice we are using vector of vector

@@ -74,9 +74,11 @@ const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 // Supported rocBLAS configs
 const vector<vector<hipblasDatatype_t>> precisions{
-    // No cuBLAS support
+// No cuBLAS support
+#ifndef __HIP_PLATFORM_NVCC__
     {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
     {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
+#endif
 
     {HIPBLAS_R_32F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
     {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
@@ -144,6 +146,8 @@ TEST_P(axpy_ex_gtest, axpy_ex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(axpy_ex_gtest, axpy_batched_ex)
 {
     Arguments       arg    = setup_axpy_ex_arguments(GetParam());
@@ -179,6 +183,8 @@ TEST_P(axpy_ex_gtest, axpy_strided_batched_ex)
         }
     }
 }
+
+#endif
 
 // Values is for a single item; ValuesIn is for an array
 // notice we are using vector of vector
