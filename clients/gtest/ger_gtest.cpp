@@ -203,6 +203,8 @@ TEST_P(blas2_ger_gtest, gerc_gtest_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // ger_batched
 TEST_P(blas2_ger_gtest, ger_batched_gtest_float)
 {
@@ -360,6 +362,8 @@ TEST_P(blas2_ger_gtest, gerc_strided_batched_gtest_float_complex)
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,

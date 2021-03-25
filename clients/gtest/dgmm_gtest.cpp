@@ -165,6 +165,8 @@ TEST_P(dgmm_gtest, dgmm_gtest_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(dgmm_gtest, dgmm_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -268,6 +270,8 @@ TEST_P(dgmm_gtest, dgmm_strided_batched_gtest_float_complex)
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
