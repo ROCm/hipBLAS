@@ -202,10 +202,12 @@ hipblasStatus_t testing_hbmv_strided_batched(const Arguments& argus)
 
         ArgumentModel<e_N,
                       e_K,
+                      e_alpha,
                       e_lda,
                       e_stride_a,
                       e_incx,
                       e_stride_x,
+                      e_beta,
                       e_incy,
                       e_stride_y,
                       e_batch_count>{}

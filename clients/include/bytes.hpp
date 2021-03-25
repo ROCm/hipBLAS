@@ -136,6 +136,20 @@ constexpr double hbmv_gbyte_count(int n, int k)
     return (sizeof(T) * (n * k1 - ((k1 * (k1 + 1)) / 2.0) + 3 * n)) / 1e9;
 }
 
+/* \brief byte counts of HEMV */
+template <typename T>
+constexpr double hemv_gbyte_count(int n)
+{
+    return (sizeof(T) * (((n * (n + 1.0)) / 2.0) + 3.0 * n)) / 1e9;
+}
+
+/* \brief byte counts of HPMV */
+template <typename T>
+constexpr double hpmv_gbyte_count(int n)
+{
+    return (sizeof(T) * ((n * (n + 1.0)) / 2.0) + 3.0 * n) / 1e9;
+}
+
 /* \brief byte counts of HPR */
 template <typename T>
 constexpr double hpr_gbyte_count(int n)

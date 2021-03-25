@@ -180,14 +180,14 @@ hipblasStatus_t testing_hbmv_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_K, e_lda, e_incx, e_incy, e_batch_count>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            hbmv_gflop_count<T>(N, K),
-            hbmv_gbyte_count<T>(N, K),
-            hipblas_error_host,
-            hipblas_error_device);
+        ArgumentModel<e_N, e_K, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         hbmv_gflop_count<T>(N, K),
+                         hbmv_gbyte_count<T>(N, K),
+                         hipblas_error_host,
+                         hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

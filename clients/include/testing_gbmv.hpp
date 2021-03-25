@@ -68,8 +68,8 @@ hipblasStatus_t testing_gbmv(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    T h_alpha = (T)argus.alpha;
-    T h_beta  = (T)argus.beta;
+    T h_alpha = argus.get_alpha<T>();
+    T h_beta  = argus.get_beta<T>();
 
     hipblasLocalHandle handle(argus);
 
@@ -161,7 +161,7 @@ hipblasStatus_t testing_gbmv(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_M, e_N, e_KL, e_KU, e_lda, e_incx, e_incy>{}.log_args<T>(
+        ArgumentModel<e_M, e_N, e_KL, e_KU, e_alpha, e_lda, e_incx, e_beta, e_incy>{}.log_args<T>(
             std::cout,
             argus,
             gpu_time_used,
