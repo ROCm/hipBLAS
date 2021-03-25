@@ -128,6 +128,8 @@ TEST_P(blas2_spr_gtest, spr_gtest_float)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(blas2_spr_gtest, spr_gtest_float_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -152,8 +154,6 @@ TEST_P(blas2_spr_gtest, spr_gtest_float_complex)
         }
     }
 }
-
-#ifndef __HIP_PLATFORM_NVCC__
 
 // spr_batched
 TEST_P(blas2_spr_gtest, spr_batched_gtest_float)

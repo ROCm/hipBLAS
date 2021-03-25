@@ -61,6 +61,8 @@ protected:
     virtual void TearDown() {}
 };
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_float)
 {
     // GetParam returns a tuple. The setup routine unpacks the tuple
@@ -148,6 +150,8 @@ TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_double_complex)
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a vector,

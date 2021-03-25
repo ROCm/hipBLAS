@@ -133,6 +133,8 @@ protected:
     virtual void TearDown() {}
 };
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(trsm_ex_gtest, trsm_ex_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -305,6 +307,8 @@ TEST_P(trsm_ex_gtest, trsm_strided_batched_ex_gtest_double_complex)
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
