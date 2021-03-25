@@ -157,6 +157,8 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
 }
 
 // axpy
+
+#ifndef __HIP_PLATFORM_NVCC__
 TEST_P(blas1_gtest, axpy_half)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
@@ -174,10 +176,11 @@ TEST_P(blas1_gtest, axpy_half)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+#endif
 
 TEST_P(blas1_gtest, axpy_float)
 {
@@ -247,7 +250,7 @@ TEST_P(blas1_gtest, axpy_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -273,7 +276,7 @@ TEST_P(blas1_gtest, axpy_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -300,7 +303,7 @@ TEST_P(blas1_gtest, axpy_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -326,7 +329,7 @@ TEST_P(blas1_gtest, axpy_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -402,7 +405,7 @@ TEST_P(blas1_gtest, copy_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -428,7 +431,7 @@ TEST_P(blas1_gtest, copy_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -455,7 +458,7 @@ TEST_P(blas1_gtest, copy_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -481,7 +484,7 @@ TEST_P(blas1_gtest, copy_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -829,7 +832,7 @@ TEST_P(blas1_gtest, swap_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -855,7 +858,7 @@ TEST_P(blas1_gtest, swap_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -882,7 +885,7 @@ TEST_P(blas1_gtest, swap_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -908,7 +911,7 @@ TEST_P(blas1_gtest, swap_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -916,6 +919,7 @@ TEST_P(blas1_gtest, swap_strided_batched_float_complex)
 #endif
 
 // dot tests
+#ifndef __HIP_PLATFORM_NVCC__
 TEST_P(blas1_gtest, dot_half)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -942,7 +946,7 @@ TEST_P(blas1_gtest, dot_half)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -973,10 +977,11 @@ TEST_P(blas1_gtest, dot_bfloat16)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
+#endif
 
 TEST_P(blas1_gtest, dot_float)
 {
@@ -1003,7 +1008,7 @@ TEST_P(blas1_gtest, dot_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1093,7 +1098,7 @@ TEST_P(blas1_gtest, dot_batched_half)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1128,7 +1133,7 @@ TEST_P(blas1_gtest, dot_batched_bfloat16)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1162,7 +1167,7 @@ TEST_P(blas1_gtest, dot_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1192,7 +1197,7 @@ TEST_P(blas1_gtest, dotu_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1222,7 +1227,7 @@ TEST_P(blas1_gtest, dotc_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1258,7 +1263,7 @@ TEST_P(blas1_gtest, dot_strided_batched_half)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1293,7 +1298,7 @@ TEST_P(blas1_gtest, dot_strided_batched_bfloat16)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1327,7 +1332,7 @@ TEST_P(blas1_gtest, dot_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1357,7 +1362,7 @@ TEST_P(blas1_gtest, dotu_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1387,7 +1392,7 @@ TEST_P(blas1_gtest, dotc_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1475,7 +1480,7 @@ TEST_P(blas1_gtest, nrm2_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1505,7 +1510,7 @@ TEST_P(blas1_gtest, nrm2_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1536,7 +1541,7 @@ TEST_P(blas1_gtest, nrm2_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1566,7 +1571,7 @@ TEST_P(blas1_gtest, nrm2_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1639,7 +1644,7 @@ TEST_P(blas1_gtest, rot_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1661,7 +1666,7 @@ TEST_P(blas1_gtest, rot_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1683,7 +1688,7 @@ TEST_P(blas1_gtest, rot_batched_float_complex_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1706,7 +1711,7 @@ TEST_P(blas1_gtest, rot_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1728,7 +1733,7 @@ TEST_P(blas1_gtest, rot_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1750,7 +1755,7 @@ TEST_P(blas1_gtest, rot_strided_batched_float_complex_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1796,7 +1801,7 @@ TEST_P(blas1_gtest, rotg_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1814,7 +1819,7 @@ TEST_P(blas1_gtest, rotg_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1833,7 +1838,7 @@ TEST_P(blas1_gtest, rotg_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1851,7 +1856,7 @@ TEST_P(blas1_gtest, rotg_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1886,7 +1891,7 @@ TEST_P(blas1_gtest, rotm_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1905,7 +1910,7 @@ TEST_P(blas1_gtest, rotm_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1940,7 +1945,7 @@ TEST_P(blas1_gtest, rotmg_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1959,7 +1964,7 @@ TEST_P(blas1_gtest, rotmg_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2061,7 +2066,7 @@ TEST_P(blas1_gtest, asum_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2087,7 +2092,7 @@ TEST_P(blas1_gtest, asum_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2113,7 +2118,7 @@ TEST_P(blas1_gtest, asum_batched_double_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2140,7 +2145,7 @@ TEST_P(blas1_gtest, asum_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2166,7 +2171,7 @@ TEST_P(blas1_gtest, asum_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2192,7 +2197,7 @@ TEST_P(blas1_gtest, asum_strided_batched_double_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2244,7 +2249,7 @@ TEST_P(blas1_gtest, amax_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2262,7 +2267,7 @@ TEST_P(blas1_gtest, amax_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2281,7 +2286,7 @@ TEST_P(blas1_gtest, amax_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2299,7 +2304,7 @@ TEST_P(blas1_gtest, amax_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2341,7 +2346,7 @@ TEST_P(blas1_gtest, amin_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2359,7 +2364,7 @@ TEST_P(blas1_gtest, amin_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2378,7 +2383,7 @@ TEST_P(blas1_gtest, amin_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2396,7 +2401,7 @@ TEST_P(blas1_gtest, amin_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }

@@ -174,8 +174,7 @@ TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float)
         }
         else
         {
-            // for  cuda
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -196,8 +195,7 @@ TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float_complex)
         }
         else
         {
-            // for  cuda
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }

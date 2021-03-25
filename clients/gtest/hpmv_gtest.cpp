@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -165,6 +165,8 @@ TEST_P(hpmv_gtest, hpmv_gtest_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(hpmv_gtest, hpmv_batched_gtest_float_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -185,7 +187,7 @@ TEST_P(hpmv_gtest, hpmv_batched_gtest_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -210,10 +212,12 @@ TEST_P(hpmv_gtest, hpmv_strided_batched_gtest_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
