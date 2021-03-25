@@ -86,8 +86,8 @@ hipblasStatus_t testing_gbmv_strided_batched(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    T h_alpha = (T)argus.alpha;
-    T h_beta  = (T)argus.beta;
+    T h_alpha = argus.get_alpha<T>();
+    T h_beta  = argus.get_beta<T>();
 
     hipblasLocalHandle handle(argus);
 
@@ -232,10 +232,12 @@ hipblasStatus_t testing_gbmv_strided_batched(const Arguments& argus)
                       e_N,
                       e_KL,
                       e_KU,
+                      e_alpha,
                       e_lda,
                       e_stride_a,
                       e_incx,
                       e_stride_x,
+                      e_beta,
                       e_incy,
                       e_stride_y>{}
             .log_args<T>(std::cout,

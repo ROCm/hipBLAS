@@ -64,7 +64,7 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    T h_alpha = (T)argus.alpha;
+    T h_alpha = argus.get_alpha<T>();
 
     hipblasLocalHandle handle(argus);
 
@@ -190,6 +190,7 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
 
         ArgumentModel<e_M,
                       e_N,
+                      e_alpha,
                       e_incx,
                       e_stride_x,
                       e_incy,

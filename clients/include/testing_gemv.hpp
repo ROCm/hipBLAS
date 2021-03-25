@@ -66,8 +66,8 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    T h_alpha = (T)argus.alpha;
-    T h_beta  = (T)argus.beta;
+    T h_alpha = argus.get_alpha<T>();
+    T h_beta  = argus.get_beta<T>();
 
     hipblasLocalHandle handle(argus);
 
