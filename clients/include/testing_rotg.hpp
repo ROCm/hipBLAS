@@ -131,13 +131,13 @@ hipblasStatus_t testing_rotg(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N>{}.log_args<T>(std::cout,
-                                         arg,
-                                         gpu_time_used,
-                                         ArgumentLogging::NA_value,
-                                         ArgumentLogging::NA_value,
-                                         hipblas_error_host,
-                                         hipblas_error_device);
+        ArgumentModel<>{}.log_args<T>(std::cout,
+                                      arg,
+                                      gpu_time_used,
+                                      ArgumentLogging::NA_value,
+                                      ArgumentLogging::NA_value,
+                                      hipblas_error_host,
+                                      hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

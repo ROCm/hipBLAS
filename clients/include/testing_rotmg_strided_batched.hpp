@@ -226,13 +226,13 @@ hipblasStatus_t testing_rotmg_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy>{}.log_args<T>(std::cout,
-                                                         arg,
-                                                         gpu_time_used,
-                                                         ArgumentLogging::NA_value,
-                                                         ArgumentLogging::NA_value,
-                                                         hipblas_error_host,
-                                                         hipblas_error_device);
+        ArgumentModel<e_batch_count>{}.log_args<T>(std::cout,
+                                                   arg,
+                                                   gpu_time_used,
+                                                   ArgumentLogging::NA_value,
+                                                   ArgumentLogging::NA_value,
+                                                   hipblas_error_host,
+                                                   hipblas_error_device);
     }
     return HIPBLAS_STATUS_SUCCESS;
 }

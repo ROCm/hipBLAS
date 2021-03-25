@@ -20,12 +20,16 @@ class ArgumentModel
 {
     // Whether model has a particular parameter
     // TODO: Replace with C++17 fold expression ((Args == param) || ...)
-    static constexpr bool has(hipblas_argument param)
+    static bool has(hipblas_argument param)
     {
-        for(auto x : {Args...})
-            if(x == param)
-                return true;
         return false;
+    }
+    template <class T, class... Ts>
+    static bool has(hipblas_argument param, T const& first, Ts const&... rest)
+    {
+        if(param == first)
+            return true;
+        return has(param, rest...);
     }
 
 public:
@@ -38,18 +42,21 @@ public:
                   double             norm1,
                   double             norm2)
     {
-        constexpr bool has_batch_count = has(e_batch_count);
-        int            batch_count     = has_batch_count ? arg.batch_count : 1;
-        int            hot_calls       = arg.iters < 1 ? 1 : arg.iters;
+        bool has_batch_count = has(e_batch_count, Args...);
+        int  batch_count     = has_batch_count ? arg.batch_count : 1;
+        int  hot_calls       = arg.iters < 1 ? 1 : arg.iters;
 
         // per/us to per/sec *10^6
         double hipblas_gflops = gflops * batch_count * hot_calls / gpu_us * 1e6;
         double hipblas_GBps   = gbytes * batch_count * hot_calls / gpu_us * 1e6;
 
         // append performance fields
-        name_line << ",hipblas-Gflops,hipblas-GB/s,hipblas-us,";
-        val_line << ", " << hipblas_gflops << ", " << hipblas_GBps << ", " << gpu_us / hot_calls
-                 << ", ";
+        if(name_line.rdbuf()->in_avail())
+            name_line << ",";
+        name_line << "hipblas-Gflops,hipblas-GB/s,hipblas-us,";
+        if(val_line.rdbuf()->in_avail())
+            val_line << ",";
+        val_line << hipblas_gflops << ", " << hipblas_GBps << ", " << gpu_us / hot_calls << ", ";
 
         if(arg.unit_check || arg.norm_check)
         {
