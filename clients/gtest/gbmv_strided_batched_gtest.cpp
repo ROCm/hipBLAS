@@ -155,6 +155,8 @@ protected:
     virtual void TearDown() {}
 };
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float)
 {
     Arguments arg = setup_gbmv_arguments(GetParam());
@@ -172,8 +174,7 @@ TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float)
         }
         else
         {
-            // for  cuda
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -194,11 +195,12 @@ TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float_complex)
         }
         else
         {
-            // for  cuda
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,

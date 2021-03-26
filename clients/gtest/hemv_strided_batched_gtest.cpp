@@ -152,6 +152,8 @@ protected:
     virtual void TearDown() {}
 };
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(hemv_gtest_strided_batched, hemv_gtest_float_complex)
 {
     Arguments arg = setup_hemv_arguments(GetParam());
@@ -168,11 +170,12 @@ TEST_P(hemv_gtest_strided_batched, hemv_gtest_float_complex)
         }
         else
         {
-            // for  cuda
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
