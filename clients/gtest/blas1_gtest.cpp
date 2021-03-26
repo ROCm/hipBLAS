@@ -1382,7 +1382,7 @@ TEST_P(blas1_gtest, nrm2_float)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2<float, float>(arg);
+    hipblasStatus_t status = testing_nrm2<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1408,7 +1408,7 @@ TEST_P(blas1_gtest, nrm2_float_complex)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_nrm2<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1435,7 +1435,7 @@ TEST_P(blas1_gtest, nrm2_batched_float)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2_batched<float, float>(arg);
+    hipblasStatus_t status = testing_nrm2_batched<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1465,7 +1465,7 @@ TEST_P(blas1_gtest, nrm2_batched_float_complex)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_nrm2_batched<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1496,7 +1496,7 @@ TEST_P(blas1_gtest, nrm2_strided_batched_float)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2_strided_batched<float, float>(arg);
+    hipblasStatus_t status = testing_nrm2_strided_batched<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1526,7 +1526,7 @@ TEST_P(blas1_gtest, nrm2_strided_batched_float_complex)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2_strided_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_nrm2_strided_batched<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
