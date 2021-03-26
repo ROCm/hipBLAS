@@ -99,7 +99,8 @@ hipblasStatus_t testing_her2(const Arguments& argus)
             // NOTE: on cuBLAS, with alpha == 0 and alpha on the device, there is not a quick-return,
             // instead, the imaginary part of the diagonal elements are set to 0. in rocBLAS, we are quick-returning
             // as well as in our reference code. For this reason, I've disabled the check here.
-            // unit_check_general<T>(N, N, lda, hA_cpu.data(), hA_device.data());
+            if(h_alpha != 0)
+                unit_check_general<T>(N, N, lda, hA_cpu.data(), hA_device.data());
         }
         if(argus.norm_check)
         {
