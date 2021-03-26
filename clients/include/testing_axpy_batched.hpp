@@ -25,7 +25,10 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
     int incy        = argus.incy;
     int batch_count = argus.batch_count;
 
-    hipblasStatus_t status   = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
     int             abs_incx = incx < 0 ? -incx : incx;
     int             abs_incy = incy < 0 ? -incy : incy;
 
@@ -44,93 +47,135 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
     int sizeY = N * abs_incy;
     T   alpha = argus.alpha;
 
-    double gpu_time_used, cpu_time_used;
-    double rocblas_error = 0.0;
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx_array[batch_count];
-    host_vector<T> hy_array[batch_count];
-    host_vector<T> hx_cpu_array[batch_count];
-    host_vector<T> hy_cpu_array[batch_count];
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hy_host(N, incy, batch_count);
+    host_batch_vector<T> hy_device(N, incy, batch_count);
+    host_batch_vector<T> hx_cpu(N, incx, batch_count);
+    host_batch_vector<T> hy_cpu(N, incy, batch_count);
 
-    device_batch_vector<T> bx_array(batch_count, sizeX);
-    device_batch_vector<T> by_array(batch_count, sizeY);
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy_host(N, incy, batch_count);
+    device_batch_vector<T> dy_device(N, incy, batch_count);
+    device_vector<T>       d_alpha(1);
+    CHECK_HIP_ERROR(dx.memcheck());
+    CHECK_HIP_ERROR(dy_host.memcheck());
+    CHECK_HIP_ERROR(dy_device.memcheck());
 
-    device_vector<T*, 0, T> dx_array(batch_count);
-    device_vector<T*, 0, T> dy_array(batch_count);
+    hipblas_init(hx, true);
+    hipblas_init(hy_host, false);
+    hy_device.copy_from(hy_host);
+    hx_cpu.copy_from(hx);
+    hy_cpu.copy_from(hy_host);
 
-    int last = batch_count - 1;
-    if(!dx_array || !dy_array || (!bx_array[last] && sizeX) || (!by_array[last] && sizeY))
-    {
-        hipblasDestroy(handle);
-        return HIPBLAS_STATUS_ALLOC_FAILED;
-    }
-
-    // Initial Data on CPU
-    srand(1);
-    for(int b = 0; b < batch_count; b++)
-    {
-        hx_array[b]     = host_vector<T>(sizeX);
-        hy_array[b]     = host_vector<T>(sizeY);
-        hx_cpu_array[b] = host_vector<T>(sizeX);
-        hy_cpu_array[b] = host_vector<T>(sizeY);
-
-        srand(1);
-        hipblas_init(hx_array[b], 1, N, abs_incx);
-        hipblas_init(hy_array[b], 1, N, abs_incy);
-
-        hx_cpu_array[b] = hx_array[b];
-        hy_cpu_array[b] = hy_array[b];
-
-        CHECK_HIP_ERROR(
-            hipMemcpy(bx_array[b], hx_array[b], sizeof(T) * sizeX, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(
-            hipMemcpy(by_array[b], hy_array[b], sizeof(T) * sizeY, hipMemcpyHostToDevice));
-    }
-    CHECK_HIP_ERROR(hipMemcpy(dx_array, bx_array, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy_array, by_array, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
-
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy_host.transfer_from(hy_host));
+    CHECK_HIP_ERROR(dy_device.transfer_from(hy_device));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
-    status = hipblasAxpyBatchedFn(handle, N, &alpha, dx_array, incx, dy_array, incy, batch_count);
-    if(status != HIPBLAS_STATUS_SUCCESS)
+    status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
+    status_2 = hipblasAxpyBatchedFn(
+        handle, N, d_alpha, dx.ptr_on_device(), incx, dy_device.ptr_on_device(), incy, batch_count);
+
+    status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+    status_4 = hipblasAxpyBatchedFn(
+        handle, N, &alpha, dx.ptr_on_device(), incx, dy_host.ptr_on_device(), incy, batch_count);
+
+    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
+       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
     {
         hipblasDestroy(handle);
-        return status;
+        if(status_1 != HIPBLAS_STATUS_SUCCESS)
+            return status_1;
+        if(status_2 != HIPBLAS_STATUS_SUCCESS)
+            return status_2;
+        if(status_3 != HIPBLAS_STATUS_SUCCESS)
+            return status_3;
+        if(status_4 != HIPBLAS_STATUS_SUCCESS)
+            return status_4;
     }
 
-    // copy output from device to CPU
-    for(int b = 0; b < batch_count; b++)
-    {
-        CHECK_HIP_ERROR(
-            hipMemcpy(hx_array[b], bx_array[b], sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(
-            hipMemcpy(hy_array[b], by_array[b], sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-    }
+    CHECK_HIP_ERROR(hy_host.transfer_from(dy_host));
+    CHECK_HIP_ERROR(hy_device.transfer_from(dy_device));
 
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_axpy<T>(N, alpha, hx_cpu_array[b].data(), incx, hy_cpu_array[b].data(), incy);
+            cblas_axpy<T>(N, alpha, hx_cpu[b], incx, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, abs_incx, hx_cpu_array, hx_array);
-            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu_array, hy_array);
+            unit_check_general<T>(1, N, batch_count, abs_incx, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy_device);
+        }
+        if(argus.norm_check)
+        {
+            norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host, batch_count);
+            norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device, batch_count);
         }
 
     } // end of if unit check
+
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        status_1 = hipblasGetStream(handle, &stream);
+        status_2 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
+
+        if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
+        {
+            hipblasDestroy(handle);
+            if(status_1 != HIPBLAS_STATUS_SUCCESS)
+                return status_1;
+            if(status_2 != HIPBLAS_STATUS_SUCCESS)
+                return status_2;
+        }
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            status_1 = hipblasAxpyBatchedFn(handle,
+                                            N,
+                                            d_alpha,
+                                            dx.ptr_on_device(),
+                                            incx,
+                                            dy_device.ptr_on_device(),
+                                            incy,
+                                            batch_count);
+
+            if(status_1 != HIPBLAS_STATUS_SUCCESS)
+            {
+                hipblasDestroy(handle);
+                return status_1;
+            }
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.log_args<T>(std::cout,
+                                                                        argus,
+                                                                        gpu_time_used,
+                                                                        axpy_gflop_count<T>(N),
+                                                                        axpy_gbyte_count<T>(N),
+                                                                        hipblas_error_host,
+                                                                        hipblas_error_device);
+    }
 
     //  BLAS_1_RESULT_PRINT
 

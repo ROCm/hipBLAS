@@ -45,6 +45,15 @@
 
 #ifdef __cplusplus
 
+#ifndef CHECK_HIPBLAS_ERROR
+#define CHECK_HIPBLAS_ERROR(error)                                            \
+    if(error != HIPBLAS_STATUS_SUCCESS)                                       \
+    {                                                                         \
+        fprintf(stderr, "hipBLAS error: %s\n", hipblasStatusToString(error)); \
+        return (error);                                                       \
+    }
+#endif
+
 #define BLAS_1_RESULT_PRINT                                \
     do                                                     \
     {                                                      \
@@ -689,6 +698,38 @@ double get_time_us_sync(hipStream_t stream);
 /* ============================================================================================ */
 
 #ifdef __cplusplus
+
+struct Arguments;
+
+/* ============================================================================================ */
+/*! \brief  local handle which is automatically created and destroyed  */
+class hipblasLocalHandle
+{
+    hipblasHandle_t m_handle;
+    void*           m_memory = nullptr;
+
+public:
+    hipblasLocalHandle();
+
+    explicit hipblasLocalHandle(const Arguments& arg);
+
+    ~hipblasLocalHandle();
+
+    hipblasLocalHandle(const hipblasLocalHandle&) = delete;
+    hipblasLocalHandle(hipblasLocalHandle&&)      = delete;
+    hipblasLocalHandle& operator=(const hipblasLocalHandle&) = delete;
+    hipblasLocalHandle& operator=(hipblasLocalHandle&&) = delete;
+
+    // Allow hipblasLocalHandle to be used anywhere hipblas_handle is expected
+    operator hipblasHandle_t&()
+    {
+        return m_handle;
+    }
+    operator const hipblasHandle_t&() const
+    {
+        return m_handle;
+    }
+};
 
 #include "hipblas_arguments.hpp"
 
