@@ -154,6 +154,8 @@ TEST_P(blas2_hpr_gtest, hpr_gtest_double)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // hpr_batched
 TEST_P(blas2_hpr_gtest, hpr_batched_gtest_float)
 {
@@ -175,7 +177,7 @@ TEST_P(blas2_hpr_gtest, hpr_batched_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -200,7 +202,7 @@ TEST_P(blas2_hpr_gtest, hpr_batched_gtest_double)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -226,7 +228,7 @@ TEST_P(blas2_hpr_gtest, hpr_strided_batched_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -251,10 +253,12 @@ TEST_P(blas2_hpr_gtest, hpr_strided_batched_gtest_double)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,

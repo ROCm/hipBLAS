@@ -1,5 +1,5 @@
 /* ************************************************************************
- * dotright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -125,6 +125,8 @@ TEST_P(nrm2_ex_gtest, nrm2_ex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(nrm2_ex_gtest, nrm2_batched_ex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -142,7 +144,7 @@ TEST_P(nrm2_ex_gtest, nrm2_batched_ex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for CUDA
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -164,10 +166,12 @@ TEST_P(nrm2_ex_gtest, nrm2_strided_batched_ex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for CUDA
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // Values is for a single item; ValuesIn is for an array
 // notice we are using vector of vector

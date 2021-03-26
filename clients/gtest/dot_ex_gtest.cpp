@@ -1,5 +1,5 @@
 /* ************************************************************************
- * dotright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -68,9 +68,11 @@ const double stride_scale_range[] = {1.0, 2.5};
 const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 const vector<vector<hipblasDatatype_t>> precisions{
-    // Not supported in cuBLAS
+// Not supported in cuBLAS
+#ifndef __HIP_PLATFORM_NVCC__
     {HIPBLAS_R_16B, HIPBLAS_R_16B, HIPBLAS_R_16B, HIPBLAS_R_32F},
     {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
+#endif
 
     // Supported in both rocBLAS and cuBLAS
     {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
@@ -135,10 +137,12 @@ TEST_P(dot_ex_gtest, dot_ex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 TEST_P(dot_ex_gtest, dot_batched_ex)
 {
@@ -157,7 +161,7 @@ TEST_P(dot_ex_gtest, dot_batched_ex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -179,7 +183,7 @@ TEST_P(dot_ex_gtest, dot_strided_batched_ex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -202,7 +206,7 @@ TEST_P(dot_ex_gtest, dotc_ex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -224,7 +228,7 @@ TEST_P(dot_ex_gtest, dotc_batched_ex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -246,10 +250,12 @@ TEST_P(dot_ex_gtest, dotc_strided_batched_ex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // Values is for a single item; ValuesIn is for an array
 // notice we are using vector of vector
