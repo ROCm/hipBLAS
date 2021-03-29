@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2020 Advanced Micro Devices, Inc.
+# Copyright 2016-2021 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # ########################################################################
@@ -36,6 +36,7 @@ add_library(hipblas_fortran ${hipblas_f90_source})
 
 add_library( hipblas
   ${hipblas_source}
+  ${CMAKE_CURRENT_SOURCE_DIR}/hipblas_auxiliary.cpp
   ${relative_hipblas_headers_public}
 )
 add_library( roc::hipblas ALIAS hipblas )
