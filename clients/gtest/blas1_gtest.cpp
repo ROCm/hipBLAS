@@ -1,5 +1,5 @@
 /* ************************************************************************
- * dotright 2016 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -157,6 +157,8 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
 }
 
 // axpy
+
+#ifndef __HIP_PLATFORM_NVCC__
 TEST_P(blas1_gtest, axpy_half)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
@@ -174,10 +176,11 @@ TEST_P(blas1_gtest, axpy_half)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+#endif
 
 TEST_P(blas1_gtest, axpy_float)
 {
@@ -223,6 +226,8 @@ TEST_P(blas1_gtest, axpy_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // axpy_batched
 TEST_P(blas1_gtest, axpy_batched_float)
 {
@@ -245,7 +250,7 @@ TEST_P(blas1_gtest, axpy_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -271,7 +276,7 @@ TEST_P(blas1_gtest, axpy_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -298,7 +303,7 @@ TEST_P(blas1_gtest, axpy_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -324,10 +329,12 @@ TEST_P(blas1_gtest, axpy_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // copy tests
 TEST_P(blas1_gtest, copy_float)
@@ -374,6 +381,8 @@ TEST_P(blas1_gtest, copy_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // copy_batched tests
 TEST_P(blas1_gtest, copy_batched_float)
 {
@@ -396,7 +405,7 @@ TEST_P(blas1_gtest, copy_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -422,7 +431,7 @@ TEST_P(blas1_gtest, copy_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -449,7 +458,7 @@ TEST_P(blas1_gtest, copy_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -475,10 +484,12 @@ TEST_P(blas1_gtest, copy_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // scal tests
 TEST_P(blas1_gtest, scal_float)
@@ -559,6 +570,8 @@ TEST_P(blas1_gtest, scal_float_complex_float)
         }
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // scal_batched tests
 TEST_P(blas1_gtest, scal_batched_float)
@@ -748,6 +761,8 @@ TEST_P(blas1_gtest, scal_strided_batched_float_complex_float)
     }
 }
 
+#endif
+
 // swap tests
 TEST_P(blas1_gtest, swap_float)
 {
@@ -793,6 +808,8 @@ TEST_P(blas1_gtest, swap_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // swap_batched tests
 TEST_P(blas1_gtest, swap_batched_float)
 {
@@ -815,7 +832,7 @@ TEST_P(blas1_gtest, swap_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -841,7 +858,7 @@ TEST_P(blas1_gtest, swap_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -868,7 +885,7 @@ TEST_P(blas1_gtest, swap_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -894,12 +911,15 @@ TEST_P(blas1_gtest, swap_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
 
+#endif
+
 // dot tests
+#ifndef __HIP_PLATFORM_NVCC__
 TEST_P(blas1_gtest, dot_half)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -926,7 +946,7 @@ TEST_P(blas1_gtest, dot_half)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -957,10 +977,11 @@ TEST_P(blas1_gtest, dot_bfloat16)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
+#endif
 
 TEST_P(blas1_gtest, dot_float)
 {
@@ -987,7 +1008,7 @@ TEST_P(blas1_gtest, dot_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1044,6 +1065,8 @@ TEST_P(blas1_gtest, dotc_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // dot_batched tests
 TEST_P(blas1_gtest, dot_batched_half)
 {
@@ -1075,7 +1098,7 @@ TEST_P(blas1_gtest, dot_batched_half)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1110,7 +1133,7 @@ TEST_P(blas1_gtest, dot_batched_bfloat16)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1144,7 +1167,7 @@ TEST_P(blas1_gtest, dot_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1174,7 +1197,7 @@ TEST_P(blas1_gtest, dotu_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1204,7 +1227,7 @@ TEST_P(blas1_gtest, dotc_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1240,7 +1263,7 @@ TEST_P(blas1_gtest, dot_strided_batched_half)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1275,7 +1298,7 @@ TEST_P(blas1_gtest, dot_strided_batched_bfloat16)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1309,7 +1332,7 @@ TEST_P(blas1_gtest, dot_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1339,7 +1362,7 @@ TEST_P(blas1_gtest, dotu_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1369,10 +1392,12 @@ TEST_P(blas1_gtest, dotc_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
+
+#endif
 
 // nrm2 tests
 TEST_P(blas1_gtest, nrm2_float)
@@ -1382,7 +1407,7 @@ TEST_P(blas1_gtest, nrm2_float)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2<float, float>(arg);
+    hipblasStatus_t status = testing_nrm2<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1408,7 +1433,7 @@ TEST_P(blas1_gtest, nrm2_float_complex)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_nrm2<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1427,6 +1452,8 @@ TEST_P(blas1_gtest, nrm2_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // nrm2_batched tests
 TEST_P(blas1_gtest, nrm2_batched_float)
 {
@@ -1435,7 +1462,7 @@ TEST_P(blas1_gtest, nrm2_batched_float)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2_batched<float, float>(arg);
+    hipblasStatus_t status = testing_nrm2_batched<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1453,7 +1480,7 @@ TEST_P(blas1_gtest, nrm2_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
@@ -1465,7 +1492,7 @@ TEST_P(blas1_gtest, nrm2_batched_float_complex)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_nrm2_batched<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1483,7 +1510,7 @@ TEST_P(blas1_gtest, nrm2_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1496,7 +1523,7 @@ TEST_P(blas1_gtest, nrm2_strided_batched_float)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2_strided_batched<float, float>(arg);
+    hipblasStatus_t status = testing_nrm2_strided_batched<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1514,7 +1541,7 @@ TEST_P(blas1_gtest, nrm2_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1526,7 +1553,7 @@ TEST_P(blas1_gtest, nrm2_strided_batched_float_complex)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_nrm2_strided_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_nrm2_strided_batched<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1544,10 +1571,12 @@ TEST_P(blas1_gtest, nrm2_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // rot
 TEST_P(blas1_gtest, rot_float)
@@ -1595,6 +1624,8 @@ TEST_P(blas1_gtest, rot_float_complex_float)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // rot_batched
 TEST_P(blas1_gtest, rot_batched_float)
 {
@@ -1613,7 +1644,7 @@ TEST_P(blas1_gtest, rot_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1635,7 +1666,7 @@ TEST_P(blas1_gtest, rot_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1657,7 +1688,7 @@ TEST_P(blas1_gtest, rot_batched_float_complex_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1680,7 +1711,7 @@ TEST_P(blas1_gtest, rot_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1702,7 +1733,7 @@ TEST_P(blas1_gtest, rot_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1724,10 +1755,12 @@ TEST_P(blas1_gtest, rot_strided_batched_float_complex_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // rotg
 TEST_P(blas1_gtest, rotg_float)
@@ -1752,6 +1785,8 @@ TEST_P(blas1_gtest, rotg_float_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // rotg_batched
 TEST_P(blas1_gtest, rotg_batched_float)
 {
@@ -1766,7 +1801,7 @@ TEST_P(blas1_gtest, rotg_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1784,7 +1819,7 @@ TEST_P(blas1_gtest, rotg_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1803,7 +1838,7 @@ TEST_P(blas1_gtest, rotg_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1821,10 +1856,12 @@ TEST_P(blas1_gtest, rotg_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // rotm
 TEST_P(blas1_gtest, rotm_float)
@@ -1837,6 +1874,8 @@ TEST_P(blas1_gtest, rotm_float)
         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // rotm_batched
 TEST_P(blas1_gtest, rotm_batched_float)
@@ -1852,7 +1891,7 @@ TEST_P(blas1_gtest, rotm_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1871,10 +1910,12 @@ TEST_P(blas1_gtest, rotm_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // rotmg
 TEST_P(blas1_gtest, rotmg_float)
@@ -1887,6 +1928,8 @@ TEST_P(blas1_gtest, rotmg_float)
         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     }
 }
+
+#ifndef __HIP_PLATFORM_NVCC__
 
 // rotmg_batched
 TEST_P(blas1_gtest, rotmg_batched_float)
@@ -1902,7 +1945,7 @@ TEST_P(blas1_gtest, rotmg_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -1921,10 +1964,12 @@ TEST_P(blas1_gtest, rotmg_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // asum
 TEST_P(blas1_gtest, asum_float)
@@ -1934,7 +1979,7 @@ TEST_P(blas1_gtest, asum_float)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum<float, float>(arg);
+    hipblasStatus_t status = testing_asum<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1956,7 +2001,7 @@ TEST_P(blas1_gtest, asum_float)
 TEST_P(blas1_gtest, asum_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_asum<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1978,7 +2023,7 @@ TEST_P(blas1_gtest, asum_float_complex)
 TEST_P(blas1_gtest, asum_double_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_asum<hipblasDoubleComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1997,11 +2042,13 @@ TEST_P(blas1_gtest, asum_double_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // asum_batched
 TEST_P(blas1_gtest, asum_batched_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_batched<float, float>(arg);
+    hipblasStatus_t status = testing_asum_batched<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2019,7 +2066,7 @@ TEST_P(blas1_gtest, asum_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2027,7 +2074,7 @@ TEST_P(blas1_gtest, asum_batched_float)
 TEST_P(blas1_gtest, asum_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_asum_batched<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2045,7 +2092,7 @@ TEST_P(blas1_gtest, asum_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2053,7 +2100,7 @@ TEST_P(blas1_gtest, asum_batched_float_complex)
 TEST_P(blas1_gtest, asum_batched_double_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_asum_batched<hipblasDoubleComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2071,7 +2118,7 @@ TEST_P(blas1_gtest, asum_batched_double_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2080,7 +2127,7 @@ TEST_P(blas1_gtest, asum_batched_double_complex)
 TEST_P(blas1_gtest, asum_strided_batched_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_strided_batched<float, float>(arg);
+    hipblasStatus_t status = testing_asum_strided_batched<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2098,7 +2145,7 @@ TEST_P(blas1_gtest, asum_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2106,7 +2153,7 @@ TEST_P(blas1_gtest, asum_strided_batched_float)
 TEST_P(blas1_gtest, asum_strided_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_strided_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_asum_strided_batched<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2124,7 +2171,7 @@ TEST_P(blas1_gtest, asum_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2132,7 +2179,7 @@ TEST_P(blas1_gtest, asum_strided_batched_float_complex)
 TEST_P(blas1_gtest, asum_strided_batched_double_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum_strided_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_asum_strided_batched<hipblasDoubleComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2150,10 +2197,12 @@ TEST_P(blas1_gtest, asum_strided_batched_double_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // amax
 TEST_P(blas1_gtest, amax_float)
@@ -2184,6 +2233,8 @@ TEST_P(blas1_gtest, amax_float_complex)
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // amax_batched
 TEST_P(blas1_gtest, amax_batched_float)
 {
@@ -2198,7 +2249,7 @@ TEST_P(blas1_gtest, amax_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2216,7 +2267,7 @@ TEST_P(blas1_gtest, amax_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2235,7 +2286,7 @@ TEST_P(blas1_gtest, amax_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2253,10 +2304,12 @@ TEST_P(blas1_gtest, amax_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // amin
 TEST_P(blas1_gtest, amin_float)
@@ -2277,6 +2330,8 @@ TEST_P(blas1_gtest, amin_float_complex)
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // amin_batched
 TEST_P(blas1_gtest, amin_batched_float)
 {
@@ -2291,7 +2346,7 @@ TEST_P(blas1_gtest, amin_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2309,7 +2364,7 @@ TEST_P(blas1_gtest, amin_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2328,7 +2383,7 @@ TEST_P(blas1_gtest, amin_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -2346,10 +2401,12 @@ TEST_P(blas1_gtest, amin_strided_batched_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // Values is for a single item; ValuesIn is for an array
 // notice we are using vector of vector

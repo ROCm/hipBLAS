@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -158,7 +158,7 @@ TEST_P(set_vector_get_vector_gtest, async_float)
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
-INSTANTIATE_TEST_SUITE_P(rocblas_auxiliary_small,
+INSTANTIATE_TEST_SUITE_P(hipblas_auxiliary_small,
                          set_vector_get_vector_gtest,
                          Combine(ValuesIn(M_range),
                                  ValuesIn(incx_incy_incd_range),

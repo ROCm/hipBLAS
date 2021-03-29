@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -54,6 +54,6 @@ TEST_P(set_get_atomics_mode_gtest, default)
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
-INSTANTIATE_TEST_SUITE_P(rocblas_auxiliary_small,
+INSTANTIATE_TEST_SUITE_P(hipblas_auxiliary_small,
                          set_get_atomics_mode_gtest,
                          Combine(ValuesIn(is_fortran)));

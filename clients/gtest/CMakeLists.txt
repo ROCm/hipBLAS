@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2020 Advanced Micro Devices, Inc.
+# Copyright 2016-2021 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # set( Boost_DEBUG ON )
@@ -39,6 +39,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 set(hipblas_test_source
   hipblas_gtest_main.cpp
+  auxiliary_gtest.cpp
   set_get_pointer_mode_gtest.cpp
   set_get_vector_gtest.cpp
   set_get_matrix_gtest.cpp
