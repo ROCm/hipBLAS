@@ -1,5 +1,9 @@
 # Change Log for hipBLAS
 
+## [hipBLAS 0.45.0 for ROCm 4.3.0]
+### Added
+- Added hipblasStatusToString
+
 ## [hipBLAS 0.44.0 for ROCm 4.2.0]
 ### Added
 - Made necessary changes to work with rocBLAS' gemm_ex changes. When using rocBLAS backend, hipBLAS will query the preferable

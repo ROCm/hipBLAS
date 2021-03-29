@@ -75,6 +75,48 @@ std::string hipblas_exepath()
     return pathstr;
 }
 
+/*****************
+ * local handles *
+ *****************/
+
+hipblasLocalHandle::hipblasLocalHandle()
+{
+    auto status = hipblasCreate(&m_handle);
+    if(status != HIPBLAS_STATUS_SUCCESS)
+        throw std::runtime_error(hipblasStatusToString(status));
+}
+
+hipblasLocalHandle::hipblasLocalHandle(const Arguments& arg)
+    : hipblasLocalHandle()
+{
+    // for future customization of handle based on arguments, example from rocblas below
+
+    /*
+    auto status = rocblas_set_atomics_mode(m_handle, arg.atomics_mode);
+
+    if(status == rocblas_status_success)
+    {
+        // If the test specifies user allocated workspace, allocate and use it
+        if(arg.user_allocated_workspace)
+        {
+            if((hipMalloc)(&m_memory, arg.user_allocated_workspace) != hipSuccess)
+                throw std::bad_alloc();
+            status = rocblas_set_workspace(m_handle, m_memory, arg.user_allocated_workspace);
+        }
+    }
+
+    if(status != rocblas_status_success)
+        throw std::runtime_error(rocblas_status_to_string(status));
+    */
+}
+
+hipblasLocalHandle::~hipblasLocalHandle()
+{
+    if(m_memory)
+        (hipFree)(m_memory);
+    hipblasDestroy(m_handle);
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
