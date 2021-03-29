@@ -24,33 +24,19 @@ hipblasStatus_t testing_dot(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
-
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0)
+    if(N < 0 || incx < 0 || incy < 0)
     {
-        status_1 = HIPBLAS_STATUS_INVALID_VALUE;
-        return status_1;
-    }
-    else if(incx < 0)
-    {
-        status_1 = HIPBLAS_STATUS_INVALID_VALUE;
-        return status_1;
-    }
-    else if(incy < 0)
-    {
-        status_1 = HIPBLAS_STATUS_INVALID_VALUE;
-        return status_1;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     int sizeX = N * incx;
     int sizeY = N * incy;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    vector<T> hx(sizeX);
-    vector<T> hy(sizeY);
+    host_vector<T> hx(sizeX);
+    host_vector<T> hy(sizeY);
 
     T                cpu_result, h_hipblas_result_1, h_hipblas_result_2;
     device_vector<T> dx(sizeX);
@@ -59,8 +45,7 @@ hipblasStatus_t testing_dot(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -75,34 +60,17 @@ hipblasStatus_t testing_dot(const Arguments& argus)
          HIPBLAS
     =================================================================== */
     // hipblasDot accept both dev/host pointer for the scalar
-    status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-    status_2 = (hipblasDotFn)(handle, N, dx, incx, dy, incy, d_hipblas_result);
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
-    {
-        hipblasDestroy(handle);
-        if(status_1 != HIPBLAS_STATUS_SUCCESS)
-            return status_1;
-        if(status_2 != HIPBLAS_STATUS_SUCCESS)
-            return status_2;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+    CHECK_HIPBLAS_ERROR((hipblasDotFn)(handle, N, dx, incx, dy, incy, d_hipblas_result));
 
-    status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-    status_2 = (hipblasDotFn)(handle, N, dx, incx, dy, incy, &h_hipblas_result_1);
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
-    {
-        hipblasDestroy(handle);
-        if(status_1 != HIPBLAS_STATUS_SUCCESS)
-            return status_1;
-        if(status_2 != HIPBLAS_STATUS_SUCCESS)
-            return status_2;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+    CHECK_HIPBLAS_ERROR((hipblasDotFn)(handle, N, dx, incx, dy, incy, &h_hipblas_result_1));
 
     CHECK_HIP_ERROR(
         hipMemcpy(&h_hipblas_result_2, d_hipblas_result, sizeof(T), hipMemcpyDeviceToHost));
 
     if(argus.unit_check || argus.norm_check)
     {
-
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -126,17 +94,8 @@ hipblasStatus_t testing_dot(const Arguments& argus)
     if(argus.timing)
     {
         hipStream_t stream;
-        status_1 = hipblasGetStream(handle, &stream);
-        status_2 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-
-        if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
-        {
-            hipblasDestroy(handle);
-            if(status_1 != HIPBLAS_STATUS_SUCCESS)
-                return status_1;
-            if(status_2 != HIPBLAS_STATUS_SUCCESS)
-                return status_2;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -144,13 +103,7 @@ hipblasStatus_t testing_dot(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status_1 = (hipblasDotFn)(handle, N, dx, incx, dy, incy, d_hipblas_result);
-
-            if(status_1 != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status_1;
-            }
+            CHECK_HIPBLAS_ERROR((hipblasDotFn)(handle, N, dx, incx, dy, incy, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -163,8 +116,6 @@ hipblasStatus_t testing_dot(const Arguments& argus)
                                                          hipblas_error_device);
     }
 
-    //  BLAS_1_RESULT_PRINT
-    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
 

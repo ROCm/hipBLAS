@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -185,6 +185,8 @@ TEST_P(blas2_herkx_gtest, herkx_gtest_double)
     // }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // herkx_batched
 TEST_P(blas2_herkx_gtest, herkx_batched_gtest_float)
 {
@@ -209,7 +211,7 @@ TEST_P(blas2_herkx_gtest, herkx_batched_gtest_float)
     //     }
     //     else
     //     {
-    //         EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+    //         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     //     }
     // }
 }
@@ -237,7 +239,7 @@ TEST_P(blas2_herkx_gtest, herkx_batched_gtest_double)
     //     }
     //     else
     //     {
-    //         EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+    //         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     //     }
     // }
 }
@@ -266,7 +268,7 @@ TEST_P(blas2_herkx_gtest, herkx_strided_batched_gtest_float)
     //     }
     //     else
     //     {
-    //         EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+    //         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     //     }
     // }
 }
@@ -294,10 +296,12 @@ TEST_P(blas2_herkx_gtest, herkx_strided_batched_gtest_double)
     //     }
     //     else
     //     {
-    //         EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+    //         EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
     //     }
     // }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,

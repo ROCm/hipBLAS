@@ -213,6 +213,8 @@ TEST_P(trmm_gtest, trmm_gtest_double_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(trmm_gtest, trmm_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -235,7 +237,7 @@ TEST_P(trmm_gtest, trmm_batched_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -262,7 +264,7 @@ TEST_P(trmm_gtest, trmm_batched_gtest_double_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -289,7 +291,7 @@ TEST_P(trmm_gtest, trmm_strided_batched_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -316,10 +318,12 @@ TEST_P(trmm_gtest, trmm_strided_batched_gtest_double_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,

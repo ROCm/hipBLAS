@@ -93,6 +93,13 @@ constexpr double dot_gflop_count<true, hipblasDoubleComplex>(int n)
     return (9.0 * n) / 1e9;
 }
 
+// iamax/iamin
+template <typename T>
+constexpr double iamax_gflop_count(int n)
+{
+    return (1.0 * n) / 1e9;
+}
+
 // nrm2
 template <typename T>
 constexpr double nrm2_gflop_count(int n)

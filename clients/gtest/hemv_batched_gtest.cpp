@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -141,11 +141,13 @@ protected:
     virtual void TearDown() {}
 };
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(hemv_gtest_batched, hemv_gtest_float_complex)
 {
     Arguments arg = setup_hemv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_hemvBatched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_hemv_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -157,10 +159,12 @@ TEST_P(hemv_gtest_batched, hemv_gtest_float_complex)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
