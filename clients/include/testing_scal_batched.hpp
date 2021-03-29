@@ -24,9 +24,8 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     int incx        = argus.incx;
     int batch_count = argus.batch_count;
     int unit_check  = argus.unit_check;
+    int norm_check  = argus.norm_check;
     int timing      = argus.timing;
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -44,8 +43,7 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);
@@ -65,17 +63,13 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     /* =====================================================================
          HIPBLAS
     =================================================================== */
-    status = hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count);
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(
+        hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hx.transfer_from(dx));
 
-    if(unit_check)
+    if(unit_check || norm_check)
     {
         /* =====================================================================
                     CPU BLAS
@@ -91,18 +85,17 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
         {
             unit_check_general<T>(1, N, batch_count, incx, hz, hx);
         }
+        if(norm_check)
+        {
+            hipblas_error = norm_check_general<T>('F', 1, N, incx, hz, hx, batch_count);
+        }
 
     } // end of if unit check
 
     if(timing)
     {
         hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -110,13 +103,8 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status = hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status;
-            }
+            CHECK_HIPBLAS_ERROR(
+                hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -127,6 +115,6 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
                                                                 scal_gbyte_count<T>(N),
                                                                 hipblas_error);
     }
-    hipblasDestroy(handle);
-    return status;
+
+    return HIPBLAS_STATUS_SUCCESS;
 }

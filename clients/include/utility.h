@@ -28,22 +28,41 @@
  * \brief provide data initialization, timing, hipblas type <-> lapack char conversion utilities.
  */
 
-#define CHECK_HIP_ERROR(error)                    \
-    do                                            \
-    {                                             \
-        if(error != hipSuccess)                   \
-        {                                         \
-            fprintf(stderr,                       \
-                    "error: '%s'(%d) at %s:%d\n", \
-                    hipGetErrorString(error),     \
-                    error,                        \
-                    __FILE__,                     \
-                    __LINE__);                    \
-            exit(EXIT_FAILURE);                   \
-        }                                         \
+#define CHECK_HIP_ERROR(error)                        \
+    do                                                \
+    {                                                 \
+        hipError_t error__ = (error);                 \
+        if(error__ != hipSuccess)                     \
+        {                                             \
+            fprintf(stderr,                           \
+                    "hip error: '%s'(%d) at %s:%d\n", \
+                    hipGetErrorString(error__),       \
+                    error__,                          \
+                    __FILE__,                         \
+                    __LINE__);                        \
+            exit(EXIT_FAILURE);                       \
+        }                                             \
     } while(0)
 
 #ifdef __cplusplus
+
+#ifndef CHECK_HIPBLAS_ERROR
+#define EXPECT_HIPBLAS_STATUS(status, expected)      \
+    do                                               \
+    {                                                \
+        hipblasStatus_t status__ = (status);         \
+        if(status__ != expected)                     \
+        {                                            \
+            fprintf(stderr,                          \
+                    "hipBLAS error: %s at %s:%d\n",  \
+                    hipblasStatusToString(status__), \
+                    __FILE__,                        \
+                    __LINE__);                       \
+            return (status__);                       \
+        }                                            \
+    } while(0)
+#define CHECK_HIPBLAS_ERROR(STATUS) EXPECT_HIPBLAS_STATUS(STATUS, HIPBLAS_STATUS_SUCCESS)
+#endif
 
 #define BLAS_1_RESULT_PRINT                                \
     do                                                     \
@@ -689,6 +708,38 @@ double get_time_us_sync(hipStream_t stream);
 /* ============================================================================================ */
 
 #ifdef __cplusplus
+
+struct Arguments;
+
+/* ============================================================================================ */
+/*! \brief  local handle which is automatically created and destroyed  */
+class hipblasLocalHandle
+{
+    hipblasHandle_t m_handle;
+    void*           m_memory = nullptr;
+
+public:
+    hipblasLocalHandle();
+
+    explicit hipblasLocalHandle(const Arguments& arg);
+
+    ~hipblasLocalHandle();
+
+    hipblasLocalHandle(const hipblasLocalHandle&) = delete;
+    hipblasLocalHandle(hipblasLocalHandle&&)      = delete;
+    hipblasLocalHandle& operator=(const hipblasLocalHandle&) = delete;
+    hipblasLocalHandle& operator=(hipblasLocalHandle&&) = delete;
+
+    // Allow hipblasLocalHandle to be used anywhere hipblas_handle is expected
+    operator hipblasHandle_t&()
+    {
+        return m_handle;
+    }
+    operator const hipblasHandle_t&() const
+    {
+        return m_handle;
+    }
+};
 
 #include "hipblas_arguments.hpp"
 
