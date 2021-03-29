@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -166,6 +166,8 @@ TEST_P(blas2_tpmv_gtest, tpmv_double)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(blas2_tpmv_gtest, tpmv_batched_float)
 {
     Arguments arg = setup_tpmv_arguments(GetParam());
@@ -181,7 +183,7 @@ TEST_P(blas2_tpmv_gtest, tpmv_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -201,10 +203,12 @@ TEST_P(blas2_tpmv_gtest, tpmv_strided_batched_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,

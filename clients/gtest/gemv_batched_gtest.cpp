@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -142,11 +142,13 @@ protected:
     virtual void TearDown() {}
 };
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(gemv_gtest_batched, gemv_gtest_float)
 {
     Arguments arg = setup_gemv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_gemvBatched<float>(arg);
+    hipblasStatus_t status = testing_gemv_batched<float>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -178,7 +180,7 @@ TEST_P(gemv_gtest_batched, gemv_gtest_float_complex)
 {
     Arguments arg = setup_gemv_arguments(GetParam());
 
-    hipblasStatus_t status = testing_gemvBatched<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_gemv_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -205,11 +207,12 @@ TEST_P(gemv_gtest_batched, gemv_gtest_float_complex)
         }
         else
         {
-            // for cuda
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,

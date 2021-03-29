@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -113,7 +113,7 @@ TEST_P(blas2_hpr_gtest, hpr_gtest_float)
 
     Arguments arg = setup_hpr_arguments(GetParam());
 
-    hipblasStatus_t status = testing_hpr<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_hpr<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -138,7 +138,7 @@ TEST_P(blas2_hpr_gtest, hpr_gtest_double)
 
     Arguments arg = setup_hpr_arguments(GetParam());
 
-    hipblasStatus_t status = testing_hpr<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_hpr<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -154,6 +154,8 @@ TEST_P(blas2_hpr_gtest, hpr_gtest_double)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 // hpr_batched
 TEST_P(blas2_hpr_gtest, hpr_batched_gtest_float)
 {
@@ -164,7 +166,7 @@ TEST_P(blas2_hpr_gtest, hpr_batched_gtest_float)
 
     Arguments arg = setup_hpr_arguments(GetParam());
 
-    hipblasStatus_t status = testing_hpr_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_hpr_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -175,7 +177,7 @@ TEST_P(blas2_hpr_gtest, hpr_batched_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -189,7 +191,7 @@ TEST_P(blas2_hpr_gtest, hpr_batched_gtest_double)
 
     Arguments arg = setup_hpr_arguments(GetParam());
 
-    hipblasStatus_t status = testing_hpr_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_hpr_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -200,7 +202,7 @@ TEST_P(blas2_hpr_gtest, hpr_batched_gtest_double)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -215,7 +217,7 @@ TEST_P(blas2_hpr_gtest, hpr_strided_batched_gtest_float)
 
     Arguments arg = setup_hpr_arguments(GetParam());
 
-    hipblasStatus_t status = testing_hpr_strided_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_hpr_strided_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -226,7 +228,7 @@ TEST_P(blas2_hpr_gtest, hpr_strided_batched_gtest_float)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
@@ -240,7 +242,7 @@ TEST_P(blas2_hpr_gtest, hpr_strided_batched_gtest_double)
 
     Arguments arg = setup_hpr_arguments(GetParam());
 
-    hipblasStatus_t status = testing_hpr_strided_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_hpr_strided_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -251,10 +253,12 @@ TEST_P(blas2_hpr_gtest, hpr_strided_batched_gtest_double)
         }
         else
         {
-            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // for cuda
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
         }
     }
 }
+
+#endif
 
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
