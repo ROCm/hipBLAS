@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -19,14 +19,11 @@ hipblasStatus_t testing_rotmg(const Arguments& arg)
     bool FORTRAN        = arg.fortran;
     auto hipblasRotmgFn = FORTRAN ? hipblasRotmg<T, true> : hipblasRotmg<T, false>;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
-    host_vector<T> params(9);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
+    hipblasLocalHandle handle(arg);
+
+    host_vector<T> params(9);
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
@@ -41,41 +38,59 @@ hipblasStatus_t testing_rotmg(const Arguments& arg)
     // Test host
     {
         host_vector<T> hparams = params;
-        status_1               = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        status_2               = (hipblasRotmgFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasRotmgFn(
             handle, &hparams[0], &hparams[1], &hparams[2], &hparams[3], &hparams[4]));
 
         if(arg.unit_check)
             near_check_general(1, 9, 1, cparams.data(), hparams.data(), rel_error);
+        if(arg.norm_check)
+            hipblas_error_host = norm_check_general<T>('F', 1, 9, 1, cparams, hparams);
     }
 
     // Test device
     {
         device_vector<T> dparams(9);
         CHECK_HIP_ERROR(hipMemcpy(dparams, params, 9 * sizeof(T), hipMemcpyHostToDevice));
-        status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_4
-            = (hipblasRotmgFn(handle, dparams, dparams + 1, dparams + 2, dparams + 3, dparams + 4));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(
+            hipblasRotmgFn(handle, dparams, dparams + 1, dparams + 2, dparams + 3, dparams + 4));
         host_vector<T> hparams(9);
         CHECK_HIP_ERROR(hipMemcpy(hparams, dparams, 9 * sizeof(T), hipMemcpyDeviceToHost));
 
         if(arg.unit_check)
             near_check_general(1, 9, 1, cparams.data(), hparams.data(), rel_error);
+        if(arg.norm_check)
+            hipblas_error_device = norm_check_general<T>('F', 1, 9, 1, cparams, hparams);
     }
 
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
-       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
+    if(arg.timing)
     {
-        hipblasDestroy(handle);
-        if(status_1 != HIPBLAS_STATUS_SUCCESS)
-            return status_1;
-        if(status_2 != HIPBLAS_STATUS_SUCCESS)
-            return status_2;
-        if(status_3 != HIPBLAS_STATUS_SUCCESS)
-            return status_3;
-        if(status_4 != HIPBLAS_STATUS_SUCCESS)
-            return status_4;
+        device_vector<T> dparams(9);
+        CHECK_HIP_ERROR(hipMemcpy(dparams, params, 9 * sizeof(T), hipMemcpyHostToDevice));
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        int runs = arg.cold_iters + arg.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == arg.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasRotmgFn(
+                handle, dparams, dparams + 1, dparams + 2, dparams + 3, dparams + 4));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<>{}.log_args<T>(std::cout,
+                                      arg,
+                                      gpu_time_used,
+                                      ArgumentLogging::NA_value,
+                                      ArgumentLogging::NA_value,
+                                      hipblas_error_host,
+                                      hipblas_error_device);
     }
-    hipblasDestroy(handle);
+
     return HIPBLAS_STATUS_SUCCESS;
 }

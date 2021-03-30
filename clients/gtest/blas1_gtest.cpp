@@ -1766,7 +1766,7 @@ TEST_P(blas1_gtest, rot_strided_batched_float_complex_float)
 TEST_P(blas1_gtest, rotg_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_rotg<float, float>(arg);
+    hipblasStatus_t status = testing_rotg<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1777,7 +1777,7 @@ TEST_P(blas1_gtest, rotg_float)
 TEST_P(blas1_gtest, rotg_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_rotg<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_rotg<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1791,7 +1791,7 @@ TEST_P(blas1_gtest, rotg_float_complex)
 TEST_P(blas1_gtest, rotg_batched_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_rotg_batched<float, float>(arg);
+    hipblasStatus_t status = testing_rotg_batched<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1809,7 +1809,7 @@ TEST_P(blas1_gtest, rotg_batched_float)
 TEST_P(blas1_gtest, rotg_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_rotg_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_rotg_batched<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1828,7 +1828,7 @@ TEST_P(blas1_gtest, rotg_batched_float_complex)
 TEST_P(blas1_gtest, rotg_strided_batched_float)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_rotg_strided_batched<float, float>(arg);
+    hipblasStatus_t status = testing_rotg_strided_batched<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -1846,7 +1846,7 @@ TEST_P(blas1_gtest, rotg_strided_batched_float)
 TEST_P(blas1_gtest, rotg_strided_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_rotg_strided_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_rotg_strided_batched<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

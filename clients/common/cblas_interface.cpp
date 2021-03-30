@@ -567,6 +567,7 @@ void zdrot_(const int*            n,
             const double*         s);
 
 void crotg_(hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s);
+void zrotg_(hipblasDoubleComplex* a, hipblasDoubleComplex* b, double* c, hipblasDoubleComplex* s);
 }
 
 // rot
@@ -732,6 +733,15 @@ void cblas_rotg<hipblasComplex, float>(hipblasComplex* a,
                                        hipblasComplex* s)
 {
     crotg_(a, b, c, s);
+}
+
+template <>
+void cblas_rotg<hipblasDoubleComplex, double>(hipblasDoubleComplex* a,
+                                              hipblasDoubleComplex* b,
+                                              double*               c,
+                                              hipblasDoubleComplex* s)
+{
+    zrotg_(a, b, c, s);
 }
 
 // rotm

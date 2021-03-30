@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -13,18 +13,15 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T, typename U = T>
+template <typename T>
 hipblasStatus_t testing_rotg_batched(const Arguments& arg)
 {
+    using U      = real_t<T>;
     bool FORTRAN = arg.fortran;
     auto hipblasRotgBatchedFn
         = FORTRAN ? hipblasRotgBatched<T, U, true> : hipblasRotgBatched<T, U, false>;
 
-    int             batch_count = arg.batch_count;
-    hipblasStatus_t status_1    = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_2    = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_3    = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_4    = HIPBLAS_STATUS_SUCCESS;
+    int batch_count = arg.batch_count;
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
@@ -38,43 +35,31 @@ hipblasStatus_t testing_rotg_batched(const Arguments& arg)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
+
+    hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
-    host_vector<T> ha[batch_count];
-    host_vector<T> hb[batch_count];
-    host_vector<U> hc[batch_count];
-    host_vector<T> hs[batch_count];
+    host_batch_vector<T> ha(1, 1, batch_count);
+    host_batch_vector<T> hb(1, 1, batch_count);
+    host_batch_vector<U> hc(1, 1, batch_count);
+    host_batch_vector<T> hs(1, 1, batch_count);
+    host_batch_vector<T> ca(1, 1, batch_count);
+    host_batch_vector<T> cb(1, 1, batch_count);
+    host_batch_vector<U> cc(1, 1, batch_count);
+    host_batch_vector<T> cs(1, 1, batch_count);
 
-    device_batch_vector<T> ba(batch_count, 1);
-    device_batch_vector<T> bb(batch_count, 1);
+    device_batch_vector<T> da(1, 1, batch_count);
+    device_batch_vector<T> db(1, 1, batch_count);
 
-    for(int b = 0; b < batch_count; b++)
-    {
-        ha[b] = host_vector<T>(1);
-        hb[b] = host_vector<T>(1);
-        hc[b] = host_vector<U>(1);
-        hs[b] = host_vector<T>(1);
-    }
-
-    host_vector<T> ca[batch_count];
-    host_vector<T> cb[batch_count];
-    host_vector<U> cc[batch_count];
-    host_vector<T> cs[batch_count];
-
-    srand(1);
-    for(int b = 0; b < batch_count; b++)
-    {
-        hipblas_init<T>(ha[b], 1, 1, 1);
-        hipblas_init<T>(hb[b], 1, 1, 1);
-        hipblas_init<U>(hc[b], 1, 1, 1);
-        hipblas_init<T>(hs[b], 1, 1, 1);
-        ca[b] = ha[b];
-        cb[b] = hb[b];
-        cc[b] = hc[b];
-        cs[b] = hs[b];
-    }
+    hipblas_init(ha, true);
+    hipblas_init(hb, false);
+    hipblas_init(hc, false);
+    hipblas_init(hs, false);
+    ca.copy_from(ha);
+    cb.copy_from(hb);
+    cc.copy_from(hc);
+    cs.copy_from(hs);
 
     for(int b = 0; b < batch_count; b++)
     {
@@ -83,102 +68,121 @@ hipblasStatus_t testing_rotg_batched(const Arguments& arg)
 
     // Test host
     {
-        host_vector<T> ra[batch_count];
-        host_vector<T> rb[batch_count];
-        host_vector<U> rc[batch_count];
-        host_vector<T> rs[batch_count];
-        T*             ra_in[batch_count];
-        T*             rb_in[batch_count];
-        U*             rc_in[batch_count];
-        T*             rs_in[batch_count];
-        for(int b = 0; b < batch_count; b++)
-        {
-            ra_in[b] = ra[b] = ha[b];
-            rb_in[b] = rb[b] = hb[b];
-            rc_in[b] = rc[b] = hc[b];
-            rs_in[b] = rs[b] = hs[b];
-        }
+        host_batch_vector<T> ra(1, 1, batch_count);
+        host_batch_vector<T> rb(1, 1, batch_count);
+        host_batch_vector<U> rc(1, 1, batch_count);
+        host_batch_vector<T> rs(1, 1, batch_count);
+        ra.copy_from(ha);
+        rb.copy_from(hb);
+        rc.copy_from(hc);
+        rs.copy_from(hs);
 
-        status_1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-
-        status_2 = (hipblasRotgBatchedFn(handle, ra_in, rb_in, rc_in, rs_in, batch_count));
-
-        if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
-        {
-            hipblasDestroy(handle);
-            if(status_1 != HIPBLAS_STATUS_SUCCESS)
-                return status_1;
-            if(status_2 != HIPBLAS_STATUS_SUCCESS)
-                return status_2;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasRotgBatchedFn(handle, ra, rb, rc, rs, batch_count));
 
         if(arg.unit_check)
         {
-            near_check_general<T>(1, 1, batch_count, 1, ra, ca, rel_error);
-            near_check_general<T>(1, 1, batch_count, 1, rb, cb, rel_error);
-            near_check_general<U>(1, 1, batch_count, 1, rc, cc, rel_error);
-            near_check_general<T>(1, 1, batch_count, 1, rs, cs, rel_error);
+            for(int b = 0; b < batch_count; b++)
+            {
+                near_check_general<T>(1, 1, 1, ca[b], ra[b], rel_error);
+                near_check_general<T>(1, 1, 1, cb[b], rb[b], rel_error);
+                near_check_general<U>(1, 1, 1, cc[b], rc[b], rel_error);
+                near_check_general<T>(1, 1, 1, cs[b], rs[b], rel_error);
+            }
+        }
+        if(arg.norm_check)
+        {
+            hipblas_error_host = norm_check_general<T>('F', 1, 1, 1, ca, ra, batch_count);
+            hipblas_error_host += norm_check_general<T>('F', 1, 1, 1, cb, rb, batch_count);
+            hipblas_error_host += norm_check_general<U>('F', 1, 1, 1, cc, rc, batch_count);
+            hipblas_error_host += norm_check_general<T>('F', 1, 1, 1, cs, rs, batch_count);
         }
     }
 
     // Test device
     {
-        device_vector<T*, 0, T> da(batch_count);
-        device_vector<T*, 0, T> db(batch_count);
-        device_vector<U*, 0, U> dc(batch_count);
-        device_vector<T*, 0, T> ds(batch_count);
-        device_batch_vector<T>  ba(batch_count, 1);
-        device_batch_vector<T>  bb(batch_count, 1);
-        device_batch_vector<U>  bc(batch_count, 1);
-        device_batch_vector<T>  bs(batch_count, 1);
-        for(int b = 0; b < batch_count; b++)
-        {
-            CHECK_HIP_ERROR(hipMemcpy(ba[b], ha[b], sizeof(T), hipMemcpyHostToDevice));
-            CHECK_HIP_ERROR(hipMemcpy(bb[b], hb[b], sizeof(T), hipMemcpyHostToDevice));
-            CHECK_HIP_ERROR(hipMemcpy(bc[b], hc[b], sizeof(U), hipMemcpyHostToDevice));
-            CHECK_HIP_ERROR(hipMemcpy(bs[b], hs[b], sizeof(T), hipMemcpyHostToDevice));
-        }
-        CHECK_HIP_ERROR(hipMemcpy(da, ba, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(hipMemcpy(db, bb, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(hipMemcpy(dc, bc, sizeof(U*) * batch_count, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(hipMemcpy(ds, bs, sizeof(T*) * batch_count, hipMemcpyHostToDevice));
+        device_batch_vector<T> da(1, 1, batch_count);
+        device_batch_vector<T> db(1, 1, batch_count);
+        device_batch_vector<U> dc(1, 1, batch_count);
+        device_batch_vector<T> ds(1, 1, batch_count);
+        CHECK_HIP_ERROR(da.transfer_from(ha));
+        CHECK_HIP_ERROR(db.transfer_from(hb));
+        CHECK_HIP_ERROR(dc.transfer_from(hc));
+        CHECK_HIP_ERROR(ds.transfer_from(hs));
 
-        status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_4 = ((hipblasRotgBatchedFn(handle, da, db, dc, ds, batch_count)));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR((hipblasRotgBatchedFn(handle,
+                                                  da.ptr_on_device(),
+                                                  db.ptr_on_device(),
+                                                  dc.ptr_on_device(),
+                                                  ds.ptr_on_device(),
+                                                  batch_count)));
 
-        if((status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
-        {
-            hipblasDestroy(handle);
-            if(status_3 != HIPBLAS_STATUS_SUCCESS)
-                return status_3;
-            if(status_4 != HIPBLAS_STATUS_SUCCESS)
-                return status_4;
-        }
-
-        host_vector<T> ra[batch_count];
-        host_vector<T> rb[batch_count];
-        host_vector<U> rc[batch_count];
-        host_vector<T> rs[batch_count];
-        for(int b = 0; b < batch_count; b++)
-        {
-            ra[b] = host_vector<T>(1);
-            rb[b] = host_vector<T>(1);
-            rc[b] = host_vector<U>(1);
-            rs[b] = host_vector<T>(1);
-            CHECK_HIP_ERROR(hipMemcpy(ra[b], ba[b], sizeof(T), hipMemcpyDeviceToHost));
-            CHECK_HIP_ERROR(hipMemcpy(rb[b], bb[b], sizeof(T), hipMemcpyDeviceToHost));
-            CHECK_HIP_ERROR(hipMemcpy(rc[b], bc[b], sizeof(U), hipMemcpyDeviceToHost));
-            CHECK_HIP_ERROR(hipMemcpy(rs[b], bs[b], sizeof(T), hipMemcpyDeviceToHost));
-        }
+        host_batch_vector<T> ra(1, 1, batch_count);
+        host_batch_vector<T> rb(1, 1, batch_count);
+        host_batch_vector<U> rc(1, 1, batch_count);
+        host_batch_vector<T> rs(1, 1, batch_count);
+        CHECK_HIP_ERROR(ra.transfer_from(da));
+        CHECK_HIP_ERROR(rb.transfer_from(db));
+        CHECK_HIP_ERROR(rc.transfer_from(dc));
+        CHECK_HIP_ERROR(rs.transfer_from(ds));
 
         if(arg.unit_check)
         {
-            near_check_general<T>(1, 1, batch_count, 1, ra, ca, rel_error);
-            near_check_general<T>(1, 1, batch_count, 1, rb, cb, rel_error);
-            near_check_general<U>(1, 1, batch_count, 1, rc, cc, rel_error);
-            near_check_general<T>(1, 1, batch_count, 1, rs, cs, rel_error);
+            for(int b = 0; b < batch_count; b++)
+            {
+                near_check_general<T>(1, 1, 1, ca[b], ra[b], rel_error);
+                near_check_general<T>(1, 1, 1, cb[b], rb[b], rel_error);
+                near_check_general<U>(1, 1, 1, cc[b], rc[b], rel_error);
+                near_check_general<T>(1, 1, 1, cs[b], rs[b], rel_error);
+            }
+        }
+        if(arg.norm_check)
+        {
+            hipblas_error_device = norm_check_general<T>('F', 1, 1, 1, ca, ra, batch_count);
+            hipblas_error_device += norm_check_general<T>('F', 1, 1, 1, cb, rb, batch_count);
+            hipblas_error_device += norm_check_general<U>('F', 1, 1, 1, cc, rc, batch_count);
+            hipblas_error_device += norm_check_general<T>('F', 1, 1, 1, cs, rs, batch_count);
         }
     }
-    hipblasDestroy(handle);
+
+    if(arg.timing)
+    {
+        device_batch_vector<T> da(1, 1, batch_count);
+        device_batch_vector<T> db(1, 1, batch_count);
+        device_batch_vector<U> dc(1, 1, batch_count);
+        device_batch_vector<T> ds(1, 1, batch_count);
+        CHECK_HIP_ERROR(da.transfer_from(ha));
+        CHECK_HIP_ERROR(db.transfer_from(hb));
+        CHECK_HIP_ERROR(dc.transfer_from(hc));
+        CHECK_HIP_ERROR(ds.transfer_from(hs));
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        int runs = arg.cold_iters + arg.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == arg.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR((hipblasRotgBatchedFn(handle,
+                                                      da.ptr_on_device(),
+                                                      db.ptr_on_device(),
+                                                      dc.ptr_on_device(),
+                                                      ds.ptr_on_device(),
+                                                      batch_count)));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_batch_count>{}.log_args<T>(std::cout,
+                                                   arg,
+                                                   gpu_time_used,
+                                                   ArgumentLogging::NA_value,
+                                                   ArgumentLogging::NA_value,
+                                                   hipblas_error_host,
+                                                   hipblas_error_device);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }
