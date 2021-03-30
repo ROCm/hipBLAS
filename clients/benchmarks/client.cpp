@@ -340,6 +340,15 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"nrm2", testing_nrm2<T>},
             {"nrm2_batched", testing_nrm2_batched<T>},
             {"nrm2_strided_batched", testing_nrm2_strided_batched<T>},
+            {"rotg", testing_rotg<T>},
+            {"rotg_batched", testing_rotg_batched<T>},
+            {"rotg_strided_batched", testing_rotg_strided_batched<T>},
+            {"rotm", testing_rotm<T>},
+            {"rotm_batched", testing_rotm_batched<T>},
+            {"rotm_strided_batched", testing_rotm_strided_batched<T>},
+            {"rotmg", testing_rotmg<T>},
+            {"rotmg_batched", testing_rotmg_batched<T>},
+            {"rotmg_strided_batched", testing_rotmg_strided_batched<T>},
             {"swap", testing_swap<T>},
             {"swap_batched", testing_swap_batched<T>},
             {"swap_strided_batched", testing_swap_strided_batched<T>},
@@ -360,13 +369,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             /*{"set_get_vector", testing_set_get_vector<T>},
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
-                // L1
-                {"rotm", testing_rotm<T>},
-                {"rotm_batched", testing_rotm_batched<T>},
-                {"rotm_strided_batched", testing_rotm_strided_batched<T>},
-                {"rotmg", testing_rotmg<T>},
-                {"rotmg_batched", testing_rotmg_batched<T>},
-                {"rotmg_strided_batched", testing_rotmg_strided_batched<T>},
                 // L2
                 {"spr", testing_spr<T>},
                 {"spr_batched", testing_spr_batched<T>},
@@ -519,6 +521,9 @@ struct perf_blas<
             {"nrm2", testing_nrm2<T>},
             {"nrm2_batched", testing_nrm2_batched<T>},
             {"nrm2_strided_batched", testing_nrm2_strided_batched<T>},
+            {"rotg", testing_rotg<T>},
+            {"rotg_batched", testing_rotg_batched<T>},
+            {"rotg_strided_batched", testing_rotg_strided_batched<T>},
             {"swap", testing_swap<T>},
             {"swap_batched", testing_swap_batched<T>},
             {"swap_strided_batched", testing_swap_strided_batched<T>},
@@ -706,9 +711,9 @@ struct perf_blas_rot<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            // {"rot", testing_rot<Ti, To, Tc>},
-            // {"rot_batched", testing_rot_batched<Ti, To, Tc>},
-            // {"rot_strided_batched", testing_rot_strided_batched<Ti, To, Tc>},
+            {"rot", testing_rot<Ti, To, Tc>},
+            {"rot_batched", testing_rot_batched<Ti, To, Tc>},
+            {"rot_strided_batched", testing_rot_strided_batched<Ti, To, Tc>},
         };
         run_function(map, arg);
     }
@@ -774,32 +779,6 @@ struct perf_blas_scal_ex<
             {"scal_strided_batched_ex", testing_scal_strided_batched_ex_template<Ta, Tx, Tex>},
         };
         run_function(map, arg);
-    }
-};
-
-template <typename Ta, typename Tb = Ta, typename = void>
-struct perf_blas_rotg : hipblas_test_invalid
-{
-};
-
-template <typename Ta, typename Tb>
-struct perf_blas_rotg<
-    Ta,
-    Tb,
-    std::enable_if_t<(std::is_same<Ta, hipblasDoubleComplex>{} && std::is_same<Tb, double>{})
-                     || (std::is_same<Ta, hipblasComplex>{} && std::is_same<Tb, float>{})
-                     || (std::is_same<Ta, Tb>{} && std::is_same<Ta, float>{})
-                     || (std::is_same<Ta, Tb>{} && std::is_same<Ta, double>{})>>
-    : hipblas_test_valid
-{
-    void operator()(const Arguments& arg)
-    {
-        static const func_map map = {
-            {"rotg", testing_rotg<Ta, Tb>},
-            {"rotg_batched", testing_rotg_batched<Ta, Tb>},
-            {"rotg_strided_batched", testing_rotg_strided_batched<Ta, Tb>},
-        };
-        run_function(map, arg, " --b_type "s + hipblas_datatype2string(arg.b_type));
     }
 };
 
@@ -972,16 +951,14 @@ int run_bench_test(Arguments& arg)
         if(!strcmp(function, "scal") || !strcmp(function, "scal_batched")
            || !strcmp(function, "scal_strided_batched"))
             hipblas_blas1_dispatch<perf_blas_scal>(arg);
-        else if(!strcmp(function, "rotg") || !strcmp(function, "rotg_batched")
-                || !strcmp(function, "rotg_strided_batched"))
-            hipblas_blas1_dispatch<perf_blas_rotg>(arg);
+        */
         else if(!strcmp(function, "rot") || !strcmp(function, "rot_batched")
                 || !strcmp(function, "rot_strided_batched"))
-            hipblas_blas1_dispatch<perf_blas_rot>(arg);
+            hipblas_rot_dispatch<perf_blas_rot>(arg);
+        /*
         else if(!strcmp(function, "axpy_ex") || !strcmp(function, "axpy_batched_ex")
                 || !strcmp(function, "axpy_strided_batched_ex"))
             hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);*/
-
         else
             hipblas_simple_dispatch<perf_blas>(arg);
     }

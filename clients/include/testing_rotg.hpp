@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -13,19 +13,16 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T, typename U = T>
+template <typename T>
 hipblasStatus_t testing_rotg(const Arguments& arg)
 {
+    using U            = real_t<T>;
     bool FORTRAN       = arg.fortran;
     auto hipblasRotgFn = FORTRAN ? hipblasRotg<T, U, true> : hipblasRotg<T, U, false>;
 
-    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(arg);
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
@@ -54,8 +51,8 @@ hipblasStatus_t testing_rotg(const Arguments& arg)
         host_vector<T> hb = b;
         host_vector<U> hc = c;
         host_vector<T> hs = s;
-        status_1          = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        status_2          = ((hipblasRotgFn(handle, ha, hb, hc, hs)));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR((hipblasRotgFn(handle, ha, hb, hc, hs)));
 
         if(arg.unit_check)
         {
@@ -63,6 +60,13 @@ hipblasStatus_t testing_rotg(const Arguments& arg)
             near_check_general(1, 1, 1, cb.data(), hb.data(), rel_error);
             near_check_general(1, 1, 1, cc.data(), hc.data(), rel_error);
             near_check_general(1, 1, 1, cs.data(), hs.data(), rel_error);
+        }
+        if(arg.norm_check)
+        {
+            hipblas_error_host = norm_check_general<T>('F', 1, 1, 1, ca, ha);
+            hipblas_error_host += norm_check_general<T>('F', 1, 1, 1, cb, hb);
+            hipblas_error_host += norm_check_general<U>('F', 1, 1, 1, cc, hc);
+            hipblas_error_host += norm_check_general<T>('F', 1, 1, 1, cs, hs);
         }
     }
 
@@ -76,8 +80,8 @@ hipblasStatus_t testing_rotg(const Arguments& arg)
         CHECK_HIP_ERROR(hipMemcpy(db, b, sizeof(T), hipMemcpyHostToDevice));
         CHECK_HIP_ERROR(hipMemcpy(dc, c, sizeof(U), hipMemcpyHostToDevice));
         CHECK_HIP_ERROR(hipMemcpy(ds, s, sizeof(T), hipMemcpyHostToDevice));
-        status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_4 = ((hipblasRotgFn(handle, da, db, dc, ds)));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR((hipblasRotgFn(handle, da, db, dc, ds)));
         host_vector<T> ha(1);
         host_vector<T> hb(1);
         host_vector<U> hc(1);
@@ -94,20 +98,47 @@ hipblasStatus_t testing_rotg(const Arguments& arg)
             near_check_general(1, 1, 1, cc.data(), hc.data(), rel_error);
             near_check_general(1, 1, 1, cs.data(), hs.data(), rel_error);
         }
+        if(arg.norm_check)
+        {
+            hipblas_error_device = norm_check_general<T>('F', 1, 1, 1, ca, ha);
+            hipblas_error_device += norm_check_general<T>('F', 1, 1, 1, cb, hb);
+            hipblas_error_device += norm_check_general<U>('F', 1, 1, 1, cc, hc);
+            hipblas_error_device += norm_check_general<T>('F', 1, 1, 1, cs, hs);
+        }
     }
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS)
-       || (status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
+
+    if(arg.timing)
     {
-        hipblasDestroy(handle);
-        if(status_1 != HIPBLAS_STATUS_SUCCESS)
-            return status_1;
-        if(status_2 != HIPBLAS_STATUS_SUCCESS)
-            return status_2;
-        if(status_3 != HIPBLAS_STATUS_SUCCESS)
-            return status_3;
-        if(status_4 != HIPBLAS_STATUS_SUCCESS)
-            return status_4;
+        device_vector<T> da(1);
+        device_vector<T> db(1);
+        device_vector<U> dc(1);
+        device_vector<T> ds(1);
+        CHECK_HIP_ERROR(hipMemcpy(da, a, sizeof(T), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(db, b, sizeof(T), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dc, c, sizeof(U), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(ds, s, sizeof(T), hipMemcpyHostToDevice));
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        int runs = arg.cold_iters + arg.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == arg.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR((hipblasRotgFn(handle, da, db, dc, ds)));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<>{}.log_args<T>(std::cout,
+                                      arg,
+                                      gpu_time_used,
+                                      ArgumentLogging::NA_value,
+                                      ArgumentLogging::NA_value,
+                                      hipblas_error_host,
+                                      hipblas_error_device);
     }
-    hipblasDestroy(handle);
+
     return HIPBLAS_STATUS_SUCCESS;
 }

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -13,9 +13,10 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T, typename U = T>
+template <typename T>
 hipblasStatus_t testing_rotg_strided_batched(const Arguments& arg)
 {
+    using U      = real_t<T>;
     bool FORTRAN = arg.fortran;
     auto hipblasRotgStridedBatchedFn
         = FORTRAN ? hipblasRotgStridedBatched<T, U, true> : hipblasRotgStridedBatched<T, U, false>;
@@ -26,11 +27,6 @@ hipblasStatus_t testing_rotg_strided_batched(const Arguments& arg)
     hipblasStride stride_c     = stride_scale;
     hipblasStride stride_s     = stride_scale;
     int           batch_count  = arg.batch_count;
-
-    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_3 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_4 = HIPBLAS_STATUS_SUCCESS;
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
@@ -44,8 +40,9 @@ hipblasStatus_t testing_rotg_strided_batched(const Arguments& arg)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
+
+    hipblasLocalHandle handle(arg);
 
     size_t size_a = size_t(stride_a) * size_t(batch_count);
     size_t size_b = size_t(stride_b) * size_t(batch_count);
@@ -84,18 +81,9 @@ hipblasStatus_t testing_rotg_strided_batched(const Arguments& arg)
         host_vector<T> rb = hb;
         host_vector<U> rc = hc;
         host_vector<T> rs = hs;
-        status_1          = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        status_2          = ((hipblasRotgStridedBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR((hipblasRotgStridedBatchedFn(
             handle, ra, stride_a, rb, stride_b, rc, stride_c, rs, stride_s, batch_count)));
-
-        if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
-        {
-            hipblasDestroy(handle);
-            if(status_1 != HIPBLAS_STATUS_SUCCESS)
-                return status_1;
-            if(status_2 != HIPBLAS_STATUS_SUCCESS)
-                return status_2;
-        }
 
         if(arg.unit_check)
         {
@@ -103,6 +91,16 @@ hipblasStatus_t testing_rotg_strided_batched(const Arguments& arg)
             near_check_general<T>(1, 1, batch_count, 1, stride_b, cb, rb, rel_error);
             near_check_general<U>(1, 1, batch_count, 1, stride_c, cc, rc, rel_error);
             near_check_general<T>(1, 1, batch_count, 1, stride_s, cs, rs, rel_error);
+        }
+        if(arg.norm_check)
+        {
+            hipblas_error_host = norm_check_general<T>('F', 1, 1, 1, stride_a, ca, ra, batch_count);
+            hipblas_error_host
+                += norm_check_general<T>('F', 1, 1, 1, stride_b, cb, rb, batch_count);
+            hipblas_error_host
+                += norm_check_general<U>('F', 1, 1, 1, stride_c, cc, rc, batch_count);
+            hipblas_error_host
+                += norm_check_general<T>('F', 1, 1, 1, stride_s, cs, rs, batch_count);
         }
     }
 
@@ -116,18 +114,9 @@ hipblasStatus_t testing_rotg_strided_batched(const Arguments& arg)
         CHECK_HIP_ERROR(hipMemcpy(db, hb, sizeof(T) * size_b, hipMemcpyHostToDevice));
         CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U) * size_c, hipMemcpyHostToDevice));
         CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(T) * size_s, hipMemcpyHostToDevice));
-        status_3 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_4 = ((hipblasRotgStridedBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR((hipblasRotgStridedBatchedFn(
             handle, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count)));
-
-        if((status_3 != HIPBLAS_STATUS_SUCCESS) || (status_4 != HIPBLAS_STATUS_SUCCESS))
-        {
-            hipblasDestroy(handle);
-            if(status_3 != HIPBLAS_STATUS_SUCCESS)
-                return status_3;
-            if(status_4 != HIPBLAS_STATUS_SUCCESS)
-                return status_4;
-        }
 
         host_vector<T> ra(size_a);
         host_vector<T> rb(size_b);
@@ -145,7 +134,51 @@ hipblasStatus_t testing_rotg_strided_batched(const Arguments& arg)
             near_check_general<U>(1, 1, batch_count, 1, stride_c, cc, rc, rel_error);
             near_check_general<T>(1, 1, batch_count, 1, stride_s, cs, rs, rel_error);
         }
+        if(arg.norm_check)
+        {
+            hipblas_error_device
+                = norm_check_general<T>('F', 1, 1, 1, stride_a, ca, ra, batch_count);
+            hipblas_error_device
+                += norm_check_general<T>('F', 1, 1, 1, stride_b, cb, rb, batch_count);
+            hipblas_error_device
+                += norm_check_general<U>('F', 1, 1, 1, stride_c, cc, rc, batch_count);
+            hipblas_error_device
+                += norm_check_general<T>('F', 1, 1, 1, stride_s, cs, rs, batch_count);
+        }
     }
-    hipblasDestroy(handle);
+
+    if(arg.timing)
+    {
+        device_vector<T> da(size_a);
+        device_vector<T> db(size_b);
+        device_vector<U> dc(size_c);
+        device_vector<T> ds(size_s);
+        CHECK_HIP_ERROR(hipMemcpy(da, ha, sizeof(T) * size_a, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(db, hb, sizeof(T) * size_b, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U) * size_c, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(T) * size_s, hipMemcpyHostToDevice));
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        int runs = arg.cold_iters + arg.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == arg.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR((hipblasRotgStridedBatchedFn(
+                handle, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count)));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_batch_count>{}.log_args<T>(std::cout,
+                                                   arg,
+                                                   gpu_time_used,
+                                                   ArgumentLogging::NA_value,
+                                                   ArgumentLogging::NA_value,
+                                                   hipblas_error_host,
+                                                   hipblas_error_device);
+    }
     return HIPBLAS_STATUS_SUCCESS;
 }
