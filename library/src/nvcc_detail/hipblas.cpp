@@ -221,10 +221,6 @@ cublasAtomicsMode_t HIPAtomicsModeToCudaAtomicsMode(hipblasAtomicsMode_t mode)
     default:
         throw HIPBLAS_STATUS_INVALID_ENUM;
     }
-<<<<<<< HEAD
-=======
-    throw HIPBLAS_STATUS_INVALID_ENUM;
->>>>>>> b3740e2466471003872a7f2df67281e55f33c7b5
 }
 
 hipblasAtomicsMode_t CudaAtomicsModeToHIPAtomicsMode(cublasAtomicsMode_t mode)
@@ -238,10 +234,6 @@ hipblasAtomicsMode_t CudaAtomicsModeToHIPAtomicsMode(cublasAtomicsMode_t mode)
     default:
         throw HIPBLAS_STATUS_INVALID_ENUM;
     }
-<<<<<<< HEAD
-=======
-    throw HIPBLAS_STATUS_INVALID_ENUM;
->>>>>>> b3740e2466471003872a7f2df67281e55f33c7b5
 }
 
 hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
