@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <exception>
 // Convert the current C++ exception to hiblasStatus_t
 // This allows extern "C" functions to return this function in a catch(...) block
 // while converting all C++ exceptions to an equivalent hipblasStatus_t here
