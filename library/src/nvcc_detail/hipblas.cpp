@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "hipblas.h"
@@ -26,7 +26,7 @@ cublasOperation_t hipOperationToCudaOperation(hipblasOperation_t op)
         return CUBLAS_OP_C;
 
     default:
-        throw "Non existent OP";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -44,7 +44,7 @@ hipblasOperation_t CudaOperationToHIPOperation(cublasOperation_t op)
         return HIPBLAS_OP_C;
 
     default:
-        throw "Non existent OP";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -57,7 +57,7 @@ cublasFillMode_t hipFillToCudaFill(hipblasFillMode_t fill)
     case HIPBLAS_FILL_MODE_LOWER:
         return CUBLAS_FILL_MODE_LOWER;
     default:
-        throw "Non existent FILL";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -70,7 +70,7 @@ hipblasFillMode_t CudaFillToHIPFill(cublasFillMode_t fill)
     case CUBLAS_FILL_MODE_LOWER:
         return HIPBLAS_FILL_MODE_LOWER;
     default:
-        throw "Non existent FILL";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -83,7 +83,7 @@ cublasDiagType_t hipDiagonalToCudaDiagonal(hipblasDiagType_t diagonal)
     case HIPBLAS_DIAG_UNIT:
         return CUBLAS_DIAG_UNIT;
     default:
-        throw "Non existent DIAGONAL";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -96,7 +96,7 @@ hipblasDiagType_t CudaDiagonalToHIPDiagonal(cublasDiagType_t diagonal)
     case CUBLAS_DIAG_UNIT:
         return HIPBLAS_DIAG_UNIT;
     default:
-        throw "Non existent DIAGONAL";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -109,7 +109,7 @@ cublasSideMode_t hipSideToCudaSide(hipblasSideMode_t side)
     case HIPBLAS_SIDE_RIGHT:
         return CUBLAS_SIDE_RIGHT;
     default:
-        throw "Non existent SIDE";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -122,7 +122,7 @@ hipblasSideMode_t CudaSideToHIPSide(cublasSideMode_t side)
     case CUBLAS_SIDE_RIGHT:
         return HIPBLAS_SIDE_RIGHT;
     default:
-        throw "Non existent SIDE";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -137,7 +137,7 @@ cublasPointerMode_t HIPPointerModeToCudaPointerMode(hipblasPointerMode_t mode)
         return CUBLAS_POINTER_MODE_DEVICE;
 
     default:
-        throw "Non existent PointerMode";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -152,7 +152,7 @@ hipblasPointerMode_t CudaPointerModeToHIPPointerMode(cublasPointerMode_t mode)
         return HIPBLAS_POINTER_MODE_DEVICE;
 
     default:
-        throw "Non existent PointerMode";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -191,7 +191,7 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
         return CUDA_C_8I;
 
     default:
-        throw "Non existent DataType";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -204,7 +204,7 @@ cublasGemmAlgo_t HIPGemmAlgoToCudaGemmAlgo(hipblasGemmAlgo_t algo)
         return CUBLAS_GEMM_DEFAULT;
 
     default:
-        throw "Non existent GemmAlgo";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
@@ -217,7 +217,7 @@ cublasAtomicsMode_t HIPAtomicsModeToCudaAtomicsMode(hipblasAtomicsMode_t mode)
     case HIPBLAS_ATOMICS_ALLOWED:
         return CUBLAS_ATOMICS_ALLOWED;
     }
-    throw "Non existent AtomicsMode";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasAtomicsMode_t CudaAtomicsModeToHIPAtomicsMode(cublasAtomicsMode_t mode)
@@ -229,7 +229,7 @@ hipblasAtomicsMode_t CudaAtomicsModeToHIPAtomicsMode(cublasAtomicsMode_t mode)
     case CUBLAS_ATOMICS_ALLOWED:
         return HIPBLAS_ATOMICS_ALLOWED;
     }
-    throw "Non existent AtomicsMode";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
@@ -255,7 +255,7 @@ hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
     case CUBLAS_STATUS_ARCH_MISMATCH:
         return HIPBLAS_STATUS_ARCH_MISMATCH;
     default:
-        throw "Unimplemented status";
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
 }
 
