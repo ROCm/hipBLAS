@@ -493,24 +493,14 @@ catch(...)
 // amax_batched
 hipblasStatus_t hipblasIsamaxBatched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batch_count, int* result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIdamaxBatched(
     hipblasHandle_t handle, int n, const double* const x[], int incx, int batch_count, int* result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIcamaxBatched(hipblasHandle_t             handle,
@@ -519,13 +509,8 @@ hipblasStatus_t hipblasIcamaxBatched(hipblasHandle_t             handle,
                                      int                         incx,
                                      int                         batch_count,
                                      int*                        result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIzamaxBatched(hipblasHandle_t                   handle,
@@ -534,13 +519,8 @@ hipblasStatus_t hipblasIzamaxBatched(hipblasHandle_t                   handle,
                                      int                               incx,
                                      int                               batch_count,
                                      int*                              result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // amax_strided_batched
@@ -551,13 +531,8 @@ hipblasStatus_t hipblasIsamaxStridedBatched(hipblasHandle_t handle,
                                             hipblasStride   stridex,
                                             int             batch_count,
                                             int*            result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIdamaxStridedBatched(hipblasHandle_t handle,
@@ -567,13 +542,8 @@ hipblasStatus_t hipblasIdamaxStridedBatched(hipblasHandle_t handle,
                                             hipblasStride   stridex,
                                             int             batch_count,
                                             int*            result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIcamaxStridedBatched(hipblasHandle_t       handle,
@@ -583,13 +553,8 @@ hipblasStatus_t hipblasIcamaxStridedBatched(hipblasHandle_t       handle,
                                             hipblasStride         stridex,
                                             int                   batch_count,
                                             int*                  result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIzamaxStridedBatched(hipblasHandle_t             handle,
@@ -599,13 +564,8 @@ hipblasStatus_t hipblasIzamaxStridedBatched(hipblasHandle_t             handle,
                                             hipblasStride               stridex,
                                             int                         batch_count,
                                             int*                        result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // amin
@@ -656,24 +616,14 @@ catch(...)
 // amin_batched
 hipblasStatus_t hipblasIsaminBatched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batch_count, int* result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIdaminBatched(
     hipblasHandle_t handle, int n, const double* const x[], int incx, int batch_count, int* result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIcaminBatched(hipblasHandle_t             handle,
@@ -682,13 +632,8 @@ hipblasStatus_t hipblasIcaminBatched(hipblasHandle_t             handle,
                                      int                         incx,
                                      int                         batch_count,
                                      int*                        result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIzaminBatched(hipblasHandle_t                   handle,
@@ -697,13 +642,8 @@ hipblasStatus_t hipblasIzaminBatched(hipblasHandle_t                   handle,
                                      int                               incx,
                                      int                               batch_count,
                                      int*                              result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // amin_strided_batched
@@ -714,13 +654,8 @@ hipblasStatus_t hipblasIsaminStridedBatched(hipblasHandle_t handle,
                                             hipblasStride   stridex,
                                             int             batch_count,
                                             int*            result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIdaminStridedBatched(hipblasHandle_t handle,
@@ -730,13 +665,8 @@ hipblasStatus_t hipblasIdaminStridedBatched(hipblasHandle_t handle,
                                             hipblasStride   stridex,
                                             int             batch_count,
                                             int*            result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIcaminStridedBatched(hipblasHandle_t       handle,
@@ -746,13 +676,8 @@ hipblasStatus_t hipblasIcaminStridedBatched(hipblasHandle_t       handle,
                                             hipblasStride         stridex,
                                             int                   batch_count,
                                             int*                  result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasIzaminStridedBatched(hipblasHandle_t             handle,
@@ -762,13 +687,8 @@ hipblasStatus_t hipblasIzaminStridedBatched(hipblasHandle_t             handle,
                                             hipblasStride               stridex,
                                             int                         batch_count,
                                             int*                        result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // ASUM
@@ -837,13 +757,8 @@ hipblasStatus_t hipblasDasumBatched(hipblasHandle_t     handle,
                                     int                 incx,
                                     int                 batchCount,
                                     double*             result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasScasumBatched(hipblasHandle_t             handle,
@@ -852,13 +767,8 @@ hipblasStatus_t hipblasScasumBatched(hipblasHandle_t             handle,
                                      int                         incx,
                                      int                         batchCount,
                                      float*                      result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDzasumBatched(hipblasHandle_t                   handle,
@@ -867,13 +777,8 @@ hipblasStatus_t hipblasDzasumBatched(hipblasHandle_t                   handle,
                                      int                               incx,
                                      int                               batchCount,
                                      double*                           result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // asum_strided_batched
@@ -884,13 +789,8 @@ hipblasStatus_t hipblasSasumStridedBatched(hipblasHandle_t handle,
                                            hipblasStride   stridex,
                                            int             batchCount,
                                            float*          result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDasumStridedBatched(hipblasHandle_t handle,
@@ -900,13 +800,8 @@ hipblasStatus_t hipblasDasumStridedBatched(hipblasHandle_t handle,
                                            hipblasStride   stridex,
                                            int             batchCount,
                                            double*         result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t       handle,
@@ -916,13 +811,8 @@ hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t       handle,
                                             hipblasStride         stridex,
                                             int                   batchCount,
                                             float*                result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t             handle,
@@ -932,13 +822,8 @@ hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t             handle,
                                             hipblasStride               stridex,
                                             int                         batchCount,
                                             double*                     result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // axpy
@@ -949,13 +834,8 @@ hipblasStatus_t hipblasHaxpy(hipblasHandle_t    handle,
                              int                incx,
                              hipblasHalf*       y,
                              int                incy)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasSaxpy(
@@ -1035,13 +915,8 @@ hipblasStatus_t hipblasHaxpyBatched(hipblasHandle_t          handle,
                                     hipblasHalf* const       y[],
                                     int                      incy,
                                     int                      batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t    handle,
@@ -1072,13 +947,8 @@ hipblasStatus_t hipblasDaxpyBatched(hipblasHandle_t     handle,
                                     double* const       y[],
                                     int                 incy,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCaxpyBatched(hipblasHandle_t             handle,
@@ -1089,13 +959,8 @@ hipblasStatus_t hipblasCaxpyBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZaxpyBatched(hipblasHandle_t                   handle,
@@ -1106,13 +971,8 @@ hipblasStatus_t hipblasZaxpyBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // axpy_strided_batched
@@ -1126,13 +986,8 @@ hipblasStatus_t hipblasHaxpyStridedBatched(hipblasHandle_t    handle,
                                            int                incy,
                                            hipblasStride      stridey,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasSaxpyStridedBatched(hipblasHandle_t handle,
@@ -1145,13 +1000,8 @@ hipblasStatus_t hipblasSaxpyStridedBatched(hipblasHandle_t handle,
                                            int             incy,
                                            hipblasStride   stridey,
                                            int             batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDaxpyStridedBatched(hipblasHandle_t handle,
@@ -1164,13 +1014,8 @@ hipblasStatus_t hipblasDaxpyStridedBatched(hipblasHandle_t handle,
                                            int             incy,
                                            hipblasStride   stridey,
                                            int             batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCaxpyStridedBatched(hipblasHandle_t       handle,
@@ -1183,13 +1028,8 @@ hipblasStatus_t hipblasCaxpyStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stridey,
                                            int                   batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZaxpyStridedBatched(hipblasHandle_t             handle,
@@ -1202,13 +1042,8 @@ hipblasStatus_t hipblasZaxpyStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // copy
@@ -1270,13 +1105,8 @@ hipblasStatus_t hipblasScopyBatched(hipblasHandle_t    handle,
                                     float* const       y[],
                                     int                incy,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDcopyBatched(hipblasHandle_t     handle,
@@ -1286,13 +1116,8 @@ hipblasStatus_t hipblasDcopyBatched(hipblasHandle_t     handle,
                                     double* const       y[],
                                     int                 incy,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCcopyBatched(hipblasHandle_t             handle,
@@ -1302,13 +1127,8 @@ hipblasStatus_t hipblasCcopyBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZcopyBatched(hipblasHandle_t                   handle,
@@ -1318,13 +1138,8 @@ hipblasStatus_t hipblasZcopyBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // copy_strided_batched
@@ -1337,13 +1152,8 @@ hipblasStatus_t hipblasScopyStridedBatched(hipblasHandle_t handle,
                                            int             incy,
                                            hipblasStride   stridey,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDcopyStridedBatched(hipblasHandle_t handle,
@@ -1355,13 +1165,8 @@ hipblasStatus_t hipblasDcopyStridedBatched(hipblasHandle_t handle,
                                            int             incy,
                                            hipblasStride   stridey,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCcopyStridedBatched(hipblasHandle_t       handle,
@@ -1373,13 +1178,8 @@ hipblasStatus_t hipblasCcopyStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stridey,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZcopyStridedBatched(hipblasHandle_t             handle,
@@ -1391,13 +1191,8 @@ hipblasStatus_t hipblasZcopyStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // dot
@@ -1408,13 +1203,8 @@ hipblasStatus_t hipblasHdot(hipblasHandle_t    handle,
                             const hipblasHalf* y,
                             int                incy,
                             hipblasHalf*       result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasBfdot(hipblasHandle_t        handle,
@@ -1424,13 +1214,8 @@ hipblasStatus_t hipblasBfdot(hipblasHandle_t        handle,
                              const hipblasBfloat16* y,
                              int                    incy,
                              hipblasBfloat16*       result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasSdot(hipblasHandle_t handle,
@@ -1574,13 +1359,8 @@ hipblasStatus_t hipblasBfdotBatched(hipblasHandle_t              handle,
                                     int                          incy,
                                     int                          batchCount,
                                     hipblasBfloat16*             result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasSdotBatched(hipblasHandle_t    handle,
@@ -1611,13 +1391,8 @@ hipblasStatus_t hipblasDdotBatched(hipblasHandle_t     handle,
                                    int                 incy,
                                    int                 batchCount,
                                    double*             result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCdotcBatched(hipblasHandle_t             handle,
@@ -1628,13 +1403,8 @@ hipblasStatus_t hipblasCdotcBatched(hipblasHandle_t             handle,
                                     int                         incy,
                                     int                         batchCount,
                                     hipblasComplex*             result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCdotuBatched(hipblasHandle_t             handle,
@@ -1645,13 +1415,8 @@ hipblasStatus_t hipblasCdotuBatched(hipblasHandle_t             handle,
                                     int                         incy,
                                     int                         batchCount,
                                     hipblasComplex*             result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdotcBatched(hipblasHandle_t                   handle,
@@ -1662,13 +1427,8 @@ hipblasStatus_t hipblasZdotcBatched(hipblasHandle_t                   handle,
                                     int                               incy,
                                     int                               batchCount,
                                     hipblasDoubleComplex*             result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t                   handle,
@@ -1679,13 +1439,8 @@ hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t                   handle,
                                     int                               incy,
                                     int                               batchCount,
                                     hipblasDoubleComplex*             result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // dot_strided_batched
@@ -1699,13 +1454,8 @@ hipblasStatus_t hipblasHdotStridedBatched(hipblasHandle_t    handle,
                                           hipblasStride      stridey,
                                           int                batchCount,
                                           hipblasHalf*       result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasBfdotStridedBatched(hipblasHandle_t        handle,
@@ -1718,13 +1468,8 @@ hipblasStatus_t hipblasBfdotStridedBatched(hipblasHandle_t        handle,
                                            hipblasStride          stridey,
                                            int                    batchCount,
                                            hipblasBfloat16*       result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,
@@ -1737,13 +1482,8 @@ hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,
                                           hipblasStride   stridey,
                                           int             batchCount,
                                           float*          result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDdotStridedBatched(hipblasHandle_t handle,
@@ -1756,13 +1496,8 @@ hipblasStatus_t hipblasDdotStridedBatched(hipblasHandle_t handle,
                                           hipblasStride   stridey,
                                           int             batchCount,
                                           double*         result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCdotcStridedBatched(hipblasHandle_t       handle,
@@ -1775,13 +1510,8 @@ hipblasStatus_t hipblasCdotcStridedBatched(hipblasHandle_t       handle,
                                            hipblasStride         stridey,
                                            int                   batchCount,
                                            hipblasComplex*       result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCdotuStridedBatched(hipblasHandle_t       handle,
@@ -1794,13 +1524,8 @@ hipblasStatus_t hipblasCdotuStridedBatched(hipblasHandle_t       handle,
                                            hipblasStride         stridey,
                                            int                   batchCount,
                                            hipblasComplex*       result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t             handle,
@@ -1813,13 +1538,8 @@ hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t             handle,
                                            hipblasStride               stridey,
                                            int                         batchCount,
                                            hipblasDoubleComplex*       result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdotuStridedBatched(hipblasHandle_t             handle,
@@ -1832,13 +1552,8 @@ hipblasStatus_t hipblasZdotuStridedBatched(hipblasHandle_t             handle,
                                            hipblasStride               stridey,
                                            int                         batchCount,
                                            hipblasDoubleComplex*       result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // nrm2
@@ -1890,13 +1605,8 @@ catch(...)
 // nrm2_batched
 hipblasStatus_t hipblasSnrm2Batched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, float* result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDnrm2Batched(hipblasHandle_t     handle,
@@ -1905,13 +1615,8 @@ hipblasStatus_t hipblasDnrm2Batched(hipblasHandle_t     handle,
                                     int                 incx,
                                     int                 batchCount,
                                     double*             result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasScnrm2Batched(hipblasHandle_t             handle,
@@ -1920,13 +1625,8 @@ hipblasStatus_t hipblasScnrm2Batched(hipblasHandle_t             handle,
                                      int                         incx,
                                      int                         batchCount,
                                      float*                      result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDznrm2Batched(hipblasHandle_t                   handle,
@@ -1935,13 +1635,8 @@ hipblasStatus_t hipblasDznrm2Batched(hipblasHandle_t                   handle,
                                      int                               incx,
                                      int                               batchCount,
                                      double*                           result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // nrm2_strided_batched
@@ -1952,13 +1647,8 @@ hipblasStatus_t hipblasSnrm2StridedBatched(hipblasHandle_t handle,
                                            hipblasStride   stridex,
                                            int             batchCount,
                                            float*          result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDnrm2StridedBatched(hipblasHandle_t handle,
@@ -1968,13 +1658,8 @@ hipblasStatus_t hipblasDnrm2StridedBatched(hipblasHandle_t handle,
                                            hipblasStride   stridex,
                                            int             batchCount,
                                            double*         result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t       handle,
@@ -1984,13 +1669,8 @@ hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t       handle,
                                             hipblasStride         stridex,
                                             int                   batchCount,
                                             float*                result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDznrm2StridedBatched(hipblasHandle_t             handle,
@@ -2000,13 +1680,8 @@ hipblasStatus_t hipblasDznrm2StridedBatched(hipblasHandle_t             handle,
                                             hipblasStride               stridex,
                                             int                         batchCount,
                                             double*                     result)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // rot
@@ -2134,13 +1809,8 @@ hipblasStatus_t hipblasSrotBatched(hipblasHandle_t handle,
                                    const float*    c,
                                    const float*    s,
                                    int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDrotBatched(hipblasHandle_t handle,
@@ -2152,13 +1822,8 @@ hipblasStatus_t hipblasDrotBatched(hipblasHandle_t handle,
                                    const double*   c,
                                    const double*   s,
                                    int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCrotBatched(hipblasHandle_t       handle,
@@ -2170,13 +1835,8 @@ hipblasStatus_t hipblasCrotBatched(hipblasHandle_t       handle,
                                    const float*          c,
                                    const hipblasComplex* s,
                                    int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsrotBatched(hipblasHandle_t       handle,
@@ -2188,13 +1848,8 @@ hipblasStatus_t hipblasCsrotBatched(hipblasHandle_t       handle,
                                     const float*          c,
                                     const float*          s,
                                     int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZrotBatched(hipblasHandle_t             handle,
@@ -2206,13 +1861,8 @@ hipblasStatus_t hipblasZrotBatched(hipblasHandle_t             handle,
                                    const double*               c,
                                    const hipblasDoubleComplex* s,
                                    int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdrotBatched(hipblasHandle_t             handle,
@@ -2224,13 +1874,8 @@ hipblasStatus_t hipblasZdrotBatched(hipblasHandle_t             handle,
                                     const double*               c,
                                     const double*               s,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // rot_strided_batched
@@ -2245,13 +1890,8 @@ hipblasStatus_t hipblasSrotStridedBatched(hipblasHandle_t handle,
                                           const float*    c,
                                           const float*    s,
                                           int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDrotStridedBatched(hipblasHandle_t handle,
@@ -2265,13 +1905,8 @@ hipblasStatus_t hipblasDrotStridedBatched(hipblasHandle_t handle,
                                           const double*   c,
                                           const double*   s,
                                           int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCrotStridedBatched(hipblasHandle_t       handle,
@@ -2285,13 +1920,8 @@ hipblasStatus_t hipblasCrotStridedBatched(hipblasHandle_t       handle,
                                           const float*          c,
                                           const hipblasComplex* s,
                                           int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsrotStridedBatched(hipblasHandle_t handle,
@@ -2305,13 +1935,8 @@ hipblasStatus_t hipblasCsrotStridedBatched(hipblasHandle_t handle,
                                            const float*    c,
                                            const float*    s,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZrotStridedBatched(hipblasHandle_t             handle,
@@ -2325,13 +1950,8 @@ hipblasStatus_t hipblasZrotStridedBatched(hipblasHandle_t             handle,
                                           const double*               c,
                                           const hipblasDoubleComplex* s,
                                           int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdrotStridedBatched(hipblasHandle_t       handle,
@@ -2345,13 +1965,8 @@ hipblasStatus_t hipblasZdrotStridedBatched(hipblasHandle_t       handle,
                                            const double*         c,
                                            const double*         s,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // rotg
@@ -2409,13 +2024,8 @@ hipblasStatus_t hipblasSrotgBatched(hipblasHandle_t handle,
                                     float* const    c[],
                                     float* const    s[],
                                     int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDrotgBatched(hipblasHandle_t handle,
@@ -2424,13 +2034,8 @@ hipblasStatus_t hipblasDrotgBatched(hipblasHandle_t handle,
                                     double* const   c[],
                                     double* const   s[],
                                     int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCrotgBatched(hipblasHandle_t       handle,
@@ -2439,13 +2044,8 @@ hipblasStatus_t hipblasCrotgBatched(hipblasHandle_t       handle,
                                     float* const          c[],
                                     hipblasComplex* const s[],
                                     int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZrotgBatched(hipblasHandle_t             handle,
@@ -2454,13 +2054,8 @@ hipblasStatus_t hipblasZrotgBatched(hipblasHandle_t             handle,
                                     double* const               c[],
                                     hipblasDoubleComplex* const s[],
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // rotg_strided_batched
@@ -2474,13 +2069,8 @@ hipblasStatus_t hipblasSrotgStridedBatched(hipblasHandle_t handle,
                                            float*          s,
                                            hipblasStride   stride_s,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDrotgStridedBatched(hipblasHandle_t handle,
@@ -2493,13 +2083,8 @@ hipblasStatus_t hipblasDrotgStridedBatched(hipblasHandle_t handle,
                                            double*         s,
                                            hipblasStride   stride_s,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCrotgStridedBatched(hipblasHandle_t handle,
@@ -2512,13 +2097,8 @@ hipblasStatus_t hipblasCrotgStridedBatched(hipblasHandle_t handle,
                                            hipblasComplex* s,
                                            hipblasStride   stride_s,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZrotgStridedBatched(hipblasHandle_t       handle,
@@ -2531,13 +2111,8 @@ hipblasStatus_t hipblasZrotgStridedBatched(hipblasHandle_t       handle,
                                            hipblasDoubleComplex* s,
                                            hipblasStride         stride_s,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // rotm
@@ -2574,13 +2149,8 @@ hipblasStatus_t hipblasSrotmBatched(hipblasHandle_t    handle,
                                     int                incy,
                                     const float* const param[],
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDrotmBatched(hipblasHandle_t     handle,
@@ -2591,13 +2161,8 @@ hipblasStatus_t hipblasDrotmBatched(hipblasHandle_t     handle,
                                     int                 incy,
                                     const double* const param[],
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // rotm_strided_batched
@@ -2612,13 +2177,8 @@ hipblasStatus_t hipblasSrotmStridedBatched(hipblasHandle_t handle,
                                            const float*    param,
                                            hipblasStride   strideparam,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDrotmStridedBatched(hipblasHandle_t handle,
@@ -2632,13 +2192,8 @@ hipblasStatus_t hipblasDrotmStridedBatched(hipblasHandle_t handle,
                                            const double*   param,
                                            hipblasStride   strideparam,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // rotmg
@@ -2672,13 +2227,8 @@ hipblasStatus_t hipblasSrotmgBatched(hipblasHandle_t    handle,
                                      const float* const y1[],
                                      float* const       param[],
                                      int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDrotmgBatched(hipblasHandle_t     handle,
@@ -2688,13 +2238,8 @@ hipblasStatus_t hipblasDrotmgBatched(hipblasHandle_t     handle,
                                      const double* const y1[],
                                      double* const       param[],
                                      int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // rotmg_strided_batched
@@ -2710,13 +2255,8 @@ hipblasStatus_t hipblasSrotmgStridedBatched(hipblasHandle_t handle,
                                             float*          param,
                                             hipblasStride   strideparam,
                                             int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDrotmgStridedBatched(hipblasHandle_t handle,
@@ -2731,13 +2271,8 @@ hipblasStatus_t hipblasDrotmgStridedBatched(hipblasHandle_t handle,
                                             double*         param,
                                             hipblasStride   strideparam,
                                             int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // scal
@@ -2828,13 +2363,8 @@ catch(...)
 }
 hipblasStatus_t hipblasDscalBatched(
     hipblasHandle_t handle, int n, const double* alpha, double* const x[], int incx, int batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCscalBatched(hipblasHandle_t       handle,
@@ -2843,13 +2373,8 @@ hipblasStatus_t hipblasCscalBatched(hipblasHandle_t       handle,
                                     hipblasComplex* const x[],
                                     int                   incx,
                                     int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZscalBatched(hipblasHandle_t             handle,
@@ -2858,13 +2383,8 @@ hipblasStatus_t hipblasZscalBatched(hipblasHandle_t             handle,
                                     hipblasDoubleComplex* const x[],
                                     int                         incx,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsscalBatched(hipblasHandle_t       handle,
@@ -2873,13 +2393,8 @@ hipblasStatus_t hipblasCsscalBatched(hipblasHandle_t       handle,
                                      hipblasComplex* const x[],
                                      int                   incx,
                                      int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdscalBatched(hipblasHandle_t             handle,
@@ -2888,13 +2403,8 @@ hipblasStatus_t hipblasZdscalBatched(hipblasHandle_t             handle,
                                      hipblasDoubleComplex* const x[],
                                      int                         incx,
                                      int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // scal_strided_batched
@@ -2905,13 +2415,8 @@ hipblasStatus_t hipblasSscalStridedBatched(hipblasHandle_t handle,
                                            int             incx,
                                            hipblasStride   stridex,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDscalStridedBatched(hipblasHandle_t handle,
@@ -2921,13 +2426,8 @@ hipblasStatus_t hipblasDscalStridedBatched(hipblasHandle_t handle,
                                            int             incx,
                                            hipblasStride   stridex,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t       handle,
@@ -2937,13 +2437,8 @@ hipblasStatus_t hipblasCscalStridedBatched(hipblasHandle_t       handle,
                                            int                   incx,
                                            hipblasStride         stridex,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t             handle,
@@ -2953,13 +2448,8 @@ hipblasStatus_t hipblasZscalStridedBatched(hipblasHandle_t             handle,
                                            int                         incx,
                                            hipblasStride               stridex,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsscalStridedBatched(hipblasHandle_t handle,
@@ -2969,13 +2459,8 @@ hipblasStatus_t hipblasCsscalStridedBatched(hipblasHandle_t handle,
                                             int             incx,
                                             hipblasStride   stridex,
                                             int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdscalStridedBatched(hipblasHandle_t       handle,
@@ -2985,13 +2470,8 @@ hipblasStatus_t hipblasZdscalStridedBatched(hipblasHandle_t       handle,
                                             int                   incx,
                                             hipblasStride         stridex,
                                             int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // swap
@@ -3047,24 +2527,14 @@ catch(...)
 // swap_batched
 hipblasStatus_t hipblasSswapBatched(
     hipblasHandle_t handle, int n, float* x[], int incx, float* y[], int incy, int batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDswapBatched(
     hipblasHandle_t handle, int n, double* x[], int incx, double* y[], int incy, int batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCswapBatched(hipblasHandle_t handle,
@@ -3074,13 +2544,8 @@ hipblasStatus_t hipblasCswapBatched(hipblasHandle_t handle,
                                     hipblasComplex* y[],
                                     int             incy,
                                     int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZswapBatched(hipblasHandle_t       handle,
@@ -3090,13 +2555,8 @@ hipblasStatus_t hipblasZswapBatched(hipblasHandle_t       handle,
                                     hipblasDoubleComplex* y[],
                                     int                   incy,
                                     int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // swap_strided_batched
@@ -3109,13 +2569,8 @@ hipblasStatus_t hipblasSswapStridedBatched(hipblasHandle_t handle,
                                            int             incy,
                                            hipblasStride   stridey,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDswapStridedBatched(hipblasHandle_t handle,
@@ -3127,13 +2582,8 @@ hipblasStatus_t hipblasDswapStridedBatched(hipblasHandle_t handle,
                                            int             incy,
                                            hipblasStride   stridey,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCswapStridedBatched(hipblasHandle_t handle,
@@ -3145,13 +2595,8 @@ hipblasStatus_t hipblasCswapStridedBatched(hipblasHandle_t handle,
                                            int             incy,
                                            hipblasStride   stridey,
                                            int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZswapStridedBatched(hipblasHandle_t       handle,
@@ -3163,13 +2608,8 @@ hipblasStatus_t hipblasZswapStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stridey,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // gbmv
@@ -3333,13 +2773,8 @@ hipblasStatus_t hipblasSgbmvBatched(hipblasHandle_t    handle,
                                     float* const       y[],
                                     int                incy,
                                     int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgbmvBatched(hipblasHandle_t     handle,
@@ -3357,13 +2792,8 @@ hipblasStatus_t hipblasDgbmvBatched(hipblasHandle_t     handle,
                                     double* const       y[],
                                     int                 incy,
                                     int                 batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgbmvBatched(hipblasHandle_t             handle,
@@ -3381,13 +2811,8 @@ hipblasStatus_t hipblasCgbmvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgbmvBatched(hipblasHandle_t                   handle,
@@ -3405,13 +2830,8 @@ hipblasStatus_t hipblasZgbmvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // gbmv_strided_batched
@@ -3433,13 +2853,8 @@ hipblasStatus_t hipblasSgbmvStridedBatched(hipblasHandle_t    handle,
                                            int                incy,
                                            hipblasStride      stride_y,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgbmvStridedBatched(hipblasHandle_t    handle,
@@ -3460,13 +2875,8 @@ hipblasStatus_t hipblasDgbmvStridedBatched(hipblasHandle_t    handle,
                                            int                incy,
                                            hipblasStride      stride_y,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgbmvStridedBatched(hipblasHandle_t       handle,
@@ -3487,13 +2897,8 @@ hipblasStatus_t hipblasCgbmvStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stride_y,
                                            int                   batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgbmvStridedBatched(hipblasHandle_t             handle,
@@ -3514,13 +2919,8 @@ hipblasStatus_t hipblasZgbmvStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stride_y,
                                            int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // gemv
@@ -3736,13 +3136,8 @@ hipblasStatus_t hipblasCgemvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
@@ -3758,13 +3153,8 @@ hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // gemv_strided_batched
@@ -3860,13 +3250,8 @@ hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stridey,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
@@ -3885,13 +3270,8 @@ hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // ger
@@ -4059,13 +3439,8 @@ hipblasStatus_t hipblasSgerBatched(hipblasHandle_t    handle,
                                    float* const       A[],
                                    int                lda,
                                    int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgerBatched(hipblasHandle_t     handle,
@@ -4079,13 +3454,8 @@ hipblasStatus_t hipblasDgerBatched(hipblasHandle_t     handle,
                                    double* const       A[],
                                    int                 lda,
                                    int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgeruBatched(hipblasHandle_t             handle,
@@ -4099,13 +3469,8 @@ hipblasStatus_t hipblasCgeruBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       A[],
                                     int                         lda,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgercBatched(hipblasHandle_t             handle,
@@ -4119,13 +3484,8 @@ hipblasStatus_t hipblasCgercBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       A[],
                                     int                         lda,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgeruBatched(hipblasHandle_t                   handle,
@@ -4139,13 +3499,8 @@ hipblasStatus_t hipblasZgeruBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       A[],
                                     int                               lda,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgercBatched(hipblasHandle_t                   handle,
@@ -4159,13 +3514,8 @@ hipblasStatus_t hipblasZgercBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       A[],
                                     int                               lda,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // ger_strided_batched
@@ -4183,13 +3533,8 @@ hipblasStatus_t hipblasSgerStridedBatched(hipblasHandle_t handle,
                                           int             lda,
                                           hipblasStride   strideA,
                                           int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgerStridedBatched(hipblasHandle_t handle,
@@ -4206,13 +3551,8 @@ hipblasStatus_t hipblasDgerStridedBatched(hipblasHandle_t handle,
                                           int             lda,
                                           hipblasStride   strideA,
                                           int             batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgeruStridedBatched(hipblasHandle_t       handle,
@@ -4229,13 +3569,8 @@ hipblasStatus_t hipblasCgeruStridedBatched(hipblasHandle_t       handle,
                                            int                   lda,
                                            hipblasStride         strideA,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgercStridedBatched(hipblasHandle_t       handle,
@@ -4252,13 +3587,8 @@ hipblasStatus_t hipblasCgercStridedBatched(hipblasHandle_t       handle,
                                            int                   lda,
                                            hipblasStride         strideA,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgeruStridedBatched(hipblasHandle_t             handle,
@@ -4275,13 +3605,8 @@ hipblasStatus_t hipblasZgeruStridedBatched(hipblasHandle_t             handle,
                                            int                         lda,
                                            hipblasStride               strideA,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgercStridedBatched(hipblasHandle_t             handle,
@@ -4298,13 +3623,8 @@ hipblasStatus_t hipblasZgercStridedBatched(hipblasHandle_t             handle,
                                            int                         lda,
                                            hipblasStride               strideA,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hbmv
@@ -4386,13 +3706,8 @@ hipblasStatus_t hipblasChbmvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhbmvBatched(hipblasHandle_t                   handle,
@@ -4408,13 +3723,8 @@ hipblasStatus_t hipblasZhbmvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hbmv_strided_batched
@@ -4434,13 +3744,8 @@ hipblasStatus_t hipblasChbmvStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stridey,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhbmvStridedBatched(hipblasHandle_t             handle,
@@ -4459,13 +3764,8 @@ hipblasStatus_t hipblasZhbmvStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hemv
@@ -4542,13 +3842,8 @@ hipblasStatus_t hipblasChemvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhemvBatched(hipblasHandle_t                   handle,
@@ -4563,13 +3858,8 @@ hipblasStatus_t hipblasZhemvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hemv_strided_batched
@@ -4588,13 +3878,8 @@ hipblasStatus_t hipblasChemvStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stride_y,
                                            int                   batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhemvStridedBatched(hipblasHandle_t             handle,
@@ -4612,13 +3897,8 @@ hipblasStatus_t hipblasZhemvStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stride_y,
                                            int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // her
@@ -4680,13 +3960,8 @@ hipblasStatus_t hipblasCherBatched(hipblasHandle_t             handle,
                                    hipblasComplex* const       A[],
                                    int                         lda,
                                    int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZherBatched(hipblasHandle_t                   handle,
@@ -4698,13 +3973,8 @@ hipblasStatus_t hipblasZherBatched(hipblasHandle_t                   handle,
                                    hipblasDoubleComplex* const       A[],
                                    int                               lda,
                                    int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // her_strided_batched
@@ -4719,13 +3989,8 @@ hipblasStatus_t hipblasCherStridedBatched(hipblasHandle_t       handle,
                                           int                   lda,
                                           hipblasStride         strideA,
                                           int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZherStridedBatched(hipblasHandle_t             handle,
@@ -4739,13 +4004,8 @@ hipblasStatus_t hipblasZherStridedBatched(hipblasHandle_t             handle,
                                           int                         lda,
                                           hipblasStride               strideA,
                                           int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // her2
@@ -4817,13 +4077,8 @@ hipblasStatus_t hipblasCher2Batched(hipblasHandle_t             handle,
                                     hipblasComplex* const       A[],
                                     int                         lda,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZher2Batched(hipblasHandle_t                   handle,
@@ -4837,13 +4092,8 @@ hipblasStatus_t hipblasZher2Batched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       A[],
                                     int                               lda,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // her2_strided_batched
@@ -4861,13 +4111,8 @@ hipblasStatus_t hipblasCher2StridedBatched(hipblasHandle_t       handle,
                                            int                   lda,
                                            hipblasStride         strideA,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZher2StridedBatched(hipblasHandle_t             handle,
@@ -4884,13 +4129,8 @@ hipblasStatus_t hipblasZher2StridedBatched(hipblasHandle_t             handle,
                                            int                         lda,
                                            hipblasStride               strideA,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hpmv
@@ -4962,13 +4202,8 @@ hipblasStatus_t hipblasChpmvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhpmvBatched(hipblasHandle_t                   handle,
@@ -4982,13 +4217,8 @@ hipblasStatus_t hipblasZhpmvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hpmv_strided_batched
@@ -5006,13 +4236,8 @@ hipblasStatus_t hipblasChpmvStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stridey,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhpmvStridedBatched(hipblasHandle_t             handle,
@@ -5029,13 +4254,8 @@ hipblasStatus_t hipblasZhpmvStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hpr
@@ -5092,13 +4312,8 @@ hipblasStatus_t hipblasChprBatched(hipblasHandle_t             handle,
                                    int                         incx,
                                    hipblasComplex* const       AP[],
                                    int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhprBatched(hipblasHandle_t                   handle,
@@ -5109,13 +4324,8 @@ hipblasStatus_t hipblasZhprBatched(hipblasHandle_t                   handle,
                                    int                               incx,
                                    hipblasDoubleComplex* const       AP[],
                                    int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hpr_strided_batched
@@ -5129,13 +4339,8 @@ hipblasStatus_t hipblasChprStridedBatched(hipblasHandle_t       handle,
                                           hipblasComplex*       AP,
                                           hipblasStride         strideAP,
                                           int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhprStridedBatched(hipblasHandle_t             handle,
@@ -5148,13 +4353,8 @@ hipblasStatus_t hipblasZhprStridedBatched(hipblasHandle_t             handle,
                                           hipblasDoubleComplex*       AP,
                                           hipblasStride               strideAP,
                                           int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hpr2
@@ -5221,13 +4421,8 @@ hipblasStatus_t hipblasChpr2Batched(hipblasHandle_t             handle,
                                     int                         incy,
                                     hipblasComplex* const       AP[],
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhpr2Batched(hipblasHandle_t                   handle,
@@ -5240,13 +4435,8 @@ hipblasStatus_t hipblasZhpr2Batched(hipblasHandle_t                   handle,
                                     int                               incy,
                                     hipblasDoubleComplex* const       AP[],
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hpr2_strided_batched
@@ -5263,13 +4453,8 @@ hipblasStatus_t hipblasChpr2StridedBatched(hipblasHandle_t       handle,
                                            hipblasComplex*       AP,
                                            hipblasStride         strideAP,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhpr2StridedBatched(hipblasHandle_t             handle,
@@ -5285,13 +4470,8 @@ hipblasStatus_t hipblasZhpr2StridedBatched(hipblasHandle_t             handle,
                                            hipblasDoubleComplex*       AP,
                                            hipblasStride               strideAP,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // sbmv
@@ -5373,13 +4553,8 @@ hipblasStatus_t hipblasSsbmvBatched(hipblasHandle_t    handle,
                                     float*             y[],
                                     int                incy,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsbmvBatched(hipblasHandle_t     handle,
@@ -5395,13 +4570,8 @@ hipblasStatus_t hipblasDsbmvBatched(hipblasHandle_t     handle,
                                     double*             y[],
                                     int                 incy,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // sbmv_strided_batched
@@ -5421,13 +4591,8 @@ hipblasStatus_t hipblasSsbmvStridedBatched(hipblasHandle_t   handle,
                                            int               incy,
                                            hipblasStride     stridey,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsbmvStridedBatched(hipblasHandle_t   handle,
@@ -5446,13 +4611,8 @@ hipblasStatus_t hipblasDsbmvStridedBatched(hipblasHandle_t   handle,
                                            int               incy,
                                            hipblasStride     stridey,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // spmv
@@ -5508,13 +4668,8 @@ hipblasStatus_t hipblasSspmvBatched(hipblasHandle_t    handle,
                                     float*             y[],
                                     int                incy,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDspmvBatched(hipblasHandle_t     handle,
@@ -5528,13 +4683,8 @@ hipblasStatus_t hipblasDspmvBatched(hipblasHandle_t     handle,
                                     double*             y[],
                                     int                 incy,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // spmv_strided_batched
@@ -5552,13 +4702,8 @@ hipblasStatus_t hipblasSspmvStridedBatched(hipblasHandle_t   handle,
                                            int               incy,
                                            hipblasStride     stridey,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDspmvStridedBatched(hipblasHandle_t   handle,
@@ -5575,13 +4720,8 @@ hipblasStatus_t hipblasDspmvStridedBatched(hipblasHandle_t   handle,
                                            int               incy,
                                            hipblasStride     stridey,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // spr
@@ -5626,13 +4766,8 @@ hipblasStatus_t hipblasCspr(hipblasHandle_t       handle,
                             const hipblasComplex* x,
                             int                   incx,
                             hipblasComplex*       AP)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZspr(hipblasHandle_t             handle,
@@ -5642,13 +4777,8 @@ hipblasStatus_t hipblasZspr(hipblasHandle_t             handle,
                             const hipblasDoubleComplex* x,
                             int                         incx,
                             hipblasDoubleComplex*       AP)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // spr_batched
@@ -5660,13 +4790,8 @@ hipblasStatus_t hipblasSsprBatched(hipblasHandle_t    handle,
                                    int                incx,
                                    float* const       AP[],
                                    int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsprBatched(hipblasHandle_t     handle,
@@ -5677,13 +4802,8 @@ hipblasStatus_t hipblasDsprBatched(hipblasHandle_t     handle,
                                    int                 incx,
                                    double* const       AP[],
                                    int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsprBatched(hipblasHandle_t             handle,
@@ -5694,13 +4814,8 @@ hipblasStatus_t hipblasCsprBatched(hipblasHandle_t             handle,
                                    int                         incx,
                                    hipblasComplex* const       AP[],
                                    int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsprBatched(hipblasHandle_t                   handle,
@@ -5711,13 +4826,8 @@ hipblasStatus_t hipblasZsprBatched(hipblasHandle_t                   handle,
                                    int                               incx,
                                    hipblasDoubleComplex* const       AP[],
                                    int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // spr_strided_batched
@@ -5731,13 +4841,8 @@ hipblasStatus_t hipblasSsprStridedBatched(hipblasHandle_t   handle,
                                           float*            AP,
                                           hipblasStride     strideAP,
                                           int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsprStridedBatched(hipblasHandle_t   handle,
@@ -5750,13 +4855,8 @@ hipblasStatus_t hipblasDsprStridedBatched(hipblasHandle_t   handle,
                                           double*           AP,
                                           hipblasStride     strideAP,
                                           int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsprStridedBatched(hipblasHandle_t       handle,
@@ -5769,13 +4869,8 @@ hipblasStatus_t hipblasCsprStridedBatched(hipblasHandle_t       handle,
                                           hipblasComplex*       AP,
                                           hipblasStride         strideAP,
                                           int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsprStridedBatched(hipblasHandle_t             handle,
@@ -5788,13 +4883,8 @@ hipblasStatus_t hipblasZsprStridedBatched(hipblasHandle_t             handle,
                                           hipblasDoubleComplex*       AP,
                                           hipblasStride               strideAP,
                                           int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // spr2
@@ -5847,13 +4937,8 @@ hipblasStatus_t hipblasSspr2Batched(hipblasHandle_t    handle,
                                     int                incy,
                                     float* const       AP[],
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDspr2Batched(hipblasHandle_t     handle,
@@ -5866,13 +4951,8 @@ hipblasStatus_t hipblasDspr2Batched(hipblasHandle_t     handle,
                                     int                 incy,
                                     double* const       AP[],
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // spr2_strided_batched
@@ -5889,13 +4969,8 @@ hipblasStatus_t hipblasSspr2StridedBatched(hipblasHandle_t   handle,
                                            float*            AP,
                                            hipblasStride     strideAP,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDspr2StridedBatched(hipblasHandle_t   handle,
@@ -5911,13 +4986,8 @@ hipblasStatus_t hipblasDspr2StridedBatched(hipblasHandle_t   handle,
                                            double*           AP,
                                            hipblasStride     strideAP,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // symv
@@ -6036,13 +5106,8 @@ hipblasStatus_t hipblasSsymvBatched(hipblasHandle_t    handle,
                                     float*             y[],
                                     int                incy,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsymvBatched(hipblasHandle_t     handle,
@@ -6057,13 +5122,8 @@ hipblasStatus_t hipblasDsymvBatched(hipblasHandle_t     handle,
                                     double*             y[],
                                     int                 incy,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsymvBatched(hipblasHandle_t             handle,
@@ -6078,13 +5138,8 @@ hipblasStatus_t hipblasCsymvBatched(hipblasHandle_t             handle,
                                     hipblasComplex*             y[],
                                     int                         incy,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsymvBatched(hipblasHandle_t                   handle,
@@ -6099,13 +5154,8 @@ hipblasStatus_t hipblasZsymvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex*             y[],
                                     int                               incy,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // symv_strided_batched
@@ -6124,13 +5174,8 @@ hipblasStatus_t hipblasSsymvStridedBatched(hipblasHandle_t   handle,
                                            int               incy,
                                            hipblasStride     stridey,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsymvStridedBatched(hipblasHandle_t   handle,
@@ -6148,13 +5193,8 @@ hipblasStatus_t hipblasDsymvStridedBatched(hipblasHandle_t   handle,
                                            int               incy,
                                            hipblasStride     stridey,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsymvStridedBatched(hipblasHandle_t       handle,
@@ -6172,13 +5212,8 @@ hipblasStatus_t hipblasCsymvStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stridey,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsymvStridedBatched(hipblasHandle_t             handle,
@@ -6196,13 +5231,8 @@ hipblasStatus_t hipblasZsymvStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syr
@@ -6300,13 +5330,8 @@ hipblasStatus_t hipblasSsyrBatched(hipblasHandle_t    handle,
                                    float* const       A[],
                                    int                lda,
                                    int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyrBatched(hipblasHandle_t     handle,
@@ -6318,13 +5343,8 @@ hipblasStatus_t hipblasDsyrBatched(hipblasHandle_t     handle,
                                    double* const       A[],
                                    int                 lda,
                                    int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyrBatched(hipblasHandle_t             handle,
@@ -6336,13 +5356,8 @@ hipblasStatus_t hipblasCsyrBatched(hipblasHandle_t             handle,
                                    hipblasComplex* const       A[],
                                    int                         lda,
                                    int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyrBatched(hipblasHandle_t                   handle,
@@ -6354,13 +5369,8 @@ hipblasStatus_t hipblasZsyrBatched(hipblasHandle_t                   handle,
                                    hipblasDoubleComplex* const       A[],
                                    int                               lda,
                                    int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syr_strided_batched
@@ -6375,13 +5385,8 @@ hipblasStatus_t hipblasSsyrStridedBatched(hipblasHandle_t   handle,
                                           int               lda,
                                           hipblasStride     strideA,
                                           int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyrStridedBatched(hipblasHandle_t   handle,
@@ -6395,13 +5400,8 @@ hipblasStatus_t hipblasDsyrStridedBatched(hipblasHandle_t   handle,
                                           int               lda,
                                           hipblasStride     strideA,
                                           int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyrStridedBatched(hipblasHandle_t       handle,
@@ -6415,13 +5415,8 @@ hipblasStatus_t hipblasCsyrStridedBatched(hipblasHandle_t       handle,
                                           int                   lda,
                                           hipblasStride         strideA,
                                           int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyrStridedBatched(hipblasHandle_t             handle,
@@ -6435,13 +5430,8 @@ hipblasStatus_t hipblasZsyrStridedBatched(hipblasHandle_t             handle,
                                           int                         lda,
                                           hipblasStride               strideA,
                                           int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syr2
@@ -6553,13 +5543,8 @@ hipblasStatus_t hipblasSsyr2Batched(hipblasHandle_t    handle,
                                     float* const       A[],
                                     int                lda,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyr2Batched(hipblasHandle_t     handle,
@@ -6573,13 +5558,8 @@ hipblasStatus_t hipblasDsyr2Batched(hipblasHandle_t     handle,
                                     double* const       A[],
                                     int                 lda,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyr2Batched(hipblasHandle_t             handle,
@@ -6593,13 +5573,8 @@ hipblasStatus_t hipblasCsyr2Batched(hipblasHandle_t             handle,
                                     hipblasComplex* const       A[],
                                     int                         lda,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyr2Batched(hipblasHandle_t                   handle,
@@ -6613,13 +5588,8 @@ hipblasStatus_t hipblasZsyr2Batched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       A[],
                                     int                               lda,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syr2_strided_batched
@@ -6637,13 +5607,8 @@ hipblasStatus_t hipblasSsyr2StridedBatched(hipblasHandle_t   handle,
                                            int               lda,
                                            hipblasStride     strideA,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyr2StridedBatched(hipblasHandle_t   handle,
@@ -6660,13 +5625,8 @@ hipblasStatus_t hipblasDsyr2StridedBatched(hipblasHandle_t   handle,
                                            int               lda,
                                            hipblasStride     strideA,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyr2StridedBatched(hipblasHandle_t       handle,
@@ -6683,13 +5643,8 @@ hipblasStatus_t hipblasCsyr2StridedBatched(hipblasHandle_t       handle,
                                            int                   lda,
                                            hipblasStride         strideA,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyr2StridedBatched(hipblasHandle_t             handle,
@@ -6706,13 +5661,8 @@ hipblasStatus_t hipblasZsyr2StridedBatched(hipblasHandle_t             handle,
                                            int                         lda,
                                            hipblasStride               strideA,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // tbmv
@@ -6840,13 +5790,8 @@ hipblasStatus_t hipblasStbmvBatched(hipblasHandle_t    handle,
                                     float* const       x[],
                                     int                incx,
                                     int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtbmvBatched(hipblasHandle_t     handle,
@@ -6860,13 +5805,8 @@ hipblasStatus_t hipblasDtbmvBatched(hipblasHandle_t     handle,
                                     double* const       x[],
                                     int                 incx,
                                     int                 batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtbmvBatched(hipblasHandle_t             handle,
@@ -6880,13 +5820,8 @@ hipblasStatus_t hipblasCtbmvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       x[],
                                     int                         incx,
                                     int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtbmvBatched(hipblasHandle_t                   handle,
@@ -6900,13 +5835,8 @@ hipblasStatus_t hipblasZtbmvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       x[],
                                     int                               incx,
                                     int                               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // tbmv_strided_batched
@@ -6923,13 +5853,8 @@ hipblasStatus_t hipblasStbmvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stride_x,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtbmvStridedBatched(hipblasHandle_t    handle,
@@ -6945,13 +5870,8 @@ hipblasStatus_t hipblasDtbmvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stride_x,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtbmvStridedBatched(hipblasHandle_t       handle,
@@ -6967,13 +5887,8 @@ hipblasStatus_t hipblasCtbmvStridedBatched(hipblasHandle_t       handle,
                                            int                   incx,
                                            hipblasStride         stride_x,
                                            int                   batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtbmvStridedBatched(hipblasHandle_t             handle,
@@ -6989,13 +5904,8 @@ hipblasStatus_t hipblasZtbmvStridedBatched(hipblasHandle_t             handle,
                                            int                         incx,
                                            hipblasStride               stride_x,
                                            int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // tbsv
@@ -7123,13 +6033,8 @@ hipblasStatus_t hipblasStbsvBatched(hipblasHandle_t    handle,
                                     float* const       x[],
                                     int                incx,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtbsvBatched(hipblasHandle_t     handle,
@@ -7143,13 +6048,8 @@ hipblasStatus_t hipblasDtbsvBatched(hipblasHandle_t     handle,
                                     double* const       x[],
                                     int                 incx,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtbsvBatched(hipblasHandle_t             handle,
@@ -7163,13 +6063,8 @@ hipblasStatus_t hipblasCtbsvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       x[],
                                     int                         incx,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtbsvBatched(hipblasHandle_t                   handle,
@@ -7183,13 +6078,8 @@ hipblasStatus_t hipblasZtbsvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       x[],
                                     int                               incx,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // tbsv_strided_batched
@@ -7206,13 +6096,8 @@ hipblasStatus_t hipblasStbsvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stridex,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtbsvStridedBatched(hipblasHandle_t    handle,
@@ -7228,13 +6113,8 @@ hipblasStatus_t hipblasDtbsvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stridex,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtbsvStridedBatched(hipblasHandle_t       handle,
@@ -7250,13 +6130,8 @@ hipblasStatus_t hipblasCtbsvStridedBatched(hipblasHandle_t       handle,
                                            int                   incx,
                                            hipblasStride         stridex,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtbsvStridedBatched(hipblasHandle_t             handle,
@@ -7272,13 +6147,8 @@ hipblasStatus_t hipblasZtbsvStridedBatched(hipblasHandle_t             handle,
                                            int                         incx,
                                            hipblasStride               stridex,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // tpmv
@@ -7388,13 +6258,8 @@ hipblasStatus_t hipblasStpmvBatched(hipblasHandle_t    handle,
                                     float* const       x[],
                                     int                incx,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtpmvBatched(hipblasHandle_t     handle,
@@ -7406,13 +6271,8 @@ hipblasStatus_t hipblasDtpmvBatched(hipblasHandle_t     handle,
                                     double* const       x[],
                                     int                 incx,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtpmvBatched(hipblasHandle_t             handle,
@@ -7424,13 +6284,8 @@ hipblasStatus_t hipblasCtpmvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       x[],
                                     int                         incx,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtpmvBatched(hipblasHandle_t                   handle,
@@ -7442,13 +6297,8 @@ hipblasStatus_t hipblasZtpmvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       x[],
                                     int                               incx,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // tpmv_strided_batched
@@ -7463,13 +6313,8 @@ hipblasStatus_t hipblasStpmvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stridex,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtpmvStridedBatched(hipblasHandle_t    handle,
@@ -7483,13 +6328,8 @@ hipblasStatus_t hipblasDtpmvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stridex,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtpmvStridedBatched(hipblasHandle_t       handle,
@@ -7503,13 +6343,8 @@ hipblasStatus_t hipblasCtpmvStridedBatched(hipblasHandle_t       handle,
                                            int                   incx,
                                            hipblasStride         stridex,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtpmvStridedBatched(hipblasHandle_t             handle,
@@ -7523,13 +6358,8 @@ hipblasStatus_t hipblasZtpmvStridedBatched(hipblasHandle_t             handle,
                                            int                         incx,
                                            hipblasStride               stridex,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // tpsv
@@ -7639,13 +6469,8 @@ hipblasStatus_t hipblasStpsvBatched(hipblasHandle_t    handle,
                                     float* const       x[],
                                     int                incx,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtpsvBatched(hipblasHandle_t     handle,
@@ -7657,13 +6482,8 @@ hipblasStatus_t hipblasDtpsvBatched(hipblasHandle_t     handle,
                                     double* const       x[],
                                     int                 incx,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtpsvBatched(hipblasHandle_t             handle,
@@ -7675,13 +6495,8 @@ hipblasStatus_t hipblasCtpsvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       x[],
                                     int                         incx,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtpsvBatched(hipblasHandle_t                   handle,
@@ -7693,13 +6508,8 @@ hipblasStatus_t hipblasZtpsvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       x[],
                                     int                               incx,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // tpsv_strided_batched
@@ -7714,13 +6524,8 @@ hipblasStatus_t hipblasStpsvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stridex,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtpsvStridedBatched(hipblasHandle_t    handle,
@@ -7734,13 +6539,8 @@ hipblasStatus_t hipblasDtpsvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stridex,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtpsvStridedBatched(hipblasHandle_t       handle,
@@ -7754,13 +6554,8 @@ hipblasStatus_t hipblasCtpsvStridedBatched(hipblasHandle_t       handle,
                                            int                   incx,
                                            hipblasStride         stridex,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtpsvStridedBatched(hipblasHandle_t             handle,
@@ -7774,13 +6569,8 @@ hipblasStatus_t hipblasZtpsvStridedBatched(hipblasHandle_t             handle,
                                            int                         incx,
                                            hipblasStride               stridex,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trmv
@@ -7899,13 +6689,8 @@ hipblasStatus_t hipblasStrmvBatched(hipblasHandle_t    handle,
                                     float* const       x[],
                                     int                incx,
                                     int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrmvBatched(hipblasHandle_t     handle,
@@ -7918,13 +6703,8 @@ hipblasStatus_t hipblasDtrmvBatched(hipblasHandle_t     handle,
                                     double* const       x[],
                                     int                 incx,
                                     int                 batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrmvBatched(hipblasHandle_t             handle,
@@ -7937,13 +6717,8 @@ hipblasStatus_t hipblasCtrmvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       x[],
                                     int                         incx,
                                     int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrmvBatched(hipblasHandle_t                   handle,
@@ -7956,13 +6731,8 @@ hipblasStatus_t hipblasZtrmvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       x[],
                                     int                               incx,
                                     int                               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trmv_strided_batched
@@ -7978,13 +6748,8 @@ hipblasStatus_t hipblasStrmvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stride_x,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrmvStridedBatched(hipblasHandle_t    handle,
@@ -7999,13 +6764,8 @@ hipblasStatus_t hipblasDtrmvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stride_x,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrmvStridedBatched(hipblasHandle_t       handle,
@@ -8020,13 +6780,8 @@ hipblasStatus_t hipblasCtrmvStridedBatched(hipblasHandle_t       handle,
                                            int                   incx,
                                            hipblasStride         stride_x,
                                            int                   batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrmvStridedBatched(hipblasHandle_t             handle,
@@ -8041,13 +6796,8 @@ hipblasStatus_t hipblasZtrmvStridedBatched(hipblasHandle_t             handle,
                                            int                         incx,
                                            hipblasStride               stride_x,
                                            int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trsv
@@ -8166,13 +6916,8 @@ hipblasStatus_t hipblasStrsvBatched(hipblasHandle_t    handle,
                                     float* const       x[],
                                     int                incx,
                                     int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrsvBatched(hipblasHandle_t     handle,
@@ -8185,13 +6930,8 @@ hipblasStatus_t hipblasDtrsvBatched(hipblasHandle_t     handle,
                                     double* const       x[],
                                     int                 incx,
                                     int                 batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrsvBatched(hipblasHandle_t             handle,
@@ -8204,13 +6944,8 @@ hipblasStatus_t hipblasCtrsvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       x[],
                                     int                         incx,
                                     int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrsvBatched(hipblasHandle_t                   handle,
@@ -8223,13 +6958,8 @@ hipblasStatus_t hipblasZtrsvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       x[],
                                     int                               incx,
                                     int                               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trsv_strided_batched
@@ -8245,13 +6975,8 @@ hipblasStatus_t hipblasStrsvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stridex,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrsvStridedBatched(hipblasHandle_t    handle,
@@ -8266,13 +6991,8 @@ hipblasStatus_t hipblasDtrsvStridedBatched(hipblasHandle_t    handle,
                                            int                incx,
                                            hipblasStride      stridex,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrsvStridedBatched(hipblasHandle_t       handle,
@@ -8287,13 +7007,8 @@ hipblasStatus_t hipblasCtrsvStridedBatched(hipblasHandle_t       handle,
                                            int                   incx,
                                            hipblasStride         stridex,
                                            int                   batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrsvStridedBatched(hipblasHandle_t             handle,
@@ -8308,13 +7023,8 @@ hipblasStatus_t hipblasZtrsvStridedBatched(hipblasHandle_t             handle,
                                            int                         incx,
                                            hipblasStride               stridex,
                                            int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -8393,13 +7103,8 @@ hipblasStatus_t hipblasCherkBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       C[],
                                     int                         ldc,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZherkBatched(hipblasHandle_t                   handle,
@@ -8414,13 +7119,8 @@ hipblasStatus_t hipblasZherkBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       C[],
                                     int                               ldc,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // herk_strided_batched
@@ -8438,13 +7138,8 @@ hipblasStatus_t hipblasCherkStridedBatched(hipblasHandle_t       handle,
                                            int                   ldc,
                                            hipblasStride         strideC,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZherkStridedBatched(hipblasHandle_t             handle,
@@ -8461,13 +7156,8 @@ hipblasStatus_t hipblasZherkStridedBatched(hipblasHandle_t             handle,
                                            int                         ldc,
                                            hipblasStride               strideC,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // herkx
@@ -8554,13 +7244,8 @@ hipblasStatus_t hipblasCherkxBatched(hipblasHandle_t             handle,
                                      hipblasComplex* const       C[],
                                      int                         ldc,
                                      int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZherkxBatched(hipblasHandle_t                   handle,
@@ -8577,13 +7262,8 @@ hipblasStatus_t hipblasZherkxBatched(hipblasHandle_t                   handle,
                                      hipblasDoubleComplex* const       C[],
                                      int                               ldc,
                                      int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // herkx_strided_batched
@@ -8604,13 +7284,8 @@ hipblasStatus_t hipblasCherkxStridedBatched(hipblasHandle_t       handle,
                                             int                   ldc,
                                             hipblasStride         strideC,
                                             int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZherkxStridedBatched(hipblasHandle_t             handle,
@@ -8630,13 +7305,8 @@ hipblasStatus_t hipblasZherkxStridedBatched(hipblasHandle_t             handle,
                                             int                         ldc,
                                             hipblasStride               strideC,
                                             int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // her2k
@@ -8723,13 +7393,8 @@ hipblasStatus_t hipblasCher2kBatched(hipblasHandle_t             handle,
                                      hipblasComplex* const       C[],
                                      int                         ldc,
                                      int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZher2kBatched(hipblasHandle_t                   handle,
@@ -8746,13 +7411,8 @@ hipblasStatus_t hipblasZher2kBatched(hipblasHandle_t                   handle,
                                      hipblasDoubleComplex* const       C[],
                                      int                               ldc,
                                      int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // her2k_strided_batched
@@ -8773,13 +7433,8 @@ hipblasStatus_t hipblasCher2kStridedBatched(hipblasHandle_t       handle,
                                             int                   ldc,
                                             hipblasStride         strideC,
                                             int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZher2kStridedBatched(hipblasHandle_t             handle,
@@ -8799,13 +7454,8 @@ hipblasStatus_t hipblasZher2kStridedBatched(hipblasHandle_t             handle,
                                             int                         ldc,
                                             hipblasStride               strideC,
                                             int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // symm
@@ -8960,13 +7610,8 @@ hipblasStatus_t hipblasSsymmBatched(hipblasHandle_t    handle,
                                     float* const       C[],
                                     int                ldc,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsymmBatched(hipblasHandle_t     handle,
@@ -8983,13 +7628,8 @@ hipblasStatus_t hipblasDsymmBatched(hipblasHandle_t     handle,
                                     double* const       C[],
                                     int                 ldc,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsymmBatched(hipblasHandle_t             handle,
@@ -9006,13 +7646,8 @@ hipblasStatus_t hipblasCsymmBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       C[],
                                     int                         ldc,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsymmBatched(hipblasHandle_t                   handle,
@@ -9029,13 +7664,8 @@ hipblasStatus_t hipblasZsymmBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       C[],
                                     int                               ldc,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // symm_strided_batched
@@ -9056,13 +7686,8 @@ hipblasStatus_t hipblasSsymmStridedBatched(hipblasHandle_t   handle,
                                            int               ldc,
                                            hipblasStride     strideC,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsymmStridedBatched(hipblasHandle_t   handle,
@@ -9082,13 +7707,8 @@ hipblasStatus_t hipblasDsymmStridedBatched(hipblasHandle_t   handle,
                                            int               ldc,
                                            hipblasStride     strideC,
                                            int               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsymmStridedBatched(hipblasHandle_t       handle,
@@ -9108,13 +7728,8 @@ hipblasStatus_t hipblasCsymmStridedBatched(hipblasHandle_t       handle,
                                            int                   ldc,
                                            hipblasStride         strideC,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsymmStridedBatched(hipblasHandle_t             handle,
@@ -9134,13 +7749,8 @@ hipblasStatus_t hipblasZsymmStridedBatched(hipblasHandle_t             handle,
                                            int                         ldc,
                                            hipblasStride               strideC,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syrk
@@ -9277,13 +7887,8 @@ hipblasStatus_t hipblasSsyrkBatched(hipblasHandle_t    handle,
                                     float* const       C[],
                                     int                ldc,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyrkBatched(hipblasHandle_t     handle,
@@ -9298,13 +7903,8 @@ hipblasStatus_t hipblasDsyrkBatched(hipblasHandle_t     handle,
                                     double* const       C[],
                                     int                 ldc,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyrkBatched(hipblasHandle_t             handle,
@@ -9319,13 +7919,8 @@ hipblasStatus_t hipblasCsyrkBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       C[],
                                     int                         ldc,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyrkBatched(hipblasHandle_t                   handle,
@@ -9340,13 +7935,8 @@ hipblasStatus_t hipblasZsyrkBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       C[],
                                     int                               ldc,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syrk_strided_batched
@@ -9364,13 +7954,8 @@ hipblasStatus_t hipblasSsyrkStridedBatched(hipblasHandle_t    handle,
                                            int                ldc,
                                            hipblasStride      strideC,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyrkStridedBatched(hipblasHandle_t    handle,
@@ -9387,13 +7972,8 @@ hipblasStatus_t hipblasDsyrkStridedBatched(hipblasHandle_t    handle,
                                            int                ldc,
                                            hipblasStride      strideC,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyrkStridedBatched(hipblasHandle_t       handle,
@@ -9410,13 +7990,8 @@ hipblasStatus_t hipblasCsyrkStridedBatched(hipblasHandle_t       handle,
                                            int                   ldc,
                                            hipblasStride         strideC,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyrkStridedBatched(hipblasHandle_t             handle,
@@ -9433,13 +8008,8 @@ hipblasStatus_t hipblasZsyrkStridedBatched(hipblasHandle_t             handle,
                                            int                         ldc,
                                            hipblasStride               strideC,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syr2k
@@ -9594,13 +8164,8 @@ hipblasStatus_t hipblasSsyr2kBatched(hipblasHandle_t    handle,
                                      float* const       C[],
                                      int                ldc,
                                      int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyr2kBatched(hipblasHandle_t     handle,
@@ -9617,13 +8182,8 @@ hipblasStatus_t hipblasDsyr2kBatched(hipblasHandle_t     handle,
                                      double* const       C[],
                                      int                 ldc,
                                      int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyr2kBatched(hipblasHandle_t             handle,
@@ -9640,13 +8200,8 @@ hipblasStatus_t hipblasCsyr2kBatched(hipblasHandle_t             handle,
                                      hipblasComplex* const       C[],
                                      int                         ldc,
                                      int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyr2kBatched(hipblasHandle_t                   handle,
@@ -9663,13 +8218,8 @@ hipblasStatus_t hipblasZsyr2kBatched(hipblasHandle_t                   handle,
                                      hipblasDoubleComplex* const       C[],
                                      int                               ldc,
                                      int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syr2k_strided_batched
@@ -9690,13 +8240,8 @@ hipblasStatus_t hipblasSsyr2kStridedBatched(hipblasHandle_t    handle,
                                             int                ldc,
                                             hipblasStride      strideC,
                                             int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyr2kStridedBatched(hipblasHandle_t    handle,
@@ -9716,13 +8261,8 @@ hipblasStatus_t hipblasDsyr2kStridedBatched(hipblasHandle_t    handle,
                                             int                ldc,
                                             hipblasStride      strideC,
                                             int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyr2kStridedBatched(hipblasHandle_t       handle,
@@ -9742,13 +8282,8 @@ hipblasStatus_t hipblasCsyr2kStridedBatched(hipblasHandle_t       handle,
                                             int                   ldc,
                                             hipblasStride         strideC,
                                             int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyr2kStridedBatched(hipblasHandle_t             handle,
@@ -9768,13 +8303,8 @@ hipblasStatus_t hipblasZsyr2kStridedBatched(hipblasHandle_t             handle,
                                             int                         ldc,
                                             hipblasStride               strideC,
                                             int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syrkx
@@ -9929,13 +8459,8 @@ hipblasStatus_t hipblasSsyrkxBatched(hipblasHandle_t    handle,
                                      float* const       C[],
                                      int                ldc,
                                      int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyrkxBatched(hipblasHandle_t     handle,
@@ -9952,13 +8477,8 @@ hipblasStatus_t hipblasDsyrkxBatched(hipblasHandle_t     handle,
                                      double* const       C[],
                                      int                 ldc,
                                      int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyrkxBatched(hipblasHandle_t             handle,
@@ -9975,13 +8495,8 @@ hipblasStatus_t hipblasCsyrkxBatched(hipblasHandle_t             handle,
                                      hipblasComplex* const       C[],
                                      int                         ldc,
                                      int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyrkxBatched(hipblasHandle_t                   handle,
@@ -9998,13 +8513,8 @@ hipblasStatus_t hipblasZsyrkxBatched(hipblasHandle_t                   handle,
                                      hipblasDoubleComplex* const       C[],
                                      int                               ldc,
                                      int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // syrkx_strided_batched
@@ -10025,13 +8535,8 @@ hipblasStatus_t hipblasSsyrkxStridedBatched(hipblasHandle_t    handle,
                                             int                ldc,
                                             hipblasStride      strideC,
                                             int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDsyrkxStridedBatched(hipblasHandle_t    handle,
@@ -10051,13 +8556,8 @@ hipblasStatus_t hipblasDsyrkxStridedBatched(hipblasHandle_t    handle,
                                             int                ldc,
                                             hipblasStride      strideC,
                                             int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCsyrkxStridedBatched(hipblasHandle_t       handle,
@@ -10077,13 +8577,8 @@ hipblasStatus_t hipblasCsyrkxStridedBatched(hipblasHandle_t       handle,
                                             int                   ldc,
                                             hipblasStride         strideC,
                                             int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZsyrkxStridedBatched(hipblasHandle_t             handle,
@@ -10103,13 +8598,8 @@ hipblasStatus_t hipblasZsyrkxStridedBatched(hipblasHandle_t             handle,
                                             int                         ldc,
                                             hipblasStride               strideC,
                                             int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // geam
@@ -10264,13 +8754,8 @@ hipblasStatus_t hipblasSgeamBatched(hipblasHandle_t    handle,
                                     float* const       C[],
                                     int                ldc,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgeamBatched(hipblasHandle_t     handle,
@@ -10287,13 +8772,8 @@ hipblasStatus_t hipblasDgeamBatched(hipblasHandle_t     handle,
                                     double* const       C[],
                                     int                 ldc,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgeamBatched(hipblasHandle_t             handle,
@@ -10310,13 +8790,8 @@ hipblasStatus_t hipblasCgeamBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       C[],
                                     int                         ldc,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgeamBatched(hipblasHandle_t                   handle,
@@ -10333,13 +8808,8 @@ hipblasStatus_t hipblasZgeamBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       C[],
                                     int                               ldc,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // geam_strided_batched
@@ -10360,13 +8830,8 @@ hipblasStatus_t hipblasSgeamStridedBatched(hipblasHandle_t    handle,
                                            int                ldc,
                                            hipblasStride      strideC,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgeamStridedBatched(hipblasHandle_t    handle,
@@ -10386,13 +8851,8 @@ hipblasStatus_t hipblasDgeamStridedBatched(hipblasHandle_t    handle,
                                            int                ldc,
                                            hipblasStride      strideC,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       handle,
@@ -10412,13 +8872,8 @@ hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       handle,
                                            int                   ldc,
                                            hipblasStride         strideC,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgeamStridedBatched(hipblasHandle_t             handle,
@@ -10438,13 +8893,8 @@ hipblasStatus_t hipblasZgeamStridedBatched(hipblasHandle_t             handle,
                                            int                         ldc,
                                            hipblasStride               strideC,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hemm
@@ -10531,13 +8981,8 @@ hipblasStatus_t hipblasChemmBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       C[],
                                     int                         ldc,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhemmBatched(hipblasHandle_t                   handle,
@@ -10554,13 +8999,8 @@ hipblasStatus_t hipblasZhemmBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       C[],
                                     int                               ldc,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // hemm_strided_batched
@@ -10581,13 +9021,8 @@ hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       handle,
                                            int                   ldc,
                                            hipblasStride         strideC,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t             handle,
@@ -10607,13 +9042,8 @@ hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t             handle,
                                            int                         ldc,
                                            hipblasStride               strideC,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trmm
@@ -10770,13 +9200,8 @@ hipblasStatus_t hipblasStrmmBatched(hipblasHandle_t    handle,
                                     float* const       B[],
                                     int                ldb,
                                     int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrmmBatched(hipblasHandle_t     handle,
@@ -10792,13 +9217,8 @@ hipblasStatus_t hipblasDtrmmBatched(hipblasHandle_t     handle,
                                     double* const       B[],
                                     int                 ldb,
                                     int                 batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             handle,
@@ -10814,13 +9234,8 @@ hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       B[],
                                     int                         ldb,
                                     int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t                   handle,
@@ -10836,13 +9251,8 @@ hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       B[],
                                     int                               ldb,
                                     int                               batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trmm_strided_batched
@@ -10861,13 +9271,8 @@ hipblasStatus_t hipblasStrmmStridedBatched(hipblasHandle_t    handle,
                                            int                ldb,
                                            hipblasStride      strideB,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrmmStridedBatched(hipblasHandle_t    handle,
@@ -10885,13 +9290,8 @@ hipblasStatus_t hipblasDtrmmStridedBatched(hipblasHandle_t    handle,
                                            int                ldb,
                                            hipblasStride      strideB,
                                            int                batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       handle,
@@ -10909,13 +9309,8 @@ hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       handle,
                                            int                   ldb,
                                            hipblasStride         strideB,
                                            int                   batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t             handle,
@@ -10933,13 +9328,8 @@ hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t             handle,
                                            int                         ldb,
                                            hipblasStride               strideB,
                                            int                         batchCount)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trsm
@@ -11224,13 +9614,8 @@ hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    handle,
                                            int                ldb,
                                            hipblasStride      strideB,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
@@ -11248,13 +9633,8 @@ hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
                                            int                ldb,
                                            hipblasStride      strideB,
                                            int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       handle,
@@ -11272,13 +9652,8 @@ hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       handle,
                                            int                   ldb,
                                            hipblasStride         strideB,
                                            int                   batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t             handle,
@@ -11296,13 +9671,8 @@ hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t             handle,
                                            int                         ldb,
                                            hipblasStride               strideB,
                                            int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trtri
@@ -11314,13 +9684,8 @@ hipblasStatus_t hipblasStrtri(hipblasHandle_t   handle,
                               int               lda,
                               float*            invA,
                               int               ldinvA)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrtri(hipblasHandle_t   handle,
@@ -11331,13 +9696,8 @@ hipblasStatus_t hipblasDtrtri(hipblasHandle_t   handle,
                               int               lda,
                               double*           invA,
                               int               ldinvA)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrtri(hipblasHandle_t       handle,
@@ -11348,13 +9708,8 @@ hipblasStatus_t hipblasCtrtri(hipblasHandle_t       handle,
                               int                   lda,
                               hipblasComplex*       invA,
                               int                   ldinvA)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrtri(hipblasHandle_t             handle,
@@ -11365,13 +9720,8 @@ hipblasStatus_t hipblasZtrtri(hipblasHandle_t             handle,
                               int                         lda,
                               hipblasDoubleComplex*       invA,
                               int                         ldinvA)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trtri_batched
@@ -11384,13 +9734,8 @@ hipblasStatus_t hipblasStrtriBatched(hipblasHandle_t    handle,
                                      float*             invA[],
                                      int                ldinvA,
                                      int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrtriBatched(hipblasHandle_t     handle,
@@ -11402,13 +9747,8 @@ hipblasStatus_t hipblasDtrtriBatched(hipblasHandle_t     handle,
                                      double*             invA[],
                                      int                 ldinvA,
                                      int                 batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrtriBatched(hipblasHandle_t             handle,
@@ -11420,13 +9760,8 @@ hipblasStatus_t hipblasCtrtriBatched(hipblasHandle_t             handle,
                                      hipblasComplex*             invA[],
                                      int                         ldinvA,
                                      int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrtriBatched(hipblasHandle_t                   handle,
@@ -11438,13 +9773,8 @@ hipblasStatus_t hipblasZtrtriBatched(hipblasHandle_t                   handle,
                                      hipblasDoubleComplex*             invA[],
                                      int                               ldinvA,
                                      int                               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // trtri_strided_batched
@@ -11459,13 +9789,8 @@ hipblasStatus_t hipblasStrtriStridedBatched(hipblasHandle_t   handle,
                                             int               ldinvA,
                                             hipblasStride     stride_invA,
                                             int               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDtrtriStridedBatched(hipblasHandle_t   handle,
@@ -11479,13 +9804,8 @@ hipblasStatus_t hipblasDtrtriStridedBatched(hipblasHandle_t   handle,
                                             int               ldinvA,
                                             hipblasStride     stride_invA,
                                             int               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t       handle,
@@ -11499,13 +9819,8 @@ hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t       handle,
                                             int                   ldinvA,
                                             hipblasStride         stride_invA,
                                             int                   batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZtrtriStridedBatched(hipblasHandle_t             handle,
@@ -11519,13 +9834,8 @@ hipblasStatus_t hipblasZtrtriStridedBatched(hipblasHandle_t             handle,
                                             int                         ldinvA,
                                             hipblasStride               stride_invA,
                                             int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // dgmm
@@ -11637,13 +9947,8 @@ hipblasStatus_t hipblasSdgmmBatched(hipblasHandle_t    handle,
                                     float* const       C[],
                                     int                ldc,
                                     int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDdgmmBatched(hipblasHandle_t     handle,
@@ -11657,13 +9962,8 @@ hipblasStatus_t hipblasDdgmmBatched(hipblasHandle_t     handle,
                                     double* const       C[],
                                     int                 ldc,
                                     int                 batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCdgmmBatched(hipblasHandle_t             handle,
@@ -11677,13 +9977,8 @@ hipblasStatus_t hipblasCdgmmBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       C[],
                                     int                         ldc,
                                     int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdgmmBatched(hipblasHandle_t                   handle,
@@ -11697,13 +9992,8 @@ hipblasStatus_t hipblasZdgmmBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       C[],
                                     int                               ldc,
                                     int                               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // dgmm_strided_batched
@@ -11721,13 +10011,8 @@ hipblasStatus_t hipblasSdgmmStridedBatched(hipblasHandle_t   handle,
                                            int               ldc,
                                            hipblasStride     stride_C,
                                            int               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDdgmmStridedBatched(hipblasHandle_t   handle,
@@ -11744,13 +10029,8 @@ hipblasStatus_t hipblasDdgmmStridedBatched(hipblasHandle_t   handle,
                                            int               ldc,
                                            hipblasStride     stride_C,
                                            int               batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       handle,
@@ -11767,13 +10047,8 @@ hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       handle,
                                            int                   ldc,
                                            hipblasStride         stride_C,
                                            int                   batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZdgmmStridedBatched(hipblasHandle_t             handle,
@@ -11790,13 +10065,8 @@ hipblasStatus_t hipblasZdgmmStridedBatched(hipblasHandle_t             handle,
                                            int                         ldc,
                                            hipblasStride               stride_C,
                                            int                         batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 #ifdef __HIP_PLATFORM_SOLVER__
@@ -11804,35 +10074,20 @@ catch(...)
 // getrf
 hipblasStatus_t hipblasSgetrf(
     hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgetrf(
     hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgetrf(
     hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
@@ -11841,13 +10096,8 @@ hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
                               const int             lda,
                               int*                  ipiv,
                               int*                  info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // getrf_batched
@@ -11929,13 +10179,8 @@ hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t     handle,
                                             const hipblasStride strideP,
                                             int*                info,
                                             const int           batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t     handle,
@@ -11947,13 +10192,8 @@ hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t     handle,
                                             const hipblasStride strideP,
                                             int*                info,
                                             const int           batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     handle,
@@ -11965,13 +10205,8 @@ hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     handle,
                                             const hipblasStride strideP,
                                             int*                info,
                                             const int           batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
@@ -11983,13 +10218,8 @@ hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
                                             const hipblasStride   strideP,
                                             int*                  info,
                                             const int             batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // getrs
@@ -12003,13 +10233,8 @@ hipblasStatus_t hipblasSgetrs(hipblasHandle_t          handle,
                               float*                   B,
                               const int                ldb,
                               int*                     info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgetrs(hipblasHandle_t          handle,
@@ -12022,13 +10247,8 @@ hipblasStatus_t hipblasDgetrs(hipblasHandle_t          handle,
                               double*                  B,
                               const int                ldb,
                               int*                     info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
@@ -12041,13 +10261,8 @@ hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
                               hipblasComplex*          B,
                               const int                ldb,
                               int*                     info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
@@ -12060,13 +10275,8 @@ hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
                               hipblasDoubleComplex*    B,
                               const int                ldb,
                               int*                     info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // getrs_batched
@@ -12205,13 +10415,8 @@ hipblasStatus_t hipblasSgetrsStridedBatched(hipblasHandle_t          handle,
                                             const hipblasStride      strideB,
                                             int*                     info,
                                             const int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgetrsStridedBatched(hipblasHandle_t          handle,
@@ -12228,13 +10433,8 @@ hipblasStatus_t hipblasDgetrsStridedBatched(hipblasHandle_t          handle,
                                             const hipblasStride      strideB,
                                             int*                     info,
                                             const int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t          handle,
@@ -12251,13 +10451,8 @@ hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t          handle,
                                             const hipblasStride      strideB,
                                             int*                     info,
                                             const int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
@@ -12274,13 +10469,8 @@ hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
                                             const hipblasStride      strideB,
                                             int*                     info,
                                             const int                batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // getri_batched
@@ -12382,13 +10572,8 @@ hipblasStatus_t hipblasSgeqrf(hipblasHandle_t handle,
                               const int       lda,
                               float*          ipiv,
                               int*            info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgeqrf(hipblasHandle_t handle,
@@ -12398,13 +10583,8 @@ hipblasStatus_t hipblasDgeqrf(hipblasHandle_t handle,
                               const int       lda,
                               double*         ipiv,
                               int*            info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
@@ -12414,13 +10594,8 @@ hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
                               const int       lda,
                               hipblasComplex* ipiv,
                               int*            info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
@@ -12430,13 +10605,8 @@ hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
                               const int             lda,
                               hipblasDoubleComplex* ipiv,
                               int*                  info)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // geqrf_batched
@@ -12529,13 +10699,8 @@ hipblasStatus_t hipblasSgeqrfStridedBatched(hipblasHandle_t     handle,
                                             const hipblasStride strideP,
                                             int*                info,
                                             const int           batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t     handle,
@@ -12548,13 +10713,8 @@ hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t     handle,
                                             const hipblasStride strideP,
                                             int*                info,
                                             const int           batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t     handle,
@@ -12567,13 +10727,8 @@ hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t     handle,
                                             const hipblasStride strideP,
                                             int*                info,
                                             const int           batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
@@ -12586,13 +10741,8 @@ hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
                                             const hipblasStride   strideP,
                                             int*                  info,
                                             const int             batch_count)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 #endif
@@ -13356,13 +11506,8 @@ hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
                               const void*        invA,
                               int                invA_size,
                               hipblasDatatype_t  compute_type)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
@@ -13381,13 +11526,8 @@ hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
                                      const void*        invA,
                                      int                invA_size,
                                      hipblasDatatype_t  compute_type)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
@@ -13409,13 +11549,8 @@ hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
                                             int                invA_size,
                                             hipblasStride      stride_invA,
                                             hipblasDatatype_t  compute_type)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // // syrk_ex
@@ -13531,13 +11666,8 @@ hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
                                      int               incy,
                                      int               batch_count,
                                      hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   handle,
@@ -13554,13 +11684,8 @@ hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   handle,
                                             hipblasStride     stridey,
                                             int               batch_count,
                                             hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // dot_ex
@@ -13636,13 +11761,8 @@ hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
                                     void*             result,
                                     hipblasDatatype_t resultType,
                                     hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
@@ -13657,13 +11777,8 @@ hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
                                      void*             result,
                                      hipblasDatatype_t resultType,
                                      hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   handle,
@@ -13680,13 +11795,8 @@ hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   handle,
                                            void*             result,
                                            hipblasDatatype_t resultType,
                                            hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   handle,
@@ -13703,13 +11813,8 @@ hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   handle,
                                             void*             result,
                                             hipblasDatatype_t resultType,
                                             hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // nrm2_ex
@@ -13746,13 +11851,8 @@ hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
                                      void*             result,
                                      hipblasDatatype_t resultType,
                                      hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   handle,
@@ -13765,13 +11865,8 @@ hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   handle,
                                             void*             result,
                                             hipblasDatatype_t resultType,
                                             hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // rot_ex
@@ -13820,13 +11915,8 @@ hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
                                     hipblasDatatype_t csType,
                                     int               batch_count,
                                     hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
@@ -13844,13 +11934,8 @@ hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
                                            hipblasDatatype_t csType,
                                            int               batch_count,
                                            hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 // scal_ex
@@ -13887,13 +11972,8 @@ hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
                                      int               incx,
                                      int               batch_count,
                                      hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
@@ -13906,13 +11986,8 @@ hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
                                             hipblasStride     stridex,
                                             int               batch_count,
                                             hipblasDatatype_t executionType)
-try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
 }
 
 #ifdef __cplusplus
