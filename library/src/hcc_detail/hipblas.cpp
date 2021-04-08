@@ -2,6 +2,7 @@
  * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 #include "hipblas.h"
+#include "exceptions.hpp"
 #include "limits.h"
 #include "rocblas.h"
 #ifdef __HIP_PLATFORM_SOLVER__
@@ -63,7 +64,7 @@ rocblas_operation_ hipOperationToHCCOperation(hipblasOperation_t op)
     case HIPBLAS_OP_C:
         return rocblas_operation_conjugate_transpose;
     }
-    throw "Non existent OP";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasOperation_t HCCOperationToHIPOperation(rocblas_operation_ op)
@@ -77,7 +78,7 @@ hipblasOperation_t HCCOperationToHIPOperation(rocblas_operation_ op)
     case rocblas_operation_conjugate_transpose:
         return HIPBLAS_OP_C;
     }
-    throw "Non existent OP";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_fill_ hipFillToHCCFill(hipblasFillMode_t fill)
@@ -91,7 +92,7 @@ rocblas_fill_ hipFillToHCCFill(hipblasFillMode_t fill)
     case HIPBLAS_FILL_MODE_FULL:
         return rocblas_fill_full;
     }
-    throw "Non existent FILL";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasFillMode_t HCCFillToHIPFill(rocblas_fill_ fill)
@@ -105,7 +106,7 @@ hipblasFillMode_t HCCFillToHIPFill(rocblas_fill_ fill)
     case rocblas_fill_full:
         return HIPBLAS_FILL_MODE_FULL;
     }
-    throw "Non existent FILL";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_diagonal_ hipDiagonalToHCCDiagonal(hipblasDiagType_t diagonal)
@@ -117,7 +118,7 @@ rocblas_diagonal_ hipDiagonalToHCCDiagonal(hipblasDiagType_t diagonal)
     case HIPBLAS_DIAG_UNIT:
         return rocblas_diagonal_unit;
     }
-    throw "Non existent DIAGONAL";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasDiagType_t HCCDiagonalToHIPDiagonal(rocblas_diagonal_ diagonal)
@@ -129,7 +130,7 @@ hipblasDiagType_t HCCDiagonalToHIPDiagonal(rocblas_diagonal_ diagonal)
     case rocblas_diagonal_unit:
         return HIPBLAS_DIAG_UNIT;
     }
-    throw "Non existent DIAGONAL";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_side_ hipSideToHCCSide(hipblasSideMode_t side)
@@ -143,7 +144,7 @@ rocblas_side_ hipSideToHCCSide(hipblasSideMode_t side)
     case HIPBLAS_SIDE_BOTH:
         return rocblas_side_both;
     }
-    throw "Non existent SIDE";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasSideMode_t HCCSideToHIPSide(rocblas_side_ side)
@@ -157,7 +158,7 @@ hipblasSideMode_t HCCSideToHIPSide(rocblas_side_ side)
     case rocblas_side_both:
         return HIPBLAS_SIDE_BOTH;
     }
-    throw "Non existent SIDE";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_pointer_mode HIPPointerModeToRocblasPointerMode(hipblasPointerMode_t mode)
@@ -170,7 +171,7 @@ rocblas_pointer_mode HIPPointerModeToRocblasPointerMode(hipblasPointerMode_t mod
     case HIPBLAS_POINTER_MODE_DEVICE:
         return rocblas_pointer_mode_device;
     }
-    throw "Non existent PointerMode";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasPointerMode_t RocblasPointerModeToHIPPointerMode(rocblas_pointer_mode mode)
@@ -183,7 +184,7 @@ hipblasPointerMode_t RocblasPointerModeToHIPPointerMode(rocblas_pointer_mode mod
     case rocblas_pointer_mode_device:
         return HIPBLAS_POINTER_MODE_DEVICE;
     }
-    throw "Non existent PointerMode";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
@@ -217,7 +218,7 @@ rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
     case HIPBLAS_C_64F:
         return rocblas_datatype_f64_c;
     }
-    throw "Non existent DataType";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
@@ -248,7 +249,7 @@ hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
     case rocblas_datatype_f64_c:
         return HIPBLAS_C_64F;
     }
-    throw "Non existent DataType";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_gemm_algo HIPGemmAlgoToRocblasGemmAlgo(hipblasGemmAlgo_t algo)
@@ -258,7 +259,7 @@ rocblas_gemm_algo HIPGemmAlgoToRocblasGemmAlgo(hipblasGemmAlgo_t algo)
     case HIPBLAS_GEMM_DEFAULT:
         return rocblas_gemm_algo_standard;
     }
-    throw "Non existent GemmAlgo";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasGemmAlgo_t RocblasGemmAlgoToHIPGemmAlgo(rocblas_gemm_algo algo)
@@ -268,7 +269,7 @@ hipblasGemmAlgo_t RocblasGemmAlgoToHIPGemmAlgo(rocblas_gemm_algo algo)
     case rocblas_gemm_algo_standard:
         return HIPBLAS_GEMM_DEFAULT;
     }
-    throw "Non existent GemmAlgo";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_atomics_mode HIPAtomicsModeToRocblasAtomicsMode(hipblasAtomicsMode_t mode)
@@ -280,7 +281,7 @@ rocblas_atomics_mode HIPAtomicsModeToRocblasAtomicsMode(hipblasAtomicsMode_t mod
     case HIPBLAS_ATOMICS_ALLOWED:
         return rocblas_atomics_allowed;
     }
-    throw "Non existent AtomicsMode";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasAtomicsMode_t RocblasAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode mode)
@@ -292,7 +293,7 @@ hipblasAtomicsMode_t RocblasAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode mod
     case rocblas_atomics_allowed:
         return HIPBLAS_ATOMICS_ALLOWED;
     }
-    throw "Non existent AtomicsMode";
+    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
@@ -2811,6 +2812,7 @@ hipblasStatus_t hipblasSgbmv(hipblasHandle_t    handle,
                              const float*       beta,
                              float*             y,
                              int                incy)
+try
 {
     return rocBLASStatusToHIPStatus(rocblas_sgbmv((rocblas_handle)handle,
                                                   hipOperationToHCCOperation(trans),
@@ -2827,6 +2829,10 @@ hipblasStatus_t hipblasSgbmv(hipblasHandle_t    handle,
                                                   y,
                                                   incy));
 }
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
 
 hipblasStatus_t hipblasDgbmv(hipblasHandle_t    handle,
                              hipblasOperation_t trans,
@@ -2842,6 +2848,7 @@ hipblasStatus_t hipblasDgbmv(hipblasHandle_t    handle,
                              const double*      beta,
                              double*            y,
                              int                incy)
+try
 {
     return rocBLASStatusToHIPStatus(rocblas_dgbmv((rocblas_handle)handle,
                                                   hipOperationToHCCOperation(trans),
@@ -2858,6 +2865,10 @@ hipblasStatus_t hipblasDgbmv(hipblasHandle_t    handle,
                                                   y,
                                                   incy));
 }
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
 
 hipblasStatus_t hipblasCgbmv(hipblasHandle_t       handle,
                              hipblasOperation_t    trans,
@@ -2873,6 +2884,7 @@ hipblasStatus_t hipblasCgbmv(hipblasHandle_t       handle,
                              const hipblasComplex* beta,
                              hipblasComplex*       y,
                              int                   incy)
+try
 {
     return rocBLASStatusToHIPStatus(rocblas_cgbmv((rocblas_handle)handle,
                                                   hipOperationToHCCOperation(trans),
@@ -2889,6 +2901,10 @@ hipblasStatus_t hipblasCgbmv(hipblasHandle_t       handle,
                                                   (rocblas_float_complex*)y,
                                                   incy));
 }
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
 
 hipblasStatus_t hipblasZgbmv(hipblasHandle_t             handle,
                              hipblasOperation_t          trans,
@@ -2904,6 +2920,7 @@ hipblasStatus_t hipblasZgbmv(hipblasHandle_t             handle,
                              const hipblasDoubleComplex* beta,
                              hipblasDoubleComplex*       y,
                              int                         incy)
+try
 {
     return rocBLASStatusToHIPStatus(rocblas_zgbmv((rocblas_handle)handle,
                                                   hipOperationToHCCOperation(trans),
@@ -2919,6 +2936,10 @@ hipblasStatus_t hipblasZgbmv(hipblasHandle_t             handle,
                                                   (rocblas_double_complex*)beta,
                                                   (rocblas_double_complex*)y,
                                                   incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 // gbmv_batched
