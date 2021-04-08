@@ -6,7 +6,7 @@
 
 // Convert the current C++ exception to hiblasStatus_t
 // This allows extern "C" functions to return this function in a catch(...) block
-// while converting all C++ exceptions to an equivalent rocblas_status here
+// while converting all C++ exceptions to an equivalent hipblasStatus_t here
 inline hipblasStatus_t exception_to_hipblas_status(std::exception_ptr e = std::current_exception())
 try
 {
