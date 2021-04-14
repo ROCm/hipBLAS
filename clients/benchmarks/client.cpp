@@ -163,6 +163,7 @@
 #include <algorithm>
 #undef I
 
+using namespace roc; // For emulated program_options
 using namespace std::literals; // For std::string literals of form "str"s
 
 typedef int hipblas_int;
