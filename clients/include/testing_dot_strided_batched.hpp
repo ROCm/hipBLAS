@@ -73,12 +73,28 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
     =================================================================== */
     // hipblasDot accept both dev/host pointer for the scalar
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(
-        handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, d_hipblas_result));
+    CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
+                                                     N,
+                                                     dx,
+                                                     incx,
+                                                     stridex,
+                                                     dy,
+                                                     incy,
+                                                     stridey,
+                                                     batch_count,
+                                                     d_hipblas_result));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(
-        handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, h_hipblas_result1));
+    CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
+                                                     N,
+                                                     dx,
+                                                     incx,
+                                                     stridex,
+                                                     dy,
+                                                     incy,
+                                                     stridey,
+                                                     batch_count,
+                                                     h_hipblas_result1));
 
     CHECK_HIP_ERROR(hipMemcpy(
         h_hipblas_result2, d_hipblas_result, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
@@ -125,8 +141,16 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(
-                handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, d_hipblas_result));
+            CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
+                                                             N,
+                                                             dx,
+                                                             incx,
+                                                             stridex,
+                                                             dy,
+                                                             incy,
+                                                             stridey,
+                                                             batch_count,
+                                                             d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
