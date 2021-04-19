@@ -12,3 +12,11 @@ hipblasStatus_t testing_bad_operation()
     return hipblasSgemv(
         handle, hipblasOperation_t(-1), 0, 0, nullptr, nullptr, 0, nullptr, 0, nullptr, nullptr, 0);
 }
+
+hipblasStatus_t testing_handle()
+{
+    // Test out hipblasCreate() and hipblasDestroy()
+    hipblasHandle_t handle;
+    CHECK_HIPBLAS_ERROR(hipblasCreate(&handle));
+    CHECK_HIPBLAS_ERROR(hipblasDestroy(handle));
+}
