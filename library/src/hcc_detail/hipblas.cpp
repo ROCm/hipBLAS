@@ -321,12 +321,17 @@ hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
 }
 
 hipblasStatus_t hipblasCreate(hipblasHandle_t* handle)
+try
 {
     if(!handle)
         return HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
 
     // Create the rocBLAS handle
     return rocBLASStatusToHIPStatus(rocblas_create_handle((rocblas_handle*)handle));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDestroy(hipblasHandle_t handle)
