@@ -19,4 +19,5 @@ hipblasStatus_t testing_handle()
     hipblasHandle_t handle;
     CHECK_HIPBLAS_ERROR(hipblasCreate(&handle));
     CHECK_HIPBLAS_ERROR(hipblasDestroy(handle));
+    return HIPBLAS_STATUS_SUCCESS;
 }
