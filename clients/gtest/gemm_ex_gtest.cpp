@@ -584,6 +584,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
 
+// TODO: Disabling some gemm int8 tests as not supported by rocBLAS for all architectures
 // INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
 //                          parameterized_gemm_ex,
 //                          Combine(ValuesIn(int8_matrix_size_range),
