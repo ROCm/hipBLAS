@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "testing_gemm_batched_ex.hpp"
@@ -584,14 +584,15 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
-                         parameterized_gemm_ex,
-                         Combine(ValuesIn(int8_matrix_size_range),
-                                 ValuesIn(alpha_beta_range_int8),
-                                 ValuesIn(transA_transB_range),
-                                 ValuesIn(precision_int8),
-                                 ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran)));
+// TODO: Disabling some gemm int8 tests as not supported by rocBLAS for all architectures
+// INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
+//                          parameterized_gemm_ex,
+//                          Combine(ValuesIn(int8_matrix_size_range),
+//                                  ValuesIn(alpha_beta_range_int8),
+//                                  ValuesIn(transA_transB_range),
+//                                  ValuesIn(precision_int8),
+//                                  ValuesIn(batch_count_range_small),
+//                                  ValuesIn(is_fortran)));
 
 //----medium
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,
@@ -685,11 +686,11 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
-                         parameterized_gemm_batched_ex,
-                         Combine(ValuesIn(int8_matrix_size_range),
-                                 ValuesIn(alpha_beta_range_int8),
-                                 ValuesIn(transA_transB_range),
-                                 ValuesIn(precision_int8),
-                                 ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+// INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
+//                          parameterized_gemm_batched_ex,
+//                          Combine(ValuesIn(int8_matrix_size_range),
+//                                  ValuesIn(alpha_beta_range_int8),
+//                                  ValuesIn(transA_transB_range),
+//                                  ValuesIn(precision_int8),
+//                                  ValuesIn(batch_count_range),
+//                                  ValuesIn(is_fortran)));
