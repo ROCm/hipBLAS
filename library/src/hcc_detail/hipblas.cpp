@@ -309,15 +309,16 @@ hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
     case rocblas_status_not_implemented:
         return HIPBLAS_STATUS_NOT_SUPPORTED;
     case rocblas_status_invalid_pointer:
-        return HIPBLAS_STATUS_INVALID_VALUE;
     case rocblas_status_invalid_size:
+    case rocblas_status_invalid_value:
         return HIPBLAS_STATUS_INVALID_VALUE;
     case rocblas_status_memory_error:
         return HIPBLAS_STATUS_ALLOC_FAILED;
     case rocblas_status_internal_error:
         return HIPBLAS_STATUS_INTERNAL_ERROR;
+    default:
+        return HIPBLAS_STATUS_UNKNOWN;
     }
-    throw "Unimplemented status";
 }
 
 hipblasStatus_t hipblasCreate(hipblasHandle_t* handle)
