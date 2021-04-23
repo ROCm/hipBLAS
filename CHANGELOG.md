@@ -4,6 +4,9 @@
 ### Added
 - Added hipblasStatusToString
 
+### Fixed
+- Added catch() blocks around API calls to prevent the leak of C++ exceptions
+
 ## [hipBLAS 0.44.0 for ROCm 4.2.0]
 ### Added
 - Made necessary changes to work with rocBLAS' gemm_ex changes. When using rocBLAS backend, hipBLAS will query the preferable
