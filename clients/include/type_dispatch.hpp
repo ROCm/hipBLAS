@@ -131,6 +131,41 @@ auto hipblas_blas1_ex_dispatch(const Arguments& arg)
     return TEST<void>{}(arg);
 }
 
+// rot
+// giving rot it's own dispatch function so the code is easier to follow
+template <template <typename...> class TEST>
+auto hipblas_rot_dispatch(const Arguments& arg)
+{
+    const auto Ta = arg.a_type, Tb = arg.b_type, Tc = arg.c_type;
+    if(Ta == Tb && Tb == Tc)
+    {
+        // srot, drot
+        return hipblas_simple_dispatch<TEST>(arg);
+    }
+    else if(Ta == HIPBLAS_C_32F && Tb == HIPBLAS_R_32F && Tc == Tb)
+    {
+        // csrot
+        return TEST<hipblasComplex, float, float>{}(arg);
+    }
+    else if(Ta == HIPBLAS_C_64F && Tb == HIPBLAS_R_64F && Tc == Tb)
+    {
+        // zdrot
+        return TEST<hipblasDoubleComplex, double, double>{}(arg);
+    }
+    else if(Ta == HIPBLAS_C_32F && Tb == HIPBLAS_R_32F && Tc == Ta)
+    {
+        // crot
+        return TEST<hipblasComplex, float, hipblasComplex>{}(arg);
+    }
+    else if(Ta == HIPBLAS_C_64F && Tb == HIPBLAS_R_64F && Tc == Ta)
+    {
+        // zrot
+        return TEST<hipblasDoubleComplex, double, hipblasDoubleComplex>{}(arg);
+    }
+
+    return TEST<void>{}(arg);
+}
+
 // gemm functions
 template <template <typename...> class TEST>
 auto hipblas_gemm_dispatch(const Arguments& arg)

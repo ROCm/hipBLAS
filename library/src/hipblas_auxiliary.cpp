@@ -21,6 +21,7 @@ extern "C" const char* hipblasStatusToString(hipblasStatus_t status)
         CASE(HIPBLAS_STATUS_NOT_SUPPORTED);
         CASE(HIPBLAS_STATUS_ARCH_MISMATCH);
         CASE(HIPBLAS_STATUS_HANDLE_IS_NULLPTR);
+        CASE(HIPBLAS_STATUS_INVALID_ENUM);
     }
 #undef CASE
     // We don't use default: so that the compiler warns us if any valid enums are missing
