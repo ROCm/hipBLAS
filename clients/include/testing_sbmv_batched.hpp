@@ -138,16 +138,16 @@ hipblasStatus_t testing_sbmv_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, Y_size, batch_count, incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, Y_size, batch_count, incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, M, batch_count, incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, M, batch_count, incy, hy_cpu, hy_device);
         }
 
         if(argus.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, Y_size, incy, hy_cpu, hy_host, batch_count);
+                = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', 1, Y_size, incy, hy_cpu, hy_device, batch_count);
+                = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_device, batch_count);
         }
     }
 

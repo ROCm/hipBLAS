@@ -26,8 +26,6 @@ hipblasStatus_t testing_spmv_batched(const Arguments& argus)
     int incy = argus.incy;
 
     int A_size = M * (M + 1) / 2;
-    int X_size = M * incx;
-    int Y_size = M * incy;
 
     int batch_count = argus.batch_count;
 
@@ -137,9 +135,9 @@ hipblasStatus_t testing_spmv_batched(const Arguments& argus)
         if(argus.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, Y_size, incy, hy_cpu, hy_host, batch_count);
+                = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', 1, Y_size, incy, hy_cpu, hy_device, batch_count);
+                = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_device, batch_count);
         }
     }
 
