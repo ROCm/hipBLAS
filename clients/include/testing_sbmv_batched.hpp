@@ -28,8 +28,6 @@ hipblasStatus_t testing_sbmv_batched(const Arguments& argus)
     int incy = argus.incy;
 
     int A_size = lda * M;
-    int X_size = M * incx;
-    int Y_size = M * incy;
 
     int batch_count = argus.batch_count;
 

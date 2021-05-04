@@ -64,7 +64,7 @@ hipblasStatus_t testing_spmv(const Arguments& argus)
     hipblas_init<T>(hy, 1, M, incy);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
-    hy_cpu = hx;
+    hy_cpu = hy;
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
