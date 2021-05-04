@@ -79,6 +79,7 @@ hipblasStatus_t testing_spr2(const Arguments& argus)
     CHECK_HIPBLAS_ERROR(hipblasSpr2Fn(handle, uplo, N, &h_alpha, dx, incx, dy, incy, dA));
 
     CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
     CHECK_HIPBLAS_ERROR(hipblasSpr2Fn(handle, uplo, N, d_alpha, dx, incx, dy, incy, dA));
