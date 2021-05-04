@@ -200,6 +200,20 @@ constexpr double spmv_gbyte_count(int n)
     return (sizeof(T) * (tri_count(n) + n)) / 1e9;
 }
 
+/* \brief byte c ounts of SPR */
+template <typename T>
+constexpr double spr_gbyte_count(int n)
+{
+    return (sizeof(T) * (2.0 * n * (n + 1)) / 2) / 1e9;
+}
+
+/* \brief byte c ounts of SPR2 */
+template <typename T>
+constexpr double spr2_gbyte_count(int n)
+{
+    return (sizeof(T) * (5.0 * n * (n + 1)) / 2) / 1e9;
+}
+
 /* \brief byte counts of SBMV */
 template <typename T>
 constexpr double sbmv_gbyte_count(int n, int k)
@@ -220,6 +234,13 @@ template <typename T>
 constexpr double her2_gbyte_count(int n)
 {
     return (sizeof(T) * (tri_count(n) + 2 * n)) / 1e9;
+}
+
+/* \brief byte  counts of SYR */
+template <typename T>
+constexpr double syr_gbyte_count(int n)
+{
+    return (sizeof(T) * (tri_count(n) * 2)) / 1e9;
 }
 
 /* \brief byte  counts of SYR2 */

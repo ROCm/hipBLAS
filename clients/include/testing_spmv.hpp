@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -33,29 +33,29 @@ hipblasStatus_t testing_spmv(const Arguments& argus)
     // memory
     if(M < 0 || incx == 0 || incy == 0)
     {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    T alpha = argus.get_alpha<T>();
-    T beta  = argus.get_beta<T>();
+    T h_alpha = argus.get_alpha<T>();
+    T h_beta  = argus.get_beta<T>();
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
     host_vector<T> hx(M * incx);
     host_vector<T> hy(M * incy);
-    host_vector<T> hres(M * incx);
+    host_vector<T> hy_cpu(M * incy);
+    host_vector<T> hy_host(M * incy);
+    host_vector<T> hy_device(M * incy);
 
     device_vector<T> dA(A_size);
     device_vector<T> dx(M * incx);
     device_vector<T> dy(M * incy);
+    device_vector<T> d_alpha(1);
+    device_vector<T> d_beta(1);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops, hipblasBandwidth;
-    double rocblas_error;
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -64,46 +64,77 @@ hipblasStatus_t testing_spmv(const Arguments& argus)
     hipblas_init<T>(hy, 1, M, incy);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
-    hres = hx;
+    hy_cpu = hx;
 
     // copy data from CPU to device
-    hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice);
-    hipMemcpy(dx, hx.data(), sizeof(T) * M * incx, hipMemcpyHostToDevice);
-    hipMemcpy(dy, hy.data(), sizeof(T) * M * incy, hipMemcpyHostToDevice);
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * M * incx, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * M * incy, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
-    for(int iter = 0; iter < 1; iter++)
-    {
-        status = hipblasSpmvFn(handle, uplo, M, &alpha, dA, dx, incx, &beta, dy, incy);
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+    CHECK_HIPBLAS_ERROR(hipblasSpmvFn(handle, uplo, M, &h_alpha, dA, dx, incx, &h_beta, dy, incy));
 
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
-    }
+    CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * M * incy, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * M * incy, hipMemcpyHostToDevice));
 
-    // copy output from device to CPU
-    hipMemcpy(hres.data(), dy, sizeof(T) * M * incy, hipMemcpyDeviceToHost);
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+    CHECK_HIPBLAS_ERROR(hipblasSpmvFn(handle, uplo, M, d_alpha, dA, dx, incx, d_beta, dy, incy));
 
-    if(argus.unit_check)
+    CHECK_HIP_ERROR(hipMemcpy(hy_device.data(), dy, sizeof(T) * M * incy, hipMemcpyDeviceToHost));
+
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU BLAS
         =================================================================== */
 
-        cblas_spmv<T>(uplo, M, alpha, hA.data(), hx.data(), incx, beta, hy.data(), incy);
+        cblas_spmv<T>(uplo, M, h_alpha, hA.data(), hx.data(), incx, h_beta, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, M, incx, hy, hres);
+            unit_check_general<T>(1, M, incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, M, incy, hy_cpu, hy_device);
+        }
+        if(argus.norm_check)
+        {
+            hipblas_error_host   = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_host);
+            hipblas_error_device = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_device);
         }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * M * incy, hipMemcpyHostToDevice));
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(
+                hipblasSpmvFn(handle, uplo, M, d_alpha, dA, dx, incx, d_beta, dy, incy));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_M, e_alpha, e_incx, e_beta, e_incy>{}.log_args<T>(std::cout,
+                                                                          argus,
+                                                                          gpu_time_used,
+                                                                          spmv_gflop_count<T>(M),
+                                                                          spmv_gbyte_count<T>(M),
+                                                                          hipblas_error_host,
+                                                                          hipblas_error_device);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }
