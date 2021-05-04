@@ -102,9 +102,9 @@ hipblasStatus_t testing_spr2(const Arguments& argus)
         if(argus.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', A_size, 1, 1, hA_cpu.data(), hA_host.data());
+                = norm_check_general<T>('F', 1, A_size, 1, hA_cpu.data(), hA_host.data());
             hipblas_error_device
-                = norm_check_general<T>('F', A_size, 1, 1, hA_cpu.data(), hA_device.data());
+                = norm_check_general<T>('F', 1, A_size, 1, hA_cpu.data(), hA_device.data());
         }
     }
 

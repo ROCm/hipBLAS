@@ -126,9 +126,9 @@ hipblasStatus_t testing_spr2_batched(const Arguments& argus)
         if(argus.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', A_size, 1, 1, hA_cpu, hA_host, batch_count);
+                = norm_check_general<T>('F', 1, A_size, 1, hA_cpu, hA_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', A_size, 1, 1, hA_cpu, hA_device, batch_count);
+                = norm_check_general<T>('F', 1, A_size, 1, hA_cpu, hA_device, batch_count);
         }
     }
 
