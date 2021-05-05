@@ -27,9 +27,8 @@ hipblasStatus_t testing_syr_batched(const Arguments& argus)
     hipblasFillMode_t uplo        = char2hipblas_fill(char_uplo);
     int               batch_count = argus.batch_count;
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int A_size   = lda * N;
-    int x_size   = abs_incx * N;
+    int    abs_incx = incx < 0 ? -incx : incx;
+    size_t A_size   = lda * N;
 
     T h_alpha = argus.get_alpha<T>();
 

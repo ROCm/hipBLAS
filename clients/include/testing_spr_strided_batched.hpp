@@ -33,8 +33,8 @@ hipblasStatus_t testing_spr_strided_batched(const Arguments& argus)
 
     hipblasStride strideA = A_dim * stride_scale;
     hipblasStride stridex = abs_incx * N * stride_scale;
-    int           A_size  = strideA * batch_count;
-    int           x_size  = stridex * batch_count;
+    size_t        A_size  = strideA * batch_count;
+    size_t        x_size  = stridex * batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

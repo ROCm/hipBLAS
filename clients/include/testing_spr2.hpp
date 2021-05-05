@@ -26,11 +26,11 @@ hipblasStatus_t testing_spr2(const Arguments& argus)
     char              char_uplo = argus.uplo_option;
     hipblasFillMode_t uplo      = char2hipblas_fill(char_uplo);
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int abs_incy = incy < 0 ? -incy : incy;
-    int A_size   = N * (N + 1) / 2;
-    int x_size   = abs_incx * N;
-    int y_size   = abs_incy * N;
+    int    abs_incx = incx < 0 ? -incx : incx;
+    int    abs_incy = incy < 0 ? -incy : incy;
+    size_t A_size   = N * (N + 1) / 2;
+    size_t x_size   = abs_incx * N;
+    size_t y_size   = abs_incy * N;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

@@ -36,9 +36,9 @@ hipblasStatus_t testing_syr2_strided_batched(const Arguments& argus)
     hipblasStride strideA = lda * N * stride_scale;
     hipblasStride stridex = abs_incx * N * stride_scale;
     hipblasStride stridey = abs_incy * N * stride_scale;
-    int           A_size  = strideA * batch_count;
-    int           x_size  = stridex * batch_count;
-    int           y_size  = stridey * batch_count;
+    size_t        A_size  = strideA * batch_count;
+    size_t        x_size  = stridex * batch_count;
+    size_t        y_size  = stridey * batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

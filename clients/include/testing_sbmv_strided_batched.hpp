@@ -33,9 +33,9 @@ hipblasStatus_t testing_sbmv_strided_batched(const Arguments& argus)
     hipblasStride stride_x = M * incx * stride_scale;
     hipblasStride stride_y = M * incy * stride_scale;
 
-    int A_size = stride_A * batch_count;
-    int X_size = stride_x * batch_count;
-    int Y_size = stride_y * batch_count;
+    size_t A_size = stride_A * batch_count;
+    size_t X_size = stride_x * batch_count;
+    size_t Y_size = stride_y * batch_count;
 
     hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
 

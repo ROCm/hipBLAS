@@ -204,14 +204,16 @@ constexpr double spmv_gbyte_count(int n)
 template <typename T>
 constexpr double spr_gbyte_count(int n)
 {
-    return (sizeof(T) * (2.0 * n * (n + 1)) / 2) / 1e9;
+    // read and write of A + read of x
+    return (sizeof(T) * (tri_count(n) * 2 + n)) / 1e9;
 }
 
-/* \brief byte c ounts of SPR2 */
+/* \brief byte counts of SPR2 */
 template <typename T>
 constexpr double spr2_gbyte_count(int n)
 {
-    return (sizeof(T) * (5.0 * n * (n + 1)) / 2) / 1e9;
+    // read and write of A + read of x and y
+    return (sizeof(T) * (tri_count(n) * 2 + n * 2)) / 1e9;
 }
 
 /* \brief byte counts of SBMV */
@@ -236,18 +238,20 @@ constexpr double her2_gbyte_count(int n)
     return (sizeof(T) * (tri_count(n) + 2 * n)) / 1e9;
 }
 
-/* \brief byte  counts of SYR */
+/* \brief byte counts of SYR */
 template <typename T>
 constexpr double syr_gbyte_count(int n)
 {
-    return (sizeof(T) * (tri_count(n) * 2)) / 1e9;
+    // read and write of A + read of x
+    return (sizeof(T) * (tri_count(n) * 2 + n)) / 1e9;
 }
 
 /* \brief byte  counts of SYR2 */
 template <typename T>
 constexpr double syr2_gbyte_count(int n)
 {
-    return (sizeof(T) * (tri_count(n) + 2 * n)) / 1e9;
+    // read and write of A + read of x and y
+    return (sizeof(T) * (tri_count(n) * 2 + n * 2)) / 1e9;
 }
 
 /* \brief byte coutns of TBSV */

@@ -26,7 +26,7 @@ hipblasStatus_t testing_sbmv(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    int A_size = lda * M;
+    size_t A_size = lda * M;
 
     hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
 

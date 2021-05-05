@@ -28,11 +28,9 @@ hipblasStatus_t testing_spr2_batched(const Arguments& argus)
     hipblasFillMode_t uplo        = char2hipblas_fill(char_uplo);
     int               batch_count = argus.batch_count;
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int abs_incy = incy < 0 ? -incy : incy;
-    int A_size   = N * (N + 1) / 2;
-    int x_size   = abs_incx * N;
-    int y_size   = abs_incy * N;
+    int    abs_incx = incx < 0 ? -incx : incx;
+    int    abs_incy = incy < 0 ? -incy : incy;
+    size_t A_size   = N * (N + 1) / 2;
 
     T h_alpha = argus.get_alpha<T>();
 

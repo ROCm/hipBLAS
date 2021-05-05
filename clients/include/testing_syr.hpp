@@ -26,9 +26,9 @@ hipblasStatus_t testing_syr(const Arguments& argus)
     char              char_uplo = argus.uplo_option;
     hipblasFillMode_t uplo      = char2hipblas_fill(char_uplo);
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int A_size   = lda * N;
-    int x_size   = abs_incx * N;
+    int    abs_incx = incx < 0 ? -incx : incx;
+    size_t A_size   = lda * N;
+    size_t x_size   = abs_incx * N;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

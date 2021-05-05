@@ -24,7 +24,7 @@ hipblasStatus_t testing_spmv(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    int A_size = M * (M + 1) / 2;
+    size_t A_size = M * (M + 1) / 2;
 
     hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo_option);
     hipblasStatus_t   status = HIPBLAS_STATUS_SUCCESS;
