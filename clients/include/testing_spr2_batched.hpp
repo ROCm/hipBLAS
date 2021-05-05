@@ -30,7 +30,7 @@ hipblasStatus_t testing_spr2_batched(const Arguments& argus)
 
     int    abs_incx = incx < 0 ? -incx : incx;
     int    abs_incy = incy < 0 ? -incy : incy;
-    size_t A_size   = N * (N + 1) / 2;
+    size_t A_size   = size_t(N) * (N + 1) / 2;
 
     T h_alpha = argus.get_alpha<T>();
 

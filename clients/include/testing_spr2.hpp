@@ -28,9 +28,9 @@ hipblasStatus_t testing_spr2(const Arguments& argus)
 
     int    abs_incx = incx < 0 ? -incx : incx;
     int    abs_incy = incy < 0 ? -incy : incy;
-    size_t A_size   = N * (N + 1) / 2;
-    size_t x_size   = abs_incx * N;
-    size_t y_size   = abs_incy * N;
+    size_t A_size   = size_t(N) * (N + 1) / 2;
+    size_t x_size   = abs_incx * size_t(N);
+    size_t y_size   = abs_incy * size_t(N);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

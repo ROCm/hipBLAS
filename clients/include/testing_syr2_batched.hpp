@@ -31,7 +31,7 @@ hipblasStatus_t testing_syr2_batched(const Arguments& argus)
 
     int    abs_incx = incx < 0 ? -incx : incx;
     int    abs_incy = incy < 0 ? -incy : incy;
-    size_t A_size   = lda * N;
+    size_t A_size   = size_t(lda) * N;
 
     T h_alpha = argus.get_alpha<T>();
 

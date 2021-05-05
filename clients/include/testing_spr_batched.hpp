@@ -27,7 +27,7 @@ hipblasStatus_t testing_spr_batched(const Arguments& argus)
     int               batch_count = argus.batch_count;
 
     int    abs_incx = incx < 0 ? -incx : incx;
-    size_t A_size   = N * (N + 1) / 2;
+    size_t A_size   = size_t(N) * (N + 1) / 2;
 
     T h_alpha = argus.get_alpha<T>();
 

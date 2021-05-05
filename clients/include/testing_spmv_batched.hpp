@@ -25,7 +25,7 @@ hipblasStatus_t testing_spmv_batched(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    size_t A_size = M * (M + 1) / 2;
+    size_t A_size = size_t(M) * (M + 1) / 2;
 
     int batch_count = argus.batch_count;
 
