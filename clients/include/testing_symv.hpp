@@ -79,6 +79,7 @@ hipblasStatus_t testing_symv(const Arguments& argus)
         hipblasSymvFn(handle, uplo, M, &h_alpha, dA, lda, dx, incx, &h_beta, dy, incy));
 
     CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * M * incy, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * M * incy, hipMemcpyDeviceToHost));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
     CHECK_HIPBLAS_ERROR(

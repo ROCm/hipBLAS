@@ -98,6 +98,7 @@ hipblasStatus_t testing_symv_strided_batched(const Arguments& argus)
                                                     batch_count));
 
     CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyDeviceToHost));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
     CHECK_HIPBLAS_ERROR(hipblasSymvStridedBatchedFn(handle,

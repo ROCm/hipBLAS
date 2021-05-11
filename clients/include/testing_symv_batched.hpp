@@ -98,7 +98,8 @@ hipblasStatus_t testing_symv_batched(const Arguments& argus)
                                              batch_count));
 
     // copy output from device to CPU
-    CHECK_HIP_ERROR(hy_host.transfer_from(dx));
+    CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
     CHECK_HIPBLAS_ERROR(hipblasSymvBatchedFn(handle,
