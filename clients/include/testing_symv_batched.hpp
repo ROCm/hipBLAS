@@ -79,6 +79,8 @@ hipblasStatus_t testing_symv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
     /* =====================================================================
            HIPBLAS
@@ -115,7 +117,7 @@ hipblasStatus_t testing_symv_batched(const Arguments& argus)
                                              incy,
                                              batch_count));
 
-    CHECK_HIP_ERROR(hy_device.transfer_from(dx));
+    CHECK_HIP_ERROR(hy_device.transfer_from(dy));
 
     if(argus.unit_check || argus.norm_check)
     {

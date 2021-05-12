@@ -91,7 +91,7 @@ hipblasStatus_t testing_tbmv_strided_batched(const Arguments& argus)
                           K,
                           hA.data() + b * stride_A,
                           lda,
-                          hx.data() + b * stride_x,
+                          hx_cpu.data() + b * stride_x,
                           incx);
         }
 

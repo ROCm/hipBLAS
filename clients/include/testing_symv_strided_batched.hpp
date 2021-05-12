@@ -76,6 +76,8 @@ hipblasStatus_t testing_symv_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
     /* =====================================================================
            HIPBLAS
@@ -205,6 +207,5 @@ hipblasStatus_t testing_symv_strided_batched(const Arguments& argus)
                          hipblas_error_device);
     }
 
-    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
