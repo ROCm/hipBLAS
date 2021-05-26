@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -24,19 +24,17 @@ hipblasStatus_t testing_trmv(const Arguments& argus)
     int lda  = argus.lda;
     int incx = argus.incx;
 
-    int A_size = lda * M;
+    size_t A_size = size_t(lda) * M;
 
     hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
-    hipblasStatus_t    status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(M < 0 || lda < M || incx == 0)
     {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -47,12 +45,8 @@ hipblasStatus_t testing_trmv(const Arguments& argus)
     device_vector<T> dA(A_size);
     device_vector<T> dx(M * incx);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops, hipblasBandwidth;
-    double rocblas_error;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error;
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -63,28 +57,18 @@ hipblasStatus_t testing_trmv(const Arguments& argus)
     hres = hx;
 
     // copy data from CPU to device
-    hipMemcpy(dA, hA.data(), sizeof(T) * lda * M, hipMemcpyHostToDevice);
-    hipMemcpy(dx, hx.data(), sizeof(T) * M * incx, hipMemcpyHostToDevice);
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * lda * M, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * M * incx, hipMemcpyHostToDevice));
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
-    for(int iter = 0; iter < 1; iter++)
-    {
-
-        status = hipblasTrmvFn(handle, uplo, transA, diag, M, dA, lda, dx, incx);
-
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
-    }
+    CHECK_HIPBLAS_ERROR(hipblasTrmvFn(handle, uplo, transA, diag, M, dA, lda, dx, incx));
 
     // copy output from device to CPU
-    hipMemcpy(hres.data(), dx, sizeof(T) * M * incx, hipMemcpyDeviceToHost);
+    CHECK_HIP_ERROR(hipMemcpy(hres.data(), dx, sizeof(T) * M * incx, hipMemcpyDeviceToHost));
 
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU BLAS
@@ -98,8 +82,35 @@ hipblasStatus_t testing_trmv(const Arguments& argus)
         {
             unit_check_general<T>(1, M, incx, hx, hres);
         }
+        if(argus.norm_check)
+        {
+            hipblas_error = norm_check_general<T>('F', 1, M, incx, hx.data(), hres.data());
+        }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasTrmvFn(handle, uplo, transA, diag, M, dA, lda, dx, incx));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_uplo_option, e_transA_option, e_diag_option, e_M, e_lda, e_incx>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         trmv_gflop_count<T>(M),
+                         trmv_gbyte_count<T>(M),
+                         hipblas_error);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }

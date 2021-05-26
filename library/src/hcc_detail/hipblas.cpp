@@ -309,24 +309,30 @@ hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
     case rocblas_status_not_implemented:
         return HIPBLAS_STATUS_NOT_SUPPORTED;
     case rocblas_status_invalid_pointer:
-        return HIPBLAS_STATUS_INVALID_VALUE;
     case rocblas_status_invalid_size:
+    case rocblas_status_invalid_value:
         return HIPBLAS_STATUS_INVALID_VALUE;
     case rocblas_status_memory_error:
         return HIPBLAS_STATUS_ALLOC_FAILED;
     case rocblas_status_internal_error:
         return HIPBLAS_STATUS_INTERNAL_ERROR;
+    default:
+        return HIPBLAS_STATUS_UNKNOWN;
     }
-    throw "Unimplemented status";
 }
 
 hipblasStatus_t hipblasCreate(hipblasHandle_t* handle)
+try
 {
     if(!handle)
         return HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
 
     // Create the rocBLAS handle
     return rocBLASStatusToHIPStatus(rocblas_create_handle((rocblas_handle*)handle));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasDestroy(hipblasHandle_t handle)
@@ -15107,50 +15113,6 @@ rocblas_status rocsolver_zgeqrf_ptr_batched(rocblas_handle                handle
                                             const rocblas_int             lda,
                                             rocblas_double_complex* const ipiv[],
                                             const rocblas_int             batch_count);
-
-rocblas_status rocsolver_sgetri_outofplace_batched(rocblas_handle       handle,
-                                                   const rocblas_int    n,
-                                                   float* const         A[],
-                                                   const rocblas_int    lda,
-                                                   rocblas_int*         ipiv,
-                                                   const rocblas_stride strideP,
-                                                   float* const         C[],
-                                                   const rocblas_int    ldc,
-                                                   rocblas_int*         info,
-                                                   const rocblas_int    batch_count);
-
-rocblas_status rocsolver_dgetri_outofplace_batched(rocblas_handle       handle,
-                                                   const rocblas_int    n,
-                                                   double* const        A[],
-                                                   const rocblas_int    lda,
-                                                   rocblas_int*         ipiv,
-                                                   const rocblas_stride strideP,
-                                                   double* const        C[],
-                                                   const rocblas_int    ldc,
-                                                   rocblas_int*         info,
-                                                   const rocblas_int    batch_count);
-
-rocblas_status rocsolver_cgetri_outofplace_batched(rocblas_handle               handle,
-                                                   const rocblas_int            n,
-                                                   rocblas_float_complex* const A[],
-                                                   const rocblas_int            lda,
-                                                   rocblas_int*                 ipiv,
-                                                   const rocblas_stride         strideP,
-                                                   rocblas_float_complex* const C[],
-                                                   const rocblas_int            ldc,
-                                                   rocblas_int*                 info,
-                                                   const rocblas_int            batch_count);
-
-rocblas_status rocsolver_zgetri_outofplace_batched(rocblas_handle                handle,
-                                                   const rocblas_int             n,
-                                                   rocblas_double_complex* const A[],
-                                                   const rocblas_int             lda,
-                                                   rocblas_int*                  ipiv,
-                                                   const rocblas_stride          strideP,
-                                                   rocblas_double_complex* const C[],
-                                                   const rocblas_int             ldc,
-                                                   rocblas_int*                  info,
-                                                   const rocblas_int             batch_count);
 
 #ifdef __cplusplus
 }

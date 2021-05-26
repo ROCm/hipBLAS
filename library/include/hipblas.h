@@ -214,6 +214,7 @@ typedef enum
     HIPBLAS_STATUS_ARCH_MISMATCH     = 8,
     HIPBLAS_STATUS_HANDLE_IS_NULLPTR = 9, // hipBLAS handle is null pointer
     HIPBLAS_STATUS_INVALID_ENUM      = 10, // unsupported enum value was passed to function
+    HIPBLAS_STATUS_UNKNOWN           = 11, // back-end returned an unsupported status code
 } hipblasStatus_t;
 
 // set the values of enum constants to be the same as those used in cblas

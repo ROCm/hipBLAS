@@ -29,12 +29,10 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
     hipblasOperation_t transA      = char2hipblas_operation(char_transA);
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int size_A   = N * N;
-    int size_AP  = N * (N + 1) / 2;
-    int size_x   = abs_incx * N;
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    int    abs_incx = incx < 0 ? -incx : incx;
+    size_t size_A   = size_t(N) * N;
+    size_t size_AP  = size_t(N) * (N + 1) / 2;
+    size_t size_x   = abs_incx * size_t(N);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -56,12 +54,8 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     device_vector<T> dAP(size_AP);
     device_vector<T> dx_or_b(size_x);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblas_error;
-    double hipblasGflops, cblas_gflops, hipblasBandwidth;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error;
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -127,29 +121,20 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     regular_to_packed(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, (T*)hAP, N);
 
     // copy data from CPU to device
-    hipMemcpy(dAP, hAP.data(), sizeof(T) * size_AP, hipMemcpyHostToDevice);
-    hipMemcpy(dx_or_b, hx_or_b_1.data(), sizeof(T) * size_x, hipMemcpyHostToDevice);
+    CHECK_HIP_ERROR(hipMemcpy(dAP, hAP.data(), sizeof(T) * size_AP, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(
+        hipMemcpy(dx_or_b, hx_or_b_1.data(), sizeof(T) * size_x, hipMemcpyHostToDevice));
 
     /* =====================================================================
            HIPBLAS
     =================================================================== */
     if(argus.unit_check || argus.norm_check)
     {
-        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
-        status = hipblasTpsvFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasTpsvFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx));
 
         // copy output from device to CPU
-        hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost);
+        CHECK_HIP_ERROR(
+            hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost));
 
         // Calculating error
         hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
@@ -164,31 +149,16 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     if(argus.timing)
     {
         hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
-        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
         {
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status = hipblasTpsvFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status;
-            }
+            CHECK_HIPBLAS_ERROR(hipblasTpsvFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
@@ -201,6 +171,5 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
             hipblas_error);
     }
 
-    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
