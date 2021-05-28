@@ -25,4 +25,9 @@ namespace
         EXPECT_EQ(testing_bad_operation(), HIPBLAS_STATUS_INVALID_ENUM);
     }
 
+    TEST(hipblas_auxiliary, createHandle)
+    {
+        EXPECT_EQ(testing_handle(), HIPBLAS_STATUS_SUCCESS);
+    }
+
 } // namespace

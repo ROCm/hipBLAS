@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "hipblas.h"
@@ -42,6 +42,10 @@
             fprintf(stderr, "HIPBLAS_STATUS_INTERNAL_ERROR");   \
         if(error == HIPBLAS_STATUS_NOT_SUPPORTED)               \
             fprintf(stderr, "HIPBLAS_STATUS_NOT_SUPPORTED");    \
+        if(error == HIPBLAS_STATUS_INVALID_ENUM)                \
+            fprintf(stderr, "HIPBLAS_STATUS_INVALID_ENUM");     \
+        if(error == HIPBLAS_STATUS_UNKNOWN)                     \
+            fprintf(stderr, "HIPBLAS_STATUS_UNKNOWN");          \
         fprintf(stderr, "\n");                                  \
         exit(EXIT_FAILURE);                                     \
     }
