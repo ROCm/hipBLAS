@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2020 Advanced Micro Devices, Inc.
+# Copyright 2016-2021 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # The ROCm platform requires Ubuntu 16.04 or Fedora 24, which has cmake 3.5
@@ -49,7 +49,7 @@ include( ROCMInstallTargets )
 include( ROCMPackageConfigHelpers )
 include( ROCMInstallSymlinks )
 
-set ( VERSION_STRING "0.46.0" )
+set ( VERSION_STRING "0.47.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 if( NOT DEFINED $ENV{HIP_PATH})
@@ -92,9 +92,6 @@ endif( )
 if( USE_CUDA )
     list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
 endif( )
-
-# CMake list of machine targets
-set( AMDGPU_TARGETS gfx803;gfx900;gfx906;gfx908 CACHE STRING "List of specific machine types for library to target" )
 
 add_subdirectory( library )
 

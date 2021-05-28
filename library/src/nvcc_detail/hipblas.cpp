@@ -259,7 +259,7 @@ hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
     case CUBLAS_STATUS_ARCH_MISMATCH:
         return HIPBLAS_STATUS_ARCH_MISMATCH;
     default:
-        throw HIPBLAS_STATUS_INVALID_ENUM;
+        return HIPBLAS_STATUS_UNKNOWN;
     }
 }
 
