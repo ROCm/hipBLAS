@@ -32,7 +32,9 @@ set (hipblas_f90_source
 )
 
 # Create hipBLAS Fortran module
-add_library(hipblas_fortran ${hipblas_f90_source})
+if(NOT WIN32)
+    add_library(hipblas_fortran ${hipblas_f90_source})
+endif()
 
 add_library( hipblas
   ${hipblas_source}
@@ -132,7 +134,7 @@ else( )
     rocm_export_targets(
         TARGETS roc::hipblas
 	PREFIX hipblas
-	DEPENDS PACKAGE HIP
+	DEPENDS PACKAGE hip
 	NAMESPACE roc::
     )
 endif( )
