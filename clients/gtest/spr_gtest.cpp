@@ -7,7 +7,6 @@
 #include "testing_spr_batched.hpp"
 #include "testing_spr_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

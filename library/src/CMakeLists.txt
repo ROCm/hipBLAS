@@ -101,6 +101,13 @@ set_target_properties( hipblas PROPERTIES CXX_EXTENSIONS NO )
 set_target_properties( hipblas PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" )
 
+if (WIN32)
+  add_custom_command( TARGET hipblas POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/staging/$<TARGET_FILE_NAME:hipblas> ${PROJECT_BINARY_DIR}/clients/staging/$<TARGET_FILE_NAME:hipblas> )
+  if( ${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    add_custom_command( TARGET hipblas POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/staging/hipblas.pdb ${PROJECT_BINARY_DIR}/clients/staging/hipblas.pdb )
+  endif()
+endif()
+
 # Package that helps me set visibility for function names exported from shared library
 include( GenerateExportHeader )
 set_target_properties( hipblas PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON )

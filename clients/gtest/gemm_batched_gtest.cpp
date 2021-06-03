@@ -5,7 +5,6 @@
 
 #include "testing_gemm_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

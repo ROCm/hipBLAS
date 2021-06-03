@@ -7,7 +7,6 @@
 #include "testing_tbmv_batched.hpp"
 #include "testing_tbmv_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

@@ -37,11 +37,13 @@ def parse_args():
     # hipblas
     parser.add_argument(      '--rocm_dev', type=str, required=False, default = "",
                         help='Set specific rocm-dev version')
+    parser.add_argument(      '--cpu_ref_lib', type=str, required=False, default = "blis",
+                        help='Specify library to use for CPU reference code in testing (blis or lapack)')
     # rocblas/rocsolver
     parser.add_argument('-n', '--no-solver', dest='build_solver', required=False, default=True, action='store_false')
     parser.add_argument('-b', '--rocblas', dest='rocbls_version', type=str, required=False, default="",
                         help='Set a specific rocBLAS vesrion (optional)')
-    parser.add_argument('--rocblas-path', dest='rocblas_path', type=str, required=False, default="",
+    parser.add_argument('--hipsdk-path', dest='hipsdk_path', type=str, required=False, default="C:/hipSDK",
                         help='Set specific path to custom build rocBLAS (optional)')
 
     return parser.parse_args()
@@ -98,7 +100,7 @@ def config_cmd():
         cmake_executable = "cmake"
         #set CPACK_PACKAGING_INSTALL_PREFIX= defined as blank as it is appended to end of path for archive creation
         cmake_platform_opts.append( f"-DCPACK_PACKAGING_INSTALL_PREFIX=" )
-        cmake_platform_opts.append( f"-DCMAKE_INSTALL_PREFIX=\"C:/hipSDK\"" )
+        cmake_platform_opts.append( f"-DCMAKE_INSTALL_PREFIX=\"{args.hipsdk_path}\"" )
         generator = f"-G Ninja"
         cmake_options.append( generator )
         toolchain = os.path.join( src_path, "toolchain-windows.cmake" )
@@ -160,15 +162,17 @@ def config_cmd():
 
     if args.build_clients:
         cmake_build_dir = cmake_path(build_dir)
-        cmake_options.append( f"-DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_DIR={cmake_build_dir}" )
+        cmake_options.append( f"-DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_DIR={cmake_build_dir} " )
 
     if args.build_solver:
         cmake_options.append (f"-DBUILD_WITH_SOLVER=ON")
     else:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=OFF")
 
-    #if args.cpu_ref_lib == 'blis':
-    #    cmake_options.append( f"-DLINK_BLIS=ON" )
+    if args.cpu_ref_lib == 'blis':
+        cmake_options.append( f"-DLINK_BLIS=ON" )
+
+    cmake_options.append( f"-DHIPSDK_PATH={args.hipsdk_path}")
 
     # not just for tensile 
     # cmake_options.append( f"-DAMDGPU_TARGETS={args.gpu_architecture}" )

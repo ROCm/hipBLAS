@@ -7,7 +7,6 @@
 #include "testing_set_get_matrix_async.hpp"
 #include "utility.h"
 #include <functional>
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <tuple>

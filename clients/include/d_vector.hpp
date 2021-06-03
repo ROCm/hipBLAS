@@ -6,7 +6,6 @@
 
 #include "hipblas.h"
 #include <cinttypes>
-#include <gtest/gtest.h>
 
 /* ============================================================================================ */
 /*! \brief  base-class to allocate/deallocate device memory */

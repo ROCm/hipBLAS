@@ -3,9 +3,27 @@
  *
  * ************************************************************************ */
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #include "utility.h"
 #include "hipblas.h"
-#include <sys/time.h>
+#include <chrono>
+
+//
+// https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
+//
+#ifdef __cpp_lib_filesystem
+#include <filesystem>
+#else
+#include <experimental/filesystem>
+
+    namespace std
+{
+    namespace filesystem = experimental::filesystem;
+}
+#endif
 
 hipblas_rng_t hipblas_rng(69069);
 hipblas_rng_t hipblas_seed(hipblas_rng);
@@ -60,6 +78,28 @@ int type2int<hipblasDoubleComplex>(hipblasDoubleComplex val)
 // Return path of this executable
 std::string hipblas_exepath()
 {
+#ifdef WIN32
+    std::vector<wchar_t> result(MAX_PATH + 1);
+    // Ensure result is large enough to accomodate the path
+    for(;;)
+    {
+        auto length = GetModuleFileNameW(nullptr, result.data(), result.size());
+        if(length < result.size() - 1)
+        {
+            result.resize(length);
+            result.shrink_to_fit();
+            break;
+        }
+        result.resize(result.size() * 2);
+    }
+
+    std::wstring wspath(result.data());
+    std::filesystem::path exepath(wspath.begin(), wspath.end());
+    exepath = exepath.remove_filename();
+    // Add trailing "/" to exepath if required
+    exepath += exepath.empty() ? "" : "/";
+    return exepath.string();
+#else
     std::string pathstr;
     char*       path = realpath("/proc/self/exe", 0);
     if(path)
@@ -73,6 +113,7 @@ std::string hipblas_exepath()
         free(path);
     }
     return pathstr;
+#endif
 }
 
 /*****************
@@ -128,18 +169,26 @@ extern "C" {
 double get_time_us(void)
 {
     hipDeviceSynchronize();
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000 * 1000) + tv.tv_usec;
+
+    auto           now = std::chrono::steady_clock::now();
+    // now.time_since_epoch() is the dureation since epogh
+    // which is converted to microseconds
+    auto duration
+        = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
+    return (static_cast<double>(duration));
 };
 
 /*! \brief  CPU Timer(in microsecond): synchronize with given queue/stream and return wall time */
 double get_time_us_sync(hipStream_t stream)
 {
     hipStreamSynchronize(stream);
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000 * 1000) + tv.tv_usec;
+
+    auto now = std::chrono::steady_clock::now();
+    // now.time_since_epoch() is the dureation since epogh
+    // which is converted to microseconds
+    auto duration
+        = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
+    return (static_cast<double>(duration));
 };
 
 /* ============================================================================================ */

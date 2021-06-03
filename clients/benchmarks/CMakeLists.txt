@@ -12,6 +12,24 @@ if( NOT cblas_FOUND )
   message( FATAL_ERROR "cblas is a required dependency and is not found;  try adding cblas path to CMAKE_PREFIX_PATH" )
 endif( )
 
+if(LINK_BLIS)
+  set( BLIS_CPP ../common/blis_interface.cpp )
+endif()
+
+
+
+if (NOT WIN32)
+  set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+  set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+else()
+  set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
+  find_library( BLIS_LIBRARY libblis
+                  PATHS ${BLIS_DIR}/lib
+                  REQUIRED
+                  NO_DEFAULT_PATH
+              )
+endif()
+
 if( NOT TARGET hipblas )
   find_package( hipblas CONFIG PATHS /opt/rocm/hipblas )
 
@@ -34,12 +52,17 @@ set( hipblas_benchmark_common
       ../common/near.cpp
       ../common/arg_check.cpp
       ../common/hipblas_template_specialization.cpp
+      ${BLIS_CPP}
     )
 
 add_executable( hipblas-bench client.cpp ${hipblas_benchmark_common} )
 
 
 target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
+
+if(LINK_BLIS)
+  target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
+endif()
 
 # Internal header includes
 target_include_directories( hipblas-bench
@@ -51,9 +74,30 @@ target_include_directories( hipblas-bench
 target_include_directories( hipblas-bench
   SYSTEM PRIVATE
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
 )
 
-target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
+if (NOT WIN32)
+  set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+  set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+else()
+  set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
+  find_library( BLIS_LIBRARY libblis
+                  PATHS ${BLIS_DIR}/lib
+                  REQUIRED
+                  NO_DEFAULT_PATH
+              )
+endif()
+
+if (NOT WIN32)
+    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
+endif()
+
+if(LINK_BLIS)
+  target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
+endif()
+
+target_link_libraries( hipblas-bench PRIVATE roc::hipblas cblas lapack)
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c)

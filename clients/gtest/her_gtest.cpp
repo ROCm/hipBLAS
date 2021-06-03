@@ -7,7 +7,6 @@
 #include "testing_her_batched.hpp"
 #include "testing_her_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
