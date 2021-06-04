@@ -16,6 +16,7 @@ function display_help()
   echo "    [-c|--clients] build library clients too (combines with -i & -d)"
   echo "    [-n|--no-solver] build library without rocSOLVER dependency"
   echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
+  echo "    [-k|--relwithdebinfo] -DCMAKE_BUILD_TYPE=RelWithDebInfo"
   echo "    [-r]--relocatable] create a package to support relocatable ROCm"
   echo "    [--cuda|--use-cuda] build library for cuda backend"
   echo "    [--[no-]hip-clang] Whether to build library with hip-clang"
@@ -26,6 +27,7 @@ function display_help()
   echo "    [-b|--rocblas] Set specific rocblas version"
   echo "    [--rocblas-path] Set specific path to custom built rocblas"
   echo "    [--static] Create static library instead of shared library"
+  echo "    [--codecoverage] build with code coverage profiling enabled"
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
@@ -285,6 +287,8 @@ cmake_prefix_path=/opt/rocm
 rocm_path=/opt/rocm
 compiler=g++
 build_static=false
+build_release_debug=false
+build_codecoverage=false
 
 # #################################################
 # Parameter parsing
@@ -293,7 +297,7 @@ build_static=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,relwithdebinfo,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgkp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -329,6 +333,13 @@ while true; do
         shift ;;
     -g|--debug)
         build_release=false
+        shift ;;
+    -k|--relwithdebinfo)
+        build_release=false
+        build_release_debug=true
+        shift ;;
+    --codecoverage)
+        build_codecoverage=true
         shift ;;
     --hip-clang)
         build_hip_clang=true
@@ -390,6 +401,8 @@ printf "\033[32mCreating project build directory in: \033[33m${build_dir}\033[0m
 # ensure a clean build environment
 if [[ "${build_release}" == true ]]; then
   rm -rf ${build_dir}/release
+elif [[ "${build_release_debug}" == true ]]; then
+  rm -rf ${build_dir}/release-debug
 else
   rm -rf ${build_dir}/debug
 fi
@@ -444,6 +457,9 @@ pushd .
   if [[ "${build_release}" == true ]]; then
     mkdir -p ${build_dir}/release/clients && cd ${build_dir}/release
     cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Release"
+  elif [[ "${build_release_debug}" == true ]]; then
+    mkdir -p ${build_dir}/release-debug/clients && cd ${build_dir}/release-debug
+    cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=RelWithDebInfo"
   else
     mkdir -p ${build_dir}/debug/clients && cd ${build_dir}/debug
     cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Debug"
@@ -473,6 +489,15 @@ pushd .
   # custom rocblas
   if [[ ${rocblas_path+foo} ]]; then
     cmake_common_options="${cmake_common_options} -DCUSTOM_ROCBLAS=${rocblas_path}"
+  fi
+
+  # code coverage
+  if [[ "${build_codecoverage}" == true ]]; then
+      if [[ "${build_release}" == true ]]; then
+          echo "Code coverage is disabled in Release mode, to enable code coverage select either Debug mode (-g | --debug) or RelWithDebInfo mode (-k | --relwithdebinfo); aborting";
+          exit 1
+      fi
+      cmake_common_options="${cmake_common_options} -DBUILD_CODE_COVERAGE=ON"
   fi
 
   # Build library
