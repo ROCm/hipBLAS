@@ -3,6 +3,7 @@
  *
  * ************************************************************************ */
 
+#include "syrkx_reference.hpp"
 #include "testing_syrkx.hpp"
 #include "testing_syrkx_batched.hpp"
 #include "testing_syrkx_strided_batched.hpp"
