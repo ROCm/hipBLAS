@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2020 Advanced Micro Devices, Inc.
+# Copyright 2016-2021 Advanced Micro Devices, Inc.
 # ########################################################################
 
 set( THREADS_PREFER_PTHREAD_FLAG ON )
@@ -100,7 +100,7 @@ if(LINK_BLIS)
   target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
 endif()
 
-target_link_libraries( hipblas-bench PRIVATE roc::hipblas cblas lapack)
+target_link_libraries( hipblas-bench PRIVATE roc::hipblas cblas lapack stdc++fs)
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c)
