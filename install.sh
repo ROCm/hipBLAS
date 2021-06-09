@@ -26,6 +26,7 @@ function display_help()
   echo "    [-b|--rocblas] Set specific rocblas version"
   echo "    [--rocblas-path] Set specific path to custom built rocblas"
   echo "    [--static] Create static library instead of shared library"
+  echo "    [--address-sanitizer] Build with address sanitizer enabled. Uses hipcc as compiler"
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
@@ -281,6 +282,7 @@ build_cuda=false
 build_hip_clang=true
 build_release=true
 build_relocatable=false
+build_address_sanitizer=false
 cmake_prefix_path=/opt/rocm
 rocm_path=/opt/rocm
 compiler=g++
@@ -293,7 +295,7 @@ build_static=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target:,address-sanitizer --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -344,7 +346,11 @@ while true; do
         shift ;;
     --static)
         build_static=true
-	shift ;;
+        shift ;;
+    --address-sanitizer)
+        build_address_sanitizer=true
+        compiler=hipcc
+        shift ;;
     -p|--cmakepp)
         cmake_prefix_path=${2}
         shift 2 ;;
@@ -464,6 +470,11 @@ pushd .
   # solver
   if [[ "${build_solver}" == false ]]; then
     cmake_client_options="${cmake_client_options} -DBUILD_WITH_SOLVER=OFF"
+  fi
+
+  # sanitizer
+  if [[ "${build_address_sanitizer}" == true ]]; then
+    cmake_common_options="${cmake_common_options} -DBUILD_ADDRESS_SANITIZER=ON"
   fi
 
   if [[ ${custom_target+foo} ]]; then
