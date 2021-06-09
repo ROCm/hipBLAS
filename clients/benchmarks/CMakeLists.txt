@@ -17,17 +17,18 @@ if(LINK_BLIS)
 endif()
 
 
-
-if (NOT WIN32)
-  set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
-  set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
-else()
-  set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
-  find_library( BLIS_LIBRARY libblis
-                  PATHS ${BLIS_DIR}/lib
-                  REQUIRED
-                  NO_DEFAULT_PATH
-              )
+if(LINK_BLIS)
+    if (NOT WIN32)
+      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+      set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+    else()
+      set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
+      find_library( BLIS_LIBRARY libblis
+                      PATHS ${BLIS_DIR}/lib
+                      REQUIRED
+                      NO_DEFAULT_PATH
+                  )
+    endif()
 endif()
 
 if( NOT TARGET hipblas )
@@ -77,16 +78,18 @@ target_include_directories( hipblas-bench
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
 )
 
-if (NOT WIN32)
-  set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
-  set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
-else()
-  set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
-  find_library( BLIS_LIBRARY libblis
-                  PATHS ${BLIS_DIR}/lib
-                  REQUIRED
-                  NO_DEFAULT_PATH
-              )
+if(LINK_BLIS)
+    if (NOT WIN32)
+      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+      set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+    else()
+      set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
+      find_library( BLIS_LIBRARY libblis
+                      PATHS ${BLIS_DIR}/lib
+                      REQUIRED
+                      NO_DEFAULT_PATH
+                  )
+    endif()
 endif()
 
 if (NOT WIN32)

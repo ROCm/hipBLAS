@@ -146,7 +146,6 @@ def config_cmd():
         cmake_config="Debug"
 
     cmake_options.append( f"-DCMAKE_BUILD_TYPE={cmake_config}" ) 
-    cmake_options.append( f"--debug-trycompile")
 
     # clean
     delete_dir( build_path )
@@ -169,13 +168,11 @@ def config_cmd():
     else:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=OFF")
 
+    # currently windows build only works with blis
     if args.cpu_ref_lib == 'blis':
         cmake_options.append( f"-DLINK_BLIS=ON" )
 
     cmake_options.append( f"-DHIPSDK_PATH={args.hipsdk_path}")
-
-    # not just for tensile 
-    # cmake_options.append( f"-DAMDGPU_TARGETS={args.gpu_architecture}" )
 
     if args.cmake_dargs:
         for i in args.cmake_dargs:

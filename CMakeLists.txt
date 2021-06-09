@@ -26,7 +26,6 @@ if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
 endif()
 
-set(fortran_langauge "")
 if (NOT WIN32)
     if ( NOT DEFINED CMAKE_Fortran_COMPILER AND NOT DEFINED ENV{FC} )
       set( CMAKE_Fortran_COMPILER  "gfortran" )
@@ -34,7 +33,7 @@ if (NOT WIN32)
     set( fortran_language "Fortran" )
 endif( )
 
-project( hipblas LANGUAGES CXX )#fortran_language )
+project( hipblas LANGUAGES CXX ${fortran_language} )
 
 # This finds the rocm-cmake project, and installs it if not found
 # rocm-cmake contains common cmake code for rocm projects to help setup and install

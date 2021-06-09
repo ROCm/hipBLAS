@@ -131,20 +131,20 @@ set( hipblas_test_common
   ${BLIS_CPP}
 )
 
-
-
 add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
 
-if (NOT WIN32)
-  set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
-  set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
-else()
-  set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
-  find_library( BLIS_LIBRARY libblis
-                  PATHS ${BLIS_DIR}/lib
-                  REQUIRED
-                  NO_DEFAULT_PATH
-              )
+if(LINK_BLIS)
+    if (NOT WIN32)
+      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+      set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+    else( )
+      set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
+      find_library( BLIS_LIBRARY libblis
+                      PATHS ${BLIS_DIR}/lib
+                      REQUIRED
+                      NO_DEFAULT_PATH
+                  )
+    endif()
 endif()
 
 target_include_directories( hipblas-test
@@ -213,7 +213,6 @@ if (WIN32)
     ${HIP_DIR}/bin/*.dll
     ${HIP_DIR}/bin/hipinfo.exe
     ${HIPSDK_PATH}/rocblas/bin/rocblas.dll
-    C:/Users/dmcniven/source/repos/hipblas/build/release/staging/hipblas.dll
     ${CMAKE_SOURCE_DIR}/rtest.*
     C:/Windows/System32/libomp140*.dll
   ) 
