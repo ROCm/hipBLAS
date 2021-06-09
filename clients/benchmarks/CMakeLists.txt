@@ -100,7 +100,11 @@ if(LINK_BLIS)
   target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
 endif()
 
-target_link_libraries( hipblas-bench PRIVATE roc::hipblas cblas lapack stdc++fs)
+target_link_libraries( hipblas-bench PRIVATE roc::hipblas cblas lapack )
+
+if( NOT WIN32 )
+    target_link_libraries( hipblas-bench PRIVATE stdc++fs)
+endif()
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c)
