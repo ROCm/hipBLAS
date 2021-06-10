@@ -43,7 +43,7 @@ def parse_args():
     parser.add_argument('-n', '--no-solver', dest='build_solver', required=False, default=True, action='store_false')
     parser.add_argument('-b', '--rocblas', dest='rocbls_version', type=str, required=False, default="",
                         help='Set a specific rocBLAS vesrion (optional)')
-    parser.add_argument('--hipsdk-path', dest='hipsdk_path', type=str, required=False, default="C:/hipSDK",
+    parser.add_argument('--rocblas-path', dest='rocblas_path', type=str, required=False, default="C:/hipSDK/rocblas",
                         help='Set specific path to custom build rocBLAS (optional)')
 
     return parser.parse_args()
@@ -99,8 +99,7 @@ def config_cmd():
         rocm_path = os.getenv( 'ROCM_CMAKE_PATH', "C:/github/rocm-cmake-master/share/rocm")
         cmake_executable = "cmake"
         #set CPACK_PACKAGING_INSTALL_PREFIX= defined as blank as it is appended to end of path for archive creation
-        cmake_platform_opts.append( f"-DCPACK_PACKAGING_INSTALL_PREFIX=" )
-        cmake_platform_opts.append( f"-DCMAKE_INSTALL_PREFIX=\"{args.hipsdk_path}\"" )
+        cmake_platform_opts.append( f"-DCPACK_PACKAGING_INSTALL_PREFIX={rocm_path}" )
         generator = f"-G Ninja"
         cmake_options.append( generator )
         toolchain = os.path.join( src_path, "toolchain-windows.cmake" )
@@ -172,7 +171,7 @@ def config_cmd():
     if args.cpu_ref_lib == 'blis':
         cmake_options.append( f"-DLINK_BLIS=ON" )
 
-    cmake_options.append( f"-DHIPSDK_PATH={args.hipsdk_path}")
+    cmake_options.append( f"-DROCBLAS_PATH={args.rocblas_path}")
 
     if args.cmake_dargs:
         for i in args.cmake_dargs:

@@ -56,7 +56,7 @@ if( NOT USE_CUDA )
       set ( ENV{rocblas_DIR} ${CUSTOM_ROCBLAS})
       find_package( rocblas REQUIRED CONFIG NO_CMAKE_PATH )
     else( )
-      find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocblas )
+      find_package( rocblas REQUIRED CONFIG PATHS ${ROCBLAS_PATH} )
     endif( )
   endif( )
 

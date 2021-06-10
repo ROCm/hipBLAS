@@ -212,13 +212,15 @@ if (WIN32)
     ${BLIS_DIR}/lib/*.dll 
     ${HIP_DIR}/bin/*.dll
     ${HIP_DIR}/bin/hipinfo.exe
-    ${HIPSDK_PATH}/rocblas/bin/rocblas.dll
+    ${ROCBLAS_PATH}/bin/rocblas.dll
     ${CMAKE_SOURCE_DIR}/rtest.*
     C:/Windows/System32/libomp140*.dll
   ) 
   foreach( file_i ${third_party_dlls})
     add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy ${file_i} ${PROJECT_BINARY_DIR}/staging/ )
   endforeach( file_i )
+
+  add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${ROCBLAS_PATH}/bin/library/ ${PROJECT_BINARY_DIR}/staging/library/)
 endif()
 
 set_target_properties( hipblas-test PROPERTIES
