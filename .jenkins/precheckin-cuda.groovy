@@ -34,6 +34,12 @@ def runCI =
         commonGroovy.runCompileCommand(platform, project, jobName)
     }
 
+    def packageCommand =
+    {
+        platform, project->
+
+        commonGroovy.runPackageCommand(platform, project, jobName, label)
+    }
     def testCommand =
     {
         platform, project->
@@ -41,7 +47,7 @@ def runCI =
         commonGroovy.runTestCommand(platform, project)
     }
 
-    buildProject(prj, formatCheck, nodes.dockerArray, compileCommand, testCommand, null)
+    buildProject(prj, formatCheck, nodes.dockerArray, compileCommand, testCommand, packageCommand)
 }
 
 def setupCI(urlJobName, jobNameList, buildCommand, runCI, label)

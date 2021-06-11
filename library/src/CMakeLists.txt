@@ -34,6 +34,10 @@ set (hipblas_f90_source
 # Create hipBLAS Fortran module
 add_library(hipblas_fortran ${hipblas_f90_source})
 
+if(BUILD_ADDRESS_SANITIZER)
+    add_link_options(-fuse-ld=lld)
+endif()
+
 add_library( hipblas
   ${hipblas_source}
   ${CMAKE_CURRENT_SOURCE_DIR}/hipblas_auxiliary.cpp
