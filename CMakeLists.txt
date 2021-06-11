@@ -93,6 +93,12 @@ if( USE_CUDA )
     list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
 endif( )
 
+option(BUILD_ADDRESS_SANITIZER "Build with address sanitizer enabled" OFF)
+if(BUILD_ADDRESS_SANITIZER)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -shared-libasan")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -shared-libasan")
+endif()
+
 add_subdirectory( library )
 
 include( clients/cmake/build-options.cmake )
