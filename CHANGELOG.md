@@ -1,10 +1,10 @@
 # Change Log for hipBLAS
 
-## [hipBLAS 0.46.0 for ROCm 4.4.0]
+## [hipBLAS 0.47.0 for ROCm 4.4.0]
 ## Added
 - Added HIPBLAS_STATUS_UNKNOWN for unsupported backend status codes
 
-## [hipBLAS 0.45.0 for ROCm 4.3.0]
+## [hipBLAS 0.46.0 for ROCm 4.3.0]
 ### Added
 - Added hipblasStatusToString
 
