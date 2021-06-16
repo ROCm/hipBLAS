@@ -604,414 +604,58 @@
 #define hipblasScalExFortran hipblasScalEx
 #define hipblasScalBatchedExFortran hipblasScalBatchedEx
 #define hipblasScalStridedBatchedExFortran hipblasScalStridedBatchedEx
-#if 0
-extern "C" {
+
 /* ==========
  *    Solver
  * ========== */
 
-// getrf
-hipblasStatus_t hipblasSgetrfFortran(
-    hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info);
-
-hipblasStatus_t hipblasDgetrfFortran(
-    hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info);
-
-hipblasStatus_t hipblasCgetrfFortran(
-    hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info);
-
-hipblasStatus_t hipblasZgetrfFortran(hipblasHandle_t       handle,
-                                     const int             n,
-                                     hipblasDoubleComplex* A,
-                                     const int             lda,
-                                     int*                  ipiv,
-                                     int*                  info);
-
-// getrf_batched
-hipblasStatus_t hipblasSgetrfBatchedFortran(hipblasHandle_t handle,
-                                            const int       n,
-                                            float* const    A[],
-                                            const int       lda,
-                                            int*            ipiv,
-                                            int*            info,
-                                            const int       batch_count);
-
-hipblasStatus_t hipblasDgetrfBatchedFortran(hipblasHandle_t handle,
-                                            const int       n,
-                                            double* const   A[],
-                                            const int       lda,
-                                            int*            ipiv,
-                                            int*            info,
-                                            const int       batch_count);
-
-hipblasStatus_t hipblasCgetrfBatchedFortran(hipblasHandle_t       handle,
-                                            const int             n,
-                                            hipblasComplex* const A[],
-                                            const int             lda,
-                                            int*                  ipiv,
-                                            int*                  info,
-                                            const int             batch_count);
-
-hipblasStatus_t hipblasZgetrfBatchedFortran(hipblasHandle_t             handle,
-                                            const int                   n,
-                                            hipblasDoubleComplex* const A[],
-                                            const int                   lda,
-                                            int*                        ipiv,
-                                            int*                        info,
-                                            const int                   batch_count);
-
-// getrf_strided_batched
-hipblasStatus_t hipblasSgetrfStridedBatchedFortran(hipblasHandle_t     handle,
-                                                   const int           n,
-                                                   float*              A,
-                                                   const int           lda,
-                                                   const hipblasStride stride_A,
-                                                   int*                ipiv,
-                                                   const hipblasStride stride_P,
-                                                   int*                info,
-                                                   const int           batch_count);
-
-hipblasStatus_t hipblasDgetrfStridedBatchedFortran(hipblasHandle_t     handle,
-                                                   const int           n,
-                                                   double*             A,
-                                                   const int           lda,
-                                                   const hipblasStride stride_A,
-                                                   int*                ipiv,
-                                                   const hipblasStride stride_P,
-                                                   int*                info,
-                                                   const int           batch_count);
-
-hipblasStatus_t hipblasCgetrfStridedBatchedFortran(hipblasHandle_t     handle,
-                                                   const int           n,
-                                                   hipblasComplex*     A,
-                                                   const int           lda,
-                                                   const hipblasStride stride_A,
-                                                   int*                ipiv,
-                                                   const hipblasStride stride_P,
-                                                   int*                info,
-                                                   const int           batch_count);
-
-hipblasStatus_t hipblasZgetrfStridedBatchedFortran(hipblasHandle_t       handle,
-                                                   const int             n,
-                                                   hipblasDoubleComplex* A,
-                                                   const int             lda,
-                                                   const hipblasStride   stride_A,
-                                                   int*                  ipiv,
-                                                   const hipblasStride   stride_P,
-                                                   int*                  info,
-                                                   const int             batch_count);
-
-// getrs
-hipblasStatus_t hipblasSgetrsFortran(hipblasHandle_t          handle,
-                                     const hipblasOperation_t trans,
-                                     const int                n,
-                                     const int                nrhs,
-                                     float*                   A,
-                                     const int                lda,
-                                     const int*               ipiv,
-                                     float*                   B,
-                                     const int                ldb,
-                                     int*                     info);
-
-hipblasStatus_t hipblasDgetrsFortran(hipblasHandle_t          handle,
-                                     const hipblasOperation_t trans,
-                                     const int                n,
-                                     const int                nrhs,
-                                     double*                  A,
-                                     const int                lda,
-                                     const int*               ipiv,
-                                     double*                  B,
-                                     const int                ldb,
-                                     int*                     info);
-
-hipblasStatus_t hipblasCgetrsFortran(hipblasHandle_t          handle,
-                                     const hipblasOperation_t trans,
-                                     const int                n,
-                                     const int                nrhs,
-                                     hipblasComplex*          A,
-                                     const int                lda,
-                                     const int*               ipiv,
-                                     hipblasComplex*          B,
-                                     const int                ldb,
-                                     int*                     info);
-
-hipblasStatus_t hipblasZgetrsFortran(hipblasHandle_t          handle,
-                                     const hipblasOperation_t trans,
-                                     const int                n,
-                                     const int                nrhs,
-                                     hipblasDoubleComplex*    A,
-                                     const int                lda,
-                                     const int*               ipiv,
-                                     hipblasDoubleComplex*    B,
-                                     const int                ldb,
-                                     int*                     info);
-
-// getrs_batched
-hipblasStatus_t hipblasSgetrsBatchedFortran(hipblasHandle_t          handle,
-                                            const hipblasOperation_t trans,
-                                            const int                n,
-                                            const int                nrhs,
-                                            float* const             A[],
-                                            const int                lda,
-                                            const int*               ipiv,
-                                            float* const             B[],
-                                            const int                ldb,
-                                            int*                     info,
-                                            const int                batch_count);
-
-hipblasStatus_t hipblasDgetrsBatchedFortran(hipblasHandle_t          handle,
-                                            const hipblasOperation_t trans,
-                                            const int                n,
-                                            const int                nrhs,
-                                            double* const            A[],
-                                            const int                lda,
-                                            const int*               ipiv,
-                                            double* const            B[],
-                                            const int                ldb,
-                                            int*                     info,
-                                            const int                batch_count);
-
-hipblasStatus_t hipblasCgetrsBatchedFortran(hipblasHandle_t          handle,
-                                            const hipblasOperation_t trans,
-                                            const int                n,
-                                            const int                nrhs,
-                                            hipblasComplex* const    A[],
-                                            const int                lda,
-                                            const int*               ipiv,
-                                            hipblasComplex* const    B[],
-                                            const int                ldb,
-                                            int*                     info,
-                                            const int                batch_count);
-
-hipblasStatus_t hipblasZgetrsBatchedFortran(hipblasHandle_t             handle,
-                                            const hipblasOperation_t    trans,
-                                            const int                   n,
-                                            const int                   nrhs,
-                                            hipblasDoubleComplex* const A[],
-                                            const int                   lda,
-                                            const int*                  ipiv,
-                                            hipblasDoubleComplex* const B[],
-                                            const int                   ldb,
-                                            int*                        info,
-                                            const int                   batch_count);
-
-// getrs_strided_batched
-hipblasStatus_t hipblasSgetrsStridedBatchedFortran(hipblasHandle_t          handle,
-                                                   const hipblasOperation_t trans,
-                                                   const int                n,
-                                                   const int                nrhs,
-                                                   float*                   A,
-                                                   const int                lda,
-                                                   const hipblasStride      stride_A,
-                                                   const int*               ipiv,
-                                                   const hipblasStride      stride_P,
-                                                   float*                   B,
-                                                   const int                ldb,
-                                                   const hipblasStride      stride_B,
-                                                   int*                     info,
-                                                   const int                batch_count);
-
-hipblasStatus_t hipblasDgetrsStridedBatchedFortran(hipblasHandle_t          handle,
-                                                   const hipblasOperation_t trans,
-                                                   const int                n,
-                                                   const int                nrhs,
-                                                   double*                  A,
-                                                   const int                lda,
-                                                   const hipblasStride      stride_A,
-                                                   const int*               ipiv,
-                                                   const hipblasStride      stride_P,
-                                                   double*                  B,
-                                                   const int                ldb,
-                                                   const hipblasStride      stride_B,
-                                                   int*                     info,
-                                                   const int                batch_count);
-
-hipblasStatus_t hipblasCgetrsStridedBatchedFortran(hipblasHandle_t          handle,
-                                                   const hipblasOperation_t trans,
-                                                   const int                n,
-                                                   const int                nrhs,
-                                                   hipblasComplex*          A,
-                                                   const int                lda,
-                                                   const hipblasStride      stride_A,
-                                                   const int*               ipiv,
-                                                   const hipblasStride      stride_P,
-                                                   hipblasComplex*          B,
-                                                   const int                ldb,
-                                                   const hipblasStride      stride_B,
-                                                   int*                     info,
-                                                   const int                batch_count);
-
-hipblasStatus_t hipblasZgetrsStridedBatchedFortran(hipblasHandle_t          handle,
-                                                   const hipblasOperation_t trans,
-                                                   const int                n,
-                                                   const int                nrhs,
-                                                   hipblasDoubleComplex*    A,
-                                                   const int                lda,
-                                                   const hipblasStride      stride_A,
-                                                   const int*               ipiv,
-                                                   const hipblasStride      stride_P,
-                                                   hipblasDoubleComplex*    B,
-                                                   const int                ldb,
-                                                   const hipblasStride      stride_B,
-                                                   int*                     info,
-                                                   const int                batch_count);
-
-// getri_batched
-hipblasStatus_t hipblasSgetriBatchedFortran(hipblasHandle_t handle,
-                                            const int       n,
-                                            float* const    A[],
-                                            const int       lda,
-                                            int*            ipiv,
-                                            float* const    C[],
-                                            const int       ldc,
-                                            int*            info,
-                                            const int       batch_count);
-
-hipblasStatus_t hipblasDgetriBatchedFortran(hipblasHandle_t handle,
-                                            const int       n,
-                                            double* const   A[],
-                                            const int       lda,
-                                            int*            ipiv,
-                                            double* const   C[],
-                                            const int       ldc,
-                                            int*            info,
-                                            const int       batch_count);
-
-hipblasStatus_t hipblasCgetriBatchedFortran(hipblasHandle_t       handle,
-                                            const int             n,
-                                            hipblasComplex* const A[],
-                                            const int             lda,
-                                            int*                  ipiv,
-                                            hipblasComplex* const C[],
-                                            const int             ldc,
-                                            int*                  info,
-                                            const int             batch_count);
-
-hipblasStatus_t hipblasZgetriBatchedFortran(hipblasHandle_t             handle,
-                                            const int                   n,
-                                            hipblasDoubleComplex* const A[],
-                                            const int                   lda,
-                                            int*                        ipiv,
-                                            hipblasDoubleComplex* const C[],
-                                            const int                   ldc,
-                                            int*                        info,
-                                            const int                   batch_count);
-
-// geqrf
-hipblasStatus_t hipblasSgeqrfFortran(hipblasHandle_t handle,
-                                     const int       m,
-                                     const int       n,
-                                     float*          A,
-                                     const int       lda,
-                                     float*          tau,
-                                     int*            info);
-
-hipblasStatus_t hipblasDgeqrfFortran(hipblasHandle_t handle,
-                                     const int       m,
-                                     const int       n,
-                                     double*         A,
-                                     const int       lda,
-                                     double*         tau,
-                                     int*            info);
-
-hipblasStatus_t hipblasCgeqrfFortran(hipblasHandle_t handle,
-                                     const int       m,
-                                     const int       n,
-                                     hipblasComplex* A,
-                                     const int       lda,
-                                     hipblasComplex* tau,
-                                     int*            info);
-
-hipblasStatus_t hipblasZgeqrfFortran(hipblasHandle_t       handle,
-                                     const int             m,
-                                     const int             n,
-                                     hipblasDoubleComplex* A,
-                                     const int             lda,
-                                     hipblasDoubleComplex* tau,
-                                     int*                  info);
-
-// geqrf_batched
-hipblasStatus_t hipblasSgeqrfBatchedFortran(hipblasHandle_t handle,
-                                            const int       m,
-                                            const int       n,
-                                            float* const    A[],
-                                            const int       lda,
-                                            float* const    tau[],
-                                            int*            info,
-                                            const int       batch_count);
-
-hipblasStatus_t hipblasDgeqrfBatchedFortran(hipblasHandle_t handle,
-                                            const int       m,
-                                            const int       n,
-                                            double* const   A[],
-                                            const int       lda,
-                                            double* const   tau[],
-                                            int*            info,
-                                            const int       batch_count);
-
-hipblasStatus_t hipblasCgeqrfBatchedFortran(hipblasHandle_t       handle,
-                                            const int             m,
-                                            const int             n,
-                                            hipblasComplex* const A[],
-                                            const int             lda,
-                                            hipblasComplex* const tau[],
-                                            int*                  info,
-                                            const int             batch_count);
-
-hipblasStatus_t hipblasZgeqrfBatchedFortran(hipblasHandle_t             handle,
-                                            const int                   m,
-                                            const int                   n,
-                                            hipblasDoubleComplex* const A[],
-                                            const int                   lda,
-                                            hipblasDoubleComplex* const tau[],
-                                            int*                        info,
-                                            const int                   batch_count);
-
-// geqrf_strided_batched
-hipblasStatus_t hipblasSgeqrfStridedBatchedFortran(hipblasHandle_t     handle,
-                                                   const int           m,
-                                                   const int           n,
-                                                   float*              A,
-                                                   const int           lda,
-                                                   const hipblasStride stride_A,
-                                                   float*              tau,
-                                                   const hipblasStride stride_T,
-                                                   int*                info,
-                                                   const int           batch_count);
-
-hipblasStatus_t hipblasDgeqrfStridedBatchedFortran(hipblasHandle_t     handle,
-                                                   const int           m,
-                                                   const int           n,
-                                                   double*             A,
-                                                   const int           lda,
-                                                   const hipblasStride stride_A,
-                                                   double*             tau,
-                                                   const hipblasStride stride_T,
-                                                   int*                info,
-                                                   const int           batch_count);
-
-hipblasStatus_t hipblasCgeqrfStridedBatchedFortran(hipblasHandle_t     handle,
-                                                   const int           m,
-                                                   const int           n,
-                                                   hipblasComplex*     A,
-                                                   const int           lda,
-                                                   const hipblasStride stride_A,
-                                                   hipblasComplex*     tau,
-                                                   const hipblasStride stride_T,
-                                                   int*                info,
-                                                   const int           batch_count);
-
-hipblasStatus_t hipblasZgeqrfStridedBatchedFortran(hipblasHandle_t       handle,
-                                                   const int             m,
-                                                   const int             n,
-                                                   hipblasDoubleComplex* A,
-                                                   const int             lda,
-                                                   const hipblasStride   stride_A,
-                                                   hipblasDoubleComplex* tau,
-                                                   const hipblasStride   stride_T,
-                                                   int*                  info,
-                                                   const int             batch_count);
-}
-#endif
+#define hipblasSgetrfFortran hipblasSgetrf
+#define hipblasDgetrfFortran hipblasDgetrf
+#define hipblasCgetrfFortran hipblasCgetrf
+#define hipblasZgetrfFortran hipblasZgetrf
+#define hipblasSgetrfBatchedFortran hipblasSgetrfBatched
+#define hipblasDgetrfBatchedFortran hipblasDgetrfBatched
+#define hipblasCgetrfBatchedFortran hipblasCgetrfBatched
+#define hipblasZgetrfBatchedFortran hipblasZgetrfBatched
+#define hipblasSgetrfStridedBatchedFortran hipblasSgetrfStridedBatched
+#define hipblasDgetrfStridedBatchedFortran hipblasDgetrfStridedBatched
+#define hipblasCgetrfStridedBatchedFortran hipblasCgetrfStridedBatched
+#define hipblasZgetrfStridedBatchedFortran hipblasZgetrfStridedBatched
+#define hipblasSgetrsFortran hipblasSgetrs
+#define hipblasDgetrsFortran hipblasDgetrs
+#define hipblasCgetrsFortran hipblasCgetrs
+#define hipblasZgetrsFortran hipblasZgetrs
+#define hipblasSgetrsBatchedFortran hipblasSgetrsBatched
+#define hipblasDgetrsBatchedFortran hipblasDgetrsBatched
+#define hipblasCgetrsBatchedFortran hipblasCgetrsBatched
+#define hipblasZgetrsBatchedFortran hipblasZgetrsBatched
+#define hipblasSgetrsStridedBatchedFortran hipblasSgetrsStridedBatched
+#define hipblasDgetrsStridedBatchedFortran hipblasDgetrsStridedBatched
+#define hipblasCgetrsStridedBatchedFortran hipblasCgetrsStridedBatched
+#define hipblasZgetrsStridedBatchedFortran hipblasZgetrsStridedBatched
+#define hipblasSgetriFortran hipblasSgetri
+#define hipblasDgetriFortran hipblasDgetri
+#define hipblasCgetriFortran hipblasCgetri
+#define hipblasZgetriFortran hipblasZgetri
+#define hipblasSgetriBatchedFortran hipblasSgetriBatched
+#define hipblasDgetriBatchedFortran hipblasDgetriBatched
+#define hipblasCgetriBatchedFortran hipblasCgetriBatched
+#define hipblasZgetriBatchedFortran hipblasZgetriBatched
+#define hipblasSgetriStridedBatchedFortran hipblasSgetriStridedBatched
+#define hipblasDgetriStridedBatchedFortran hipblasDgetriStridedBatched
+#define hipblasCgetriStridedBatchedFortran hipblasCgetriStridedBatched
+#define hipblasZgetriStridedBatchedFortran hipblasZgetriStridedBatched
+#define hipblasSgeqrfFortran hipblasSgeqrf
+#define hipblasDgeqrfFortran hipblasDgeqrf
+#define hipblasCgeqrfFortran hipblasCgeqrf
+#define hipblasZgeqrfFortran hipblasZgeqrf
+#define hipblasSgeqrfBatchedFortran hipblasSgeqrfBatched
+#define hipblasDgeqrfBatchedFortran hipblasDgeqrfBatched
+#define hipblasCgeqrfBatchedFortran hipblasCgeqrfBatched
+#define hipblasZgeqrfBatchedFortran hipblasZgeqrfBatched
+#define hipblasSgeqrfStridedBatchedFortran hipblasSgeqrfStridedBatched
+#define hipblasDgeqrfStridedBatchedFortran hipblasDgeqrfStridedBatched
+#define hipblasCgeqrfStridedBatchedFortran hipblasCgeqrfStridedBatched
+#define hipblasZgeqrfStridedBatchedFortran hipblasZgeqrfStridedBatched
 
 #endif
