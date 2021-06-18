@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2020 Advanced Micro Devices, Inc.
+# Copyright 2016-2021 Advanced Micro Devices, Inc.
 # ########################################################################
 
 set( hipblas_samples_common ../common/utility.cpp )
@@ -10,7 +10,7 @@ add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp 
 add_executable( example-c example-c.c ${hipblas_samples_common} )
 
 if(NOT WIN32)
-    add_executable( example-sscal-fortran example_sscal_fortran.f90 )
+    #add_executable( example-sscal-fortran example_sscal_fortran.f90 )
 endif()
 
 # We test for C99 compatibility in the example-c.c test
