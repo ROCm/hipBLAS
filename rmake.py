@@ -41,10 +41,11 @@ def parse_args():
                         help='Specify library to use for CPU reference code in testing (blis or lapack)')
     # rocblas/rocsolver
     parser.add_argument('-n', '--no-solver', dest='build_solver', required=False, default=True, action='store_false')
-    parser.add_argument('-b', '--rocblas', dest='rocbls_version', type=str, required=False, default="",
+    parser.add_argument('-b', '--rocblas', dest='rocblas_version', type=str, required=False, default="",
                         help='Set a specific rocBLAS vesrion (optional)')
     parser.add_argument('--rocblas-path', dest='rocblas_path', type=str, required=False, default="C:/hipSDK/rocblas",
                         help='Set specific path to custom build rocBLAS (optional)')
+    parser.add_argument('--rocsolver-path', dest='rocsolver_path', type=str, required=False, default="C:/hipSDK/rocsolver")
 
     return parser.parse_args()
 
@@ -172,6 +173,7 @@ def config_cmd():
         cmake_options.append( f"-DLINK_BLIS=ON" )
 
     cmake_options.append( f"-DROCBLAS_PATH={args.rocblas_path}")
+    cmake_options.append( f"-DROCSOLVER_PATH={args.rocsolver_path}")
 
     if args.cmake_dargs:
         for i in args.cmake_dargs:

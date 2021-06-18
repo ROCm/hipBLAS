@@ -213,6 +213,7 @@ if (WIN32)
     ${HIP_DIR}/bin/*.dll
     ${HIP_DIR}/bin/hipinfo.exe
     ${ROCBLAS_PATH}/bin/rocblas.dll
+    ${ROCSOLVER_PATH}/bin/rocsolver.dll
     ${CMAKE_SOURCE_DIR}/rtest.*
     C:/Windows/System32/libomp140*.dll
   ) 
