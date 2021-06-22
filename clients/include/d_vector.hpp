@@ -1,11 +1,13 @@
 /* ************************************************************************
- * Copyright 2018-2020 Advanced Micro Devices, Inc.
+ * Copyright 2018-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #pragma once
 
 #include "hipblas.h"
 #include <cinttypes>
+#include <clocale>
+#include <cstdio>
 
 /* ============================================================================================ */
 /*! \brief  base-class to allocate/deallocate device memory */
