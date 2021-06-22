@@ -22,7 +22,7 @@ set(python "python")
 
 # TODO remove, just to speed up slow cmake
 #set(CMAKE_C_COMPILER_WORKS 1)
-#set(CMAKE_CXX_COMPILER_WORKS 1) 
+#set(CMAKE_CXX_COMPILER_WORKS 1)
 #set(CMAKE_Fortran_COMPILER_WORKS 1)
 
 

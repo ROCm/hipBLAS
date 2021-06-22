@@ -208,15 +208,15 @@ if (WIN32)
   file( GLOB third_party_dlls
     LIST_DIRECTORIES OFF
     CONFIGURE_DEPENDS
-    ${LAPACK_DIR}/bin/*.dll 
-    ${BLIS_DIR}/lib/*.dll 
+    ${LAPACK_DIR}/bin/*.dll
+    ${BLIS_DIR}/lib/*.dll
     ${HIP_DIR}/bin/*.dll
     ${HIP_DIR}/bin/hipinfo.exe
     ${ROCBLAS_PATH}/bin/rocblas.dll
     ${ROCSOLVER_PATH}/bin/rocsolver.dll
     ${CMAKE_SOURCE_DIR}/rtest.*
     C:/Windows/System32/libomp140*.dll
-  ) 
+  )
   foreach( file_i ${third_party_dlls})
     add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy ${file_i} ${PROJECT_BINARY_DIR}/staging/ )
   endforeach( file_i )
