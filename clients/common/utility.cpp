@@ -7,8 +7,8 @@
 #include <windows.h>
 #endif
 
-#include "utility.h"
 #include "hipblas.h"
+#include "utility.h"
 #include <chrono>
 
 //
@@ -19,7 +19,7 @@
 #else
 #include <experimental/filesystem>
 
-    namespace std
+namespace std
 {
     namespace filesystem = experimental::filesystem;
 }
@@ -79,22 +79,22 @@ int type2int<hipblasDoubleComplex>(hipblasDoubleComplex val)
 std::string hipblas_exepath()
 {
 #ifdef WIN32
-    std::vector<wchar_t> result(MAX_PATH + 1);
+    std::vector<TCHAR> result(MAX_PATH + 1);
     // Ensure result is large enough to accomodate the path
     for(;;)
     {
-        auto length = GetModuleFileNameW(nullptr, result.data(), result.size());
+        auto length = GetModuleFileNameA(nullptr, result.data(), result.size());
         if(length < result.size() - 1)
         {
             result.resize(length);
-            result.shrink_to_fit();
+            // result.shrink_to_fit();
             break;
         }
         result.resize(result.size() * 2);
     }
 
-    std::wstring wspath(result.data());
-    std::filesystem::path exepath(wspath.begin(), wspath.end());
+    std::filesystem::path exepath(result.begin(), result.end());
+
     exepath = exepath.remove_filename();
     // Add trailing "/" to exepath if required
     exepath += exepath.empty() ? "" : "/";
@@ -170,7 +170,7 @@ double get_time_us(void)
 {
     hipDeviceSynchronize();
 
-    auto           now = std::chrono::steady_clock::now();
+    auto now = std::chrono::steady_clock::now();
     // now.time_since_epoch() is the dureation since epogh
     // which is converted to microseconds
     auto duration
