@@ -86,7 +86,7 @@ std::string hipblas_exepath()
         auto length = GetModuleFileNameA(nullptr, result.data(), result.size());
         if(length < result.size() - 1)
         {
-            result.resize(length);
+            result.resize(length + 1);
             // result.shrink_to_fit();
             break;
         }
