@@ -7,7 +7,6 @@
 #include "testing_symv_batched.hpp"
 #include "testing_symv_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

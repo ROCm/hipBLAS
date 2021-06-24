@@ -32,7 +32,9 @@ set (hipblas_f90_source
 )
 
 # Create hipBLAS Fortran module
-add_library(hipblas_fortran ${hipblas_f90_source})
+if(NOT WIN32)
+    add_library(hipblas_fortran ${hipblas_f90_source})
+endif()
 
 if(BUILD_ADDRESS_SANITIZER)
     add_link_options(-fuse-ld=lld)
@@ -57,7 +59,9 @@ if( NOT USE_CUDA )
     if( CUSTOM_ROCBLAS )
       set ( ENV{rocblas_DIR} ${CUSTOM_ROCBLAS})
       find_package( rocblas REQUIRED CONFIG NO_CMAKE_PATH )
-    else( )
+    elseif( WIN32 )
+        find_package( rocblas REQUIRED CONFIG PATHS ${ROCBLAS_PATH})
+    else()
       find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocblas )
     endif( )
   endif( )
@@ -67,7 +71,11 @@ if( NOT USE_CUDA )
   # Add rocSOLVER as a dependency if BUILD_WITH_SOLVER is on
   if( BUILD_WITH_SOLVER )
     if( NOT TARGET rocsolver )
-      find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
+      if(WIN32)
+        find_package( rocsolver REQUIRED CONFIG PATHS ${ROCSOLVER_PATH} )
+      else()
+        find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
+      endif()
     endif( )
     target_link_libraries( hipblas PRIVATE roc::rocsolver )
   endif( )
@@ -103,6 +111,13 @@ set_target_properties( hipblas PROPERTIES CXX_EXTENSIONS NO )
 set_target_properties( hipblas PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" )
 
+if (WIN32)
+  add_custom_command( TARGET hipblas POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/staging/$<TARGET_FILE_NAME:hipblas> ${PROJECT_BINARY_DIR}/clients/staging/$<TARGET_FILE_NAME:hipblas> )
+  if( ${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    add_custom_command( TARGET hipblas POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/staging/hipblas.pdb ${PROJECT_BINARY_DIR}/clients/staging/hipblas.pdb )
+  endif()
+endif()
+
 # Package that helps me set visibility for function names exported from shared library
 include( GenerateExportHeader )
 set_target_properties( hipblas PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON )
@@ -136,7 +151,7 @@ else( )
     rocm_export_targets(
         TARGETS roc::hipblas
 	PREFIX hipblas
-	DEPENDS PACKAGE HIP
+	DEPENDS PACKAGE hip
 	NAMESPACE roc::
     )
 endif( )

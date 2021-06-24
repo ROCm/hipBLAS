@@ -5,7 +5,6 @@
 
 #include "testing_set_get_atomics_mode.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
