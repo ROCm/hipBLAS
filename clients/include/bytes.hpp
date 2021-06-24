@@ -340,4 +340,11 @@ constexpr double herk_gbyte_count(int n, int k)
     return syrk_gbyte_count<T>(n, k);
 }
 
+/* \brief byte counts of DGMM */
+template <typename T>
+constexpr double dgmm_gbyte_count(int n, int m, int k)
+{
+    return (sizeof(T) * (2 * m * n) + (k));
+}
+
 #endif /* _HIPBLAS_BYTES_H_ */
