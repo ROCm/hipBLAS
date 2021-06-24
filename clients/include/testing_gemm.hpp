@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <vector>
 
 #include "testing_common.hpp"

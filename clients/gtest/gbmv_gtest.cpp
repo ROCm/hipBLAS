@@ -5,7 +5,6 @@
 
 #include "testing_gbmv.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

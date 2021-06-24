@@ -5,7 +5,6 @@
 
 #include "testing_geqrf_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

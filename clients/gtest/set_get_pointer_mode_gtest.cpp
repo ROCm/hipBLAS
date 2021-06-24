@@ -4,7 +4,9 @@
  * ************************************************************************ */
 
 #include "hipblas.h"
+#ifdef GOOGLE_TEST
 #include <gtest/gtest.h>
+#endif
 #include <stdexcept>
 //#include "utility.h"
 

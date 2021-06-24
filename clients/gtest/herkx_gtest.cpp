@@ -7,7 +7,6 @@
 #include "testing_herkx_batched.hpp"
 #include "testing_herkx_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

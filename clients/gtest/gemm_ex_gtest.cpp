@@ -6,7 +6,6 @@
 #include "testing_gemm_ex.hpp"
 #include "testing_gemm_strided_batched_ex.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
