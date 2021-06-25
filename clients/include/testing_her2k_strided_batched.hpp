@@ -131,6 +131,8 @@ hipblasStatus_t testing_her2k_strided_batched(const Arguments& argus)
                                                      stride_C,
                                                      batch_count));
 
+    CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================

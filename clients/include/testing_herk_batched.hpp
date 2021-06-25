@@ -60,7 +60,7 @@ hipblasStatus_t testing_herk_batched(const Arguments& argus)
     host_batch_vector<T> hC_gold(C_size, 1, batch_count);
 
     device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dC(A_size, 1, batch_count);
+    device_batch_vector<T> dC(C_size, 1, batch_count);
     device_vector<U>       d_alpha(1);
     device_vector<U>       d_beta(1);
 
