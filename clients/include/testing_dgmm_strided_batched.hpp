@@ -38,9 +38,9 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
     if(!stride_x)
         stride_x = 1;
 
-    int A_size = stride_A * batch_count;
-    int C_size = stride_C * batch_count;
-    int X_size = stride_x * batch_count;
+    size_t A_size = size_t(stride_A) * batch_count;
+    size_t C_size = size_t(stride_C) * batch_count;
+    size_t X_size = size_t(stride_x) * batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

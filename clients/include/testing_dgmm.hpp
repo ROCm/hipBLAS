@@ -28,10 +28,10 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
     int incx = argus.incx;
     int ldc  = argus.ldc;
 
-    int A_size = size_t(lda) * N;
-    int C_size = size_t(ldc) * N;
-    int k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
-    int X_size = size_t(incx) * k;
+    size_t A_size = size_t(lda) * N;
+    size_t C_size = size_t(ldc) * N;
+    int    k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
+    size_t X_size = size_t(incx) * k;
     if(!X_size)
         X_size = 1;
 

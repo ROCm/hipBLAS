@@ -30,12 +30,9 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
     int ldc         = argus.ldc;
     int batch_count = argus.batch_count;
 
-    int A_size = size_t(lda) * N;
-    int C_size = size_t(ldc) * N;
-    int k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
-    int X_size = size_t(incx) * k;
-    if(!X_size)
-        X_size = 1;
+    size_t A_size = size_t(lda) * N;
+    size_t C_size = size_t(ldc) * N;
+    int    k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

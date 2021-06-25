@@ -344,7 +344,16 @@ constexpr double herk_gbyte_count(int n, int k)
 template <typename T>
 constexpr double dgmm_gbyte_count(int n, int m, int k)
 {
+    // read A, read x, write C
     return (sizeof(T) * (2 * m * n) + (k));
+}
+
+/* \brief byte counts of GEAM */
+template <typename T>
+constexpr double geam_gbyte_count(int n, int m)
+{
+    // read A, read B, write to C
+    return (sizeof(T) * 3 * m * n);
 }
 
 #endif /* _HIPBLAS_BYTES_H_ */

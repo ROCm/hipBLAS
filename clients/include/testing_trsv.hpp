@@ -30,9 +30,9 @@ hipblasStatus_t testing_trsv(const Arguments& argus)
     hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
     hipblasOperation_t transA      = char2hipblas_operation(char_transA);
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int size_A   = lda * M;
-    int size_x   = abs_incx * M;
+    int    abs_incx = incx < 0 ? -incx : incx;
+    size_t size_A   = size_t(lda) * M;
+    size_t size_x   = abs_incx * size_t(M);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

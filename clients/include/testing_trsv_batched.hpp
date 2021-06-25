@@ -32,9 +32,8 @@ hipblasStatus_t testing_trsv_batched(const Arguments& argus)
     hipblasOperation_t transA      = char2hipblas_operation(char_transA);
     int                batch_count = argus.batch_count;
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int size_A   = lda * M;
-    int size_x   = abs_incx * M;
+    int    abs_incx = incx < 0 ? -incx : incx;
+    size_t size_A   = size_t(lda) * M;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

@@ -36,8 +36,8 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
     int           abs_incx = incx < 0 ? -incx : incx;
     hipblasStride strideA  = lda * M * stride_scale;
     hipblasStride stridex  = abs_incx * M * stride_scale;
-    int           size_A   = strideA * batch_count;
-    int           size_x   = stridex * batch_count;
+    size_t        size_A   = size_t(strideA) * batch_count;
+    size_t        size_x   = size_t(stridex) * batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
