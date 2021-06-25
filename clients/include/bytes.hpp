@@ -356,4 +356,12 @@ constexpr double geam_gbyte_count(int n, int m)
     return (sizeof(T) * 3 * m * n);
 }
 
+/* \brief byte counts of HEMM */
+template <typename T>
+constexpr double hemm_gbyte_count(int n, int m, int k)
+{
+    // read A, B, C, write C
+    return (sizeof(T) * (3 * m * n + tri_count(k)));
+}
+
 #endif /* _HIPBLAS_BYTES_H_ */
