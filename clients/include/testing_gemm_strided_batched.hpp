@@ -82,12 +82,12 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
         B_col = K;
     }
 
-    hipblasStride stride_A = lda * A_col * stride_scale;
-    hipblasStride stride_B = ldb * B_col * stride_scale;
-    hipblasStride stride_C = ldc * N * stride_scale;
-    size_t        A_size   = size_t(stride_A) * batch_count;
-    size_t        B_size   = size_t(stride_B) * batch_count;
-    size_t        C_size   = size_t(stride_C) * batch_count;
+    hipblasStride stride_A = size_t(lda) * A_col * stride_scale;
+    hipblasStride stride_B = size_t(ldb) * B_col * stride_scale;
+    hipblasStride stride_C = size_t(ldc) * N * stride_scale;
+    size_t        A_size   = stride_A * batch_count;
+    size_t        B_size   = stride_B * batch_count;
+    size_t        C_size   = stride_C * batch_count;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hA(A_size);
@@ -155,7 +155,7 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
 
         // device mode
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * C_size, hipMemcpyHostToDevice));
         CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedFn(handle,
                                                         transA,
                                                         transB,
