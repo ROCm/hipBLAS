@@ -152,6 +152,9 @@
 #include "testing_herk.hpp"
 #include "testing_herk_batched.hpp"
 #include "testing_herk_strided_batched.hpp"
+#include "testing_herkx.hpp"
+#include "testing_herkx_batched.hpp"
+#include "testing_herkx_strided_batched.hpp"
 #include "testing_syr2k.hpp"
 #include "testing_syr2k_batched.hpp"
 #include "testing_syr2k_strided_batched.hpp"
@@ -612,9 +615,15 @@ struct perf_blas<
             {"hemm", testing_hemm<T>},
             {"hemm_batched", testing_hemm_batched<T>},
             {"hemm_strided_batched", testing_hemm_strided_batched<T>},
-            // {"herk", testing_herk<T>},
-            // {"herk_batched", testing_herk_batched<T>},
-            // {"herk_strided_batched", testing_herk_strided_batched<T>},
+            {"herk", testing_herk<T>},
+            {"herk_batched", testing_herk_batched<T>},
+            {"herk_strided_batched", testing_herk_strided_batched<T>},
+            {"her2k", testing_her2k<T>},
+            {"her2k_batched", testing_her2k_batched<T>},
+            {"her2k_strided_batched", testing_her2k_strided_batched<T>},
+            {"herkx", testing_herkx<T>},
+            {"herkx_batched", testing_herkx_batched<T>},
+            {"herkx_strided_batched", testing_herkx_strided_batched<T>},
             /*
                 // L3
                 {"syrk", testing_syrk<T>},
@@ -629,12 +638,7 @@ struct perf_blas<
                 {"symm", testing_symm_hemm<T, false>},
                 {"symm_batched", testing_symm_hemm_batched<T, false>},
                 {"symm_strided_batched", testing_symm_hemm_strided_batched<T, false>},
-                {"her2k", testing_her2k<T>},
-                {"her2k_batched", testing_her2k_batched<T>},
-                {"her2k_strided_batched", testing_her2k_strided_batched<T>},
-                {"herkx", testing_her2k<T, false>},
-                {"herkx_batched", testing_her2k_batched<T, false>},
-                {"herkx_strided_batched", testing_her2k_strided_batched<T, false>},
+
             {"trtri", testing_trtri<T>},
             {"trtri_batched", testing_trtri_batched<T>},
             {"trtri_strided_batched", testing_trtri_strided_batched<T>},

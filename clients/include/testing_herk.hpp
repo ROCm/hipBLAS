@@ -14,9 +14,10 @@ using namespace std;
 
 /* ============================================================================================ */
 
-template <typename T, typename U>
+template <typename T>
 hipblasStatus_t testing_herk(const Arguments& argus)
 {
+    using U            = real_t<T>;
     bool FORTRAN       = argus.fortran;
     auto hipblasHerkFn = FORTRAN ? hipblasHerk<T, U, true> : hipblasHerk<T, U, false>;
 
