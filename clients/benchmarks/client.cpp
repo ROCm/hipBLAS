@@ -432,14 +432,14 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"syrk", testing_syrk<T>},
             {"syrk_batched", testing_syrk_batched<T>},
             {"syrk_strided_batched", testing_syrk_strided_batched<T>},
+            {"syr2k", testing_syr2k<T>},
+            {"syr2k_batched", testing_syr2k_batched<T>},
+            {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
             /*{"set_get_vector", testing_set_get_vector<T>},
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
 
                 // L3
-                {"syr2k", testing_syr2k<T>},
-                {"syr2k_batched", testing_syr2k_batched<T>},
-                {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
                 {"syrkx", testing_syr2k<T, false>},
                 {"syrkx_batched", testing_syr2k_batched<T, false>},
                 {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
@@ -632,11 +632,11 @@ struct perf_blas<
             {"syrk", testing_syrk<T>},
             {"syrk_batched", testing_syrk_batched<T>},
             {"syrk_strided_batched", testing_syrk_strided_batched<T>},
+            {"syr2k", testing_syr2k<T>},
+            {"syr2k_batched", testing_syr2k_batched<T>},
+            {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
             /*
                 // L3
-                {"syr2k", testing_syr2k<T>},
-                {"syr2k_batched", testing_syr2k_batched<T>},
-                {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
                 {"syrkx", testing_syr2k<T, false>},
                 {"syrkx_batched", testing_syr2k_batched<T, false>},
                 {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
