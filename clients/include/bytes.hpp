@@ -333,11 +333,64 @@ constexpr double syrk_gbyte_count(int n, int k)
     return (sizeof(T) * (tri_count(n) + n * k)) / 1e9;
 }
 
+/* \brief byte counts of SYR2K */
+template <typename T>
+constexpr double syr2k_gbyte_count(int n, int k)
+{
+    // Read A, B, C, write C
+    return (sizeof(T) * (2 * n * k + 2 * tri_count(n)));
+}
+
+/* \brief byte counts of SYRKX */
+template <typename T>
+constexpr double syrkx_gbyte_count(int n, int k)
+{
+    return syr2k_gbyte_count<T>(n, k);
+}
+
 /* \brief byte counts of HERK */
 template <typename T>
 constexpr double herk_gbyte_count(int n, int k)
 {
     return syrk_gbyte_count<T>(n, k);
+}
+
+/* \brief byte counts of HER2K */
+template <typename T>
+constexpr double her2k_gbyte_count(int n, int k)
+{
+    return syr2k_gbyte_count<T>(n, k);
+}
+
+/* \brief byte counts of HERKX */
+template <typename T>
+constexpr double herkx_gbyte_count(int n, int k)
+{
+    return syrkx_gbyte_count<T>(n, k);
+}
+
+/* \brief byte counts of DGMM */
+template <typename T>
+constexpr double dgmm_gbyte_count(int n, int m, int k)
+{
+    // read A, read x, write C
+    return (sizeof(T) * (2 * m * n) + (k));
+}
+
+/* \brief byte counts of GEAM */
+template <typename T>
+constexpr double geam_gbyte_count(int n, int m)
+{
+    // read A, read B, write to C
+    return (sizeof(T) * 3 * m * n);
+}
+
+/* \brief byte counts of HEMM */
+template <typename T>
+constexpr double hemm_gbyte_count(int n, int m, int k)
+{
+    // read A, B, C, write C
+    return (sizeof(T) * (3 * m * n + tri_count(k)));
 }
 
 #endif /* _HIPBLAS_BYTES_H_ */

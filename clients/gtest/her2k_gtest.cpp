@@ -137,7 +137,7 @@ TEST_P(blas2_her2k_gtest, her2k_gtest_float)
 
     Arguments arg = setup_her2k_arguments(GetParam());
 
-    hipblasStatus_t status = testing_her2k<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_her2k<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -164,7 +164,7 @@ TEST_P(blas2_her2k_gtest, her2k_gtest_double)
 
     Arguments arg = setup_her2k_arguments(GetParam());
 
-    hipblasStatus_t status = testing_her2k<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_her2k<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -194,7 +194,7 @@ TEST_P(blas2_her2k_gtest, her2k_batched_gtest_float)
 
     Arguments arg = setup_her2k_arguments(GetParam());
 
-    hipblasStatus_t status = testing_her2k_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_her2k_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -222,7 +222,7 @@ TEST_P(blas2_her2k_gtest, her2k_batched_gtest_double)
 
     Arguments arg = setup_her2k_arguments(GetParam());
 
-    hipblasStatus_t status = testing_her2k_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_her2k_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -251,7 +251,7 @@ TEST_P(blas2_her2k_gtest, her2k_strided_batched_gtest_float)
 
     Arguments arg = setup_her2k_arguments(GetParam());
 
-    hipblasStatus_t status = testing_her2k_strided_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_her2k_strided_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -279,7 +279,7 @@ TEST_P(blas2_her2k_gtest, her2k_strided_batched_gtest_double)
 
     Arguments arg = setup_her2k_arguments(GetParam());
 
-    hipblasStatus_t status = testing_her2k_strided_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_her2k_strided_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)

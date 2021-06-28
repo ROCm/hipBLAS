@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include <fstream>
@@ -35,53 +35,39 @@ hipblasStatus_t testing_geam(const Arguments& argus)
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();
 
-    int A_size, B_size, C_size, A_row, A_col, B_row, B_col;
-    int inc1_A, inc2_A, inc1_B, inc2_B;
+    int A_row, A_col, B_row, B_col;
 
-    T hipblas_error = 0.0;
-
-    hipblasHandle_t handle;
-    hipblasStatus_t status1 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status2 = HIPBLAS_STATUS_SUCCESS;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
+    hipblasLocalHandle handle(argus);
 
     if(transA == HIPBLAS_OP_N)
     {
-        A_row  = M;
-        A_col  = N;
-        inc1_A = 1;
-        inc2_A = lda;
+        A_row = M;
+        A_col = N;
     }
     else
     {
-        A_row  = N;
-        A_col  = M;
-        inc1_A = lda;
-        inc2_A = 1;
+        A_row = N;
+        A_col = M;
     }
     if(transB == HIPBLAS_OP_N)
     {
-        B_row  = M;
-        B_col  = N;
-        inc1_B = 1;
-        inc2_B = ldb;
+        B_row = M;
+        B_col = N;
     }
     else
     {
-        B_row  = N;
-        B_col  = M;
-        inc1_B = ldb;
-        inc2_B = 1;
+        B_row = N;
+        B_col = M;
     }
 
-    A_size = lda * A_col;
-    B_size = ldb * B_col;
-    C_size = ldc * N;
+    size_t A_size = size_t(lda) * A_col;
+    size_t B_size = size_t(ldb) * B_col;
+    size_t C_size = size_t(ldc) * N;
 
     // check here to prevent undefined memory allocation error
     if(M <= 0 || N <= 0 || lda < A_row || ldb < B_row || ldc < M)
     {
-        hipblasDestroy(handle);
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
@@ -91,11 +77,6 @@ hipblasStatus_t testing_geam(const Arguments& argus)
     device_vector<T> dC(C_size);
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
-    if(!dA || !dB || !dC || !d_alpha || !d_beta)
-    {
-        hipblasDestroy(handle);
-        return HIPBLAS_STATUS_ALLOC_FAILED;
-    }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
@@ -121,49 +102,23 @@ hipblasStatus_t testing_geam(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
     {
         // &h_alpha and &h_beta are host pointers
-        status1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-
-        if(status1 != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status1;
-        }
-
-        status2 = hipblasGeamFn(
-            handle, transA, transB, M, N, &h_alpha, dA, lda, &h_beta, dB, ldb, dC, ldc);
-
-        if(status2 != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status2;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasGeamFn(
+            handle, transA, transB, M, N, &h_alpha, dA, lda, &h_beta, dB, ldb, dC, ldc));
 
         CHECK_HIP_ERROR(hipMemcpy(hC1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
     }
     {
-        // d_alpha and d_beta are device pointers
-        status1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-
-        if(status1 != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status1;
-        }
-
         CHECK_HIP_ERROR(hipMemcpy(dC, hC2.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
-        status2 = hipblasGeamFn(
-            handle, transA, transB, M, N, d_alpha, dA, lda, d_beta, dB, ldb, dC, ldc);
-
-        if(status2 != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status2;
-        }
+        // d_alpha and d_beta are device pointers
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGeamFn(
+            handle, transA, transB, M, N, d_alpha, dA, lda, d_beta, dB, ldb, dC, ldc));
 
         CHECK_HIP_ERROR(hipMemcpy(hC2.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
     }
@@ -171,24 +126,61 @@ hipblasStatus_t testing_geam(const Arguments& argus)
     /* =====================================================================
             CPU BLAS
     =================================================================== */
-    if(status2 != HIPBLAS_STATUS_INVALID_VALUE) // only valid size compare with cblas
+    if(argus.unit_check || argus.norm_check)
     {
         cblas_geam(
             transA, transB, M, N, &h_alpha, (T*)hA, lda, &h_beta, (T*)hB, ldb, (T*)hC_copy, ldc);
+
+        // enable unit check, notice unit check is not invasive, but norm check is,
+        // unit check and norm check can not be interchanged their order
+        if(argus.unit_check)
+        {
+            unit_check_general<T>(M, N, ldc, hC_copy.data(), hC1.data());
+            unit_check_general<T>(M, N, ldc, hC_copy.data(), hC2.data());
+        }
+
+        if(argus.norm_check)
+        {
+            hipblas_error_host = norm_check_general<T>('F', M, N, ldc, hC_copy.data(), hC1.data());
+            hipblas_error_device
+                = norm_check_general<T>('F', M, N, ldc, hC_copy.data(), hC2.data());
+        }
     }
 
-#ifndef NDEBUG
-    print_matrix(hC_copy, hC1, min(M, 3), min(N, 3), ldc);
-#endif
-
-    // enable unit check, notice unit check is not invasive, but norm check is,
-    // unit check and norm check can not be interchanged their order
-    if(argus.unit_check)
+    if(argus.timing)
     {
-        unit_check_general<T>(M, N, ldc, hC_copy.data(), hC1.data());
-        unit_check_general<T>(M, N, ldc, hC_copy.data(), hC2.data());
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasGeamFn(
+                handle, transA, transB, M, N, d_alpha, dA, lda, d_beta, dB, ldb, dC, ldc));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
+
+        ArgumentModel<e_transA_option,
+                      e_transB_option,
+                      e_M,
+                      e_N,
+                      e_alpha,
+                      e_lda,
+                      e_beta,
+                      e_ldb,
+                      e_ldc>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         geam_gflop_count<T>(M, N),
+                         geam_gbyte_count<T>(M, N),
+                         hipblas_error_host,
+                         hipblas_error_device);
     }
 
-    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
