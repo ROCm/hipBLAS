@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -28,21 +28,18 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
     int incx = argus.incx;
     int ldc  = argus.ldc;
 
-    int A_size = size_t(lda) * N;
-    int C_size = size_t(ldc) * N;
-    int k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
-    int X_size = size_t(incx) * k;
+    size_t A_size = size_t(lda) * N;
+    size_t C_size = size_t(ldc) * N;
+    int    k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
+    size_t X_size = size_t(incx) * k;
     if(!X_size)
         X_size = 1;
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(M < 0 || N < 0 || lda < M || ldc < M)
     {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -58,12 +55,8 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
     device_vector<T> dx(X_size);
     device_vector<T> dC(C_size);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops, hipblasBandwidth;
-    double rocblas_error;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error;
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -76,25 +69,19 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
     hC_gold = hC;
 
     // copy data from CPU to device
-    hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice);
-    hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice);
-    hipMemcpy(dC, hC.data(), sizeof(T) * C_size, hipMemcpyHostToDevice);
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
-    status = hipblasDgmmFn(handle, side, M, N, dA, lda, dx, incx, dC, ldc);
-
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasDgmmFn(handle, side, M, N, dA, lda, dx, incx, dC, ldc));
 
     // copy output from device to CPU
-    hipMemcpy(hC_1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost);
+    CHECK_HIP_ERROR(hipMemcpy(hC_1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
 
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU BLAS
@@ -122,8 +109,36 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
         {
             unit_check_general<T>(M, N, ldc, hC_gold, hC_1);
         }
+
+        if(argus.norm_check)
+        {
+            hipblas_error = norm_check_general<T>('F', M, N, ldc, hC_gold, hC_1);
+        }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasDgmmFn(handle, side, M, N, dA, lda, dx, incx, dC, ldc));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
+
+        ArgumentModel<e_side_option, e_M, e_N, e_lda, e_incx, e_ldc>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            dgmm_gflop_count<T>(M, N),
+            dgmm_gbyte_count<T>(M, N, k),
+            hipblas_error);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }
