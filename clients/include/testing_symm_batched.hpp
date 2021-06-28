@@ -141,6 +141,7 @@ hipblasStatus_t testing_symm_batched(const Arguments& argus)
         if(argus.unit_check)
         {
             unit_check_general<T>(M, N, batch_count, ldc, hC_gold, hC_host);
+            unit_check_general<T>(M, N, batch_count, ldc, hC_gold, hC_device);
         }
 
         if(argus.norm_check)
