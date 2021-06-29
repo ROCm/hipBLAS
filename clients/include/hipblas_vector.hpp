@@ -12,7 +12,6 @@
 #include "utility.h"
 #include <cinttypes>
 #include <cstdio>
-#include <gtest/gtest.h>
 #include <locale.h>
 #include <vector>
 

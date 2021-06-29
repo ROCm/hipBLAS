@@ -620,22 +620,21 @@ constexpr double dgmm_gflop_count<hipblasDoubleComplex>(int m, int n)
 
 /* \brief floating point counts of HEMM */
 template <typename T>
-constexpr double hemm_gflop_count(hipblasSideMode_t side, int m, int n)
+constexpr double hemm_gflop_count(int m, int n, int k)
 {
-    int k = side == HIPBLAS_SIDE_LEFT ? m : n;
     return ((2 * k - 1.0) * m * n + 2.0 * m * n) / 1e9;
 }
 
 template <>
-constexpr double hemm_gflop_count<hipblasComplex>(hipblasSideMode_t side, int m, int n)
+constexpr double hemm_gflop_count<hipblasComplex>(int m, int n, int k)
 {
-    return 4.0 * hemm_gflop_count<float>(side, m, n);
+    return 4.0 * hemm_gflop_count<float>(m, n, k);
 }
 
 template <>
-constexpr double hemm_gflop_count<hipblasDoubleComplex>(hipblasSideMode_t side, int m, int n)
+constexpr double hemm_gflop_count<hipblasDoubleComplex>(int m, int n, int k)
 {
-    return hemm_gflop_count<hipblasComplex>(side, m, n);
+    return hemm_gflop_count<hipblasComplex>(m, n, k);
 }
 
 /* \brief floating point counts of HERK */

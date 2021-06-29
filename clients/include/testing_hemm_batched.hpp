@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -31,10 +31,10 @@ hipblasStatus_t testing_hemm_batched(const Arguments& argus)
     hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo_option);
     hipblasStatus_t   status = HIPBLAS_STATUS_SUCCESS;
 
-    int K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    int A_size = lda * K;
-    int B_size = ldb * N;
-    int C_size = ldc * N;
+    int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
+    size_t A_size = size_t(lda) * K;
+    size_t B_size = size_t(ldb) * N;
+    size_t C_size = size_t(ldc) * N;
 
     int batch_count = argus.batch_count;
 
@@ -49,140 +49,158 @@ hipblasStatus_t testing_hemm_batched(const Arguments& argus)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
+    hipblasLocalHandle handle(argus);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops, hipblasBandwidth;
-    double rocblas_error;
+    T h_alpha = argus.get_alpha<T>();
+    T h_beta  = argus.get_beta<T>();
 
-    T alpha = argus.get_alpha<T>();
-    T beta  = argus.get_beta<T>();
+    // host arrays
+    host_batch_vector<T> hA(A_size, 1, batch_count);
+    host_batch_vector<T> hB(B_size, 1, batch_count);
+    host_batch_vector<T> hC_host(C_size, 1, batch_count);
+    host_batch_vector<T> hC_device(C_size, 1, batch_count);
+    host_batch_vector<T> hC_gold(C_size, 1, batch_count);
 
-    // arrays of pointers-to-host on host
-    host_vector<T> hA_array[batch_count];
-    host_vector<T> hB_array[batch_count];
-    host_vector<T> hC_array[batch_count];
-    host_vector<T> hC_gold_array[batch_count];
+    // device arrays
+    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_batch_vector<T> dB(B_size, 1, batch_count);
+    device_batch_vector<T> dC(C_size, 1, batch_count);
+    device_vector<T>       d_alpha(1);
+    device_vector<T>       d_beta(1);
 
-    // arrays of pointers-to-device on host
-    device_batch_vector<T> bA_array(batch_count, A_size);
-    device_batch_vector<T> bB_array(batch_count, B_size);
-    device_batch_vector<T> bC_array(batch_count, C_size);
+    CHECK_HIP_ERROR(dA.memcheck());
+    CHECK_HIP_ERROR(dB.memcheck());
+    CHECK_HIP_ERROR(dC.memcheck());
 
-    // arrays of pointers-to-device on device
-    device_vector<T*, 0, T> dA_array(batch_count);
-    device_vector<T*, 0, T> dB_array(batch_count);
-    device_vector<T*, 0, T> dC_array(batch_count);
+    hipblas_init(hA, true);
+    hipblas_init(hB);
+    hipblas_init(hC_host);
 
-    int last = batch_count - 1;
-    if(!dA_array || !dB_array || !dC_array || (!bA_array[last] && A_size)
-       || (!bB_array[last] && B_size) || (!bC_array[last] && C_size))
-    {
-        hipblasDestroy(handle);
-        return HIPBLAS_STATUS_ALLOC_FAILED;
-    }
+    hC_device.copy_from(hC_host);
+    hC_gold.copy_from(hC_host);
 
-    // Initial Data on CPU
-    hipError_t err_A, err_B, err_C;
-    srand(1);
-    for(int b = 0; b < batch_count; b++)
-    {
-        hA_array[b]      = host_vector<T>(A_size);
-        hB_array[b]      = host_vector<T>(B_size);
-        hC_array[b]      = host_vector<T>(C_size);
-        hC_gold_array[b] = host_vector<T>(C_size);
-
-        // initialize matrices on host
-        srand(1);
-        hipblas_init<T>(hA_array[b], M, N, lda);
-        hipblas_init<T>(hB_array[b], M, N, ldb);
-        hipblas_init<T>(hC_array[b], M, N, ldc);
-        hC_gold_array[b] = hC_array[b];
-
-        err_A = hipMemcpy(bA_array[b], hA_array[b], sizeof(T) * A_size, hipMemcpyHostToDevice);
-        err_B = hipMemcpy(bB_array[b], hB_array[b], sizeof(T) * B_size, hipMemcpyHostToDevice);
-        err_C = hipMemcpy(bC_array[b], hC_array[b], sizeof(T) * C_size, hipMemcpyHostToDevice);
-
-        if(err_A != hipSuccess || err_B != hipSuccess || err_C != hipSuccess)
-        {
-            hipblasDestroy(handle);
-            return HIPBLAS_STATUS_MAPPING_ERROR;
-        }
-    }
-
-    err_A = hipMemcpy(dA_array, bA_array, batch_count * sizeof(T*), hipMemcpyHostToDevice);
-    err_B = hipMemcpy(dB_array, bB_array, batch_count * sizeof(T*), hipMemcpyHostToDevice);
-    err_C = hipMemcpy(dC_array, bC_array, batch_count * sizeof(T*), hipMemcpyHostToDevice);
-    if(err_A != hipSuccess || err_B != hipSuccess || err_C != hipSuccess)
-    {
-        hipblasDestroy(handle);
-        return HIPBLAS_STATUS_MAPPING_ERROR;
-    }
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
-    for(int iter = 0; iter < 1; iter++)
-    {
-        status = hipblasHemmBatchedFn(handle,
-                                      side,
-                                      uplo,
-                                      M,
-                                      N,
-                                      &alpha,
-                                      dA_array,
-                                      lda,
-                                      dB_array,
-                                      ldb,
-                                      &beta,
-                                      dC_array,
-                                      ldc,
-                                      batch_count);
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+    CHECK_HIPBLAS_ERROR(hipblasHemmBatchedFn(handle,
+                                             side,
+                                             uplo,
+                                             M,
+                                             N,
+                                             &h_alpha,
+                                             dA.ptr_on_device(),
+                                             lda,
+                                             dB.ptr_on_device(),
+                                             ldb,
+                                             &h_beta,
+                                             dC.ptr_on_device(),
+                                             ldc,
+                                             batch_count));
 
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
-    }
+    CHECK_HIP_ERROR(hC_host.transfer_from(dC));
 
-    // copy output from device to CPU
-    for(int b = 0; b < batch_count; b++)
-    {
-        hipMemcpy(hC_array[b], bC_array[b], sizeof(T) * C_size, hipMemcpyDeviceToHost);
-    }
+    CHECK_HIP_ERROR(dC.transfer_from(hC_device));
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+    CHECK_HIPBLAS_ERROR(hipblasHemmBatchedFn(handle,
+                                             side,
+                                             uplo,
+                                             M,
+                                             N,
+                                             d_alpha,
+                                             dA.ptr_on_device(),
+                                             lda,
+                                             dB.ptr_on_device(),
+                                             ldb,
+                                             d_beta,
+                                             dC.ptr_on_device(),
+                                             ldc,
+                                             batch_count));
 
-    if(argus.unit_check)
+    CHECK_HIP_ERROR(hC_device.transfer_from(dC));
+
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_hemm<T>(side,
-                          uplo,
-                          M,
-                          N,
-                          alpha,
-                          hA_array[b],
-                          lda,
-                          hB_array[b],
-                          ldb,
-                          beta,
-                          hC_gold_array[b],
-                          ldc);
+            cblas_hemm<T>(
+                side, uplo, M, N, h_alpha, hA[b], lda, hB[b], ldb, h_beta, hC_gold[b], ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(M, N, batch_count, ldc, hC_gold_array, hC_array);
+            unit_check_general<T>(M, N, batch_count, ldc, hC_gold, hC_host);
+            unit_check_general<T>(M, N, batch_count, ldc, hC_gold, hC_device);
+        }
+
+        if(argus.norm_check)
+        {
+            hipblas_error_host
+                = norm_check_general<T>('F', M, N, ldc, hC_gold, hC_host, batch_count);
+            hipblas_error_device
+                = norm_check_general<T>('F', M, N, ldc, hC_gold, hC_device, batch_count);
         }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasHemmBatchedFn(handle,
+                                                     side,
+                                                     uplo,
+                                                     M,
+                                                     N,
+                                                     d_alpha,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     dB.ptr_on_device(),
+                                                     ldb,
+                                                     d_beta,
+                                                     dC.ptr_on_device(),
+                                                     ldc,
+                                                     batch_count));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
+
+        ArgumentModel<e_side_option,
+                      e_uplo_option,
+                      e_M,
+                      e_N,
+                      e_alpha,
+                      e_lda,
+                      e_ldb,
+                      e_beta,
+                      e_ldc,
+                      e_batch_count>{}
+            .log_args<T>(std::cout,
+                         argus,
+                         gpu_time_used,
+                         hemm_gflop_count<T>(M, N, K),
+                         hemm_gbyte_count<T>(M, N, K),
+                         hipblas_error_host,
+                         hipblas_error_device);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }

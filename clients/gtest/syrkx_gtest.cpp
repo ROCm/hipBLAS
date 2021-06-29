@@ -7,7 +7,6 @@
 #include "testing_syr2k_batched.hpp"
 #include "testing_syr2k_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
