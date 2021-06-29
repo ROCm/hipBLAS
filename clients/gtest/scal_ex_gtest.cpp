@@ -7,7 +7,6 @@
 #include "testing_scal_ex.hpp"
 #include "testing_scal_strided_batched_ex.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

@@ -7,7 +7,6 @@
 #include "testing_rot_ex.hpp"
 #include "testing_rot_strided_batched_ex.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

@@ -20,8 +20,10 @@ if( NOT Boost_FOUND )
 endif( )
 
 # Linking lapack library requires fortran flags
-enable_language( Fortran )
-find_package( cblas CONFIG REQUIRED )
+if(NOT WIN32)
+    enable_language( Fortran )
+endif()
+find_package( cblas CONFIG REQUIRED PATHS ${LAPACK_DIR} )
 if( NOT cblas_FOUND )
   message( FATAL_ERROR "cblas is a required dependency and is not found;  try adding cblas path to CMAKE_PREFIX_PATH" )
 endif( )
@@ -113,6 +115,10 @@ if( BUILD_WITH_SOLVER )
   )
 endif( )
 
+if(LINK_BLIS)
+  set( BLIS_CPP ../common/blis_interface.cpp )
+endif()
+
 set( hipblas_test_common
   ../common/utility.cpp
   ../common/cblas_interface.cpp
@@ -122,9 +128,24 @@ set( hipblas_test_common
   ../common/arg_check.cpp
   ../common/hipblas_datatype2string.cpp
   ../common/hipblas_template_specialization.cpp
+  ${BLIS_CPP}
 )
 
 add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
+
+if(LINK_BLIS)
+    if (NOT WIN32)
+      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+      set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+    else( )
+      set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
+      find_library( BLIS_LIBRARY libblis
+                      PATHS ${BLIS_DIR}/lib
+                      REQUIRED
+                      NO_DEFAULT_PATH
+                  )
+    endif()
+endif()
 
 target_include_directories( hipblas-test
   PRIVATE
@@ -143,10 +164,19 @@ target_include_directories( hipblas-test
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
     ${ROCM_PATH}/hsa/include
 )
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} hipblas_fortran_client )
+if (NOT WIN32)
+    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
+endif()
+
+target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} )
+
+if(LINK_BLIS)
+  target_link_libraries( hipblas-test PRIVATE ${BLIS_LIBRARY} )
+endif()
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-test PRIVATE -mf16c )
@@ -173,5 +203,33 @@ else( )
   target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} Threads::Threads )
 endif( )
 
-set_target_properties( hipblas-test PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
-set_target_properties( hipblas-test PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
+if (WIN32)
+  # for now adding in all .dll as dependency chain is not cmake based on win32
+  file( GLOB third_party_dlls
+    LIST_DIRECTORIES OFF
+    CONFIGURE_DEPENDS
+    ${LAPACK_DIR}/bin/*.dll
+    ${BLIS_DIR}/lib/*.dll
+    ${HIP_DIR}/bin/*.dll
+    ${HIP_DIR}/bin/hipinfo.exe
+    ${ROCBLAS_PATH}/bin/rocblas.dll
+    ${ROCSOLVER_PATH}/bin/rocsolver.dll
+    ${CMAKE_SOURCE_DIR}/rtest.*
+    C:/Windows/System32/libomp140*.dll
+  )
+  foreach( file_i ${third_party_dlls})
+    add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy ${file_i} ${PROJECT_BINARY_DIR}/staging/ )
+  endforeach( file_i )
+
+  add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${ROCBLAS_PATH}/bin/library/ ${PROJECT_BINARY_DIR}/staging/library/)
+endif()
+
+set_target_properties( hipblas-test PROPERTIES
+    CXX_STANDARD 14
+    CXX_STANDARED_REQUIRED ON
+    CXX_EXTENSIONS OFF
+    IMPORT_PREFIX ""
+    IMPORT_SUFFIX ".lib"
+    LINKER_LANGUAGE CXX
+    DEBUG_POSTFIX "-d"
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
