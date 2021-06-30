@@ -340,13 +340,6 @@ constexpr double syr2k_gbyte_count(int n, int k)
     return (sizeof(T) * (2 * n * k + 2 * tri_count(n)));
 }
 
-/* \brief byte counts of SYRKX */
-template <typename T>
-constexpr double syrkx_gbyte_count(int n, int k)
-{
-    return syr2k_gbyte_count<T>(n, k);
-}
-
 /* \brief byte counts of HERK */
 template <typename T>
 constexpr double herk_gbyte_count(int n, int k)
