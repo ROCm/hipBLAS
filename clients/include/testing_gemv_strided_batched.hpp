@@ -33,28 +33,25 @@ hipblasStatus_t testing_gemv_strided_batched(const Arguments& argus)
     hipblasStride stride_x;
     hipblasStride stride_y;
 
-    int A_size = stride_A * batch_count;
-    int X_size;
-    int Y_size;
-
-    int x_els;
-    int y_els;
+    size_t A_size = stride_A * batch_count;
+    size_t X_size, dim_x;
+    size_t Y_size, dim_y;
 
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
 
     if(transA == HIPBLAS_OP_N)
     {
-        x_els = N;
-        y_els = M;
+        dim_x = N;
+        dim_y = M;
     }
     else
     {
-        x_els = M;
-        y_els = N;
+        dim_x = M;
+        dim_y = N;
     }
 
-    stride_x = x_els * incx * stride_scale;
-    stride_y = y_els * incy * stride_scale;
+    stride_x = dim_x * incx * stride_scale;
+    stride_y = dim_y * incy * stride_scale;
     X_size   = stride_x * batch_count;
     Y_size   = stride_y * batch_count;
 
@@ -91,8 +88,8 @@ hipblasStatus_t testing_gemv_strided_batched(const Arguments& argus)
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, M, N, lda, stride_A, batch_count);
-    hipblas_init<T>(hx, 1, x_els, incx, stride_x, batch_count);
-    hipblas_init<T>(hy, 1, y_els, incy, stride_y, batch_count);
+    hipblas_init<T>(hx, 1, dim_x, incx, stride_x, batch_count);
+    hipblas_init<T>(hy, 1, dim_y, incy, stride_y, batch_count);
 
     // copy vector is easy in STL; hy_cpu = hy: save a copy in hy_cpu which will be output of CPU BLAS
     hy_cpu = hy;
@@ -173,15 +170,15 @@ hipblasStatus_t testing_gemv_strided_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, y_els, batch_count, incy, stride_y, hy_cpu, hy_host);
-            unit_check_general<T>(1, y_els, batch_count, incy, stride_y, hy_cpu, hy_device);
+            unit_check_general<T>(1, dim_y, batch_count, incy, stride_y, hy_cpu, hy_host);
+            unit_check_general<T>(1, dim_y, batch_count, incy, stride_y, hy_cpu, hy_device);
         }
         if(argus.norm_check)
         {
             hipblas_error_host = norm_check_general<T>(
-                'F', 1, y_els, incy, stride_y, hy_cpu, hy_host, batch_count);
+                'F', 1, dim_y, incy, stride_y, hy_cpu, hy_host, batch_count);
             hipblas_error_device = norm_check_general<T>(
-                'F', 1, y_els, incy, stride_y, hy_cpu, hy_device, batch_count);
+                'F', 1, dim_y, incy, stride_y, hy_cpu, hy_device, batch_count);
         }
     }
 
