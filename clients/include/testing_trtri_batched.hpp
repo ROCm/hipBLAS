@@ -84,6 +84,7 @@ hipblasStatus_t testing_trtri_batched(const Arguments& argus)
 
     hB.copy_from(hA);
     CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dinvA.transfer_from(hA));
 
     /* =====================================================================
            HIPBLAS
@@ -133,8 +134,15 @@ hipblasStatus_t testing_trtri_batched(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(
-                hipblasTrtriBatchedFn(handle, uplo, diag, N, dA, lda, dinvA, ldinvA, batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasTrtriBatchedFn(handle,
+                                                      uplo,
+                                                      diag,
+                                                      N,
+                                                      dA.ptr_on_device(),
+                                                      lda,
+                                                      dinvA.ptr_on_device(),
+                                                      ldinvA,
+                                                      batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

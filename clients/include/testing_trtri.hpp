@@ -80,6 +80,7 @@ hipblasStatus_t testing_trtri(const Arguments& argus)
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dinvA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
 
     /* =====================================================================
            HIPBLAS
