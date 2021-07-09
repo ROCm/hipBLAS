@@ -170,24 +170,26 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
                                                         strideB,
                                                         batch_count));
 
+        CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */
 
-        // for(int b = 0; b < batch_count; b++)
-        // {
-        //     cblas_trsm<T>(side,
-        //                   uplo,
-        //                   transA,
-        //                   diag,
-        //                   M,
-        //                   N,
-        //                   h_alpha,
-        //                   (const T*)hA.data() + b * strideA,
-        //                   lda,
-        //                   hB_gold.data() + b * strideB,
-        //                   ldb);
-        // }
+        for(int b = 0; b < batch_count; b++)
+        {
+            cblas_trsm<T>(side,
+                          uplo,
+                          transA,
+                          diag,
+                          M,
+                          N,
+                          h_alpha,
+                          (const T*)hA.data() + b * strideA,
+                          lda,
+                          hB_gold.data() + b * strideB,
+                          ldb);
+        }
 
         // if enable norm check, norm check is invasive
         real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
@@ -196,7 +198,7 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
         hipblas_error_host
             = norm_check_general<T>('F', M, N, ldb, strideB, hB_gold, hB_host, batch_count);
         hipblas_error_device
-            = norm_check_general<T>('F', M, N, ldb, strideB, hB_gold, hB_host, batch_count);
+            = norm_check_general<T>('F', M, N, ldb, strideB, hB_gold, hB_device, batch_count);
         if(argus.unit_check)
         {
             unit_check_error(hipblas_error_host, tolerance);

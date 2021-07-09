@@ -204,6 +204,5 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
                          hipblas_error_device);
     }
 
-    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

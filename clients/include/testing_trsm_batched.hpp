@@ -174,20 +174,11 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
            CPU BLAS
         =================================================================== */
 
-        // for(int b = 0; b < batch_count; b++)
-        // {
-        //     cblas_trsm<T>(side,
-        //                   uplo,
-        //                   transA,
-        //                   diag,
-        //                   M,
-        //                   N,
-        //                   h_alpha,
-        //                   (const T*)hA[b].data(),
-        //                   lda,
-        //                   hB_copy[b].data(),
-        //                   ldb);
-        // }
+        for(int b = 0; b < batch_count; b++)
+        {
+            cblas_trsm<T>(
+                side, uplo, transA, diag, M, N, h_alpha, (const T*)hA[b], lda, hB_gold[b], ldb);
+        }
 
         // if enable norm check, norm check is invasive
         real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
