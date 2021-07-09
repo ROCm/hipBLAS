@@ -435,6 +435,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"syr2k", testing_syr2k<T>},
             {"syr2k_batched", testing_syr2k_batched<T>},
             {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
+            {"trtri", testing_trtri<T>},
+            {"trtri_batched", testing_trtri_batched<T>},
+            {"trtri_strided_batched", testing_trtri_strided_batched<T>},
             /*{"set_get_vector", testing_set_get_vector<T>},
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
@@ -443,10 +446,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
                 {"syrkx", testing_syr2k<T, false>},
                 {"syrkx_batched", testing_syr2k_batched<T, false>},
                 {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
-
-                {"trtri", testing_trtri<T>},
-                {"trtri_batched", testing_trtri_batched<T>},
-                {"trtri_strided_batched", testing_trtri_strided_batched<T>},
 */
             {"trsm", testing_trsm<T>},
             //{"trsm_ex", testing_trsm_ex<T>},
@@ -635,16 +634,14 @@ struct perf_blas<
             {"syr2k", testing_syr2k<T>},
             {"syr2k_batched", testing_syr2k_batched<T>},
             {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
+            {"trtri", testing_trtri<T>},
+            {"trtri_batched", testing_trtri_batched<T>},
+            {"trtri_strided_batched", testing_trtri_strided_batched<T>},
             /*
                 // L3
                 {"syrkx", testing_syr2k<T, false>},
                 {"syrkx_batched", testing_syr2k_batched<T, false>},
                 {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
-
-
-            {"trtri", testing_trtri<T>},
-            {"trtri_batched", testing_trtri_batched<T>},
-            {"trtri_strided_batched", testing_trtri_strided_batched<T>},
           */
 
             {"trsm", testing_trsm<T>},
