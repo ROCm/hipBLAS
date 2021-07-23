@@ -29,18 +29,14 @@ hipblasStatus_t testing_hemv_strided_batched(const Arguments& argus)
     int    batch_count  = argus.batch_count;
 
     hipblasStride stride_A = lda * N * stride_scale;
-    hipblasStride stride_x;
-    hipblasStride stride_y;
+    hipblasStride stride_x = N * incx * stride_scale;
+    hipblasStride stride_y = N * incy * stride_scale;
 
-    int               A_size = stride_A * batch_count;
-    int               X_size;
-    int               Y_size;
     hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
 
-    stride_x = N * incx * stride_scale;
-    stride_y = N * incy * stride_scale;
-    X_size   = stride_x * batch_count;
-    Y_size   = stride_y * batch_count;
+    size_t A_size = stride_A * batch_count;
+    size_t X_size = stride_x * batch_count;
+    size_t Y_size = stride_y * batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
