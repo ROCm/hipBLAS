@@ -756,7 +756,7 @@ constexpr double syr2k_gflop_count<hipblasDoubleComplex>(int n, int k)
 template <typename T>
 constexpr double syrkx_gflop_count(int n, int k)
 {
-    return ((2 * k - 1.0) * n * n + 2.0 * sym_tri_count(n)) / 1e9;
+    return (2 * k * sym_tri_count(n)) / 1e9;
 }
 
 template <>

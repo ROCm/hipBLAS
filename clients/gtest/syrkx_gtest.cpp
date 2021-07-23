@@ -41,11 +41,12 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 
 // vector of vector, each vector is a {N, K, lda, ldb, ldc};
 // add/delete as a group
-const vector<vector<int>> matrix_size_range = {{-1, -1, -1, -1, -1},
-                                               {11, 6, 11, 11, 11},
-                                               {16, 15, 16, 16, 16},
-                                               {32, 12, 32, 32, 32},
-                                               {65, 4, 65, 65, 65}};
+const vector<vector<int>> matrix_size_range
+    = {{-1, -1, -1, -1, -1},
+       {11, 6, 11, 11, 11},
+       {16, 15, 16, 16, 16},
+       //                                             {32, 12, 32, 32, 32},
+       {65, 4, 65, 65, 65}};
 
 // vector, each entry is  {alpha, alphai, beta, betai};
 // add/delete single values, like {2.0}
