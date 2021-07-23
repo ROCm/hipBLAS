@@ -135,7 +135,7 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice);
+        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)

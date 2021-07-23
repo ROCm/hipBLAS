@@ -71,16 +71,16 @@ hipblasStatus_t testing_gemv_batched(const Arguments& argus)
 
     // arrays of pointers-to-host on host
     host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hx(X_size, 1, batch_count);
-    host_batch_vector<T> hy(Y_size, 1, batch_count);
-    host_batch_vector<T> hy_cpu(Y_size, 1, batch_count);
-    host_batch_vector<T> hy_host(Y_size, 1, batch_count);
-    host_batch_vector<T> hy_device(Y_size, 1, batch_count);
+    host_batch_vector<T> hx(dim_x, incx, batch_count);
+    host_batch_vector<T> hy(dim_y, incy, batch_count);
+    host_batch_vector<T> hy_cpu(dim_y, incy, batch_count);
+    host_batch_vector<T> hy_host(dim_y, incy, batch_count);
+    host_batch_vector<T> hy_device(dim_y, incy, batch_count);
 
     // device pointers
     device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dx(X_size, 1, batch_count);
-    device_batch_vector<T> dy(Y_size, 1, batch_count);
+    device_batch_vector<T> dx(dim_x, incx, batch_count);
+    device_batch_vector<T> dy(dim_y, incy, batch_count);
     device_vector<T>       d_alpha(1);
     device_vector<T>       d_beta(1);
 
