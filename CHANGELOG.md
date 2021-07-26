@@ -1,5 +1,9 @@
 # Change Log for hipBLAS
 
+## (Unreleased) hipBLAS 0.48.0
+### Added
+- Added more support for hipblas-bench
+
 ## [hipBLAS 0.47.0 for ROCm 4.4.0]
 ## Added
 - Added HIPBLAS_STATUS_UNKNOWN for unsupported backend status codes
