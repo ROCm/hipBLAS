@@ -329,7 +329,6 @@ constexpr double trsm_gbyte_count(int m, int n, int k)
 template <typename T>
 constexpr double syrk_gbyte_count(int n, int k)
 {
-    int k1 = k < n ? k : n - 1;
     return (sizeof(T) * (tri_count(n) + n * k)) / 1e9;
 }
 
@@ -341,13 +340,6 @@ constexpr double syr2k_gbyte_count(int n, int k)
     return (sizeof(T) * (2 * n * k + 2 * tri_count(n)));
 }
 
-/* \brief byte counts of SYRKX */
-template <typename T>
-constexpr double syrkx_gbyte_count(int n, int k)
-{
-    return syr2k_gbyte_count<T>(n, k);
-}
-
 /* \brief byte counts of HERK */
 template <typename T>
 constexpr double herk_gbyte_count(int n, int k)
@@ -355,6 +347,12 @@ constexpr double herk_gbyte_count(int n, int k)
     return syrk_gbyte_count<T>(n, k);
 }
 
+/* \brief byte counts of SYRKX */
+template <typename T>
+constexpr double syrkx_gbyte_count(int n, int k)
+{
+    return (sizeof(T) * (tri_count(n) + 2 * (n * k))) / 1e9;
+}
 /* \brief byte counts of HER2K */
 template <typename T>
 constexpr double her2k_gbyte_count(int n, int k)

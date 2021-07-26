@@ -42,12 +42,14 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 // vector of vector, each vector is a {M, N, lda, ldb};
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
-    {-1, -1, 1, 1}, {10, 10, 20, 100}, {600, 500, 600, 600},
-    //                                      {1024, 1024, 1024, 1024}
+    {-1, -1, 1, 1}, {10, 10, 20, 100},
+    //                {600, 500, 600, 600} ,
+    //                {1024, 1024, 1024, 1024}
 };
 
 const vector<vector<int>> full_matrix_size_range = {
-    {192, 192, 192, 192}, {640, 640, 960, 960},
+    {192, 192, 192, 192},
+    //                                      {640, 640, 960, 960},
     //                                      {1000, 1000, 1000, 1000},
     //                                      {2000, 2000, 2000, 2000},
 };
@@ -93,7 +95,7 @@ const vector<vector<char>> full_side_uplo_transA_diag_range = {
 
 const vector<double> stride_scale_range = {1, 3};
 
-const vector<int> batch_count_range = {1, 3, 5};
+const vector<int> batch_count_range = {1, 3};
 
 const bool is_fortran[]       = {false, true};
 const bool is_fortran_false[] = {false};

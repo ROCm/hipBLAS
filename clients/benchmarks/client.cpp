@@ -241,12 +241,16 @@ void run_function(const func_map& map, const Arguments& arg, const std::string& 
     match->second(arg);
 }
 
+#include "syrkx_reference.hpp"
 #include "testing_gemm.hpp"
 #include "testing_gemm_batched.hpp"
 #include "testing_gemm_batched_ex.hpp"
 #include "testing_gemm_ex.hpp"
 #include "testing_gemm_strided_batched.hpp"
 #include "testing_gemm_strided_batched_ex.hpp"
+#include "testing_syrkx.hpp"
+#include "testing_syrkx_batched.hpp"
+#include "testing_syrkx_strided_batched.hpp"
 #include "testing_trmm.hpp"
 #include "testing_trmm_batched.hpp"
 #include "testing_trmm_strided_batched.hpp"
@@ -441,12 +445,11 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             /*{"set_get_vector", testing_set_get_vector<T>},
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
-
-                // L3
-                {"syrkx", testing_syr2k<T, false>},
-                {"syrkx_batched", testing_syr2k_batched<T, false>},
-                {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
 */
+            {"syrkx", testing_syrkx<T>},
+            {"syrkx_batched", testing_syrkx_batched<T>},
+            {"syrkx_strided_batched", testing_syrkx_strided_batched<T>},
+
             {"trsm", testing_trsm<T>},
             //{"trsm_ex", testing_trsm_ex<T>},
             {"trsm_batched", testing_trsm_batched<T>},
@@ -637,13 +640,9 @@ struct perf_blas<
             {"trtri", testing_trtri<T>},
             {"trtri_batched", testing_trtri_batched<T>},
             {"trtri_strided_batched", testing_trtri_strided_batched<T>},
-            /*
-                // L3
-                {"syrkx", testing_syr2k<T, false>},
-                {"syrkx_batched", testing_syr2k_batched<T, false>},
-                {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
-          */
-
+            {"syrkx", testing_syrkx<T>},
+            {"syrkx_batched", testing_syrkx_batched<T>},
+            {"syrkx_strided_batched", testing_syrkx_strided_batched<T>},
             {"trsm", testing_trsm<T>},
             //{"trsm_ex", testing_trsm_ex<T>},
             {"trsm_batched", testing_trsm_batched<T>},
