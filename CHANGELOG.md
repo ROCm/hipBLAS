@@ -4,6 +4,9 @@
 ### Added
 - Added more support for hipblas-bench
 
+### Fixed
+- Avoid large offset overflow for gemv and hemv in hipblas-test
+
 ## [hipBLAS 0.47.0 for ROCm 4.4.0]
 ## Added
 - Added HIPBLAS_STATUS_UNKNOWN for unsupported backend status codes
