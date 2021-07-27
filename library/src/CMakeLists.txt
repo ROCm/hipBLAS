@@ -157,7 +157,7 @@ else( )
 endif( )
 
 # Force installation of .f90 module files
-install(FILES "hipblas_module.f90"
+rocm_install(FILES "hipblas_module.f90"
         DESTINATION "hipblas/include")
 
 rocm_install_symlink_subdir( hipblas )
