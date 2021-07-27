@@ -1,6 +1,11 @@
 # Change Log for hipBLAS
 
 ## (Unreleased) hipBLAS 0.48.0
+### Added
+- Added more support for hipblas-bench
+
+### Fixed
+- Avoid large offset overflow for gemv and hemv in hipblas-test
 
 ### Changed
 - Packaging split into a runtime package called hipblas and a development package called hipblas-devel. The development package depends on runtime. The runtime package suggests the development package for all supported OSes except CentOS 7 to aid in the transition. The suggests feature in packaging is introduced as a deprecated feature and will be removed in a future rocm release.
