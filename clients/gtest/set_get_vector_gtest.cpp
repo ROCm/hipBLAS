@@ -6,7 +6,6 @@
 #include "testing_set_get_vector.hpp"
 #include "testing_set_get_vector_async.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>

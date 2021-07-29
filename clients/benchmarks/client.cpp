@@ -143,15 +143,18 @@
 #include "testing_geam.hpp"
 #include "testing_geam_batched.hpp"
 #include "testing_geam_strided_batched.hpp"
+#include "testing_hemm.hpp"
+#include "testing_hemm_batched.hpp"
+#include "testing_hemm_strided_batched.hpp"
 #include "testing_her2k.hpp"
 #include "testing_her2k_batched.hpp"
 #include "testing_her2k_strided_batched.hpp"
 #include "testing_herk.hpp"
 #include "testing_herk_batched.hpp"
 #include "testing_herk_strided_batched.hpp"
-// #include "testing_symm_hemm.hpp"
-// #include "testing_symm_hemm_batched.hpp"
-// #include "testing_symm_hemm_strided_batched.hpp"
+#include "testing_herkx.hpp"
+#include "testing_herkx_batched.hpp"
+#include "testing_herkx_strided_batched.hpp"
 #include "testing_syr2k.hpp"
 #include "testing_syr2k_batched.hpp"
 #include "testing_syr2k_strided_batched.hpp"
@@ -235,12 +238,16 @@ void run_function(const func_map& map, const Arguments& arg, const std::string& 
     match->second(arg);
 }
 
+#include "syrkx_reference.hpp"
 #include "testing_gemm.hpp"
 #include "testing_gemm_batched.hpp"
 #include "testing_gemm_batched_ex.hpp"
 #include "testing_gemm_ex.hpp"
 #include "testing_gemm_strided_batched.hpp"
 #include "testing_gemm_strided_batched_ex.hpp"
+#include "testing_syrkx.hpp"
+#include "testing_syrkx_batched.hpp"
+#include "testing_syrkx_strided_batched.hpp"
 #include "testing_trmm.hpp"
 #include "testing_trmm_batched.hpp"
 #include "testing_trmm_strided_batched.hpp"
@@ -391,46 +398,58 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"tbmv", testing_tbmv<T>},
             {"tbmv_batched", testing_tbmv_batched<T>},
             {"tbmv_strided_batched", testing_tbmv_strided_batched<T>},
+            {"tbsv", testing_tbsv<T>},
+            {"tbsv_batched", testing_tbsv_batched<T>},
+            {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
             {"tpmv", testing_tpmv<T>},
             {"tpmv_batched", testing_tpmv_batched<T>},
             {"tpmv_strided_batched", testing_tpmv_strided_batched<T>},
+            {"tpsv", testing_tpsv<T>},
+            {"tpsv_batched", testing_tpsv_batched<T>},
+            {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
             {"trmv", testing_trmv<T>},
             {"trmv_batched", testing_trmv_batched<T>},
             {"trmv_strided_batched", testing_trmv_strided_batched<T>},
-            /*{"set_get_vector", testing_set_get_vector<T>},
-                {"set_get_matrix", testing_set_get_matrix<T>},
-                {"set_get_matrix_async", testing_set_get_matrix_async<T>},
+            {"trsv", testing_trsv<T>},
+            {"trsv_batched", testing_trsv_batched<T>},
+            {"trsv_strided_batched", testing_trsv_strided_batched<T>},
 
-                // L3
-                {"geam", testing_geam<T>},
-                {"geam_batched", testing_geam_batched<T>},
-                {"geam_strided_batched", testing_geam_strided_batched<T>},
-                {"dgmm", testing_dgmm<T>},
-                {"dgmm_batched", testing_dgmm_batched<T>},
-                {"dgmm_strided_batched", testing_dgmm_strided_batched<T>},
-                {"symm", testing_symm_hemm<T, false>},
-                {"symm_batched", testing_symm_hemm_batched<T, false>},
-                {"symm_strided_batched", testing_symm_hemm_strided_batched<T, false>},
-                {"syrk", testing_syrk<T>},
-                {"syrk_batched", testing_syrk_batched<T>},
-                {"syrk_strided_batched", testing_syrk_strided_batched<T>},
-                {"syr2k", testing_syr2k<T>},
-                {"syr2k_batched", testing_syr2k_batched<T>},
-                {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
-                {"syrkx", testing_syr2k<T, false>},
-                {"syrkx_batched", testing_syr2k_batched<T, false>},
-                {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
-
-                {"trtri", testing_trtri<T>},
-                {"trtri_batched", testing_trtri_batched<T>},
-                {"trtri_strided_batched", testing_trtri_strided_batched<T>},
-*/
+            // L3
+            {"geam", testing_geam<T>},
+            {"geam_batched", testing_geam_batched<T>},
+            {"geam_strided_batched", testing_geam_strided_batched<T>},
+            {"dgmm", testing_dgmm<T>},
+            {"dgmm_batched", testing_dgmm_batched<T>},
+            {"dgmm_strided_batched", testing_dgmm_strided_batched<T>},
             {"trmm", testing_trmm<T>},
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
             {"gemm", testing_gemm<T>},
             {"gemm_batched", testing_gemm_batched<T>},
             {"gemm_strided_batched", testing_gemm_strided_batched<T>},
+            /*{"set_get_vector", testing_set_get_vector<T>},
+                {"set_get_matrix", testing_set_get_matrix<T>},
+                {"set_get_matrix_async", testing_set_get_matrix_async<T>},
+
+                // L3
+
+                {"symm", testing_symm<T>},
+                {"symm_batched", testing_symm_batched<T>},
+                {"symm_strided_batched", testing_symm_strided_batched<T>},
+                {"syrk", testing_syrk<T>},
+                {"syrk_batched", testing_syrk_batched<T>},
+                {"syrk_strided_batched", testing_syrk_strided_batched<T>},
+                {"syr2k", testing_syr2k<T>},
+                {"syr2k_batched", testing_syr2k_batched<T>},
+                {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
+
+                {"trtri", testing_trtri<T>},
+                {"trtri_batched", testing_trtri_batched<T>},
+                {"trtri_strided_batched", testing_trtri_strided_batched<T>},
+*/
+            {"syrkx", testing_syrkx<T>},
+            {"syrkx_batched", testing_syrkx_batched<T>},
+            {"syrkx_strided_batched", testing_syrkx_strided_batched<T>},
 
             {"trsm", testing_trsm<T>},
             //{"trsm_ex", testing_trsm_ex<T>},
@@ -438,15 +457,6 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             //{"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
             //{"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
-            {"tbsv", testing_tbsv<T>},
-            {"tbsv_batched", testing_tbsv_batched<T>},
-            {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
-            {"tpsv", testing_tpsv<T>},
-            {"tpsv_batched", testing_tpsv_batched<T>},
-            {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
-            {"trsv", testing_trsv<T>},
-            {"trsv_batched", testing_trsv_batched<T>},
-            {"trsv_strided_batched", testing_trsv_strided_batched<T>},
         };
         run_function(fmap, arg);
     }
@@ -581,67 +591,70 @@ struct perf_blas<
             {"tbmv", testing_tbmv<T>},
             {"tbmv_batched", testing_tbmv_batched<T>},
             {"tbmv_strided_batched", testing_tbmv_strided_batched<T>},
+            {"tbsv", testing_tbsv<T>},
+            {"tbsv_batched", testing_tbsv_batched<T>},
+            {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
             {"tpmv", testing_tpmv<T>},
             {"tpmv_batched", testing_tpmv_batched<T>},
             {"tpmv_strided_batched", testing_tpmv_strided_batched<T>},
+            {"tpsv", testing_tpsv<T>},
+            {"tpsv_batched", testing_tpsv_batched<T>},
+            {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
             {"trmv", testing_trmv<T>},
             {"trmv_batched", testing_trmv_batched<T>},
             {"trmv_strided_batched", testing_trmv_strided_batched<T>},
+            {"trsv", testing_trsv<T>},
+            {"trsv_batched", testing_trsv_batched<T>},
+            {"trsv_strided_batched", testing_trsv_strided_batched<T>},
 
+            // L3
+            {"dgmm", testing_dgmm<T>},
+            {"dgmm_batched", testing_dgmm_batched<T>},
+            {"dgmm_strided_batched", testing_dgmm_strided_batched<T>},
+            {"geam", testing_geam<T>},
+            {"geam_batched", testing_geam_batched<T>},
+            {"geam_strided_batched", testing_geam_strided_batched<T>},
+            {"gemm", testing_gemm<T>},
+            {"gemm_batched", testing_gemm_batched<T>},
+            {"gemm_strided_batched", testing_gemm_strided_batched<T>},
+            {"hemm", testing_hemm<T>},
+            {"hemm_batched", testing_hemm_batched<T>},
+            {"hemm_strided_batched", testing_hemm_strided_batched<T>},
+            {"herk", testing_herk<T>},
+            {"herk_batched", testing_herk_batched<T>},
+            {"herk_strided_batched", testing_herk_strided_batched<T>},
+            {"her2k", testing_her2k<T>},
+            {"her2k_batched", testing_her2k_batched<T>},
+            {"her2k_strided_batched", testing_her2k_strided_batched<T>},
+            {"herkx", testing_herkx<T>},
+            {"herkx_batched", testing_herkx_batched<T>},
+            {"herkx_strided_batched", testing_herkx_strided_batched<T>},
             /*
                 // L3
-                {"dgmm", testing_dgmm<T>},
-                {"dgmm_batched", testing_dgmm_batched<T>},
-                {"dgmm_strided_batched", testing_dgmm_strided_batched<T>},
-                {"geam", testing_geam<T>},
-                {"geam_batched", testing_geam_batched<T>},
-                {"geam_strided_batched", testing_geam_strided_batched<T>},
                 {"syrk", testing_syrk<T>},
                 {"syrk_batched", testing_syrk_batched<T>},
                 {"syrk_strided_batched", testing_syrk_strided_batched<T>},
                 {"syr2k", testing_syr2k<T>},
                 {"syr2k_batched", testing_syr2k_batched<T>},
                 {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
-                {"syrkx", testing_syr2k<T, false>},
-                {"syrkx_batched", testing_syr2k_batched<T, false>},
-                {"syrkx_strided_batched", testing_syr2k_strided_batched<T, false>},
                 {"symm", testing_symm_hemm<T, false>},
                 {"symm_batched", testing_symm_hemm_batched<T, false>},
                 {"symm_strided_batched", testing_symm_hemm_strided_batched<T, false>},
-                {"hemm", testing_symm_hemm<T, true>},
-                {"hemm_batched", testing_symm_hemm_batched<T, true>},
-                {"hemm_strided_batched", testing_symm_hemm_strided_batched<T, true>},
-                {"herk", testing_herk<T>},
-                {"herk_batched", testing_herk_batched<T>},
-                {"herk_strided_batched", testing_herk_strided_batched<T>},
-                {"her2k", testing_her2k<T>},
-                {"her2k_batched", testing_her2k_batched<T>},
-                {"her2k_strided_batched", testing_her2k_strided_batched<T>},
-                {"herkx", testing_her2k<T, false>},
-                {"herkx_batched", testing_her2k_batched<T, false>},
-                {"herkx_strided_batched", testing_her2k_strided_batched<T, false>},
+
             {"trtri", testing_trtri<T>},
             {"trtri_batched", testing_trtri_batched<T>},
             {"trtri_strided_batched", testing_trtri_strided_batched<T>},
           */
-            {"gemm", testing_gemm<T>},
-            {"gemm_batched", testing_gemm_batched<T>},
-            {"gemm_strided_batched", testing_gemm_strided_batched<T>},
+            {"syrkx", testing_syrkx<T>},
+            {"syrkx_batched", testing_syrkx_batched<T>},
+            {"syrkx_strided_batched", testing_syrkx_strided_batched<T>},
             {"trsm", testing_trsm<T>},
             //{"trsm_ex", testing_trsm_ex<T>},
             {"trsm_batched", testing_trsm_batched<T>},
             //{"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
             //{"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
-            {"tbsv", testing_tbsv<T>},
-            {"tbsv_batched", testing_tbsv_batched<T>},
-            {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
-            {"tpsv", testing_tpsv<T>},
-            {"tpsv_batched", testing_tpsv_batched<T>},
-            {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
-            {"trsv", testing_trsv<T>},
-            {"trsv_batched", testing_trsv_batched<T>},
-            {"trsv_strided_batched", testing_trsv_strided_batched<T>},
+
             {"trmm", testing_trmm<T>},
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
