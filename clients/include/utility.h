@@ -22,7 +22,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
+#ifdef GOOGLE_TEST
+#include "gtest/gtest.h"
+#endif
 
 /*!\file
  * \brief provide data initialization, timing, hipblas type <-> lapack char conversion utilities.
@@ -225,6 +227,11 @@ public:
         return std::uniform_int_distribution<T>{}(hipblas_rng);
     }
 
+    explicit operator signed char()
+    {
+        return static_cast<signed char>(std::uniform_int_distribution<int>{}(hipblas_rng));
+    }
+
     // Random NaN double
     explicit operator double()
     {
@@ -264,7 +271,8 @@ public:
     // Random complex integers
     explicit operator hipblasInt8Complex()
     {
-        return {int8_t(*this), int8_t(*this)};
+        return static_cast<int8_t>(
+            std::uniform_int_distribution<unsigned short>(1, 3)(hipblas_rng));
     }
 };
 
@@ -687,8 +695,8 @@ void set_device(int device_id);
 int getArch();
 
 /* query what rocBLAS recommends for int8 layout. We are /always/ passing in the flag which
-/* rocBLAS recommends, thus we need to know what layout to format our data in our tests.
-/* returns true if should be packed. */
+ * rocBLAS recommends, thus we need to know what layout to format our data in our tests.
+ * returns true if should be packed. */
 bool layout_pack_int8();
 
 /* ============================================================================================ */

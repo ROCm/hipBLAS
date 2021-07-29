@@ -7,7 +7,6 @@
 #include "testing_hemm_batched.hpp"
 #include "testing_hemm_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -121,7 +120,7 @@ Arguments setup_hemm_arguments(hemm_tuple tup)
     arg.side_option = side_uplo[0];
     arg.uplo_option = side_uplo[1];
 
-    arg.timing = 1;
+    arg.timing = 0;
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;

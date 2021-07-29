@@ -8,6 +8,10 @@ cmake_minimum_required( VERSION 3.5 )
 # We use C++14 features, this will add compile option: -std=c++14
 set( CMAKE_CXX_STANDARD 14 )
 
+if (NOT python)
+    set(python "python3") # default for linux
+endif()
+
 # Consider removing this in the future
 # This should appear before the project command, because it does not use FORCE
 if( WIN32 )
@@ -22,16 +26,19 @@ if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
 endif()
 
-if ( NOT DEFINED CMAKE_Fortran_COMPILER AND NOT DEFINED ENV{FC} )
-  set( CMAKE_Fortran_COMPILER  "gfortran" )
-endif()
+if (NOT WIN32)
+    if ( NOT DEFINED CMAKE_Fortran_COMPILER AND NOT DEFINED ENV{FC} )
+      set( CMAKE_Fortran_COMPILER  "gfortran" )
+    endif()
+    set( fortran_language "Fortran" )
+endif( )
 
-project( hipblas LANGUAGES CXX Fortran )
+project( hipblas LANGUAGES CXX ${fortran_language} )
 
 # This finds the rocm-cmake project, and installs it if not found
 # rocm-cmake contains common cmake code for rocm projects to help setup and install
 set( PROJECT_EXTERN_DIR ${CMAKE_CURRENT_BINARY_DIR}/extern )
-find_package( ROCM CONFIG QUIET PATHS /opt/rocm )
+find_package( ROCM 0.6 CONFIG QUIET PATHS /opt/rocm )
 if( NOT ROCM_FOUND )
   set( rocm_cmake_tag "master" CACHE STRING "rocm-cmake tag to download" )
   file( DOWNLOAD https://github.com/RadeonOpenCompute/rocm-cmake/archive/${rocm_cmake_tag}.zip
@@ -39,8 +46,12 @@ if( NOT ROCM_FOUND )
 
   execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag}.zip
     WORKING_DIRECTORY ${PROJECT_EXTERN_DIR} )
+  execute_process( COMMAND ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=${PROJECT_EXTERN_DIR}/rocm-cmake .
+    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag} )
+  execute_process( COMMAND ${CMAKE_COMMAND} --build rocm-cmake-${rocm_cmake_tag} --target install
+    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR})
 
-  find_package( ROCM REQUIRED CONFIG PATHS ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag} )
+  find_package( ROCM 0.6 REQUIRED CONFIG PATHS ${PROJECT_EXTERN_DIR}/rocm-cmake )
 endif( )
 
 include( ROCMSetupVersion )
@@ -49,7 +60,7 @@ include( ROCMInstallTargets )
 include( ROCMPackageConfigHelpers )
 include( ROCMInstallSymlinks )
 
-set ( VERSION_STRING "0.47.0" )
+set ( VERSION_STRING "0.48.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 if( NOT DEFINED $ENV{HIP_PATH})
@@ -86,7 +97,7 @@ endif()
 if( USE_CUDA)
     find_package( HIP MODULE REQUIRED )
 else( )
-    find_package( hip REQUIRED CONFIG PATHS ${ROCM_PATH} /opt/rocm)
+    find_package( hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH} /opt/rocm)
 endif( )
 
 if( USE_CUDA )

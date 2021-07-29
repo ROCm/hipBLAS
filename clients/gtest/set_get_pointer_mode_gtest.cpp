@@ -1,10 +1,12 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
 #include "hipblas.h"
+#ifdef GOOGLE_TEST
 #include <gtest/gtest.h>
+#endif
 #include <stdexcept>
 //#include "utility.h"
 
