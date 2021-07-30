@@ -67,7 +67,7 @@ const bool is_fortran[] = {false, true};
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
-     BLAS-2 syr2k:
+     BLAS-3 syr2k:
 =================================================================== */
 
 /* ============================Setup Arguments======================================= */
@@ -118,17 +118,17 @@ Arguments setup_syr2k_arguments(syr2k_tuple tup)
     return arg;
 }
 
-class blas2_syr2k_gtest : public ::TestWithParam<syr2k_tuple>
+class blas3_syr2k_gtest : public ::TestWithParam<syr2k_tuple>
 {
 protected:
-    blas2_syr2k_gtest() {}
-    virtual ~blas2_syr2k_gtest() {}
+    blas3_syr2k_gtest() {}
+    virtual ~blas3_syr2k_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
 // syr2k
-TEST_P(blas2_syr2k_gtest, syr2k_gtest_float)
+TEST_P(blas3_syr2k_gtest, syr2k_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -155,7 +155,7 @@ TEST_P(blas2_syr2k_gtest, syr2k_gtest_float)
     }
 }
 
-TEST_P(blas2_syr2k_gtest, syr2k_gtest_double_complex)
+TEST_P(blas3_syr2k_gtest, syr2k_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -185,7 +185,7 @@ TEST_P(blas2_syr2k_gtest, syr2k_gtest_double_complex)
 #ifndef __HIP_PLATFORM_NVCC__
 
 // syr2k_batched
-TEST_P(blas2_syr2k_gtest, syr2k_batched_gtest_float)
+TEST_P(blas3_syr2k_gtest, syr2k_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -213,7 +213,7 @@ TEST_P(blas2_syr2k_gtest, syr2k_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_syr2k_gtest, syr2k_batched_gtest_double_complex)
+TEST_P(blas3_syr2k_gtest, syr2k_batched_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -242,7 +242,7 @@ TEST_P(blas2_syr2k_gtest, syr2k_batched_gtest_double_complex)
 }
 
 // syr2k_strided_batched
-TEST_P(blas2_syr2k_gtest, syr2k_strided_batched_gtest_float)
+TEST_P(blas3_syr2k_gtest, syr2k_strided_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -270,7 +270,7 @@ TEST_P(blas2_syr2k_gtest, syr2k_strided_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_syr2k_gtest, syr2k_strided_batched_gtest_double_complex)
+TEST_P(blas3_syr2k_gtest, syr2k_strided_batched_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -306,7 +306,7 @@ TEST_P(blas2_syr2k_gtest, syr2k_strided_batched_gtest_double_complex)
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
 INSTANTIATE_TEST_SUITE_P(hipblasSyr2k,
-                         blas2_syr2k_gtest,
+                         blas3_syr2k_gtest,
                          Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(uplo_range),
