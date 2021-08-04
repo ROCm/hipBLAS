@@ -391,4 +391,20 @@ constexpr double hemm_gbyte_count(int n, int m, int k)
     return (sizeof(T) * (3 * m * n + tri_count(k)));
 }
 
+/* \brief byte counts of SYMM */
+template <typename T>
+constexpr double symm_gbyte_count(int n, int m, int k)
+{
+    // read A, B, C, write C
+    return (sizeof(T) * (3 * m * n + tri_count(k)));
+}
+
+/* \brief byte counts of TRTRI */
+template <typename T>
+constexpr double trtri_gbyte_count(int n)
+{
+    // read A, write invA
+    return (sizeof(T) * (2 * tri_count(n)));
+}
+
 #endif /* _HIPBLAS_BYTES_H_ */

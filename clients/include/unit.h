@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -79,6 +79,18 @@ void unit_check_nrm2(int            batch_count,
         ASSERT_NEAR(cpu_result[b], gpu_result[b], allowable_error);
 #endif
     }
+}
+
+template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
+constexpr double get_epsilon()
+{
+    return std::numeric_limits<T>::epsilon();
+}
+
+template <typename T, std::enable_if_t<+is_complex<T>, int> = 0>
+constexpr auto get_epsilon()
+{
+    return get_epsilon<decltype(std::real(T{}))>();
 }
 
 #endif
