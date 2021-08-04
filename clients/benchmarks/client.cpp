@@ -155,6 +155,9 @@
 #include "testing_herkx.hpp"
 #include "testing_herkx_batched.hpp"
 #include "testing_herkx_strided_batched.hpp"
+#include "testing_symm.hpp"
+#include "testing_symm_batched.hpp"
+#include "testing_symm_strided_batched.hpp"
 #include "testing_syr2k.hpp"
 #include "testing_syr2k_batched.hpp"
 #include "testing_syr2k_strided_batched.hpp"
@@ -427,25 +430,21 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"gemm", testing_gemm<T>},
             {"gemm_batched", testing_gemm_batched<T>},
             {"gemm_strided_batched", testing_gemm_strided_batched<T>},
+            {"symm", testing_symm<T>},
+            {"symm_batched", testing_symm_batched<T>},
+            {"symm_strided_batched", testing_symm_strided_batched<T>},
+            {"syrk", testing_syrk<T>},
+            {"syrk_batched", testing_syrk_batched<T>},
+            {"syrk_strided_batched", testing_syrk_strided_batched<T>},
+            {"syr2k", testing_syr2k<T>},
+            {"syr2k_batched", testing_syr2k_batched<T>},
+            {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
+            {"trtri", testing_trtri<T>},
+            {"trtri_batched", testing_trtri_batched<T>},
+            {"trtri_strided_batched", testing_trtri_strided_batched<T>},
             /*{"set_get_vector", testing_set_get_vector<T>},
                 {"set_get_matrix", testing_set_get_matrix<T>},
                 {"set_get_matrix_async", testing_set_get_matrix_async<T>},
-
-                // L3
-
-                {"symm", testing_symm<T>},
-                {"symm_batched", testing_symm_batched<T>},
-                {"symm_strided_batched", testing_symm_strided_batched<T>},
-                {"syrk", testing_syrk<T>},
-                {"syrk_batched", testing_syrk_batched<T>},
-                {"syrk_strided_batched", testing_syrk_strided_batched<T>},
-                {"syr2k", testing_syr2k<T>},
-                {"syr2k_batched", testing_syr2k_batched<T>},
-                {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
-
-                {"trtri", testing_trtri<T>},
-                {"trtri_batched", testing_trtri_batched<T>},
-                {"trtri_strided_batched", testing_trtri_strided_batched<T>},
 */
             {"syrkx", testing_syrkx<T>},
             {"syrkx_batched", testing_syrkx_batched<T>},
@@ -629,22 +628,18 @@ struct perf_blas<
             {"herkx", testing_herkx<T>},
             {"herkx_batched", testing_herkx_batched<T>},
             {"herkx_strided_batched", testing_herkx_strided_batched<T>},
-            /*
-                // L3
-                {"syrk", testing_syrk<T>},
-                {"syrk_batched", testing_syrk_batched<T>},
-                {"syrk_strided_batched", testing_syrk_strided_batched<T>},
-                {"syr2k", testing_syr2k<T>},
-                {"syr2k_batched", testing_syr2k_batched<T>},
-                {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
-                {"symm", testing_symm_hemm<T, false>},
-                {"symm_batched", testing_symm_hemm_batched<T, false>},
-                {"symm_strided_batched", testing_symm_hemm_strided_batched<T, false>},
-
+            {"symm", testing_symm<T>},
+            {"symm_batched", testing_symm_batched<T>},
+            {"symm_strided_batched", testing_symm_strided_batched<T>},
+            {"syrk", testing_syrk<T>},
+            {"syrk_batched", testing_syrk_batched<T>},
+            {"syrk_strided_batched", testing_syrk_strided_batched<T>},
+            {"syr2k", testing_syr2k<T>},
+            {"syr2k_batched", testing_syr2k_batched<T>},
+            {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
             {"trtri", testing_trtri<T>},
             {"trtri_batched", testing_trtri_batched<T>},
             {"trtri_strided_batched", testing_trtri_strided_batched<T>},
-          */
             {"syrkx", testing_syrkx<T>},
             {"syrkx_batched", testing_syrkx_batched<T>},
             {"syrkx_strided_batched", testing_syrkx_strided_batched<T>},
