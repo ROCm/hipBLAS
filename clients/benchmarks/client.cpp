@@ -32,10 +32,10 @@
 #include "testing_asum_strided_batched.hpp"
 #include "testing_axpy.hpp"
 #include "testing_axpy_batched.hpp"
-//#include "testing_axpy_batched_ex.hpp"
-//#include "testing_axpy_ex.hpp"
+#include "testing_axpy_batched_ex.hpp"
+#include "testing_axpy_ex.hpp"
 #include "testing_axpy_strided_batched.hpp"
-//#include "testing_axpy_strided_batched_ex.hpp"
+#include "testing_axpy_strided_batched_ex.hpp"
 #include "testing_copy.hpp"
 #include "testing_copy_batched.hpp"
 #include "testing_copy_strided_batched.hpp"
@@ -669,26 +669,26 @@ struct perf_blas_axpy_ex<
     Tx,
     Ty,
     Tex,
-    std::enable_if_t<(std::is_same<Ta, float>{} && std::is_same<Ta, Tx>{} && std::is_same<Tx, Ty>{}
-                      && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, double>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, hipblasComplex>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, hipblasDoubleComplex>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Tex, float>{})>>
+    std::enable_if_t<((std::is_same<Ta, float>{} && std::is_same<Ta, Tx>{} && std::is_same<Tx, Ty>{}
+                       && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, double>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, hipblasComplex>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, hipblasDoubleComplex>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Tex, float>{}))>>
     : hipblas_test_valid
 {
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            // {"axpy_ex", testing_axpy_ex<Ta, Tx, Ty, Tex>},
-            // {"axpy_batched_ex", testing_axpy_batched_ex<Ta, Tx, Ty, Tex>},
-            // {"axpy_strided_batched_ex", testing_axpy_strided_batched_ex<Ta, Tx, Ty, Tex>},
+            {"axpy_ex", testing_axpy_ex_template<Ta, Tx, Ty>},
+            {"axpy_batched_ex", testing_axpy_batched_ex_template<Ta, Tx, Ty>},
+            {"axpy_strided_batched_ex", testing_axpy_strided_batched_ex_template<Ta, Tx, Ty>},
         };
         run_function(map, arg);
     }
@@ -963,10 +963,9 @@ int run_bench_test(Arguments& arg)
         else if(!strcmp(function, "rot") || !strcmp(function, "rot_batched")
                 || !strcmp(function, "rot_strided_batched"))
             hipblas_rot_dispatch<perf_blas_rot>(arg);
-        /*
         else if(!strcmp(function, "axpy_ex") || !strcmp(function, "axpy_batched_ex")
                 || !strcmp(function, "axpy_strided_batched_ex"))
-            hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);*/
+            hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);
         else
             hipblas_simple_dispatch<perf_blas>(arg);
     }
