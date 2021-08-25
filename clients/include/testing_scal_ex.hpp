@@ -25,10 +25,8 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
     int timing     = argus.timing;
     int norm_check = argus.norm_check;
 
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-
-    int sizeX = N * incx;
-    Ta  alpha = argus.get_alpha<Ta>();
+    size_t sizeX   = size_t(N) * incx;
+    Ta     h_alpha = argus.get_alpha<Ta>();
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -42,56 +40,63 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
     hipblasDatatype_t executionType = argus.compute_type;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<Tx>   hx(sizeX);
-    host_vector<Tx>   hz(sizeX);
+    host_vector<Tx> hx_host(sizeX);
+    host_vector<Tx> hx_device(sizeX);
+    host_vector<Tx> hx_cpu(sizeX);
+
     device_vector<Tx> dx(sizeX);
+    device_vector<Ta> d_alpha(1);
 
-    double gpu_time_used = 0.0, cpu_time_used = 0.0;
-    double hipblas_error = 0.0;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<Tx>(hx, 1, N, incx);
+    hipblas_init<Tx>(hx_host, 1, N, incx);
 
     // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
-    hz = hx;
+    hx_device = hx_cpu = hx_host;
 
     // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * N * incx, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx_host, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
-    status = hipblasScalExFn(handle, N, &alpha, alphaType, dx, xType, incx, executionType);
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+    CHECK_HIPBLAS_ERROR(
+        hipblasScalExFn(handle, N, &h_alpha, alphaType, dx, xType, incx, executionType));
 
     // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(Tx) * N * incx, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx_device, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+    CHECK_HIPBLAS_ERROR(
+        hipblasScalExFn(handle, N, d_alpha, alphaType, dx, xType, incx, executionType));
+
+    CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
 
     if(unit_check || norm_check)
     {
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_scal<Tx, Ta>(N, alpha, hz.data(), incx);
+        cblas_scal<Tx, Ta>(N, h_alpha, hx_cpu, incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(unit_check)
         {
-            unit_check_general<Tx>(1, N, incx, hz.data(), hx.data());
+            unit_check_general<Tx>(1, N, incx, hx_cpu, hx_host);
+            unit_check_general<Tx>(1, N, incx, hx_cpu, hx_device);
         }
 
         if(norm_check)
         {
-            hipblas_error = norm_check_general<Tx>('F', 1, N, incx, hz.data(), hx.data());
+            hipblas_error_host = norm_check_general<Tx>('F', 1, N, incx, hx_cpu, hx_host);
+            hipblas_error_host = norm_check_general<Tx>('F', 1, N, incx, hx_cpu, hx_device);
         }
 
     } // end of if unit check
@@ -99,12 +104,8 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
     if(timing)
     {
         hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -112,13 +113,8 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status = hipblasScalExFn(handle, N, &alpha, alphaType, dx, xType, incx, executionType);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status;
-            }
+            CHECK_HIPBLAS_ERROR(
+                hipblasScalExFn(handle, N, d_alpha, alphaType, dx, xType, incx, executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -127,10 +123,11 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
                                                            gpu_time_used,
                                                            scal_gflop_count<Tx, Ta>(N),
                                                            scal_gbyte_count<Tx>(N),
-                                                           hipblas_error);
+                                                           hipblas_error_host,
+                                                           hipblas_error_device);
     }
-    hipblasDestroy(handle);
-    return status;
+
+    return HIPBLAS_STATUS_SUCCESS;
 }
 
 hipblasStatus_t testing_scal_ex(const Arguments& argus)
