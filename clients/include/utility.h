@@ -378,6 +378,15 @@ void hipblas_packInt8(
                         = temp[(colBase + colOffset) * lda + row + (stride_a * b)];
 }
 
+template <typename T>
+void hipblas_packInt8(T* A, const T* temp, size_t M, size_t N, size_t lda)
+{
+    for(size_t colBase = 0; colBase < N; colBase += 4)
+        for(size_t row = 0; row < lda; row++)
+            for(size_t colOffset = 0; colOffset < 4; colOffset++)
+                A[(colBase * lda + 4 * row) + colOffset] = temp[(colBase + colOffset) * lda + row];
+}
+
 /* ============================================================================================ */
 
 /* ============================================================================================ */
