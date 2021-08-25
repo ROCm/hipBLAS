@@ -41,7 +41,10 @@
 #include "testing_copy_strided_batched.hpp"
 #include "testing_dot.hpp"
 #include "testing_dot_batched.hpp"
+#include "testing_dot_batched_ex.hpp"
+#include "testing_dot_ex.hpp"
 #include "testing_dot_strided_batched.hpp"
+#include "testing_dot_strided_batched_ex.hpp"
 #include "testing_iamax_iamin.hpp"
 #include "testing_iamax_iamin_batched.hpp"
 #include "testing_iamax_iamin_strided_batched.hpp"
@@ -694,6 +697,49 @@ struct perf_blas_axpy_ex<
     }
 };
 
+template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, typename = void>
+struct perf_blas_dot_ex : hipblas_test_invalid
+{
+};
+
+template <typename Tx, typename Ty, typename Tr, typename Tex>
+struct perf_blas_dot_ex<
+    Tx,
+    Ty,
+    Tr,
+    Tex,
+    std::enable_if_t<(std::is_same<Tx, float>{} && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tr>{}
+                      && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, double>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, hipblasHalf>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, hipblasComplex>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, hipblasDoubleComplex>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, hipblasHalf>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tex, float>{})
+                     || (std::is_same<Tx, hipblasBfloat16>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tex, float>{})>>
+    : hipblas_test_valid
+{
+    void operator()(const Arguments& arg)
+    {
+        static const func_map map = {
+            {"dot_ex", testing_dot_ex_template<Tx, Ty, Tr, Tex, false>},
+            {"dot_batched_ex", testing_dot_batched_ex_template<Tx, Ty, Tr, Tex, false>},
+            {"dot_strided_batched_ex",
+             testing_dot_strided_batched_ex_template<Tx, Ty, Tr, Tex, false>},
+            {"dotc_ex", testing_dot_ex_template<Tx, Ty, Tr, Tex, true>},
+            {"dotc_batched_ex", testing_dot_batched_ex_template<Tx, Ty, Tr, Tex, true>},
+            {"dotc_strided_batched_ex",
+             testing_dot_strided_batched_ex_template<Tx, Ty, Tr, Tex, true>},
+        };
+        run_function(map, arg);
+    }
+};
+
 template <typename Ti, typename To = Ti, typename Tc = To, typename = void>
 struct perf_blas_rot : hipblas_test_invalid
 {
@@ -966,6 +1012,11 @@ int run_bench_test(Arguments& arg)
         else if(!strcmp(function, "axpy_ex") || !strcmp(function, "axpy_batched_ex")
                 || !strcmp(function, "axpy_strided_batched_ex"))
             hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);
+        else if(!strcmp(function, "dot_ex") || !strcmp(function, "dot_batched_ex")
+                || !strcmp(function, "dot_strided_batched_ex") || !strcmp(function, "dotc_ex")
+                || !strcmp(function, "dotc_batched_ex")
+                || !strcmp(function, "dotc_strided_batched_ex"))
+            hipblas_blas1_ex_dispatch<perf_blas_dot_ex>(arg);
         else
             hipblas_simple_dispatch<perf_blas>(arg);
     }
