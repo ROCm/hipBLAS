@@ -56,7 +56,10 @@
 #include "testing_nrm2_strided_batched_ex.hpp"
 #include "testing_rot.hpp"
 #include "testing_rot_batched.hpp"
+#include "testing_rot_batched_ex.hpp"
+#include "testing_rot_ex.hpp"
 #include "testing_rot_strided_batched.hpp"
+#include "testing_rot_strided_batched_ex.hpp"
 #include "testing_rotg.hpp"
 #include "testing_rotg_batched.hpp"
 #include "testing_rotg_strided_batched.hpp"
@@ -774,6 +777,47 @@ struct perf_blas_nrm2_ex<
     }
 };
 
+template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs, typename = void>
+struct perf_blas_rot_ex : hipblas_test_invalid
+{
+};
+
+template <typename Tx, typename Ty, typename Tcs, typename Tex>
+struct perf_blas_rot_ex<
+    Tx,
+    Ty,
+    Tcs,
+    Tex,
+    std::enable_if_t<(std::is_same<Tx, float>{} && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tcs>{}
+                      && std::is_same<Tcs, Tex>{})
+                     || (std::is_same<Tx, double>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Ty, Tcs>{} && std::is_same<Tex, Tcs>{})
+                     || (std::is_same<Tx, hipblasComplex>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Tcs, Ty>{} && std::is_same<Tcs, Tex>{})
+                     || (std::is_same<Tx, hipblasDoubleComplex>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Tcs, Ty>{} && std::is_same<Tex, Tcs>{})
+                     || (std::is_same<Tx, hipblasComplex>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Tcs, float>{} && std::is_same<Tex, hipblasComplex>{})
+                     || (std::is_same<Tx, hipblasDoubleComplex>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Tcs, double>{}
+                         && std::is_same<Tex, hipblasDoubleComplex>{})
+                     || (std::is_same<Tx, hipblasHalf>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Tcs, Ty>{} && std::is_same<Tex, float>{})
+                     || (std::is_same<Tx, hipblasBfloat16>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Tcs, Ty>{} && std::is_same<Tex, float>{})>>
+    : hipblas_test_valid
+{
+    void operator()(const Arguments& arg)
+    {
+        static const func_map map = {
+            {"rot_ex", testing_rot_ex_template<Tex, Tx, Tcs>},
+            {"rot_batched_ex", testing_rot_batched_ex_template<Tex, Tx, Tcs>},
+            {"rot_strided_batched_ex", testing_rot_strided_batched_ex_template<Tex, Tx, Tcs>},
+        };
+        run_function(map, arg);
+    }
+};
+
 template <typename Ti, typename To = Ti, typename Tc = To, typename = void>
 struct perf_blas_rot : hipblas_test_invalid
 {
@@ -1054,6 +1098,9 @@ int run_bench_test(Arguments& arg)
         else if(!strcmp(function, "nrm2_ex") || !strcmp(function, "nrm2_batched_ex")
                 || !strcmp(function, "nrm2_strided_batched_ex"))
             hipblas_blas1_ex_dispatch<perf_blas_nrm2_ex>(arg);
+        else if(!strcmp(function, "rot_ex") || !strcmp(function, "rot_batched_ex")
+                || !strcmp(function, "rot_strided_batched_ex"))
+            hipblas_blas1_ex_dispatch<perf_blas_rot_ex>(arg);
         else
             hipblas_simple_dispatch<perf_blas>(arg);
     }
