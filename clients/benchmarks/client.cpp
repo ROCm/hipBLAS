@@ -50,7 +50,10 @@
 #include "testing_iamax_iamin_strided_batched.hpp"
 #include "testing_nrm2.hpp"
 #include "testing_nrm2_batched.hpp"
+#include "testing_nrm2_batched_ex.hpp"
+#include "testing_nrm2_ex.hpp"
 #include "testing_nrm2_strided_batched.hpp"
+#include "testing_nrm2_strided_batched_ex.hpp"
 #include "testing_rot.hpp"
 #include "testing_rot_batched.hpp"
 #include "testing_rot_strided_batched.hpp"
@@ -740,6 +743,37 @@ struct perf_blas_dot_ex<
     }
 };
 
+template <typename Tx, typename Tr = Tx, typename Tex = Tr, typename = void>
+struct perf_blas_nrm2_ex : hipblas_test_invalid
+{
+};
+
+template <typename Tx, typename Tr, typename Tex>
+struct perf_blas_nrm2_ex<
+    Tx,
+    Tr,
+    Tex,
+    std::enable_if_t<
+        (std::is_same<Tx, float>{} && std::is_same<Tx, Tr>{} && std::is_same<Tr, Tex>{})
+        || (std::is_same<Tx, double>{} && std::is_same<Tx, Tr>{} && std::is_same<Tr, Tex>{})
+        || (std::is_same<Tx, hipblasComplex>{} && std::is_same<Tr, float>{}
+            && std::is_same<Tr, Tex>{})
+        || (std::is_same<Tx, hipblasDoubleComplex>{} && std::is_same<Tr, double>{}
+            && std::is_same<Tr, Tex>{})
+        || (std::is_same<Tx, hipblasHalf>{} && std::is_same<Tr, Tx>{}
+            && std::is_same<Tex, float>{})>> : hipblas_test_valid
+{
+    void operator()(const Arguments& arg)
+    {
+        static const func_map map = {
+            {"nrm2_ex", testing_nrm2_ex_template<Tx, Tr, Tex>},
+            {"nrm2_batched_ex", testing_nrm2_batched_ex_template<Tx, Tr, Tex>},
+            {"nrm2_strided_batched_ex", testing_nrm2_strided_batched_ex_template<Tx, Tr, Tex>},
+        };
+        run_function(map, arg);
+    }
+};
+
 template <typename Ti, typename To = Ti, typename Tc = To, typename = void>
 struct perf_blas_rot : hipblas_test_invalid
 {
@@ -1017,6 +1051,9 @@ int run_bench_test(Arguments& arg)
                 || !strcmp(function, "dotc_batched_ex")
                 || !strcmp(function, "dotc_strided_batched_ex"))
             hipblas_blas1_ex_dispatch<perf_blas_dot_ex>(arg);
+        else if(!strcmp(function, "nrm2_ex") || !strcmp(function, "nrm2_batched_ex")
+                || !strcmp(function, "nrm2_strided_batched_ex"))
+            hipblas_blas1_ex_dispatch<perf_blas_nrm2_ex>(arg);
         else
             hipblas_simple_dispatch<perf_blas>(arg);
     }
