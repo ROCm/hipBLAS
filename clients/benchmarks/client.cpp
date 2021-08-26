@@ -451,20 +451,21 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"trtri", testing_trtri<T>},
             {"trtri_batched", testing_trtri_batched<T>},
             {"trtri_strided_batched", testing_trtri_strided_batched<T>},
-            /*{"set_get_vector", testing_set_get_vector<T>},
-                {"set_get_matrix", testing_set_get_matrix<T>},
-                {"set_get_matrix_async", testing_set_get_matrix_async<T>},
-*/
             {"syrkx", testing_syrkx<T>},
             {"syrkx_batched", testing_syrkx_batched<T>},
             {"syrkx_strided_batched", testing_syrkx_strided_batched<T>},
-
             {"trsm", testing_trsm<T>},
             {"trsm_ex", testing_trsm_ex<T>},
             {"trsm_batched", testing_trsm_batched<T>},
             {"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
             {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
+
+            // Aux
+            {"set_get_vector", testing_set_get_vector<T>},
+            {"set_get_vector_async", testing_set_get_vector_async<T>},
+            {"set_get_matrix", testing_set_get_matrix<T>},
+            {"set_get_matrix_async", testing_set_get_matrix_async<T>},
         };
         run_function(fmap, arg);
     }
