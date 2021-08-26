@@ -67,7 +67,7 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
     host_vector<Tcs> hs(1);
     srand(1);
     hipblas_init<Tx>(hx_host, 1, N, incx, stridex, batch_count);
-    hipblas_init<Tx>(hy_host, 1, N, incy, stridey, batch_count);
+    hipblas_init<Ty>(hy_host, 1, N, incy, stridey, batch_count);
 
     hipblas_init<Tcs>(hc, 1, 1, 1);
     hipblas_init<Tcs>(hs, 1, 1, 1);
