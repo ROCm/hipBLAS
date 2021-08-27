@@ -13,11 +13,11 @@
 using namespace std;
 
 template <typename T, typename U>
-hipblasStatus_t testing_getrf_batched(const Arguments& argus)
+hipblasStatus_t testing_getri_npvt_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
-    auto hipblasGetrfBatchedFn
-        = FORTRAN ? hipblasGetrfBatched<T, true> : hipblasGetrfBatched<T, false>;
+    auto hipblasGetriBatchedFn
+        = FORTRAN ? hipblasGetriBatched<T, true> : hipblasGetriBatched<T, false>;
 
     int M           = argus.N;
     int N           = argus.N;
@@ -43,15 +43,16 @@ hipblasStatus_t testing_getrf_batched(const Arguments& argus)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T>   hA[batch_count];
     host_vector<T>   hA1[batch_count];
+    host_vector<T>   hC[batch_count];
     host_vector<int> hIpiv(Ipiv_size);
-    host_vector<int> hIpiv1(Ipiv_size);
     host_vector<int> hInfo(batch_count);
     host_vector<int> hInfo1(batch_count);
 
     device_batch_vector<T> bA(batch_count, A_size);
+    device_batch_vector<T> bC(batch_count, A_size);
 
     device_vector<T*, 0, T> dA(batch_count);
-    device_vector<int>      dIpiv(Ipiv_size);
+    device_vector<T*, 0, T> dC(batch_count);
     device_vector<int>      dInfo(batch_count);
 
     double gpu_time_used, cpu_time_used;
@@ -65,8 +66,10 @@ hipblasStatus_t testing_getrf_batched(const Arguments& argus)
     srand(1);
     for(int b = 0; b < batch_count; b++)
     {
-        hA[b]  = host_vector<T>(A_size);
-        hA1[b] = host_vector<T>(A_size);
+        hA[b]       = host_vector<T>(A_size);
+        hA1[b]      = host_vector<T>(A_size);
+        hC[b]       = host_vector<T>(A_size);
+        int* hIpivb = hIpiv.data() + b * strideP;
 
         hipblas_init<T>(hA[b], M, N, lda);
 
@@ -82,19 +85,22 @@ hipblasStatus_t testing_getrf_batched(const Arguments& argus)
             }
         }
 
+        // perform LU factorization on A
+        hInfo[b] = cblas_getrf(M, N, hA[b].data(), lda, hIpivb);
+
         // Copy data from CPU to device
         CHECK_HIP_ERROR(hipMemcpy(bA[b], hA[b].data(), A_size * sizeof(T), hipMemcpyHostToDevice));
     }
 
     CHECK_HIP_ERROR(hipMemcpy(dA, bA, batch_count * sizeof(T*), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(int)));
+    CHECK_HIP_ERROR(hipMemcpy(dC, bC, batch_count * sizeof(T*), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, batch_count * sizeof(int)));
 
     /* =====================================================================
            HIPBLAS
     =================================================================== */
 
-    status = hipblasGetrfBatchedFn(handle, N, dA, lda, dIpiv, dInfo, batch_count);
+    status = hipblasGetriBatchedFn(handle, N, dA, lda, nullptr, dC, lda, dInfo, batch_count);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -104,9 +110,7 @@ hipblasStatus_t testing_getrf_batched(const Arguments& argus)
 
     // Copy output from device to CPU
     for(int b = 0; b < batch_count; b++)
-        CHECK_HIP_ERROR(hipMemcpy(hA1[b].data(), bA[b], A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hA1[b].data(), bC[b], A_size * sizeof(T), hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(
         hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
 
@@ -118,7 +122,15 @@ hipblasStatus_t testing_getrf_batched(const Arguments& argus)
 
         for(int b = 0; b < batch_count; b++)
         {
-            hInfo[b] = cblas_getrf(M, N, hA[b].data(), lda, hIpiv.data() + b * strideP);
+            // Workspace query
+            host_vector<T> work(1);
+            cblas_getri(N, hA[b].data(), lda, hIpiv.data() + b * strideP, work.data(), -1);
+            int lwork = type2int(work[0]);
+
+            // Perform inversion
+            work = host_vector<T>(lwork);
+            hInfo[b]
+                = cblas_getri(N, hA[b].data(), lda, hIpiv.data() + b * strideP, work.data(), lwork);
 
             if(argus.unit_check)
             {
