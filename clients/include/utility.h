@@ -369,6 +369,9 @@ template <typename T>
 void hipblas_packInt8(
     std::vector<T>& A, size_t M, size_t N, size_t lda, size_t batch_count = 1, size_t stride_a = 0)
 {
+    if(N % 4 != 0)
+        std::cerr << "ERROR: dimension must be a multiple of 4 in order to pack" << std::endl;
+
     std::vector<T> temp(A);
     for(size_t b = 0; b < batch_count; b++)
         for(size_t colBase = 0; colBase < N; colBase += 4)
@@ -381,6 +384,9 @@ void hipblas_packInt8(
 template <typename T>
 void hipblas_packInt8(T* A, const T* temp, size_t M, size_t N, size_t lda)
 {
+    if(N % 4 != 0)
+        std::cerr << "ERROR: dimension must be a multiple of 4 in order to pack" << std::endl;
+
     for(size_t colBase = 0; colBase < N; colBase += 4)
         for(size_t row = 0; row < lda; row++)
             for(size_t colOffset = 0; colOffset < 4; colOffset++)

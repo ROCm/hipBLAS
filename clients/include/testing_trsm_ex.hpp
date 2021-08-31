@@ -119,7 +119,7 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dB, hB_host, sizeof(T) * B_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    hipblasStride stride_A    = TRSM_BLOCK * lda + TRSM_BLOCK;
+    hipblasStride stride_A    = TRSM_BLOCK * size_t(lda) + TRSM_BLOCK;
     hipblasStride stride_invA = TRSM_BLOCK * TRSM_BLOCK;
     int           blocks      = K / TRSM_BLOCK;
 
