@@ -80,8 +80,8 @@ hipblasStatus_t testing_nrm2_ex_template(const Arguments& argus)
         }
         if(argus.norm_check)
         {
-            hipblas_error_host   = std::abs((cpu_result - hipblas_result_host) / cpu_result);
-            hipblas_error_device = std::abs((cpu_result - hipblas_result_device) / cpu_result);
+            hipblas_error_host   = vector_norm_1(1, 1, &cpu_result, &hipblas_result_host);
+            hipblas_error_device = vector_norm_1(1, 1, &cpu_result, &hipblas_result_device);
         }
     } // end of if unit/norm check
 
