@@ -15,6 +15,7 @@
 #include "hipblas_datatype2string.hpp"
 #include <cmath>
 #include <immintrin.h>
+#include <iostream>
 #include <random>
 #include <type_traits>
 #include <vector>
