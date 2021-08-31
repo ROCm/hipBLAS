@@ -1,5 +1,9 @@
 # Change Log for hipBLAS
 
+## (Unreleased) hipBLAS 0.49.0
+### Fixed
+- Fixed use of incorrect 'HIP_PATH' when building from source.
+
 ## (Unreleased) hipBLAS 0.48.0
 ### Added
 - Added more support for hipblas-bench

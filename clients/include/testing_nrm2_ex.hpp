@@ -75,8 +75,8 @@ hipblasStatus_t testing_nrm2_ex_template(const Arguments& argus)
 
         if(argus.unit_check)
         {
-            unit_check_nrm2<Tr>(cpu_result, hipblas_result_host, N);
-            unit_check_nrm2<Tr>(cpu_result, hipblas_result_device, N);
+            unit_check_nrm2<Tr, Tex>(cpu_result, rocblas_result_1, N);
+            unit_check_nrm2<Tr, Tex>(cpu_result, rocblas_result_2, N);
         }
         if(argus.norm_check)
         {

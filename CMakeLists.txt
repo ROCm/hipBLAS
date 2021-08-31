@@ -63,7 +63,7 @@ include( ROCMInstallSymlinks )
 set ( VERSION_STRING "0.49.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
-if( NOT DEFINED $ENV{HIP_PATH})
+if( NOT DEFINED ENV{HIP_PATH})
     set( HIP_PATH "/opt/rocm/hip" )
 else( )
     set (HIP_PATH $ENV{HIP_PATH} )

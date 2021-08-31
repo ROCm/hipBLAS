@@ -96,8 +96,8 @@ hipblasStatus_t testing_nrm2_batched_ex_template(const Arguments& argus)
 
         if(argus.unit_check)
         {
-            unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_hipblas_result_host, N);
-            unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_hipblas_result_device, N);
+            unit_check_nrm2<Tr, Tex>(batch_count, h_cpu_result, h_rocblas_result1, N);
+            unit_check_nrm2<Tr, Tex>(batch_count, h_cpu_result, h_rocblas_result2, N);
         }
         if(argus.norm_check)
         {
