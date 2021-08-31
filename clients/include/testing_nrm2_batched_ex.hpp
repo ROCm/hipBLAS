@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -119,8 +119,8 @@ hipblasStatus_t testing_nrm2_batched_ex_template(Arguments argus)
 
         if(argus.unit_check)
         {
-            unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_rocblas_result1, N);
-            unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_rocblas_result2, N);
+            unit_check_nrm2<Tr, Tex>(batch_count, h_cpu_result, h_rocblas_result1, N);
+            unit_check_nrm2<Tr, Tex>(batch_count, h_cpu_result, h_rocblas_result2, N);
         }
 
     } // end of if unit/norm check
