@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -32,7 +32,7 @@ hipblasStatus_t testing_trsm_strided_batched_ex(const Arguments& argus)
     char   char_uplo    = argus.uplo_option;
     char   char_transA  = argus.transA_option;
     char   char_diag    = argus.diag_option;
-    T      alpha        = argus.alpha;
+    T      alpha        = argus.get_alpha<T>();
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 

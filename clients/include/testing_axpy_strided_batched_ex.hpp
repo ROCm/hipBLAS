@@ -51,7 +51,7 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(Arguments argus)
 
     int sizeX = stridex * batch_count;
     int sizeY = stridey * batch_count;
-    Ta  alpha = argus.alpha;
+    Ta  alpha = argus.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<Tx> hx(sizeX);

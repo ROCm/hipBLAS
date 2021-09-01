@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -31,7 +31,7 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
     char char_uplo   = argus.uplo_option;
     char char_transA = argus.transA_option;
     char char_diag   = argus.diag_option;
-    T    alpha       = argus.alpha;
+    T    alpha       = argus.get_alpha<T>();
 
     hipblasSideMode_t  side   = char2hipblas_side(char_side);
     hipblasFillMode_t  uplo   = char2hipblas_fill(char_uplo);

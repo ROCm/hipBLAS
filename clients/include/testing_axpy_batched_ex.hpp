@@ -46,7 +46,7 @@ hipblasStatus_t testing_axpy_batched_ex_template(Arguments argus)
 
     int sizeX = N * abs_incx;
     int sizeY = N * abs_incy;
-    Ta  alpha = argus.alpha;
+    Ta  alpha = argus.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<Tx> hx_array[batch_count];
