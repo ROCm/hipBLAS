@@ -827,4 +827,33 @@ constexpr double trtri_gflop_count<hipblasDoubleComplex>(int n)
     return (8.0 * n * n * n) / 3e9;
 }
 
+/*
+ * ===========================================================================
+ *    Solver
+ * ===========================================================================
+ */
+
+template <typename T>
+constexpr double geqrf_gflop_count(int n)
+{
+    return 0;
+}
+
+template <typename T>
+constexpr double getrf_gflop_count(int n)
+{
+    return 0;
+}
+template <typename T>
+constexpr double getri_gflop_count(int n)
+{
+    return 0;
+}
+
+template <typename T>
+constexpr double getrs_gflop_count(int n)
+{
+    return 0;
+}
+
 #endif /* _HIPBLAS_FLOPS_H_ */

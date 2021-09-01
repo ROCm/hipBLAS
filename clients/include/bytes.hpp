@@ -407,4 +407,33 @@ constexpr double trtri_gbyte_count(int n)
     return (sizeof(T) * (2 * tri_count(n)));
 }
 
+/*
+ * ===========================================================================
+ *    Solver
+ * ===========================================================================
+ */
+
+template <typename T>
+constexpr double geqrf_gbyte_count(int n)
+{
+    return 0;
+}
+
+template <typename T>
+constexpr double getrf_gbyte_count(int n)
+{
+    return 0;
+}
+template <typename T>
+constexpr double getri_gbyte_count(int n)
+{
+    return 0;
+}
+
+template <typename T>
+constexpr double getrs_gbyte_count(int n)
+{
+    return 0;
+}
+
 #endif /* _HIPBLAS_BYTES_H_ */

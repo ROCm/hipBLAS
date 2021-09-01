@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -12,9 +12,10 @@
 
 using namespace std;
 
-template <typename T, typename U>
+template <typename T>
 hipblasStatus_t testing_getrs(const Arguments& argus)
 {
+    using U             = real_t<T>;
     bool FORTRAN        = argus.fortran;
     auto hipblasGetrsFn = FORTRAN ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
 
@@ -22,11 +23,9 @@ hipblasStatus_t testing_getrs(const Arguments& argus)
     int lda = argus.lda;
     int ldb = argus.ldb;
 
-    int A_size    = lda * N;
-    int B_size    = ldb * 1;
-    int Ipiv_size = N;
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    size_t A_size    = size_t(lda) * N;
+    size_t B_size    = ldb * 1;
+    size_t Ipiv_size = N;
 
     // Check to prevent memory allocation error
     if(N < 0 || lda < N || ldb < N)
@@ -47,12 +46,8 @@ hipblasStatus_t testing_getrs(const Arguments& argus)
     device_vector<T>   dB(B_size);
     device_vector<int> dIpiv(Ipiv_size);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops;
-    double rocblas_error;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error;
+    hipblasLocalHandle handle(argus);
 
     // Initial hA, hB, hX on CPU
     srand(1);
@@ -80,32 +75,24 @@ hipblasStatus_t testing_getrs(const Arguments& argus)
     if(info != 0)
     {
         cerr << "LU decomposition failed" << endl;
-        return HIPBLAS_STATUS_SUCCESS;
+        return HIPBLAS_STATUS_INTERNAL_ERROR;
     }
 
     // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), B_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-
-    status = hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info);
-
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info));
 
     // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hB1.data(), dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hB1, dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
 
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU LAPACK
@@ -113,21 +100,39 @@ hipblasStatus_t testing_getrs(const Arguments& argus)
 
         cblas_getrs('N', N, 1, hA.data(), lda, hIpiv.data(), hB.data(), ldb);
 
-        // for(int i = 0; i < N; i++)
-        //     //cerr << hX[i] << ' ' << hB[i] << ' ' << hB1[i] << endl;
-        //     cerr << hB[i] - hB1[i] << ' ';
-        // cerr << endl;
+        hipblas_error = norm_check_general<T>('F', N, 1, ldb, hB.data(), hB1.data());
 
         if(argus.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
 
-            double e = norm_check_general<T>('F', N, 1, ldb, hB.data(), hB1.data());
-            unit_check_error(e, tolerance);
+            unit_check_error(hipblas_error, tolerance);
         }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
+                                                       argus,
+                                                       gpu_time_used,
+                                                       getrs_gflop_count<T>(N),
+                                                       getrs_gbyte_count<T>(N),
+                                                       hipblas_error);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }

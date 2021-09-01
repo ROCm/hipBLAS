@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -12,9 +12,10 @@
 
 using namespace std;
 
-template <typename T, typename U>
+template <typename T>
 hipblasStatus_t testing_geqrf(const Arguments& argus)
 {
+    using U             = real_t<T>;
     bool FORTRAN        = argus.fortran;
     auto hipblasGeqrfFn = FORTRAN ? hipblasGeqrf<T, true> : hipblasGeqrf<T, false>;
 
@@ -22,10 +23,8 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
     int N   = argus.N;
     int lda = argus.lda;
 
-    int A_size    = lda * N;
-    int Ipiv_size = min(M, N);
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    size_t A_size    = size_t(lda) * N;
+    int    Ipiv_size = min(M, N);
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M)
@@ -43,12 +42,8 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
     device_vector<T> dA(A_size);
     device_vector<T> dIpiv(Ipiv_size);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops;
-    double rocblas_error;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error;
+    hipblasLocalHandle handle(argus);
 
     // Initial hA on CPU
     srand(1);
@@ -73,20 +68,13 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-
-    status = hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info);
-
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
 
     // Copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hA1, dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
 
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU LAPACK
@@ -101,20 +89,42 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
         work = host_vector<T>(lwork);
         cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), lwork);
 
+        double e1     = norm_check_general<T>('F', M, N, lda, hA, hA1);
+        double e2     = norm_check_general<T>('F', min(M, N), 1, min(M, N), hIpiv, hIpiv1);
+        hipblas_error = e1 + e2;
+
         if(argus.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = eps * 2000;
 
-            double e1 = norm_check_general<T>('F', M, N, lda, hA.data(), hA1.data());
             unit_check_error(e1, tolerance);
-
-            double e2
-                = norm_check_general<T>('F', min(M, N), 1, min(M, N), hIpiv.data(), hIpiv1.data());
             unit_check_error(e2, tolerance);
         }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_M, e_N, e_lda>{}.log_args<T>(std::cout,
+                                                     argus,
+                                                     gpu_time_used,
+                                                     geqrf_gflop_count<T>(N),
+                                                     geqrf_gbyte_count<T>(N),
+                                                     hipblas_error);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }

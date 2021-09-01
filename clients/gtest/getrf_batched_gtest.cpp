@@ -67,7 +67,7 @@ TEST_P(getrf_batched_gtest, getrf_batched_gtest_float)
 
     Arguments arg = setup_getrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_batched<float, float>(arg);
+    hipblasStatus_t status = testing_getrf_batched<float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -89,7 +89,7 @@ TEST_P(getrf_batched_gtest, getrf_batched_gtest_double)
 
     Arguments arg = setup_getrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_batched<double, double>(arg);
+    hipblasStatus_t status = testing_getrf_batched<double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -111,7 +111,7 @@ TEST_P(getrf_batched_gtest, getrf_batched_gtest_float_complex)
 
     Arguments arg = setup_getrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_getrf_batched<hipblasComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -133,7 +133,7 @@ TEST_P(getrf_batched_gtest, getrf_batched_gtest_double_complex)
 
     Arguments arg = setup_getrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_getrf_batched<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
