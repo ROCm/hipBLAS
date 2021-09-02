@@ -459,59 +459,69 @@ TEST_P(parameterized_gemm_batched_ex, standard_strided_batched)
     }
 }
 
-class parameterized_chunk_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
-{
-protected:
-    parameterized_chunk_gemm_ex() {}
-    virtual ~parameterized_chunk_gemm_ex() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
-};
+// TODO: Disabling some gemm int8 tests as not supported by rocBLAS for all architectures
+// class parameterized_chunk_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
+// {
+// protected:
+//     parameterized_chunk_gemm_ex() {}
+//     virtual ~parameterized_chunk_gemm_ex() {}
+//     virtual void SetUp() {}
+//     virtual void TearDown() {}
+// };
 
-TEST_P(parameterized_chunk_gemm_ex, float)
-{
-    // GetParam return a tuple. Tee setup routine unpack the tuple
-    // and initializes arg(Arguments) which will be passed to testing routine
-    // The Arguments data struture have physical meaning associated.
-    // while the tuple is non-intuitive.
+// TEST_P(parameterized_chunk_gemm_ex, float)
+// {
+//     // GetParam return a tuple. Tee setup routine unpack the tuple
+//     // and initializes arg(Arguments) which will be passed to testing routine
+//     // The Arguments data struture have physical meaning associated.
+//     // while the tuple is non-intuitive.
 
-    Arguments arg = setup_gemm_ex_arguments(GetParam());
+//     Arguments arg = setup_gemm_ex_arguments(GetParam());
 
-    hipblasStatus_t status = testing_gemm_ex(arg);
+//     hipblasStatus_t status = testing_gemm_ex(arg);
 
-    // if not success, then the input argument is problematic, so detect the error message
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        if(arg.M < 0 || arg.N < 0 || arg.K < 0)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
-        {
-            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-        }
-        else
-        {
-            // Only available in cuda cc >= 5.0.
-            // If we want we can change this to call query_device_property() and
-            // call this only if cc < 5.0 on a CUDA device, else fail.
-            EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
-        }
-    }
-}
+//     // if not success, then the input argument is problematic, so detect the error message
+//     if(status != HIPBLAS_STATUS_SUCCESS)
+//     {
+//         if(arg.M < 0 || arg.N < 0 || arg.K < 0)
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+//         }
+//         else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+//         }
+//         else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+//         {
+//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+//         }
+//         else
+//         {
+//             // Only available in cuda cc >= 5.0.
+//             // If we want we can change this to call query_device_property() and
+//             // call this only if cc < 5.0 on a CUDA device, else fail.
+//             EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+//         }
+//     }
+// }
 
-class parameterized_half_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
-{
-protected:
-    parameterized_half_gemm_ex() {}
-    virtual ~parameterized_half_gemm_ex() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
-};
+// class parameterized_half_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
+// {
+// protected:
+//     parameterized_half_gemm_ex() {}
+//     virtual ~parameterized_half_gemm_ex() {}
+//     virtual void SetUp() {}
+//     virtual void TearDown() {}
+// };
+
+// INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
+//                          parameterized_gemm_ex,
+//                          Combine(ValuesIn(int8_matrix_size_range),
+//                                  ValuesIn(alpha_beta_range_int8),
+//                                  ValuesIn(transA_transB_range),
+//                                  ValuesIn(precision_int8),
+//                                  ValuesIn(batch_count_range_small),
+//                                  ValuesIn(is_fortran)));
 
 // TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
 
@@ -569,16 +579,6 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
                                  ValuesIn(precision_double_complex),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
-
-// TODO: Disabling some gemm int8 tests as not supported by rocBLAS for all architectures
-// INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
-//                          parameterized_gemm_ex,
-//                          Combine(ValuesIn(int8_matrix_size_range),
-//                                  ValuesIn(alpha_beta_range_int8),
-//                                  ValuesIn(transA_transB_range),
-//                                  ValuesIn(precision_int8),
-//                                  ValuesIn(batch_count_range_small),
-//                                  ValuesIn(is_fortran)));
 
 //----medium
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,

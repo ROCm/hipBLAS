@@ -13,7 +13,7 @@
 using namespace std;
 
 template <typename T, typename U>
-hipblasStatus_t testing_getrf_batched(const Arguments& argus)
+hipblasStatus_t testing_getrf_npvt_batched(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasGetrfBatchedFn
@@ -44,14 +44,12 @@ hipblasStatus_t testing_getrf_batched(const Arguments& argus)
     host_vector<T>   hA[batch_count];
     host_vector<T>   hA1[batch_count];
     host_vector<int> hIpiv(Ipiv_size);
-    host_vector<int> hIpiv1(Ipiv_size);
     host_vector<int> hInfo(batch_count);
     host_vector<int> hInfo1(batch_count);
 
     device_batch_vector<T> bA(batch_count, A_size);
 
     device_vector<T*, 0, T> dA(batch_count);
-    device_vector<int>      dIpiv(Ipiv_size);
     device_vector<int>      dInfo(batch_count);
 
     double gpu_time_used, cpu_time_used;
@@ -87,14 +85,13 @@ hipblasStatus_t testing_getrf_batched(const Arguments& argus)
     }
 
     CHECK_HIP_ERROR(hipMemcpy(dA, bA, batch_count * sizeof(T*), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(int)));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, batch_count * sizeof(int)));
 
     /* =====================================================================
            HIPBLAS
     =================================================================== */
 
-    status = hipblasGetrfBatchedFn(handle, N, dA, lda, dIpiv, dInfo, batch_count);
+    status = hipblasGetrfBatchedFn(handle, N, dA, lda, nullptr, dInfo, batch_count);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -105,8 +102,6 @@ hipblasStatus_t testing_getrf_batched(const Arguments& argus)
     // Copy output from device to CPU
     for(int b = 0; b < batch_count; b++)
         CHECK_HIP_ERROR(hipMemcpy(hA1[b].data(), bA[b], A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(
         hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
 

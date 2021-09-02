@@ -31,8 +31,8 @@ hipblasStatus_t testing_dot(const Arguments& argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    int sizeX = N * incx;
-    int sizeY = N * incy;
+    size_t sizeX = size_t(N) * incx;
+    size_t sizeY = size_t(N) * incy;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);

@@ -114,7 +114,7 @@ Arguments setup_trsm_ex_arguments(trsm_ex_tuple tup)
     arg.transA_option = side_uplo_transA_diag[2];
     arg.diag_option   = side_uplo_transA_diag[3];
 
-    arg.timing = 1;
+    arg.timing = 0;
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;

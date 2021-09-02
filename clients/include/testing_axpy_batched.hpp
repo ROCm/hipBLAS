@@ -110,8 +110,10 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
         }
         if(argus.norm_check)
         {
-            norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host, batch_count);
-            norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device, batch_count);
+            hipblas_error_host
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host, batch_count);
+            hipblas_error_device
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device, batch_count);
         }
 
     } // end of if unit check
