@@ -40,7 +40,7 @@ const vector<vector<int>> matrix_size_range = {
 
 // vector of vector, each pair is a {alpha, alphai, beta, betai};
 // add/delete this list in pairs, like {2.0, 3.0, 4.0, 5.0}
-const vector<vector<double>> alpha_beta_range = {{2.0, 2.0, 0.0, 0.0}, {0.0, 0.0, 1.3, 2.0}};
+const vector<vector<double>> alpha_beta_range = {{2.0, 2.0, 0.0, 0.0}, {0.0, 0.0, 1.0, 2.0}};
 
 // vector of vector, each pair is a {transA, transB};
 // add/delete this list in pairs, like {'N', 'T'}
