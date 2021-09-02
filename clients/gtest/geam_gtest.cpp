@@ -177,6 +177,8 @@ TEST_P(geam_gtest, geam_gtest_double_complex)
     }
 }
 
+#ifndef __HIP_PLATFORM_NVCC__
+
 TEST_P(geam_gtest, geam_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -296,6 +298,8 @@ TEST_P(geam_gtest, geam_strided_batched_gtest_double_complex)
         }
     }
 }
+
+#endif
 
 // This function mainly test the scope of alpha_beta, transA_transB,.the scope of matrix_size_range
 // is small

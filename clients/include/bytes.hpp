@@ -27,6 +27,14 @@ constexpr double set_get_matrix_gbyte_count(int m, int n)
     return (sizeof(T) * m * n * 2.0) / 1e9;
 }
 
+/* \brief byte counts of SET/GET_VECTOR/_ASYNC */
+template <typename T>
+constexpr double set_get_vector_gbyte_count(int n)
+{
+    // calls done in pairs for timing so x 2.0
+    return (sizeof(T) * n * 2.0) / 1e9;
+}
+
 /*
  * ===========================================================================
  *    level 1 BLAS

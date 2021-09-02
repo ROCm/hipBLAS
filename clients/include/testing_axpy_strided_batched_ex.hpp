@@ -14,7 +14,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename Ta, typename Tx = Ta, typename Ty = Tx>
-hipblasStatus_t testing_axpy_strided_batched_ex_template(Arguments argus)
+hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasAxpyStridedBatchedExFn
@@ -49,83 +49,141 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(Arguments argus)
     hipblasStride stridex = N * abs_incx * stride_scale;
     hipblasStride stridey = N * abs_incy * stride_scale;
 
-    int sizeX = stridex * batch_count;
-    int sizeY = stridey * batch_count;
-    Ta  alpha = argus.alpha;
+    size_t sizeX   = stridex * batch_count;
+    size_t sizeY   = stridey * batch_count;
+    Ta     h_alpha = argus.alpha;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<Tx> hx(sizeX);
-    host_vector<Ty> hy(sizeY);
-    host_vector<Tx> hx_cpu(sizeX);
     host_vector<Ty> hy_cpu(sizeY);
+    host_vector<Ty> hy_host(sizeY);
+    host_vector<Ty> hy_device(sizeY);
 
     device_vector<Tx> dx(sizeX);
     device_vector<Ty> dy(sizeY);
+    device_vector<Ta> d_alpha(1);
 
-    double gpu_time_used, cpu_time_used;
-    double rocblas_error = 0.0;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
     hipblas_init<Tx>(hx, 1, N, abs_incx, stridex, batch_count);
-    hipblas_init<Ty>(hy, 1, N, abs_incy, stridey, batch_count);
+    hipblas_init<Ty>(hy_host, 1, N, abs_incy, stridey, batch_count);
 
-    hx_cpu = hx;
-    hy_cpu = hy;
+    hy_device = hy_host;
+    hy_cpu    = hy_host;
 
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy_host, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
     /* =====================================================================
-         ROCBLAS
+         HIPBLAS
     =================================================================== */
-    status = hipblasAxpyStridedBatchedExFn(handle,
-                                           N,
-                                           &alpha,
-                                           alphaType,
-                                           dx,
-                                           xType,
-                                           incx,
-                                           stridex,
-                                           dy,
-                                           yType,
-                                           incy,
-                                           stridey,
-                                           batch_count,
-                                           executionType);
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+    CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                      N,
+                                                      &h_alpha,
+                                                      alphaType,
+                                                      dx,
+                                                      xType,
+                                                      incx,
+                                                      stridex,
+                                                      dy,
+                                                      yType,
+                                                      incy,
+                                                      stridey,
+                                                      batch_count,
+                                                      executionType));
 
-    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
 
-    if(argus.unit_check)
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+    CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                      N,
+                                                      d_alpha,
+                                                      alphaType,
+                                                      dx,
+                                                      xType,
+                                                      incx,
+                                                      stridex,
+                                                      dy,
+                                                      yType,
+                                                      incy,
+                                                      stridey,
+                                                      batch_count,
+                                                      executionType));
+
+    CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
+
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_axpy(N, alpha, hx_cpu.data() + b * stridex, incx, hy_cpu + b * stridey, incy);
+            cblas_axpy(N, h_alpha, hx.data() + b * stridex, incx, hy_cpu + b * stridey, incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<Tx>(1, N, batch_count, abs_incx, stridex, hx_cpu.data(), hx.data());
-            unit_check_general<Ty>(1, N, batch_count, abs_incy, stridey, hy_cpu.data(), hy.data());
+            unit_check_general<Ty>(1, N, batch_count, abs_incy, stridey, hy_cpu, hy_host);
+            unit_check_general<Ty>(1, N, batch_count, abs_incy, stridey, hy_cpu, hy_device);
+        }
+        if(argus.norm_check)
+        {
+            hipblas_error_host
+                = norm_check_general<Ty>('F', 1, N, 1, stridey, hy_cpu, hy_host, batch_count);
+            hipblas_error_device
+                = norm_check_general<Ty>('F', 1, N, 1, stridey, hy_cpu, hy_device, batch_count);
         }
 
     } // end of if unit check
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                              N,
+                                                              d_alpha,
+                                                              alphaType,
+                                                              dx,
+                                                              xType,
+                                                              incx,
+                                                              stridex,
+                                                              dy,
+                                                              yType,
+                                                              incy,
+                                                              stridey,
+                                                              batch_count,
+                                                              executionType));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_y, e_batch_count>{}.log_args<Ta>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            axpy_gflop_count<Ta>(N),
+            axpy_gbyte_count<Ta>(N),
+            hipblas_error_host,
+            hipblas_error_device);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }
 

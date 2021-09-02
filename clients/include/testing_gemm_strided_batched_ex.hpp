@@ -113,146 +113,158 @@ hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments& argus)
     device_vector<Tb> dB(size_B);
     device_vector<Tc> dC(size_C);
 
-    device_vector<Tc> d_alpha_Tc(1);
-    device_vector<Tc> d_beta_Tc(1);
+    device_vector<Tex> d_alpha(1);
+    device_vector<Tex> d_beta(1);
 
-    if(!dA || !dB || !dC || !d_alpha_Tc || !d_beta_Tc)
+    if(!dA || !dB || !dC || !d_alpha || !d_beta)
     {
         PRINT_IF_HIP_ERROR(hipErrorOutOfMemory);
         return HIPBLAS_STATUS_ALLOC_FAILED;
     }
 
-    hipblasHandle_t handle;
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
+    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<Ta> hA(size_A);
     host_vector<Tb> hB(size_B);
-    host_vector<Tc> hC(size_C);
+    host_vector<Tc> hC_host(size_C);
+    host_vector<Tc> hC_device(size_C);
     host_vector<Tc> hC_gold(size_C);
 
     // Initial Data on CPU
     srand(1);
     hipblas_init<Ta>(hA, A_row, A_col, lda, stride_A, batch_count);
     hipblas_init_alternating_sign<Tb>(hB, B_row, B_col, ldb, stride_B, batch_count);
-    hipblas_init<Tc>(hC, M, N, ldc, stride_C, batch_count);
-    hC_gold = hC;
+    hipblas_init<Tc>(hC_host, M, N, ldc, stride_C, batch_count);
+    hC_gold = hC_device = hC_host;
 
     // copy data from CPU to device
 #ifdef __HIP_PLATFORM_NVCC__
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(Ta) * size_A, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(Tb) * size_B, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(Ta) * size_A, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(Tb) * size_B, hipMemcpyHostToDevice));
 #else
     if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N && layout_pack_int8())
     {
-        vector<Ta> hA_packed(hA);
+        host_vector<Ta> hA_packed(hA);
         hipblas_packInt8(hA_packed, M, K, lda, batch_count, stride_A);
-        CHECK_HIP_ERROR(
-            hipMemcpy(dA, hA_packed.data(), sizeof(Ta) * size_A, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dA, hA_packed, sizeof(Ta) * size_A, hipMemcpyHostToDevice));
     }
     else
     {
-        CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(Ta) * size_A, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(Ta) * size_A, hipMemcpyHostToDevice));
     }
 
     if(std::is_same<Tb, int8_t>{} && transB != HIPBLAS_OP_N && layout_pack_int8())
     {
-        vector<Tb> hB_packed(hB);
+        host_vector<Tb> hB_packed(hB);
         hipblas_packInt8(hB_packed, N, K, ldb, batch_count, stride_B);
-        CHECK_HIP_ERROR(
-            hipMemcpy(dB, hB_packed.data(), sizeof(Tb) * size_B, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dB, hB_packed, sizeof(Tb) * size_B, hipMemcpyHostToDevice));
     }
     else
     {
-        CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(Tb) * size_B, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(Tb) * size_B, hipMemcpyHostToDevice));
     }
 #endif
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(Tc) * size_C, hipMemcpyHostToDevice));
 
-    status = hipblasGemmStridedBatchedExFn(handle,
-                                           transA,
-                                           transB,
-                                           M,
-                                           N,
-                                           K,
-                                           &h_alpha_Tc,
-                                           dA,
-                                           a_type,
-                                           lda,
-                                           stride_A,
-                                           dB,
-                                           b_type,
-                                           ldb,
-                                           stride_B,
-                                           &h_beta_Tc,
-                                           dC,
-                                           c_type,
-                                           ldc,
-                                           stride_C,
-                                           batch_count,
-                                           compute_type,
-                                           algo);
+    CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha_Tc, sizeof(Tex), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta_Tc, sizeof(Tex), hipMemcpyHostToDevice));
 
-    if(status != HIPBLAS_STATUS_SUCCESS)
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+    CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExFn(handle,
+                                                      transA,
+                                                      transB,
+                                                      M,
+                                                      N,
+                                                      K,
+                                                      &h_alpha_Tc,
+                                                      dA,
+                                                      a_type,
+                                                      lda,
+                                                      stride_A,
+                                                      dB,
+                                                      b_type,
+                                                      ldb,
+                                                      stride_B,
+                                                      &h_beta_Tc,
+                                                      dC,
+                                                      c_type,
+                                                      ldc,
+                                                      stride_C,
+                                                      batch_count,
+                                                      compute_type,
+                                                      algo));
+
+    CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
+
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+    CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExFn(handle,
+                                                      transA,
+                                                      transB,
+                                                      M,
+                                                      N,
+                                                      K,
+                                                      d_alpha,
+                                                      dA,
+                                                      a_type,
+                                                      lda,
+                                                      stride_A,
+                                                      dB,
+                                                      b_type,
+                                                      ldb,
+                                                      stride_B,
+                                                      d_beta,
+                                                      dC,
+                                                      c_type,
+                                                      ldc,
+                                                      stride_C,
+                                                      batch_count,
+                                                      compute_type,
+                                                      algo));
+
+    CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
+
+    if(unit_check || norm_check)
     {
-        hipblasDestroy(handle);
-        return status;
-    }
-
-    CHECK_HIP_ERROR(hipMemcpy(hC.data(), dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
-
-    // CPU BLAS
-    for(int b = 0; b < batch_count; b++)
-    {
-        cblas_gemm<Ta, Tc, Tex>(transA,
-                                transB,
-                                M,
-                                N,
-                                K,
-                                h_alpha_Tc,
-                                hA.data() + b * stride_A,
-                                lda,
-                                hB.data() + b * stride_B,
-                                ldb,
-                                h_beta_Tc,
-                                hC_gold.data() + b * stride_C,
-                                ldc);
-    }
-
-    double hipblas_error = 0.0;
-    double gpu_time_used = 0.0;
-    // enable unit check, notice unit check is not invasive, but norm check is,
-    // unit check and norm check can not be interchanged their order
-    if(unit_check)
-    {
+        // CPU BLAS
         for(int b = 0; b < batch_count; b++)
         {
-            unit_check_general<Tc>(
-                M, N, ldc, hC_gold.data() + b * stride_C, hC.data() + b * stride_C);
+            cblas_gemm<Ta, Tc, Tex>(transA,
+                                    transB,
+                                    M,
+                                    N,
+                                    K,
+                                    h_alpha_Tc,
+                                    hA.data() + b * stride_A,
+                                    lda,
+                                    hB.data() + b * stride_B,
+                                    ldb,
+                                    h_beta_Tc,
+                                    hC_gold.data() + b * stride_C,
+                                    ldc);
         }
-    }
-    if(norm_check)
-    {
-        hipblas_error = std::abs(norm_check_general<Tc>(
-            'F', M, N, ldc, stride_C, hC_gold.data(), hC.data(), batch_count));
+
+        if(argus.unit_check)
+        {
+            unit_check_general<Tc>(M, N, batch_count, ldc, stride_C, hC_gold, hC_host);
+            unit_check_general<Tc>(M, N, batch_count, ldc, stride_C, hC_gold, hC_device);
+        }
+        if(argus.norm_check)
+        {
+            hipblas_error_host
+                = norm_check_general<Tc>('F', M, N, ldc, stride_C, hC_gold, hC_host, batch_count);
+            hipblas_error_device
+                = norm_check_general<Tc>('F', M, N, ldc, stride_C, hC_gold, hC_device, batch_count);
+        }
     }
 
     if(timing)
     {
         hipStream_t stream;
-        status = hipblasGetStream(handle, &stream);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
-        status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -260,35 +272,29 @@ hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            status = hipblasGemmStridedBatchedExFn(handle,
-                                                   transA,
-                                                   transB,
-                                                   M,
-                                                   N,
-                                                   K,
-                                                   &h_alpha_Tc,
-                                                   dA,
-                                                   a_type,
-                                                   lda,
-                                                   stride_A,
-                                                   dB,
-                                                   b_type,
-                                                   ldb,
-                                                   stride_B,
-                                                   &h_beta_Tc,
-                                                   dC,
-                                                   c_type,
-                                                   ldc,
-                                                   stride_C,
-                                                   batch_count,
-                                                   compute_type,
-                                                   algo);
-
-            if(status != HIPBLAS_STATUS_SUCCESS)
-            {
-                hipblasDestroy(handle);
-                return status;
-            }
+            CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExFn(handle,
+                                                              transA,
+                                                              transB,
+                                                              M,
+                                                              N,
+                                                              K,
+                                                              &h_alpha_Tc,
+                                                              dA,
+                                                              a_type,
+                                                              lda,
+                                                              stride_A,
+                                                              dB,
+                                                              b_type,
+                                                              ldb,
+                                                              stride_B,
+                                                              &h_beta_Tc,
+                                                              dC,
+                                                              c_type,
+                                                              ldc,
+                                                              stride_C,
+                                                              batch_count,
+                                                              compute_type,
+                                                              algo));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -306,11 +312,11 @@ hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments& argus)
                           gpu_time_used,
                           gemm_gflop_count<Tex>(M, N, K),
                           gemm_gbyte_count<Tex>(M, N, K),
-                          hipblas_error);
+                          hipblas_error_host,
+                          hipblas_error_device);
     }
 
-    hipblasDestroy(handle);
-    return status;
+    return HIPBLAS_STATUS_SUCCESS;
 }
 
 hipblasStatus_t testing_gemm_strided_batched_ex(const Arguments& argus)
