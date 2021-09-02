@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -26,16 +26,11 @@ hipblasStatus_t testing_set_get_vector_async(const Arguments& argus)
     int incy = argus.incy;
     int incd = argus.incd;
 
-    hipblasStatus_t status     = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_set = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_get = HIPBLAS_STATUS_SUCCESS;
-
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(M < 0 || incx <= 0 || incy <= 0 || incd <= 0)
     {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -45,8 +40,8 @@ hipblasStatus_t testing_set_get_vector_async(const Arguments& argus)
 
     device_vector<T> db(M * incd);
 
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             hipblas_error = 0.0, gpu_time_used = 0.0;
+    hipblasLocalHandle handle(argus);
 
     hipStream_t stream;
     hipblasGetStream(handle, &stream);
@@ -58,28 +53,16 @@ hipblasStatus_t testing_set_get_vector_async(const Arguments& argus)
     hy_ref = hy;
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
-    status_set
-        = hipblasSetVectorAsyncFn(M, sizeof(T), (void*)hx.data(), incx, (void*)db, incd, stream);
-    status_get
-        = hipblasGetVectorAsyncFn(M, sizeof(T), (void*)db, incd, (void*)hy.data(), incy, stream);
+    CHECK_HIPBLAS_ERROR(
+        hipblasSetVectorAsyncFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd, stream));
+    CHECK_HIPBLAS_ERROR(
+        hipblasGetVectorAsyncFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy, stream));
 
     hipStreamSynchronize(stream);
 
-    if(status_set != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status_set;
-    }
-
-    if(status_get != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status_get;
-    }
-
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU BLAS
@@ -97,8 +80,37 @@ hipblasStatus_t testing_set_get_vector_async(const Arguments& argus)
         {
             unit_check_general<T>(1, M, incy, hy.data(), hy_ref.data());
         }
+        if(argus.norm_check)
+        {
+            hipblas_error = norm_check_general<T>('F', 1, M, incy, hy, hy_ref);
+        }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(
+                hipblasSetVectorAsyncFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd, stream));
+            CHECK_HIPBLAS_ERROR(
+                hipblasGetVectorAsyncFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy, stream));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_M, e_incx, e_incy, e_incb>{}.log_args<T>(std::cout,
+                                                                 argus,
+                                                                 gpu_time_used,
+                                                                 ArgumentLogging::NA_value,
+                                                                 set_get_vector_gbyte_count<T>(M),
+                                                                 hipblas_error);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }

@@ -89,12 +89,12 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
         {
             for(int b = 0; b < batch_count; b++)
             {
-                hipblas_error_host = std::max(
-                    Tr(hipblas_error_host),
-                    std::abs((h_cpu_result[b] - h_hipblas_result_host[b]) / h_cpu_result[b]));
+                hipblas_error_host
+                    = std::max(vector_norm_1(1, 1, &(h_cpu_result[b]), &(h_hipblas_result_host[b])),
+                               hipblas_error_host);
                 hipblas_error_device = std::max(
-                    Tr(hipblas_error_device),
-                    std::abs((h_cpu_result[b] - h_hipblas_result_device[b]) / h_cpu_result[b]));
+                    vector_norm_1(1, 1, &(h_cpu_result[b]), &(h_hipblas_result_device[b])),
+                    hipblas_error_device);
             }
         }
 

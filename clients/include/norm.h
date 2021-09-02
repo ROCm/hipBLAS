@@ -155,6 +155,9 @@ double vector_norm_1(int M, int incx, T* hx_gold, T* hx)
         max_err_scal += std::abs(hx_gold[i * incx]);
     }
 
+    if(std::abs(max_err_scal) < 1e6)
+        max_err_scal = 1;
+
     return max_err / max_err_scal;
 }
 

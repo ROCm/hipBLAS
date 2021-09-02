@@ -4,6 +4,7 @@
  * ************************************************************************ */
 
 #include "testing_getrf.hpp"
+#include "testing_getrf_npvt.hpp"
 #include "utility.h"
 #include <math.h>
 #include <stdexcept>
@@ -136,6 +137,94 @@ TEST_P(getrf_gtest, getrf_gtest_double_complex)
     Arguments arg = setup_getrf_arguments(GetParam());
 
     hipblasStatus_t status = testing_getrf<hipblasDoubleComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(getrf_gtest, getrf_npvt_gtest_float)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_npvt<float, float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(getrf_gtest, getrf_npvt_gtest_double)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_npvt<double, double>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(getrf_gtest, getrf_npvt_gtest_float_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_npvt<hipblasComplex, float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(getrf_gtest, getrf_npvt_gtest_double_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_npvt<hipblasDoubleComplex, double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
