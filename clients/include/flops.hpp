@@ -833,27 +833,80 @@ constexpr double trtri_gflop_count<hipblasDoubleComplex>(int n)
  * ===========================================================================
  */
 
+/* \brief floating point counts of GEQRF */
 template <typename T>
-constexpr double geqrf_gflop_count(int n)
+constexpr double geqrf_gflop_count(int n, int m)
 {
     return 0;
 }
 
-template <typename T>
-constexpr double getrf_gflop_count(int n)
+template <>
+constexpr double geqrf_gflop_count<hipblasComplex>(int n, int m)
 {
-    return 0;
+    return 4.0 * geqrf_gflop_count<float>(n, m);
 }
+
+template <>
+constexpr double geqrf_gflop_count<hipblasDoubleComplex>(int n, int m)
+{
+    return 4.0 * geqrf_gflop_count<float>(n, m);
+}
+
+/* \brief floating point counts of GETRF */
+template <typename T>
+constexpr double getrf_gflop_count(int n, int m)
+{
+    return ((2.0 / 3.0) * n * n * n) / 1e9;
+}
+
+template <>
+constexpr double getrf_gflop_count<hipblasComplex>(int n, int m)
+{
+    return 4.0 * getrf_gflop_count<float>(n, m);
+}
+
+template <>
+constexpr double getrf_gflop_count<hipblasDoubleComplex>(int n, int m)
+{
+    return 4.0 * getrf_gflop_count<float>(n, m);
+}
+
+/* \brief floating point counts of GETRI */
 template <typename T>
 constexpr double getri_gflop_count(int n)
 {
-    return 0;
+    return ((4.0 / 3.0) * n * n * n) / 1e9;
 }
 
-template <typename T>
-constexpr double getrs_gflop_count(int n)
+template <>
+constexpr double getri_gflop_count<hipblasComplex>(int n)
 {
-    return 0;
+    return 4.0 * getri_gflop_count<float>(n);
+}
+
+template <>
+constexpr double getri_gflop_count<hipblasDoubleComplex>(int n)
+{
+    return 4.0 * getri_gflop_count<float>(n);
+}
+
+/* \brief floating point counts of GETRS */
+template <typename T>
+constexpr double getrs_gflop_count(int n, int nrhs)
+{
+    return (1.0 * n * n * nrhs) / 1e9;
+}
+
+template <>
+constexpr double getrs_gflop_count<hipblasComplex>(int n, int nrhs)
+{
+    return 4.0 * getrs_gflop_count<float>(n, nrhs);
+}
+
+template <>
+constexpr double getrs_gflop_count<hipblasDoubleComplex>(int n, int nrhs)
+{
+    return 4.0 * getrs_gflop_count<float>(n, nrhs);
 }
 
 #endif /* _HIPBLAS_FLOPS_H_ */

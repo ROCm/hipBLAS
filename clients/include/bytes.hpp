@@ -414,26 +414,30 @@ constexpr double trtri_gbyte_count(int n)
  */
 
 template <typename T>
-constexpr double geqrf_gbyte_count(int n)
+constexpr double geqrf_gbyte_count(int n, int m)
 {
-    return 0;
+    // read/write A, write ipiv
+    return (sizeof(T) * (2 * n * m + std::min(n, m)));
 }
 
 template <typename T>
-constexpr double getrf_gbyte_count(int n)
+constexpr double getrf_gbyte_count(int n, int m)
 {
-    return 0;
+    // read/write A, write ipiv
+    return (sizeof(T) * (2 * n * m + std::min(n, m)));
 }
 template <typename T>
 constexpr double getri_gbyte_count(int n)
 {
-    return 0;
+    // read/write A, read ipiv
+    return (sizeof(T) * (2 * n * n + n));
 }
 
 template <typename T>
-constexpr double getrs_gbyte_count(int n)
+constexpr double getrs_gbyte_count(int n, int nrhs)
 {
-    return 0;
+    // read A, read ipiv, read/write B
+    return (sizeof(T) * (n * n + n + n * nrhs));
 }
 
 #endif /* _HIPBLAS_BYTES_H_ */

@@ -173,8 +173,8 @@ hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
             std::cout,
             argus,
             gpu_time_used,
-            getrs_gflop_count<T>(N),
-            getrs_gbyte_count<T>(N),
+            getrs_gflop_count<T>(N, 1),
+            getrs_gbyte_count<T>(N, 1),
             hipblas_error);
     }
     return HIPBLAS_STATUS_SUCCESS;

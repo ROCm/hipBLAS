@@ -133,8 +133,8 @@ hipblasStatus_t testing_geqrf_batched(const Arguments& argus)
         ArgumentModel<e_M, e_N, e_lda, e_batch_count>{}.log_args<T>(std::cout,
                                                                     argus,
                                                                     gpu_time_used,
-                                                                    geqrf_gflop_count<T>(N),
-                                                                    geqrf_gbyte_count<T>(N),
+                                                                    geqrf_gflop_count<T>(N, M),
+                                                                    geqrf_gbyte_count<T>(N, M),
                                                                     hipblas_error);
     }
 

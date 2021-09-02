@@ -160,8 +160,8 @@ hipblasStatus_t testing_getrs_batched(const Arguments& argus)
         ArgumentModel<e_N, e_lda, e_ldb, e_batch_count>{}.log_args<T>(std::cout,
                                                                       argus,
                                                                       gpu_time_used,
-                                                                      getrs_gflop_count<T>(N),
-                                                                      getrs_gbyte_count<T>(N),
+                                                                      getrs_gflop_count<T>(N, 1),
+                                                                      getrs_gbyte_count<T>(N, 1),
                                                                       hipblas_error);
     }
 

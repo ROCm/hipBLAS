@@ -129,8 +129,8 @@ hipblasStatus_t testing_getrs(const Arguments& argus)
         ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
                                                        argus,
                                                        gpu_time_used,
-                                                       getrs_gflop_count<T>(N),
-                                                       getrs_gbyte_count<T>(N),
+                                                       getrs_gflop_count<T>(N, 1),
+                                                       getrs_gbyte_count<T>(N, 1),
                                                        hipblas_error);
     }
 

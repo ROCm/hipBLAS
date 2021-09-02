@@ -133,12 +133,13 @@ hipblasStatus_t testing_getrf_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_stride_a, e_batch_count>{}.log_args<T>(std::cout,
-                                                                           argus,
-                                                                           gpu_time_used,
-                                                                           getrf_gflop_count<T>(N),
-                                                                           getrf_gbyte_count<T>(N),
-                                                                           hipblas_error);
+        ArgumentModel<e_N, e_lda, e_stride_a, e_batch_count>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            getrf_gflop_count<T>(N, M),
+            getrf_gbyte_count<T>(N, M),
+            hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

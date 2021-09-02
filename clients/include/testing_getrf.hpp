@@ -114,8 +114,8 @@ hipblasStatus_t testing_getrf(const Arguments& argus)
         ArgumentModel<e_N, e_lda>{}.log_args<T>(std::cout,
                                                 argus,
                                                 gpu_time_used,
-                                                getrf_gflop_count<T>(N),
-                                                getrf_gbyte_count<T>(N),
+                                                getrf_gflop_count<T>(N, M),
+                                                getrf_gbyte_count<T>(N, M),
                                                 hipblas_error);
     }
 

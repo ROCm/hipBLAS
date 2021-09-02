@@ -143,8 +143,8 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
             std::cout,
             argus,
             gpu_time_used,
-            geqrf_gflop_count<T>(N),
-            geqrf_gbyte_count<T>(N),
+            geqrf_gflop_count<T>(N, M),
+            geqrf_gbyte_count<T>(N, M),
             hipblas_error);
     }
 
