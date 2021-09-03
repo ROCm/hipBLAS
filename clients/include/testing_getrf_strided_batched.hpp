@@ -138,7 +138,7 @@ hipblasStatus_t testing_getrf_strided_batched(const Arguments& argus)
             argus,
             gpu_time_used,
             getrf_gflop_count<T>(N, M),
-            getrf_gbyte_count<T>(N, M),
+            ArgumentLogging::NA_value,
             hipblas_error);
     }
 

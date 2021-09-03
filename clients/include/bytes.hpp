@@ -415,37 +415,4 @@ constexpr double trtri_gbyte_count(int n)
     return (sizeof(T) * (2 * tri_count(n)));
 }
 
-/*
- * ===========================================================================
- *    Solver
- * ===========================================================================
- */
-
-template <typename T>
-constexpr double geqrf_gbyte_count(int n, int m)
-{
-    // read/write A, write ipiv
-    return (sizeof(T) * (2 * n * m + std::min(n, m)));
-}
-
-template <typename T>
-constexpr double getrf_gbyte_count(int n, int m)
-{
-    // read/write A, write ipiv
-    return (sizeof(T) * (2 * n * m + std::min(n, m)));
-}
-template <typename T>
-constexpr double getri_gbyte_count(int n)
-{
-    // read/write A, read ipiv
-    return (sizeof(T) * (2 * n * n + n));
-}
-
-template <typename T>
-constexpr double getrs_gbyte_count(int n, int nrhs)
-{
-    // read A, read ipiv, read/write B
-    return (sizeof(T) * (n * n + n + n * nrhs));
-}
-
 #endif /* _HIPBLAS_BYTES_H_ */

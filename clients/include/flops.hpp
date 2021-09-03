@@ -837,7 +837,9 @@ constexpr double trtri_gflop_count<hipblasDoubleComplex>(int n)
 template <typename T>
 constexpr double geqrf_gflop_count(int n, int m)
 {
-    return 0;
+    // Calculation is for m == n, using max of m, n for now
+    int k = std::max(m, n);
+    return ((4.0 / 3.0) * k * k * k);
 }
 
 template <>
@@ -856,7 +858,7 @@ constexpr double geqrf_gflop_count<hipblasDoubleComplex>(int n, int m)
 template <typename T>
 constexpr double getrf_gflop_count(int n, int m)
 {
-    return ((2.0 / 3.0) * n * n * n) / 1e9;
+    return (m * n * n) / 1e9;
 }
 
 template <>
@@ -894,7 +896,7 @@ constexpr double getri_gflop_count<hipblasDoubleComplex>(int n)
 template <typename T>
 constexpr double getrs_gflop_count(int n, int nrhs)
 {
-    return (1.0 * n * n * nrhs) / 1e9;
+    return (2.0 * n * n * nrhs) / 1e9;
 }
 
 template <>

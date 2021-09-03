@@ -122,7 +122,7 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
                                                      argus,
                                                      gpu_time_used,
                                                      geqrf_gflop_count<T>(N, M),
-                                                     geqrf_gbyte_count<T>(N, M),
+                                                     ArgumentLogging::NA_value,
                                                      hipblas_error);
     }
 

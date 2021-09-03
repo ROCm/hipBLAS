@@ -59,7 +59,6 @@ hipblasStatus_t testing_getri_batched(const Arguments& argus)
     // Initial hA on CPU
     hipblas_init(hA, true);
 
-    srand(1);
     for(int b = 0; b < batch_count; b++)
     {
         // scale A to avoid singularities
@@ -150,7 +149,8 @@ hipblasStatus_t testing_getri_batched(const Arguments& argus)
                                                                argus,
                                                                gpu_time_used,
                                                                getri_gflop_count<T>(N),
-                                                               getri_gbyte_count<T>(N),
+                                                               ArgumentLogging::NA_value,
+                                                               ,
                                                                hipblas_error);
     }
 

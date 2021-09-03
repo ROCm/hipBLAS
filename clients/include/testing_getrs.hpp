@@ -130,7 +130,7 @@ hipblasStatus_t testing_getrs(const Arguments& argus)
                                                        argus,
                                                        gpu_time_used,
                                                        getrs_gflop_count<T>(N, 1),
-                                                       getrs_gbyte_count<T>(N, 1),
+                                                       ArgumentLogging::NA_value,
                                                        hipblas_error);
     }
 

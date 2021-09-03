@@ -199,7 +199,7 @@
 #include "testing_trtri_batched.hpp"
 #include "testing_trtri_strided_batched.hpp"
 // solver functions
-#ifdef __BUILD_WITH_SOLVER__
+#ifdef __HIP_PLATFORM_SOLVER__
 #include "testing_geqrf.hpp"
 #include "testing_geqrf_batched.hpp"
 #include "testing_geqrf_strided_batched.hpp"
@@ -474,7 +474,7 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
             {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
 
-#ifdef __BUILD_WITH_SOLVER__
+#ifdef __HIP_PLATFORM_SOLVER__
             {"geqrf", testing_geqrf<T>},
             {"geqrf_batched", testing_geqrf_batched<T>},
             {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
@@ -690,7 +690,7 @@ struct perf_blas<
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
 
-#ifdef __BUILD_WITH_SOLVER__
+#ifdef __HIP_PLATFORM_SOLVER__
             {"geqrf", testing_geqrf<T>},
             {"geqrf_batched", testing_geqrf_batched<T>},
             {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
