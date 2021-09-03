@@ -33,9 +33,9 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    int sizeX = N * abs_incx;
-    int sizeY = N * abs_incy;
-    T   alpha = argus.get_alpha<T>();
+    size_t sizeX = size_t(N) * abs_incx;
+    size_t sizeY = size_t(N) * abs_incy;
+    T      alpha = argus.get_alpha<T>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);
@@ -69,22 +69,23 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
         hipMemcpy(dy_device, hy_device.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, d_alpha, dx, incx, dy_device, incy));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, &alpha, dx, incx, dy_host, incy));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hy_device.data(), dy_device, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, d_alpha, dx, incx, dy_device, incy));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, &alpha, dx, incx, dy_host, incy));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(
+            hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hy_device.data(), dy_device, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
