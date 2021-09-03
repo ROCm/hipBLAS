@@ -40,7 +40,7 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
 
     int sizeX = N * abs_incx;
     int sizeY = N * abs_incy;
-    T   alpha = argus.alpha;
+    T   alpha = argus.get_alpha<T>();
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 

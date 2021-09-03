@@ -32,21 +32,8 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
 
-    float alpha_float = argus.alpha;
-    float beta_float  = argus.beta;
-
-    T h_alpha, h_beta;
-
-    if(is_same<T, hipblasHalf>::value)
-    {
-        h_alpha = float_to_half(alpha_float);
-        h_beta  = float_to_half(beta_float);
-    }
-    else
-    {
-        h_alpha = static_cast<T>(alpha_float);
-        h_beta  = static_cast<T>(beta_float);
-    }
+    T h_alpha = argus.get_alpha<T>();
+    T h_beta  = argus.get_beta<T>();
 
     int A_row, A_col, B_row, B_col;
 

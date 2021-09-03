@@ -43,50 +43,12 @@ hipblasStatus_t testing_gemm_ex_template(const Arguments& argus)
     hipblasDatatype_t c_type       = argus.c_type;
     hipblasDatatype_t compute_type = argus.compute_type;
 
-    float alpha_float = argus.alpha;
-    float beta_float  = argus.beta;
+    Tex h_alpha_Tc = argus.get_alpha<Tex>();
+    Tex h_beta_Tc  = argus.get_beta<Tex>();
 
     int norm_check = argus.norm_check;
     int unit_check = argus.unit_check;
     int timing     = argus.timing;
-
-    Tex h_alpha_Tc;
-    Tex h_beta_Tc;
-
-    if(is_same<Tex, hipblasHalf>::value)
-    {
-        h_alpha_Tc = float_to_half(alpha_float);
-        h_beta_Tc  = float_to_half(beta_float);
-    }
-    else if(is_same<Tex, float>::value)
-    {
-        h_alpha_Tc = static_cast<Tex>(alpha_float);
-        h_beta_Tc  = static_cast<Tex>(beta_float);
-    }
-    else if(is_same<Tex, double>::value)
-    {
-        h_alpha_Tc = static_cast<Tex>(alpha_float);
-        h_beta_Tc  = static_cast<Tex>(beta_float);
-    }
-    else if(is_same<Tex, hipblasComplex>::value)
-    {
-        h_alpha_Tc = static_cast<Tex>(alpha_float);
-        h_beta_Tc  = static_cast<Tex>(beta_float);
-    }
-    else if(is_same<Tex, hipblasDoubleComplex>::value)
-    {
-        h_alpha_Tc = static_cast<Tex>(alpha_float);
-        h_beta_Tc  = static_cast<Tex>(beta_float);
-    }
-    else if(is_same<Tex, int32_t>::value)
-    {
-        h_alpha_Tc = static_cast<Tex>(alpha_float);
-        h_beta_Tc  = static_cast<Tex>(beta_float);
-    }
-    else
-    {
-        return HIPBLAS_STATUS_NOT_SUPPORTED;
-    }
 
     int A_row = transA == HIPBLAS_OP_N ? M : K;
     int A_col = transA == HIPBLAS_OP_N ? K : M;

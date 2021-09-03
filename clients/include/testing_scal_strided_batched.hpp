@@ -30,7 +30,7 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
     hipblasStride stridex = N * incx * stride_scale;
     int           sizeX   = stridex * batch_count;
 
-    U alpha = argus.alpha;
+    U alpha = argus.get_alpha<U>();
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

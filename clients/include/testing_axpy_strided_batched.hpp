@@ -25,7 +25,7 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
     int    incy         = argus.incy;
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
-    T      alpha        = argus.alpha;
+    T      alpha        = argus.get_alpha<T>();
 
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;

@@ -39,7 +39,7 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     }
 
     int    sizeX         = N * incx;
-    U      alpha         = argus.alpha;
+    U      alpha         = argus.get_alpha<U>();
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
 

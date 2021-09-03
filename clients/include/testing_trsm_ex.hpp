@@ -31,7 +31,7 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
     char char_uplo   = argus.uplo_option;
     char char_transA = argus.transA_option;
     char char_diag   = argus.diag_option;
-    T    h_alpha     = argus.alpha;
+    T    h_alpha     = argus.get_alpha<T>();
 
     hipblasSideMode_t  side   = char2hipblas_side(char_side);
     hipblasFillMode_t  uplo   = char2hipblas_fill(char_uplo);
