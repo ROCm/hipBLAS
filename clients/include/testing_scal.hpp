@@ -32,7 +32,7 @@ hipblasStatus_t testing_scal(const Arguments& argus)
     }
 
     int sizeX = N * incx;
-    U   alpha = argus.alpha;
+    U   alpha = argus.get_alpha<U>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T>   hx(sizeX);

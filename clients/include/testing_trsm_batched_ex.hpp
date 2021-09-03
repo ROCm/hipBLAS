@@ -31,7 +31,7 @@ hipblasStatus_t testing_trsm_batched_ex(const Arguments& argus)
     char char_uplo   = argus.uplo_option;
     char char_transA = argus.transA_option;
     char char_diag   = argus.diag_option;
-    T    h_alpha     = argus.alpha;
+    T    h_alpha     = argus.get_alpha<T>();
     int  batch_count = argus.batch_count;
 
     hipblasSideMode_t  side   = char2hipblas_side(char_side);

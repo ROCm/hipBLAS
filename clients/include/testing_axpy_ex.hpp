@@ -40,7 +40,7 @@ hipblasStatus_t testing_axpy_ex_template(const Arguments& argus)
 
     size_t sizeX   = size_t(N) * abs_incx;
     size_t sizeY   = size_t(N) * abs_incy;
-    Ta     h_alpha = argus.alpha;
+    Ta     h_alpha = argus.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<Tx> hx(sizeX);

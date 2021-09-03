@@ -18,7 +18,8 @@ using ::testing::ValuesIn;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
-typedef std::tuple<int, double, int, double, int, vector<hipblasDatatype_t>, bool> scal_ex_tuple;
+typedef std::tuple<int, vector<double>, int, double, int, vector<hipblasDatatype_t>, bool>
+    scal_ex_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -53,7 +54,7 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 
 const int N_range[] = {-1, 10, 500, 1000, 7111, 10000};
 
-const double alpha_range[] = {1.0, 2.0};
+const vector<vector<double>> alpha_range = {{1.0, 2.0}};
 
 const int incx_range[] = {1, -1};
 
@@ -96,7 +97,8 @@ Arguments setup_scal_ex_arguments(scal_ex_tuple tup)
 {
     Arguments arg;
     arg.N                                     = std::get<0>(tup);
-    arg.alpha                                 = std::get<1>(tup);
+    arg.alpha                                 = std::get<1>(tup)[0];
+    arg.alphai                                = std::get<1>(tup)[1];
     arg.incx                                  = std::get<2>(tup);
     arg.stride_scale                          = std::get<3>(tup);
     arg.batch_count                           = std::get<4>(tup);
