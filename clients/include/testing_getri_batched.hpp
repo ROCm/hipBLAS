@@ -150,7 +150,6 @@ hipblasStatus_t testing_getri_batched(const Arguments& argus)
                                                                gpu_time_used,
                                                                getri_gflop_count<T>(N),
                                                                ArgumentLogging::NA_value,
-                                                               ,
                                                                hipblas_error);
     }
 
