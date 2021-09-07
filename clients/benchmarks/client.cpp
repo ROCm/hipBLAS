@@ -145,13 +145,20 @@
 #include "testing_trmv.hpp"
 #include "testing_trmv_batched.hpp"
 #include "testing_trmv_strided_batched.hpp"
-// blas3 with no tensile
+// blas3
+#include "syrkx_reference.hpp"
 #include "testing_dgmm.hpp"
 #include "testing_dgmm_batched.hpp"
 #include "testing_dgmm_strided_batched.hpp"
 #include "testing_geam.hpp"
 #include "testing_geam_batched.hpp"
 #include "testing_geam_strided_batched.hpp"
+#include "testing_gemm.hpp"
+#include "testing_gemm_batched.hpp"
+#include "testing_gemm_batched_ex.hpp"
+#include "testing_gemm_ex.hpp"
+#include "testing_gemm_strided_batched.hpp"
+#include "testing_gemm_strided_batched_ex.hpp"
 #include "testing_hemm.hpp"
 #include "testing_hemm_batched.hpp"
 #include "testing_hemm_strided_batched.hpp"
@@ -173,7 +180,38 @@
 #include "testing_syrk.hpp"
 #include "testing_syrk_batched.hpp"
 #include "testing_syrk_strided_batched.hpp"
-//
+#include "testing_syrkx.hpp"
+#include "testing_syrkx_batched.hpp"
+#include "testing_syrkx_strided_batched.hpp"
+#include "testing_trmm.hpp"
+#include "testing_trmm_batched.hpp"
+#include "testing_trmm_strided_batched.hpp"
+#include "testing_trsm.hpp"
+#include "testing_trsm_batched.hpp"
+#include "testing_trsm_batched_ex.hpp"
+#include "testing_trsm_ex.hpp"
+#include "testing_trsm_strided_batched.hpp"
+#include "testing_trsm_strided_batched_ex.hpp"
+#include "testing_trsv.hpp"
+#include "testing_trsv_batched.hpp"
+#include "testing_trsv_strided_batched.hpp"
+#include "testing_trtri.hpp"
+#include "testing_trtri_batched.hpp"
+#include "testing_trtri_strided_batched.hpp"
+// solver functions
+#ifdef __HIP_PLATFORM_SOLVER__
+#include "testing_geqrf.hpp"
+#include "testing_geqrf_batched.hpp"
+#include "testing_geqrf_strided_batched.hpp"
+#include "testing_getrf.hpp"
+#include "testing_getrf_batched.hpp"
+#include "testing_getrf_strided_batched.hpp"
+#include "testing_getri_batched.hpp"
+#include "testing_getrs.hpp"
+#include "testing_getrs_batched.hpp"
+#include "testing_getrs_strided_batched.hpp"
+#endif
+
 #include "utility.h"
 #include <algorithm>
 #undef I
@@ -250,31 +288,6 @@ void run_function(const func_map& map, const Arguments& arg, const std::string& 
     match->second(arg);
 }
 
-#include "syrkx_reference.hpp"
-#include "testing_gemm.hpp"
-#include "testing_gemm_batched.hpp"
-#include "testing_gemm_batched_ex.hpp"
-#include "testing_gemm_ex.hpp"
-#include "testing_gemm_strided_batched.hpp"
-#include "testing_gemm_strided_batched_ex.hpp"
-#include "testing_syrkx.hpp"
-#include "testing_syrkx_batched.hpp"
-#include "testing_syrkx_strided_batched.hpp"
-#include "testing_trmm.hpp"
-#include "testing_trmm_batched.hpp"
-#include "testing_trmm_strided_batched.hpp"
-#include "testing_trsm.hpp"
-#include "testing_trsm_batched.hpp"
-#include "testing_trsm_batched_ex.hpp"
-#include "testing_trsm_ex.hpp"
-#include "testing_trsm_strided_batched.hpp"
-#include "testing_trsm_strided_batched_ex.hpp"
-#include "testing_trsv.hpp"
-#include "testing_trsv_batched.hpp"
-#include "testing_trsv_strided_batched.hpp"
-#include "testing_trtri.hpp"
-#include "testing_trtri_batched.hpp"
-#include "testing_trtri_strided_batched.hpp"
 // Template to dispatch testing_gemm_ex for performance tests
 // When Ti == void or Ti == To == Tc == bfloat16, the test is marked invalid
 template <typename Ti, typename To = Ti, typename Tc = To, typename = void>
@@ -460,6 +473,19 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
             {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
+
+#ifdef __HIP_PLATFORM_SOLVER__
+            {"geqrf", testing_geqrf<T>},
+            {"geqrf_batched", testing_geqrf_batched<T>},
+            {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
+            {"getrf", testing_getrf<T>},
+            {"getrf_batched", testing_getrf_batched<T>},
+            {"getrf_strided_batched", testing_getrf_strided_batched<T>},
+            {"getri_batched", testing_getri_batched<T>},
+            {"getrs", testing_getrs<T>},
+            {"getrs_batched", testing_getrs_batched<T>},
+            {"getrs_strided_batched", testing_getrs_strided_batched<T>},
+#endif
 
             // Aux
             {"set_get_vector", testing_set_get_vector<T>},
@@ -663,6 +689,19 @@ struct perf_blas<
             {"trmm", testing_trmm<T>},
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
+
+#ifdef __HIP_PLATFORM_SOLVER__
+            {"geqrf", testing_geqrf<T>},
+            {"geqrf_batched", testing_geqrf_batched<T>},
+            {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
+            {"getrf", testing_getrf<T>},
+            {"getrf_batched", testing_getrf_batched<T>},
+            {"getrf_strided_batched", testing_getrf_strided_batched<T>},
+            {"getri_batched", testing_getri_batched<T>},
+            {"getrs", testing_getrs<T>},
+            {"getrs_batched", testing_getrs_batched<T>},
+            {"getrs_strided_batched", testing_getrs_strided_batched<T>},
+#endif
         };
         run_function(map, arg);
     }
