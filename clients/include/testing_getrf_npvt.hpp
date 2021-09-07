@@ -70,10 +70,6 @@ hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, sizeof(int)));
 
-    // Copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hInfo1.data(), dInfo, sizeof(int), hipMemcpyDeviceToHost));
-
     if(argus.unit_check)
     {
         /* =====================================================================
@@ -86,6 +82,10 @@ hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
             hipblasDestroy(handle);
             return status;
         }
+
+        // Copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hInfo1.data(), dInfo, sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
