@@ -83,21 +83,28 @@ hipblasStatus_t testing_getri_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, batch_count * sizeof(int)));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasGetriBatchedFn(
-        handle, N, dA.ptr_on_device(), lda, dIpiv, dC.ptr_on_device(), lda, dInfo, batch_count));
-
-    // Copy output from device to CPU
-    CHECK_HIP_ERROR(hA1.transfer_from(dC));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasGetriBatchedFn(handle,
+                                                  N,
+                                                  dA.ptr_on_device(),
+                                                  lda,
+                                                  dIpiv,
+                                                  dC.ptr_on_device(),
+                                                  lda,
+                                                  dInfo,
+                                                  batch_count));
+
+        // Copy output from device to CPU
+        CHECK_HIP_ERROR(hA1.transfer_from(dC));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
+
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
