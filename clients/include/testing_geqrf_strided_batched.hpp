@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -12,9 +12,10 @@
 
 using namespace std;
 
-template <typename T, typename U>
+template <typename T>
 hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
 {
+    using U      = real_t<T>;
     bool FORTRAN = argus.fortran;
     auto hipblasGeqrfStridedBatchedFn
         = FORTRAN ? hipblasGeqrfStridedBatched<T, true> : hipblasGeqrfStridedBatched<T, false>;
@@ -29,8 +30,6 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
     hipblasStride strideP   = min(M, N) * stride_scale;
     int           A_size    = strideA * batch_count;
     int           Ipiv_size = strideP * batch_count;
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M || batch_count < 0)
@@ -52,12 +51,8 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
     device_vector<T> dA(A_size);
     device_vector<T> dIpiv(Ipiv_size);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops;
-    double rocblas_error;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error;
+    hipblasLocalHandle handle(argus);
 
     // Initial hA on CPU
     srand(1);
@@ -87,21 +82,14 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-
-    status = hipblasGeqrfStridedBatchedFn(
-        handle, M, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count);
-
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasGeqrfStridedBatchedFn(
+        handle, M, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count));
 
     // Copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
 
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU LAPACK
@@ -118,27 +106,47 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
         {
             cblas_geqrf(
                 M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP, work.data(), N);
+        }
 
-            if(argus.unit_check)
-            {
-                U      eps       = std::numeric_limits<U>::epsilon();
-                double tolerance = eps * 2000;
+        double e1 = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);
+        double e2 = norm_check_general<T>(
+            'F', min(M, N), 1, min(M, N), strideP, hIpiv, hIpiv1, batch_count);
+        hipblas_error = e1 + e2;
 
-                double e1 = norm_check_general<T>(
-                    'F', M, N, lda, hA.data() + b * strideA, hA1.data() + b * strideA);
-                unit_check_error(e1, tolerance);
+        if(argus.unit_check)
+        {
+            U      eps       = std::numeric_limits<U>::epsilon();
+            double tolerance = eps * 2000;
 
-                double e2 = norm_check_general<T>('F',
-                                                  min(M, N),
-                                                  1,
-                                                  strideP,
-                                                  hIpiv.data() + b * strideP,
-                                                  hIpiv1.data() + b * strideP);
-                unit_check_error(e2, tolerance);
-            }
+            unit_check_error(e1, tolerance);
+            unit_check_error(e2, tolerance);
         }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasGeqrfStridedBatchedFn(
+                handle, M, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_M, e_N, e_lda, e_stride_a, e_batch_count>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            geqrf_gflop_count<T>(N, M),
+            ArgumentLogging::NA_value,
+            hipblas_error);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }

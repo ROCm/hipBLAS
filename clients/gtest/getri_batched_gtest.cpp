@@ -63,7 +63,7 @@ TEST_P(getri_batched_gtest, getri_batched_gtest_float)
 
     Arguments arg = setup_getri_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getri_batched<float, float>(arg);
+    hipblasStatus_t status = testing_getri_batched<float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -85,7 +85,7 @@ TEST_P(getri_batched_gtest, getri_batched_gtest_double)
 
     Arguments arg = setup_getri_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getri_batched<double, double>(arg);
+    hipblasStatus_t status = testing_getri_batched<double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -107,7 +107,7 @@ TEST_P(getri_batched_gtest, getri_batched_gtest_float_complex)
 
     Arguments arg = setup_getri_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getri_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_getri_batched<hipblasComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -129,7 +129,7 @@ TEST_P(getri_batched_gtest, getri_batched_gtest_double_complex)
 
     Arguments arg = setup_getri_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getri_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_getri_batched<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
