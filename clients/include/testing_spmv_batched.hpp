@@ -80,46 +80,45 @@ hipblasStatus_t testing_spmv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasSpmvBatchedFn(handle,
-                                             uplo,
-                                             M,
-                                             &h_alpha,
-                                             dA.ptr_on_device(),
-                                             dx.ptr_on_device(),
-                                             incx,
-                                             &h_beta,
-                                             dy.ptr_on_device(),
-                                             incy,
-                                             batch_count));
-
-    CHECK_HIP_ERROR(hy_host.transfer_from(dy));
-    CHECK_HIP_ERROR(dy.transfer_from(hy));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasSpmvBatchedFn(handle,
-                                             uplo,
-                                             M,
-                                             d_alpha,
-                                             dA.ptr_on_device(),
-                                             dx.ptr_on_device(),
-                                             incx,
-                                             d_beta,
-                                             dy.ptr_on_device(),
-                                             incy,
-                                             batch_count));
-
-    CHECK_HIP_ERROR(hy_device.transfer_from(dy));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasSpmvBatchedFn(handle,
+                                                 uplo,
+                                                 M,
+                                                 &h_alpha,
+                                                 dA.ptr_on_device(),
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 &h_beta,
+                                                 dy.ptr_on_device(),
+                                                 incy,
+                                                 batch_count));
+
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+        CHECK_HIP_ERROR(dy.transfer_from(hy));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasSpmvBatchedFn(handle,
+                                                 uplo,
+                                                 M,
+                                                 d_alpha,
+                                                 dA.ptr_on_device(),
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 d_beta,
+                                                 dy.ptr_on_device(),
+                                                 incy,
+                                                 batch_count));
+
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy));
+
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_spmv<T>(uplo, M, h_alpha, hA[b], hx[b], incx, h_beta, hy_cpu[b], incy);

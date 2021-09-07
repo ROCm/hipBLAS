@@ -129,7 +129,6 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-
     if(argus.unit_check || argus.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
@@ -175,7 +174,6 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_trsm<T>(side,

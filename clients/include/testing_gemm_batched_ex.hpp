@@ -132,57 +132,58 @@ hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha_Tc, sizeof(Tex), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta_Tc, sizeof(Tex), hipMemcpyHostToDevice));
 
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
-                                               transA,
-                                               transB,
-                                               M,
-                                               N,
-                                               K,
-                                               &h_alpha_Tc,
-                                               (const void**)(Ta**)dA.ptr_on_device(),
-                                               a_type,
-                                               lda,
-                                               (const void**)(Tb**)dB.ptr_on_device(),
-                                               b_type,
-                                               ldb,
-                                               &h_beta_Tc,
-                                               (void**)(Tc**)dC.ptr_on_device(),
-                                               c_type,
-                                               ldc,
-                                               batch_count,
-                                               compute_type,
-                                               algo));
-
-    CHECK_HIP_ERROR(hC_host.transfer_from(dC));
-    CHECK_HIP_ERROR(dC.transfer_from(hC_device));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
-                                               transA,
-                                               transB,
-                                               M,
-                                               N,
-                                               K,
-                                               d_alpha,
-                                               (const void**)(Ta**)dA.ptr_on_device(),
-                                               a_type,
-                                               lda,
-                                               (const void**)(Tb**)dB.ptr_on_device(),
-                                               b_type,
-                                               ldb,
-                                               d_beta,
-                                               (void**)(Tc**)dC.ptr_on_device(),
-                                               c_type,
-                                               ldc,
-                                               batch_count,
-                                               compute_type,
-                                               algo));
-
-    CHECK_HIP_ERROR(hC_device.transfer_from(dC));
-
     if(unit_check || norm_check)
     {
+        // hipBLAS
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
+                                                   transA,
+                                                   transB,
+                                                   M,
+                                                   N,
+                                                   K,
+                                                   &h_alpha_Tc,
+                                                   (const void**)(Ta**)dA.ptr_on_device(),
+                                                   a_type,
+                                                   lda,
+                                                   (const void**)(Tb**)dB.ptr_on_device(),
+                                                   b_type,
+                                                   ldb,
+                                                   &h_beta_Tc,
+                                                   (void**)(Tc**)dC.ptr_on_device(),
+                                                   c_type,
+                                                   ldc,
+                                                   batch_count,
+                                                   compute_type,
+                                                   algo));
+
+        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
+        CHECK_HIP_ERROR(dC.transfer_from(hC_device));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
+                                                   transA,
+                                                   transB,
+                                                   M,
+                                                   N,
+                                                   K,
+                                                   d_alpha,
+                                                   (const void**)(Ta**)dA.ptr_on_device(),
+                                                   a_type,
+                                                   lda,
+                                                   (const void**)(Tb**)dB.ptr_on_device(),
+                                                   b_type,
+                                                   ldb,
+                                                   d_beta,
+                                                   (void**)(Tc**)dC.ptr_on_device(),
+                                                   c_type,
+                                                   ldc,
+                                                   batch_count,
+                                                   compute_type,
+                                                   algo));
+
+        CHECK_HIP_ERROR(hC_device.transfer_from(dC));
+
         // CPU BLAS
         for(int b = 0; b < batch_count; b++)
         {

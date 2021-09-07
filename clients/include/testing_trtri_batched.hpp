@@ -86,24 +86,24 @@ hipblasStatus_t testing_trtri_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dinvA.transfer_from(hA));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasTrtriBatchedFn(handle,
-                                              uplo,
-                                              diag,
-                                              N,
-                                              dA.ptr_on_device(),
-                                              lda,
-                                              dinvA.ptr_on_device(),
-                                              ldinvA,
-                                              batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hA.transfer_from(dinvA));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasTrtriBatchedFn(handle,
+                                                  uplo,
+                                                  diag,
+                                                  N,
+                                                  dA.ptr_on_device(),
+                                                  lda,
+                                                  dinvA.ptr_on_device(),
+                                                  ldinvA,
+                                                  batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hA.transfer_from(dinvA));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */

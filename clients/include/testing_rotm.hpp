@@ -58,13 +58,13 @@ hipblasStatus_t testing_rotm(const Arguments& arg)
     const T   FLAGS[FLAG_COUNT] = {-1, 0, 1, -2};
     for(int i = 0; i < FLAG_COUNT; ++i)
     {
-        hparam[0]         = FLAGS[i];
-        host_vector<T> cx = hx;
-        host_vector<T> cy = hy;
-        cblas_rotm<T>(N, cx, incx, cy, incy, hparam);
-
         if(arg.unit_check || arg.norm_check)
         {
+            hparam[0]         = FLAGS[i];
+            host_vector<T> cx = hx;
+            host_vector<T> cy = hy;
+            cblas_rotm<T>(N, cx, incx, cy, incy, hparam);
+
             // Test host
             {
                 CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));

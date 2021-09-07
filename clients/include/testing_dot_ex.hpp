@@ -64,31 +64,40 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
-                                       N,
-                                       dx,
-                                       xType,
-                                       incx,
-                                       dy,
-                                       yType,
-                                       incy,
-                                       &hipblas_result_host,
-                                       resultType,
-                                       executionType));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasDotExFn(
-        handle, N, dx, xType, incx, dy, yType, incy, d_hipblas_result, resultType, executionType));
-
-    CHECK_HIP_ERROR(
-        hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
+                                           N,
+                                           dx,
+                                           xType,
+                                           incx,
+                                           dy,
+                                           yType,
+                                           incy,
+                                           &hipblas_result_host,
+                                           resultType,
+                                           executionType));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
+                                           N,
+                                           dx,
+                                           xType,
+                                           incx,
+                                           dy,
+                                           yType,
+                                           incy,
+                                           d_hipblas_result,
+                                           resultType,
+                                           executionType));
+
+        CHECK_HIP_ERROR(
+            hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

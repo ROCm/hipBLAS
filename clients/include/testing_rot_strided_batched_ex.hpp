@@ -80,50 +80,50 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
     CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(Tcs), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(Tcs), hipMemcpyHostToDevice));
 
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
-                                                     N,
-                                                     dx,
-                                                     xType,
-                                                     incx,
-                                                     stridex,
-                                                     dy,
-                                                     yType,
-                                                     incy,
-                                                     stridey,
-                                                     hc,
-                                                     hs,
-                                                     csType,
-                                                     batch_count,
-                                                     executionType));
-
-    CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx_device, sizeof(Tx) * size_x, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * size_y, hipMemcpyHostToDevice));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
-                                                     N,
-                                                     dx,
-                                                     xType,
-                                                     incx,
-                                                     stridex,
-                                                     dy,
-                                                     yType,
-                                                     incy,
-                                                     stridey,
-                                                     dc,
-                                                     ds,
-                                                     csType,
-                                                     batch_count,
-                                                     executionType));
-
-    CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
-
     if(arg.unit_check || arg.norm_check)
     {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
+                                                         N,
+                                                         dx,
+                                                         xType,
+                                                         incx,
+                                                         stridex,
+                                                         dy,
+                                                         yType,
+                                                         incy,
+                                                         stridey,
+                                                         hc,
+                                                         hs,
+                                                         csType,
+                                                         batch_count,
+                                                         executionType));
+
+        CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dx, hx_device, sizeof(Tx) * size_x, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * size_y, hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
+                                                         N,
+                                                         dx,
+                                                         xType,
+                                                         incx,
+                                                         stridex,
+                                                         dy,
+                                                         yType,
+                                                         incy,
+                                                         stridey,
+                                                         dc,
+                                                         ds,
+                                                         csType,
+                                                         batch_count,
+                                                         executionType));
+
+        CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
+
         for(int b = 0; b < batch_count; b++)
         {
             cblas_rot<Tx, Tcs, Tcs>(

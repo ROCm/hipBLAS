@@ -76,44 +76,44 @@ hipblasStatus_t testing_syrk_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasSyrkBatchedFn(handle,
-                                             uplo,
-                                             transA,
-                                             N,
-                                             K,
-                                             &h_alpha,
-                                             dA.ptr_on_device(),
-                                             lda,
-                                             &h_beta,
-                                             dC.ptr_on_device(),
-                                             ldc,
-                                             batch_count));
-
-    CHECK_HIP_ERROR(hC_host.transfer_from(dC));
-    CHECK_HIP_ERROR(dC.transfer_from(hC_device));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasSyrkBatchedFn(handle,
-                                             uplo,
-                                             transA,
-                                             N,
-                                             K,
-                                             d_alpha,
-                                             dA.ptr_on_device(),
-                                             lda,
-                                             d_beta,
-                                             dC.ptr_on_device(),
-                                             ldc,
-                                             batch_count));
-
-    CHECK_HIP_ERROR(hC_device.transfer_from(dC));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasSyrkBatchedFn(handle,
+                                                 uplo,
+                                                 transA,
+                                                 N,
+                                                 K,
+                                                 &h_alpha,
+                                                 dA.ptr_on_device(),
+                                                 lda,
+                                                 &h_beta,
+                                                 dC.ptr_on_device(),
+                                                 ldc,
+                                                 batch_count));
+
+        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
+        CHECK_HIP_ERROR(dC.transfer_from(hC_device));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasSyrkBatchedFn(handle,
+                                                 uplo,
+                                                 transA,
+                                                 N,
+                                                 K,
+                                                 d_alpha,
+                                                 dA.ptr_on_device(),
+                                                 lda,
+                                                 d_beta,
+                                                 dC.ptr_on_device(),
+                                                 ldc,
+                                                 batch_count));
+
+        CHECK_HIP_ERROR(hC_device.transfer_from(dC));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */

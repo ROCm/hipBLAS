@@ -60,22 +60,22 @@ hipblasStatus_t testing_nrm2_strided_batched(const Arguments& argus)
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
 
-    // hipblasNrm2 accept both dev/host pointer for the scalar
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(
-        hipblasNrm2StridedBatchedFn(handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
-        handle, N, dx, incx, stridex, batch_count, h_hipblas_result_host));
-
-    CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
-                              d_hipblas_result,
-                              sizeof(Tr) * batch_count,
-                              hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        // hipblasNrm2 accept both dev/host pointer for the scalar
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
+            handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
+            handle, N, dx, incx, stridex, batch_count, h_hipblas_result_host));
+
+        CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
+                                  d_hipblas_result,
+                                  sizeof(Tr) * batch_count,
+                                  hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
