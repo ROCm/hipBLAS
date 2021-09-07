@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -12,9 +12,10 @@
 
 using namespace std;
 
-template <typename T, typename U>
+template <typename T>
 hipblasStatus_t testing_getrf_strided_batched(const Arguments& argus)
 {
+    using U      = real_t<T>;
     bool FORTRAN = argus.fortran;
     auto hipblasGetrfStridedBatchedFn
         = FORTRAN ? hipblasGetrfStridedBatched<T, true> : hipblasGetrfStridedBatched<T, false>;
@@ -25,12 +26,10 @@ hipblasStatus_t testing_getrf_strided_batched(const Arguments& argus)
     int    batch_count  = argus.batch_count;
     double stride_scale = argus.stride_scale;
 
-    hipblasStride strideA   = lda * N * stride_scale;
+    hipblasStride strideA   = size_t(lda) * N * stride_scale;
     hipblasStride strideP   = min(M, N) * stride_scale;
-    int           A_size    = strideA * batch_count;
-    int           Ipiv_size = strideP * batch_count;
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    size_t        A_size    = strideA * batch_count;
+    size_t        Ipiv_size = strideP * batch_count;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M || batch_count < 0)
@@ -54,12 +53,8 @@ hipblasStatus_t testing_getrf_strided_batched(const Arguments& argus)
     device_vector<int> dIpiv(Ipiv_size);
     device_vector<int> dInfo(batch_count);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops;
-    double rocblas_error;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error;
+    hipblasLocalHandle handle(argus);
 
     // Initial hA on CPU
     srand(1);
@@ -90,15 +85,8 @@ hipblasStatus_t testing_getrf_strided_batched(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-
-    status = hipblasGetrfStridedBatchedFn(
-        handle, N, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count);
-
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasGetrfStridedBatchedFn(
+        handle, N, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count));
 
     // Copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
@@ -116,19 +104,43 @@ hipblasStatus_t testing_getrf_strided_batched(const Arguments& argus)
         for(int b = 0; b < batch_count; b++)
         {
             hInfo[b] = cblas_getrf(M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP);
+        }
 
-            if(argus.unit_check)
-            {
-                U      eps       = std::numeric_limits<U>::epsilon();
-                double tolerance = eps * 2000;
+        hipblas_error = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);
 
-                double e = norm_check_general<T>(
-                    'F', M, N, lda, hA.data() + b * strideA, hA1.data() + b * strideA);
-                unit_check_error(e, tolerance);
-            }
+        if(argus.unit_check)
+        {
+            U      eps       = std::numeric_limits<U>::epsilon();
+            double tolerance = eps * 2000;
+
+            unit_check_error(hipblas_error, tolerance);
         }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasGetrfStridedBatchedFn(
+                handle, N, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_lda, e_stride_a, e_batch_count>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            getrf_gflop_count<T>(N, M),
+            ArgumentLogging::NA_value,
+            hipblas_error);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }
