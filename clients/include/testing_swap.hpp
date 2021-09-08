@@ -33,8 +33,8 @@ hipblasStatus_t testing_swap(const Arguments& argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    int sizeX = N * incx;
-    int sizeY = N * incy;
+    size_t sizeX = size_t(N) * incx;
+    size_t sizeY = size_t(N) * incy;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);
@@ -63,17 +63,17 @@ hipblasStatus_t testing_swap(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSwapFn(handle, N, dx, incx, dy, incy));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-
     if(unit_check || norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSwapFn(handle, N, dx, incx, dy, incy));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

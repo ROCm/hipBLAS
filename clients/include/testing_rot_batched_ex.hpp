@@ -76,47 +76,48 @@ hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
     CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(Tcs), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(Tcs), hipMemcpyHostToDevice));
 
-    // HIPBLAS
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasRotBatchedExFn(handle,
-                                              N,
-                                              dx.ptr_on_device(),
-                                              xType,
-                                              incx,
-                                              dy.ptr_on_device(),
-                                              yType,
-                                              incy,
-                                              hc,
-                                              hs,
-                                              csType,
-                                              batch_count,
-                                              executionType));
-
-    CHECK_HIP_ERROR(hx_host.transfer_from(dx));
-    CHECK_HIP_ERROR(hy_host.transfer_from(dy));
-    CHECK_HIP_ERROR(dx.transfer_from(hx_device));
-    CHECK_HIP_ERROR(dy.transfer_from(hy_device));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasRotBatchedExFn(handle,
-                                              N,
-                                              dx.ptr_on_device(),
-                                              xType,
-                                              incx,
-                                              dy.ptr_on_device(),
-                                              yType,
-                                              incy,
-                                              dc,
-                                              ds,
-                                              csType,
-                                              batch_count,
-                                              executionType));
-
-    CHECK_HIP_ERROR(hx_device.transfer_from(dx));
-    CHECK_HIP_ERROR(hy_device.transfer_from(dy));
-
     if(arg.unit_check || arg.norm_check)
     {
+        // HIPBLAS
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasRotBatchedExFn(handle,
+                                                  N,
+                                                  dx.ptr_on_device(),
+                                                  xType,
+                                                  incx,
+                                                  dy.ptr_on_device(),
+                                                  yType,
+                                                  incy,
+                                                  hc,
+                                                  hs,
+                                                  csType,
+                                                  batch_count,
+                                                  executionType));
+
+        CHECK_HIP_ERROR(hx_host.transfer_from(dx));
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+        CHECK_HIP_ERROR(dx.transfer_from(hx_device));
+        CHECK_HIP_ERROR(dy.transfer_from(hy_device));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasRotBatchedExFn(handle,
+                                                  N,
+                                                  dx.ptr_on_device(),
+                                                  xType,
+                                                  incx,
+                                                  dy.ptr_on_device(),
+                                                  yType,
+                                                  incy,
+                                                  dc,
+                                                  ds,
+                                                  csType,
+                                                  batch_count,
+                                                  executionType));
+
+        CHECK_HIP_ERROR(hx_device.transfer_from(dx));
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy));
+
+        // CBLAS
         for(int b = 0; b < batch_count; b++)
         {
             cblas_rot<Tx, Tcs, Tcs>(N, hx_cpu[b], incx, hy_cpu[b], incy, *hc, *hs);

@@ -101,23 +101,34 @@ hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasGetrsStridedBatchedFn(
-        handle, op, N, 1, dA, lda, strideA, dIpiv, strideP, dB, ldb, strideB, &info, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hB1.data(), dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasGetrsStridedBatchedFn(handle,
+                                                         op,
+                                                         N,
+                                                         1,
+                                                         dA,
+                                                         lda,
+                                                         strideA,
+                                                         dIpiv,
+                                                         strideP,
+                                                         dB,
+                                                         ldb,
+                                                         strideB,
+                                                         &info,
+                                                         batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hB1.data(), dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+
+        /* =====================================================================
            CPU LAPACK
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_getrs('N',

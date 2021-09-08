@@ -68,22 +68,21 @@ hipblasStatus_t testing_getrf(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(int)));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, sizeof(int)));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasGetrfFn(handle, N, dA, lda, dIpiv, dInfo));
-
-    // Copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hA1, dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hInfo1, dInfo, sizeof(int), hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasGetrfFn(handle, N, dA, lda, dIpiv, dInfo));
+
+        // Copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hA1, dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hInfo1, dInfo, sizeof(int), hipMemcpyDeviceToHost));
+
+        /* =====================================================================
            CPU LAPACK
         =================================================================== */
-
         hInfo[0] = cblas_getrf(M, N, hA.data(), lda, hIpiv.data());
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1);

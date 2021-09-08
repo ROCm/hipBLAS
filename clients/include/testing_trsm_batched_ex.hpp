@@ -39,9 +39,9 @@ hipblasStatus_t testing_trsm_batched_ex(const Arguments& argus)
     hipblasOperation_t transA = char2hipblas_operation(char_transA);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(char_diag);
 
-    int K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    int A_size = lda * K;
-    int B_size = ldb * N;
+    int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
+    size_t A_size = size_t(lda) * K;
+    size_t B_size = size_t(ldb) * N;
 
     // check here to prevent undefined memory allocation error
     // TODO: Workaround for cuda tests, not actually testing return values
@@ -131,9 +131,7 @@ hipblasStatus_t testing_trsm_batched_ex(const Arguments& argus)
     CHECK_HIP_ERROR(dB.transfer_from(hB_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
+    // calculate invA
     hipblasStride stride_A    = TRSM_BLOCK * lda + TRSM_BLOCK;
     hipblasStride stride_invA = TRSM_BLOCK * TRSM_BLOCK;
     int           blocks      = K / TRSM_BLOCK;
@@ -171,49 +169,52 @@ hipblasStatus_t testing_trsm_batched_ex(const Arguments& argus)
         }
     }
 
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasTrsmBatchedExFn(handle,
-                                               side,
-                                               uplo,
-                                               transA,
-                                               diag,
-                                               M,
-                                               N,
-                                               &h_alpha,
-                                               dA.ptr_on_device(),
-                                               lda,
-                                               dB.ptr_on_device(),
-                                               ldb,
-                                               batch_count,
-                                               dinvA.ptr_on_device(),
-                                               TRSM_BLOCK * K,
-                                               argus.compute_type));
-
-    CHECK_HIP_ERROR(hB_host.transfer_from(dB));
-    CHECK_HIP_ERROR(dB.transfer_from(hB_device));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasTrsmBatchedExFn(handle,
-                                               side,
-                                               uplo,
-                                               transA,
-                                               diag,
-                                               M,
-                                               N,
-                                               d_alpha,
-                                               dA.ptr_on_device(),
-                                               lda,
-                                               dB.ptr_on_device(),
-                                               ldb,
-                                               batch_count,
-                                               dinvA.ptr_on_device(),
-                                               TRSM_BLOCK * K,
-                                               argus.compute_type));
-
-    CHECK_HIP_ERROR(hB_device.transfer_from(dB));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasTrsmBatchedExFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   &h_alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dB.ptr_on_device(),
+                                                   ldb,
+                                                   batch_count,
+                                                   dinvA.ptr_on_device(),
+                                                   TRSM_BLOCK * K,
+                                                   argus.compute_type));
+
+        CHECK_HIP_ERROR(hB_host.transfer_from(dB));
+        CHECK_HIP_ERROR(dB.transfer_from(hB_device));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasTrsmBatchedExFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   d_alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dB.ptr_on_device(),
+                                                   ldb,
+                                                   batch_count,
+                                                   dinvA.ptr_on_device(),
+                                                   TRSM_BLOCK * K,
+                                                   argus.compute_type));
+
+        CHECK_HIP_ERROR(hB_device.transfer_from(dB));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */

@@ -91,28 +91,28 @@ hipblasStatus_t testing_getrs_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dB.transfer_from(hB));
     CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasGetrsBatchedFn(handle,
-                                              op,
-                                              N,
-                                              1,
-                                              dA.ptr_on_device(),
-                                              lda,
-                                              dIpiv,
-                                              dB.ptr_on_device(),
-                                              ldb,
-                                              &info,
-                                              batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hB1.transfer_from(dB));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasGetrsBatchedFn(handle,
+                                                  op,
+                                                  N,
+                                                  1,
+                                                  dA.ptr_on_device(),
+                                                  lda,
+                                                  dIpiv,
+                                                  dB.ptr_on_device(),
+                                                  ldb,
+                                                  &info,
+                                                  batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hB1.transfer_from(dB));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+
         /* =====================================================================
            CPU LAPACK
         =================================================================== */

@@ -86,55 +86,55 @@ hipblasStatus_t testing_syr2k_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasSyrk2StridedBatchedFn(handle,
-                                                     uplo,
-                                                     transA,
-                                                     N,
-                                                     K,
-                                                     &h_alpha,
-                                                     dA,
-                                                     lda,
-                                                     stride_A,
-                                                     dB,
-                                                     ldb,
-                                                     stride_B,
-                                                     &h_beta,
-                                                     dC,
-                                                     ldc,
-                                                     stride_C,
-                                                     batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * C_size, hipMemcpyHostToDevice));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasSyrk2StridedBatchedFn(handle,
-                                                     uplo,
-                                                     transA,
-                                                     N,
-                                                     K,
-                                                     d_alpha,
-                                                     dA,
-                                                     lda,
-                                                     stride_A,
-                                                     dB,
-                                                     ldb,
-                                                     stride_B,
-                                                     d_beta,
-                                                     dC,
-                                                     ldc,
-                                                     stride_C,
-                                                     batch_count));
-
-    CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasSyrk2StridedBatchedFn(handle,
+                                                         uplo,
+                                                         transA,
+                                                         N,
+                                                         K,
+                                                         &h_alpha,
+                                                         dA,
+                                                         lda,
+                                                         stride_A,
+                                                         dB,
+                                                         ldb,
+                                                         stride_B,
+                                                         &h_beta,
+                                                         dC,
+                                                         ldc,
+                                                         stride_C,
+                                                         batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * C_size, hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasSyrk2StridedBatchedFn(handle,
+                                                         uplo,
+                                                         transA,
+                                                         N,
+                                                         K,
+                                                         d_alpha,
+                                                         dA,
+                                                         lda,
+                                                         stride_A,
+                                                         dB,
+                                                         ldb,
+                                                         stride_B,
+                                                         d_beta,
+                                                         dC,
+                                                         ldc,
+                                                         stride_C,
+                                                         batch_count));
+
+        CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */

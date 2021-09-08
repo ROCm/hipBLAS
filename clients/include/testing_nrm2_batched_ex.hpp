@@ -55,36 +55,36 @@ hipblasStatus_t testing_nrm2_batched_ex_template(const Arguments& argus)
     hipblas_init(hx, true);
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
-    // hipblasNrm2 accept both dev/host pointer for the scalar
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedExFn(handle,
-                                               N,
-                                               dx.ptr_on_device(),
-                                               xType,
-                                               incx,
-                                               batch_count,
-                                               d_hipblas_result,
-                                               resultType,
-                                               executionType));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedExFn(handle,
-                                               N,
-                                               dx.ptr_on_device(),
-                                               xType,
-                                               incx,
-                                               batch_count,
-                                               h_hipblas_result_host,
-                                               resultType,
-                                               executionType));
-
-    CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
-                              d_hipblas_result,
-                              sizeof(Tr) * batch_count,
-                              hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        // hipblasNrm2 accept both dev/host pointer for the scalar
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedExFn(handle,
+                                                   N,
+                                                   dx.ptr_on_device(),
+                                                   xType,
+                                                   incx,
+                                                   batch_count,
+                                                   d_hipblas_result,
+                                                   resultType,
+                                                   executionType));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedExFn(handle,
+                                                   N,
+                                                   dx.ptr_on_device(),
+                                                   xType,
+                                                   incx,
+                                                   batch_count,
+                                                   h_hipblas_result_host,
+                                                   resultType,
+                                                   executionType));
+
+        CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
+                                  d_hipblas_result,
+                                  sizeof(Tr) * batch_count,
+                                  hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
