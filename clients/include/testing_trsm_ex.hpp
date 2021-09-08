@@ -123,9 +123,6 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
     hipblasStride stride_invA = TRSM_BLOCK * TRSM_BLOCK;
     int           blocks      = K / TRSM_BLOCK;
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
     // Calculate invA
     if(blocks > 0)
     {
@@ -157,52 +154,54 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
                                                           1));
     }
 
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasTrsmExFn(handle,
-                                        side,
-                                        uplo,
-                                        transA,
-                                        diag,
-                                        M,
-                                        N,
-                                        &h_alpha,
-                                        dA,
-                                        lda,
-                                        dB,
-                                        ldb,
-                                        dinvA,
-                                        TRSM_BLOCK * K,
-                                        argus.compute_type));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB_device, sizeof(T) * B_size, hipMemcpyHostToDevice));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasTrsmExFn(handle,
-                                        side,
-                                        uplo,
-                                        transA,
-                                        diag,
-                                        M,
-                                        N,
-                                        d_alpha,
-                                        dA,
-                                        lda,
-                                        dB,
-                                        ldb,
-                                        dinvA,
-                                        TRSM_BLOCK * K,
-                                        argus.compute_type));
-
-    CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasTrsmExFn(handle,
+                                            side,
+                                            uplo,
+                                            transA,
+                                            diag,
+                                            M,
+                                            N,
+                                            &h_alpha,
+                                            dA,
+                                            lda,
+                                            dB,
+                                            ldb,
+                                            dinvA,
+                                            TRSM_BLOCK * K,
+                                            argus.compute_type));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dB, hB_device, sizeof(T) * B_size, hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasTrsmExFn(handle,
+                                            side,
+                                            uplo,
+                                            transA,
+                                            diag,
+                                            M,
+                                            N,
+                                            d_alpha,
+                                            dA,
+                                            lda,
+                                            dB,
+                                            ldb,
+                                            dinvA,
+                                            TRSM_BLOCK * K,
+                                            argus.compute_type));
+
+        CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         cblas_trsm<T>(
             side, uplo, transA, diag, M, N, h_alpha, (const T*)hA.data(), lda, hB_cpu.data(), ldb);
 

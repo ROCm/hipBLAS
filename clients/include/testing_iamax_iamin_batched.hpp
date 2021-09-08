@@ -69,25 +69,25 @@ hipblasStatus_t testing_iamax_iamin_batched(const Arguments&                 arg
     double gpu_time_used;
     int    hipblas_error_host = 0, hipblas_error_device = 0;
 
-    /* =====================================================================
-                HIPBLAS
-    =================================================================== */
-    // device_pointer
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(
-        func(handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result_device));
-    CHECK_HIP_ERROR(hipMemcpy(hipblas_result_device,
-                              d_hipblas_result_device,
-                              sizeof(int) * batch_count,
-                              hipMemcpyDeviceToHost));
-
-    // host_pointer
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(
-        func(handle, N, dx.ptr_on_device(), incx, batch_count, hipblas_result_host));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        // device_pointer
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(
+            func(handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result_device));
+        CHECK_HIP_ERROR(hipMemcpy(hipblas_result_device,
+                                  d_hipblas_result_device,
+                                  sizeof(int) * batch_count,
+                                  hipMemcpyDeviceToHost));
+
+        // host_pointer
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(
+            func(handle, N, dx.ptr_on_device(), incx, batch_count, hipblas_result_host));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

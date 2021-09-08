@@ -70,28 +70,26 @@ hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, sizeof(int)));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-
-    status = hipblasGetrfFn(handle, N, dA, lda, nullptr, dInfo);
-
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
-
-    // Copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hInfo1.data(), dInfo, sizeof(int), hipMemcpyDeviceToHost));
-
     if(argus.unit_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        status = hipblasGetrfFn(handle, N, dA, lda, nullptr, dInfo);
+
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        // Copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hInfo1.data(), dInfo, sizeof(int), hipMemcpyDeviceToHost));
+
+        /* =====================================================================
            CPU LAPACK
         =================================================================== */
-
         hInfo[0] = cblas_getrf(M, N, hA.data(), lda, hIpiv.data());
 
         if(argus.unit_check)

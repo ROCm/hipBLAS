@@ -65,38 +65,38 @@ hipblasStatus_t testing_scal_batched_ex_template(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
-                                               N,
-                                               &h_alpha,
-                                               alphaType,
-                                               dx.ptr_on_device(),
-                                               xType,
-                                               incx,
-                                               batch_count,
-                                               executionType));
-
-    CHECK_HIP_ERROR(hx_host.transfer_from(dx));
-    CHECK_HIP_ERROR(dx.transfer_from(hx_device));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
-                                               N,
-                                               d_alpha,
-                                               alphaType,
-                                               dx.ptr_on_device(),
-                                               xType,
-                                               incx,
-                                               batch_count,
-                                               executionType));
-
-    CHECK_HIP_ERROR(hx_device.transfer_from(dx));
-
     if(unit_check || norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
+                                                   N,
+                                                   &h_alpha,
+                                                   alphaType,
+                                                   dx.ptr_on_device(),
+                                                   xType,
+                                                   incx,
+                                                   batch_count,
+                                                   executionType));
+
+        CHECK_HIP_ERROR(hx_host.transfer_from(dx));
+        CHECK_HIP_ERROR(dx.transfer_from(hx_device));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
+                                                   N,
+                                                   d_alpha,
+                                                   alphaType,
+                                                   dx.ptr_on_device(),
+                                                   xType,
+                                                   incx,
+                                                   batch_count,
+                                                   executionType));
+
+        CHECK_HIP_ERROR(hx_device.transfer_from(dx));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

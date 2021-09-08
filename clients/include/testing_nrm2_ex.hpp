@@ -52,20 +52,19 @@ hipblasStatus_t testing_nrm2_ex_template(const Arguments& argus)
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
 
-    // hipblasNrm2 accept both dev/host pointer for the scalar
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(
-        hipblasNrm2ExFn(handle, N, dx, xType, incx, d_hipblas_result, resultType, executionType));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasNrm2ExFn(
-        handle, N, dx, xType, incx, &hipblas_result_host, resultType, executionType));
-
-    CHECK_HIP_ERROR(
-        hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        // hipblasNrm2 accept both dev/host pointer for the scalar
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2ExFn(
+            handle, N, dx, xType, incx, d_hipblas_result, resultType, executionType));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2ExFn(
+            handle, N, dx, xType, incx, &hipblas_result_host, resultType, executionType));
+
+        CHECK_HIP_ERROR(
+            hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
 
         /* =====================================================================
                     CPU BLAS

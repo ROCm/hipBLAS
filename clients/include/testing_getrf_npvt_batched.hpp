@@ -87,30 +87,29 @@ hipblasStatus_t testing_getrf_npvt_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, bA, batch_count * sizeof(T*), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, batch_count * sizeof(int)));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-
-    status = hipblasGetrfBatchedFn(handle, N, dA, lda, nullptr, dInfo, batch_count);
-
-    if(status != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status;
-    }
-
-    // Copy output from device to CPU
-    for(int b = 0; b < batch_count; b++)
-        CHECK_HIP_ERROR(hipMemcpy(hA1[b].data(), bA[b], A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
-
     if(argus.unit_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        status = hipblasGetrfBatchedFn(handle, N, dA, lda, nullptr, dInfo, batch_count);
+
+        if(status != HIPBLAS_STATUS_SUCCESS)
+        {
+            hipblasDestroy(handle);
+            return status;
+        }
+
+        // Copy output from device to CPU
+        for(int b = 0; b < batch_count; b++)
+            CHECK_HIP_ERROR(
+                hipMemcpy(hA1[b].data(), bA[b], A_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
+
+        /* =====================================================================
            CPU LAPACK
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             hInfo[b] = cblas_getrf(M, N, hA[b].data(), lda, hIpiv.data() + b * strideP);

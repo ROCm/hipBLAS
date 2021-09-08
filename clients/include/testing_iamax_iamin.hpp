@@ -56,22 +56,22 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
     double gpu_time_used;
     int    hipblas_error_host, hipblas_error_device;
 
-    /* =====================================================================
-                HIPBLAS
-    =================================================================== */
-    // device_pointer
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, d_hipblas_result));
-
-    CHECK_HIP_ERROR(
-        hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(int), hipMemcpyDeviceToHost));
-
-    // host_pointer
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, &hipblas_result_host));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        // device_pointer
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, d_hipblas_result));
+
+        CHECK_HIP_ERROR(hipMemcpy(
+            &hipblas_result_device, d_hipblas_result, sizeof(int), hipMemcpyDeviceToHost));
+
+        // host_pointer
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, &hipblas_result_host));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
