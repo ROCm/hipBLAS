@@ -12,9 +12,10 @@
 
 using namespace std;
 
-template <typename T, typename U>
+template <typename T>
 hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
 {
+    using U             = real_t<T>;
     bool FORTRAN        = argus.fortran;
     auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
 
@@ -22,10 +23,8 @@ hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
     int N   = argus.N;
     int lda = argus.lda;
 
-    int A_size    = lda * N;
-    int Ipiv_size = min(M, N);
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    size_t A_size    = size_t(lda) * N;
+    size_t Ipiv_size = min(M, N);
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M)
@@ -43,12 +42,8 @@ hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
     device_vector<T>   dA(A_size);
     device_vector<int> dInfo(1);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops;
-    double rocblas_error;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error;
+    hipblasLocalHandle handle(argus);
 
     // Initial hA on CPU
     srand(1);
@@ -70,18 +65,12 @@ hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, sizeof(int)));
 
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        status = hipblasGetrfFn(handle, N, dA, lda, nullptr, dInfo);
-
-        if(status != HIPBLAS_STATUS_SUCCESS)
-        {
-            hipblasDestroy(handle);
-            return status;
-        }
+        CHECK_HIPBLAS_ERROR(hipblasGetrfFn(handle, N, dA, lda, nullptr, dInfo));
 
         // Copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
@@ -92,16 +81,38 @@ hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
         =================================================================== */
         hInfo[0] = cblas_getrf(M, N, hA.data(), lda, hIpiv.data());
 
+        hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1);
         if(argus.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = eps * 2000;
 
-            double e = norm_check_general<T>('F', M, N, lda, hA.data(), hA1.data());
-            unit_check_error(e, tolerance);
+            unit_check_error(hipblas_error, tolerance);
         }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasGetrfFn(handle, N, dA, lda, nullptr, dInfo));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_lda>{}.log_args<T>(std::cout,
+                                                argus,
+                                                gpu_time_used,
+                                                getrf_gflop_count<T>(N, M),
+                                                ArgumentLogging::NA_value,
+                                                hipblas_error);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }
