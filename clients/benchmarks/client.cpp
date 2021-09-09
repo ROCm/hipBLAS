@@ -205,8 +205,12 @@
 #include "testing_geqrf_strided_batched.hpp"
 #include "testing_getrf.hpp"
 #include "testing_getrf_batched.hpp"
+#include "testing_getrf_npvt.hpp"
+#include "testing_getrf_npvt_batched.hpp"
+#include "testing_getrf_npvt_strided_batched.hpp"
 #include "testing_getrf_strided_batched.hpp"
 #include "testing_getri_batched.hpp"
+#include "testing_getri_npvt_batched.hpp"
 #include "testing_getrs.hpp"
 #include "testing_getrs_batched.hpp"
 #include "testing_getrs_strided_batched.hpp"
@@ -481,7 +485,11 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"getrf", testing_getrf<T>},
             {"getrf_batched", testing_getrf_batched<T>},
             {"getrf_strided_batched", testing_getrf_strided_batched<T>},
+            {"getrf_npvt", testing_getrf_npvt<T>},
+            {"getrf_npvt_batched", testing_getrf_npvt_batched<T>},
+            {"getrf_npvt_strided_batched", testing_getrf_npvt_strided_batched<T>},
             {"getri_batched", testing_getri_batched<T>},
+            {"getri_npvt_batched", testing_getri_npvt_batched<T>},
             {"getrs", testing_getrs<T>},
             {"getrs_batched", testing_getrs_batched<T>},
             {"getrs_strided_batched", testing_getrs_strided_batched<T>},
@@ -697,7 +705,11 @@ struct perf_blas<
             {"getrf", testing_getrf<T>},
             {"getrf_batched", testing_getrf_batched<T>},
             {"getrf_strided_batched", testing_getrf_strided_batched<T>},
+            {"getrf_npvt", testing_getrf_npvt<T>},
+            {"getrf_npvt_batched", testing_getrf_npvt_batched<T>},
+            {"getrf_npvt_strided_batched", testing_getrf_npvt_strided_batched<T>},
             {"getri_batched", testing_getri_batched<T>},
+            {"getri_npvt_batched", testing_getri_npvt_batched<T>},
             {"getrs", testing_getrs<T>},
             {"getrs_batched", testing_getrs_batched<T>},
             {"getrs_strided_batched", testing_getrs_strided_batched<T>},
