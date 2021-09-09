@@ -25,17 +25,19 @@ hipblasStatus_t testing_copy(const Arguments& argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0)
+    if(N <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(incx < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
-    size_t sizeX = size_t(N) * incx;
-    size_t sizeY = size_t(N) * incy;
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    int    abs_incy = incy >= 0 ? incy : -incy;
+    size_t sizeX    = size_t(N) * abs_incx;
+    size_t sizeY    = size_t(N) * abs_incy;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);
@@ -54,8 +56,8 @@ hipblasStatus_t testing_copy(const Arguments& argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx);
-    hipblas_init<T>(hy, 1, N, incy);
+    hipblas_init<T>(hx, 1, N, abs_incx);
+    hipblas_init<T>(hy, 1, N, abs_incy);
 
     hx_cpu = hx;
     hy_cpu = hy;
@@ -83,11 +85,11 @@ hipblasStatus_t testing_copy(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, incy, hy_cpu.data(), hy.data());
+            unit_check_general<T>(1, N, abs_incy, hy_cpu.data(), hy.data());
         }
         if(argus.norm_check)
         {
-            hipblas_error = norm_check_general<T>('F', 1, N, incy, hy_cpu, hy);
+            hipblas_error = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy);
         }
 
     } // end of if unit check
