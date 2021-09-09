@@ -27,7 +27,7 @@ hipblasStatus_t testing_getrf_npvt_batched(const Arguments& argus)
 
     hipblasStride strideP   = min(M, N);
     size_t        A_size    = size_t(lda) * N;
-    int           Ipiv_size = strideP * batch_count;
+    size_t        Ipiv_size = strideP * batch_count;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M || batch_count < 0)
