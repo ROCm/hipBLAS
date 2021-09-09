@@ -30,9 +30,9 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0)
+    if(N <= 0 || incx <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     hipblasDatatype_t alphaType     = argus.a_type;

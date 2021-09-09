@@ -29,16 +29,12 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int    sizeX         = N * incx;
+    size_t sizeX         = size_t(N) * incx;
     U      alpha         = argus.get_alpha<U>();
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
