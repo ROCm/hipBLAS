@@ -27,18 +27,20 @@ hipblasStatus_t testing_dot_strided_batched_ex_template(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasStride stridex = size_t(N) * incx * stride_scale;
-    hipblasStride stridey = size_t(N) * incy * stride_scale;
-    size_t        sizeX   = stridex * batch_count;
-    size_t        sizeY   = stridey * batch_count;
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    int           abs_incy = incy >= 0 ? incy : -incy;
+    hipblasStride stridex  = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stridey  = size_t(N) * abs_incy * stride_scale;
+    size_t        sizeX    = stridex * batch_count;
+    size_t        sizeY    = stridey * batch_count;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
+    if(N <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
@@ -64,8 +66,8 @@ hipblasStatus_t testing_dot_strided_batched_ex_template(const Arguments& argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init_alternating_sign<Tx>(hx, 1, N, incx, stridex, batch_count);
-    hipblas_init<Ty>(hy, 1, N, incy, stridey, batch_count);
+    hipblas_init_alternating_sign<Tx>(hx, 1, N, abs_incx, stridex, batch_count);
+    hipblas_init<Ty>(hy, 1, N, abs_incy, stridey, batch_count);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));

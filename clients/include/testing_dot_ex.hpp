@@ -26,9 +26,9 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0)
+    if(N <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     hipblasDatatype_t xType         = argus.a_type;
@@ -36,11 +36,14 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
     hipblasDatatype_t resultType    = argus.c_type;
     hipblasDatatype_t executionType = argus.compute_type;
 
-    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
-
-    size_t sizeX = size_t(N) * incx;
-    size_t sizeY = size_t(N) * incy;
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    int    abs_incy = incy >= 0 ? incy : -incy;
+    size_t sizeX    = size_t(N) * abs_incx;
+    size_t sizeY    = size_t(N) * abs_incy;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<Tx> hx(sizeX);
@@ -57,8 +60,8 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init_alternating_sign<Tx>(hx, 1, N, incx);
-    hipblas_init<Ty>(hy, 1, N, incy);
+    hipblas_init_alternating_sign<Tx>(hx, 1, N, abs_incx);
+    hipblas_init<Ty>(hy, 1, N, abs_incy);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * sizeX, hipMemcpyHostToDevice));

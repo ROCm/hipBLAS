@@ -28,14 +28,13 @@ hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
+    if(N <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
+
+    int abs_incx = incx >= 0 ? incx : -incx;
+    int abs_incy = incy >= 0 ? incy : -incy;
 
     hipblasDatatype_t xType         = argus.a_type;
     hipblasDatatype_t yType         = argus.b_type;
@@ -43,14 +42,14 @@ hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
     hipblasDatatype_t executionType = argus.compute_type;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_batch_vector<Tx> hx(N, incx, batch_count);
-    host_batch_vector<Ty> hy(N, incy, batch_count);
+    host_batch_vector<Tx> hx(N, incx ? incx : 1, batch_count);
+    host_batch_vector<Ty> hy(N, incy ? incy : 1, batch_count);
     host_vector<Tr>       h_cpu_result(batch_count);
     host_vector<Tr>       h_hipblas_result_host(batch_count);
     host_vector<Tr>       h_hipblas_result_device(batch_count);
 
-    device_batch_vector<Tx> dx(N, incx, batch_count);
-    device_batch_vector<Ty> dy(N, incy, batch_count);
+    device_batch_vector<Tx> dx(N, incx ? incx : 1, batch_count);
+    device_batch_vector<Ty> dy(N, incy ? incy : 1, batch_count);
     device_vector<Tr>       d_hipblas_result(batch_count);
 
     CHECK_HIP_ERROR(dx.memcheck());

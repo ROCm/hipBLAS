@@ -27,8 +27,8 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
     int    unit_check   = argus.unit_check;
     int    timing       = argus.timing;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    int           sizeX   = stridex * batch_count;
+    hipblasStride stridex = size_t(N) * incx * stride_scale;
+    size_t        sizeX   = stridex * batch_count;
 
     U alpha = argus.get_alpha<U>();
 

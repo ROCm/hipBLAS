@@ -32,12 +32,16 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     hipblasStride stridey  = size_t(N) * abs_incy * stride_scale;
     size_t        sizeX    = stridex * batch_count;
     size_t        sizeY    = stridey * batch_count;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
@@ -89,12 +93,12 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incy, stridey, hy_cpu.data(), hy.data());
+            unit_check_general<T>(1, N, batch_count, abs_incy, stridey, hy_cpu.data(), hy.data());
         }
         if(argus.norm_check)
         {
             hipblas_error
-                = norm_check_general<T>('F', 1, N, incy, stridey, hy_cpu, hy, batch_count);
+                = norm_check_general<T>('F', 1, N, abs_incy, stridey, hy_cpu, hy, batch_count);
         }
 
     } // end of if unit check
