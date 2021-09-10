@@ -26,15 +26,11 @@ hipblasStatus_t testing_nrm2_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    int           sizeX   = stridex * batch_count;
+    hipblasStride stridex = size_t(N) * incx * stride_scale;
+    size_t        sizeX   = stridex * batch_count;
 
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(batch_count == 0)
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }

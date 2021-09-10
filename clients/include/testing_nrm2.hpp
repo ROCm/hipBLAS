@@ -24,12 +24,12 @@ hipblasStatus_t testing_nrm2(const Arguments& argus)
     int incx = argus.incx;
 
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0)
+    if(N <= 0 || incx <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
+    size_t sizeX = size_t(N) * incx;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);

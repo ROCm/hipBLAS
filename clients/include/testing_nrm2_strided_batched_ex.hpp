@@ -29,11 +29,7 @@ hipblasStatus_t testing_nrm2_strided_batched_ex_template(const Arguments& argus)
     size_t        sizeX   = stridex * batch_count;
 
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }

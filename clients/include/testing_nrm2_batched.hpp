@@ -26,16 +26,12 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
     int batch_count = argus.batch_count;
 
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(batch_count == 0)
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
+    size_t sizeX = size_t(N) * incx;
 
     double gpu_time_used;
     double hipblas_error_host = 0, hipblas_error_device = 0;

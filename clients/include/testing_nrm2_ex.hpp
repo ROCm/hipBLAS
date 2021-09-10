@@ -23,9 +23,9 @@ hipblasStatus_t testing_nrm2_ex_template(const Arguments& argus)
     int incx = argus.incx;
 
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0)
+    if(N <= 0 || incx <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     hipblasDatatype_t xType         = argus.a_type;
