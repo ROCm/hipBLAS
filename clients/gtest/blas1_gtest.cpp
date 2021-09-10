@@ -96,6 +96,7 @@ const vector<vector<double>> alpha_beta_range = {{1.0, 2.0, 0.0, 0.0}, {2.0, -1.
 // but throw a message, which will still be detected by gtest
 const vector<vector<int>> incx_incy_range = {
     {1, 1},
+    {1, 2},
     {-1, -1},
 };
 

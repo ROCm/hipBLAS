@@ -28,14 +28,19 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || !incx || !incy)
+    if(N <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     size_t sizeX = size_t(N) * abs_incx;
     size_t sizeY = size_t(N) * abs_incy;
-    T      alpha = argus.get_alpha<T>();
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
+
+    T alpha = argus.get_alpha<T>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);
@@ -93,7 +98,7 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
 
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, abs_incx, hy_cpu.data(), hy_host.data());
+            unit_check_general<T>(1, N, abs_incy, hy_cpu.data(), hy_host.data());
             unit_check_general<T>(1, N, abs_incy, hy_cpu.data(), hy_device.data());
         }
         if(argus.norm_check)

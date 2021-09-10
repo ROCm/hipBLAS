@@ -25,7 +25,7 @@ hipblasStatus_t testing_axpy_ex_template(const Arguments& argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || !incx || !incy)
+    if(N <= 0)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
@@ -38,9 +38,14 @@ hipblasStatus_t testing_axpy_ex_template(const Arguments& argus)
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
 
-    size_t sizeX   = size_t(N) * abs_incx;
-    size_t sizeY   = size_t(N) * abs_incy;
-    Ta     h_alpha = argus.get_alpha<Ta>();
+    size_t sizeX = size_t(N) * abs_incx;
+    size_t sizeY = size_t(N) * abs_incy;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
+
+    Ta h_alpha = argus.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<Tx> hx(sizeX);
@@ -49,7 +54,7 @@ hipblasStatus_t testing_axpy_ex_template(const Arguments& argus)
     host_vector<Ty> hy_cpu(sizeY);
 
     device_vector<Tx> dx(sizeX);
-    device_vector<Ty> dy(sizeX);
+    device_vector<Ty> dy(sizeY);
     device_vector<Ta> d_alpha(1);
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
@@ -94,7 +99,7 @@ hipblasStatus_t testing_axpy_ex_template(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<Ty>(1, N, abs_incx, hy_cpu, hy_host);
+            unit_check_general<Ty>(1, N, abs_incy, hy_cpu, hy_host);
             unit_check_general<Ty>(1, N, abs_incy, hy_cpu, hy_device);
         }
         if(argus.norm_check)

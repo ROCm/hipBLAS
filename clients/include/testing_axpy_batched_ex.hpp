@@ -26,11 +26,7 @@ hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || !incx || !incy || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
+    if(N <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
@@ -40,21 +36,18 @@ hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& argus)
     hipblasDatatype_t yType         = argus.c_type;
     hipblasDatatype_t executionType = argus.compute_type;
 
-    int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
 
-    size_t sizeX   = size_t(N) * abs_incx;
-    size_t sizeY   = size_t(N) * abs_incy;
-    Ta     h_alpha = argus.get_alpha<Ta>();
+    Ta h_alpha = argus.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_batch_vector<Tx> hx(N, incx, batch_count);
-    host_batch_vector<Ty> hy_host(N, incy, batch_count);
-    host_batch_vector<Ty> hy_device(N, incy, batch_count);
-    host_batch_vector<Ty> hy_cpu(N, incy, batch_count);
+    host_batch_vector<Tx> hx(N, incx ? incx : 1, batch_count);
+    host_batch_vector<Ty> hy_host(N, incy ? incy : 1, batch_count);
+    host_batch_vector<Ty> hy_device(N, incy ? incy : 1, batch_count);
+    host_batch_vector<Ty> hy_cpu(N, incy ? incy : 1, batch_count);
 
-    device_batch_vector<Tx> dx(N, incx, batch_count);
-    device_batch_vector<Ty> dy(N, incy, batch_count);
+    device_batch_vector<Tx> dx(N, incx ? incx : 1, batch_count);
+    device_batch_vector<Ty> dy(N, incy ? incy : 1, batch_count);
     device_vector<Ta>       d_alpha(1);
 
     CHECK_HIP_ERROR(dx.memcheck());
@@ -124,7 +117,7 @@ hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<Ty>(1, N, batch_count, abs_incx, hy_cpu, hy_host);
+            unit_check_general<Ty>(1, N, batch_count, abs_incy, hy_cpu, hy_host);
             unit_check_general<Ty>(1, N, batch_count, abs_incy, hy_cpu, hy_device);
         }
         if(argus.norm_check)

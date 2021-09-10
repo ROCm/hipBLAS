@@ -29,7 +29,7 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || !incx || !incy || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
@@ -46,12 +46,17 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
 
-    hipblasStride stridex = N * abs_incx * stride_scale;
-    hipblasStride stridey = N * abs_incy * stride_scale;
+    hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
 
-    size_t sizeX   = stridex * batch_count;
-    size_t sizeY   = stridey * batch_count;
-    Ta     h_alpha = argus.get_alpha<Ta>();
+    size_t sizeX = stridex * batch_count;
+    size_t sizeY = stridey * batch_count;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
+
+    Ta h_alpha = argus.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<Tx> hx(sizeX);
@@ -137,10 +142,10 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
         }
         if(argus.norm_check)
         {
-            hipblas_error_host
-                = norm_check_general<Ty>('F', 1, N, 1, stridey, hy_cpu, hy_host, batch_count);
-            hipblas_error_device
-                = norm_check_general<Ty>('F', 1, N, 1, stridey, hy_cpu, hy_device, batch_count);
+            hipblas_error_host = norm_check_general<Ty>(
+                'F', 1, N, abs_incy, stridey, hy_cpu, hy_host, batch_count);
+            hipblas_error_device = norm_check_general<Ty>(
+                'F', 1, N, abs_incy, stridey, hy_cpu, hy_device, batch_count);
         }
 
     } // end of if unit check
