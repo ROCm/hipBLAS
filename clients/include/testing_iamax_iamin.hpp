@@ -36,7 +36,7 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
+    size_t sizeX = size_t(N) * incx;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this
     // practice

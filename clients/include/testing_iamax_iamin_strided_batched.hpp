@@ -29,8 +29,8 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    int           sizeX   = stridex * batch_count;
+    hipblasStride stridex = size_t(N) * incx * stride_scale;
+    size_t        sizeX   = stridex * batch_count;
 
     hipblasLocalHandle handle(argus);
 
