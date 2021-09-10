@@ -63,8 +63,8 @@ hipblasStatus_t testing_rot_batched(const Arguments& arg)
     hs[0] = sin(alpha[0]);
 
     // CPU BLAS reference data
-    host_batch_vector<T> cx(N, incx, batch_count);
-    host_batch_vector<T> cy(N, incy, batch_count);
+    host_batch_vector<T> cx(N, incx ? incx : 1, batch_count);
+    host_batch_vector<T> cy(N, incy ? incy : 1, batch_count);
     cx.copy_from(hx);
     cy.copy_from(hy);
 
