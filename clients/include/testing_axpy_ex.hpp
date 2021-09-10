@@ -27,7 +27,7 @@ hipblasStatus_t testing_axpy_ex_template(const Arguments& argus)
     // memory
     if(N <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     hipblasDatatype_t alphaType     = argus.a_type;

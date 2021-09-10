@@ -31,10 +31,6 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
-    {
         return HIPBLAS_STATUS_SUCCESS;
     }
 

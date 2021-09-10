@@ -93,8 +93,8 @@ hipblasStatus_t testing_rot_batched(const Arguments& arg)
                                                      hs,
                                                      batch_count)));
 
-            host_batch_vector<T> rx(N, incx, batch_count);
-            host_batch_vector<T> ry(N, incy, batch_count);
+            host_batch_vector<T> rx(N, incx ? incx : 1, batch_count);
+            host_batch_vector<T> ry(N, incy ? incy : 1, batch_count);
             CHECK_HIP_ERROR(rx.transfer_from(dx));
             CHECK_HIP_ERROR(ry.transfer_from(dy));
 
