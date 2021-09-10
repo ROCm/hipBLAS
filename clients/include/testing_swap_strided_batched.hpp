@@ -29,16 +29,22 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
     int    norm_check   = argus.norm_check;
     int    timing       = argus.timing;
 
-    hipblasStride stridex = size_t(N) * incx * stride_scale;
-    hipblasStride stridey = size_t(N) * incy * stride_scale;
-    size_t        sizeX   = stridex * batch_count;
-    size_t        sizeY   = stridey * batch_count;
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    int           abs_incy = incy >= 0 ? incy : -incy;
+    hipblasStride stridex  = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stridey  = size_t(N) * abs_incy * stride_scale;
+    size_t        sizeX    = stridex * batch_count;
+    size_t        sizeY    = stridey * batch_count;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0 || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
@@ -57,8 +63,8 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx, stridex, batch_count);
-    hipblas_init<T>(hy, 1, N, incy, stridey, batch_count);
+    hipblas_init<T>(hx, 1, N, abs_incx, stridex, batch_count);
+    hipblas_init<T>(hy, 1, N, abs_incy, stridey, batch_count);
     hx_cpu = hx;
     hy_cpu = hy;
 
@@ -88,7 +94,12 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
 
         if(unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incy, stridey, hy_cpu.data(), hy.data());
+            unit_check_general<T>(1, N, batch_count, abs_incy, stridey, hy_cpu.data(), hy.data());
+        }
+        if(norm_check)
+        {
+            hipblas_error
+                = norm_check_general<T>('F', 1, N, abs_incy, stridey, hy_cpu, hy, batch_count);
         }
 
     } // end of if unit/norm check
