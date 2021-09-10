@@ -42,17 +42,17 @@ hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
 
-    host_batch_vector<Tx> hx_host(N, incx ? incx : 1, batch_count);
-    host_batch_vector<Ty> hy_host(N, incy ? incy : 1, batch_count);
-    host_batch_vector<Tx> hx_device(N, incx ? incx : 1, batch_count);
-    host_batch_vector<Ty> hy_device(N, incy ? incy : 1, batch_count);
-    host_batch_vector<Tx> hx_cpu(N, incx ? incx : 1, batch_count);
-    host_batch_vector<Ty> hy_cpu(N, incy ? incy : 1, batch_count);
+    host_batch_vector<Tx> hx_host(N, incx, batch_count);
+    host_batch_vector<Ty> hy_host(N, incy, batch_count);
+    host_batch_vector<Tx> hx_device(N, incx, batch_count);
+    host_batch_vector<Ty> hy_device(N, incy, batch_count);
+    host_batch_vector<Tx> hx_cpu(N, incx, batch_count);
+    host_batch_vector<Ty> hy_cpu(N, incy, batch_count);
     host_vector<Tcs>      hc(1);
     host_vector<Tcs>      hs(1);
 
-    device_batch_vector<Tx> dx(N, incx ? incx : 1, batch_count);
-    device_batch_vector<Ty> dy(N, incy ? incy : 1, batch_count);
+    device_batch_vector<Tx> dx(N, incx, batch_count);
+    device_batch_vector<Ty> dy(N, incy, batch_count);
     device_vector<Tcs>      dc(1);
     device_vector<Tcs>      ds(1);
 

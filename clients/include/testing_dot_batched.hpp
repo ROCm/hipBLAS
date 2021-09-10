@@ -43,14 +43,14 @@ hipblasStatus_t testing_dot_batched(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_batch_vector<T> hx(N, incx ? incx : 1, batch_count);
-    host_batch_vector<T> hy(N, incy ? incy : 1, batch_count);
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hy(N, incy, batch_count);
     host_vector<T>       h_cpu_result(batch_count);
     host_vector<T>       h_hipblas_result1(batch_count);
     host_vector<T>       h_hipblas_result2(batch_count);
 
-    device_batch_vector<T> dx(N, incx ? incx : 1, batch_count);
-    device_batch_vector<T> dy(N, incy ? incy : 1, batch_count);
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<T>       d_hipblas_result(batch_count);
     CHECK_HIP_ERROR(dx.memcheck());
     CHECK_HIP_ERROR(dy.memcheck());

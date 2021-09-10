@@ -40,14 +40,14 @@ hipblasStatus_t testing_rot_batched(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    device_batch_vector<T> dx(N, incx ? incx : 1, batch_count);
-    device_batch_vector<T> dy(N, incy ? incy : 1, batch_count);
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<U>       dc(1);
     device_vector<V>       ds(1);
 
     // Initial Data on CPU
-    host_batch_vector<T> hx(N, incx ? incx : 1, batch_count);
-    host_batch_vector<T> hy(N, incy ? incy : 1, batch_count);
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hy(N, incy, batch_count);
     host_vector<U>       hc(1);
     host_vector<V>       hs(1);
 
@@ -63,8 +63,8 @@ hipblasStatus_t testing_rot_batched(const Arguments& arg)
     hs[0] = sin(alpha[0]);
 
     // CPU BLAS reference data
-    host_batch_vector<T> cx(N, incx ? incx : 1, batch_count);
-    host_batch_vector<T> cy(N, incy ? incy : 1, batch_count);
+    host_batch_vector<T> cx(N, incx, batch_count);
+    host_batch_vector<T> cy(N, incy, batch_count);
     cx.copy_from(hx);
     cy.copy_from(hy);
 
@@ -93,8 +93,8 @@ hipblasStatus_t testing_rot_batched(const Arguments& arg)
                                                      hs,
                                                      batch_count)));
 
-            host_batch_vector<T> rx(N, incx ? incx : 1, batch_count);
-            host_batch_vector<T> ry(N, incy ? incy : 1, batch_count);
+            host_batch_vector<T> rx(N, incx, batch_count);
+            host_batch_vector<T> ry(N, incy, batch_count);
             CHECK_HIP_ERROR(rx.transfer_from(dx));
             CHECK_HIP_ERROR(ry.transfer_from(dy));
 

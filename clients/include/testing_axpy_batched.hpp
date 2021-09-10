@@ -40,15 +40,15 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_batch_vector<T> hx(N, incx ? incx : 1, batch_count);
-    host_batch_vector<T> hy_host(N, incy ? incy : 1, batch_count);
-    host_batch_vector<T> hy_device(N, incy ? incy : 1, batch_count);
-    host_batch_vector<T> hx_cpu(N, incx ? incx : 1, batch_count);
-    host_batch_vector<T> hy_cpu(N, incy ? incy : 1, batch_count);
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hy_host(N, incy, batch_count);
+    host_batch_vector<T> hy_device(N, incy, batch_count);
+    host_batch_vector<T> hx_cpu(N, incx, batch_count);
+    host_batch_vector<T> hy_cpu(N, incy, batch_count);
 
-    device_batch_vector<T> dx(N, incx ? incx : 1, batch_count);
-    device_batch_vector<T> dy_host(N, incy ? incy : 1, batch_count);
-    device_batch_vector<T> dy_device(N, incy ? incy : 1, batch_count);
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy_host(N, incy, batch_count);
+    device_batch_vector<T> dy_device(N, incy, batch_count);
     device_vector<T>       d_alpha(1);
     CHECK_HIP_ERROR(dx.memcheck());
     CHECK_HIP_ERROR(dy_host.memcheck());
