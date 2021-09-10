@@ -25,7 +25,7 @@ hipblasStatus_t testing_rot_ex_template(const Arguments& arg)
     int incy = arg.incy;
 
     // check to prevent undefined memory allocation error
-    if(N <= 0 || incx <= 0 || incy <= 0)
+    if(N <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
@@ -38,8 +38,14 @@ hipblasStatus_t testing_rot_ex_template(const Arguments& arg)
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
 
-    size_t size_x = N * size_t(incx);
-    size_t size_y = N * size_t(incy);
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    int    abs_incy = incy >= 0 ? incy : -incy;
+    size_t size_x   = N * size_t(abs_incx);
+    size_t size_y   = N * size_t(abs_incy);
+    if(!size_x)
+        size_x = 1;
+    if(!size_y)
+        size_y = 1;
 
     device_vector<Tx>  dx(size_x);
     device_vector<Ty>  dy(size_y);
@@ -57,8 +63,8 @@ hipblasStatus_t testing_rot_ex_template(const Arguments& arg)
     host_vector<Tcs> hs(1);
 
     srand(1);
-    hipblas_init<Tx>(hx_host, 1, N, incx);
-    hipblas_init<Ty>(hy_host, 1, N, incy);
+    hipblas_init<Tx>(hx_host, 1, N, abs_incx);
+    hipblas_init<Ty>(hy_host, 1, N, abs_incy);
 
     // Random alpha (0 - 10)
     host_vector<int> alpha(1);
@@ -103,17 +109,17 @@ hipblasStatus_t testing_rot_ex_template(const Arguments& arg)
 
         if(arg.unit_check)
         {
-            unit_check_general<Tx>(1, N, incx, hx_cpu, hx_host);
-            unit_check_general<Ty>(1, N, incy, hy_cpu, hy_host);
-            unit_check_general<Tx>(1, N, incx, hx_cpu, hx_device);
-            unit_check_general<Ty>(1, N, incy, hy_cpu, hy_device);
+            unit_check_general<Tx>(1, N, abs_incx, hx_cpu, hx_host);
+            unit_check_general<Ty>(1, N, abs_incy, hy_cpu, hy_host);
+            unit_check_general<Tx>(1, N, abs_incx, hx_cpu, hx_device);
+            unit_check_general<Ty>(1, N, abs_incy, hy_cpu, hy_device);
         }
         if(arg.norm_check)
         {
-            hipblas_error_host = norm_check_general<Tx>('F', 1, N, incx, hx_cpu, hx_host);
-            hipblas_error_host += norm_check_general<Ty>('F', 1, N, incy, hy_cpu, hy_host);
-            hipblas_error_device = norm_check_general<Tx>('F', 1, N, incx, hx_cpu, hx_device);
-            hipblas_error_device += norm_check_general<Ty>('F', 1, N, incy, hy_cpu, hy_device);
+            hipblas_error_host = norm_check_general<Tx>('F', 1, N, abs_incx, hx_cpu, hx_host);
+            hipblas_error_host += norm_check_general<Ty>('F', 1, N, abs_incy, hy_cpu, hy_host);
+            hipblas_error_device = norm_check_general<Tx>('F', 1, N, abs_incx, hx_cpu, hx_device);
+            hipblas_error_device += norm_check_general<Ty>('F', 1, N, abs_incy, hy_cpu, hy_device);
         }
     }
 

@@ -20,32 +20,35 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
     auto hipblasRotStridedBatchedFn = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
                                               : hipblasRotStridedBatched<T, U, V, false>;
 
-    int           N            = arg.N;
-    int           incx         = arg.incx;
-    int           incy         = arg.incy;
-    double        stride_scale = arg.stride_scale;
-    hipblasStride stride_x     = N * incx * stride_scale;
-    hipblasStride stride_y     = N * incy * stride_scale;
-    int           batch_count  = arg.batch_count;
+    int    N            = arg.N;
+    int    incx         = arg.incx;
+    int    incy         = arg.incy;
+    double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
+
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    int           abs_incy = incy >= 0 ? incy : -incy;
+    hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stride_y = size_t(N) * abs_incy * stride_scale;
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
     // check to prevent undefined memory allocation error
-    if(N <= 0 || incx <= 0 || incy <= 0 || batch_count == 0)
+    if(N <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
-    }
-    else if(batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     hipblasLocalHandle handle(arg);
 
-    size_t size_x = N * size_t(incx) + size_t(stride_x) * size_t(batch_count - 1);
-    size_t size_y = N * size_t(incy) + size_t(stride_y) * size_t(batch_count - 1);
+    size_t size_x = N * size_t(abs_incx) + size_t(stride_x) * size_t(batch_count - 1);
+    size_t size_y = N * size_t(abs_incy) + size_t(stride_y) * size_t(batch_count - 1);
+    if(!size_x)
+        size_x = 1;
+    if(!size_y)
+        size_y = 1;
 
     device_vector<T> dx(size_x);
     device_vector<T> dy(size_y);
@@ -58,8 +61,8 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
     host_vector<U> hc(1);
     host_vector<V> hs(1);
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx, stride_x, batch_count);
-    hipblas_init<T>(hy, 1, N, incy, stride_y, batch_count);
+    hipblas_init<T>(hx, 1, N, abs_incx, stride_x, batch_count);
+    hipblas_init<T>(hy, 1, N, abs_incy, stride_y, batch_count);
 
     // Random alpha (0 - 10)
     host_vector<int> alpha(1);
@@ -97,15 +100,15 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
             CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
             if(arg.unit_check)
             {
-                near_check_general<T>(1, N, batch_count, incx, stride_x, cx, rx, rel_error);
-                near_check_general<T>(1, N, batch_count, incy, stride_y, cy, ry, rel_error);
+                near_check_general<T>(1, N, batch_count, abs_incx, stride_x, cx, rx, rel_error);
+                near_check_general<T>(1, N, batch_count, abs_incy, stride_y, cy, ry, rel_error);
             }
             if(arg.norm_check)
             {
                 hipblas_error_host
-                    = norm_check_general<T>('F', 1, N, incx, stride_x, cx, rx, batch_count);
+                    = norm_check_general<T>('F', 1, N, abs_incx, stride_x, cx, rx, batch_count);
                 hipblas_error_host
-                    += norm_check_general<T>('F', 1, N, incy, stride_y, cy, ry, batch_count);
+                    += norm_check_general<T>('F', 1, N, abs_incy, stride_y, cy, ry, batch_count);
             }
         }
 
@@ -125,15 +128,15 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
             CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
             if(arg.unit_check)
             {
-                near_check_general<T>(1, N, batch_count, incx, stride_x, cx, rx, rel_error);
-                near_check_general<T>(1, N, batch_count, incy, stride_y, cy, ry, rel_error);
+                near_check_general<T>(1, N, batch_count, abs_incx, stride_x, cx, rx, rel_error);
+                near_check_general<T>(1, N, batch_count, abs_incy, stride_y, cy, ry, rel_error);
             }
             if(arg.norm_check)
             {
                 hipblas_error_device
-                    = norm_check_general<T>('F', 1, N, incx, stride_x, cx, rx, batch_count);
+                    = norm_check_general<T>('F', 1, N, abs_incx, stride_x, cx, rx, batch_count);
                 hipblas_error_device
-                    += norm_check_general<T>('F', 1, N, incy, stride_y, cy, ry, batch_count);
+                    += norm_check_general<T>('F', 1, N, abs_incy, stride_y, cy, ry, batch_count);
             }
         }
     }

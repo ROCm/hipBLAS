@@ -26,14 +26,13 @@ hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
     int batch_count = arg.batch_count;
 
     // check to prevent undefined memory allocation error
-    if(N <= 0 || incx <= 0 || incy <= 0 || batch_count == 0)
+    if(N <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
-    if(batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
+
+    int abs_incx = incx >= 0 ? incx : -incx;
+    int abs_incy = incy >= 0 ? incy : -incy;
 
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;
@@ -43,20 +42,17 @@ hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
 
-    size_t size_x = N * size_t(incx);
-    size_t size_y = N * size_t(incy);
-
-    host_batch_vector<Tx> hx_host(N, incx, batch_count);
-    host_batch_vector<Ty> hy_host(N, incy, batch_count);
-    host_batch_vector<Tx> hx_device(N, incx, batch_count);
-    host_batch_vector<Ty> hy_device(N, incy, batch_count);
-    host_batch_vector<Tx> hx_cpu(N, incx, batch_count);
-    host_batch_vector<Ty> hy_cpu(N, incy, batch_count);
+    host_batch_vector<Tx> hx_host(N, incx ? incx : 1, batch_count);
+    host_batch_vector<Ty> hy_host(N, incy ? incy : 1, batch_count);
+    host_batch_vector<Tx> hx_device(N, incx ? incx : 1, batch_count);
+    host_batch_vector<Ty> hy_device(N, incy ? incy : 1, batch_count);
+    host_batch_vector<Tx> hx_cpu(N, incx ? incx : 1, batch_count);
+    host_batch_vector<Ty> hy_cpu(N, incy ? incy : 1, batch_count);
     host_vector<Tcs>      hc(1);
     host_vector<Tcs>      hs(1);
 
-    device_batch_vector<Tx> dx(N, incx, batch_count);
-    device_batch_vector<Ty> dy(N, incy, batch_count);
+    device_batch_vector<Tx> dx(N, incx ? incx : 1, batch_count);
+    device_batch_vector<Ty> dy(N, incy ? incy : 1, batch_count);
     device_vector<Tcs>      dc(1);
     device_vector<Tcs>      ds(1);
 
@@ -125,21 +121,21 @@ hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
 
         if(arg.unit_check)
         {
-            unit_check_general<Tx>(1, N, batch_count, incx, hx_cpu, hx_host);
-            unit_check_general<Ty>(1, N, batch_count, incy, hy_cpu, hy_host);
-            unit_check_general<Tx>(1, N, batch_count, incx, hx_cpu, hx_device);
-            unit_check_general<Ty>(1, N, batch_count, incy, hy_cpu, hy_device);
+            unit_check_general<Tx>(1, N, batch_count, abs_incx, hx_cpu, hx_host);
+            unit_check_general<Ty>(1, N, batch_count, abs_incy, hy_cpu, hy_host);
+            unit_check_general<Tx>(1, N, batch_count, abs_incx, hx_cpu, hx_device);
+            unit_check_general<Ty>(1, N, batch_count, abs_incy, hy_cpu, hy_device);
         }
         if(arg.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<Tx>('F', 1, N, incx, hx_cpu, hx_host, batch_count);
+                = norm_check_general<Tx>('F', 1, N, abs_incx, hx_cpu, hx_host, batch_count);
             hipblas_error_host
-                += norm_check_general<Ty>('F', 1, N, incy, hy_cpu, hy_host, batch_count);
+                += norm_check_general<Ty>('F', 1, N, abs_incy, hy_cpu, hy_host, batch_count);
             hipblas_error_device
-                = norm_check_general<Tx>('F', 1, N, incx, hx_cpu, hx_device, batch_count);
+                = norm_check_general<Tx>('F', 1, N, abs_incx, hx_cpu, hx_device, batch_count);
             hipblas_error_device
-                += norm_check_general<Ty>('F', 1, N, incy, hy_cpu, hy_device, batch_count);
+                += norm_check_general<Ty>('F', 1, N, abs_incy, hy_cpu, hy_device, batch_count);
         }
     }
 
