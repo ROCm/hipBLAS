@@ -26,11 +26,7 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
     int batch_count = argus.batch_count;
 
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(batch_count == 0)
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }

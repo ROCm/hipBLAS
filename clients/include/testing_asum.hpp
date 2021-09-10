@@ -24,9 +24,9 @@ hipblasStatus_t testing_asum(const Arguments& argus)
     int incx = argus.incx;
 
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0)
+    if(N <= 0 || incx <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     size_t sizeX = size_t(N) * incx;
