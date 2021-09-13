@@ -27,9 +27,14 @@ hipblasStatus_t testing_rotm_batched(const Arguments& arg)
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
+    hipblasLocalHandle handle(arg);
+
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR(
+            hipblasRotmBatchedFn(handle, N, nullptr, incx, nullptr, incy, nullptr, batch_count));
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -37,8 +42,6 @@ hipblasStatus_t testing_rotm_batched(const Arguments& arg)
     int abs_incy = incy >= 0 ? incy : -incy;
 
     double gpu_time_used, hipblas_error_device;
-
-    hipblasLocalHandle handle(arg);
 
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);

@@ -24,17 +24,42 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    // argument sanity check, quick return if input parameters are invalid before allocating invalid
-    // memory
-    if(N <= 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-
     hipblasDatatype_t xType         = argus.a_type;
     hipblasDatatype_t yType         = argus.b_type;
     hipblasDatatype_t resultType    = argus.c_type;
     hipblasDatatype_t executionType = argus.compute_type;
+
+    hipblasLocalHandle handle(argus);
+
+    // argument sanity check, quick return if input parameters are invalid before allocating invalid
+    // memory
+    if(N <= 0)
+    {
+        device_vector<Tr> d_hipblas_result_0(1);
+        host_vector<Tr>   h_hipblas_result_0(1);
+        hipblas_init_nan(h_hipblas_result_0.data(), 1);
+        CHECK_HIP_ERROR(
+            hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr), hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
+                                           N,
+                                           nullptr,
+                                           xType,
+                                           incx,
+                                           nullptr,
+                                           yType,
+                                           incy,
+                                           d_hipblas_result_0,
+                                           resultType,
+                                           executionType));
+
+        host_vector<Tr> cpu_0(1);
+        host_vector<Tr> gpu_0(1);
+        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(Tr), hipMemcpyDeviceToHost));
+        unit_check_general<Tr>(1, 1, 1, cpu_0, gpu_0);
+        return HIPBLAS_STATUS_SUCCESS;
+    }
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     int    abs_incy = incy >= 0 ? incy : -incy;
@@ -55,8 +80,7 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
 
     Tr cpu_result, hipblas_result_host, hipblas_result_device;
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     srand(1);

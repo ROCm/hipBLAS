@@ -30,23 +30,36 @@ hipblasStatus_t testing_rotm_strided_batched(const Arguments& arg)
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
+    hipblasLocalHandle handle(arg);
+
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    int           abs_incy = incy >= 0 ? incy : -incy;
+    hipblasStride stride_x = N * abs_incx * stride_scale;
+    hipblasStride stride_y = N * abs_incy * stride_scale;
+
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR((hipblasRotmStridedBatchedFn(handle,
+                                                         N,
+                                                         nullptr,
+                                                         incx,
+                                                         stride_x,
+                                                         nullptr,
+                                                         incy,
+                                                         stride_y,
+                                                         nullptr,
+                                                         stride_param,
+                                                         batch_count)));
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
     double gpu_time_used, hipblas_error_device;
 
-    hipblasLocalHandle handle(arg);
-
-    int           abs_incx   = incx >= 0 ? incx : -incx;
-    int           abs_incy   = incy >= 0 ? incy : -incy;
-    hipblasStride stride_x   = N * abs_incx * stride_scale;
-    hipblasStride stride_y   = N * abs_incy * stride_scale;
-    size_t        size_x     = N * size_t(abs_incx) + size_t(stride_x) * size_t(batch_count - 1);
-    size_t        size_y     = N * size_t(abs_incy) + size_t(stride_y) * size_t(batch_count - 1);
-    size_t        size_param = 5 + size_t(stride_param) * size_t(batch_count - 1);
+    size_t size_x     = N * size_t(abs_incx) + size_t(stride_x) * size_t(batch_count - 1);
+    size_t size_y     = N * size_t(abs_incy) + size_t(stride_y) * size_t(batch_count - 1);
+    size_t size_param = 5 + size_t(stride_param) * size_t(batch_count - 1);
     if(!size_x)
         size_x = 1;
     if(!size_y)

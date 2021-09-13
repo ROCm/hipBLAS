@@ -32,10 +32,14 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
 
     U alpha = argus.get_alpha<U>();
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR(
+            hipblasScalStridedBatchedFn(handle, N, nullptr, nullptr, incx, stridex, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -47,8 +51,6 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
 
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

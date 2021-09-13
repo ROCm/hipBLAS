@@ -25,10 +25,14 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
     int incy        = argus.incy;
     int batch_count = argus.batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR(
+            hipblasCopyBatchedFn(handle, N, nullptr, incx, nullptr, incy, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -36,8 +40,6 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
 
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);

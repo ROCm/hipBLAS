@@ -39,19 +39,36 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
     if(!size_y)
         size_y = 1;
 
-    // check to prevent undefined memory allocation error
-    if(N <= 0 || batch_count <= 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;
     hipblasDatatype_t csType        = arg.c_type;
     hipblasDatatype_t executionType = arg.compute_type;
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
+
+    // check to prevent undefined memory allocation error
+    if(N <= 0 || batch_count <= 0)
+    {
+        CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
+                                                         N,
+                                                         nullptr,
+                                                         xType,
+                                                         incx,
+                                                         stridex,
+                                                         nullptr,
+                                                         yType,
+                                                         incy,
+                                                         stridey,
+                                                         nullptr,
+                                                         nullptr,
+                                                         csType,
+                                                         batch_count,
+                                                         executionType));
+
+        return HIPBLAS_STATUS_SUCCESS;
+    }
+
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     device_vector<Tx>  dx(size_x);
     device_vector<Ty>  dy(size_y);

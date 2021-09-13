@@ -24,19 +24,32 @@ hipblasStatus_t testing_rot_ex_template(const Arguments& arg)
     int incx = arg.incx;
     int incy = arg.incy;
 
-    // check to prevent undefined memory allocation error
-    if(N <= 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;
     hipblasDatatype_t csType        = arg.c_type;
     hipblasDatatype_t executionType = arg.compute_type;
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
+
+    // check to prevent undefined memory allocation error
+    if(N <= 0)
+    {
+        CHECK_HIPBLAS_ERROR(hipblasRotExFn(handle,
+                                           N,
+                                           nullptr,
+                                           xType,
+                                           incx,
+                                           nullptr,
+                                           yType,
+                                           incy,
+                                           nullptr,
+                                           nullptr,
+                                           csType,
+                                           executionType));
+        return HIPBLAS_STATUS_SUCCESS;
+    }
+
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     int    abs_incy = incy >= 0 ? incy : -incy;

@@ -23,10 +23,13 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0)
     {
+        CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, nullptr, incx, nullptr, incy));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -51,8 +54,6 @@ hipblasStatus_t testing_copy(const Arguments& argus)
 
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

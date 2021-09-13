@@ -24,10 +24,29 @@ hipblasStatus_t testing_dot(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0)
     {
+        device_vector<T> d_hipblas_result_0(1);
+        host_vector<T>   h_hipblas_result_0(1);
+        hipblas_init_nan(h_hipblas_result_0.data(), 1);
+        CHECK_HIP_ERROR(
+            hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(T), hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(
+            hipblasDotFn(handle, N, nullptr, incx, nullptr, incy, d_hipblas_result_0));
+
+        host_vector<T> cpu_0(1);
+        host_vector<T> gpu_0(1);
+        hipblas_init<T>(cpu_0, 1, 1, 1);
+
+        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(T), hipMemcpyDeviceToHost));
+        unit_check_general<T>(1, 1, 1, cpu_0, gpu_0);
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -50,8 +69,6 @@ hipblasStatus_t testing_dot(const Arguments& argus)
     device_vector<T> d_hipblas_result(1);
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

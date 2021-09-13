@@ -39,10 +39,14 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
     if(!sizeY)
         sizeY = 1;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
+            handle, N, nullptr, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -59,8 +63,6 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
     device_vector<T> d_alpha(1);
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

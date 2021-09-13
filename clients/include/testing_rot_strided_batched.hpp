@@ -33,15 +33,27 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
+    hipblasLocalHandle handle(arg);
+
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR((hipblasRotStridedBatchedFn(handle,
+                                                        N,
+                                                        nullptr,
+                                                        incx,
+                                                        stride_x,
+                                                        nullptr,
+                                                        incy,
+                                                        stride_y,
+                                                        nullptr,
+                                                        nullptr,
+                                                        batch_count)));
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(arg);
 
     size_t size_x = N * size_t(abs_incx) + size_t(stride_x) * size_t(batch_count - 1);
     size_t size_y = N * size_t(abs_incy) + size_t(stride_y) * size_t(batch_count - 1);

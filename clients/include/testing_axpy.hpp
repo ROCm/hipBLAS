@@ -26,10 +26,13 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0)
     {
+        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, nullptr, nullptr, incx, nullptr, incy));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -55,8 +58,6 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
     device_vector<T> d_alpha(1);
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

@@ -25,9 +25,32 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
     int incx        = argus.incx;
     int batch_count = argus.batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
+        device_vector<Tr> d_hipblas_result_0(std::max(1, batch_count));
+        host_vector<Tr>   h_hipblas_result_0(std::max(1, batch_count));
+        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(Tr) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(
+            hipblasNrm2BatchedFn(handle, N, nullptr, incx, batch_count, d_hipblas_result_0));
+
+        if(batch_count > 0)
+        {
+            host_vector<Tr> cpu_0(1);
+            host_vector<Tr> gpu_0(1);
+            CHECK_HIP_ERROR(hipMemcpy(
+                gpu_0, d_hipblas_result_0, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
+            unit_check_general<Tr>(1, batch_count, 1, cpu_0, gpu_0);
+        }
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -35,8 +58,6 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
 
     double gpu_time_used;
     double hipblas_error_host = 0, hipblas_error_device = 0;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);

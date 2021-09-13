@@ -27,23 +27,39 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    // argument sanity check, quick return if input parameters are invalid before allocating invalid
-    // memory
-    if(N <= 0 || batch_count <= 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
+    int abs_incx = incx < 0 ? -incx : incx;
+    int abs_incy = incy < 0 ? -incy : incy;
+
+    hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
 
     hipblasDatatype_t alphaType     = argus.a_type;
     hipblasDatatype_t xType         = argus.b_type;
     hipblasDatatype_t yType         = argus.c_type;
     hipblasDatatype_t executionType = argus.compute_type;
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int abs_incy = incy < 0 ? -incy : incy;
+    hipblasLocalHandle handle(argus);
 
-    hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
-    hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
+    // argument sanity check, quick return if input parameters are invalid before allocating invalid
+    // memory
+    if(N <= 0 || batch_count <= 0)
+    {
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                          N,
+                                                          nullptr,
+                                                          alphaType,
+                                                          nullptr,
+                                                          xType,
+                                                          incx,
+                                                          stridex,
+                                                          nullptr,
+                                                          yType,
+                                                          incy,
+                                                          stridey,
+                                                          batch_count,
+                                                          executionType));
+        return HIPBLAS_STATUS_SUCCESS;
+    }
 
     size_t sizeX = stridex * batch_count;
     size_t sizeY = stridey * batch_count;
@@ -64,8 +80,7 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
     device_vector<Ty> dy(sizeY);
     device_vector<Ta> d_alpha(1);
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     srand(1);

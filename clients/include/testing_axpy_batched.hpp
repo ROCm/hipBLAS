@@ -26,18 +26,20 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
     int batch_count = argus.batch_count;
     int abs_incy    = incy < 0 ? -incy : incy;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR(
+            hipblasAxpyBatchedFn(handle, N, nullptr, nullptr, incx, nullptr, incy, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
     T alpha = argus.get_alpha<T>();
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);

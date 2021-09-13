@@ -27,10 +27,13 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     int norm_check  = argus.norm_check;
     int timing      = argus.timing;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR(hipblasScalBatchedFn(handle, N, nullptr, nullptr, incx, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -38,8 +41,6 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     U      alpha         = argus.get_alpha<U>();
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);

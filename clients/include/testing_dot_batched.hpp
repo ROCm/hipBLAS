@@ -26,10 +26,32 @@ hipblasStatus_t testing_dot_batched(const Arguments& argus)
     int incy        = argus.incy;
     int batch_count = argus.batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || batch_count <= 0)
     {
+        device_vector<T> d_hipblas_result_0(std::max(batch_count, 1));
+        host_vector<T>   h_hipblas_result_0(std::max(1, batch_count));
+        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(T) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasDotBatchedFn(
+            handle, N, nullptr, incx, nullptr, incy, batch_count, d_hipblas_result_0));
+
+        if(batch_count > 0)
+        {
+            host_vector<T> cpu_0(batch_count);
+            host_vector<T> gpu_0(batch_count);
+            CHECK_HIP_ERROR(hipMemcpy(
+                gpu_0, d_hipblas_result_0, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
+            unit_check_general<T>(1, batch_count, 1, cpu_0, gpu_0);
+        }
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -39,8 +61,6 @@ hipblasStatus_t testing_dot_batched(const Arguments& argus)
     size_t sizeY    = size_t(N) * abs_incy;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);

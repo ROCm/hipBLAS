@@ -26,10 +26,13 @@ hipblasStatus_t testing_swap(const Arguments& argus)
     int norm_check = argus.norm_check;
     int timing     = argus.timing;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0)
     {
+        CHECK_HIPBLAS_ERROR(hipblasSwapFn(handle, N, nullptr, incx, nullptr, incy));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -55,8 +58,6 @@ hipblasStatus_t testing_swap(const Arguments& argus)
 
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

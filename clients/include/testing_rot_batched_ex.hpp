@@ -25,22 +25,37 @@ hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
     int incy        = arg.incy;
     int batch_count = arg.batch_count;
 
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t csType        = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
+
+    hipblasLocalHandle handle(arg);
+
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR(hipblasRotBatchedExFn(handle,
+                                                  N,
+                                                  nullptr,
+                                                  xType,
+                                                  incx,
+                                                  nullptr,
+                                                  yType,
+                                                  incy,
+                                                  nullptr,
+                                                  nullptr,
+                                                  csType,
+                                                  batch_count,
+                                                  executionType));
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
     int abs_incx = incx >= 0 ? incx : -incx;
     int abs_incy = incy >= 0 ? incy : -incy;
 
-    hipblasDatatype_t xType         = arg.a_type;
-    hipblasDatatype_t yType         = arg.b_type;
-    hipblasDatatype_t csType        = arg.c_type;
-    hipblasDatatype_t executionType = arg.compute_type;
-
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     host_batch_vector<Tx> hx_host(N, incx, batch_count);
     host_batch_vector<Ty> hy_host(N, incy, batch_count);

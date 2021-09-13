@@ -24,10 +24,13 @@ hipblasStatus_t testing_scal(const Arguments& argus)
     int unit_check = argus.unit_check;
     int timing     = argus.timing;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || incx <= 0)
     {
+        CHECK_HIPBLAS_ERROR(hipblasScalFn(handle, N, nullptr, nullptr, incx));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -41,8 +44,6 @@ hipblasStatus_t testing_scal(const Arguments& argus)
 
     double gpu_time_used, cpu_time_used;
     double hipblas_error = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

@@ -40,10 +40,14 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
     if(!sizeY)
         sizeY = 1;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || batch_count <= 0)
     {
+        CHECK_HIPBLAS_ERROR(hipblasSwapStridedBatchedFn(
+            handle, N, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -58,8 +62,6 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
 
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

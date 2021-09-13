@@ -25,15 +25,17 @@ hipblasStatus_t testing_rot(const Arguments& arg)
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
+    hipblasLocalHandle handle(arg);
+
     // check to prevent undefined memory allocation error
     if(N <= 0)
     {
+        CHECK_HIPBLAS_ERROR(
+            hipblasRotFn(handle, N, nullptr, incx, nullptr, incy, nullptr, nullptr));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(arg);
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     int    abs_incy = incy >= 0 ? incy : -incy;
