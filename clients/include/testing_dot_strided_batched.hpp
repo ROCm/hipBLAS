@@ -67,8 +67,9 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
 
         if(batch_count > 0)
         {
-            host_vector<T>   cpu_0(batch_count);
-            device_vector<T> gpu_0(batch_count);
+            host_vector<T> cpu_0(batch_count);
+            host_vector<T> gpu_0(batch_count);
+
             CHECK_HIP_ERROR(hipMemcpy(
                 gpu_0, d_hipblas_result_0, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
             unit_check_general<T>(1, batch_count, 1, cpu_0, gpu_0);

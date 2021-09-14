@@ -42,7 +42,6 @@ hipblasStatus_t testing_dot(const Arguments& argus)
 
         host_vector<T> cpu_0(1);
         host_vector<T> gpu_0(1);
-        hipblas_init<T>(cpu_0, 1, 1, 1);
 
         CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(T), hipMemcpyDeviceToHost));
         unit_check_general<T>(1, 1, 1, cpu_0, gpu_0);

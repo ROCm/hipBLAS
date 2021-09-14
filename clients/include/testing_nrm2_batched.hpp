@@ -44,8 +44,8 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
 
         if(batch_count > 0)
         {
-            host_vector<Tr> cpu_0(1);
-            host_vector<Tr> gpu_0(1);
+            host_vector<Tr> cpu_0(batch_count);
+            host_vector<Tr> gpu_0(batch_count);
             CHECK_HIP_ERROR(hipMemcpy(
                 gpu_0, d_hipblas_result_0, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
             unit_check_general<Tr>(1, batch_count, 1, cpu_0, gpu_0);

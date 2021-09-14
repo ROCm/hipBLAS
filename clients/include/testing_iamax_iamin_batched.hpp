@@ -43,8 +43,8 @@ hipblasStatus_t testing_iamax_iamin_batched(const Arguments&                 arg
 
         if(batch_count > 0)
         {
-            host_vector<int> cpu_0(1);
-            host_vector<int> gpu_0(1);
+            host_vector<int> cpu_0(batch_count);
+            host_vector<int> gpu_0(batch_count);
             CHECK_HIP_ERROR(hipMemcpy(
                 gpu_0, d_hipblas_result_0, sizeof(int) * batch_count, hipMemcpyDeviceToHost));
             unit_check_general<int>(1, batch_count, 1, cpu_0, gpu_0);

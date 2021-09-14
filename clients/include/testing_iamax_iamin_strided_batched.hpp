@@ -35,7 +35,7 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
     hipblasLocalHandle handle(argus);
 
     // check to prevent undefined memory allocation error
-    if(batch_count == 0)
+    if(batch_count <= 0 || N <= 0 || incx <= 0)
     {
         // quick return success or invalid value
         device_vector<int> d_hipblas_result_0(std::max(1, batch_count));
@@ -52,8 +52,8 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
 
         if(batch_count > 0)
         {
-            host_vector<int> cpu_0(1);
-            host_vector<int> gpu_0(1);
+            host_vector<int> cpu_0(batch_count);
+            host_vector<int> gpu_0(batch_count);
             CHECK_HIP_ERROR(hipMemcpy(
                 gpu_0, d_hipblas_result_0, sizeof(int) * batch_count, hipMemcpyDeviceToHost));
             unit_check_general<int>(1, batch_count, 1, cpu_0, gpu_0);
