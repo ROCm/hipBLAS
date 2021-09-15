@@ -28,19 +28,52 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    hipblasStride stridey = N * incy * stride_scale;
-    int           sizeX   = stridex * batch_count;
-    int           sizeY   = stridey * batch_count;
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    int           abs_incy = incy >= 0 ? incy : -incy;
+    hipblasStride stridex  = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stridey  = size_t(N) * abs_incy * stride_scale;
+    size_t        sizeX    = stridex * batch_count;
+    size_t        sizeY    = stridey * batch_count;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
+
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0 || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(batch_count == 0)
-    {
+        device_vector<T> d_hipblas_result_0(std::max(batch_count, 1));
+        host_vector<T>   h_hipblas_result_0(std::max(1, batch_count));
+        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(T) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasDotStridedBatchedFn(handle,
+                                                       N,
+                                                       nullptr,
+                                                       incx,
+                                                       stridex,
+                                                       nullptr,
+                                                       incy,
+                                                       stridey,
+                                                       batch_count,
+                                                       d_hipblas_result_0));
+
+        if(batch_count > 0)
+        {
+            host_vector<T> cpu_0(batch_count);
+            host_vector<T> gpu_0(batch_count);
+
+            CHECK_HIP_ERROR(hipMemcpy(
+                gpu_0, d_hipblas_result_0, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
+            unit_check_general<T>(1, batch_count, 1, cpu_0, gpu_0);
+        }
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -57,12 +90,10 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblasLocalHandle handle(argus);
-
     // Initial Data on CPU
     srand(1);
-    hipblas_init_alternating_sign<T>(hx, 1, N, incx, stridex, batch_count);
-    hipblas_init<T>(hy, 1, N, incy, stridey, batch_count);
+    hipblas_init_alternating_sign<T>(hx, 1, N, abs_incx, stridex, batch_count);
+    hipblas_init<T>(hy, 1, N, abs_incy, stridey, batch_count);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
