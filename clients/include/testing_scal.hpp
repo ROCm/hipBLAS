@@ -24,15 +24,18 @@ hipblasStatus_t testing_scal(const Arguments& argus)
     int unit_check = argus.unit_check;
     int timing     = argus.timing;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0)
+    if(N <= 0 || incx <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        CHECK_HIPBLAS_ERROR(hipblasScalFn(handle, N, nullptr, nullptr, incx));
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
-    U   alpha = argus.get_alpha<U>();
+    size_t sizeX = size_t(N) * incx;
+    U      alpha = argus.get_alpha<U>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T>   hx(sizeX);
@@ -41,8 +44,6 @@ hipblasStatus_t testing_scal(const Arguments& argus)
 
     double gpu_time_used, cpu_time_used;
     double hipblas_error = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

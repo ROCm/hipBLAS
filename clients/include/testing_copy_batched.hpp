@@ -25,21 +25,21 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
     int incy        = argus.incy;
     int batch_count = argus.batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0 || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
+        CHECK_HIPBLAS_ERROR(
+            hipblasCopyBatchedFn(handle, N, nullptr, incx, nullptr, incy, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
+    int abs_incy = incy >= 0 ? incy : -incy;
+
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);
@@ -84,11 +84,11 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incy, hy_cpu, hy);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy);
         }
         if(argus.norm_check)
         {
-            hipblas_error = norm_check_general<T>('F', 1, N, incy, hy_cpu, hy, batch_count);
+            hipblas_error = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy, batch_count);
         }
 
     } // end of if unit check
