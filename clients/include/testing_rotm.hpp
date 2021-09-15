@@ -25,18 +25,25 @@ hipblasStatus_t testing_rotm(const Arguments& arg)
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
+    hipblasLocalHandle handle(arg);
+
     // check to prevent undefined memory allocation error
-    if(N <= 0 || incx <= 0 || incy <= 0)
+    if(N <= 0)
     {
+        CHECK_HIPBLAS_ERROR(hipblasRotmFn(handle, N, nullptr, incx, nullptr, incy, nullptr));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblasLocalHandle handle(arg);
-
-    size_t size_x = N * size_t(incx);
-    size_t size_y = N * size_t(incy);
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    int    abs_incy = incy >= 0 ? incy : -incy;
+    size_t size_x   = N * size_t(abs_incx);
+    size_t size_y   = N * size_t(abs_incy);
+    if(!size_x)
+        size_x = 1;
+    if(!size_y)
+        size_y = 1;
 
     device_vector<T> dx(size_x);
     device_vector<T> dy(size_y);
@@ -48,8 +55,8 @@ hipblasStatus_t testing_rotm(const Arguments& arg)
     host_vector<T> hdata(4);
     host_vector<T> hparam(5);
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx);
-    hipblas_init<T>(hy, 1, N, incy);
+    hipblas_init<T>(hx, 1, N, abs_incx);
+    hipblas_init<T>(hy, 1, N, abs_incy);
     hipblas_init<T>(hdata, 1, 4, 1);
 
     // CPU BLAS reference data
@@ -77,13 +84,13 @@ hipblasStatus_t testing_rotm(const Arguments& arg)
                 CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
                 if(arg.unit_check)
                 {
-                    near_check_general(1, N, incx, cx.data(), rx.data(), rel_error);
-                    near_check_general(1, N, incy, cy.data(), ry.data(), rel_error);
+                    near_check_general(1, N, abs_incx, cx.data(), rx.data(), rel_error);
+                    near_check_general(1, N, abs_incy, cy.data(), ry.data(), rel_error);
                 }
                 if(arg.norm_check)
                 {
-                    hipblas_error_host = norm_check_general<T>('F', 1, N, incx, cx, rx);
-                    hipblas_error_host += norm_check_general<T>('F', 1, N, incy, cy, ry);
+                    hipblas_error_host = norm_check_general<T>('F', 1, N, abs_incx, cx, rx);
+                    hipblas_error_host += norm_check_general<T>('F', 1, N, abs_incy, cy, ry);
                 }
             }
 
@@ -100,13 +107,13 @@ hipblasStatus_t testing_rotm(const Arguments& arg)
                 CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
                 if(arg.unit_check)
                 {
-                    near_check_general(1, N, incx, cx.data(), rx.data(), rel_error);
-                    near_check_general(1, N, incy, cy.data(), ry.data(), rel_error);
+                    near_check_general(1, N, abs_incx, cx.data(), rx.data(), rel_error);
+                    near_check_general(1, N, abs_incy, cy.data(), ry.data(), rel_error);
                 }
                 if(arg.norm_check)
                 {
-                    hipblas_error_device = norm_check_general<T>('F', 1, N, incx, cx, rx);
-                    hipblas_error_device += norm_check_general<T>('F', 1, N, incy, cy, ry);
+                    hipblas_error_device = norm_check_general<T>('F', 1, N, abs_incx, cx, rx);
+                    hipblas_error_device += norm_check_general<T>('F', 1, N, abs_incy, cy, ry);
                 }
             }
         }

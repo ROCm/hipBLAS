@@ -26,16 +26,35 @@ hipblasStatus_t testing_nrm2_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    int           sizeX   = stridex * batch_count;
+    hipblasStride stridex = size_t(N) * incx * stride_scale;
+    size_t        sizeX   = stridex * batch_count;
+
+    hipblasLocalHandle handle(argus);
 
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0 || batch_count < 0)
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(batch_count == 0)
-    {
+        device_vector<Tr> d_hipblas_result_0(std::max(1, batch_count));
+        host_vector<Tr>   h_hipblas_result_0(std::max(1, batch_count));
+        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(Tr) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
+            handle, N, nullptr, incx, stridex, batch_count, d_hipblas_result_0));
+
+        if(batch_count > 0)
+        {
+            host_vector<Tr> cpu_0(batch_count);
+            host_vector<Tr> gpu_0(batch_count);
+            CHECK_HIP_ERROR(hipMemcpy(
+                gpu_0, d_hipblas_result_0, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
+            unit_check_general<Tr>(1, batch_count, 1, cpu_0, gpu_0);
+        }
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -50,8 +69,6 @@ hipblasStatus_t testing_nrm2_strided_batched(const Arguments& argus)
 
     double gpu_time_used;
     double hipblas_error_host = 0, hipblas_error_device = 0;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);

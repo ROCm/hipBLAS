@@ -92,10 +92,12 @@ const vector<vector<double>> alpha_beta_range = {{1.0, 2.0, 0.0, 0.0}, {2.0, -1.
 
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 2}
-// incx , incy must > 0, otherwise there is no real computation taking place,
-// but throw a message, which will still be detected by gtest
+// negative increments use absolute value for comparisons, so
+// some combinations may not work as expected. {-1, -1} as done
+// here is fine
 const vector<vector<int>> incx_incy_range = {
     {1, 1},
+    {1, 2},
     {-1, -1},
 };
 

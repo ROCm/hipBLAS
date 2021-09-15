@@ -664,21 +664,21 @@ void cblas_rot<hipblasComplex>(int             n,
                                hipblasComplex  s)
 {
     float c_real = std::real(c);
-    crot_(&n, x, &incx, y, &incx, &c_real, &s);
+    crot_(&n, x, &incx, y, &incy, &c_real, &s);
 }
 
 template <>
 void cblas_rot<hipblasComplex, float>(
     int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy, float c, hipblasComplex s)
 {
-    crot_(&n, x, &incx, y, &incx, &c, &s);
+    crot_(&n, x, &incx, y, &incy, &c, &s);
 }
 
 template <>
 void cblas_rot<hipblasComplex, float, float>(
     int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy, float c, float s)
 {
-    csrot_(&n, x, &incx, y, &incx, &c, &s);
+    csrot_(&n, x, &incx, y, &incy, &c, &s);
 }
 
 template <>
@@ -691,7 +691,7 @@ void cblas_rot<hipblasDoubleComplex>(int                   n,
                                      hipblasDoubleComplex  s)
 {
     double c_real = std::real(c);
-    zrot_(&n, x, &incx, y, &incx, &c_real, &s);
+    zrot_(&n, x, &incx, y, &incy, &c_real, &s);
 }
 
 template <>
@@ -703,14 +703,14 @@ void cblas_rot<hipblasDoubleComplex, double>(int                   n,
                                              double                c,
                                              hipblasDoubleComplex  s)
 {
-    zrot_(&n, x, &incx, y, &incx, &c, &s);
+    zrot_(&n, x, &incx, y, &incy, &c, &s);
 }
 
 template <>
 void cblas_rot<hipblasDoubleComplex, double, double>(
     int n, hipblasDoubleComplex* x, int incx, hipblasDoubleComplex* y, int incy, double c, double s)
 {
-    zdrot_(&n, x, &incx, y, &incx, &c, &s);
+    zdrot_(&n, x, &incx, y, &incy, &c, &s);
 }
 
 // rotg

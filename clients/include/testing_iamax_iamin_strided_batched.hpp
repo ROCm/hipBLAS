@@ -29,35 +29,36 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    int           sizeX   = stridex * batch_count;
+    hipblasStride stridex = size_t(N) * incx * stride_scale;
+    size_t        sizeX   = stridex * batch_count;
 
     hipblasLocalHandle handle(argus);
 
     // check to prevent undefined memory allocation error
-    if(batch_count == 0)
+    if(batch_count <= 0 || N <= 0 || incx <= 0)
     {
         // quick return success or invalid value
-        device_vector<T>   dx(100);
-        device_vector<int> d_hipblas_result(1);
+        device_vector<int> d_hipblas_result_0(std::max(1, batch_count));
+        host_vector<int>   h_hipblas_result_0(std::max(1, batch_count));
+        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(int) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
 
-        return func(handle, N, dx, incx, stridex, batch_count, d_hipblas_result);
-    }
-    else if(batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(N < 1 || incx <= 0)
-    {
-        // quick return success
-        device_vector<T> dx(100);
-        host_vector<int> h_hipblas_result(batch_count);
-        host_vector<int> h_zeros(batch_count);
-        for(int b = 0; b < batch_count; b++)
-            h_zeros[b] = 0;
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(
+            func(handle, N, nullptr, incx, stridex, batch_count, d_hipblas_result_0));
 
-        CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, stridex, batch_count, h_hipblas_result));
-        unit_check_general<int>(1, 1, batch_count, h_zeros, h_hipblas_result);
+        if(batch_count > 0)
+        {
+            host_vector<int> cpu_0(batch_count);
+            host_vector<int> gpu_0(batch_count);
+            CHECK_HIP_ERROR(hipMemcpy(
+                gpu_0, d_hipblas_result_0, sizeof(int) * batch_count, hipMemcpyDeviceToHost));
+            unit_check_general<int>(1, batch_count, 1, cpu_0, gpu_0);
+        }
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
