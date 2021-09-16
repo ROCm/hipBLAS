@@ -45,7 +45,7 @@ const vector<int> matrix_size_range = {-1, 11, 16, 32, 65};
 
 // vector of vector, each pair is a {incx};
 // add/delete this list in pairs, like {1}
-const vector<int> incx_incy_range = {1, 0, -2};
+const vector<int> incx_incy_range = {-1, 0, 2};
 
 // vector, each entry is  {alpha};
 // add/delete single values, like {2.0}
