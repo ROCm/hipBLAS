@@ -60,7 +60,7 @@ hipblasStatus_t testing_tbmv(const Arguments& argus)
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hA, M, M, lda);
+    hipblas_init<T>(hA, 1, A_size, 1);
     hipblas_init<T>(hx, 1, M, abs_incx);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
@@ -89,7 +89,7 @@ hipblasStatus_t testing_tbmv(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, M, incx, hx_cpu, hx_res);
+            unit_check_general<T>(1, M, abs_incx, hx_cpu, hx_res);
         }
         if(argus.norm_check)
         {
