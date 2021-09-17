@@ -31,20 +31,21 @@ hipblasStatus_t testing_spr_batched(const Arguments& argus)
 
     T h_alpha = argus.get_alpha<T>();
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    // TODO: not ACTUALLY incx < 0 returns invalid as a workaround for cuda tests right now
-    if(N < 0 || incx == 0 || batch_count < 0)
+    bool invalid_size = N < 0 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual
+            = hipblasSprBatchedFn(handle, uplo, N, nullptr, nullptr, incx, nullptr, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(A_size, 1, batch_count);
