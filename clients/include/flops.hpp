@@ -401,21 +401,21 @@ template <typename T>
 constexpr double tbmv_gflop_count(int m, int k)
 {
     int k1 = k < m ? k : m;
-    return ((2.0 * m * k1 - k1 * (k1 + 1)) + m) / 1e9;
+    return ((2.0 * m * k1 - double(k1) * (k1 + 1)) + m) / 1e9;
 }
 
 template <>
 constexpr double tbmv_gflop_count<hipblasComplex>(int m, int k)
 {
     int k1 = k < m ? k : m;
-    return (4.0 * (2 * m * k1 - k1 * (k1 + 1)) + 4 * m) / 1e9;
+    return (4.0 * (2.0 * m * k1 - double(k1) * (k1 + 1)) + 4.0 * m) / 1e9;
 }
 
 template <>
 constexpr double tbmv_gflop_count<hipblasDoubleComplex>(int m, int k)
 {
     int k1 = k < m ? k : m;
-    return (4.0 * (2.0 * m * k1 - k1 * (k1 + 1)) + 4 * m) / 1e9;
+    return (4.0 * (2.0 * m * k1 - double(k1) * (k1 + 1)) + 4.0 * m) / 1e9;
 }
 
 /* \brief floating point counts of TPSV */
