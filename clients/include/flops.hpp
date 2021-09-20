@@ -325,14 +325,14 @@ constexpr double hemv_gflop_count(int n)
 template <typename T>
 constexpr double her_gflop_count(int n)
 {
-    return (4.0 * n * n + 6.0 * n) / 1e9;
+    return (4.0 * n * n) / 1e9;
 }
 
 /* \brief floating point counts of HER2 */
 template <typename T>
 constexpr double her2_gflop_count(int n)
 {
-    return (8.0 * n * n + 20.0 * n) / 1e9;
+    return (8.0 * (n + 1) * n) / 1e9;
 }
 
 /* \brief floating point counts of HPMV */
@@ -498,35 +498,22 @@ constexpr double spr2_gflop_count(int n)
 }
 
 /* \brief floating point counts of GER */
-template <typename T, bool CONJ>
+template <typename T>
 constexpr double ger_gflop_count(int m, int n)
 {
-    return (2.0 * m * n) / 1e9;
+    return (6.0 * (double(m) * n + std::min(m, n)) + 2.0 * m * n) / 1e9;
 }
 
 template <>
-constexpr double ger_gflop_count<hipblasComplex, false>(int m, int n)
+constexpr double ger_gflop_count<float>(int m, int n)
 {
-    return 4.0 * ger_gflop_count<float, false>(m, n);
+    return ((2.0 * m * n) + std::min(m, n)) / 1e9;
 }
 
 template <>
-constexpr double ger_gflop_count<hipblasComplex, true>(int m, int n)
+constexpr double ger_gflop_count<double>(int m, int n)
 {
-
-    return 4.0 * ger_gflop_count<float, false>(m, n) + n / 1e9; // +n for conjugate
-}
-
-template <>
-constexpr double ger_gflop_count<hipblasDoubleComplex, false>(int m, int n)
-{
-    return ger_gflop_count<hipblasComplex, false>(m, n);
-}
-
-template <>
-constexpr double ger_gflop_count<hipblasDoubleComplex, true>(int m, int n)
-{
-    return ger_gflop_count<hipblasComplex, true>(m, n);
+    return ger_gflop_count<float>(m, n);
 }
 
 /* \brief floating point counts of SYR */
