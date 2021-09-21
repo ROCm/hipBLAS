@@ -34,11 +34,18 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
     size_t C_size = size_t(ldc) * N;
     int    k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < M || ldc < M || batch_count < 0)
+    bool invalid_size = M < 0 || N < 0 || ldc < M || lda < M || batch_count < 0;
+    if(invalid_size || !N || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual = hipblasDgmmBatchedFn(
+            handle, side, M, N, nullptr, lda, nullptr, incx, nullptr, ldc, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -58,8 +65,7 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
     CHECK_HIP_ERROR(dC.memcheck());
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
     hipblas_init(hA, true);
@@ -98,6 +104,7 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
         =================================================================== */
 
         // reference calculation
+        ptrdiff_t shift_x = incx < 0 ? -ptrdiff_t(incx) * (N - 1) : 0;
         for(int b = 0; b < batch_count; b++)
         {
             for(size_t i1 = 0; i1 < M; i1++)
@@ -107,12 +114,12 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
                     if(HIPBLAS_SIDE_RIGHT == side)
                     {
                         hC_gold[b][i1 + i2 * ldc]
-                            = hA_copy[b][i1 + i2 * lda] * hx_copy[b][i2 * incx];
+                            = hA_copy[b][i1 + i2 * lda] * hx_copy[b][shift_x + i2 * incx];
                     }
                     else
                     {
                         hC_gold[b][i1 + i2 * ldc]
-                            = hA_copy[b][i1 + i2 * lda] * hx_copy[b][i1 * incx];
+                            = hA_copy[b][i1 + i2 * lda] * hx_copy[b][shift_x + i1 * incx];
                     }
                 }
             }

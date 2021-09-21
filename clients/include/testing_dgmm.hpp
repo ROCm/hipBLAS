@@ -28,18 +28,26 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
     int incx = argus.incx;
     int ldc  = argus.ldc;
 
-    size_t A_size = size_t(lda) * N;
-    size_t C_size = size_t(ldc) * N;
-    int    k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
-    size_t X_size = size_t(incx) * k;
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    size_t A_size   = size_t(lda) * N;
+    size_t C_size   = size_t(ldc) * N;
+    int    k        = (side == HIPBLAS_SIDE_RIGHT ? N : M);
+    size_t X_size   = size_t(abs_incx) * k;
     if(!X_size)
         X_size = 1;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < M || ldc < M)
+    bool invalid_size = M < 0 || N < 0 || ldc < M || lda < M;
+    if(invalid_size || !N || !M)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual
+            = hipblasDgmmFn(handle, side, M, N, nullptr, lda, nullptr, incx, nullptr, ldc);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -55,13 +63,12 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
     device_vector<T> dx(X_size);
     device_vector<T> dC(C_size);
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, M, N, lda);
-    hipblas_init<T>(hx, 1, k, incx);
+    hipblas_init<T>(hx, 1, k, abs_incx);
     hipblas_init<T>(hC, M, N, ldc);
     hA_copy = hA;
     hx_copy = hx;
@@ -88,17 +95,18 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
         =================================================================== */
 
         // reference calculation
+        ptrdiff_t shift_x = incx < 0 ? -ptrdiff_t(incx) * (N - 1) : 0;
         for(size_t i1 = 0; i1 < M; i1++)
         {
             for(size_t i2 = 0; i2 < N; i2++)
             {
                 if(HIPBLAS_SIDE_RIGHT == side)
                 {
-                    hC_gold[i1 + i2 * ldc] = hA_copy[i1 + i2 * lda] * hx_copy[i2 * incx];
+                    hC_gold[i1 + i2 * ldc] = hA_copy[i1 + i2 * lda] * hx_copy[shift_x + i2 * incx];
                 }
                 else
                 {
-                    hC_gold[i1 + i2 * ldc] = hA_copy[i1 + i2 * lda] * hx_copy[i1 * incx];
+                    hC_gold[i1 + i2 * ldc] = hA_copy[i1 + i2 * lda] * hx_copy[shift_x + i1 * incx];
                 }
             }
         }
