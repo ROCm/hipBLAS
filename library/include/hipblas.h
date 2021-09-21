@@ -52,49 +52,19 @@ typedef struct hipblasBfloat16
     uint16_t data;
 } hipblasBfloat16;
 
-typedef struct hipblasInt8Complex
-{
-#ifndef __cplusplus
+#if defined(ROCM_MATHLIBS_API_USE_HIP_COMPLEX)
+// Using hip complex types
 
-    hipblasInt8 x, y;
+#include <hip/hip_complex.h>
+
+/*! \brief hip type to represent a complex number with single precision real and imaginary parts. */
+typedef hipFloatComplex hipblasComplex;
+
+/*! \brief hip type to represent a complex number with double precision real and imaginary parts. */
+typedef hipDoubleComplex hipblasDoubleComplex;
 
 #else
-
-private:
-    hipblasInt8 x, y;
-
-public:
-#if __cplusplus >= 201103L
-    hipblasInt8Complex() = default;
-#else
-    hipblasInt8Complex() {}
-#endif
-
-    hipblasInt8Complex(hipblasInt8 r, hipblasInt8 i = 0)
-        : x(r)
-        , y(i)
-    {
-    }
-
-    hipblasInt8 real() const
-    {
-        return x;
-    }
-    hipblasInt8 imag() const
-    {
-        return y;
-    }
-    void real(hipblasInt8 r)
-    {
-        x = r;
-    }
-    void imag(hipblasInt8 i)
-    {
-        y = i;
-    }
-
-#endif
-} hipblasInt8Complex;
+// using internal complex class for API
 
 typedef struct hipblasComplex
 {
@@ -183,6 +153,53 @@ public:
 
 #endif
 } hipblasDoubleComplex;
+
+// this isn't needed right now
+// typedef struct hipblasInt8Complex
+// {
+// #ifndef __cplusplus
+
+//     hipblasInt8 x, y;
+
+// #else
+
+// private:
+//     hipblasInt8 x, y;
+
+// public:
+// #if __cplusplus >= 201103L
+//     hipblasInt8Complex() = default;
+// #else
+//     hipblasInt8Complex() {}
+// #endif
+
+//     hipblasInt8Complex(hipblasInt8 r, hipblasInt8 i = 0)
+//         : x(r)
+//         , y(i)
+//     {
+//     }
+
+//     hipblasInt8 real() const
+//     {
+//         return x;
+//     }
+//     hipblasInt8 imag() const
+//     {
+//         return y;
+//     }
+//     void real(hipblasInt8 r)
+//     {
+//         x = r;
+//     }
+//     void imag(hipblasInt8 i)
+//     {
+//         y = i;
+//     }
+
+// #endif
+// } hipblasInt8Complex;
+
+#endif // using internal complex class for API
 
 #if __cplusplus >= 201103L
 #include <type_traits>
