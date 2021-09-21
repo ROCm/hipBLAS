@@ -35,22 +35,36 @@ hipblasStatus_t testing_tbsv_strided_batched(const Arguments& argus)
     int                batch_count  = argus.batch_count;
 
     int           abs_incx = incx < 0 ? -incx : incx;
-    hipblasStride strideA  = M * M;
-    hipblasStride strideAB = M * lda * stride_scale;
-    hipblasStride stridex  = abs_incx * M * stride_scale;
+    hipblasStride strideA  = size_t(M) * M;
+    hipblasStride strideAB = size_t(M) * lda * stride_scale;
+    hipblasStride stridex  = size_t(abs_incx) * M * stride_scale;
     size_t        size_A   = strideA * batch_count;
     size_t        size_AB  = strideAB * batch_count;
     size_t        size_x   = stridex * batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || K < 0 || lda < K + 1 || !incx || batch_count < 0)
+    bool invalid_size = M < 0 || K < 0 || lda < K + 1 || !incx || batch_count < 0;
+    if(invalid_size || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(!batch_count || !M || !lda)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasTbsvStridedBatchedFn(handle,
+                                                             uplo,
+                                                             transA,
+                                                             diag,
+                                                             M,
+                                                             K,
+                                                             nullptr,
+                                                             lda,
+                                                             strideA,
+                                                             nullptr,
+                                                             incx,
+                                                             stridex,
+                                                             batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -64,8 +78,7 @@ hipblasStatus_t testing_tbsv_strided_batched(const Arguments& argus)
     device_vector<T> dAB(size_AB);
     device_vector<T> dx_or_b(size_x);
 
-    double             gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
 
     // Initial Data on CPU
     srand(1);

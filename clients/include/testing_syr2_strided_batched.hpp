@@ -40,15 +40,30 @@ hipblasStatus_t testing_syr2_strided_batched(const Arguments& argus)
     size_t        x_size  = stridex * batch_count;
     size_t        y_size  = stridey * batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || lda < 1 || lda < N || incx == 0 || incy == 0 || batch_count < 0)
+    bool invalid_size = N < 0 || !incx || !incy || lda < N || lda < 1 || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasSyr2StridedBatchedFn(handle,
+                                                             uplo,
+                                                             N,
+                                                             nullptr,
+                                                             nullptr,
+                                                             incx,
+                                                             stridex,
+                                                             nullptr,
+                                                             incy,
+                                                             stridey,
+                                                             nullptr,
+                                                             lda,
+                                                             strideA,
+                                                             batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -66,8 +81,7 @@ hipblasStatus_t testing_syr2_strided_batched(const Arguments& argus)
 
     T h_alpha = argus.get_alpha<T>();
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     srand(1);
