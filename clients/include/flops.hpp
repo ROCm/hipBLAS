@@ -621,83 +621,39 @@ constexpr double dgmm_gflop_count<hipblasDoubleComplex>(int m, int n)
 template <typename T>
 constexpr double hemm_gflop_count(int m, int n, int k)
 {
-    return ((2 * k - 1.0) * m * n + 2.0 * m * n) / 1e9;
-}
-
-template <>
-constexpr double hemm_gflop_count<hipblasComplex>(int m, int n, int k)
-{
-    return 4.0 * hemm_gflop_count<float>(m, n, k);
-}
-
-template <>
-constexpr double hemm_gflop_count<hipblasDoubleComplex>(int m, int n, int k)
-{
-    return hemm_gflop_count<hipblasComplex>(m, n, k);
+    return (8.0 * m * k * n) / 1e9;
 }
 
 /* \brief floating point counts of HERK */
 template <typename T>
 constexpr double herk_gflop_count(int n, int k)
 {
-    return ((2 * k - 1.0) * n * n + 2.0 * sym_tri_count(n)) / 1e9;
-}
-
-template <>
-constexpr double herk_gflop_count<hipblasComplex>(int n, int k)
-{
-    return 4.0 * herk_gflop_count<float>(n, k); // don't count conjugation
-}
-
-template <>
-constexpr double herk_gflop_count<hipblasDoubleComplex>(int n, int k)
-{
-    return herk_gflop_count<hipblasComplex>(n, k);
+    return (4.0 * n * n * k) / 1e9;
 }
 
 /* \brief floating point counts of HER2K */
 template <typename T>
 constexpr double her2k_gflop_count(int n, int k)
 {
-    return (2 * (2 * k - 1.0) * n * n + 3.0 * sym_tri_count(n)) / 1e9;
-}
-
-template <>
-constexpr double her2k_gflop_count<hipblasComplex>(int n, int k)
-{
-    return 4.0 * her2k_gflop_count<float>(n, k); // don't count conjugation
-}
-
-template <>
-constexpr double her2k_gflop_count<hipblasDoubleComplex>(int n, int k)
-{
-    return her2k_gflop_count<hipblasComplex>(n, k);
+    return (8.0 * n * n * k) / 1e9;
 }
 
 /* \brief floating point counts of HERKX */
 template <typename T>
 constexpr double herkx_gflop_count(int n, int k)
 {
-    return ((2 * k - 1.0) * n * n + 2.0 * sym_tri_count(n)) / 1e9;
-}
-
-template <>
-constexpr double herkx_gflop_count<hipblasComplex>(int n, int k)
-{
-    return 4.0 * herkx_gflop_count<float>(n, k); // don't count conjugation
-}
-
-template <>
-constexpr double herkx_gflop_count<hipblasDoubleComplex>(int n, int k)
-{
-    return herkx_gflop_count<hipblasComplex>(n, k);
+    return (4.0 * n * n * k) / 1e9;
 }
 
 /* \brief floating point counts of SYMM */
 template <typename T>
 constexpr double symm_gflop_count(int m, int n, int k)
 {
+<<<<<<< HEAD
     return ((2.0 * k - 1.0) * m * n + 2.0 * m * n) / 1e9;
+=======
+    return (2.0 * m * k * n) / 1e9;
+>>>>>>> Modify hipBLAS level 3 GFLOPs calculation
 }
 
 template <>
@@ -716,7 +672,7 @@ constexpr double symm_gflop_count<hipblasDoubleComplex>(int m, int n, int k)
 template <typename T>
 constexpr double syrk_gflop_count(int n, int k)
 {
-    return ((2 * k - 1.0) * n * n + 2.0 * sym_tri_count(n)) / 1e9;
+    return (1.0 * n * n * k) / 1e9;
 }
 
 template <>
@@ -735,7 +691,7 @@ constexpr double syrk_gflop_count<hipblasDoubleComplex>(int n, int k)
 template <typename T>
 constexpr double syr2k_gflop_count(int n, int k)
 {
-    return (2 * (2 * k - 1.0) * n * n + 3.0 * sym_tri_count(n)) / 1e9;
+    return (2.0 * n * n * k) / 1e9;
 }
 
 template <>
@@ -779,13 +735,13 @@ constexpr double trmm_gflop_count(int m, int n, int k)
 template <>
 constexpr double trmm_gflop_count<hipblasComplex>(int m, int n, int k)
 {
-    return 4 * (1.0 * m * n * k) / 1e9;
+    return 4.0 * trmm_gflop_count<float>(m, n, k);
 }
 
 template <>
 constexpr double trmm_gflop_count<hipblasDoubleComplex>(int m, int n, int k)
 {
-    return 4 * (1.0 * m * n * k) / 1e9;
+    return trmm_gflop_count<hipblasComplex>(m, n, k);
 }
 
 /* \brief floating point counts of TRSM */
@@ -798,13 +754,13 @@ constexpr double trsm_gflop_count(int m, int n, int k)
 template <>
 constexpr double trsm_gflop_count<hipblasComplex>(int m, int n, int k)
 {
-    return (4.0 * m * n * k) / 1e9;
+    return 4.0 * trsm_gflop_count<float>(m, n, k);
 }
 
 template <>
 constexpr double trsm_gflop_count<hipblasDoubleComplex>(int m, int n, int k)
 {
-    return (4.0 * m * n * k) / 1e9;
+    return trsm_gflop_count<hipblasComplex>(m, n, k);
 }
 
 /* \brief floating point counts of TRTRI */
