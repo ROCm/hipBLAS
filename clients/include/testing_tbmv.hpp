@@ -25,18 +25,26 @@ hipblasStatus_t testing_tbmv(const Arguments& argus)
     int lda  = argus.lda;
     int incx = argus.incx;
 
-    size_t A_size = size_t(lda) * M;
-    size_t x_size = size_t(M) * incx;
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    size_t A_size   = size_t(lda) * M;
+    size_t x_size   = size_t(M) * abs_incx;
 
     hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || K < 0 || lda < M || incx == 0)
+    bool invalid_size = M < 0 || K < 0 || lda < K + 1 || !incx;
+    if(invalid_size || !M)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual
+            = hipblasTbmvFn(handle, uplo, transA, diag, M, K, nullptr, lda, nullptr, incx);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -48,13 +56,12 @@ hipblasStatus_t testing_tbmv(const Arguments& argus)
     device_vector<T> dA(A_size);
     device_vector<T> dx(x_size);
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hA, M, M, lda);
-    hipblas_init<T>(hx, 1, M, incx);
+    hipblas_init<T>(hA, 1, A_size, 1);
+    hipblas_init<T>(hx, 1, M, abs_incx);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hx_cpu = hx;
@@ -82,11 +89,12 @@ hipblasStatus_t testing_tbmv(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, M, incx, hx_cpu, hx_res);
+            unit_check_general<T>(1, M, abs_incx, hx_cpu, hx_res);
         }
         if(argus.norm_check)
         {
-            hipblas_error = norm_check_general<T>('F', 1, M, incx, hx_cpu.data(), hx_res.data());
+            hipblas_error
+                = norm_check_general<T>('F', 1, M, abs_incx, hx_cpu.data(), hx_res.data());
         }
     }
 
