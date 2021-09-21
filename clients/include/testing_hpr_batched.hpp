@@ -33,18 +33,19 @@ hipblasStatus_t testing_hpr_batched(const Arguments& argus)
 
     U h_alpha = argus.get_alpha<U>();
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx == 0 || batch_count < 0)
+    bool invalid_size = N < 0 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual
+            = hipblasHprBatchedFn(handle, uplo, N, nullptr, nullptr, incx, nullptr, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(A_size, 1, batch_count);
