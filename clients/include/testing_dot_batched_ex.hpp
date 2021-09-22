@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -14,7 +14,7 @@ using namespace std;
 /* ============================================================================================ */
 
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
-hipblasStatus_t testing_dot_batched_ex_template(Arguments argus)
+hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
 {
     bool FORTRAN = argus.fortran;
     auto hipblasDotBatchedExFn
@@ -42,111 +42,67 @@ hipblasStatus_t testing_dot_batched_ex_template(Arguments argus)
     hipblasDatatype_t resultType    = argus.c_type;
     hipblasDatatype_t executionType = argus.compute_type;
 
-    hipblasStatus_t status_1 = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_2 = HIPBLAS_STATUS_SUCCESS;
-
-    int sizeX = N * incx;
-    int sizeY = N * incy;
-
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<Tx> hx[batch_count];
-    host_vector<Ty> hy[batch_count];
-    host_vector<Tr> h_cpu_result(batch_count);
-    host_vector<Tr> h_rocblas_result1(batch_count);
-    host_vector<Tr> h_rocblas_result2(batch_count);
+    host_batch_vector<Tx> hx(N, incx, batch_count);
+    host_batch_vector<Ty> hy(N, incy, batch_count);
+    host_vector<Tr>       h_cpu_result(batch_count);
+    host_vector<Tr>       h_hipblas_result_host(batch_count);
+    host_vector<Tr>       h_hipblas_result_device(batch_count);
 
-    device_batch_vector<Tx> bx(batch_count, sizeX);
-    device_batch_vector<Ty> by(batch_count, sizeY);
+    device_batch_vector<Tx> dx(N, incx, batch_count);
+    device_batch_vector<Ty> dy(N, incy, batch_count);
+    device_vector<Tr>       d_hipblas_result(batch_count);
 
-    device_vector<Tx*, 0, Tx> dx(batch_count);
-    device_vector<Ty*, 0, Ty> dy(batch_count);
-    device_vector<Tr>         d_rocblas_result(batch_count);
+    CHECK_HIP_ERROR(dx.memcheck());
+    CHECK_HIP_ERROR(dy.memcheck());
 
-    int last = batch_count - 1;
-    if(!dx || !dy || !d_rocblas_result || (!bx[last] && sizeX) || (!by[last] && sizeY))
-    {
-        return HIPBLAS_STATUS_ALLOC_FAILED;
-    }
-
-    int device_pointer = 1;
-    int host_pointer   = 1;
-
-    double gpu_time_used, cpu_time_used;
-    double rocblas_error;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
-    srand(1);
-    for(int b = 0; b < batch_count; b++)
-    {
-        hx[b] = host_vector<Tx>(sizeX);
-        hy[b] = host_vector<Ty>(sizeY);
-
-        srand(1);
-        hipblas_init_alternating_sign<Tx>(hx[b], 1, N, incx);
-        hipblas_init<Ty>(hy[b], 1, N, incy);
-
-        CHECK_HIP_ERROR(hipMemcpy(bx[b], hx[b], sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(hipMemcpy(by[b], hy[b], sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
-    }
-    CHECK_HIP_ERROR(hipMemcpy(dx, bx, batch_count * sizeof(Tx*), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, by, batch_count * sizeof(Ty*), hipMemcpyHostToDevice));
-
-    /* =====================================================================
-         ROCBLAS
-    =================================================================== */
-    // hipblasDot accept both dev/host pointer for the scalar
-    if(host_pointer)
-    {
-        hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
-        status_1 = (hipblasDotBatchedExFn)(handle,
-                                           N,
-                                           dx,
-                                           xType,
-                                           incx,
-                                           dy,
-                                           yType,
-                                           incy,
-                                           batch_count,
-                                           d_rocblas_result,
-                                           resultType,
-                                           executionType);
-    }
-    if(device_pointer)
-    {
-
-        hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
-        status_2 = (hipblasDotBatchedExFn)(handle,
-                                           N,
-                                           dx,
-                                           xType,
-                                           incx,
-                                           dy,
-                                           yType,
-                                           incy,
-                                           batch_count,
-                                           h_rocblas_result2,
-                                           resultType,
-                                           executionType);
-    }
-
-    if((status_1 != HIPBLAS_STATUS_SUCCESS) || (status_2 != HIPBLAS_STATUS_SUCCESS))
-    {
-        hipblasDestroy(handle);
-        if(status_1 != HIPBLAS_STATUS_SUCCESS)
-            return status_1;
-        if(status_2 != HIPBLAS_STATUS_SUCCESS)
-            return status_2;
-    }
-
-    if(device_pointer)
-        CHECK_HIP_ERROR(hipMemcpy(
-            h_rocblas_result1, d_rocblas_result, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
+    hipblas_init(hy, true);
+    hipblas_init_alternating_sign(hx);
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasDotBatchedExFn(handle,
+                                                  N,
+                                                  dx.ptr_on_device(),
+                                                  xType,
+                                                  incx,
+                                                  dy.ptr_on_device(),
+                                                  yType,
+                                                  incy,
+                                                  batch_count,
+                                                  h_hipblas_result_host,
+                                                  resultType,
+                                                  executionType));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasDotBatchedExFn(handle,
+                                                  N,
+                                                  dx.ptr_on_device(),
+                                                  xType,
+                                                  incx,
+                                                  dy.ptr_on_device(),
+                                                  yType,
+                                                  incy,
+                                                  batch_count,
+                                                  d_hipblas_result,
+                                                  resultType,
+                                                  executionType));
+
+        CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
+                                  d_hipblas_result,
+                                  sizeof(Tr) * batch_count,
+                                  hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -158,13 +114,56 @@ hipblasStatus_t testing_dot_batched_ex_template(Arguments argus)
 
         if(argus.unit_check)
         {
-            unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_rocblas_result1);
-            unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_rocblas_result2);
+            unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_hipblas_result_host);
+            unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_hipblas_result_device);
+        }
+        if(argus.norm_check)
+        {
+            hipblas_error_host = norm_check_general<Tr>(
+                'F', 1, batch_count, 1, h_cpu_result, h_hipblas_result_host);
+            hipblas_error_device = norm_check_general<Tr>(
+                'F', 1, batch_count, 1, h_cpu_result, h_hipblas_result_device);
         }
 
     } // end of if unit/norm check
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasDotBatchedExFn(handle,
+                                                      N,
+                                                      dx.ptr_on_device(),
+                                                      xType,
+                                                      incx,
+                                                      dy.ptr_on_device(),
+                                                      yType,
+                                                      incy,
+                                                      batch_count,
+                                                      d_hipblas_result,
+                                                      resultType,
+                                                      executionType));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.log_args<Tx>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            dot_gflop_count<CONJ, Tx>(N),
+            dot_gbyte_count<Tx>(N),
+            hipblas_error_host,
+            hipblas_error_device);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }
 

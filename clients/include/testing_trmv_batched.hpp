@@ -66,28 +66,27 @@ hipblasStatus_t testing_trmv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasTrmvBatchedFn(handle,
-                                             uplo,
-                                             transA,
-                                             diag,
-                                             M,
-                                             dA.ptr_on_device(),
-                                             lda,
-                                             dx.ptr_on_device(),
-                                             incx,
-                                             batch_count));
-
-    CHECK_HIP_ERROR(hres.transfer_from(dx));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasTrmvBatchedFn(handle,
+                                                 uplo,
+                                                 transA,
+                                                 diag,
+                                                 M,
+                                                 dA.ptr_on_device(),
+                                                 lda,
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 batch_count));
+
+        CHECK_HIP_ERROR(hres.transfer_from(dx));
+
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_trmv<T>(uplo, transA, diag, M, hA[b], lda, hx[b], incx);

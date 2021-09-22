@@ -49,18 +49,18 @@ hipblasStatus_t testing_nrm2(const Arguments& argus)
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
 
-    // hipblasNrm2 accept both dev/host pointer for the scalar
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasNrm2Fn(handle, N, dx, incx, d_hipblas_result));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasNrm2Fn(handle, N, dx, incx, &hipblas_result_host));
-
-    CHECK_HIP_ERROR(
-        hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        // hipblasNrm2 accept both dev/host pointer for the scalar
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2Fn(handle, N, dx, incx, d_hipblas_result));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2Fn(handle, N, dx, incx, &hipblas_result_host));
+
+        CHECK_HIP_ERROR(
+            hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -75,8 +75,8 @@ hipblasStatus_t testing_nrm2(const Arguments& argus)
 
         if(argus.norm_check)
         {
-            hipblas_error_host   = std::abs((cpu_result - hipblas_result_host) / cpu_result);
-            hipblas_error_device = std::abs((cpu_result - hipblas_result_device) / cpu_result);
+            hipblas_error_host   = vector_norm_1(1, 1, &cpu_result, &hipblas_result_host);
+            hipblas_error_device = vector_norm_1(1, 1, &cpu_result, &hipblas_result_device);
         }
     } // end of if unit/norm check
 

@@ -35,8 +35,6 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
-
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     hipblasLocalHandle handle(argus);
@@ -58,22 +56,23 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
     /* =====================================================================
          HIPBLAS
     =================================================================== */
-    // hipblasAsum accept both dev/host pointer for the scalar
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(
-        hipblasAsumBatchedFn(handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAsumBatchedFn(
-        handle, N, dx.ptr_on_device(), incx, batch_count, h_hipblas_result_host));
-
-    CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
-                              d_hipblas_result,
-                              sizeof(Tr) * batch_count,
-                              hipMemcpyDeviceToHost));
 
     if(argus.unit_check || argus.norm_check)
     {
+        // hipblasAsum accept both dev/host pointer for the scalar
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAsumBatchedFn(
+            handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasAsumBatchedFn(
+            handle, N, dx.ptr_on_device(), incx, batch_count, h_hipblas_result_host));
+
+        CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
+                                  d_hipblas_result,
+                                  sizeof(Tr) * batch_count,
+                                  hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

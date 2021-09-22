@@ -696,22 +696,21 @@ constexpr double herkx_gflop_count<hipblasDoubleComplex>(int n, int k)
 
 /* \brief floating point counts of SYMM */
 template <typename T>
-constexpr double symm_gflop_count(hipblasSideMode_t side, int m, int n)
+constexpr double symm_gflop_count(int m, int n, int k)
 {
-    int k = side == HIPBLAS_SIDE_LEFT ? m : n;
     return ((2 * k - 1.0) * m * n + 2.0 * m * n) / 1e9;
 }
 
 template <>
-constexpr double symm_gflop_count<hipblasComplex>(hipblasSideMode_t side, int m, int n)
+constexpr double symm_gflop_count<hipblasComplex>(int m, int n, int k)
 {
-    return 4.0 * symm_gflop_count<float>(side, m, n);
+    return 4.0 * symm_gflop_count<float>(m, n, k);
 }
 
 template <>
-constexpr double symm_gflop_count<hipblasDoubleComplex>(hipblasSideMode_t side, int m, int n)
+constexpr double symm_gflop_count<hipblasDoubleComplex>(int m, int n, int k)
 {
-    return symm_gflop_count<hipblasComplex>(side, m, n);
+    return symm_gflop_count<hipblasComplex>(m, n, k);
 }
 
 /* \brief floating point counts of SYRK */
@@ -826,6 +825,90 @@ template <>
 constexpr double trtri_gflop_count<hipblasDoubleComplex>(int n)
 {
     return (8.0 * n * n * n) / 3e9;
+}
+
+/*
+ * ===========================================================================
+ *    Solver
+ * ===========================================================================
+ */
+
+/* \brief floating point counts of GEQRF */
+template <typename T>
+constexpr double geqrf_gflop_count(int n, int m)
+{
+    // Calculation is for m == n, using max of m, n for now
+    int k = std::max(m, n);
+    return ((4.0 / 3.0) * k * k * k);
+}
+
+template <>
+constexpr double geqrf_gflop_count<hipblasComplex>(int n, int m)
+{
+    return 4.0 * geqrf_gflop_count<float>(n, m);
+}
+
+template <>
+constexpr double geqrf_gflop_count<hipblasDoubleComplex>(int n, int m)
+{
+    return 4.0 * geqrf_gflop_count<float>(n, m);
+}
+
+/* \brief floating point counts of GETRF */
+template <typename T>
+constexpr double getrf_gflop_count(int n, int m)
+{
+    return (m * n * n) / 1e9;
+}
+
+template <>
+constexpr double getrf_gflop_count<hipblasComplex>(int n, int m)
+{
+    return 4.0 * getrf_gflop_count<float>(n, m);
+}
+
+template <>
+constexpr double getrf_gflop_count<hipblasDoubleComplex>(int n, int m)
+{
+    return 4.0 * getrf_gflop_count<float>(n, m);
+}
+
+/* \brief floating point counts of GETRI */
+template <typename T>
+constexpr double getri_gflop_count(int n)
+{
+    return ((4.0 / 3.0) * n * n * n) / 1e9;
+}
+
+template <>
+constexpr double getri_gflop_count<hipblasComplex>(int n)
+{
+    return 4.0 * getri_gflop_count<float>(n);
+}
+
+template <>
+constexpr double getri_gflop_count<hipblasDoubleComplex>(int n)
+{
+    return 4.0 * getri_gflop_count<float>(n);
+}
+
+/* \brief floating point counts of GETRS */
+template <typename T>
+constexpr double getrs_gflop_count(int n, int nrhs)
+{
+    return (2.0 * n * n * nrhs) / 1e9;
+}
+
+template <>
+constexpr double getrs_gflop_count<hipblasComplex>(int n, int nrhs)
+{
+    return 4.0 * getrs_gflop_count<float>(n, nrhs);
+}
+
+template <>
+constexpr double getrs_gflop_count<hipblasDoubleComplex>(int n, int nrhs)
+{
+    return 4.0 * getrs_gflop_count<float>(n, nrhs);
 }
 
 #endif /* _HIPBLAS_FLOPS_H_ */

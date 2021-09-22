@@ -39,7 +39,7 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     }
 
     int    sizeX         = N * incx;
-    U      alpha         = argus.alpha;
+    U      alpha         = argus.get_alpha<U>();
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
 
@@ -60,17 +60,17 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dz.transfer_from(hx));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(
-        hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hx.transfer_from(dx));
-
     if(unit_check || norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(
+            hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hx.transfer_from(dx));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

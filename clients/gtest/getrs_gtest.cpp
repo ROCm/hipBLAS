@@ -65,7 +65,7 @@ TEST_P(getrs_gtest, getrs_gtest_float)
 
     Arguments arg = setup_getrs_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrs<float, float>(arg);
+    hipblasStatus_t status = testing_getrs<float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -87,7 +87,7 @@ TEST_P(getrs_gtest, getrs_gtest_double)
 
     Arguments arg = setup_getrs_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrs<double, double>(arg);
+    hipblasStatus_t status = testing_getrs<double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -109,7 +109,7 @@ TEST_P(getrs_gtest, getrs_gtest_float_complex)
 
     Arguments arg = setup_getrs_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrs<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_getrs<hipblasComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -131,7 +131,7 @@ TEST_P(getrs_gtest, getrs_gtest_double_complex)
 
     Arguments arg = setup_getrs_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrs<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_getrs<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

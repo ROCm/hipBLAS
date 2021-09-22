@@ -3,6 +3,7 @@
  *
  * ************************************************************************ */
 
+#include "testing_getrf_npvt_strided_batched.hpp"
 #include "testing_getrf_strided_batched.hpp"
 #include "utility.h"
 #include <math.h>
@@ -69,7 +70,7 @@ TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_float)
 
     Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_strided_batched<float, float>(arg);
+    hipblasStatus_t status = testing_getrf_strided_batched<float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -91,7 +92,7 @@ TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_double)
 
     Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_strided_batched<double, double>(arg);
+    hipblasStatus_t status = testing_getrf_strided_batched<double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -113,7 +114,7 @@ TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_float_complex)
 
     Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_strided_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_getrf_strided_batched<hipblasComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -135,7 +136,95 @@ TEST_P(getrf_strided_batched_gtest, getrf_strided_batched_gtest_double_complex)
 
     Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_getrf_strided_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_getrf_strided_batched<hipblasDoubleComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(getrf_strided_batched_gtest, getrf_npvt_strided_batched_gtest_float)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_npvt_strided_batched<float>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(getrf_strided_batched_gtest, getrf_npvt_strided_batched_gtest_double)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_npvt_strided_batched<double>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(getrf_strided_batched_gtest, getrf_npvt_strided_batched_gtest_float_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_npvt_strided_batched<hipblasComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(getrf_strided_batched_gtest, getrf_npvt_strided_batched_gtest_double_complex)
+{
+    // GetParam returns a tuple. The setup routine unpacks the tuple
+    // and initializes arg(Arguments), which will be passed to testing routine.
+
+    Arguments arg = setup_getrf_strided_batched_arguments(GetParam());
+
+    hipblasStatus_t status = testing_getrf_npvt_strided_batched<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
