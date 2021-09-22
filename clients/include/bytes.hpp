@@ -27,6 +27,14 @@ constexpr double set_get_matrix_gbyte_count(int m, int n)
     return (sizeof(T) * m * n * 2.0) / 1e9;
 }
 
+/* \brief byte counts of SET/GET_VECTOR/_ASYNC */
+template <typename T>
+constexpr double set_get_vector_gbyte_count(int n)
+{
+    // calls done in pairs for timing so x 2.0
+    return (sizeof(T) * n * 2.0) / 1e9;
+}
+
 /*
  * ===========================================================================
  *    level 1 BLAS
@@ -389,6 +397,22 @@ constexpr double hemm_gbyte_count(int n, int m, int k)
 {
     // read A, B, C, write C
     return (sizeof(T) * (3 * m * n + tri_count(k)));
+}
+
+/* \brief byte counts of SYMM */
+template <typename T>
+constexpr double symm_gbyte_count(int n, int m, int k)
+{
+    // read A, B, C, write C
+    return (sizeof(T) * (3 * m * n + tri_count(k)));
+}
+
+/* \brief byte counts of TRTRI */
+template <typename T>
+constexpr double trtri_gbyte_count(int n)
+{
+    // read A, write invA
+    return (sizeof(T) * (2 * tri_count(n)));
 }
 
 #endif /* _HIPBLAS_BYTES_H_ */

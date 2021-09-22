@@ -75,24 +75,24 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dC.transfer_from(hC));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasDgmmBatchedFn(handle,
-                                             side,
-                                             M,
-                                             N,
-                                             dA.ptr_on_device(),
-                                             lda,
-                                             dx.ptr_on_device(),
-                                             incx,
-                                             dC.ptr_on_device(),
-                                             ldc,
-                                             batch_count));
-    CHECK_HIP_ERROR(hC_1.transfer_from(dC));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasDgmmBatchedFn(handle,
+                                                 side,
+                                                 M,
+                                                 N,
+                                                 dA.ptr_on_device(),
+                                                 lda,
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 dC.ptr_on_device(),
+                                                 ldc,
+                                                 batch_count));
+        CHECK_HIP_ERROR(hC_1.transfer_from(dC));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */

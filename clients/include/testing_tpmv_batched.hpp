@@ -66,21 +66,27 @@ hipblasStatus_t testing_tpmv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasTpmvBatchedFn(
-        handle, uplo, transA, diag, M, dA.ptr_on_device(), dx.ptr_on_device(), incx, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hx_res.transfer_from(dx));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasTpmvBatchedFn(handle,
+                                                 uplo,
+                                                 transA,
+                                                 diag,
+                                                 M,
+                                                 dA.ptr_on_device(),
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hx_res.transfer_from(dx));
+
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_tpmv<T>(uplo, transA, diag, M, hA[b], hx[b], incx);

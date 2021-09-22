@@ -29,10 +29,10 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
     int    norm_check   = argus.norm_check;
     int    timing       = argus.timing;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    hipblasStride stridey = N * incy * stride_scale;
-    int           sizeX   = stridex * batch_count;
-    int           sizeY   = stridey * batch_count;
+    hipblasStride stridex = size_t(N) * incx * stride_scale;
+    hipblasStride stridey = size_t(N) * incy * stride_scale;
+    size_t        sizeX   = stridex * batch_count;
+    size_t        sizeY   = stridey * batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -50,8 +50,6 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
     device_vector<T> dx(sizeX);
     device_vector<T> dy(sizeY);
 
-    int device_pointer = 1;
-
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
 
@@ -68,18 +66,18 @@ hipblasStatus_t testing_swap_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(
-        hipblasSwapStridedBatchedFn(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-
     if(unit_check || norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSwapStridedBatchedFn(
+            handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

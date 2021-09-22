@@ -26,8 +26,8 @@ hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    int           sizeX   = stridex * batch_count;
+    hipblasStride stridex = size_t(N) * incx * stride_scale;
+    size_t        sizeX   = stridex * batch_count;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
@@ -60,23 +60,25 @@ hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    // hipblasAsum accept both dev/host pointer for the scalar
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(
-        hipblasAsumStridedBatchedFn(handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAsumStridedBatchedFn(
-        handle, N, dx, incx, stridex, batch_count, hipblas_result_host));
-
-    CHECK_HIP_ERROR(hipMemcpy(
-        hipblas_result_device, d_hipblas_result, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        // hipblasAsum accept both dev/host pointer for the scalar
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAsumStridedBatchedFn(
+            handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasAsumStridedBatchedFn(
+            handle, N, dx, incx, stridex, batch_count, hipblas_result_host));
+
+        CHECK_HIP_ERROR(hipMemcpy(hipblas_result_device,
+                                  d_hipblas_result,
+                                  sizeof(Tr) * batch_count,
+                                  hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

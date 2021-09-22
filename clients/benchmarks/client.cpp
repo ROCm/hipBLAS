@@ -32,25 +32,34 @@
 #include "testing_asum_strided_batched.hpp"
 #include "testing_axpy.hpp"
 #include "testing_axpy_batched.hpp"
-//#include "testing_axpy_batched_ex.hpp"
-//#include "testing_axpy_ex.hpp"
+#include "testing_axpy_batched_ex.hpp"
+#include "testing_axpy_ex.hpp"
 #include "testing_axpy_strided_batched.hpp"
-//#include "testing_axpy_strided_batched_ex.hpp"
+#include "testing_axpy_strided_batched_ex.hpp"
 #include "testing_copy.hpp"
 #include "testing_copy_batched.hpp"
 #include "testing_copy_strided_batched.hpp"
 #include "testing_dot.hpp"
 #include "testing_dot_batched.hpp"
+#include "testing_dot_batched_ex.hpp"
+#include "testing_dot_ex.hpp"
 #include "testing_dot_strided_batched.hpp"
+#include "testing_dot_strided_batched_ex.hpp"
 #include "testing_iamax_iamin.hpp"
 #include "testing_iamax_iamin_batched.hpp"
 #include "testing_iamax_iamin_strided_batched.hpp"
 #include "testing_nrm2.hpp"
 #include "testing_nrm2_batched.hpp"
+#include "testing_nrm2_batched_ex.hpp"
+#include "testing_nrm2_ex.hpp"
 #include "testing_nrm2_strided_batched.hpp"
+#include "testing_nrm2_strided_batched_ex.hpp"
 #include "testing_rot.hpp"
 #include "testing_rot_batched.hpp"
+#include "testing_rot_batched_ex.hpp"
+#include "testing_rot_ex.hpp"
 #include "testing_rot_strided_batched.hpp"
+#include "testing_rot_strided_batched_ex.hpp"
 #include "testing_rotg.hpp"
 #include "testing_rotg_batched.hpp"
 #include "testing_rotg_strided_batched.hpp"
@@ -136,13 +145,20 @@
 #include "testing_trmv.hpp"
 #include "testing_trmv_batched.hpp"
 #include "testing_trmv_strided_batched.hpp"
-// blas3 with no tensile
+// blas3
+#include "syrkx_reference.hpp"
 #include "testing_dgmm.hpp"
 #include "testing_dgmm_batched.hpp"
 #include "testing_dgmm_strided_batched.hpp"
 #include "testing_geam.hpp"
 #include "testing_geam_batched.hpp"
 #include "testing_geam_strided_batched.hpp"
+#include "testing_gemm.hpp"
+#include "testing_gemm_batched.hpp"
+#include "testing_gemm_batched_ex.hpp"
+#include "testing_gemm_ex.hpp"
+#include "testing_gemm_strided_batched.hpp"
+#include "testing_gemm_strided_batched_ex.hpp"
 #include "testing_hemm.hpp"
 #include "testing_hemm_batched.hpp"
 #include "testing_hemm_strided_batched.hpp"
@@ -155,13 +171,51 @@
 #include "testing_herkx.hpp"
 #include "testing_herkx_batched.hpp"
 #include "testing_herkx_strided_batched.hpp"
+#include "testing_symm.hpp"
+#include "testing_symm_batched.hpp"
+#include "testing_symm_strided_batched.hpp"
 #include "testing_syr2k.hpp"
 #include "testing_syr2k_batched.hpp"
 #include "testing_syr2k_strided_batched.hpp"
 #include "testing_syrk.hpp"
 #include "testing_syrk_batched.hpp"
 #include "testing_syrk_strided_batched.hpp"
-//
+#include "testing_syrkx.hpp"
+#include "testing_syrkx_batched.hpp"
+#include "testing_syrkx_strided_batched.hpp"
+#include "testing_trmm.hpp"
+#include "testing_trmm_batched.hpp"
+#include "testing_trmm_strided_batched.hpp"
+#include "testing_trsm.hpp"
+#include "testing_trsm_batched.hpp"
+#include "testing_trsm_batched_ex.hpp"
+#include "testing_trsm_ex.hpp"
+#include "testing_trsm_strided_batched.hpp"
+#include "testing_trsm_strided_batched_ex.hpp"
+#include "testing_trsv.hpp"
+#include "testing_trsv_batched.hpp"
+#include "testing_trsv_strided_batched.hpp"
+#include "testing_trtri.hpp"
+#include "testing_trtri_batched.hpp"
+#include "testing_trtri_strided_batched.hpp"
+// solver functions
+#ifdef __HIP_PLATFORM_SOLVER__
+#include "testing_geqrf.hpp"
+#include "testing_geqrf_batched.hpp"
+#include "testing_geqrf_strided_batched.hpp"
+#include "testing_getrf.hpp"
+#include "testing_getrf_batched.hpp"
+#include "testing_getrf_npvt.hpp"
+#include "testing_getrf_npvt_batched.hpp"
+#include "testing_getrf_npvt_strided_batched.hpp"
+#include "testing_getrf_strided_batched.hpp"
+#include "testing_getri_batched.hpp"
+#include "testing_getri_npvt_batched.hpp"
+#include "testing_getrs.hpp"
+#include "testing_getrs_batched.hpp"
+#include "testing_getrs_strided_batched.hpp"
+#endif
+
 #include "utility.h"
 #include <algorithm>
 #undef I
@@ -238,31 +292,6 @@ void run_function(const func_map& map, const Arguments& arg, const std::string& 
     match->second(arg);
 }
 
-#include "syrkx_reference.hpp"
-#include "testing_gemm.hpp"
-#include "testing_gemm_batched.hpp"
-#include "testing_gemm_batched_ex.hpp"
-#include "testing_gemm_ex.hpp"
-#include "testing_gemm_strided_batched.hpp"
-#include "testing_gemm_strided_batched_ex.hpp"
-#include "testing_syrkx.hpp"
-#include "testing_syrkx_batched.hpp"
-#include "testing_syrkx_strided_batched.hpp"
-#include "testing_trmm.hpp"
-#include "testing_trmm_batched.hpp"
-#include "testing_trmm_strided_batched.hpp"
-#include "testing_trsm.hpp"
-#include "testing_trsm_batched.hpp"
-#include "testing_trsm_batched_ex.hpp"
-#include "testing_trsm_ex.hpp"
-#include "testing_trsm_strided_batched.hpp"
-#include "testing_trsm_strided_batched_ex.hpp"
-#include "testing_trsv.hpp"
-#include "testing_trsv_batched.hpp"
-#include "testing_trsv_strided_batched.hpp"
-#include "testing_trtri.hpp"
-#include "testing_trtri_batched.hpp"
-#include "testing_trtri_strided_batched.hpp"
 // Template to dispatch testing_gemm_ex for performance tests
 // When Ti == void or Ti == To == Tc == bfloat16, the test is marked invalid
 template <typename Ti, typename To = Ti, typename Tc = To, typename = void>
@@ -427,36 +456,50 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"gemm", testing_gemm<T>},
             {"gemm_batched", testing_gemm_batched<T>},
             {"gemm_strided_batched", testing_gemm_strided_batched<T>},
-            /*{"set_get_vector", testing_set_get_vector<T>},
-                {"set_get_matrix", testing_set_get_matrix<T>},
-                {"set_get_matrix_async", testing_set_get_matrix_async<T>},
-
-                // L3
-
-                {"symm", testing_symm<T>},
-                {"symm_batched", testing_symm_batched<T>},
-                {"symm_strided_batched", testing_symm_strided_batched<T>},
-                {"syrk", testing_syrk<T>},
-                {"syrk_batched", testing_syrk_batched<T>},
-                {"syrk_strided_batched", testing_syrk_strided_batched<T>},
-                {"syr2k", testing_syr2k<T>},
-                {"syr2k_batched", testing_syr2k_batched<T>},
-                {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
-
-                {"trtri", testing_trtri<T>},
-                {"trtri_batched", testing_trtri_batched<T>},
-                {"trtri_strided_batched", testing_trtri_strided_batched<T>},
-*/
+            {"symm", testing_symm<T>},
+            {"symm_batched", testing_symm_batched<T>},
+            {"symm_strided_batched", testing_symm_strided_batched<T>},
+            {"syrk", testing_syrk<T>},
+            {"syrk_batched", testing_syrk_batched<T>},
+            {"syrk_strided_batched", testing_syrk_strided_batched<T>},
+            {"syr2k", testing_syr2k<T>},
+            {"syr2k_batched", testing_syr2k_batched<T>},
+            {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
+            {"trtri", testing_trtri<T>},
+            {"trtri_batched", testing_trtri_batched<T>},
+            {"trtri_strided_batched", testing_trtri_strided_batched<T>},
             {"syrkx", testing_syrkx<T>},
             {"syrkx_batched", testing_syrkx_batched<T>},
             {"syrkx_strided_batched", testing_syrkx_strided_batched<T>},
-
             {"trsm", testing_trsm<T>},
-            //{"trsm_ex", testing_trsm_ex<T>},
+            {"trsm_ex", testing_trsm_ex<T>},
             {"trsm_batched", testing_trsm_batched<T>},
-            //{"trsm_batched_ex", testing_trsm_batched_ex<T>},
+            {"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
-            //{"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
+            {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
+
+#ifdef __HIP_PLATFORM_SOLVER__
+            {"geqrf", testing_geqrf<T>},
+            {"geqrf_batched", testing_geqrf_batched<T>},
+            {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
+            {"getrf", testing_getrf<T>},
+            {"getrf_batched", testing_getrf_batched<T>},
+            {"getrf_strided_batched", testing_getrf_strided_batched<T>},
+            {"getrf_npvt", testing_getrf_npvt<T>},
+            {"getrf_npvt_batched", testing_getrf_npvt_batched<T>},
+            {"getrf_npvt_strided_batched", testing_getrf_npvt_strided_batched<T>},
+            {"getri_batched", testing_getri_batched<T>},
+            {"getri_npvt_batched", testing_getri_npvt_batched<T>},
+            {"getrs", testing_getrs<T>},
+            {"getrs_batched", testing_getrs_batched<T>},
+            {"getrs_strided_batched", testing_getrs_strided_batched<T>},
+#endif
+
+            // Aux
+            {"set_get_vector", testing_set_get_vector<T>},
+            {"set_get_vector_async", testing_set_get_vector_async<T>},
+            {"set_get_matrix", testing_set_get_matrix<T>},
+            {"set_get_matrix_async", testing_set_get_matrix_async<T>},
         };
         run_function(fmap, arg);
     }
@@ -629,35 +672,48 @@ struct perf_blas<
             {"herkx", testing_herkx<T>},
             {"herkx_batched", testing_herkx_batched<T>},
             {"herkx_strided_batched", testing_herkx_strided_batched<T>},
-            /*
-                // L3
-                {"syrk", testing_syrk<T>},
-                {"syrk_batched", testing_syrk_batched<T>},
-                {"syrk_strided_batched", testing_syrk_strided_batched<T>},
-                {"syr2k", testing_syr2k<T>},
-                {"syr2k_batched", testing_syr2k_batched<T>},
-                {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
-                {"symm", testing_symm_hemm<T, false>},
-                {"symm_batched", testing_symm_hemm_batched<T, false>},
-                {"symm_strided_batched", testing_symm_hemm_strided_batched<T, false>},
-
+            {"symm", testing_symm<T>},
+            {"symm_batched", testing_symm_batched<T>},
+            {"symm_strided_batched", testing_symm_strided_batched<T>},
+            {"syrk", testing_syrk<T>},
+            {"syrk_batched", testing_syrk_batched<T>},
+            {"syrk_strided_batched", testing_syrk_strided_batched<T>},
+            {"syr2k", testing_syr2k<T>},
+            {"syr2k_batched", testing_syr2k_batched<T>},
+            {"syr2k_strided_batched", testing_syr2k_strided_batched<T>},
             {"trtri", testing_trtri<T>},
             {"trtri_batched", testing_trtri_batched<T>},
             {"trtri_strided_batched", testing_trtri_strided_batched<T>},
-          */
             {"syrkx", testing_syrkx<T>},
             {"syrkx_batched", testing_syrkx_batched<T>},
             {"syrkx_strided_batched", testing_syrkx_strided_batched<T>},
             {"trsm", testing_trsm<T>},
-            //{"trsm_ex", testing_trsm_ex<T>},
+            {"trsm_ex", testing_trsm_ex<T>},
             {"trsm_batched", testing_trsm_batched<T>},
-            //{"trsm_batched_ex", testing_trsm_batched_ex<T>},
+            {"trsm_batched_ex", testing_trsm_batched_ex<T>},
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
-            //{"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
+            {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
 
             {"trmm", testing_trmm<T>},
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
+
+#ifdef __HIP_PLATFORM_SOLVER__
+            {"geqrf", testing_geqrf<T>},
+            {"geqrf_batched", testing_geqrf_batched<T>},
+            {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
+            {"getrf", testing_getrf<T>},
+            {"getrf_batched", testing_getrf_batched<T>},
+            {"getrf_strided_batched", testing_getrf_strided_batched<T>},
+            {"getrf_npvt", testing_getrf_npvt<T>},
+            {"getrf_npvt_batched", testing_getrf_npvt_batched<T>},
+            {"getrf_npvt_strided_batched", testing_getrf_npvt_strided_batched<T>},
+            {"getri_batched", testing_getri_batched<T>},
+            {"getri_npvt_batched", testing_getri_npvt_batched<T>},
+            {"getrs", testing_getrs<T>},
+            {"getrs_batched", testing_getrs_batched<T>},
+            {"getrs_strided_batched", testing_getrs_strided_batched<T>},
+#endif
         };
         run_function(map, arg);
     }
@@ -674,26 +730,141 @@ struct perf_blas_axpy_ex<
     Tx,
     Ty,
     Tex,
-    std::enable_if_t<(std::is_same<Ta, float>{} && std::is_same<Ta, Tx>{} && std::is_same<Tx, Ty>{}
-                      && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, double>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, hipblasComplex>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, hipblasDoubleComplex>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
-                     || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{}
-                         && std::is_same<Tx, Ty>{} && std::is_same<Tex, float>{})>>
+    std::enable_if_t<((std::is_same<Ta, float>{} && std::is_same<Ta, Tx>{} && std::is_same<Tx, Ty>{}
+                       && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, double>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, hipblasComplex>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, hipblasDoubleComplex>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tex>{})
+                      || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{}
+                          && std::is_same<Tx, Ty>{} && std::is_same<Tex, float>{}))>>
     : hipblas_test_valid
 {
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            // {"axpy_ex", testing_axpy_ex<Ta, Tx, Ty, Tex>},
-            // {"axpy_batched_ex", testing_axpy_batched_ex<Ta, Tx, Ty, Tex>},
-            // {"axpy_strided_batched_ex", testing_axpy_strided_batched_ex<Ta, Tx, Ty, Tex>},
+            {"axpy_ex", testing_axpy_ex_template<Ta, Tx, Ty>},
+            {"axpy_batched_ex", testing_axpy_batched_ex_template<Ta, Tx, Ty>},
+            {"axpy_strided_batched_ex", testing_axpy_strided_batched_ex_template<Ta, Tx, Ty>},
+        };
+        run_function(map, arg);
+    }
+};
+
+template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, typename = void>
+struct perf_blas_dot_ex : hipblas_test_invalid
+{
+};
+
+template <typename Tx, typename Ty, typename Tr, typename Tex>
+struct perf_blas_dot_ex<
+    Tx,
+    Ty,
+    Tr,
+    Tex,
+    std::enable_if_t<(std::is_same<Tx, float>{} && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tr>{}
+                      && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, double>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, hipblasHalf>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, hipblasComplex>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, hipblasDoubleComplex>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tr, Tex>{})
+                     || (std::is_same<Tx, hipblasHalf>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tex, float>{})
+                     || (std::is_same<Tx, hipblasBfloat16>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Ty, Tr>{} && std::is_same<Tex, float>{})>>
+    : hipblas_test_valid
+{
+    void operator()(const Arguments& arg)
+    {
+        static const func_map map = {
+            {"dot_ex", testing_dot_ex_template<Tx, Ty, Tr, Tex, false>},
+            {"dot_batched_ex", testing_dot_batched_ex_template<Tx, Ty, Tr, Tex, false>},
+            {"dot_strided_batched_ex",
+             testing_dot_strided_batched_ex_template<Tx, Ty, Tr, Tex, false>},
+            {"dotc_ex", testing_dot_ex_template<Tx, Ty, Tr, Tex, true>},
+            {"dotc_batched_ex", testing_dot_batched_ex_template<Tx, Ty, Tr, Tex, true>},
+            {"dotc_strided_batched_ex",
+             testing_dot_strided_batched_ex_template<Tx, Ty, Tr, Tex, true>},
+        };
+        run_function(map, arg);
+    }
+};
+
+template <typename Tx, typename Tr = Tx, typename Tex = Tr, typename = void>
+struct perf_blas_nrm2_ex : hipblas_test_invalid
+{
+};
+
+template <typename Tx, typename Tr, typename Tex>
+struct perf_blas_nrm2_ex<
+    Tx,
+    Tr,
+    Tex,
+    std::enable_if_t<
+        (std::is_same<Tx, float>{} && std::is_same<Tx, Tr>{} && std::is_same<Tr, Tex>{})
+        || (std::is_same<Tx, double>{} && std::is_same<Tx, Tr>{} && std::is_same<Tr, Tex>{})
+        || (std::is_same<Tx, hipblasComplex>{} && std::is_same<Tr, float>{}
+            && std::is_same<Tr, Tex>{})
+        || (std::is_same<Tx, hipblasDoubleComplex>{} && std::is_same<Tr, double>{}
+            && std::is_same<Tr, Tex>{})
+        || (std::is_same<Tx, hipblasHalf>{} && std::is_same<Tr, Tx>{}
+            && std::is_same<Tex, float>{})>> : hipblas_test_valid
+{
+    void operator()(const Arguments& arg)
+    {
+        static const func_map map = {
+            {"nrm2_ex", testing_nrm2_ex_template<Tx, Tr, Tex>},
+            {"nrm2_batched_ex", testing_nrm2_batched_ex_template<Tx, Tr, Tex>},
+            {"nrm2_strided_batched_ex", testing_nrm2_strided_batched_ex_template<Tx, Tr, Tex>},
+        };
+        run_function(map, arg);
+    }
+};
+
+template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs, typename = void>
+struct perf_blas_rot_ex : hipblas_test_invalid
+{
+};
+
+template <typename Tx, typename Ty, typename Tcs, typename Tex>
+struct perf_blas_rot_ex<
+    Tx,
+    Ty,
+    Tcs,
+    Tex,
+    std::enable_if_t<(std::is_same<Tx, float>{} && std::is_same<Tx, Ty>{} && std::is_same<Ty, Tcs>{}
+                      && std::is_same<Tcs, Tex>{})
+                     || (std::is_same<Tx, double>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Ty, Tcs>{} && std::is_same<Tex, Tcs>{})
+                     || (std::is_same<Tx, hipblasComplex>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Tcs, Ty>{} && std::is_same<Tcs, Tex>{})
+                     || (std::is_same<Tx, hipblasDoubleComplex>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Tcs, Ty>{} && std::is_same<Tex, Tcs>{})
+                     || (std::is_same<Tx, hipblasComplex>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Tcs, float>{} && std::is_same<Tex, hipblasComplex>{})
+                     || (std::is_same<Tx, hipblasDoubleComplex>{} && std::is_same<Tx, Ty>{}
+                         && std::is_same<Tcs, double>{}
+                         && std::is_same<Tex, hipblasDoubleComplex>{})
+                     || (std::is_same<Tx, hipblasHalf>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Tcs, Ty>{} && std::is_same<Tex, float>{})
+                     || (std::is_same<Tx, hipblasBfloat16>{} && std::is_same<Ty, Tx>{}
+                         && std::is_same<Tcs, Ty>{} && std::is_same<Tex, float>{})>>
+    : hipblas_test_valid
+{
+    void operator()(const Arguments& arg)
+    {
+        static const func_map map = {
+            {"rot_ex", testing_rot_ex_template<Tex, Tx, Tcs>},
+            {"rot_batched_ex", testing_rot_batched_ex_template<Tex, Tx, Tcs>},
+            {"rot_strided_batched_ex", testing_rot_strided_batched_ex_template<Tex, Tx, Tcs>},
         };
         run_function(map, arg);
     }
@@ -968,10 +1139,20 @@ int run_bench_test(Arguments& arg)
         else if(!strcmp(function, "rot") || !strcmp(function, "rot_batched")
                 || !strcmp(function, "rot_strided_batched"))
             hipblas_rot_dispatch<perf_blas_rot>(arg);
-        /*
         else if(!strcmp(function, "axpy_ex") || !strcmp(function, "axpy_batched_ex")
                 || !strcmp(function, "axpy_strided_batched_ex"))
-            hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);*/
+            hipblas_blas1_ex_dispatch<perf_blas_axpy_ex>(arg);
+        else if(!strcmp(function, "dot_ex") || !strcmp(function, "dot_batched_ex")
+                || !strcmp(function, "dot_strided_batched_ex") || !strcmp(function, "dotc_ex")
+                || !strcmp(function, "dotc_batched_ex")
+                || !strcmp(function, "dotc_strided_batched_ex"))
+            hipblas_blas1_ex_dispatch<perf_blas_dot_ex>(arg);
+        else if(!strcmp(function, "nrm2_ex") || !strcmp(function, "nrm2_batched_ex")
+                || !strcmp(function, "nrm2_strided_batched_ex"))
+            hipblas_blas1_ex_dispatch<perf_blas_nrm2_ex>(arg);
+        else if(!strcmp(function, "rot_ex") || !strcmp(function, "rot_batched_ex")
+                || !strcmp(function, "rot_strided_batched_ex"))
+            hipblas_blas1_ex_dispatch<perf_blas_rot_ex>(arg);
         else
             hipblas_simple_dispatch<perf_blas>(arg);
     }

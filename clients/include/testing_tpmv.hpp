@@ -59,20 +59,19 @@ hipblasStatus_t testing_tpmv(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * M * incx, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasTpmvFn(handle, uplo, transA, diag, M, dA, dx, incx));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hres.data(), dx, sizeof(T) * M * incx, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasTpmvFn(handle, uplo, transA, diag, M, dA, dx, incx));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hres.data(), dx, sizeof(T) * M * incx, hipMemcpyDeviceToHost));
+
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         cblas_tpmv<T>(uplo, transA, diag, M, hA.data(), hx.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,

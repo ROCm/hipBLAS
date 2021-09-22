@@ -70,24 +70,38 @@ hipblasStatus_t testing_syr_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasSyrBatchedFn(
-        handle, uplo, N, &h_alpha, dx.ptr_on_device(), incx, dA.ptr_on_device(), lda, batch_count));
-
-    CHECK_HIP_ERROR(hA_host.transfer_from(dA));
-    CHECK_HIP_ERROR(dA.transfer_from(hA));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasSyrBatchedFn(
-        handle, uplo, N, d_alpha, dx.ptr_on_device(), incx, dA.ptr_on_device(), lda, batch_count));
-
-    CHECK_HIP_ERROR(hA_device.transfer_from(dA));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasSyrBatchedFn(handle,
+                                                uplo,
+                                                N,
+                                                &h_alpha,
+                                                dx.ptr_on_device(),
+                                                incx,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                batch_count));
+
+        CHECK_HIP_ERROR(hA_host.transfer_from(dA));
+        CHECK_HIP_ERROR(dA.transfer_from(hA));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasSyrBatchedFn(handle,
+                                                uplo,
+                                                N,
+                                                d_alpha,
+                                                dx.ptr_on_device(),
+                                                incx,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                batch_count));
+
+        CHECK_HIP_ERROR(hA_device.transfer_from(dA));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */

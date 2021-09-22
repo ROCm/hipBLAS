@@ -39,10 +39,8 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
-    int sizeY = N * incy;
-
-    int device_pointer = 1;
+    size_t sizeX = size_t(N) * incx;
+    size_t sizeY = size_t(N) * incy;
 
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
@@ -69,17 +67,17 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSwapBatchedFn(
-        handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
-
-    CHECK_HIP_ERROR(hx.transfer_from(dx));
-    CHECK_HIP_ERROR(hy.transfer_from(dy));
-
     if(unit_check || norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSwapBatchedFn(
+            handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
+
+        CHECK_HIP_ERROR(hx.transfer_from(dx));
+        CHECK_HIP_ERROR(hy.transfer_from(dy));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

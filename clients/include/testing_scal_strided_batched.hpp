@@ -30,7 +30,7 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
     hipblasStride stridex = N * incx * stride_scale;
     int           sizeX   = stridex * batch_count;
 
-    U alpha = argus.alpha;
+    U alpha = argus.get_alpha<U>();
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -60,17 +60,16 @@ hipblasStatus_t testing_scal_strided_batched(const Arguments& argus)
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(
-        hipblasScalStridedBatchedFn(handle, N, &alpha, dx, incx, stridex, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-
     if(argus.unit_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(
+            hipblasScalStridedBatchedFn(handle, N, &alpha, dx, incx, stridex, batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
 
         /* =====================================================================
                     CPU BLAS

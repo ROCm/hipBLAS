@@ -65,20 +65,19 @@ hipblasStatus_t testing_trmv_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasTrmvStridedBatchedFn(
-        handle, uplo, transA, diag, M, dA, lda, stride_A, dx, incx, stride_x, batch_count));
-
-    CHECK_HIP_ERROR(hipMemcpy(hres.data(), dx, sizeof(T) * X_size, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasTrmvStridedBatchedFn(
+            handle, uplo, transA, diag, M, dA, lda, stride_A, dx, incx, stride_x, batch_count));
+
+        CHECK_HIP_ERROR(hipMemcpy(hres.data(), dx, sizeof(T) * X_size, hipMemcpyDeviceToHost));
+
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_trmv<T>(uplo,

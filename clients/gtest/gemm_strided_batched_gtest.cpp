@@ -47,11 +47,11 @@ const vector<vector<int>> matrix_size_range = {
     //          {500, 500, 500, 500, 600, 500},
 };
 
-// vector of vector, each pair is a {alpha, beta};
-// add/delete this list in pairs, like {2.0, 4.0}
+// vector of vector, each pair is a {alpha, alphai, beta, betai};
+// add/delete this list in pairs, like {2.0, 3.0, 4.0, 5.0}
 const vector<vector<double>> alpha_beta_range = {
-    {1.0, 0.0},
-    {-1.0, -1.0},
+    {1.0, 2.0, 0.0, 0.0},
+    {-1.0, 1.0, -1.0, 2.0},
 };
 
 // vector of vector, each pair is a {transA, transB};
@@ -103,9 +103,11 @@ Arguments setup_gemm_strided_batched_arguments(gemm_strided_batched_tuple tup)
     arg.ldb = matrix_size[4];
     arg.ldc = matrix_size[5];
 
-    // the first element of alpha_beta_range is always alpha, and the second is always beta
-    arg.alpha = alpha_beta[0];
-    arg.beta  = alpha_beta[1];
+    // the first 2 elements of alpha_beta_range are always alpha, and the second 2 are always beta
+    arg.alpha  = alpha_beta[0];
+    arg.alphai = alpha_beta[1];
+    arg.beta   = alpha_beta[2];
+    arg.betai  = alpha_beta[3];
 
     arg.transA_option = transA_transB[0];
     arg.transB_option = transA_transB[1];

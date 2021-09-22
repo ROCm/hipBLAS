@@ -26,13 +26,10 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    int unit_check = argus.unit_check;
-    int timing     = argus.timing;
-
-    hipblasStride stridex = N * incx * stride_scale;
-    hipblasStride stridey = N * incy * stride_scale;
-    int           sizeX   = stridex * batch_count;
-    int           sizeY   = stridey * batch_count;
+    hipblasStride stridex = size_t(N) * incx * stride_scale;
+    hipblasStride stridey = size_t(N) * incy * stride_scale;
+    size_t        sizeX   = stridex * batch_count;
+    size_t        sizeY   = stridey * batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -66,18 +63,18 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(
-        hipblasCopyStridedBatchedFn(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-
-    if(unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasCopyStridedBatchedFn(
+            handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+
         /*=====================================================================
                     CPU BLAS
         =================================================================== */
@@ -92,10 +89,15 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
         {
             unit_check_general<T>(1, N, batch_count, incy, stridey, hy_cpu.data(), hy.data());
         }
+        if(argus.norm_check)
+        {
+            hipblas_error
+                = norm_check_general<T>('F', 1, N, incy, stridey, hy_cpu, hy, batch_count);
+        }
 
     } // end of if unit check
 
-    if(timing)
+    if(argus.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
