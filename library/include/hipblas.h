@@ -199,6 +199,13 @@ public:
 // #endif
 // } hipblasInt8Complex;
 
+#if __cplusplus >= 201103L
+static_assert(std::is_trivial<hipblasComplex>{},
+              "hipblasComplex is not a trivial type, and thus is incompatible with C.");
+static_assert(std::is_trivial<hipblasDoubleComplex>{},
+              "hipblasDoubleComplex is not a trivial type, and thus is incompatible with C.");
+#endif
+
 #endif // using internal complex class for API
 
 #if __cplusplus >= 201103L
@@ -208,13 +215,6 @@ static_assert(std::is_standard_layout<hipblasComplex>{},
 static_assert(
     std::is_standard_layout<hipblasDoubleComplex>{},
     "hipblasDoubleComplex is not a standard layout type, and thus is incompatible with C.");
-
-// Question: Do we need this check?
-// static_assert(std::is_trivial<hipblasComplex>{},
-//               "hipblasComplex is not a trivial type, and thus is incompatible with C.");
-// static_assert(std::is_trivial<hipblasDoubleComplex>{},
-//               "hipblasDoubleComplex is not a trivial type, and thus is incompatible with C.");
-
 static_assert(sizeof(hipblasComplex) == sizeof(float) * 2
                   && sizeof(hipblasDoubleComplex) == sizeof(double) * 2
                   && sizeof(hipblasDoubleComplex) == sizeof(hipblasComplex) * 2,
