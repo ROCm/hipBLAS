@@ -649,11 +649,7 @@ constexpr double herkx_gflop_count(int n, int k)
 template <typename T>
 constexpr double symm_gflop_count(int m, int n, int k)
 {
-<<<<<<< HEAD
-    return ((2.0 * k - 1.0) * m * n + 2.0 * m * n) / 1e9;
-=======
     return (2.0 * m * k * n) / 1e9;
->>>>>>> Modify hipBLAS level 3 GFLOPs calculation
 }
 
 template <>
