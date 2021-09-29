@@ -13520,12 +13520,6 @@ catch(...)
 }
 
 // trmm
-// clang-format off
-#pragma GCC warning "The hipblasXtrmm API, along with batched versions, will \
-be changing in a future release to allow in-place and out-of-place behavior. This change \
-will introduce an output matrix \"C\", matching the rocblas_xtrmm_outofplace API and the \
-cublasXtrmm API."
-// clang-format on
 hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                              hipblasSideMode_t  side,
                              hipblasFillMode_t  uplo,
