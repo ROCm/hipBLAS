@@ -27,22 +27,26 @@ hipblasStatus_t testing_hpr_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
+    int               abs_incx = incx >= 0 ? incx : -incx;
     size_t            dim_A    = size_t(N) * (N + 1) / 2;
     hipblasStride     stride_A = dim_A * stride_scale;
-    hipblasStride     stride_x = size_t(N) * incx * stride_scale;
+    hipblasStride     stride_x = size_t(N) * abs_incx * stride_scale;
     size_t            A_size   = stride_A * batch_count;
     size_t            x_size   = stride_x * batch_count;
     hipblasFillMode_t uplo     = char2hipblas_fill(argus.uplo_option);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx == 0 || batch_count < 0)
+    bool invalid_size = N < 0 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasHprStridedBatchedFn(
+            handle, uplo, N, nullptr, nullptr, incx, stride_x, nullptr, stride_A, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -60,12 +64,10 @@ hipblasStatus_t testing_hpr_strided_batched(const Arguments& argus)
 
     U h_alpha = argus.get_alpha<U>();
 
-    hipblasLocalHandle handle(argus);
-
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, 1, dim_A, 1, stride_A, batch_count);
-    hipblas_init<T>(hx, 1, N, incx, stride_x, batch_count);
+    hipblas_init<T>(hx, 1, N, abs_incx, stride_x, batch_count);
 
     // copy matrix is easy in STL; hA_cpu = hA: save a copy in hA_cpu which will be output of CPU BLAS
     hA_cpu = hA;

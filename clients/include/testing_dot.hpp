@@ -24,15 +24,39 @@ hipblasStatus_t testing_dot(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0)
+    if(N <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        device_vector<T> d_hipblas_result_0(1);
+        host_vector<T>   h_hipblas_result_0(1);
+        hipblas_init_nan(h_hipblas_result_0.data(), 1);
+        CHECK_HIP_ERROR(
+            hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(T), hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(
+            hipblasDotFn(handle, N, nullptr, incx, nullptr, incy, d_hipblas_result_0));
+
+        host_vector<T> cpu_0(1);
+        host_vector<T> gpu_0(1);
+
+        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(T), hipMemcpyDeviceToHost));
+        unit_check_general<T>(1, 1, 1, cpu_0, gpu_0);
+
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
-    size_t sizeX = size_t(N) * incx;
-    size_t sizeY = size_t(N) * incy;
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    int    abs_incy = incy >= 0 ? incy : -incy;
+    size_t sizeX    = size_t(N) * abs_incx;
+    size_t sizeY    = size_t(N) * abs_incy;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);
@@ -45,12 +69,10 @@ hipblasStatus_t testing_dot(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblasLocalHandle handle(argus);
-
     // Initial Data on CPU
     srand(1);
-    hipblas_init_alternating_sign<T>(hx, 1, N, incx);
-    hipblas_init<T>(hy, 1, N, incy);
+    hipblas_init_alternating_sign<T>(hx, 1, N, abs_incx);
+    hipblas_init<T>(hy, 1, N, abs_incy);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));

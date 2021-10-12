@@ -39,15 +39,28 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
     size_t        size_A   = size_t(strideA) * batch_count;
     size_t        size_x   = size_t(stridex) * batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || lda < M || !incx || batch_count < 0)
+    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx || batch_count < 0;
+    if(invalid_size || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(!batch_count || !M || !lda)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasTrsvStridedBatchedFn(handle,
+                                                             uplo,
+                                                             transA,
+                                                             diag,
+                                                             M,
+                                                             nullptr,
+                                                             lda,
+                                                             strideA,
+                                                             nullptr,
+                                                             incx,
+                                                             stridex,
+                                                             batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -60,8 +73,7 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
     device_vector<T> dA(size_A);
     device_vector<T> dx_or_b(size_x);
 
-    double             gpu_time_used, hipblas_error, cumulative_hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error, cumulative_hipblas_error;
 
     // Initial Data on CPU
     srand(1);

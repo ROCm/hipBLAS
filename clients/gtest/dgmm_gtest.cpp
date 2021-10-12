@@ -42,9 +42,10 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 // vector of vector, each vector is a {M, N, lda, incx, ldc};
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
-    {-1, -1, -1, -1, -1},
-    {128, 130, 150, 1, 150},
-    {1000, 1000, 1000, 2, 1000},
+    {-1, -1, -1, -1, -1}, {128, 128, 150, -1, 150}, {1000, 1000, 1000, 2, 1000},
+
+    // TODO: rocBLAS dgmm is currently broken when (M != N && incx < 0 && side == L)
+    // {128, 130, 150, -1, 150},
 };
 
 const vector<char> side_range = {
