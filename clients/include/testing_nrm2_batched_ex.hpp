@@ -23,19 +23,45 @@ hipblasStatus_t testing_nrm2_batched_ex_template(const Arguments& argus)
     int incx        = argus.incx;
     int batch_count = argus.batch_count;
 
-    // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-
     hipblasDatatype_t xType         = argus.a_type;
     hipblasDatatype_t resultType    = argus.b_type;
     hipblasDatatype_t executionType = argus.compute_type;
+
+    hipblasLocalHandle handle(argus);
+
+    // check to prevent undefined memory allocation error
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
+    {
+        device_vector<Tr> d_hipblas_result_0(std::max(batch_count, 1));
+        host_vector<Tr>   h_hipblas_result_0(std::max(1, batch_count));
+        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(Tr) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedExFn(handle,
+                                                   N,
+                                                   nullptr,
+                                                   xType,
+                                                   incx,
+                                                   batch_count,
+                                                   d_hipblas_result_0,
+                                                   resultType,
+                                                   executionType));
+
+        if(batch_count > 0)
+        {
+            // TODO: error in rocBLAS - only setting the first element to 0, not for all batches
+            // host_vector<Tr> cpu_0(batch_count);
+            // host_vector<Tr> gpu_0(batch_count);
+            // CHECK_HIP_ERROR(hipMemcpy(
+            //     gpu_0, d_hipblas_result_0, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
+            // unit_check_general<Tr>(1, batch_count, 1, cpu_0, gpu_0);
+        }
+        return HIPBLAS_STATUS_SUCCESS;
+    }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<Tx> hx(N, incx, batch_count);
@@ -48,8 +74,7 @@ hipblasStatus_t testing_nrm2_batched_ex_template(const Arguments& argus)
 
     CHECK_HIP_ERROR(dx.memcheck());
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     hipblas_init(hx, true);

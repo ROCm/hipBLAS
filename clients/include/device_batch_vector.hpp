@@ -1,5 +1,5 @@
 //
-// Copyright 2018-2020 Advanced Micro Devices, Inc.
+// Copyright 2018-2021 Advanced Micro Devices, Inc.
 //
 #pragma once
 
@@ -39,9 +39,9 @@ public:
     //!
     explicit device_batch_vector(int n, int inc, int batch_count)
         : m_n(n)
-        , m_inc(inc)
+        , m_inc(inc ? inc : 1)
         , m_batch_count(batch_count)
-        , d_vector<T, PAD, U>(size_t(n) * std::abs(inc))
+        , d_vector<T, PAD, U>(size_t(n) * std::abs(inc ? inc : 1))
     {
         if(false == this->try_initialize_memory())
         {

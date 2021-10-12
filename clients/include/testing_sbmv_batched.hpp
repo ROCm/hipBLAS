@@ -27,26 +27,40 @@ hipblasStatus_t testing_sbmv_batched(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    size_t A_size = size_t(lda) * M;
+    int    abs_incy = incy >= 0 ? incy : -incy;
+    size_t A_size   = size_t(lda) * M;
 
     int batch_count = argus.batch_count;
 
     hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || K < 0 || lda < K + 1 || incx == 0 || incy == 0 || batch_count < 0)
+    bool invalid_size
+        = M < 0 || K < 0 || lda < K + 1 || lda < 1 || !incx || !incy || batch_count < 0;
+    if(invalid_size || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasSbmvBatchedFn(handle,
+                                                      uplo,
+                                                      M,
+                                                      K,
+                                                      nullptr,
+                                                      nullptr,
+                                                      lda,
+                                                      nullptr,
+                                                      incx,
+                                                      nullptr,
+                                                      nullptr,
+                                                      incy,
+                                                      batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();
@@ -135,16 +149,16 @@ hipblasStatus_t testing_sbmv_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, batch_count, incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, M, batch_count, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, M, batch_count, abs_incy, hy_cpu, hy_device);
         }
 
         if(argus.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_host, batch_count);
+                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_device, batch_count);
+                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_device, batch_count);
         }
     }
 

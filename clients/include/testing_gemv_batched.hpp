@@ -28,8 +28,8 @@ hipblasStatus_t testing_gemv_batched(const Arguments& argus)
     int incy = argus.incy;
 
     size_t A_size = size_t(lda) * N;
-    size_t X_size, dim_x;
-    size_t Y_size, dim_y;
+    size_t dim_x;
+    size_t dim_y;
 
     int batch_count = argus.batch_count;
 
@@ -46,23 +46,32 @@ hipblasStatus_t testing_gemv_batched(const Arguments& argus)
         dim_y = N;
     }
 
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < 0 || incx <= 0 || incy <= 0 || batch_count < 0)
+    bool invalid_size = M < 0 || N < 0 || lda < M || lda < 1 || !incx || !incy || batch_count < 0;
+    if(invalid_size || !M || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasGemvBatchedFn(handle,
+                                                      transA,
+                                                      M,
+                                                      N,
+                                                      nullptr,
+                                                      nullptr,
+                                                      lda,
+                                                      nullptr,
+                                                      incx,
+                                                      nullptr,
+                                                      nullptr,
+                                                      incy,
+                                                      batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
-    X_size = dim_x * incx;
-    Y_size = dim_y * incy;
-
-    hipblasLocalHandle handle(argus);
+    int abs_incy = incy >= 0 ? incy : -incy;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
@@ -153,15 +162,15 @@ hipblasStatus_t testing_gemv_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, dim_y, batch_count, incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, dim_y, batch_count, incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, dim_y, batch_count, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, dim_y, batch_count, abs_incy, hy_cpu, hy_device);
         }
         if(argus.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, dim_y, incy, hy_cpu, hy_host, batch_count);
+                = norm_check_general<T>('F', 1, dim_y, abs_incy, hy_cpu, hy_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', 1, dim_y, incy, hy_cpu, hy_device, batch_count);
+                = norm_check_general<T>('F', 1, dim_y, abs_incy, hy_cpu, hy_device, batch_count);
         }
     }
 

@@ -26,28 +26,40 @@ hipblasStatus_t testing_hbmv(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    size_t A_size = size_t(lda) * N;
-
     hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
+
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || K < 0 || lda < K + 1 || incx == 0 || incy == 0)
+    bool invalid_size = N < 0 || K < 0 || lda <= K || !incx || !incy;
+    if(invalid_size || !N)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual = hipblasHbmvFn(
+            handle, uplo, N, K, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
+
+    int abs_incx = incx >= 0 ? incx : -incx;
+    int abs_incy = incy >= 0 ? incy : -incy;
+
+    size_t A_size = size_t(lda) * N;
+    size_t x_size = size_t(N) * abs_incx;
+    size_t y_size = size_t(N) * abs_incy;
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
-    host_vector<T> hx(N * incx);
-    host_vector<T> hy(N * incy);
-    host_vector<T> hy_cpu(N * incy);
-    host_vector<T> hy_host(N * incy);
-    host_vector<T> hy_device(N * incy);
+    host_vector<T> hx(x_size);
+    host_vector<T> hy(y_size);
+    host_vector<T> hy_cpu(y_size);
+    host_vector<T> hy_host(y_size);
+    host_vector<T> hy_device(y_size);
 
     device_vector<T> dA(A_size);
-    device_vector<T> dx(N * incx);
-    device_vector<T> dy(N * incy);
+    device_vector<T> dx(x_size);
+    device_vector<T> dy(y_size);
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
 
@@ -56,21 +68,19 @@ hipblasStatus_t testing_hbmv(const Arguments& argus)
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();
 
-    hipblasLocalHandle handle(argus);
-
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, K, N, lda);
-    hipblas_init<T>(hx, 1, N, incx);
-    hipblas_init<T>(hy, 1, N, incy);
+    hipblas_init<T>(hx, 1, N, abs_incx);
+    hipblas_init<T>(hy, 1, N, abs_incy);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hy_cpu = hy;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * lda * N, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * N * incy, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * y_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
@@ -83,15 +93,14 @@ hipblasStatus_t testing_hbmv(const Arguments& argus)
         CHECK_HIPBLAS_ERROR(hipblasHbmvFn(
             handle, uplo, N, K, (T*)&h_alpha, dA, lda, dx, incx, (T*)&h_beta, dy, incy));
 
-        CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * N * incy, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * N * incy, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * y_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * y_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         CHECK_HIPBLAS_ERROR(
             hipblasHbmvFn(handle, uplo, N, K, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
 
-        CHECK_HIP_ERROR(
-            hipMemcpy(hy_device.data(), dy, sizeof(T) * N * incy, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy_device.data(), dy, sizeof(T) * y_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
@@ -104,19 +113,19 @@ hipblasStatus_t testing_hbmv(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, N, incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, N, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, abs_incy, hy_cpu, hy_device);
         }
         if(argus.norm_check)
         {
-            hipblas_error_host   = norm_check_general<T>('F', 1, N, incy, hy_cpu, hy_host);
-            hipblas_error_device = norm_check_general<T>('F', 1, N, incy, hy_cpu, hy_device);
+            hipblas_error_host   = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host);
+            hipblas_error_device = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device);
         }
     }
 
     if(argus.timing)
     {
-        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * N * incy, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * y_size, hipMemcpyHostToDevice));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));

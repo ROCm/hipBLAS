@@ -27,10 +27,12 @@ hipblasStatus_t testing_spmv_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    int           dim_A    = M * (M + 1) / 2;
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    int           abs_incy = incy >= 0 ? incy : -incy;
+    size_t        dim_A    = size_t(M) * (M + 1) / 2;
     hipblasStride stride_A = dim_A * stride_scale;
-    hipblasStride stride_x = M * incx * stride_scale;
-    hipblasStride stride_y = M * incy * stride_scale;
+    hipblasStride stride_x = size_t(M) * abs_incx * stride_scale;
+    hipblasStride stride_y = size_t(M) * abs_incy * stride_scale;
 
     size_t A_size = stride_A * batch_count;
     size_t X_size = stride_x * batch_count;
@@ -38,11 +40,30 @@ hipblasStatus_t testing_spmv_strided_batched(const Arguments& argus)
 
     hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || incx == 0 || incy == 0 || batch_count < 0)
+    bool invalid_size = M < 0 || !incx || !incy || batch_count < 0;
+    if(invalid_size || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual = hipblasSpmvStridedBatchedFn(handle,
+                                                             uplo,
+                                                             M,
+                                                             nullptr,
+                                                             nullptr,
+                                                             stride_A,
+                                                             nullptr,
+                                                             incx,
+                                                             stride_x,
+                                                             nullptr,
+                                                             nullptr,
+                                                             incy,
+                                                             stride_y,
+                                                             batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -62,14 +83,13 @@ hipblasStatus_t testing_spmv_strided_batched(const Arguments& argus)
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, 1, dim_A, 1, stride_A, batch_count);
-    hipblas_init<T>(hx, 1, M, incx, stride_x, batch_count);
-    hipblas_init<T>(hy, 1, M, incy, stride_y, batch_count);
+    hipblas_init<T>(hx, 1, M, abs_incx, stride_x, batch_count);
+    hipblas_init<T>(hy, 1, M, abs_incy, stride_y, batch_count);
     hy_cpu = hy;
 
     // copy data from CPU to device
@@ -141,15 +161,15 @@ hipblasStatus_t testing_spmv_strided_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, incx, stride_x, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, batch_count, incx, stride_x, hy_cpu, hy_device);
+            unit_check_general<T>(1, M, batch_count, abs_incy, stride_y, hy_cpu, hy_host);
+            unit_check_general<T>(1, M, batch_count, abs_incy, stride_y, hy_cpu, hy_device);
         }
         if(argus.norm_check)
         {
-            hipblas_error_host
-                = norm_check_general<T>('F', 1, M, incy, stride_y, hy_cpu, hy_host, batch_count);
-            hipblas_error_device
-                = norm_check_general<T>('F', 1, M, incy, stride_y, hy_cpu, hy_device, batch_count);
+            hipblas_error_host = norm_check_general<T>(
+                'F', 1, M, abs_incy, stride_y, hy_cpu, hy_host, batch_count);
+            hipblas_error_device = norm_check_general<T>(
+                'F', 1, M, abs_incy, stride_y, hy_cpu, hy_device, batch_count);
         }
     }
 
