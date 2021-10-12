@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2020 Advanced Micro Devices, Inc.
+# Copyright 2016-2021 Advanced Micro Devices, Inc.
 # ########################################################################
 # Helper cmake script to automate building dependencies for hipblas
 # This script can be invoked manually by the user with 'cmake -P'
@@ -24,7 +24,6 @@ endif()
 # The superbuild does not build anything itself; all compiling is done in external projects
 project( hipblas-dependencies NONE )
 
-option( BUILD_BOOST "Download and build boost library" ON )
 option( BUILD_GTEST "Download and build googletest library" ON )
 option( BUILD_LAPACK "Download and build lapack library" ON )
 # option( BUILD_VERBOSE "Print helpful build debug information" OFF )
@@ -57,13 +56,6 @@ if( BUILD_LAPACK )
   set( lapack_custom_target COMMAND cd ${LAPACK_BINARY_ROOT}$<SEMICOLON> ${CMAKE_COMMAND} --build . --target install )
 endif( )
 
-if( BUILD_BOOST )
-  include( external-boost )
-
-  list( APPEND hipblas_dependencies boost )
-  set( boost_custom_target COMMAND cd ${BOOST_BINARY_ROOT}$<SEMICOLON> ${Boost.Command} install )
-endif( )
-
 # POLICY CMP0037 - "Target names should not be reserved and should match a validity pattern"
 # Familiar target names like 'install' should be OK at the super-build level
 if( POLICY CMP0037 )
@@ -71,7 +63,6 @@ if( POLICY CMP0037 )
 endif( )
 
 add_custom_target( install
-  ${boost_custom_target}
   ${gtest_custom_target}
   ${lapack_custom_target}
   DEPENDS ${hipblas_dependencies}

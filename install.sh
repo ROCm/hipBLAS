@@ -176,11 +176,11 @@ install_packages( )
     fi
   fi
 
-  local client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
-  local client_dependencies_centos=( "devtoolset-7-gcc-gfortran" "boost-devel" )
-  local client_dependencies_centos8=( "gcc-gfortran" "boost-devel" )
-  local client_dependencies_fedora=( "gcc-gfortran" "boost-devel" )
-  local client_dependencies_sles=( "libboost_program_options1_66_0-devel" "pkg-config" "dpkg" )
+  local client_dependencies_ubuntu=( "gfortran" )
+  local client_dependencies_centos=( "devtoolset-7-gcc-gfortran" )
+  local client_dependencies_centos8=( "gcc-gfortran" )
+  local client_dependencies_fedora=( "gcc-gfortran" )
+  local client_dependencies_sles=( "pkg-config" "dpkg" )
 
   case "${ID}" in
     ubuntu)
@@ -420,7 +420,7 @@ if [[ "${install_dependencies}" == true ]]; then
   pushd .
     printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into \033[33m/usr/local\033[0m\n"
     mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
-    ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install -DBUILD_BOOST=OFF ../../deps
+    ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install ../../deps
     make -j$(nproc)
     make install
   popd

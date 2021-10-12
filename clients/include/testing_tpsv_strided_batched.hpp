@@ -41,11 +41,18 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
     size_t        size_AP  = strideAP * batch_count;
     size_t        size_x   = stridex * batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || !incx || batch_count < 0)
+    bool invalid_size = N < 0 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual = hipblasTpsvStridedBatchedFn(
+            handle, uplo, transA, diag, N, nullptr, strideAP, nullptr, incx, stridex, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -61,9 +68,7 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
     device_vector<T> dAP(size_AP);
     device_vector<T> dx_or_b(size_x);
 
-    double             gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
-    hipblasLocalHandle handle(argus);
-
+    double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, N, N, N, strideA, batch_count);

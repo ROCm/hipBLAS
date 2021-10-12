@@ -23,10 +23,26 @@ hipblasStatus_t testing_asum(const Arguments& argus)
     int N    = argus.N;
     int incx = argus.incx;
 
+    hipblasLocalHandle handle(argus);
+
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0)
+    if(N <= 0 || incx <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        device_vector<Tr> d_hipblas_result_0(1);
+        host_vector<Tr>   h_hipblas_result_0(1);
+        hipblas_init_nan(h_hipblas_result_0.data(), 1);
+        CHECK_HIP_ERROR(
+            hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr), hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, nullptr, incx, d_hipblas_result_0));
+
+        host_vector<Tr> cpu_0(1);
+        host_vector<Tr> gpu_0(1);
+        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(Tr), hipMemcpyDeviceToHost));
+        unit_check_general<Tr>(1, 1, 1, cpu_0, gpu_0);
+
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     size_t sizeX = size_t(N) * incx;
@@ -39,8 +55,6 @@ hipblasStatus_t testing_asum(const Arguments& argus)
     Tr                cpu_result, hipblas_result_host, hipblas_result_device;
 
     double gpu_time_used, hipblas_error_host = 0, hipblas_error_device = 0;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
