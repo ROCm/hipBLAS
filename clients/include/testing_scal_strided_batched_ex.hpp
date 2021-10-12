@@ -33,20 +33,28 @@ hipblasStatus_t testing_scal_strided_batched_ex_template(const Arguments& argus)
 
     Ta h_alpha = argus.get_alpha<Ta>();
 
-    // argument sanity check, quick return if input parameters are invalid before allocating invalid
-    // memory
-    if(N < 0 || incx < 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
+    hipblasLocalHandle handle(argus);
 
     hipblasDatatype_t alphaType     = argus.a_type;
     hipblasDatatype_t xType         = argus.b_type;
     hipblasDatatype_t executionType = argus.compute_type;
+
+    // argument sanity check, quick return if input parameters are invalid before allocating invalid
+    // memory
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
+    {
+        CHECK_HIPBLAS_ERROR(hipblasScalStridedBatchedExFn(handle,
+                                                          N,
+                                                          nullptr,
+                                                          alphaType,
+                                                          nullptr,
+                                                          xType,
+                                                          incx,
+                                                          stride_scale,
+                                                          batch_count,
+                                                          executionType));
+        return HIPBLAS_STATUS_SUCCESS;
+    }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<Tx> hx_host(sizeX);
@@ -56,8 +64,7 @@ hipblasStatus_t testing_scal_strided_batched_ex_template(const Arguments& argus)
     device_vector<Tx> dx(sizeX);
     device_vector<Ta> d_alpha(1);
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     srand(1);

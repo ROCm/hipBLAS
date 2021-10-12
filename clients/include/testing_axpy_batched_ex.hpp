@@ -24,28 +24,35 @@ hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& argus)
     int incy        = argus.incy;
     int batch_count = argus.batch_count;
 
-    // argument sanity check, quick return if input parameters are invalid before allocating invalid
-    // memory
-    if(N < 0 || !incx || !incy || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-
     hipblasDatatype_t alphaType     = argus.a_type;
     hipblasDatatype_t xType         = argus.b_type;
     hipblasDatatype_t yType         = argus.c_type;
     hipblasDatatype_t executionType = argus.compute_type;
 
-    int abs_incx = incx < 0 ? -incx : incx;
+    hipblasLocalHandle handle(argus);
+
+    // argument sanity check, quick return if input parameters are invalid before allocating invalid
+    // memory
+    if(N <= 0 || batch_count <= 0)
+    {
+        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
+                                                   N,
+                                                   nullptr,
+                                                   alphaType,
+                                                   nullptr,
+                                                   xType,
+                                                   incx,
+                                                   nullptr,
+                                                   yType,
+                                                   incy,
+                                                   batch_count,
+                                                   executionType));
+        return HIPBLAS_STATUS_SUCCESS;
+    }
+
     int abs_incy = incy < 0 ? -incy : incy;
 
-    size_t sizeX   = size_t(N) * abs_incx;
-    size_t sizeY   = size_t(N) * abs_incy;
-    Ta     h_alpha = argus.get_alpha<Ta>();
+    Ta h_alpha = argus.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<Tx> hx(N, incx, batch_count);
@@ -60,8 +67,7 @@ hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
     CHECK_HIP_ERROR(dy.memcheck());
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     hipblas_init(hx, true);
@@ -124,7 +130,7 @@ hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<Ty>(1, N, batch_count, abs_incx, hy_cpu, hy_host);
+            unit_check_general<Ty>(1, N, batch_count, abs_incy, hy_cpu, hy_host);
             unit_check_general<Ty>(1, N, batch_count, abs_incy, hy_cpu, hy_device);
         }
         if(argus.norm_check)

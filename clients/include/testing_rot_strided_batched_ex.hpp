@@ -27,29 +27,48 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
     double stride_scale = arg.stride_scale;
     int    batch_count  = arg.batch_count;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    hipblasStride stridey = N * incy * stride_scale;
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    int           abs_incy = incy >= 0 ? incy : -incy;
+    hipblasStride stridex  = N * abs_incx * stride_scale;
+    hipblasStride stridey  = N * abs_incy * stride_scale;
 
-    int size_x = stridex * batch_count;
-    int size_y = stridey * batch_count;
-
-    // check to prevent undefined memory allocation error
-    if(N <= 0 || incx <= 0 || incy <= 0 || !batch_count)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-    if(batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
+    size_t size_x = stridex * batch_count;
+    size_t size_y = stridey * batch_count;
+    if(!size_x)
+        size_x = 1;
+    if(!size_y)
+        size_y = 1;
 
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;
     hipblasDatatype_t csType        = arg.c_type;
     hipblasDatatype_t executionType = arg.compute_type;
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
+
+    // check to prevent undefined memory allocation error
+    if(N <= 0 || batch_count <= 0)
+    {
+        CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
+                                                         N,
+                                                         nullptr,
+                                                         xType,
+                                                         incx,
+                                                         stridex,
+                                                         nullptr,
+                                                         yType,
+                                                         incy,
+                                                         stridey,
+                                                         nullptr,
+                                                         nullptr,
+                                                         csType,
+                                                         batch_count,
+                                                         executionType));
+
+        return HIPBLAS_STATUS_SUCCESS;
+    }
+
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     device_vector<Tx>  dx(size_x);
     device_vector<Ty>  dy(size_y);
@@ -66,8 +85,8 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
     host_vector<Tcs> hc(1);
     host_vector<Tcs> hs(1);
     srand(1);
-    hipblas_init<Tx>(hx_host, 1, N, incx, stridex, batch_count);
-    hipblas_init<Ty>(hy_host, 1, N, incy, stridey, batch_count);
+    hipblas_init<Tx>(hx_host, 1, N, abs_incx, stridex, batch_count);
+    hipblas_init<Ty>(hy_host, 1, N, abs_incy, stridey, batch_count);
 
     hipblas_init<Tcs>(hc, 1, 1, 1);
     hipblas_init<Tcs>(hs, 1, 1, 1);
@@ -132,22 +151,22 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
 
         if(arg.unit_check)
         {
-            unit_check_general<Tx>(1, N, batch_count, incx, stridex, hx_cpu, hx_host);
-            unit_check_general<Tx>(1, N, batch_count, incy, stridey, hy_cpu, hy_host);
-            unit_check_general<Ty>(1, N, batch_count, incx, stridex, hx_cpu, hx_device);
-            unit_check_general<Ty>(1, N, batch_count, incy, stridey, hy_cpu, hy_device);
+            unit_check_general<Tx>(1, N, batch_count, abs_incx, stridex, hx_cpu, hx_host);
+            unit_check_general<Tx>(1, N, batch_count, abs_incy, stridey, hy_cpu, hy_host);
+            unit_check_general<Ty>(1, N, batch_count, abs_incx, stridex, hx_cpu, hx_device);
+            unit_check_general<Ty>(1, N, batch_count, abs_incy, stridey, hy_cpu, hy_device);
         }
 
-        if(arg.unit_check)
+        if(arg.norm_check)
         {
-            hipblas_error_host
-                = norm_check_general<Tx>('F', 1, N, incx, stridex, hx_cpu, hx_host, batch_count);
-            hipblas_error_host
-                += norm_check_general<Ty>('F', 1, N, incy, stridey, hy_cpu, hy_host, batch_count);
-            hipblas_error_device
-                = norm_check_general<Tx>('F', 1, N, incx, stridex, hx_cpu, hx_device, batch_count);
-            hipblas_error_device
-                += norm_check_general<Ty>('F', 1, N, incy, stridey, hy_cpu, hy_device, batch_count);
+            hipblas_error_host = norm_check_general<Tx>(
+                'F', 1, N, abs_incx, stridex, hx_cpu, hx_host, batch_count);
+            hipblas_error_host += norm_check_general<Ty>(
+                'F', 1, N, abs_incy, stridey, hy_cpu, hy_host, batch_count);
+            hipblas_error_device = norm_check_general<Tx>(
+                'F', 1, N, abs_incx, stridex, hx_cpu, hx_device, batch_count);
+            hipblas_error_device += norm_check_general<Ty>(
+                'F', 1, N, abs_incy, stridey, hy_cpu, hy_device, batch_count);
         }
     }
 

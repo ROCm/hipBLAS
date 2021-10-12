@@ -35,15 +35,18 @@ hipblasStatus_t testing_trsv_batched(const Arguments& argus)
     int    abs_incx = incx < 0 ? -incx : incx;
     size_t size_A   = size_t(lda) * M;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || lda < M || incx == 0 || batch_count < 0)
+    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx || batch_count < 0;
+    if(invalid_size || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(!batch_count)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasTrsvBatchedFn(
+            handle, uplo, transA, diag, M, nullptr, lda, nullptr, incx, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -59,8 +62,7 @@ hipblasStatus_t testing_trsv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.memcheck());
     CHECK_HIP_ERROR(dx_or_b.memcheck());
 
-    double             gpu_time_used, hipblas_error, cumulative_hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error, cumulative_hipblas_error;
 
     // Initial Data on CPU
     srand(1);

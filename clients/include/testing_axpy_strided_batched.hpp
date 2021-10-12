@@ -34,15 +34,19 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
     hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
     size_t        sizeX   = stridex * batch_count;
     size_t        sizeY   = stridey * batch_count;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
+
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || !incx || !incy || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
-    {
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
+            handle, N, nullptr, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -59,8 +63,6 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
     device_vector<T> d_alpha(1);
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -93,7 +95,7 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(
-            hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+            hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(
             hipMemcpy(hy_device.data(), dy_device, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
 
@@ -111,16 +113,16 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
         if(argus.unit_check)
         {
             unit_check_general<T>(
-                1, N, batch_count, abs_incx, stridex, hy_cpu.data(), hy_host.data());
+                1, N, batch_count, abs_incy, stridex, hy_cpu.data(), hy_host.data());
             unit_check_general<T>(
                 1, N, batch_count, abs_incy, stridey, hy_cpu.data(), hy_device.data());
         }
         if(argus.norm_check)
         {
             hipblas_error_host = norm_check_general<T>(
-                'F', 1, N, 1, stridey, hy_cpu.data(), hy_host.data(), batch_count);
+                'F', 1, N, abs_incy, stridey, hy_cpu.data(), hy_host.data(), batch_count);
             hipblas_error_device = norm_check_general<T>(
-                'F', 1, N, 1, stridey, hy_cpu.data(), hy_device.data(), batch_count);
+                'F', 1, N, abs_incy, stridey, hy_cpu.data(), hy_device.data(), batch_count);
         }
     } // end of if unit check
 
