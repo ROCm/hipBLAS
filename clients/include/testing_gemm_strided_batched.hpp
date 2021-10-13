@@ -203,7 +203,7 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -217,14 +217,14 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
                                                             M,
                                                             N,
                                                             K,
-                                                            d_alpha,
+                                                            &h_alpha,
                                                             dA,
                                                             lda,
                                                             stride_A,
                                                             dB,
                                                             ldb,
                                                             stride_B,
-                                                            d_beta,
+                                                            &h_beta,
                                                             dC,
                                                             ldc,
                                                             stride_C,
