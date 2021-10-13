@@ -218,7 +218,10 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        // gemm has better performance in host mode. In rocBLAS in device mode
+        // we need to copy alpha and beta to the host.
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -232,12 +235,12 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
                                                      M,
                                                      N,
                                                      K,
-                                                     d_alpha,
+                                                     &h_alpha,
                                                      (const T* const*)dA.ptr_on_device(),
                                                      lda,
                                                      (const T* const*)dB.ptr_on_device(),
                                                      ldb,
-                                                     d_beta,
+                                                     &h_beta,
                                                      dC.ptr_on_device(),
                                                      ldc,
                                                      batch_count));
