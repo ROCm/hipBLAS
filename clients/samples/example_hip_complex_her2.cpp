@@ -100,13 +100,13 @@ int main(int argc, char** argv)
 
     for(int i1 = 0; i1 < N; i1++)
     {
-        hX[i1 * incx] = hipFloatComplex(1.0f, 0.0f);
-        hY[i1 * incy] = hipFloatComplex(1.0f, 0.0f);
+        hX[i1 * incx] = make_hipFloatComplex(1.0f, 0.0f);
+        hY[i1 * incy] = make_hipFloatComplex(1.0f, 0.0f);
     }
 
     for(int i1 = 0; i1 < rows; i1++)
         for(int i2 = 0; i2 < cols; i2++)
-            hA[i1 + i2 * lda] = hipFloatComplex((float)(rand() % 10), 0.0f);
+            hA[i1 + i2 * lda] = make_hipFloatComplex((float)(rand() % 10), 0.0f);
 
     hipFloatComplex* dA = nullptr;
     hipFloatComplex* dX = nullptr;
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
     CHECK_HIPBLAS_ERROR(rstatus);
 
     const hipblasFillMode_t uplo   = HIPBLAS_FILL_MODE_UPPER;
-    hipFloatComplex         hAlpha = hipFloatComplex(2.0f, 0.0f);
+    hipFloatComplex         hAlpha = make_hipFloatComplex(2.0f, 0.0f);
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(
@@ -144,11 +144,12 @@ int main(int argc, char** argv)
     bool fail = false;
     for(size_t i1 = 0; i1 < rows; i1++)
         for(size_t i2 = 0; i2 < cols; i2++)
-            if(i1 <= i2
-               && hResult[i1 + i2 * lda]
-                      != hipCaddf(hA[i1 + i2 * lda], hipFloatComplex(4.0f * hX[i1 * incx].x, 0.0f)))
+        {
+            hipFloatComplex tmp
+                = hipCaddf(hA[i1 + i2 * lda], make_hipFloatComplex(4.0 * hX[i1 * incx].x, 0.0f));
+            if(i1 <= i2 && (hResult[i1 + i2 * lda].x != tmp.x || hResult[i1 + i2 * lda].y != tmp.y))
                 fail = true;
-
+        }
     CHECK_HIP_ERROR(hipFree(dA));
     CHECK_HIP_ERROR(hipFree(dX));
     CHECK_HIP_ERROR(hipFree(dY));
