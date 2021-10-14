@@ -8,6 +8,7 @@ add_executable( example-sscal example_sscal.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
 add_executable( example-c example-c.c ${hipblas_samples_common} )
+add_executable( example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
 
 if(NOT WIN32)
     #add_executable( example-sscal-fortran example_sscal_fortran.f90 )
@@ -27,7 +28,7 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c )
+foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c;example-hip-complex-her2 )
 
   # External header includes included as SYSTEM files
   target_include_directories( ${exe}
