@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -15,9 +15,9 @@
 int main()
 {
 
-    int             N      = 10240;
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-    float           alpha  = 10.0;
+    int             N = 10240;
+    hipblasStatus_t status;
+    float           alpha = 10.0;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     std::vector<float> hx(N);
@@ -52,6 +52,8 @@ int main()
     status = hipblasSscal(handle, N, &alpha, dx, 1);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
+        hipFree(dx);
+        hipblasDestroy(handle);
         return status;
     }
 
