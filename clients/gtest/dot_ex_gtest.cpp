@@ -96,9 +96,7 @@ protected:
 
 Arguments setup_dot_ex_arguments(dot_ex_tuple tup)
 {
-    Arguments arg;
-    arg.N                                     = std::get<0>(tup);
-    int         N                             = std::get<0>(tup);
+    Arguments   arg;
     vector<int> incx_incy                     = std::get<1>(tup);
     arg.stride_scale                          = std::get<2>(tup);
     arg.batch_count                           = std::get<3>(tup);
