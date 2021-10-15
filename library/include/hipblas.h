@@ -362,7 +362,28 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSetAtomicsMode(hipblasHandle_t      handle
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t       handle,
                                                      hipblasAtomicsMode_t* atomics_mode);
 
-// amax
+/*! \brief BLAS Level 1 API
+
+    \details
+    amax finds the first index of the element of maximum magnitude of a vector x.
+    vector
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in x.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of y.
+    @param[inout]
+    result
+              device pointer or host pointer to store the amax index.
+              return is 0.0 if n, incx<=0.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int* result);
 
