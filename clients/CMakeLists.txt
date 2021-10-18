@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2020 Advanced Micro Devices, Inc.
+# Copyright 2016-2021 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # The ROCm platform requires Ubuntu 16.04 or Fedora 24, which has cmake 3.5
@@ -29,22 +29,24 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 include( build-options )
 
-set(hipblas_f90_source_clients
-  include/hipblas_fortran.f90
-)
+if( NOT WIN32 )
+    set(hipblas_f90_source_clients
+      include/hipblas_fortran.f90
+    )
 
-set(hipblas_f90_source_clients_solver
-  include/hipblas_fortran_solver.f90
-)
+    set(hipblas_f90_source_clients_solver
+  include/hipblas_fortran_solver.f90)
+endif()
 
 if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_SAMPLES )
-  if( BUILD_WITH_SOLVER)
-    add_library(hipblas_fortran_client ${hipblas_f90_source_clients} ${hipblas_f90_source_clients_solver})
-  else()
-    add_library(hipblas_fortran_client ${hipblas_f90_source_clients})
+  if( NOT WIN32 )
+    if( BUILD_WITH_SOLVER )
+      add_library(hipblas_fortran_client ${hipblas_f90_source_clients} ${hipblas_f90_source_clients_solver})
+    else()
+      add_library(hipblas_fortran_client ${hipblas_f90_source_clients})
+    endif()
+    add_dependencies(hipblas_fortran_client hipblas_fortran)
   endif()
-
-  add_dependencies(hipblas_fortran_client hipblas_fortran)
   include_directories(${CMAKE_BINARY_DIR}/include)
 endif( )
 

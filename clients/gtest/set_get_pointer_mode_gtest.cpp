@@ -1,10 +1,12 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
 #include "hipblas.h"
+#ifdef GOOGLE_TEST
 #include <gtest/gtest.h>
+#endif
 #include <stdexcept>
 //#include "utility.h"
 
@@ -24,13 +26,12 @@ README: This file contains testers to verify the correctness of
 
 TEST(hipblas_set_pointer, hipblas_get_pointer)
 {
-    hipblasStatus_t      status = HIPBLAS_STATUS_SUCCESS;
-    hipblasPointerMode_t mode   = HIPBLAS_POINTER_MODE_DEVICE;
+    hipblasPointerMode_t mode = HIPBLAS_POINTER_MODE_DEVICE;
 
     hipblasHandle_t handle;
     hipblasCreate(&handle);
 
-    status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
+    hipblasStatus_t status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
     EXPECT_EQ(status, HIPBLAS_STATUS_SUCCESS);
 
     status = hipblasGetPointerMode(handle, &mode);

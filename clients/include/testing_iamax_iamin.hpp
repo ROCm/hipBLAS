@@ -26,17 +26,26 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
     int zero = 0;
 
     // check to prevent undefined memory allocation error
-    if(N < 1 || incx <= 0)
+    if(N <= 0 || incx <= 0)
     {
-        device_vector<T> dx(100);
-        int              hipblas_result;
-        CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, &hipblas_result));
+        device_vector<int> d_hipblas_result_0(1);
+        host_vector<int>   h_hipblas_result_0(1);
+        hipblas_init_nan(h_hipblas_result_0.data(), 1);
+        CHECK_HIP_ERROR(
+            hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(int), hipMemcpyHostToDevice));
 
-        unit_check_general<int>(1, 1, 1, &zero, &hipblas_result);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(func(handle, N, nullptr, incx, d_hipblas_result_0));
+
+        host_vector<int> cpu_0(1);
+        host_vector<int> gpu_0(1);
+        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(int), hipMemcpyDeviceToHost));
+        unit_check_general<int>(1, 1, 1, cpu_0, gpu_0);
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
+    size_t sizeX = size_t(N) * incx;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this
     // practice
@@ -56,22 +65,22 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
     double gpu_time_used;
     int    hipblas_error_host, hipblas_error_device;
 
-    /* =====================================================================
-                HIPBLAS
-    =================================================================== */
-    // device_pointer
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, d_hipblas_result));
-
-    CHECK_HIP_ERROR(
-        hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(int), hipMemcpyDeviceToHost));
-
-    // host_pointer
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, &hipblas_result_host));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        // device_pointer
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, d_hipblas_result));
+
+        CHECK_HIP_ERROR(hipMemcpy(
+            &hipblas_result_device, d_hipblas_result, sizeof(int), hipMemcpyDeviceToHost));
+
+        // host_pointer
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, &hipblas_result_host));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

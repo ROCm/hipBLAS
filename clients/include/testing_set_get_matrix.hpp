@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -27,36 +27,11 @@ hipblasStatus_t testing_set_get_matrix(const Arguments& argus)
     int ldb  = argus.ldb;
     int ldc  = argus.ldc;
 
-    hipblasStatus_t status     = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_set = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_get = HIPBLAS_STATUS_SUCCESS;
-
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(rows < 0)
+    if(rows < 0 || cols < 0 || lda <= 0 || ldb <= 0 || ldc <= 0)
     {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
-    }
-    else if(cols < 0)
-    {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
-    }
-    else if(lda <= 0)
-    {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
-    }
-    else if(ldb <= 0)
-    {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
-    }
-    else if(ldc <= 0)
-    {
-        status = HIPBLAS_STATUS_INVALID_VALUE;
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -67,13 +42,8 @@ hipblasStatus_t testing_set_get_matrix(const Arguments& argus)
 
     device_vector<T> dc(cols * ldc);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasBandwidth, cpu_bandwidth;
-    double rocblas_error = 0.0;
-
-    hipblasHandle_t handle;
-
-    hipblasCreate(&handle);
+    double             hipblas_error = 0.0, gpu_time_used = 0.0;
+    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -91,24 +61,12 @@ hipblasStatus_t testing_set_get_matrix(const Arguments& argus)
     };
 
     /* =====================================================================
-           ROCBLAS
+           HIPBLAS
     =================================================================== */
+    CHECK_HIPBLAS_ERROR(hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
+    CHECK_HIPBLAS_ERROR(hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
 
-    status_set = hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha.data(), lda, (void*)dc, ldc);
-    status_get = hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb.data(), ldb);
-    if(status_set != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status_set;
-    }
-
-    if(status_get != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status_get;
-    }
-
-    if(argus.unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
            CPU BLAS
@@ -127,10 +85,40 @@ hipblasStatus_t testing_set_get_matrix(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(rows, cols, ldb, hb.data(), hb_ref.data());
+            unit_check_general<T>(rows, cols, ldb, hb, hb_ref);
+        }
+        if(argus.norm_check)
+        {
+            hipblas_error = norm_check_general<T>('F', rows, cols, ldb, hb, hb_ref);
         }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(
+                hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
+            CHECK_HIPBLAS_ERROR(
+                hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_M, e_N, e_lda, e_ldb, e_ldc>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            ArgumentLogging::NA_value,
+            set_get_matrix_gbyte_count<T>(rows, cols),
+            hipblas_error);
+    }
+
     return HIPBLAS_STATUS_SUCCESS;
 }

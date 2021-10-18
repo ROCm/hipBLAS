@@ -7,7 +7,6 @@
 #include "testing_axpy_ex.hpp"
 #include "testing_axpy_strided_batched_ex.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -19,7 +18,7 @@ using ::testing::ValuesIn;
 using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
-typedef std::tuple<int, double, vector<int>, double, int, vector<hipblasDatatype_t>, bool>
+typedef std::tuple<int, vector<double>, vector<int>, double, int, vector<hipblasDatatype_t>, bool>
     axpy_ex_tuple;
 
 /* =====================================================================
@@ -55,16 +54,18 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 
 const int N_range[] = {-1, 10, 500, 1000, 7111};
 
-// vector of vector, each pair is a {alpha, beta};
+// vector of vector, each pair is a {alpha, alphai};
 // add/delete this list in pairs, like {2.0, 4.0}
-const double alpha_range[] = {1.0, 2.0};
+const vector<vector<double>> alpha_range = {{1.0, 2.0}};
 
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 2}
-// incx , incy must > 0, otherwise there is no real computation taking place,
-// but throw a message, which will still be detected by gtest
+// negative increments use absolute value for comparisons, so
+// some combinations may not work as expected. {-1, -1} as done
+// here is fine
 const vector<vector<int>> incx_incy_range = {
     {1, 1},
+    {2, 3},
     {-1, -1},
 };
 
@@ -104,7 +105,8 @@ Arguments setup_axpy_ex_arguments(axpy_ex_tuple tup)
     Arguments arg;
 
     arg.N                                     = std::get<0>(tup);
-    arg.alpha                                 = std::get<1>(tup);
+    arg.alpha                                 = std::get<1>(tup)[0];
+    arg.alphai                                = std::get<1>(tup)[1];
     arg.incx                                  = std::get<2>(tup)[0];
     arg.incy                                  = std::get<2>(tup)[1];
     arg.stride_scale                          = std::get<3>(tup);

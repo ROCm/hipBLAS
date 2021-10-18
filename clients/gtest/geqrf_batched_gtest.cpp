@@ -1,11 +1,10 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
 #include "testing_geqrf_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -65,7 +64,7 @@ TEST_P(geqrf_batched_gtest, geqrf_batched_gtest_float)
 
     Arguments arg = setup_geqrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_batched<float, float>(arg);
+    hipblasStatus_t status = testing_geqrf_batched<float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -87,7 +86,7 @@ TEST_P(geqrf_batched_gtest, geqrf_batched_gtest_double)
 
     Arguments arg = setup_geqrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_batched<double, double>(arg);
+    hipblasStatus_t status = testing_geqrf_batched<double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -109,7 +108,7 @@ TEST_P(geqrf_batched_gtest, geqrf_batched_gtest_float_complex)
 
     Arguments arg = setup_geqrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_geqrf_batched<hipblasComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -131,7 +130,7 @@ TEST_P(geqrf_batched_gtest, geqrf_batched_gtest_double_complex)
 
     Arguments arg = setup_geqrf_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_geqrf_batched<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

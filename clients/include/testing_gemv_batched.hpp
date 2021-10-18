@@ -27,9 +27,9 @@ hipblasStatus_t testing_gemv_batched(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    int A_size = lda * N;
-    int X_size;
-    int Y_size;
+    size_t A_size = size_t(lda) * N;
+    size_t dim_x;
+    size_t dim_y;
 
     int batch_count = argus.batch_count;
 
@@ -37,29 +37,41 @@ hipblasStatus_t testing_gemv_batched(const Arguments& argus)
 
     if(transA == HIPBLAS_OP_N)
     {
-        X_size = N;
-        Y_size = M;
+        dim_x = N;
+        dim_y = M;
     }
     else
     {
-        X_size = M;
-        Y_size = N;
-    }
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-
-    // argument sanity check, quick return if input parameters are invalid before allocating invalid
-    // memory
-    if(M < 0 || N < 0 || lda < 0 || incx <= 0 || incy <= 0 || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        dim_x = M;
+        dim_y = N;
     }
 
     hipblasLocalHandle handle(argus);
+
+    // argument sanity check, quick return if input parameters are invalid before allocating invalid
+    // memory
+    bool invalid_size = M < 0 || N < 0 || lda < M || lda < 1 || !incx || !incy || batch_count < 0;
+    if(invalid_size || !M || !N || !batch_count)
+    {
+        hipblasStatus_t actual = hipblasGemvBatchedFn(handle,
+                                                      transA,
+                                                      M,
+                                                      N,
+                                                      nullptr,
+                                                      nullptr,
+                                                      lda,
+                                                      nullptr,
+                                                      incx,
+                                                      nullptr,
+                                                      nullptr,
+                                                      incy,
+                                                      batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
+    }
+
+    int abs_incy = incy >= 0 ? incy : -incy;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
@@ -68,16 +80,16 @@ hipblasStatus_t testing_gemv_batched(const Arguments& argus)
 
     // arrays of pointers-to-host on host
     host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hx(X_size, incx, batch_count);
-    host_batch_vector<T> hy(Y_size, incy, batch_count);
-    host_batch_vector<T> hy_cpu(Y_size, incy, batch_count);
-    host_batch_vector<T> hy_host(Y_size, incy, batch_count);
-    host_batch_vector<T> hy_device(Y_size, incy, batch_count);
+    host_batch_vector<T> hx(dim_x, incx, batch_count);
+    host_batch_vector<T> hy(dim_y, incy, batch_count);
+    host_batch_vector<T> hy_cpu(dim_y, incy, batch_count);
+    host_batch_vector<T> hy_host(dim_y, incy, batch_count);
+    host_batch_vector<T> hy_device(dim_y, incy, batch_count);
 
     // device pointers
     device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dx(X_size, incx, batch_count);
-    device_batch_vector<T> dy(Y_size, incy, batch_count);
+    device_batch_vector<T> dx(dim_x, incx, batch_count);
+    device_batch_vector<T> dy(dim_y, incy, batch_count);
     device_vector<T>       d_alpha(1);
     device_vector<T>       d_beta(1);
 
@@ -150,15 +162,15 @@ hipblasStatus_t testing_gemv_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, Y_size, batch_count, incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, Y_size, batch_count, incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, dim_y, batch_count, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, dim_y, batch_count, abs_incy, hy_cpu, hy_device);
         }
         if(argus.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, Y_size, incy, hy_cpu, hy_host, batch_count);
+                = norm_check_general<T>('F', 1, dim_y, abs_incy, hy_cpu, hy_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', 1, Y_size, incy, hy_cpu, hy_device, batch_count);
+                = norm_check_general<T>('F', 1, dim_y, abs_incy, hy_cpu, hy_device, batch_count);
         }
     }
 

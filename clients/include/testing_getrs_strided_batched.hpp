@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -12,9 +12,10 @@
 
 using namespace std;
 
-template <typename T, typename U>
+template <typename T>
 hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
 {
+    using U      = real_t<T>;
     bool FORTRAN = argus.fortran;
     auto hipblasGetrsStridedBatchedFn
         = FORTRAN ? hipblasGetrsStridedBatched<T, true> : hipblasGetrsStridedBatched<T, false>;
@@ -25,14 +26,12 @@ hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
     int    batch_count  = argus.batch_count;
     double stride_scale = argus.stride_scale;
 
-    hipblasStride strideA   = lda * N * stride_scale;
-    hipblasStride strideB   = ldb * 1 * stride_scale;
-    hipblasStride strideP   = N * stride_scale;
-    int           A_size    = strideA * batch_count;
-    int           B_size    = strideB * batch_count;
-    int           Ipiv_size = strideP * batch_count;
-
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+    hipblasStride strideA   = size_t(lda) * N * stride_scale;
+    hipblasStride strideB   = size_t(ldb) * 1 * stride_scale;
+    hipblasStride strideP   = size_t(N) * stride_scale;
+    size_t        A_size    = strideA * batch_count;
+    size_t        B_size    = strideB * batch_count;
+    size_t        Ipiv_size = strideP * batch_count;
 
     // Check to prevent memory allocation error
     if(N < 0 || lda < N || ldb < N || batch_count < 0)
@@ -57,12 +56,8 @@ hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
     device_vector<T>   dB(B_size);
     device_vector<int> dIpiv(Ipiv_size);
 
-    double gpu_time_used, cpu_time_used;
-    double hipblasGflops, cblas_gflops;
-    double rocblas_error;
-
-    hipblasHandle_t handle;
-    hipblasCreate(&handle);
+    double             gpu_time_used, hipblas_error;
+    hipblasLocalHandle handle(argus);
 
     // Initial hA, hB, hX on CPU
     srand(1);
@@ -97,39 +92,43 @@ hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
         if(info != 0)
         {
             cerr << "LU decomposition failed" << endl;
-            return HIPBLAS_STATUS_SUCCESS;
+            return HIPBLAS_STATUS_INTERNAL_ERROR;
         }
     }
 
     // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), B_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-
-    status = hipblasGetrsStridedBatchedFn(
-        handle, op, N, 1, dA, lda, strideA, dIpiv, strideP, dB, ldb, strideB, &info, batch_count);
-
-    if(status != HIPBLAS_STATUS_SUCCESS)
+    if(argus.unit_check || argus.norm_check)
     {
-        hipblasDestroy(handle);
-        return status;
-    }
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasGetrsStridedBatchedFn(handle,
+                                                         op,
+                                                         N,
+                                                         1,
+                                                         dA,
+                                                         lda,
+                                                         strideA,
+                                                         dIpiv,
+                                                         strideP,
+                                                         dB,
+                                                         ldb,
+                                                         strideB,
+                                                         &info,
+                                                         batch_count));
 
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hB1.data(), dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hB1.data(), dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
 
-    if(argus.unit_check)
-    {
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_getrs('N',
@@ -140,19 +139,54 @@ hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
                         hIpiv.data() + b * strideP,
                         hB.data() + b * strideB,
                         ldb);
+        }
 
-            if(argus.unit_check)
-            {
-                U      eps       = std::numeric_limits<U>::epsilon();
-                double tolerance = N * eps * 100;
+        hipblas_error = norm_check_general<T>('F', N, 1, ldb, strideB, hB, hB1, batch_count);
 
-                double e = norm_check_general<T>(
-                    'F', N, 1, ldb, hB.data() + b * strideB, hB1.data() + b * strideB);
-                unit_check_error(e, tolerance);
-            }
+        if(argus.unit_check)
+        {
+            U      eps       = std::numeric_limits<U>::epsilon();
+            double tolerance = N * eps * 100;
+
+            unit_check_error(hipblas_error, tolerance);
         }
     }
 
-    hipblasDestroy(handle);
+    if(argus.timing)
+    {
+        hipStream_t stream;
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+
+        int runs = argus.cold_iters + argus.iters;
+        for(int iter = 0; iter < runs; iter++)
+        {
+            if(iter == argus.cold_iters)
+                gpu_time_used = get_time_us_sync(stream);
+
+            CHECK_HIPBLAS_ERROR(hipblasGetrsStridedBatchedFn(handle,
+                                                             op,
+                                                             N,
+                                                             1,
+                                                             dA,
+                                                             lda,
+                                                             strideA,
+                                                             dIpiv,
+                                                             strideP,
+                                                             dB,
+                                                             ldb,
+                                                             strideB,
+                                                             &info,
+                                                             batch_count));
+        }
+        gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
+
+        ArgumentModel<e_N, e_lda, e_stride_a, e_ldb, e_stride_b, e_batch_count>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            getrs_gflop_count<T>(N, 1),
+            ArgumentLogging::NA_value,
+            hipblas_error);
+    }
     return HIPBLAS_STATUS_SUCCESS;
 }

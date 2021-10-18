@@ -7,7 +7,6 @@
 #include "testing_rot_ex.hpp"
 #include "testing_rot_strided_batched_ex.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -56,8 +55,9 @@ const int N_range[] = {-1, 10, 500, 1000, 7111, 10000};
 
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 2}
-// incx , incy must > 0, otherwise there is no real computation taking place,
-// but throw a message, which will still be detected by gtest
+// negative increments use absolute value for comparisons, so
+// some combinations may not work as expected. {-1, -1} as done
+// here is fine
 const vector<vector<int>> incx_incy_range = {
     {1, 1},
     {-1, -1},

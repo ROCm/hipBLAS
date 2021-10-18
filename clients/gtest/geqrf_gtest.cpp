@@ -5,7 +5,6 @@
 
 #include "testing_geqrf.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -67,7 +66,7 @@ TEST_P(geqrf_gtest, geqrf_gtest_float)
 
     Arguments arg = setup_geqrf_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf<float, float>(arg);
+    hipblasStatus_t status = testing_geqrf<float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -89,7 +88,7 @@ TEST_P(geqrf_gtest, geqrf_gtest_double)
 
     Arguments arg = setup_geqrf_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf<double, double>(arg);
+    hipblasStatus_t status = testing_geqrf<double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -111,7 +110,7 @@ TEST_P(geqrf_gtest, geqrf_gtest_float_complex)
 
     Arguments arg = setup_geqrf_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_geqrf<hipblasComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -133,7 +132,7 @@ TEST_P(geqrf_gtest, geqrf_gtest_double_complex)
 
     Arguments arg = setup_geqrf_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_geqrf<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
