@@ -15,6 +15,7 @@
 #include "hipblas_datatype2string.hpp"
 #include <cmath>
 #include <immintrin.h>
+#include <iostream>
 #include <random>
 #include <type_traits>
 #include <vector>
@@ -22,7 +23,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
+#ifdef GOOGLE_TEST
+#include "gtest/gtest.h"
+#endif
 
 /*!\file
  * \brief provide data initialization, timing, hipblas type <-> lapack char conversion utilities.
@@ -225,6 +228,11 @@ public:
         return std::uniform_int_distribution<T>{}(hipblas_rng);
     }
 
+    explicit operator signed char()
+    {
+        return static_cast<signed char>(std::uniform_int_distribution<int>{}(hipblas_rng));
+    }
+
     // Random NaN double
     explicit operator double()
     {
@@ -261,11 +269,13 @@ public:
         return {double(*this), double(*this)};
     }
 
-    // Random complex integers
-    explicit operator hipblasInt8Complex()
-    {
-        return {int8_t(*this), int8_t(*this)};
-    }
+    // // Currently not needed
+    // // Random complex integers
+    // explicit operator hipblasInt8Complex()
+    // {
+    //     return static_cast<int8_t>(
+    //         std::uniform_int_distribution<unsigned short>(1, 3)(hipblas_rng));
+    // }
 };
 
 /* ============================================================================================ */
@@ -361,6 +371,9 @@ template <typename T>
 void hipblas_packInt8(
     std::vector<T>& A, size_t M, size_t N, size_t lda, size_t batch_count = 1, size_t stride_a = 0)
 {
+    if(N % 4 != 0)
+        std::cerr << "ERROR: dimension must be a multiple of 4 in order to pack" << std::endl;
+
     std::vector<T> temp(A);
     for(size_t b = 0; b < batch_count; b++)
         for(size_t colBase = 0; colBase < N; colBase += 4)
@@ -368,6 +381,18 @@ void hipblas_packInt8(
                 for(size_t colOffset = 0; colOffset < 4; colOffset++)
                     A[(colBase * lda + 4 * row) + colOffset + (stride_a * b)]
                         = temp[(colBase + colOffset) * lda + row + (stride_a * b)];
+}
+
+template <typename T>
+void hipblas_packInt8(T* A, const T* temp, size_t M, size_t N, size_t lda)
+{
+    if(N % 4 != 0)
+        std::cerr << "ERROR: dimension must be a multiple of 4 in order to pack" << std::endl;
+
+    for(size_t colBase = 0; colBase < N; colBase += 4)
+        for(size_t row = 0; row < lda; row++)
+            for(size_t colOffset = 0; colOffset < 4; colOffset++)
+                A[(colBase * lda + 4 * row) + colOffset] = temp[(colBase + colOffset) * lda + row];
 }
 
 /* ============================================================================================ */
@@ -687,8 +712,8 @@ void set_device(int device_id);
 int getArch();
 
 /* query what rocBLAS recommends for int8 layout. We are /always/ passing in the flag which
-/* rocBLAS recommends, thus we need to know what layout to format our data in our tests.
-/* returns true if should be packed. */
+ * rocBLAS recommends, thus we need to know what layout to format our data in our tests.
+ * returns true if should be packed. */
 bool layout_pack_int8();
 
 /* ============================================================================================ */

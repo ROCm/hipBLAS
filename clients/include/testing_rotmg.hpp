@@ -23,51 +23,49 @@ hipblasStatus_t testing_rotmg(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    host_vector<T> params(9);
+    host_vector<T> hparams(9);
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
     // Initial data on CPU
     srand(1);
-    hipblas_init<T>(params, 1, 9, 1);
+    hipblas_init<T>(hparams, 1, 9, 1);
 
-    // CPU BLAS
-    host_vector<T> cparams = params;
-    cblas_rotmg<T>(&cparams[0], &cparams[1], &cparams[2], &cparams[3], &cparams[4]);
+    host_vector<T>   cparams   = hparams;
+    host_vector<T>   hparams_d = hparams;
+    device_vector<T> dparams(9);
+    CHECK_HIP_ERROR(hipMemcpy(dparams, hparams, 9 * sizeof(T), hipMemcpyHostToDevice));
 
-    // Test host
+    if(arg.unit_check || arg.norm_check)
     {
-        host_vector<T> hparams = params;
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         CHECK_HIPBLAS_ERROR(hipblasRotmgFn(
             handle, &hparams[0], &hparams[1], &hparams[2], &hparams[3], &hparams[4]));
 
-        if(arg.unit_check)
-            near_check_general(1, 9, 1, cparams.data(), hparams.data(), rel_error);
-        if(arg.norm_check)
-            hipblas_error_host = norm_check_general<T>('F', 1, 9, 1, cparams, hparams);
-    }
-
-    // Test device
-    {
-        device_vector<T> dparams(9);
-        CHECK_HIP_ERROR(hipMemcpy(dparams, params, 9 * sizeof(T), hipMemcpyHostToDevice));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         CHECK_HIPBLAS_ERROR(
             hipblasRotmgFn(handle, dparams, dparams + 1, dparams + 2, dparams + 3, dparams + 4));
-        host_vector<T> hparams(9);
-        CHECK_HIP_ERROR(hipMemcpy(hparams, dparams, 9 * sizeof(T), hipMemcpyDeviceToHost));
+
+        CHECK_HIP_ERROR(hipMemcpy(hparams_d, dparams, 9 * sizeof(T), hipMemcpyDeviceToHost));
+
+        // CPU BLAS
+        cblas_rotmg<T>(&cparams[0], &cparams[1], &cparams[2], &cparams[3], &cparams[4]);
 
         if(arg.unit_check)
+        {
             near_check_general(1, 9, 1, cparams.data(), hparams.data(), rel_error);
+            near_check_general(1, 9, 1, cparams.data(), hparams_d.data(), rel_error);
+        }
+
         if(arg.norm_check)
-            hipblas_error_device = norm_check_general<T>('F', 1, 9, 1, cparams, hparams);
+        {
+            hipblas_error_host   = norm_check_general<T>('F', 1, 9, 1, cparams, hparams);
+            hipblas_error_device = norm_check_general<T>('F', 1, 9, 1, cparams, hparams_d);
+        }
     }
 
     if(arg.timing)
     {
-        device_vector<T> dparams(9);
-        CHECK_HIP_ERROR(hipMemcpy(dparams, params, 9 * sizeof(T), hipMemcpyHostToDevice));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));

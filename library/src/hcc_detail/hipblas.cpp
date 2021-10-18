@@ -15123,8 +15123,12 @@ hipblasStatus_t hipblasSgetrf(
     hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
-        rocsolver_sgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
+            rocsolver_sgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
+            rocsolver_sgetrf_npvt((rocblas_handle)handle, n, n, A, lda, info)));
 }
 catch(...)
 {
@@ -15135,8 +15139,12 @@ hipblasStatus_t hipblasDgetrf(
     hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
-        rocsolver_dgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
+            rocsolver_dgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
+            rocsolver_dgetrf_npvt((rocblas_handle)handle, n, n, A, lda, info)));
 }
 catch(...)
 {
@@ -15147,8 +15155,12 @@ hipblasStatus_t hipblasCgetrf(
     hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_cgetrf(
-        (rocblas_handle)handle, n, n, (rocblas_float_complex*)A, lda, ipiv, info)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_cgetrf(
+            (rocblas_handle)handle, n, n, (rocblas_float_complex*)A, lda, ipiv, info)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_cgetrf_npvt(
+            (rocblas_handle)handle, n, n, (rocblas_float_complex*)A, lda, info)));
 }
 catch(...)
 {
@@ -15163,8 +15175,12 @@ hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
                               int*                  info)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_zgetrf(
-        (rocblas_handle)handle, n, n, (rocblas_double_complex*)A, lda, ipiv, info)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_zgetrf(
+            (rocblas_handle)handle, n, n, (rocblas_double_complex*)A, lda, ipiv, info)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_zgetrf_npvt(
+            (rocblas_handle)handle, n, n, (rocblas_double_complex*)A, lda, info)));
 }
 catch(...)
 {
@@ -15181,8 +15197,12 @@ hipblasStatus_t hipblasSgetrfBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_sgetrf_batched(
-        (rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_sgetrf_batched(
+            (rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_sgetrf_npvt_batched(
+            (rocblas_handle)handle, n, n, A, lda, info, batch_count)));
 }
 catch(...)
 {
@@ -15198,8 +15218,12 @@ hipblasStatus_t hipblasDgetrfBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_dgetrf_batched(
-        (rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_dgetrf_batched(
+            (rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_dgetrf_npvt_batched(
+            (rocblas_handle)handle, n, n, A, lda, info, batch_count)));
 }
 catch(...)
 {
@@ -15215,16 +15239,20 @@ hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle,
                                      const int             batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(
-        rocBLASStatusToHIPStatus(rocsolver_cgetrf_batched((rocblas_handle)handle,
-                                                          n,
-                                                          n,
-                                                          (rocblas_float_complex**)A,
-                                                          lda,
-                                                          ipiv,
-                                                          n,
-                                                          info,
-                                                          batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(
+            rocBLASStatusToHIPStatus(rocsolver_cgetrf_batched((rocblas_handle)handle,
+                                                              n,
+                                                              n,
+                                                              (rocblas_float_complex**)A,
+                                                              lda,
+                                                              ipiv,
+                                                              n,
+                                                              info,
+                                                              batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_cgetrf_npvt_batched(
+            (rocblas_handle)handle, n, n, (rocblas_float_complex**)A, lda, info, batch_count)));
 }
 catch(...)
 {
@@ -15240,16 +15268,20 @@ hipblasStatus_t hipblasZgetrfBatched(hipblasHandle_t             handle,
                                      const int                   batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(
-        rocBLASStatusToHIPStatus(rocsolver_zgetrf_batched((rocblas_handle)handle,
-                                                          n,
-                                                          n,
-                                                          (rocblas_double_complex**)A,
-                                                          lda,
-                                                          ipiv,
-                                                          n,
-                                                          info,
-                                                          batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(
+            rocBLASStatusToHIPStatus(rocsolver_zgetrf_batched((rocblas_handle)handle,
+                                                              n,
+                                                              n,
+                                                              (rocblas_double_complex**)A,
+                                                              lda,
+                                                              ipiv,
+                                                              n,
+                                                              info,
+                                                              batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_zgetrf_npvt_batched(
+            (rocblas_handle)handle, n, n, (rocblas_double_complex**)A, lda, info, batch_count)));
 }
 catch(...)
 {
@@ -15268,8 +15300,12 @@ hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t     handle,
                                             const int           batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_sgetrf_strided_batched(
-        (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_sgetrf_strided_batched(
+            (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_sgetrf_npvt_strided_batched(
+            (rocblas_handle)handle, n, n, A, lda, strideA, info, batch_count)));
 }
 catch(...)
 {
@@ -15287,8 +15323,12 @@ hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t     handle,
                                             const int           batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_dgetrf_strided_batched(
-        (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_dgetrf_strided_batched(
+            (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_dgetrf_npvt_strided_batched(
+            (rocblas_handle)handle, n, n, A, lda, strideA, info, batch_count)));
 }
 catch(...)
 {
@@ -15306,17 +15346,28 @@ hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     handle,
                                             const int           batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(
-        rocBLASStatusToHIPStatus(rocsolver_cgetrf_strided_batched((rocblas_handle)handle,
-                                                                  n,
-                                                                  n,
-                                                                  (rocblas_float_complex*)A,
-                                                                  lda,
-                                                                  strideA,
-                                                                  ipiv,
-                                                                  strideP,
-                                                                  info,
-                                                                  batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(
+            rocBLASStatusToHIPStatus(rocsolver_cgetrf_strided_batched((rocblas_handle)handle,
+                                                                      n,
+                                                                      n,
+                                                                      (rocblas_float_complex*)A,
+                                                                      lda,
+                                                                      strideA,
+                                                                      ipiv,
+                                                                      strideP,
+                                                                      info,
+                                                                      batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
+            rocsolver_cgetrf_npvt_strided_batched((rocblas_handle)handle,
+                                                  n,
+                                                  n,
+                                                  (rocblas_float_complex*)A,
+                                                  lda,
+                                                  strideA,
+                                                  info,
+                                                  batch_count)));
 }
 catch(...)
 {
@@ -15334,17 +15385,28 @@ hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
                                             const int             batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(
-        rocBLASStatusToHIPStatus(rocsolver_zgetrf_strided_batched((rocblas_handle)handle,
-                                                                  n,
-                                                                  n,
-                                                                  (rocblas_double_complex*)A,
-                                                                  lda,
-                                                                  strideA,
-                                                                  ipiv,
-                                                                  strideP,
-                                                                  info,
-                                                                  batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(
+            rocBLASStatusToHIPStatus(rocsolver_zgetrf_strided_batched((rocblas_handle)handle,
+                                                                      n,
+                                                                      n,
+                                                                      (rocblas_double_complex*)A,
+                                                                      lda,
+                                                                      strideA,
+                                                                      ipiv,
+                                                                      strideP,
+                                                                      info,
+                                                                      batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
+            rocsolver_zgetrf_npvt_strided_batched((rocblas_handle)handle,
+                                                  n,
+                                                  n,
+                                                  (rocblas_double_complex*)A,
+                                                  lda,
+                                                  strideA,
+                                                  info,
+                                                  batch_count)));
 }
 catch(...)
 {
@@ -15974,8 +16036,13 @@ hipblasStatus_t hipblasSgetriBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_sgetri_outofplace_batched(
-        (rocblas_handle)handle, n, A, lda, ipiv, n, C, ldc, info, batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_sgetri_outofplace_batched(
+            (rocblas_handle)handle, n, A, lda, ipiv, n, C, ldc, info, batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(
+            rocBLASStatusToHIPStatus(rocsolver_sgetri_npvt_outofplace_batched(
+                (rocblas_handle)handle, n, A, lda, C, ldc, info, batch_count)));
 }
 catch(...)
 {
@@ -15993,8 +16060,13 @@ hipblasStatus_t hipblasDgetriBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_dgetri_outofplace_batched(
-        (rocblas_handle)handle, n, A, lda, ipiv, n, C, ldc, info, batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(rocsolver_dgetri_outofplace_batched(
+            (rocblas_handle)handle, n, A, lda, ipiv, n, C, ldc, info, batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(
+            rocBLASStatusToHIPStatus(rocsolver_dgetri_npvt_outofplace_batched(
+                (rocblas_handle)handle, n, A, lda, C, ldc, info, batch_count)));
 }
 catch(...)
 {
@@ -16012,17 +16084,28 @@ hipblasStatus_t hipblasCgetriBatched(hipblasHandle_t       handle,
                                      const int             batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(
-        rocBLASStatusToHIPStatus(rocsolver_cgetri_outofplace_batched((rocblas_handle)handle,
-                                                                     n,
-                                                                     (rocblas_float_complex**)A,
-                                                                     lda,
-                                                                     ipiv,
-                                                                     n,
-                                                                     (rocblas_float_complex**)C,
-                                                                     ldc,
-                                                                     info,
-                                                                     batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(
+            rocBLASStatusToHIPStatus(rocsolver_cgetri_outofplace_batched((rocblas_handle)handle,
+                                                                         n,
+                                                                         (rocblas_float_complex**)A,
+                                                                         lda,
+                                                                         ipiv,
+                                                                         n,
+                                                                         (rocblas_float_complex**)C,
+                                                                         ldc,
+                                                                         info,
+                                                                         batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
+            rocsolver_cgetri_npvt_outofplace_batched((rocblas_handle)handle,
+                                                     n,
+                                                     (rocblas_float_complex**)A,
+                                                     lda,
+                                                     (rocblas_float_complex**)C,
+                                                     ldc,
+                                                     info,
+                                                     batch_count)));
 }
 catch(...)
 {
@@ -16040,17 +16123,28 @@ hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             handle,
                                      const int                   batch_count)
 try
 {
-    return HIPBLAS_DEMAND_ALLOC(
-        rocBLASStatusToHIPStatus(rocsolver_zgetri_outofplace_batched((rocblas_handle)handle,
-                                                                     n,
-                                                                     (rocblas_double_complex**)A,
-                                                                     lda,
-                                                                     ipiv,
-                                                                     n,
-                                                                     (rocblas_double_complex**)C,
-                                                                     ldc,
-                                                                     info,
-                                                                     batch_count)));
+    if(ipiv != nullptr)
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
+            rocsolver_zgetri_outofplace_batched((rocblas_handle)handle,
+                                                n,
+                                                (rocblas_double_complex**)A,
+                                                lda,
+                                                ipiv,
+                                                n,
+                                                (rocblas_double_complex**)C,
+                                                ldc,
+                                                info,
+                                                batch_count)));
+    else
+        return HIPBLAS_DEMAND_ALLOC(rocBLASStatusToHIPStatus(
+            rocsolver_zgetri_npvt_outofplace_batched((rocblas_handle)handle,
+                                                     n,
+                                                     (rocblas_double_complex**)A,
+                                                     lda,
+                                                     (rocblas_double_complex**)C,
+                                                     ldc,
+                                                     info,
+                                                     batch_count)));
 }
 catch(...)
 {

@@ -27,6 +27,14 @@ constexpr double set_get_matrix_gbyte_count(int m, int n)
     return (sizeof(T) * m * n * 2.0) / 1e9;
 }
 
+/* \brief byte counts of SET/GET_VECTOR/_ASYNC */
+template <typename T>
+constexpr double set_get_vector_gbyte_count(int n)
+{
+    // calls done in pairs for timing so x 2.0
+    return (sizeof(T) * n * 2.0) / 1e9;
+}
+
 /*
  * ===========================================================================
  *    level 1 BLAS
@@ -329,8 +337,15 @@ constexpr double trsm_gbyte_count(int m, int n, int k)
 template <typename T>
 constexpr double syrk_gbyte_count(int n, int k)
 {
-    int k1 = k < n ? k : n - 1;
     return (sizeof(T) * (tri_count(n) + n * k)) / 1e9;
+}
+
+/* \brief byte counts of SYR2K */
+template <typename T>
+constexpr double syr2k_gbyte_count(int n, int k)
+{
+    // Read A, B, C, write C
+    return (sizeof(T) * (2 * n * k + 2 * tri_count(n)));
 }
 
 /* \brief byte counts of HERK */
@@ -338,6 +353,66 @@ template <typename T>
 constexpr double herk_gbyte_count(int n, int k)
 {
     return syrk_gbyte_count<T>(n, k);
+}
+
+/* \brief byte counts of SYRKX */
+template <typename T>
+constexpr double syrkx_gbyte_count(int n, int k)
+{
+    return (sizeof(T) * (tri_count(n) + 2 * (n * k))) / 1e9;
+}
+/* \brief byte counts of HER2K */
+template <typename T>
+constexpr double her2k_gbyte_count(int n, int k)
+{
+    return syr2k_gbyte_count<T>(n, k);
+}
+
+/* \brief byte counts of HERKX */
+template <typename T>
+constexpr double herkx_gbyte_count(int n, int k)
+{
+    return syrkx_gbyte_count<T>(n, k);
+}
+
+/* \brief byte counts of DGMM */
+template <typename T>
+constexpr double dgmm_gbyte_count(int n, int m, int k)
+{
+    // read A, read x, write C
+    return (sizeof(T) * (2 * m * n) + (k));
+}
+
+/* \brief byte counts of GEAM */
+template <typename T>
+constexpr double geam_gbyte_count(int n, int m)
+{
+    // read A, read B, write to C
+    return (sizeof(T) * 3 * m * n);
+}
+
+/* \brief byte counts of HEMM */
+template <typename T>
+constexpr double hemm_gbyte_count(int n, int m, int k)
+{
+    // read A, B, C, write C
+    return (sizeof(T) * (3 * m * n + tri_count(k)));
+}
+
+/* \brief byte counts of SYMM */
+template <typename T>
+constexpr double symm_gbyte_count(int n, int m, int k)
+{
+    // read A, B, C, write C
+    return (sizeof(T) * (3 * m * n + tri_count(k)));
+}
+
+/* \brief byte counts of TRTRI */
+template <typename T>
+constexpr double trtri_gbyte_count(int n)
+{
+    // read A, write invA
+    return (sizeof(T) * (2 * tri_count(n)));
 }
 
 #endif /* _HIPBLAS_BYTES_H_ */

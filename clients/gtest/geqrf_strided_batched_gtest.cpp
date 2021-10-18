@@ -5,7 +5,6 @@
 
 #include "testing_geqrf_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -67,7 +66,7 @@ TEST_P(geqrf_strided_batched_gtest, geqrf_strided_batched_gtest_float)
 
     Arguments arg = setup_geqrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_strided_batched<float, float>(arg);
+    hipblasStatus_t status = testing_geqrf_strided_batched<float>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -89,7 +88,7 @@ TEST_P(geqrf_strided_batched_gtest, geqrf_strided_batched_gtest_double)
 
     Arguments arg = setup_geqrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_strided_batched<double, double>(arg);
+    hipblasStatus_t status = testing_geqrf_strided_batched<double>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -111,7 +110,7 @@ TEST_P(geqrf_strided_batched_gtest, geqrf_strided_batched_gtest_float_complex)
 
     Arguments arg = setup_geqrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_strided_batched<hipblasComplex, float>(arg);
+    hipblasStatus_t status = testing_geqrf_strided_batched<hipblasComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -133,7 +132,7 @@ TEST_P(geqrf_strided_batched_gtest, geqrf_strided_batched_gtest_double_complex)
 
     Arguments arg = setup_geqrf_strided_batched_arguments(GetParam());
 
-    hipblasStatus_t status = testing_geqrf_strided_batched<hipblasDoubleComplex, double>(arg);
+    hipblasStatus_t status = testing_geqrf_strided_batched<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

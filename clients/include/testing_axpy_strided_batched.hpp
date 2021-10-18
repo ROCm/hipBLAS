@@ -25,24 +25,28 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
     int    incy         = argus.incy;
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
-    T      alpha        = argus.alpha;
+    T      alpha        = argus.get_alpha<T>();
 
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
 
-    hipblasStride stridex = N * abs_incx * stride_scale;
-    hipblasStride stridey = N * abs_incy * stride_scale;
-    int           sizeX   = stridex * batch_count;
-    int           sizeY   = stridey * batch_count;
+    hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
+    size_t        sizeX   = stridex * batch_count;
+    size_t        sizeY   = stridey * batch_count;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
+
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || !incx || !incy || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
-    {
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
+            handle, N, nullptr, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
@@ -60,8 +64,6 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblasLocalHandle handle(argus);
-
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hx, 1, N, abs_incx, stridex, batch_count);
@@ -78,24 +80,25 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
         hipMemcpy(dy_device, hy_device.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
-        handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
-        handle, N, &alpha, dx, incx, stridex, dy_host, incy, stridey, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hy_device.data(), dy_device, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
+            handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
+            handle, N, &alpha, dx, incx, stridex, dy_host, incy, stridey, batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(
+            hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hy_device.data(), dy_device, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -110,16 +113,16 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
         if(argus.unit_check)
         {
             unit_check_general<T>(
-                1, N, batch_count, abs_incx, stridex, hy_cpu.data(), hy_host.data());
+                1, N, batch_count, abs_incy, stridex, hy_cpu.data(), hy_host.data());
             unit_check_general<T>(
                 1, N, batch_count, abs_incy, stridey, hy_cpu.data(), hy_device.data());
         }
         if(argus.norm_check)
         {
             hipblas_error_host = norm_check_general<T>(
-                'F', 1, N, 1, stridey, hy_cpu.data(), hy_host.data(), batch_count);
+                'F', 1, N, abs_incy, stridey, hy_cpu.data(), hy_host.data(), batch_count);
             hipblas_error_device = norm_check_general<T>(
-                'F', 1, N, 1, stridey, hy_cpu.data(), hy_device.data(), batch_count);
+                'F', 1, N, abs_incy, stridey, hy_cpu.data(), hy_device.data(), batch_count);
         }
     } // end of if unit check
 

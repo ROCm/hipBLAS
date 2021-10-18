@@ -39,6 +39,10 @@
 #define HIPBLAS_CLANG_STATIC
 #endif
 
+#ifndef HIPBLAS_DEPRECATED_MSG
+#define HIPBLAS_DEPRECATED_MSG(MSG) __attribute__((deprecated(#MSG)))
+#endif
+
 typedef void* hipblasHandle_t;
 
 typedef uint16_t hipblasHalf;
@@ -52,49 +56,19 @@ typedef struct hipblasBfloat16
     uint16_t data;
 } hipblasBfloat16;
 
-typedef struct hipblasInt8Complex
-{
-#ifndef __cplusplus
+#if defined(ROCM_MATHLIBS_API_USE_HIP_COMPLEX)
+// Using hip complex types
 
-    hipblasInt8 x, y;
+#include <hip/hip_complex.h>
+
+/*! \brief hip type to represent a complex number with single precision real and imaginary parts. */
+typedef hipFloatComplex hipblasComplex;
+
+/*! \brief hip type to represent a complex number with double precision real and imaginary parts. */
+typedef hipDoubleComplex hipblasDoubleComplex;
 
 #else
-
-private:
-    hipblasInt8 x, y;
-
-public:
-#if __cplusplus >= 201103L
-    hipblasInt8Complex() = default;
-#else
-    hipblasInt8Complex() {}
-#endif
-
-    hipblasInt8Complex(hipblasInt8 r, hipblasInt8 i = 0)
-        : x(r)
-        , y(i)
-    {
-    }
-
-    hipblasInt8 real() const
-    {
-        return x;
-    }
-    hipblasInt8 imag() const
-    {
-        return y;
-    }
-    void real(hipblasInt8 r)
-    {
-        x = r;
-    }
-    void imag(hipblasInt8 i)
-    {
-        y = i;
-    }
-
-#endif
-} hipblasInt8Complex;
+// using internal complex class for API
 
 typedef struct hipblasComplex
 {
@@ -184,6 +158,60 @@ public:
 #endif
 } hipblasDoubleComplex;
 
+// this isn't needed right now
+// typedef struct hipblasInt8Complex
+// {
+// #ifndef __cplusplus
+
+//     hipblasInt8 x, y;
+
+// #else
+
+// private:
+//     hipblasInt8 x, y;
+
+// public:
+// #if __cplusplus >= 201103L
+//     hipblasInt8Complex() = default;
+// #else
+//     hipblasInt8Complex() {}
+// #endif
+
+//     hipblasInt8Complex(hipblasInt8 r, hipblasInt8 i = 0)
+//         : x(r)
+//         , y(i)
+//     {
+//     }
+
+//     hipblasInt8 real() const
+//     {
+//         return x;
+//     }
+//     hipblasInt8 imag() const
+//     {
+//         return y;
+//     }
+//     void real(hipblasInt8 r)
+//     {
+//         x = r;
+//     }
+//     void imag(hipblasInt8 i)
+//     {
+//         y = i;
+//     }
+
+// #endif
+// } hipblasInt8Complex;
+
+#if __cplusplus >= 201103L
+static_assert(std::is_trivial<hipblasComplex>{},
+              "hipblasComplex is not a trivial type, and thus is incompatible with C.");
+static_assert(std::is_trivial<hipblasDoubleComplex>{},
+              "hipblasDoubleComplex is not a trivial type, and thus is incompatible with C.");
+#endif
+
+#endif // using internal complex class for API
+
 #if __cplusplus >= 201103L
 #include <type_traits>
 static_assert(std::is_standard_layout<hipblasComplex>{},
@@ -191,10 +219,6 @@ static_assert(std::is_standard_layout<hipblasComplex>{},
 static_assert(
     std::is_standard_layout<hipblasDoubleComplex>{},
     "hipblasDoubleComplex is not a standard layout type, and thus is incompatible with C.");
-static_assert(std::is_trivial<hipblasComplex>{},
-              "hipblasComplex is not a trivial type, and thus is incompatible with C.");
-static_assert(std::is_trivial<hipblasDoubleComplex>{},
-              "hipblasDoubleComplex is not a trivial type, and thus is incompatible with C.");
 static_assert(sizeof(hipblasComplex) == sizeof(float) * 2
                   && sizeof(hipblasDoubleComplex) == sizeof(double) * 2
                   && sizeof(hipblasDoubleComplex) == sizeof(hipblasComplex) * 2,
@@ -5746,7 +5770,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideC,
                                                           int                         batchCount);
 
-// trmm
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("The hipblasXtrmm API, along with batched versions, will \
+be changing in a future release to allow in-place and out-of-place behavior. This change \
+will introduce an output matrix "C", matching the rocblas_xtrmm_outofplace API and the \
+cublasXtrmm API.")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                                             hipblasSideMode_t  side,
                                             hipblasFillMode_t  uplo,

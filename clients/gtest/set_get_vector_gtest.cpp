@@ -6,7 +6,6 @@
 #include "testing_set_get_vector.hpp"
 #include "testing_set_get_vector_async.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -117,7 +116,7 @@ TEST_P(set_vector_get_vector_gtest, float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.incx <= 0 || arg.incy <= 0 || arg.incx <= 0)
+        if(arg.M < 0 || arg.incx <= 0 || arg.incy <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -142,7 +141,7 @@ TEST_P(set_vector_get_vector_gtest, async_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.M < 0 || arg.incx <= 0 || arg.incy <= 0 || arg.incx <= 0)
+        if(arg.M < 0 || arg.incx <= 0 || arg.incy <= 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

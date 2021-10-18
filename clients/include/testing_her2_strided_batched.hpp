@@ -28,23 +28,41 @@ hipblasStatus_t testing_her2_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasStride     stride_A = lda * N * stride_scale;
-    hipblasStride     stride_x = N * incx * stride_scale;
-    hipblasStride     stride_y = N * incy * stride_scale;
-    int               A_size   = stride_A * batch_count;
-    int               x_size   = stride_x * batch_count;
-    int               y_size   = stride_y * batch_count;
+    int abs_incx = incx >= 0 ? incx : -incx;
+    int abs_incy = incy >= 0 ? incy : -incy;
+
+    hipblasStride     stride_A = size_t(lda) * N * stride_scale;
+    hipblasStride     stride_x = size_t(N) * abs_incx * stride_scale;
+    hipblasStride     stride_y = size_t(N) * abs_incy * stride_scale;
+    size_t            A_size   = stride_A * batch_count;
+    size_t            x_size   = stride_x * batch_count;
+    size_t            y_size   = stride_y * batch_count;
     hipblasFillMode_t uplo     = char2hipblas_fill(argus.uplo_option);
+
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || lda < N || incx == 0 || incy == 0 || batch_count < 0)
+    bool invalid_size = N < 0 || !incx || !incy || lda < N || lda < 1 || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasHer2StridedBatchedFn(handle,
+                                                             uplo,
+                                                             N,
+                                                             nullptr,
+                                                             nullptr,
+                                                             incx,
+                                                             stride_x,
+                                                             nullptr,
+                                                             incy,
+                                                             stride_y,
+                                                             nullptr,
+                                                             lda,
+                                                             stride_A,
+                                                             batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -64,13 +82,11 @@ hipblasStatus_t testing_her2_strided_batched(const Arguments& argus)
 
     T h_alpha = argus.get_alpha<T>();
 
-    hipblasLocalHandle handle(argus);
-
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, N, N, lda, stride_A, batch_count);
-    hipblas_init<T>(hx, 1, N, incx, stride_x, batch_count);
-    hipblas_init<T>(hy, 1, N, incy, stride_y, batch_count);
+    hipblas_init<T>(hx, 1, N, abs_incx, stride_x, batch_count);
+    hipblas_init<T>(hy, 1, N, abs_incy, stride_y, batch_count);
 
     // copy matrix is easy in STL; hA_cpu = hA: save a copy in hA_cpu which will be output of CPU BLAS
     hA_cpu = hA;
@@ -81,48 +97,48 @@ hipblasStatus_t testing_her2_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * y_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasHer2StridedBatchedFn(handle,
-                                                    uplo,
-                                                    N,
-                                                    (T*)&h_alpha,
-                                                    dx,
-                                                    incx,
-                                                    stride_x,
-                                                    dy,
-                                                    incy,
-                                                    stride_y,
-                                                    dA,
-                                                    lda,
-                                                    stride_A,
-                                                    batch_count));
-
-    CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasHer2StridedBatchedFn(handle,
-                                                    uplo,
-                                                    N,
-                                                    d_alpha,
-                                                    dx,
-                                                    incx,
-                                                    stride_x,
-                                                    dy,
-                                                    incy,
-                                                    stride_y,
-                                                    dA,
-                                                    lda,
-                                                    stride_A,
-                                                    batch_count));
-
-    CHECK_HIP_ERROR(hipMemcpy(hA_device.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasHer2StridedBatchedFn(handle,
+                                                        uplo,
+                                                        N,
+                                                        (T*)&h_alpha,
+                                                        dx,
+                                                        incx,
+                                                        stride_x,
+                                                        dy,
+                                                        incy,
+                                                        stride_y,
+                                                        dA,
+                                                        lda,
+                                                        stride_A,
+                                                        batch_count));
+
+        CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasHer2StridedBatchedFn(handle,
+                                                        uplo,
+                                                        N,
+                                                        d_alpha,
+                                                        dx,
+                                                        incx,
+                                                        stride_x,
+                                                        dy,
+                                                        incy,
+                                                        stride_y,
+                                                        dA,
+                                                        lda,
+                                                        stride_A,
+                                                        batch_count));
+
+        CHECK_HIP_ERROR(hipMemcpy(hA_device.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */

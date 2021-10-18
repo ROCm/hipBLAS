@@ -28,6 +28,7 @@ function display_help()
   echo "    [--rocblas-path] Set specific path to custom built rocblas"
   echo "    [--static] Create static library instead of shared library"
   echo "    [--codecoverage] build with code coverage profiling enabled"
+  echo "    [--address-sanitizer] Build with address sanitizer enabled. Uses hipcc as compiler"
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
@@ -177,11 +178,11 @@ install_packages( )
     fi
   fi
 
-  local client_dependencies_ubuntu=( "gfortran" "libboost-program-options-dev" )
-  local client_dependencies_centos=( "devtoolset-7-gcc-gfortran" "boost-devel" )
-  local client_dependencies_centos8=( "gcc-gfortran" "boost-devel" )
-  local client_dependencies_fedora=( "gcc-gfortran" "boost-devel" )
-  local client_dependencies_sles=( "libboost_program_options1_66_0-devel" "pkg-config" "dpkg" )
+  local client_dependencies_ubuntu=( "gfortran" )
+  local client_dependencies_centos=( "devtoolset-7-gcc-gfortran" )
+  local client_dependencies_centos8=( "gcc-gfortran" )
+  local client_dependencies_fedora=( "gcc-gfortran" )
+  local client_dependencies_sles=( "pkg-config" "dpkg" )
 
   case "${ID}" in
     ubuntu)
@@ -283,6 +284,7 @@ build_cuda=false
 build_hip_clang=true
 build_release=true
 build_relocatable=false
+build_address_sanitizer=false
 cmake_prefix_path=/opt/rocm
 rocm_path=/opt/rocm
 compiler=g++
@@ -297,7 +299,7 @@ build_codecoverage=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,relwithdebinfo,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target: --options rhicndgkp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target:,address-sanitizer --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -355,7 +357,11 @@ while true; do
         shift ;;
     --static)
         build_static=true
-	shift ;;
+        shift ;;
+    --address-sanitizer)
+        build_address_sanitizer=true
+        compiler=hipcc
+        shift ;;
     -p|--cmakepp)
         cmake_prefix_path=${2}
         shift 2 ;;
@@ -427,7 +433,7 @@ if [[ "${install_dependencies}" == true ]]; then
   pushd .
     printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into \033[33m/usr/local\033[0m\n"
     mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
-    ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install -DBUILD_BOOST=OFF ../../deps
+    ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install ../../deps
     make -j$(nproc)
     make install
   popd
@@ -480,6 +486,11 @@ pushd .
   # solver
   if [[ "${build_solver}" == false ]]; then
     cmake_client_options="${cmake_client_options} -DBUILD_WITH_SOLVER=OFF"
+  fi
+
+  # sanitizer
+  if [[ "${build_address_sanitizer}" == true ]]; then
+    cmake_common_options="${cmake_common_options} -DBUILD_ADDRESS_SANITIZER=ON"
   fi
 
   if [[ ${custom_target+foo} ]]; then

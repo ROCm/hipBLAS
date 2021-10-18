@@ -7,7 +7,6 @@
 #include "testing_trmv_batched.hpp"
 #include "testing_trmv_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -54,7 +53,7 @@ const vector<vector<int>> matrix_size_range = {
 
 // vector of vector, each element is an {incx}
 const vector<vector<int>> incx_incy_range = {
-    {1}, {0}, {2}
+    {-1}, {0}, {2}
     //     {10, 100}
 };
 

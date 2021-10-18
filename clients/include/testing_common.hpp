@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -13,7 +13,11 @@
 #include "cblas_interface.h"
 #include "flops.hpp"
 #include "hipblas.hpp"
+#ifndef WIN32
 #include "hipblas_fortran.hpp"
+#else
+#include "hipblas_no_fortran.hpp"
+#endif
 #include "hipblas_vector.hpp"
 #include "near.h"
 #include "norm.h"

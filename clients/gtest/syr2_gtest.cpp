@@ -7,7 +7,6 @@
 #include "testing_syr2_batched.hpp"
 #include "testing_syr2_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -46,7 +45,7 @@ const vector<vector<int>> matrix_size_range = {{-1, -1}, {11, 11}, {16, 16}, {32
 
 // vector of vector, each element is an {incx, incy}
 const vector<vector<int>> incx_incy_range = {
-    {-2, -2}, {1, 1}, {0, 0}, {2, 2}
+    {-1, -1}, {0, 0}, {1, 2}
     //     {10, 100}
 };
 

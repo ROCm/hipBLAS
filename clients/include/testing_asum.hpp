@@ -23,13 +23,29 @@ hipblasStatus_t testing_asum(const Arguments& argus)
     int N    = argus.N;
     int incx = argus.incx;
 
+    hipblasLocalHandle handle(argus);
+
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0)
+    if(N <= 0 || incx <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        device_vector<Tr> d_hipblas_result_0(1);
+        host_vector<Tr>   h_hipblas_result_0(1);
+        hipblas_init_nan(h_hipblas_result_0.data(), 1);
+        CHECK_HIP_ERROR(
+            hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr), hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, nullptr, incx, d_hipblas_result_0));
+
+        host_vector<Tr> cpu_0(1);
+        host_vector<Tr> gpu_0(1);
+        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(Tr), hipMemcpyDeviceToHost));
+        unit_check_general<Tr>(1, 1, 1, cpu_0, gpu_0);
+
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
+    size_t sizeX = size_t(N) * incx;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);
@@ -40,8 +56,6 @@ hipblasStatus_t testing_asum(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host = 0, hipblas_error_device = 0;
 
-    hipblasLocalHandle handle(argus);
-
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hx, 1, N, incx);
@@ -49,21 +63,21 @@ hipblasStatus_t testing_asum(const Arguments& argus)
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    // hipblasAsum accept both dev/host pointer for the scalar
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, dx, incx, d_hipblas_result));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, dx, incx, &hipblas_result_host));
-
-    CHECK_HIP_ERROR(
-        hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        // hipblasAsum accept both dev/host pointer for the scalar
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, dx, incx, d_hipblas_result));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, dx, incx, &hipblas_result_host));
+
+        CHECK_HIP_ERROR(
+            hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

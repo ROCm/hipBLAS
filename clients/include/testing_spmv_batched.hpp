@@ -25,26 +25,28 @@ hipblasStatus_t testing_spmv_batched(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    size_t A_size = size_t(M) * (M + 1) / 2;
+    int    abs_incy = incy >= 0 ? incy : -incy;
+    size_t A_size   = size_t(M) * (M + 1) / 2;
 
     int batch_count = argus.batch_count;
 
     hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || incx == 0 || incy == 0 || batch_count < 0)
+    bool invalid_size = M < 0 || !incx || !incy || batch_count < 0;
+    if(invalid_size || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasSpmvBatchedFn(
+            handle, uplo, M, nullptr, nullptr, nullptr, incx, nullptr, nullptr, incy, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();
@@ -80,46 +82,45 @@ hipblasStatus_t testing_spmv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasSpmvBatchedFn(handle,
-                                             uplo,
-                                             M,
-                                             &h_alpha,
-                                             dA.ptr_on_device(),
-                                             dx.ptr_on_device(),
-                                             incx,
-                                             &h_beta,
-                                             dy.ptr_on_device(),
-                                             incy,
-                                             batch_count));
-
-    CHECK_HIP_ERROR(hy_host.transfer_from(dy));
-    CHECK_HIP_ERROR(dy.transfer_from(hy));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasSpmvBatchedFn(handle,
-                                             uplo,
-                                             M,
-                                             d_alpha,
-                                             dA.ptr_on_device(),
-                                             dx.ptr_on_device(),
-                                             incx,
-                                             d_beta,
-                                             dy.ptr_on_device(),
-                                             incy,
-                                             batch_count));
-
-    CHECK_HIP_ERROR(hy_device.transfer_from(dy));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasSpmvBatchedFn(handle,
+                                                 uplo,
+                                                 M,
+                                                 &h_alpha,
+                                                 dA.ptr_on_device(),
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 &h_beta,
+                                                 dy.ptr_on_device(),
+                                                 incy,
+                                                 batch_count));
+
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+        CHECK_HIP_ERROR(dy.transfer_from(hy));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasSpmvBatchedFn(handle,
+                                                 uplo,
+                                                 M,
+                                                 d_alpha,
+                                                 dA.ptr_on_device(),
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 d_beta,
+                                                 dy.ptr_on_device(),
+                                                 incy,
+                                                 batch_count));
+
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy));
+
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_spmv<T>(uplo, M, h_alpha, hA[b], hx[b], incx, h_beta, hy_cpu[b], incy);
@@ -129,15 +130,15 @@ hipblasStatus_t testing_spmv_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, batch_count, incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, M, batch_count, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, M, batch_count, abs_incy, hy_cpu, hy_device);
         }
         if(argus.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_host, batch_count);
+                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', 1, M, incy, hy_cpu, hy_device, batch_count);
+                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_device, batch_count);
         }
     }
 

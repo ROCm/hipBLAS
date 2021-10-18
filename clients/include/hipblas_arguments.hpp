@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #pragma once
@@ -183,6 +183,9 @@ private:
     template <typename T, typename U, std::enable_if_t<!is_complex<T>, int> = 0>
     static T convert_alpha_beta(U r, U i)
     {
+        if(std::is_same<T, hipblasHalf>::value)
+            return float_to_half(r);
+
         return T(r);
     }
 

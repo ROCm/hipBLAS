@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2020 Advanced Micro Devices, Inc.
+ * Copyright 2020-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "hipblas.h"
@@ -46,7 +46,13 @@ int main()
 
     status = hipblasSscal(handle, N, &alpha, dx, 1);
     if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        hipFree(dx);
+        hipblasDestroy(handle);
+        free(hx);
+        free(hz);
         return status;
+    }
 
     gpu_time_used = get_time_us() - gpu_time_used;
 

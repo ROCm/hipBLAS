@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2020 Advanced Micro Devices, Inc.
+# Copyright 2016-2021 Advanced Micro Devices, Inc.
 # ########################################################################
 
 set( hipblas_samples_common ../common/utility.cpp )
@@ -8,14 +8,18 @@ add_executable( example-sscal example_sscal.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
 add_executable( example-c example-c.c ${hipblas_samples_common} )
-#add_executable( example-sscal-fortran example_sscal_fortran.f90 )
+add_executable( example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
+
+if(NOT WIN32)
+    #add_executable( example-sscal-fortran example_sscal_fortran.f90 )
+endif()
 
 # We test for C99 compatibility in the example-c.c test
 set_source_files_properties(example-c.c PROPERTIES LANGUAGE CXX)
 set_source_files_properties(example-c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
 
 # We test for C++11 compatibility in one of the samples
-set_source_files_properties(example_sgemm_strided_batched.cpp PROPERTIES COMPILE_FLAGS "-std=c++11")
+#set_source_files_properties(example_sgemm_strided_batched.cpp PROPERTIES COMPILE_FLAGS "-std=c++11")
 
 if( NOT TARGET hipblas )
   find_package( hipblas CONFIG PATHS ${ROCM_PATH}/hipblas )
@@ -24,7 +28,7 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c )
+foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c;example-hip-complex-her2 )
 
   # External header includes included as SYSTEM files
   target_include_directories( ${exe}
@@ -56,8 +60,12 @@ foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c
     target_link_libraries( ${exe} PRIVATE ${CUDA_LIBRARIES} )
   endif( )
 
-  set_target_properties(${exe} PROPERTIES LINKER_LANGUAGE CXX)
-  set_target_properties( ${exe} PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
-  set_target_properties( ${exe} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
+  set_target_properties( ${exe} PROPERTIES
+    LINKER_LANGUAGE CXX
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS ON
+    DEBUG_POSTFIX "-d"
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 
 endforeach( )

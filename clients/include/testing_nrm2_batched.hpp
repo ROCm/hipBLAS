@@ -25,22 +25,39 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
     int incx        = argus.incx;
     int batch_count = argus.batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // check to prevent undefined memory allocation error
-    if(N < 0 || incx < 0 || batch_count < 0)
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(batch_count == 0)
-    {
+        device_vector<Tr> d_hipblas_result_0(std::max(1, batch_count));
+        host_vector<Tr>   h_hipblas_result_0(std::max(1, batch_count));
+        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(Tr) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(
+            hipblasNrm2BatchedFn(handle, N, nullptr, incx, batch_count, d_hipblas_result_0));
+
+        if(batch_count > 0)
+        {
+            host_vector<Tr> cpu_0(batch_count);
+            host_vector<Tr> gpu_0(batch_count);
+            CHECK_HIP_ERROR(hipMemcpy(
+                gpu_0, d_hipblas_result_0, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
+            unit_check_general<Tr>(1, batch_count, 1, cpu_0, gpu_0);
+        }
+
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
+    size_t sizeX = size_t(N) * incx;
 
     double gpu_time_used;
     double hipblas_error_host = 0, hipblas_error_device = 0;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);
@@ -56,22 +73,22 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
     hipblas_init(hx, true);
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
-    // hipblasNrm2 accept both dev/host pointer for the scalar
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(
-        hipblasNrm2BatchedFn(handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedFn(
-        handle, N, dx.ptr_on_device(), incx, batch_count, h_hipblas_result_host));
-
-    CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
-                              d_hipblas_result,
-                              sizeof(Tr) * batch_count,
-                              hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        // hipblasNrm2 accept both dev/host pointer for the scalar
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedFn(
+            handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedFn(
+            handle, N, dx.ptr_on_device(), incx, batch_count, h_hipblas_result_host));
+
+        CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
+                                  d_hipblas_result,
+                                  sizeof(Tr) * batch_count,
+                                  hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -89,12 +106,12 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
         {
             for(int b = 0; b < batch_count; b++)
             {
-                hipblas_error_host = std::max(
-                    Tr(hipblas_error_host),
-                    std::abs((h_cpu_result[b] - h_hipblas_result_host[b]) / h_cpu_result[b]));
+                hipblas_error_host
+                    = std::max(vector_norm_1(1, 1, &(h_cpu_result[b]), &(h_hipblas_result_host[b])),
+                               hipblas_error_host);
                 hipblas_error_device = std::max(
-                    Tr(hipblas_error_device),
-                    std::abs((h_cpu_result[b] - h_hipblas_result_device[b]) / h_cpu_result[b]));
+                    vector_norm_1(1, 1, &(h_cpu_result[b]), &(h_hipblas_result_device[b])),
+                    hipblas_error_device);
             }
         }
 

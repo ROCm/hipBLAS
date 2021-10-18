@@ -26,19 +26,26 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    int unit_check = argus.unit_check;
-    int timing     = argus.timing;
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    int           abs_incy = incy >= 0 ? incy : -incy;
+    hipblasStride stridex  = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stridey  = size_t(N) * abs_incy * stride_scale;
+    size_t        sizeX    = stridex * batch_count;
+    size_t        sizeY    = stridey * batch_count;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
 
-    hipblasStride stridex = N * incx * stride_scale;
-    hipblasStride stridey = N * incy * stride_scale;
-    int           sizeX   = stridex * batch_count;
-    int           sizeY   = stridey * batch_count;
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        CHECK_HIPBLAS_ERROR(hipblasCopyStridedBatchedFn(
+            handle, N, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
@@ -53,12 +60,10 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     double gpu_time_used = 0.0;
     double hipblas_error = 0.0;
 
-    hipblasLocalHandle handle(argus);
-
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx, stridex, batch_count);
-    hipblas_init<T>(hy, 1, N, incy, stridey, batch_count);
+    hipblas_init<T>(hx, 1, N, abs_incx, stridex, batch_count);
+    hipblas_init<T>(hy, 1, N, abs_incy, stridey, batch_count);
 
     hx_cpu = hx;
     hy_cpu = hy;
@@ -66,18 +71,18 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(
-        hipblasCopyStridedBatchedFn(handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-
-    if(unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasCopyStridedBatchedFn(
+            handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+
         /*=====================================================================
                     CPU BLAS
         =================================================================== */
@@ -90,12 +95,17 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incy, stridey, hy_cpu.data(), hy.data());
+            unit_check_general<T>(1, N, batch_count, abs_incy, stridey, hy_cpu.data(), hy.data());
+        }
+        if(argus.norm_check)
+        {
+            hipblas_error
+                = norm_check_general<T>('F', 1, N, abs_incy, stridey, hy_cpu, hy, batch_count);
         }
 
     } // end of if unit check
 
-    if(timing)
+    if(argus.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));

@@ -40,7 +40,6 @@
 #include "testing_swap_batched.hpp"
 #include "testing_swap_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -87,16 +86,18 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 
 const int N_range[] = {-1, 10, 500, 1000, 7111, 10000};
 
-// vector of vector, each pair is a {alpha, beta};
-// add/delete this list in pairs, like {2.0, 4.0}
-const vector<vector<double>> alpha_beta_range = {{1.0, 0.0}, {2.0, -1.0}};
+// vector of vector, each pair is a {alpha, alphai, beta, betai};
+// add/delete this list in pairs, like {2.0, 3.0, 4.0, 5.0}
+const vector<vector<double>> alpha_beta_range = {{1.0, 2.0, 0.0, 0.0}, {2.0, -1.0, -1.0, 2.0}};
 
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 2}
-// incx , incy must > 0, otherwise there is no real computation taking place,
-// but throw a message, which will still be detected by gtest
+// negative increments use absolute value for comparisons, so
+// some combinations may not work as expected. {-1, -1} as done
+// here is fine
 const vector<vector<int>> incx_incy_range = {
     {1, 1},
+    {1, 2},
     {-1, -1},
 };
 
@@ -131,19 +132,14 @@ Arguments setup_blas1_arguments(blas1_tuple tup)
     int            batch_count  = std::get<4>(tup);
     bool           fortran      = std::get<5>(tup);
 
-    // the first element of alpha_beta_range is always alpha, and the second is always beta
-    double alpha = alpha_beta[0];
-    double beta  = alpha_beta[1];
-
-    int incx = incx_incy[0];
-    int incy = incx_incy[1];
-
     Arguments arg;
-    arg.N     = N;
-    arg.alpha = alpha;
-    arg.beta  = beta;
-    arg.incx  = incx;
-    arg.incy  = incy;
+    arg.N      = N;
+    arg.alpha  = alpha_beta[0];
+    arg.alphai = alpha_beta[1];
+    arg.beta   = alpha_beta[2];
+    arg.betai  = alpha_beta[3];
+    arg.incx   = incx_incy[0];
+    arg.incy   = incx_incy[1];
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;

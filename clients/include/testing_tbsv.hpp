@@ -31,11 +31,18 @@ hipblasStatus_t testing_tbsv(const Arguments& argus)
     hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
     hipblasOperation_t transA      = char2hipblas_operation(char_transA);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || K < 0 || lda < K + 1 || !incx)
+    bool invalid_size = M < 0 || K < 0 || lda < K + 1 || !incx;
+    if(invalid_size || !M)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual
+            = hipblasTbsvFn(handle, uplo, transA, diag, M, K, nullptr, lda, nullptr, incx);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     int    abs_incx = incx < 0 ? -incx : incx;
@@ -54,8 +61,7 @@ hipblasStatus_t testing_tbsv(const Arguments& argus)
     device_vector<T> dAB(size_AB);
     device_vector<T> dx_or_b(size_x);
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
     srand(1);

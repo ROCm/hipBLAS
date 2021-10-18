@@ -26,16 +26,24 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || !incx || !incy)
+    if(N <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, nullptr, nullptr, incx, nullptr, incy));
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * abs_incx;
-    int sizeY = N * abs_incy;
-    T   alpha = argus.alpha;
+    size_t sizeX = size_t(N) * abs_incx;
+    size_t sizeY = size_t(N) * abs_incy;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
+
+    T alpha = argus.get_alpha<T>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);
@@ -50,8 +58,6 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
     device_vector<T> d_alpha(1);
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     srand(1);
@@ -69,22 +75,23 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
         hipMemcpy(dy_device, hy_device.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, d_alpha, dx, incx, dy_device, incy));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, &alpha, dx, incx, dy_host, incy));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(
-        hipMemcpy(hy_device.data(), dy_device, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, d_alpha, dx, incx, dy_device, incy));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, &alpha, dx, incx, dy_host, incy));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(
+            hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(hy_device.data(), dy_device, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -92,7 +99,7 @@ hipblasStatus_t testing_axpy(const Arguments& argus)
 
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, abs_incx, hy_cpu.data(), hy_host.data());
+            unit_check_general<T>(1, N, abs_incy, hy_cpu.data(), hy_host.data());
             unit_check_general<T>(1, N, abs_incy, hy_cpu.data(), hy_device.data());
         }
         if(argus.norm_check)

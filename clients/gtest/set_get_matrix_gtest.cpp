@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -7,7 +7,6 @@
 #include "testing_set_get_matrix_async.hpp"
 #include "utility.h"
 #include <functional>
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <tuple>

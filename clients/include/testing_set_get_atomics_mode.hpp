@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -20,46 +20,25 @@ hipblasStatus_t testing_set_get_atomics_mode(const Arguments& argus)
     auto hipblasSetAtomicsModeFn = FORTRAN ? hipblasSetAtomicsModeFortran : hipblasSetAtomicsMode;
     auto hipblasGetAtomicsModeFn = FORTRAN ? hipblasGetAtomicsModeFortran : hipblasGetAtomicsMode;
 
-    hipblasStatus_t status     = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_set = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_get = HIPBLAS_STATUS_SUCCESS;
-
     hipblasAtomicsMode_t mode;
-    hipblasHandle_t      handle;
-    hipblasCreate(&handle);
+    hipblasLocalHandle   handle(argus);
 
     // Not checking default as rocBLAS defaults to allowed
     // and cuBLAS defaults to not allowed.
-    // status = hipblasGetAtomicsModeFn(handle, &mode);
-    // if(status != HIPBLAS_STATUS_SUCCESS)
-    // {
-    //     hipblasDestroy(handle);
-    //     return status;
-    // }
+    // CHECK_HIPBLAS_ERROR(hipblasGetAtomicsModeFn(handle, &mode));
 
     // EXPECT_EQ(HIPBLAS_ATOMICS_ALLOWED, mode);
 
     // Make sure set()/get() functions work
-    status_set = hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_NOT_ALLOWED);
-    status_get = hipblasGetAtomicsModeFn(handle, &mode);
-    if(status_set != HIPBLAS_STATUS_SUCCESS || status_get != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status_set != HIPBLAS_STATUS_SUCCESS ? status_set : status_get;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_NOT_ALLOWED));
+    CHECK_HIPBLAS_ERROR(hipblasGetAtomicsModeFn(handle, &mode));
 
     EXPECT_EQ(HIPBLAS_ATOMICS_NOT_ALLOWED, mode);
 
-    status_set = hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_ALLOWED);
-    status_get = hipblasGetAtomicsModeFn(handle, &mode);
-    if(status_set != HIPBLAS_STATUS_SUCCESS || status_get != HIPBLAS_STATUS_SUCCESS)
-    {
-        hipblasDestroy(handle);
-        return status_set != HIPBLAS_STATUS_SUCCESS ? status_set : status_get;
-    }
+    CHECK_HIPBLAS_ERROR(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_ALLOWED));
+    CHECK_HIPBLAS_ERROR(hipblasGetAtomicsModeFn(handle, &mode));
 
     EXPECT_EQ(HIPBLAS_ATOMICS_ALLOWED, mode);
 
-    hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }

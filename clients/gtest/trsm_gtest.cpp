@@ -7,7 +7,6 @@
 #include "testing_trsm_batched.hpp"
 #include "testing_trsm_strided_batched.hpp"
 #include "utility.h"
-#include <gtest/gtest.h>
 #include <math.h>
 #include <stdexcept>
 #include <vector>
@@ -20,7 +19,7 @@ using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, double, vector<char>, double, int, bool> trsm_tuple;
+typedef std::tuple<vector<int>, vector<double>, vector<char>, double, int, bool> trsm_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -53,7 +52,7 @@ const vector<vector<int>> full_matrix_size_range = {
     //                                      {2000, 2000, 2000, 2000},
 };
 
-const vector<double> alpha_range = {1.0, -5.0};
+const vector<vector<double>> alpha_range = {{1.0, -5.0}};
 
 // vector of vector, each pair is a {side, uplo, transA, diag};
 // side has two option "Lefe (L), Right (R)"
@@ -118,12 +117,12 @@ const bool is_fortran_false[] = {false};
 Arguments setup_trsm_arguments(trsm_tuple tup)
 {
 
-    vector<int>  matrix_size           = std::get<0>(tup);
-    double       alpha                 = std::get<1>(tup);
-    vector<char> side_uplo_transA_diag = std::get<2>(tup);
-    double       stride_scale          = std::get<3>(tup);
-    int          batch_count           = std::get<4>(tup);
-    bool         fortran               = std::get<5>(tup);
+    vector<int>    matrix_size           = std::get<0>(tup);
+    vector<double> alpha_alphai          = std::get<1>(tup);
+    vector<char>   side_uplo_transA_diag = std::get<2>(tup);
+    double         stride_scale          = std::get<3>(tup);
+    int            batch_count           = std::get<4>(tup);
+    bool           fortran               = std::get<5>(tup);
 
     Arguments arg;
 
@@ -133,7 +132,8 @@ Arguments setup_trsm_arguments(trsm_tuple tup)
     arg.lda = matrix_size[2];
     arg.ldb = matrix_size[3];
 
-    arg.alpha = alpha;
+    arg.alpha  = alpha_alphai[0];
+    arg.alphai = alpha_alphai[1];
 
     arg.side_option   = side_uplo_transA_diag[0];
     arg.uplo_option   = side_uplo_transA_diag[1];
