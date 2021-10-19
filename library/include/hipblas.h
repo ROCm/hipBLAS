@@ -4585,7 +4585,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherk(hipblasHandle_t             handle,
 
     \details
 
-    herk_batched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
+    herkBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
 
     C_i := alpha*op( A_i )*op( A_i )^H + beta*C_i
 
@@ -4607,7 +4607,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherk(hipblasHandle_t             handle,
     @param[in]
     transA  [hipblasOperation_t]
             HIPBLAS_OP_C: op(A) = A^H
-            HIPBLAS_OP_N:                op(A) = A
+            HIPBLAS_OP_N: op(A) = A
 
     @param[in]
     n       [int]
@@ -4680,7 +4680,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkBatched(hipblasHandle_t              
 
     \details
 
-    herk_strided_batched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
+    herkStridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
 
     C_i := alpha*op( A_i )*op( A_i )^H + beta*C_i
 
@@ -4703,7 +4703,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkBatched(hipblasHandle_t              
     @param[in]
     transA  [hipblasOperation_t]
             HIPBLAS_OP_C: op(A) = A^H
-            HIPBLAS_OP_N:                op(A) = A
+            HIPBLAS_OP_N: op(A) = A
 
     @param[in]
     n       [int]
@@ -4813,7 +4813,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkStridedBatched(hipblasHandle_t       
     @param[in]
     trans  [hipblasOperation_t]
             HIPBLAS_OP_C:  op( A ) = A^H, op( B ) = B^H
-            HIPBLAS_OP_N:                 op( A ) = A, op( B ) = B
+            HIPBLAS_OP_N:  op( A ) = A, op( B ) = B
 
     @param[in]
     n       [int]
@@ -4895,7 +4895,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkx(hipblasHandle_t             handle,
 
     \details
 
-    herkx_batched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
+    herkxBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
 
     C_i := alpha*op( A_i )*op( B_i )^H + beta*C_i
 
@@ -4918,7 +4918,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkx(hipblasHandle_t             handle,
     @param[in]
     trans  [hipblasOperation_t]
             HIPBLAS_OP_C: op(A) = A^H
-            HIPBLAS_OP_N:                op(A) = A
+            HIPBLAS_OP_N: op(A) = A
 
     @param[in]
     n       [int]
@@ -5006,7 +5006,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkxBatched(hipblasHandle_t             
 
     \details
 
-    herkx_strided_batched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
+    herkxstridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
 
     C_i := alpha*op( A_i )*op( B_i )^H + beta*C_i
 
@@ -5029,7 +5029,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkxBatched(hipblasHandle_t             
     @param[in]
     trans  [hipblasOperation_t]
             HIPBLAS_OP_C: op( A_i ) = A_i^H, op( B_i ) = B_i^H
-            HIPBLAS_OP_N:                op( A_i ) = A_i, op( B_i ) = B_i
+            HIPBLAS_OP_N: op( A_i ) = A_i, op( B_i ) = B_i
 
     @param[in]
     n       [int]
@@ -5157,7 +5157,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkxStridedBatched(hipblasHandle_t      
     @param[in]
     trans  [hipblasOperation_t]
             HIPBLAS_OP_C:  op( A ) = A^H, op( B ) = B^H
-            HIPBLAS_OP_N:                 op( A ) = A, op( B ) = B
+            HIPBLAS_OP_N:  op( A ) = A, op( B ) = B
 
     @param[in]
     n       [int]
@@ -5239,7 +5239,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZher2k(hipblasHandle_t             handle,
 
     \details
 
-    her2k_batched performs a batch of the matrix-matrix operations for a Hermitian rank-2k update
+    her2kBatched performs a batch of the matrix-matrix operations for a Hermitian rank-2k update
 
     C_i := alpha*op( A_i )*op( B_i )^H + conj(alpha)*op( B_i )*op( A_i )^H + beta*C_i
 
@@ -5261,7 +5261,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZher2k(hipblasHandle_t             handle,
     @param[in]
     trans  [hipblasOperation_t]
             HIPBLAS_OP_C: op(A) = A^H
-            HIPBLAS_OP_N:                op(A) = A
+            HIPBLAS_OP_N: op(A) = A
 
     @param[in]
     n       [int]
@@ -5346,7 +5346,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZher2kBatched(hipblasHandle_t             
 
     \details
 
-    her2k_strided_batched performs a batch of the matrix-matrix operations for a Hermitian rank-2k update
+    her2kstridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-2k update
 
     C_i := alpha*op( A_i )*op( B_i )^H + conj(alpha)*op( B_i )*op( A_i )^H + beta*C_i
 
@@ -5368,7 +5368,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZher2kBatched(hipblasHandle_t             
     @param[in]
     trans  [hipblasOperation_t]
             HIPBLAS_OP_C: op( A_i ) = A_i^H, op( B_i ) = B_i^H
-            HIPBLAS_OP_N:                op( A_i ) = A_i, op( B_i ) = B_i
+            HIPBLAS_OP_N: op( A_i ) = A_i, op( B_i ) = B_i
 
     @param[in]
     n       [int]
@@ -5603,7 +5603,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsymm(hipblasHandle_t             handle,
 
     \details
 
-    symm_batched performs a batch of the matrix-matrix operations:
+    symmBatched performs a batch of the matrix-matrix operations:
 
     C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
     C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
@@ -5740,7 +5740,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsymmBatched(hipblasHandle_t              
 
     \details
 
-    symm_strided_batched performs a batch of the matrix-matrix operations:
+    symmstridedBatched performs a batch of the matrix-matrix operations:
 
     C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
     C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
@@ -5919,8 +5919,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsymmStridedBatched(hipblasHandle_t       
 
     @param[in]
     transA  [hipblasOperation_t]
-            HIPBLAS_OP_T:           op(A) = A^T
-            HIPBLAS_OP_N:                op(A) = A
+            HIPBLAS_OP_T: op(A) = A^T
+            HIPBLAS_OP_N: op(A) = A
             HIPBLAS_OP_C: op(A) = A^T
 
             HIPBLAS_OP_C is not supported for complex types, see cherk
@@ -6016,7 +6016,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrk(hipblasHandle_t             handle,
 
     \details
 
-    syrk_batched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+    syrkBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
 
     C_i := alpha*op( A_i )*op( A_i )^T + beta*C_i
 
@@ -6037,8 +6037,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrk(hipblasHandle_t             handle,
 
     @param[in]
     transA  [hipblasOperation_t]
-            HIPBLAS_OP_T:           op(A) = A^T
-            HIPBLAS_OP_N:                op(A) = A
+            HIPBLAS_OP_T: op(A) = A^T
+            HIPBLAS_OP_N: op(A) = A
             HIPBLAS_OP_C: op(A) = A^T
 
             HIPBLAS_OP_C is not supported for complex types, see cherk
@@ -6140,7 +6140,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkBatched(hipblasHandle_t              
 
     \details
 
-    syrk_strided_batched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+    syrkstridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
 
     C_i := alpha*op( A_i )*op( A_i )^T + beta*C_i
 
@@ -6161,8 +6161,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkBatched(hipblasHandle_t              
 
     @param[in]
     transA  [hipblasOperation_t]
-            HIPBLAS_OP_T:           op(A) = A^T
-            HIPBLAS_OP_N:                op(A) = A
+            HIPBLAS_OP_T: op(A) = A^T
+            HIPBLAS_OP_N: op(A) = A
             HIPBLAS_OP_C: op(A) = A^T
 
             HIPBLAS_OP_C is not supported for complex types, see cherk
@@ -6412,7 +6412,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2k(hipblasHandle_t             handle,
 
     \details
 
-    syr2k_batched performs a batch of the matrix-matrix operations for a symmetric rank-2k update
+    syr2kBatched performs a batch of the matrix-matrix operations for a symmetric rank-2k update
 
     C_i := alpha*(op( A_i )*op( B_i )^T + op( B_i )*op( A_i )^T) + beta*C_i
 
@@ -6547,7 +6547,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2kBatched(hipblasHandle_t             
 
     \details
 
-    syr2k_strided_batched performs a batch of the matrix-matrix operations for a symmetric rank-2k update
+    syr2kstridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-2k update
 
     C_i := alpha*(op( A_i )*op( B_i )^T + op( B_i )*op( A_i )^T) + beta*C_i
 
@@ -6844,7 +6844,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkx(hipblasHandle_t             handle,
 
     \details
 
-    syrkx_batched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+    syrkxBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
 
     C_i := alpha*op( A_i )*op( B_i )^T + beta*C_i
 
@@ -6984,7 +6984,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkxBatched(hipblasHandle_t             
 
     \details
 
-    syrkx_strided_batched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+    syrkxstridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
 
     C_i := alpha*op( A_i )*op( B_i )^T + beta*C_i
 
@@ -7255,7 +7255,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeam(hipblasHandle_t             handle,
 /*! \brief BLAS Level 3 API
 
     \details
-    xGEAM_batched performs one of the batched matrix-matrix operations
+    xGEAMBatched performs one of the batched matrix-matrix operations
 
         C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batch_count - 1
 
@@ -7375,7 +7375,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeamBatched(hipblasHandle_t              
 /*! \brief BLAS Level 3 API
 
     \details
-    xGEAM_strided_batched performs one of the batched matrix-matrix operations
+    xGEAMstridedBatched performs one of the batched matrix-matrix operations
 
         C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batch_count - 1
 
@@ -7634,7 +7634,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemm(hipblasHandle_t             handle,
 
     \details
 
-    hemm_batched performs a batch of the matrix-matrix operations:
+    hemmBatched performs a batch of the matrix-matrix operations:
 
     C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
     C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
@@ -7742,7 +7742,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmBatched(hipblasHandle_t              
 
     \details
 
-    hemm_strided_batched performs a batch of the matrix-matrix operations:
+    hemmstridedBatched performs a batch of the matrix-matrix operations:
 
     C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
     C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
@@ -7896,8 +7896,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
     @param[in]
     transA  [hipblasOperation_t]
             Specifies the form of op(A) to be used in the matrix multiplication as follows:
-            HIPBLAS_OP_N:    op(A) = A.
-            HIPBLAS_OP_T:      op(A) = A^T.
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
             HIPBLAS_OP_C:  op(A) = A^H.
 
     @param[in]
@@ -8018,7 +8018,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
 
     \details
 
-    trmm_batched performs one of the batched matrix-matrix operations
+    trmmBatched performs one of the batched matrix-matrix operations
 
     B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1
 
@@ -8169,7 +8169,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
 
     \details
 
-    trmm_strided_batched performs one of the strided_batched matrix-matrix operations
+    trmmstridedBatched performs one of the strided_batched matrix-matrix operations
 
     B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1
 
@@ -8373,9 +8373,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t       
 
     @param[in]
     transA  [hipblasOperation_t]
-            transB:    op(A) = A.
-            HIPBLAS_OP_T:      op(A) = A^T.
-            HIPBLAS_OP_C:  op(A) = A^H.
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_OP_C: op(A) = A^H.
 
     @param[in]
     diag    [hipblasDiagType_t]
@@ -8471,7 +8471,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsm(hipblasHandle_t             handle,
 
 /*! \brief BLAS Level 3 API
     \details
-    trsm_batched performs the following batched operation:
+    trsmBatched performs the following batched operation:
 
         op(A_i)*X_i = alpha*B_i or  X_i*op(A_i) = alpha*B_i, for i = 1, ..., batch_count.
 
@@ -8505,9 +8505,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsm(hipblasHandle_t             handle,
             HIPBLAS_FILL_MODE_LOWER:  each A_i is a  lower triangular matrix.
     @param[in]
     transA  [hipblasOperation_t]
-            transB:    op(A) = A.
-            HIPBLAS_OP_T:      op(A) = A^T.
-            HIPBLAS_OP_C:  op(A) = A^H.
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_OP_C: op(A) = A^H.
     @param[in]
     diag    [hipblasDiagType_t]
             HIPBLAS_DIAG_UNIT:     each A_i is assumed to be unit triangular.
@@ -8600,7 +8600,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t             h
 
 /*! \brief BLAS Level 3 API
     \details
-    trsm_srided_batched performs the following strided batched operation:
+    trsm_sridedBatched performs the following strided batched operation:
 
         op(A_i)*X_i = alpha*B_i or  X_i*op(A_i) = alpha*B_i, for i = 1, ..., batch_count.
 
@@ -8633,9 +8633,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t             h
             HIPBLAS_FILL_MODE_LOWER:  each A_i is a  lower triangular matrix.
     @param[in]
     transA  [hipblasOperation_t]
-            transB:    op(A) = A.
-            HIPBLAS_OP_T:      op(A) = A^T.
-            HIPBLAS_OP_C:  op(A) = A^H.
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_OP_C: op(A) = A^H.
     @param[in]
     diag    [hipblasDiagType_t]
             HIPBLAS_DIAG_UNIT:     each A_i is assumed to be unit triangular.
@@ -9074,7 +9074,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmm(hipblasHandle_t             handle,
 /*! \brief BLAS Level 3 API
 
     \details
-    xDGMM_batched performs one of the batched matrix-matrix operations
+    xDGMMBatched performs one of the batched matrix-matrix operations
 
         C_i = A_i * diag(x_i) for i = 0, 1, ... batch_count-1 if side == HIPBLAS_SIDE_RIGHT
         C_i = diag(x_i) * A_i for i = 0, 1, ... batch_count-1 if side == HIPBLAS_SIDE_LEFT
@@ -9170,7 +9170,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmmBatched(hipblasHandle_t              
 /*! \brief BLAS Level 3 API
 
     \details
-    xDGMM_strided_batched performs one of the batched matrix-matrix operations
+    xDGMMstridedBatched performs one of the batched matrix-matrix operations
 
         C_i = A_i * diag(x_i)   if side == HIPBLAS_SIDE_RIGHT   for i = 0, 1, ... batch_count-1
         C_i = diag(x_i) * A_i   if side == HIPBLAS_SIDE_LEFT    for i = 0, 1, ... batch_count-1
