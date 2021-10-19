@@ -5794,7 +5794,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
 // clang-format off
 HIPBLAS_DEPRECATED_MSG("The hipblasXtrmm API, along with batched versions, will \
 be changing in a future release to allow in-place and out-of-place behavior. This change \
-will introduce an output matrix "C", matching the rocblas_xtrmm_outofplace API and the \
+will introduce an output matrix 'C', matching the rocblas_xtrmm_outofplace API and the \
 cublasXtrmm API.")
 // clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
