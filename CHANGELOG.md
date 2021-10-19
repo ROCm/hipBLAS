@@ -4,7 +4,7 @@
 ### Added
 - Added rocSOLVER functions to hipblas-bench
 - Added option ROCM_MATHLIBS_API_USE_HIP_COMPLEX to opt-in to use hipFloatComplex and hipDoubleComplex
-- Compilation warning for future trmm changes
+- Added compilation warning for future trmm changes
 
 ### Fixed
 - Fixed use of incorrect 'HIP_PATH' when building from source.
