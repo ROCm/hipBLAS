@@ -55,10 +55,6 @@
 #define DIM2 1024
 #define DIM3 1025
 
-// #define DIM1 256
-// #define DIM2 256
-// #define DIM3 256
-
 template <typename T>
 void mat_mat_mult(T   alpha,
                   T   beta,
@@ -95,7 +91,7 @@ int main()
     _Float16           alpha = 1.1, beta = 0.9;
 
     int m = DIM1, n = DIM2, k = DIM3;
-    int lda, ldb, ldc, size_a, size_b, size_c, B_row, B_col;
+    int lda, ldb, ldc, size_a, size_b, size_c;
     int a_stride_1, a_stride_2, b_stride_1, b_stride_2;
     std::cout << "hgemm example" << std::endl;
     if(transa == HIPBLAS_OP_N)
@@ -116,20 +112,16 @@ int main()
     }
     if(transb == HIPBLAS_OP_N)
     {
-        B_row      = k;
-        B_col      = n;
-        ldb        = B_row;
-        size_b     = B_col * ldb;
+        ldb        = k;
+        size_b     = n * ldb;
         b_stride_1 = 1;
         b_stride_2 = ldb;
         std::cout << "N: ";
     }
     else
     {
-        B_row      = n;
-        B_col      = k;
-        ldb        = B_row;
-        size_b     = B_col * ldb;
+        ldb        = n;
+        size_b     = k * ldb;
         b_stride_1 = ldb;
         b_stride_2 = 1;
         std::cout << "T: ";
@@ -147,16 +139,16 @@ int main()
     srand(1);
     for(int i = 0; i < size_a; ++i)
     {
-        ha[i] = rand() % 2;
+        // random number in [-2, 2]
+        ha[i] = rand() % 5 - 2;
     }
-    for(int j = 0; j < B_col; ++j)
+    for(int i = 0; i < size_b; ++i)
     {
-        for(int i = 0; i < B_row; ++i)
-            hb[j * ldb + i] = ((i ^ j) & 1) ? (rand() % 2) : -(rand() % 2);
+        hb[i] = rand() % 5 - 2;
     }
     for(int i = 0; i < size_c; ++i)
     {
-        hc[i] = rand() % 2;
+        hc[i] = rand() % 5 - 2;
     }
     hc_gold = hc;
 

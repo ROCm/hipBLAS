@@ -36,7 +36,7 @@ list (APPEND example-executables example-sscal example-sgemm example-sgemm-strid
 if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
   list (APPEND example-executables example-hgemm)
 endif( )
-#foreach( exe example-sscal;example-sgemm;example-sgemm-strided-batched;example-c;example-hip-complex-her2;example-hgemm )
+
 foreach( exe IN LISTS example-executables)
 
   # External header includes included as SYSTEM files
