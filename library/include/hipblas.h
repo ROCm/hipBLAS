@@ -2762,7 +2762,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeruStridedBatched(hipblasHandle_t       
 /*! \brief BLAS Level 2 API
 
     \details
-    gercStridedBatched,geruStridedBatched,gercStridedBatched performs the matrix-vector operations
+    gerStridedBatched,geruStridedBatched,gercStridedBatched performs the matrix-vector operations
 
         A_i := A_i + alpha*x_i*y_i**T, OR
         A_i := A_i + alpha*x_i*y_i**H  for gerc
@@ -3368,10 +3368,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemvStridedBatched(hipblasHandle_t       
     lda       [int]
               specifies the leading dimension of each A_i. must be >= max(1, n)
     @param[in]
+    strideA    [hipblasStride]
+                stride from the start of one (A_i) to the next (A_i+1)
+
+    @param[in]
     x         device array of device pointers storing each vector x_i.
     @param[in]
     incx      [int]
               specifies the increment for the elements of each x_i.
+    @param[in]
+    stridex  [hipblasStride]
+              stride from the start of one vector (x_i) and the next one (x_i+1).
     @param[in]
     beta      device pointer or host pointer to scalar beta.
     @param[inout]
@@ -3379,6 +3386,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemvStridedBatched(hipblasHandle_t       
     @param[in]
     incy      [int]
               specifies the increment for the elements of y.
+    @param[in]
+    stridey  [hipblasStride]
+              stride from the start of one vector (y_i) and the next one (y_i+1).
     @param[in]
     batchCount [int]
                 number of instances in the batch.
@@ -4360,7 +4370,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChprStridedBatched(hipblasHandle_t       h
             Note that the imaginary part of the diagonal elements are not accessed and are assumed
             to be 0.
     @param[in]
-    strideA    [hipblasStride]
+    strideAP   [hipblasStride]
                 stride from the start of one (A_i) and the next (A_i+1)
     @param[in]
     batchCount [int]
@@ -4631,7 +4641,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpr2StridedBatched(hipblasHandle_t       
             Note that the imaginary part of the diagonal elements are not accessed and are assumed
             to be 0.
     @param[in]
-    strideA    [hipblasStride]
+    strideAP    [hipblasStride]
                 stride from the start of one (A_i) and the next (A_i+1)
     @param[in]
     batchCount [int]
