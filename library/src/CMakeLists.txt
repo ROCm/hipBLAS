@@ -118,24 +118,27 @@ endif( )
 
 rocm_install_targets(
   TARGETS hipblas
-  INCLUDE
-    ${CMAKE_SOURCE_DIR}/library/include
-    ${CMAKE_BINARY_DIR}/include
-  PREFIX hipblas
 )
+
+install( DIRECTORY "${CMAKE_SOURCE_DIR}/library/include/" "${CMAKE_BINARY_DIR}/include/"
+       DESTINATION include/hipblas
+  FILES_MATCHING
+  PATTERN "*.h"
+  PATTERN "*.hpp"
+  PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ )
+
+
 #         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
 
 if ( NOT USE_CUDA )
     rocm_export_targets(
         TARGETS roc::hipblas
-	PREFIX hipblas
 	DEPENDS PACKAGE hip
 	NAMESPACE roc::
     )
 else( )
     rocm_export_targets(
         TARGETS roc::hipblas
-	PREFIX hipblas
 	DEPENDS PACKAGE HIP
 	NAMESPACE roc::
     )
@@ -143,6 +146,4 @@ endif( )
 
 # Force installation of .f90 module files
 install(FILES "hipblas_module.f90"
-        DESTINATION "hipblas/include")
-
-rocm_install_symlink_subdir( hipblas )
+        DESTINATION "include/hipblas")
