@@ -4659,7 +4659,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkBatched(hipblasHandle_t             h
     ldc    [int]
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -4745,7 +4745,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkStridedBatched(hipblasHandle_t       
             otherwise lda >= max( 1, k ).
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[in]
@@ -4762,11 +4762,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkStridedBatched(hipblasHandle_t       
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
 
     @param[inout]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -4983,7 +4983,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxBatched(hipblasHandle_t             
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -5074,7 +5074,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxStridedBatched(hipblasHandle_t      
             otherwise lda >= max( 1, k ).
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[in]
@@ -5088,7 +5088,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxStridedBatched(hipblasHandle_t      
             otherwise ldb >= max( 1, k ).
 
     @param[in]
-    stride_B  [hipblasStride]
+    strideB  [hipblasStride]
               stride from the start of one matrix (B_i) and the next one (B_i+1)
 
     @param[in]
@@ -5105,11 +5105,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxStridedBatched(hipblasHandle_t      
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
 
     @param[inout]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -5323,7 +5323,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kBatched(hipblasHandle_t             
     ldc    [int]
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -5413,7 +5413,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kStridedBatched(hipblasHandle_t      
             otherwise lda >= max( 1, k ).
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[in]
@@ -5427,7 +5427,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kStridedBatched(hipblasHandle_t      
             otherwise ldb >= max( 1, k ).
 
     @param[in]
-    stride_B  [hipblasStride]
+    strideB  [hipblasStride]
               stride from the start of one matrix (B_i) and the next one (B_i+1)
 
     @param[in]
@@ -5444,11 +5444,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kStridedBatched(hipblasHandle_t      
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
 
     @param[inout]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -5717,7 +5717,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymmBatched(hipblasHandle_t             h
            ldc specifies the first dimension of C_i. ldc >= max( 1, m )
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -5842,7 +5842,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymmStridedBatched(hipblasHandle_t       
             otherwise lda >= max( 1, n ).
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[in]
@@ -5853,7 +5853,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymmStridedBatched(hipblasHandle_t       
             ldb specifies the first dimension of B_i. ldb >= max( 1, m )
 
     @param[in]
-    stride_B  [hipblasStride]
+    strideB  [hipblasStride]
               stride from the start of one matrix (B_i) and the next one (B_i+1)
     @param[in]
     beta
@@ -5868,11 +5868,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymmStridedBatched(hipblasHandle_t       
            ldc specifies the first dimension of C. ldc >= max( 1, m ).
 
     @param[inout]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -6119,7 +6119,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkBatched(hipblasHandle_t             h
     ldc    [int]
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -6238,7 +6238,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkStridedBatched(hipblasHandle_t       
             otherwise lda >= max( 1, k ).
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[in]
@@ -6254,11 +6254,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkStridedBatched(hipblasHandle_t       
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
 
     @param[inout]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -6524,7 +6524,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2kBatched(hipblasHandle_t             
     ldc    [int]
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -6650,7 +6650,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2kStridedBatched(hipblasHandle_t      
             otherwise lda >= max( 1, k ).
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[in]
@@ -6680,11 +6680,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2kStridedBatched(hipblasHandle_t      
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
 
     @param[inout]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -6961,7 +6961,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkxBatched(hipblasHandle_t             
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
             number of instances in the batch.
 
     ********************************************************************/
@@ -7088,7 +7088,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkxStridedBatched(hipblasHandle_t      
             otherwise lda >= max( 1, k ).
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[in]
@@ -7102,7 +7102,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkxStridedBatched(hipblasHandle_t      
             otherwise ldb >= max( 1, k ).
 
     @param[in]
-    stride_B  [hipblasStride]
+    strideB  [hipblasStride]
               stride from the start of one matrix (B_i) and the next one (B_i+1)
 
     @param[in]
@@ -7118,11 +7118,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkxStridedBatched(hipblasHandle_t      
            ldc specifies the first dimension of C. ldc >= max( 1, n ).
 
     @param[inout]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -7302,7 +7302,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamBatched(hipblasHandle_t             h
     \details
     xGEAMBatched performs one of the batched matrix-matrix operations
 
-        C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batch_count - 1
+        C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batchCount - 1
 
     where alpha and beta are scalars, and op(A_i), op(B_i) and C_i are m by n matrices
     and op( X ) is one of
@@ -7353,7 +7353,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamBatched(hipblasHandle_t             h
               specifies the leading dimension of C.
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances i in the batch.
 
     ********************************************************************/
@@ -7431,7 +7431,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       
     \details
     xGEAMstridedBatched performs one of the batched matrix-matrix operations
 
-        C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batch_count - 1
+        C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batchCount - 1
 
     where alpha and beta are scalars, and op(A_i), op(B_i) and C_i are m by n matrices
     and op( X ) is one of
@@ -7473,7 +7473,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       
               specifies the leading dimension of A.
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[in]
@@ -7490,7 +7490,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       
               specifies the leading dimension of B.
 
     @param[in]
-    stride_B  [hipblasStride]
+    strideB  [hipblasStride]
               stride from the start of one matrix (B_i) and the next one (B_i+1)
 
     @param[in, out]
@@ -7502,11 +7502,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       
               specifies the leading dimension of C.
 
     @param[in]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances i in the batch.
 
     ********************************************************************/
@@ -7719,7 +7719,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemmBatched(hipblasHandle_t             h
            ldc specifies the first dimension of C_i. ldc >= max( 1, m )
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -7809,7 +7809,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       
             otherwise lda >= max( 1, n ).
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[in]
@@ -7822,7 +7822,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       
             otherwise ldb >= max( 1, n ).
 
     @param[in]
-    stride_B  [hipblasStride]
+    strideB  [hipblasStride]
               stride from the start of one matrix (B_i) and the next one (B_i+1)
 
     @param[in]
@@ -7838,11 +7838,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       
            ldc specifies the first dimension of C. ldc >= max( 1, m )
 
     @param[inout]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch
 
     ********************************************************************/
@@ -8062,7 +8062,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             h
 
     trmmBatched performs one of the batched matrix-matrix operations
 
-    B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1
+    B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
 
     where  alpha  is a scalar,  B_i  is an m by n matrix,  A_i  is a unit, or
     non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
@@ -8148,7 +8148,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             h
            ldb specifies the first dimension of B_i. ldb >= max( 1, m ).
 
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances i in the batch.
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t                   handle,
@@ -8219,7 +8219,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       
 
     trmmstridedBatched performs one of the strided_batched matrix-matrix operations
 
-    B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1
+    B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
 
     where  alpha  is a scalar,  B_i  is an m by n matrix,  A_i  is a unit, or
     non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
@@ -8295,7 +8295,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       
             if side == HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
 
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[inout]
@@ -8309,10 +8309,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       
            ldb specifies the first dimension of B_i. ldb >= max( 1, m ).
 
            @param[in]
-    stride_B  [hipblasStride]
+    strideB  [hipblasStride]
               stride from the start of one matrix (B_i) and the next one (B_i+1)
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances i in the batch.
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t             handle,
@@ -8481,7 +8481,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmBatched(hipblasHandle_t    handle,
                                                    int                lda,
                                                    float*             B[],
                                                    int                ldb,
-                                                   int                batch_count);
+                                                   int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t    handle,
                                                    hipblasSideMode_t  side,
@@ -8495,7 +8495,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t    handle,
                                                    int                lda,
                                                    double*            B[],
                                                    int                ldb,
-                                                   int                batch_count);
+                                                   int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t       handle,
                                                    hipblasSideMode_t     side,
@@ -8509,20 +8509,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t       handle,
                                                    int                   lda,
                                                    hipblasComplex*       B[],
                                                    int                   ldb,
-                                                   int                   batch_count);
+                                                   int                   batchCount);
 
 /*! \brief BLAS Level 3 API
     \details
     trsmBatched performs the following batched operation:
 
-        op(A_i)*X_i = alpha*B_i or  X_i*op(A_i) = alpha*B_i, for i = 1, ..., batch_count.
+        op(A_i)*X_i = alpha*B_i or  X_i*op(A_i) = alpha*B_i, for i = 1, ..., batchCount.
 
     where alpha is a scalar, X and B are batched m by n matrices,
     A is triangular batched matrix and op(A) is one of
 
         op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
 
-    Each matrix X_i is overwritten on B_i for i = 1, ..., batch_count.
+    Each matrix X_i is overwritten on B_i for i = 1, ..., batchCount.
 
     Note about memory allocation:
     When trsm is launched with a k evenly divisible by the internal block size of 128,
@@ -8581,7 +8581,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t       handle,
     ldb    [int]
            ldb specifies the first dimension of each B_i. ldb >= max( 1, m ).
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of trsm operatons in the batch.
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t             handle,
@@ -8596,7 +8596,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t             h
                                                    int                         lda,
                                                    hipblasDoubleComplex*       B[],
                                                    int                         ldb,
-                                                   int                         batch_count);
+                                                   int                         batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasSideMode_t  side,
@@ -8612,7 +8612,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    han
                                                           float*             B,
                                                           int                ldb,
                                                           hipblasStride      strideB,
-                                                          int                batch_count);
+                                                          int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasSideMode_t  side,
@@ -8628,7 +8628,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    han
                                                           double*            B,
                                                           int                ldb,
                                                           hipblasStride      strideB,
-                                                          int                batch_count);
+                                                          int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       handle,
                                                           hipblasSideMode_t     side,
@@ -8644,20 +8644,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       
                                                           hipblasComplex*       B,
                                                           int                   ldb,
                                                           hipblasStride         strideB,
-                                                          int                   batch_count);
+                                                          int                   batchCount);
 
 /*! \brief BLAS Level 3 API
     \details
     trsm_sridedBatched performs the following strided batched operation:
 
-        op(A_i)*X_i = alpha*B_i or  X_i*op(A_i) = alpha*B_i, for i = 1, ..., batch_count.
+        op(A_i)*X_i = alpha*B_i or  X_i*op(A_i) = alpha*B_i, for i = 1, ..., batchCount.
 
     where alpha is a scalar, X and B are strided batched m by n matrices,
     A is triangular strided batched matrix and op(A) is one of
 
         op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
 
-    Each matrix X_i is overwritten on B_i for i = 1, ..., batch_count.
+    Each matrix X_i is overwritten on B_i for i = 1, ..., batchCount.
 
     Note about memory allocation:
     When trsm is launched with a k evenly divisible by the internal block size of 128,
@@ -8711,7 +8711,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       
             if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
             if side = HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
     @param[in]
-    stride_a [hipblasStride]
+    strideA [hipblasStride]
              stride from the start of one A_i matrix to the next A_(i + 1).
     @param[in,out]
     B       device pointer pointing to the first matrix B_1.
@@ -8719,10 +8719,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       
     ldb    [int]
            ldb specifies the first dimension of each B_i. ldb >= max( 1, m ).
     @param[in]
-    stride_b [hipblasStride]
+    strideB [hipblasStride]
              stride from the start of one B_i matrix to the next B_(i + 1).
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of trsm operatons in the batch.
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t             handle,
@@ -8739,7 +8739,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t       
                                                           hipblasDoubleComplex*       B,
                                                           int                         ldb,
                                                           hipblasStride               strideB,
-                                                          int                         batch_count);
+                                                          int                         batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrtri(hipblasHandle_t   handle,
                                              hipblasFillMode_t uplo,
@@ -8819,7 +8819,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrtriBatched(hipblasHandle_t    handle,
                                                     int                lda,
                                                     float*             invA[],
                                                     int                ldinvA,
-                                                    int                batch_count);
+                                                    int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrtriBatched(hipblasHandle_t     handle,
                                                     hipblasFillMode_t   uplo,
@@ -8829,7 +8829,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrtriBatched(hipblasHandle_t     handle,
                                                     int                 lda,
                                                     double*             invA[],
                                                     int                 ldinvA,
-                                                    int                 batch_count);
+                                                    int                 batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriBatched(hipblasHandle_t             handle,
                                                     hipblasFillMode_t           uplo,
@@ -8839,14 +8839,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriBatched(hipblasHandle_t             
                                                     int                         lda,
                                                     hipblasComplex*             invA[],
                                                     int                         ldinvA,
-                                                    int                         batch_count);
+                                                    int                         batchCount);
 
 /*! \brief BLAS Level 3 API
 
     \details
     trtri_batched  compute the inverse of A_i and write into invA_i where
                    A_i and invA_i are the i-th matrices in the batch,
-                   for i = 1, ..., batch_count.
+                   for i = 1, ..., batchCount.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -8878,7 +8878,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriBatched(hipblasHandle_t             
     ldinvA    [int]
               specifies the leading dimension of each invA_i.
     @param[in]
-    batch_count [int]
+    batchCount [int]
               numbers of matrices in the batch
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrtriBatched(hipblasHandle_t                   handle,
@@ -8889,7 +8889,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrtriBatched(hipblasHandle_t             
                                                     int                               lda,
                                                     hipblasDoubleComplex*             invA[],
                                                     int                               ldinvA,
-                                                    int                               batch_count);
+                                                    int                               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrtriStridedBatched(hipblasHandle_t   handle,
                                                            hipblasFillMode_t uplo,
@@ -8897,11 +8897,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrtriStridedBatched(hipblasHandle_t   han
                                                            int               n,
                                                            const float*      A,
                                                            int               lda,
-                                                           hipblasStride     stride_A,
+                                                           hipblasStride     strideA,
                                                            float*            invA,
                                                            int               ldinvA,
                                                            hipblasStride     stride_invA,
-                                                           int               batch_count);
+                                                           int               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrtriStridedBatched(hipblasHandle_t   handle,
                                                            hipblasFillMode_t uplo,
@@ -8909,11 +8909,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrtriStridedBatched(hipblasHandle_t   han
                                                            int               n,
                                                            const double*     A,
                                                            int               lda,
-                                                           hipblasStride     stride_A,
+                                                           hipblasStride     strideA,
                                                            double*           invA,
                                                            int               ldinvA,
                                                            hipblasStride     stride_invA,
-                                                           int               batch_count);
+                                                           int               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t       handle,
                                                            hipblasFillMode_t     uplo,
@@ -8921,18 +8921,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t      
                                                            int                   n,
                                                            const hipblasComplex* A,
                                                            int                   lda,
-                                                           hipblasStride         stride_A,
+                                                           hipblasStride         strideA,
                                                            hipblasComplex*       invA,
                                                            int                   ldinvA,
                                                            hipblasStride         stride_invA,
-                                                           int                   batch_count);
+                                                           int                   batchCount);
 
 /*! \brief BLAS Level 3 API
 
     \details
     trtri_strided_batched compute the inverse of A_i and write into invA_i where
                    A_i and invA_i are the i-th matrices in the batch,
-                   for i = 1, ..., batch_count
+                   for i = 1, ..., batchCount
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -8952,7 +8952,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t      
     lda       [int]
               specifies the leading dimension of each A.
     @param[in]
-    stride_a  [hipblasStride]
+    strideA  [hipblasStride]
              "batch stride a": stride from the start of one A_i matrix to the next A_(i + 1).
     @param[out]
     invA      device pointer storing the inverses of each matrix A_i.
@@ -8970,7 +8970,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t      
     stride_invA  [hipblasStride]
                  "batch stride invA": stride from the start of one invA_i matrix to the next invA_(i + 1).
     @param[in]
-    batch_count  [int]
+    batchCount  [int]
                  numbers of matrices in the batch
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrtriStridedBatched(hipblasHandle_t             handle,
@@ -8979,11 +8979,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrtriStridedBatched(hipblasHandle_t      
                                                            int                         n,
                                                            const hipblasDoubleComplex* A,
                                                            int                         lda,
-                                                           hipblasStride               stride_A,
+                                                           hipblasStride               strideA,
                                                            hipblasDoubleComplex*       invA,
                                                            int                         ldinvA,
                                                            hipblasStride               stride_invA,
-                                                           int                         batch_count);
+                                                           int                         batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdgmm(hipblasHandle_t   handle,
                                             hipblasSideMode_t side,
@@ -9081,7 +9081,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSdgmmBatched(hipblasHandle_t    handle,
                                                    int                incx,
                                                    float* const       C[],
                                                    int                ldc,
-                                                   int                batch_count);
+                                                   int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDdgmmBatched(hipblasHandle_t     handle,
                                                    hipblasSideMode_t   side,
@@ -9093,7 +9093,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdgmmBatched(hipblasHandle_t     handle,
                                                    int                 incx,
                                                    double* const       C[],
                                                    int                 ldc,
-                                                   int                 batch_count);
+                                                   int                 batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmBatched(hipblasHandle_t             handle,
                                                    hipblasSideMode_t           side,
@@ -9105,15 +9105,15 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmBatched(hipblasHandle_t             h
                                                    int                         incx,
                                                    hipblasComplex* const       C[],
                                                    int                         ldc,
-                                                   int                         batch_count);
+                                                   int                         batchCount);
 
 /*! \brief BLAS Level 3 API
 
     \details
     xDGMMBatched performs one of the batched matrix-matrix operations
 
-        C_i = A_i * diag(x_i) for i = 0, 1, ... batch_count-1 if side == HIPBLAS_SIDE_RIGHT
-        C_i = diag(x_i) * A_i for i = 0, 1, ... batch_count-1 if side == HIPBLAS_SIDE_LEFT
+        C_i = A_i * diag(x_i) for i = 0, 1, ... batchCount-1 if side == HIPBLAS_SIDE_RIGHT
+        C_i = diag(x_i) * A_i for i = 0, 1, ... batchCount-1 if side == HIPBLAS_SIDE_LEFT
 
     where C_i and A_i are m by n dimensional matrices. diag(x_i) is a diagonal matrix
     and x_i is vector of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension m
@@ -9151,7 +9151,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmBatched(hipblasHandle_t             h
     ldc       [int]
               specifies the leading dimension of C_i.
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances in the batch.
 
     ********************************************************************/
@@ -9165,7 +9165,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmmBatched(hipblasHandle_t              
                                                    int                               incx,
                                                    hipblasDoubleComplex* const       C[],
                                                    int                               ldc,
-                                                   int                               batch_count);
+                                                   int                               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdgmmStridedBatched(hipblasHandle_t   handle,
                                                           hipblasSideMode_t side,
@@ -9173,14 +9173,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSdgmmStridedBatched(hipblasHandle_t   hand
                                                           int               n,
                                                           const float*      A,
                                                           int               lda,
-                                                          hipblasStride     stride_A,
+                                                          hipblasStride     strideA,
                                                           const float*      x,
                                                           int               incx,
-                                                          hipblasStride     stride_x,
+                                                          hipblasStride     stridex,
                                                           float*            C,
                                                           int               ldc,
-                                                          hipblasStride     stride_C,
-                                                          int               batch_count);
+                                                          hipblasStride     strideC,
+                                                          int               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDdgmmStridedBatched(hipblasHandle_t   handle,
                                                           hipblasSideMode_t side,
@@ -9188,14 +9188,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdgmmStridedBatched(hipblasHandle_t   hand
                                                           int               n,
                                                           const double*     A,
                                                           int               lda,
-                                                          hipblasStride     stride_A,
+                                                          hipblasStride     strideA,
                                                           const double*     x,
                                                           int               incx,
-                                                          hipblasStride     stride_x,
+                                                          hipblasStride     stridex,
                                                           double*           C,
                                                           int               ldc,
-                                                          hipblasStride     stride_C,
-                                                          int               batch_count);
+                                                          hipblasStride     strideC,
+                                                          int               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       handle,
                                                           hipblasSideMode_t     side,
@@ -9210,15 +9210,15 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       
                                                           hipblasComplex*       C,
                                                           int                   ldc,
                                                           hipblasStride         stride_C,
-                                                          int                   batch_count);
+                                                          int                   batchCount);
 
 /*! \brief BLAS Level 3 API
 
     \details
     xDGMMstridedBatched performs one of the batched matrix-matrix operations
 
-        C_i = A_i * diag(x_i)   if side == HIPBLAS_SIDE_RIGHT   for i = 0, 1, ... batch_count-1
-        C_i = diag(x_i) * A_i   if side == HIPBLAS_SIDE_LEFT    for i = 0, 1, ... batch_count-1
+        C_i = A_i * diag(x_i)   if side == HIPBLAS_SIDE_RIGHT   for i = 0, 1, ... batchCount-1
+        C_i = diag(x_i) * A_i   if side == HIPBLAS_SIDE_LEFT    for i = 0, 1, ... batchCount-1
 
     where C_i and A_i are m by n dimensional matrices. diag(x_i) is a diagonal matrix
     and x_i is vector of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension m
@@ -9243,7 +9243,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       
     lda       [int]
               specifies the leading dimension of A.
     @param[in]
-    stride_A  [hipblasStride]
+    strideA  [hipblasStride]
               stride from the start of one matrix (A_i) and the next one (A_i+1)
     @param[in]
     x         pointer to the first vector x_0 on the GPU.
@@ -9253,7 +9253,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       
     incx      [int]
               specifies the increment between values of x
     @param[in]
-    stride_x  [hipblasStride]
+    stridex  [hipblasStride]
               stride from the start of one vector(x_i) and the next one (x_i+1)
     @param[in, out]
     C         device pointer to the first matrix C_0 on the GPU.
@@ -9262,10 +9262,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       
     ldc       [int]
               specifies the leading dimension of C.
     @param[in]
-    stride_C  [hipblasStride]
+    strideC  [hipblasStride]
               stride from the start of one matrix (C_i) and the next one (C_i+1)
     @param[in]
-    batch_count [int]
+    batchCount [int]
                 number of instances i in the batch.
 
     ********************************************************************/
@@ -9275,14 +9275,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmmStridedBatched(hipblasHandle_t       
                                                           int                         n,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          hipblasStride               stride_A,
+                                                          hipblasStride               strideA,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          hipblasStride               stride_x,
+                                                          hipblasStride               stridex,
                                                           hipblasDoubleComplex*       C,
                                                           int                         ldc,
-                                                          hipblasStride               stride_C,
-                                                          int                         batch_count);
+                                                          hipblasStride               strideC,
+                                                          int                         batchCount);
 
 // getrf
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrf(
