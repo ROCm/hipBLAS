@@ -420,30 +420,30 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamax(
     batchCount [int]
               number of instances in the batch, must be > 0.
     @param[out]
-    results
+    result
               device or host array of pointers of batchCount size for results.
               return is 0 if n, incx<=0.
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIsamaxBatched(
-    hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* results);
+    hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIdamaxBatched(
-    hipblasHandle_t handle, int n, const double* const x[], int incx, int batchCount, int* results);
+    hipblasHandle_t handle, int n, const double* const x[], int incx, int batchCount, int* result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIcamaxBatched(hipblasHandle_t             handle,
                                                     int                         n,
                                                     const hipblasComplex* const x[],
                                                     int                         incx,
                                                     int                         batchCount,
-                                                    int*                        results);
+                                                    int*                        result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxBatched(hipblasHandle_t                   handle,
                                                     int                               n,
                                                     const hipblasDoubleComplex* const x[],
                                                     int                               incx,
                                                     int                               batchCount,
-                                                    int*                              results);
+                                                    int*                              result);
 
 /*! \brief BLAS Level 1 API
 
@@ -468,7 +468,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxBatched(hipblasHandle_t             
     batchCount [int]
               number of instances in the batch
     @param[out]
-    results
+    result
               device or host pointer for storing contiguous batchCount results.
               return is 0 if n <= 0, incx<=0.
 
@@ -480,7 +480,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIsamaxStridedBatched(hipblasHandle_t handl
                                                            int             incx,
                                                            hipblasStride   stridex,
                                                            int             batchCount,
-                                                           int*            results);
+                                                           int*            result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIdamaxStridedBatched(hipblasHandle_t handle,
                                                            int             n,
@@ -488,7 +488,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIdamaxStridedBatched(hipblasHandle_t handl
                                                            int             incx,
                                                            hipblasStride   stridex,
                                                            int             batchCount,
-                                                           int*            results);
+                                                           int*            result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIcamaxStridedBatched(hipblasHandle_t       handle,
                                                            int                   n,
@@ -496,7 +496,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIcamaxStridedBatched(hipblasHandle_t      
                                                            int                   incx,
                                                            hipblasStride         stridex,
                                                            int                   batchCount,
-                                                           int*                  results);
+                                                           int*                  result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxStridedBatched(hipblasHandle_t             handle,
                                                            int                         n,
@@ -504,7 +504,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxStridedBatched(hipblasHandle_t      
                                                            int                         incx,
                                                            hipblasStride               stridex,
                                                            int                         batchCount,
-                                                           int*                        results);
+                                                           int*                        result);
 
 /*! \brief BLAS Level 1 API
 
@@ -560,30 +560,30 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamin(
     batchCount [int]
               number of instances in the batch, must be > 0.
     @param[out]
-    results
+    result
               device or host pointers to array of batchCount size for results.
               return is 0 if n, incx<=0.
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIsaminBatched(
-    hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* results);
+    hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIdaminBatched(
-    hipblasHandle_t handle, int n, const double* const x[], int incx, int batchCount, int* results);
+    hipblasHandle_t handle, int n, const double* const x[], int incx, int batchCount, int* result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIcaminBatched(hipblasHandle_t             handle,
                                                     int                         n,
                                                     const hipblasComplex* const x[],
                                                     int                         incx,
                                                     int                         batchCount,
-                                                    int*                        results);
+                                                    int*                        result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIzaminBatched(hipblasHandle_t                   handle,
                                                     int                               n,
                                                     const hipblasDoubleComplex* const x[],
                                                     int                               incx,
                                                     int                               batchCount,
-                                                    int*                              results);
+                                                    int*                              result);
 
 /*! \brief BLAS Level 1 API
 
@@ -608,7 +608,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzaminBatched(hipblasHandle_t             
     batchCount [int]
               number of instances in the batch
     @param[out]
-    results
+    result
               device or host pointer to array for storing contiguous batchCount results.
               return is 0 if n <= 0, incx<=0.
 
@@ -620,7 +620,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIsaminStridedBatched(hipblasHandle_t handl
                                                            int             incx,
                                                            hipblasStride   stridex,
                                                            int             batchCount,
-                                                           int*            results);
+                                                           int*            result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIdaminStridedBatched(hipblasHandle_t handle,
                                                            int             n,
@@ -628,7 +628,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIdaminStridedBatched(hipblasHandle_t handl
                                                            int             incx,
                                                            hipblasStride   stridex,
                                                            int             batchCount,
-                                                           int*            results);
+                                                           int*            result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIcaminStridedBatched(hipblasHandle_t       handle,
                                                            int                   n,
@@ -636,7 +636,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIcaminStridedBatched(hipblasHandle_t      
                                                            int                   incx,
                                                            hipblasStride         stridex,
                                                            int                   batchCount,
-                                                           int*                  results);
+                                                           int*                  result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIzaminStridedBatched(hipblasHandle_t             handle,
                                                            int                         n,
@@ -644,7 +644,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzaminStridedBatched(hipblasHandle_t      
                                                            int                         incx,
                                                            hipblasStride               stridex,
                                                            int                         batchCount,
-                                                           int*                        results);
+                                                           int*                        result);
 
 /*! \brief BLAS Level 1 API
 
@@ -704,34 +704,34 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasum(
     batchCount [int]
               number of instances in the batch.
     @param[out]
-    results
+    result
               device array or host array of batchCount size for results.
               return is 0.0 if n, incx<=0.
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSasumBatched(
-    hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, float* results);
+    hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, float* result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDasumBatched(hipblasHandle_t     handle,
                                                    int                 n,
                                                    const double* const x[],
                                                    int                 incx,
                                                    int                 batchCount,
-                                                   double*             results);
+                                                   double*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasScasumBatched(hipblasHandle_t             handle,
                                                     int                         n,
                                                     const hipblasComplex* const x[],
                                                     int                         incx,
                                                     int                         batchCount,
-                                                    float*                      results);
+                                                    float*                      result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched(hipblasHandle_t                   handle,
                                                     int                               n,
                                                     const hipblasDoubleComplex* const x[],
                                                     int                               incx,
                                                     int                               batchCount,
-                                                    double*                           results);
+                                                    double*                           result);
 
 /*! \brief BLAS Level 1 API
 
@@ -761,7 +761,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched(hipblasHandle_t             
     batchCount [int]
               number of instances in the batch
     @param[out]
-    results
+    result
               device pointer or host pointer to array for storing contiguous batchCount results.
               return is 0.0 if n, incx<=0.
     ********************************************************************/
@@ -772,7 +772,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSasumStridedBatched(hipblasHandle_t handle
                                                           int             incx,
                                                           hipblasStride   stridex,
                                                           int             batchCount,
-                                                          float*          results);
+                                                          float*          result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDasumStridedBatched(hipblasHandle_t handle,
                                                           int             n,
@@ -780,7 +780,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDasumStridedBatched(hipblasHandle_t handle
                                                           int             incx,
                                                           hipblasStride   stridex,
                                                           int             batchCount,
-                                                          double*         results);
+                                                          double*         result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t       handle,
                                                            int                   n,
@@ -788,7 +788,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t      
                                                            int                   incx,
                                                            hipblasStride         stridex,
                                                            int                   batchCount,
-                                                           float*                results);
+                                                           float*                result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t             handle,
                                                            int                         n,
@@ -796,7 +796,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t      
                                                            int                         incx,
                                                            hipblasStride               stridex,
                                                            int                         batchCount,
-                                                           double*                     results);
+                                                           double*                     result);
 
 /*! \brief BLAS Level 1 API
 
@@ -1355,7 +1355,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotu(hipblasHandle_t             handle,
     batchCount [int]
                 number of instances in the batch
     @param[inout]
-    results
+    result
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
 
@@ -1368,7 +1368,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasHdotBatched(hipblasHandle_t          handl
                                                   const hipblasHalf* const y[],
                                                   int                      incy,
                                                   int                      batchCount,
-                                                  hipblasHalf*             results);
+                                                  hipblasHalf*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasBfdotBatched(hipblasHandle_t              handle,
                                                    int                          n,
@@ -1377,7 +1377,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasBfdotBatched(hipblasHandle_t              
                                                    const hipblasBfloat16* const y[],
                                                    int                          incy,
                                                    int                          batchCount,
-                                                   hipblasBfloat16*             results);
+                                                   hipblasBfloat16*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdotBatched(hipblasHandle_t    handle,
                                                   int                n,
@@ -1386,7 +1386,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSdotBatched(hipblasHandle_t    handle,
                                                   const float* const y[],
                                                   int                incy,
                                                   int                batchCount,
-                                                  float*             results);
+                                                  float*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDdotBatched(hipblasHandle_t     handle,
                                                   int                 n,
@@ -1395,7 +1395,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdotBatched(hipblasHandle_t     handle,
                                                   const double* const y[],
                                                   int                 incy,
                                                   int                 batchCount,
-                                                  double*             results);
+                                                  double*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCdotcBatched(hipblasHandle_t             handle,
                                                    int                         n,
@@ -1404,7 +1404,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdotcBatched(hipblasHandle_t             h
                                                    const hipblasComplex* const y[],
                                                    int                         incy,
                                                    int                         batchCount,
-                                                   hipblasComplex*             results);
+                                                   hipblasComplex*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCdotuBatched(hipblasHandle_t             handle,
                                                    int                         n,
@@ -1413,7 +1413,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdotuBatched(hipblasHandle_t             h
                                                    const hipblasComplex* const y[],
                                                    int                         incy,
                                                    int                         batchCount,
-                                                   hipblasComplex*             results);
+                                                   hipblasComplex*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcBatched(hipblasHandle_t                   handle,
                                                    int                               n,
@@ -1422,7 +1422,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcBatched(hipblasHandle_t              
                                                    const hipblasDoubleComplex* const y[],
                                                    int                               incy,
                                                    int                               batchCount,
-                                                   hipblasDoubleComplex*             results);
+                                                   hipblasDoubleComplex*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t                   handle,
                                                    int                               n,
@@ -1431,7 +1431,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t              
                                                    const hipblasDoubleComplex* const y[],
                                                    int                               incy,
                                                    int                               batchCount,
-                                                   hipblasDoubleComplex*             results);
+                                                   hipblasDoubleComplex*             result);
 
 /*! \brief BLAS Level 1 API
 
@@ -1473,7 +1473,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuBatched(hipblasHandle_t              
     batchCount [int]
                 number of instances in the batch
     @param[inout]
-    results
+    result
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
 
@@ -1488,7 +1488,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasHdotStridedBatched(hipblasHandle_t    hand
                                                          int                incy,
                                                          hipblasStride      stridey,
                                                          int                batchCount,
-                                                         hipblasHalf*       results);
+                                                         hipblasHalf*       result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasBfdotStridedBatched(hipblasHandle_t        handle,
                                                           int                    n,
@@ -1499,7 +1499,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasBfdotStridedBatched(hipblasHandle_t       
                                                           int                    incy,
                                                           hipblasStride          stridey,
                                                           int                    batchCount,
-                                                          hipblasBfloat16*       results);
+                                                          hipblasBfloat16*       result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,
                                                          int             n,
@@ -1510,7 +1510,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSdotStridedBatched(hipblasHandle_t handle,
                                                          int             incy,
                                                          hipblasStride   stridey,
                                                          int             batchCount,
-                                                         float*          results);
+                                                         float*          result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDdotStridedBatched(hipblasHandle_t handle,
                                                          int             n,
@@ -1521,7 +1521,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdotStridedBatched(hipblasHandle_t handle,
                                                          int             incy,
                                                          hipblasStride   stridey,
                                                          int             batchCount,
-                                                         double*         results);
+                                                         double*         result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCdotcStridedBatched(hipblasHandle_t       handle,
                                                           int                   n,
@@ -1532,7 +1532,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdotcStridedBatched(hipblasHandle_t       
                                                           int                   incy,
                                                           hipblasStride         stridey,
                                                           int                   batchCount,
-                                                          hipblasComplex*       results);
+                                                          hipblasComplex*       result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCdotuStridedBatched(hipblasHandle_t       handle,
                                                           int                   n,
@@ -1543,7 +1543,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdotuStridedBatched(hipblasHandle_t       
                                                           int                   incy,
                                                           hipblasStride         stridey,
                                                           int                   batchCount,
-                                                          hipblasComplex*       results);
+                                                          hipblasComplex*       result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t             handle,
                                                           int                         n,
@@ -1554,7 +1554,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t       
                                                           int                         incy,
                                                           hipblasStride               stridey,
                                                           int                         batchCount,
-                                                          hipblasDoubleComplex*       results);
+                                                          hipblasDoubleComplex*       result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuStridedBatched(hipblasHandle_t             handle,
                                                           int                         n,
@@ -1565,7 +1565,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuStridedBatched(hipblasHandle_t       
                                                           int                         incy,
                                                           hipblasStride               stridey,
                                                           int                         batchCount,
-                                                          hipblasDoubleComplex*       results);
+                                                          hipblasDoubleComplex*       result);
 
 /*! \brief BLAS Level 1 API
 
@@ -1627,35 +1627,35 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2(
     batchCount [int]
               number of instances in the batch
     @param[out]
-    results
+    result
               device pointer or host pointer to array of batchCount size for nrm2 results.
               return is 0.0 for each element if n <= 0, incx<=0.
 
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSnrm2Batched(
-    hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, float* results);
+    hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, float* result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDnrm2Batched(hipblasHandle_t     handle,
                                                    int                 n,
                                                    const double* const x[],
                                                    int                 incx,
                                                    int                 batchCount,
-                                                   double*             results);
+                                                   double*             result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2Batched(hipblasHandle_t             handle,
                                                     int                         n,
                                                     const hipblasComplex* const x[],
                                                     int                         incx,
                                                     int                         batchCount,
-                                                    float*                      results);
+                                                    float*                      result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2Batched(hipblasHandle_t                   handle,
                                                     int                               n,
                                                     const hipblasDoubleComplex* const x[],
                                                     int                               incx,
                                                     int                               batchCount,
-                                                    double*                           results);
+                                                    double*                           result);
 
 /*! \brief BLAS Level 1 API
 
@@ -1686,7 +1686,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2Batched(hipblasHandle_t             
     batchCount [int]
               number of instances in the batch
     @param[out]
-    results
+    result
               device pointer or host pointer to array for storing contiguous batch_count results.
               return is 0.0 for each element if n <= 0, incx<=0.
 
@@ -1698,7 +1698,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSnrm2StridedBatched(hipblasHandle_t handle
                                                           int             incx,
                                                           hipblasStride   stridex,
                                                           int             batchCount,
-                                                          float*          results);
+                                                          float*          result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDnrm2StridedBatched(hipblasHandle_t handle,
                                                           int             n,
@@ -1706,7 +1706,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDnrm2StridedBatched(hipblasHandle_t handle
                                                           int             incx,
                                                           hipblasStride   stridex,
                                                           int             batchCount,
-                                                          double*         results);
+                                                          double*         result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t       handle,
                                                            int                   n,
@@ -1714,7 +1714,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t      
                                                            int                   incx,
                                                            hipblasStride         stridex,
                                                            int                   batchCount,
-                                                           float*                results);
+                                                           float*                result);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2StridedBatched(hipblasHandle_t             handle,
                                                            int                         n,
@@ -1722,7 +1722,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2StridedBatched(hipblasHandle_t      
                                                            int                         incx,
                                                            hipblasStride               stridex,
                                                            int                         batchCount,
-                                                           double*                     results);
+                                                           double*                     result);
 
 /*! \brief BLAS Level 1 API
 
