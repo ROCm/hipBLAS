@@ -5024,7 +5024,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxStridedBatched(hipblasHandle_t      
 
     \details
 
-    herkxstridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
+    herkxStridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
 
     C_i := alpha*op( A_i )*op( B_i )^H + beta*C_i
 
@@ -5364,7 +5364,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kStridedBatched(hipblasHandle_t      
 
     \details
 
-    her2kstridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-2k update
+    her2kStridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-2k update
 
     C_i := alpha*op( A_i )*op( B_i )^H + conj(alpha)*op( B_i )*op( A_i )^H + beta*C_i
 
@@ -5794,7 +5794,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymmStridedBatched(hipblasHandle_t       
 
     \details
 
-    symmstridedBatched performs a batch of the matrix-matrix operations:
+    symmStridedBatched performs a batch of the matrix-matrix operations:
 
     C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
     C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
@@ -6185,7 +6185,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkStridedBatched(hipblasHandle_t       
 
     \details
 
-    syrkstridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+    syrkStridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
 
     C_i := alpha*op( A_i )*op( A_i )^T + beta*C_i
 
@@ -6601,7 +6601,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2kStridedBatched(hipblasHandle_t      
 
     \details
 
-    syr2kstridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-2k update
+    syr2kStridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-2k update
 
     C_i := alpha*(op( A_i )*op( B_i )^T + op( B_i )*op( A_i )^T) + beta*C_i
 
@@ -7038,7 +7038,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkxStridedBatched(hipblasHandle_t      
 
     \details
 
-    syrkxstridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+    syrkxStridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
 
     C_i := alpha*op( A_i )*op( B_i )^T + beta*C_i
 
@@ -7189,7 +7189,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeam(hipblasHandle_t       handle,
 /*! \brief BLAS Level 3 API
 
     \details
-    xGEAM performs one of the matrix-matrix operations
+    geam performs one of the matrix-matrix operations
 
         C = alpha*op( A ) + beta*op( B ),
 
@@ -7300,7 +7300,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamBatched(hipblasHandle_t             h
 /*! \brief BLAS Level 3 API
 
     \details
-    xGEAMBatched performs one of the batched matrix-matrix operations
+    geamBatched performs one of the batched matrix-matrix operations
 
         C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batchCount - 1
 
@@ -7429,7 +7429,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       
 /*! \brief BLAS Level 3 API
 
     \details
-    xGEAMstridedBatched performs one of the batched matrix-matrix operations
+    geamStridedBatched performs one of the batched matrix-matrix operations
 
         C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batchCount - 1
 
@@ -7760,7 +7760,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       
 
     \details
 
-    hemmstridedBatched performs a batch of the matrix-matrix operations:
+    hemmStridedBatched performs a batch of the matrix-matrix operations:
 
     C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
     C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
@@ -8217,7 +8217,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       
 
     \details
 
-    trmmstridedBatched performs one of the strided_batched matrix-matrix operations
+    trmmStridedBatched performs one of the strided_batched matrix-matrix operations
 
     B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
 
@@ -8648,7 +8648,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       
 
 /*! \brief BLAS Level 3 API
     \details
-    trsm_sridedBatched performs the following strided batched operation:
+    trsmSridedBatched performs the following strided batched operation:
 
         op(A_i)*X_i = alpha*B_i or  X_i*op(A_i) = alpha*B_i, for i = 1, ..., batchCount.
 
@@ -8844,7 +8844,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriBatched(hipblasHandle_t             
 /*! \brief BLAS Level 3 API
 
     \details
-    trtri_batched  compute the inverse of A_i and write into invA_i where
+    trtriBatched  compute the inverse of A_i and write into invA_i where
                    A_i and invA_i are the i-th matrices in the batch,
                    for i = 1, ..., batchCount.
 
@@ -8930,7 +8930,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t      
 /*! \brief BLAS Level 3 API
 
     \details
-    trtri_strided_batched compute the inverse of A_i and write into invA_i where
+    trtriStridedBatched compute the inverse of A_i and write into invA_i where
                    A_i and invA_i are the i-th matrices in the batch,
                    for i = 1, ..., batchCount
 
@@ -9021,7 +9021,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmm(hipblasHandle_t       handle,
 /*! \brief BLAS Level 3 API
 
     \details
-    xDGMM performs one of the matrix-matrix operations
+    dgmm performs one of the matrix-matrix operations
 
         C = A * diag(x) if side == HIPBLAS_SIDE_RIGHT
         C = diag(x) * A if side == HIPBLAS_SIDE_LEFT
@@ -9110,7 +9110,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmBatched(hipblasHandle_t             h
 /*! \brief BLAS Level 3 API
 
     \details
-    xDGMMBatched performs one of the batched matrix-matrix operations
+    dgmmBatched performs one of the batched matrix-matrix operations
 
         C_i = A_i * diag(x_i) for i = 0, 1, ... batchCount-1 if side == HIPBLAS_SIDE_RIGHT
         C_i = diag(x_i) * A_i for i = 0, 1, ... batchCount-1 if side == HIPBLAS_SIDE_LEFT
@@ -9215,7 +9215,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       
 /*! \brief BLAS Level 3 API
 
     \details
-    xDGMMstridedBatched performs one of the batched matrix-matrix operations
+    dgmmStridedBatched performs one of the batched matrix-matrix operations
 
         C_i = A_i * diag(x_i)   if side == HIPBLAS_SIDE_RIGHT   for i = 0, 1, ... batchCount-1
         C_i = diag(x_i) * A_i   if side == HIPBLAS_SIDE_LEFT    for i = 0, 1, ... batchCount-1
