@@ -1746,6 +1746,72 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgbmv(hipblasHandle_t       handle,
                                             hipblasComplex*       y,
                                             int                   incy);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xGBMV performs one of the matrix-vector operations
+
+        y := alpha*A*x    + beta*y,   or
+        y := alpha*A**T*x + beta*y,   or
+        y := alpha*A**H*x + beta*y,
+
+    where alpha and beta are scalars, x and y are vectors and A is an
+    m by n banded matrix with kl sub-diagonals and ku super-diagonals.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    trans     [rocblas_operation]
+              indicates whether matrix A is tranposed (conjugated) or not
+    @param[in]
+    m         [rocblas_int]
+              number of rows of matrix A
+    @param[in]
+    n         [rocblas_int]
+              number of columns of matrix A
+    @param[in]
+    kl        [rocblas_int]
+              number of sub-diagonals of A
+    @param[in]
+    ku        [rocblas_int]
+              number of super-diagonals of A
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+        A     device pointer storing banded matrix A.
+              Leading (kl + ku + 1) by n part of the matrix contains the coefficients
+              of the banded matrix. The leading diagonal resides in row (ku + 1) with
+              the first super-diagonal above on the RHS of row ku. The first sub-diagonal
+              resides below on the LHS of row ku + 2. This propogates up and down across
+              sub/super-diagonals.
+                Ex: (m = n = 7; ku = 2, kl = 2)
+                1 2 3 0 0 0 0             0 0 3 3 3 3 3
+                4 1 2 3 0 0 0             0 2 2 2 2 2 2
+                5 4 1 2 3 0 0    ---->    1 1 1 1 1 1 1
+                0 5 4 1 2 3 0             4 4 4 4 4 4 0
+                0 0 5 4 1 2 0             5 5 5 5 5 0 0
+                0 0 0 5 4 1 2             0 0 0 0 0 0 0
+                0 0 0 0 5 4 1             0 0 0 0 0 0 0
+              Note that the empty elements which don't correspond to data will not
+              be referenced.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A. Must be >= (kl + ku + 1)
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgbmv(hipblasHandle_t             handle,
                                             hipblasOperation_t          trans,
                                             int                         m,
@@ -1810,6 +1876,77 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgbmvBatched(hipblasHandle_t             h
                                                    int                         incy,
                                                    int                         batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xGBMV_BATCHED performs one of the matrix-vector operations
+
+        y_i := alpha*A_i*x_i    + beta*y_i,   or
+        y_i := alpha*A_i**T*x_i + beta*y_i,   or
+        y_i := alpha*A_i**H*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    m by n banded matrix with kl sub-diagonals and ku super-diagonals,
+    for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    trans     [rocblas_operation]
+              indicates whether matrix A is tranposed (conjugated) or not
+    @param[in]
+    m         [rocblas_int]
+              number of rows of each matrix A_i
+    @param[in]
+    n         [rocblas_int]
+              number of columns of each matrix A_i
+    @param[in]
+    kl        [rocblas_int]
+              number of sub-diagonals of each A_i
+    @param[in]
+    ku        [rocblas_int]
+              number of super-diagonals of each A_i
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+        A     device array of device pointers storing each banded matrix A_i.
+              Leading (kl + ku + 1) by n part of the matrix contains the coefficients
+              of the banded matrix. The leading diagonal resides in row (ku + 1) with
+              the first super-diagonal above on the RHS of row ku. The first sub-diagonal
+              resides below on the LHS of row ku + 2. This propogates up and down across
+              sub/super-diagonals.
+                Ex: (m = n = 7; ku = 2, kl = 2)
+                1 2 3 0 0 0 0             0 0 3 3 3 3 3
+                4 1 2 3 0 0 0             0 2 2 2 2 2 2
+                5 4 1 2 3 0 0    ---->    1 1 1 1 1 1 1
+                0 5 4 1 2 3 0             4 4 4 4 4 4 0
+                0 0 5 4 1 2 0             5 5 5 5 5 0 0
+                0 0 0 5 4 1 2             0 0 0 0 0 0 0
+                0 0 0 0 5 4 1             0 0 0 0 0 0 0
+              Note that the empty elements which don't correspond to data will not
+              be referenced.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. Must be >= (kl + ku + 1)
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each y_i.
+    @param[in]
+    batch_count [rocblas_int]
+                specifies the number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgbmvBatched(hipblasHandle_t                   handle,
                                                    hipblasOperation_t                trans,
                                                    int                               m,
@@ -1884,6 +2021,86 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgbmvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stride_y,
                                                           int                   batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xGBMV_STRIDED_BATCHED performs one of the matrix-vector operations
+
+        y_i := alpha*A_i*x_i    + beta*y_i,   or
+        y_i := alpha*A_i**T*x_i + beta*y_i,   or
+        y_i := alpha*A_i**H*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    m by n banded matrix with kl sub-diagonals and ku super-diagonals,
+    for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    trans     [rocblas_operation]
+              indicates whether matrix A is tranposed (conjugated) or not
+    @param[in]
+    m         [rocblas_int]
+              number of rows of matrix A
+    @param[in]
+    n         [rocblas_int]
+              number of columns of matrix A
+    @param[in]
+    kl        [rocblas_int]
+              number of sub-diagonals of A
+    @param[in]
+    ku        [rocblas_int]
+              number of super-diagonals of A
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+        A     device pointer to first banded matrix (A_1).
+              Leading (kl + ku + 1) by n part of the matrix contains the coefficients
+              of the banded matrix. The leading diagonal resides in row (ku + 1) with
+              the first super-diagonal above on the RHS of row ku. The first sub-diagonal
+              resides below on the LHS of row ku + 2. This propogates up and down across
+              sub/super-diagonals.
+                Ex: (m = n = 7; ku = 2, kl = 2)
+                1 2 3 0 0 0 0             0 0 3 3 3 3 3
+                4 1 2 3 0 0 0             0 2 2 2 2 2 2
+                5 4 1 2 3 0 0    ---->    1 1 1 1 1 1 1
+                0 5 4 1 2 3 0             4 4 4 4 4 4 0
+                0 0 5 4 1 2 0             5 5 5 5 5 0 0
+                0 0 0 5 4 1 2             0 0 0 0 0 0 0
+                0 0 0 0 5 4 1             0 0 0 0 0 0 0
+              Note that the empty elements which don't correspond to data will not
+              be referenced.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A. Must be >= (kl + ku + 1)
+    @param[in]
+    stride_A  [rocblas_stride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    x         device pointer to first vector (x_1).
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one vector (x_i) and the next one (x_i+1)
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device pointer to first vector (y_1).
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[in]
+    stride_y  [rocblas_stride]
+              stride from the start of one vector (y_i) and the next one (x_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+                specifies the number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgbmvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasOperation_t          trans,
                                                           int                         m,
@@ -1943,6 +2160,51 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgemv(hipblasHandle_t       handle,
                                             hipblasComplex*       y,
                                             int                   incy);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xGEMV performs one of the matrix-vector operations
+
+        y := alpha*A*x    + beta*y,   or
+        y := alpha*A**T*x + beta*y,   or
+        y := alpha*A**H*x + beta*y,
+
+    where alpha and beta are scalars, x and y are vectors and A is an
+    m by n matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    trans     [rocblas_operation]
+              indicates whether matrix A is tranposed (conjugated) or not
+    @param[in]
+    m         [rocblas_int]
+              number of rows of matrix A
+    @param[in]
+    n         [rocblas_int]
+              number of columns of matrix A
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    A         device pointer storing matrix A.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgemv(hipblasHandle_t             handle,
                                             hipblasOperation_t          trans,
                                             int                         m,
@@ -1999,6 +2261,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgemvBatched(hipblasHandle_t             h
                                                    int                         incy,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xGEMV_BATCHED performs a batch of matrix-vector operations
+
+        y_i := alpha*A_i*x_i    + beta*y_i,   or
+        y_i := alpha*A_i**T*x_i + beta*y_i,   or
+        y_i := alpha*A_i**H*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    m by n matrix, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle      [rocblas_handle]
+                handle to the rocblas library context queue.
+    @param[in]
+    trans       [rocblas_operation]
+                indicates whether matrices A_i are tranposed (conjugated) or not
+    @param[in]
+    m           [rocblas_int]
+                number of rows of each matrix A_i
+    @param[in]
+    n           [rocblas_int]
+                number of columns of each matrix A_i
+    @param[in]
+    alpha       device pointer or host pointer to scalar alpha.
+    @param[in]
+    A           device array of device pointers storing each matrix A_i.
+    @param[in]
+    lda         [rocblas_int]
+                specifies the leading dimension of each matrix A_i.
+    @param[in]
+    x           device array of device pointers storing each vector x_i.
+    @param[in]
+    incx        [rocblas_int]
+                specifies the increment for the elements of each vector x_i.
+    @param[in]
+    beta        device pointer or host pointer to scalar beta.
+    @param[inout]
+    y           device array of device pointers storing each vector y_i.
+    @param[in]
+    incy        [rocblas_int]
+                specifies the increment for the elements of each vector y_i.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
                                                    hipblasOperation_t                trans,
                                                    int                               m,
@@ -2065,6 +2376,70 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stridey,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xGEMV_STRIDED_BATCHED performs a batch of matrix-vector operations
+
+        y_i := alpha*A_i*x_i    + beta*y_i,   or
+        y_i := alpha*A_i**T*x_i + beta*y_i,   or
+        y_i := alpha*A_i**H*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    m by n matrix, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle      [rocblas_handle]
+                handle to the rocblas library context queue.
+    @param[in]
+    transA      [rocblas_operation]
+                indicates whether matrices A_i are tranposed (conjugated) or not
+    @param[in]
+    m           [rocblas_int]
+                number of rows of matrices A_i
+    @param[in]
+    n           [rocblas_int]
+                number of columns of matrices A_i
+    @param[in]
+    alpha       device pointer or host pointer to scalar alpha.
+    @param[in]
+    A           device pointer to the first matrix (A_1) in the batch.
+    @param[in]
+    lda         [rocblas_int]
+                specifies the leading dimension of matrices A_i.
+    @param[in]
+    strideA     [rocblas_stride]
+                stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    x           device pointer to the first vector (x_1) in the batch.
+    @param[in]
+    incx        [rocblas_int]
+                specifies the increment for the elements of vectors x_i.
+    @param[in]
+    stridex     [rocblas_stride]
+                stride from the start of one vector (x_i) and the next one (x_i+1).
+                There are no restrictions placed on stride_x, however the user should
+                take care to ensure that stride_x is of appropriate size. When trans equals rocblas_operation_none
+                this typically means stride_x >= n * incx, otherwise stride_x >= m * incx.
+    @param[in]
+    beta        device pointer or host pointer to scalar beta.
+    @param[inout]
+    y           device pointer to the first vector (y_1) in the batch.
+    @param[in]
+    incy        [rocblas_int]
+                specifies the increment for the elements of vectors y_i.
+    @param[in]
+    stridey     [rocblas_stride]
+                stride from the start of one vector (y_i) and the next one (y_i+1).
+                There are no restrictions placed on stride_y, however the user should
+                take care to ensure that stride_y is of appropriate size. When trans equals rocblas_operation_none
+                this typically means stride_y >= m * incy, otherwise stride_y >= n * incy. stridey should be non zero.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasOperation_t          trans,
                                                           int                         m,
@@ -2138,6 +2513,47 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeru(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       A,
                                             int                         lda);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xGER,xGERU,xGERC performs the matrix-vector operations
+
+        A := A + alpha*x*y**T , OR
+        A := A + alpha*x*y**H for xGERC
+
+    where alpha is a scalar, x and y are vectors, and A is an
+    m by n matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    m         [rocblas_int]
+              the number of rows of the matrix A.
+    @param[in]
+    n         [rocblas_int]
+              the number of columns of the matrix A.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[inout]
+    A         device pointer storing matrix A.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A.
+
+    ********************************************************************/
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgerc(hipblasHandle_t             handle,
                                             int                         m,
                                             int                         n,
@@ -2209,6 +2625,51 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeruBatched(hipblasHandle_t              
                                                    hipblasDoubleComplex* const       A[],
                                                    int                               lda,
                                                    int                               batchCount);
+
+/*! \brief BLAS Level 2 API
+
+    \details
+    xGER,xGERU,xGERC_BATCHED performs a batch of the matrix-vector operations
+
+        A := A + alpha*x*y**T , OR
+        A := A + alpha*x*y**H for xGERC
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha is a scalar, x_i and y_i are vectors and A_i is an
+    m by n matrix, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    m         [rocblas_int]
+              the number of rows of each matrix A_i.
+    @param[in]
+    n         [rocblas_int]
+              the number of columns of eaceh matrix A_i.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each vector x_i.
+    @param[in]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each vector y_i.
+    @param[inout]
+    A         device array of device pointers storing each matrix A_i.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgercBatched(hipblasHandle_t                   handle,
                                                    int                               m,
@@ -2298,6 +2759,66 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeruStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideA,
                                                           int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xGERC,xGERU,xGERC_STRIDED_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*y_i**T, OR
+        A_i := A_i + alpha*x_i*y_i**H  for xGERC
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha is a scalar, x_i and y_i are vectors and A_i is an
+    m by n matrix, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    m         [rocblas_int]
+              the number of rows of each matrix A_i.
+    @param[in]
+    n         [rocblas_int]
+              the number of columns of each matrix A_i.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer to the first vector (x_1) in the batch.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increments for the elements of each vector x_i.
+    @param[in]
+    stridex   [rocblas_stride]
+              stride from the start of one vector (x_i) and the next one (x_i+1).
+              There are no restrictions placed on stride_x, however the user should
+              take care to ensure that stride_x is of appropriate size, for a typical
+              case this means stride_x >= m * incx.
+    @param[inout]
+    y         device pointer to the first vector (y_1) in the batch.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each vector y_i.
+    @param[in]
+    stridey   [rocblas_stride]
+              stride from the start of one vector (y_i) and the next one (y_i+1).
+              There are no restrictions placed on stride_y, however the user should
+              take care to ensure that stride_y is of appropriate size, for a typical
+              case this means stride_y >= n * incy.
+    @param[inout]
+    A         device pointer to the first matrix (A_1) in the batch.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    strideA     [rocblas_stride]
+                stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgercStridedBatched(hipblasHandle_t             handle,
                                                           int                         m,
                                                           int                         n,
@@ -2327,6 +2848,78 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChbmv(hipblasHandle_t       handle,
                                             hipblasComplex*       y,
                                             int                   incy);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHBMV performs the matrix-vector operations
+
+        y := alpha*A*x + beta*y
+
+    where alpha and beta are scalars, x and y are n element vectors and A is an
+    n by n Hermitian band matrix, with k super-diagonals.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: The upper triangular part of A is being supplied.
+              rocblas_fill_lower: The lower triangular part of A is being supplied.
+    @param[in]
+    n         [rocblas_int]
+              the order of the matrix A.
+    @param[in]
+    k         [rocblas_int]
+              the number of super-diagonals of the matrix A. Must be >= 0.
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    A         device pointer storing matrix A. Of dimension (lda, n).
+              if uplo == rocblas_fill_upper:
+                The leading (k + 1) by n part of A must contain the upper
+                triangular band part of the Hermitian matrix, with the leading
+                diagonal in row (k + 1), the first super-diagonal on the RHS
+                of row k, etc.
+                The top left k by x triangle of A will not be referenced.
+                    Ex (upper, lda = n = 4, k = 1):
+                    A                             Represented matrix
+                    (0,0) (5,9) (6,8) (7,7)       (1, 0) (5, 9) (0, 0) (0, 0)
+                    (1,0) (2,0) (3,0) (4,0)       (5,-9) (2, 0) (6, 8) (0, 0)
+                    (0,0) (0,0) (0,0) (0,0)       (0, 0) (6,-8) (3, 0) (7, 7)
+                    (0,0) (0,0) (0,0) (0,0)       (0, 0) (0, 0) (7,-7) (4, 0)
+
+              if uplo == rocblas_fill_lower:
+                The leading (k + 1) by n part of A must contain the lower
+                triangular band part of the Hermitian matrix, with the leading
+                diagonal in row (1), the first sub-diagonal on the LHS of
+                row 2, etc.
+                The bottom right k by k triangle of A will not be referenced.
+                    Ex (lower, lda = 2, n = 4, k = 1):
+                    A                               Represented matrix
+                    (1,0) (2,0) (3,0) (4,0)         (1, 0) (5,-9) (0, 0) (0, 0)
+                    (5,9) (6,8) (7,7) (0,0)         (5, 9) (2, 0) (6,-8) (0, 0)
+                                                    (0, 0) (6, 8) (3, 0) (7,-7)
+                                                    (0, 0) (0, 0) (7, 7) (4, 0)
+
+              As a Hermitian matrix, the imaginary part of the main diagonal
+              of A will not be referenced and is assumed to be == 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A. must be >= k + 1
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhbmv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             int                         n,
@@ -2355,6 +2948,81 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChbmvBatched(hipblasHandle_t             h
                                                    int                         incy,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHBMV_BATCHED performs one of the matrix-vector operations
+
+        y_i := alpha*A_i*x_i + beta*y_i
+
+    where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
+    n by n Hermitian band matrix with k super-diagonals, for each batch in i = [1, batch_count].
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: The upper triangular part of each A_i is being supplied.
+              rocblas_fill_lower: The lower triangular part of each A_i is being supplied.
+    @param[in]
+    n         [rocblas_int]
+              the order of each matrix A_i.
+    @param[in]
+    k         [rocblas_int]
+              the number of super-diagonals of each matrix A_i. Must be >= 0.
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    A         device array of device pointers storing each matrix_i A of dimension (lda, n).
+              if uplo == rocblas_fill_upper:
+                The leading (k + 1) by n part of each A_i must contain the upper
+                triangular band part of the Hermitian matrix, with the leading
+                diagonal in row (k + 1), the first super-diagonal on the RHS
+                of row k, etc.
+                The top left k by x triangle of each A_i will not be referenced.
+                    Ex (upper, lda = n = 4, k = 1):
+                    A                             Represented matrix
+                    (0,0) (5,9) (6,8) (7,7)       (1, 0) (5, 9) (0, 0) (0, 0)
+                    (1,0) (2,0) (3,0) (4,0)       (5,-9) (2, 0) (6, 8) (0, 0)
+                    (0,0) (0,0) (0,0) (0,0)       (0, 0) (6,-8) (3, 0) (7, 7)
+                    (0,0) (0,0) (0,0) (0,0)       (0, 0) (0, 0) (7,-7) (4, 0)
+
+              if uplo == rocblas_fill_lower:
+                The leading (k + 1) by n part of each A_i must contain the lower
+                triangular band part of the Hermitian matrix, with the leading
+                diagonal in row (1), the first sub-diagonal on the LHS of
+                row 2, etc.
+                The bottom right k by k triangle of each A_i will not be referenced.
+                    Ex (lower, lda = 2, n = 4, k = 1):
+                    A                               Represented matrix
+                    (1,0) (2,0) (3,0) (4,0)         (1, 0) (5,-9) (0, 0) (0, 0)
+                    (5,9) (6,8) (7,7) (0,0)         (5, 9) (2, 0) (6,-8) (0, 0)
+                                                    (0, 0) (6, 8) (3, 0) (7,-7)
+                                                    (0, 0) (0, 0) (7, 7) (4, 0)
+
+              As a Hermitian matrix, the imaginary part of the main diagonal
+              of each A_i will not be referenced and is assumed to be == 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. must be >= max(1, n)
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhbmvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    int                               n,
@@ -2387,6 +3055,90 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChbmvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stridey,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHBMV_STRIDED_BATCHED performs one of the matrix-vector operations
+
+        y_i := alpha*A_i*x_i + beta*y_i
+
+    where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
+    n by n Hermitian band matrix with k super-diagonals, for each batch in i = [1, batch_count].
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: The upper triangular part of each A_i is being supplied.
+              rocblas_fill_lower: The lower triangular part of each A_i is being supplied.
+    @param[in]
+    n         [rocblas_int]
+              the order of each matrix A_i.
+    @param[in]
+    k         [rocblas_int]
+              the number of super-diagonals of each matrix A_i. Must be >= 0.
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    A         device array pointing to the first matrix A_1. Each A_i is of dimension (lda, n).
+              if uplo == rocblas_fill_upper:
+                The leading (k + 1) by n part of each A_i must contain the upper
+                triangular band part of the Hermitian matrix, with the leading
+                diagonal in row (k + 1), the first super-diagonal on the RHS
+                of row k, etc.
+                The top left k by x triangle of each A_i will not be referenced.
+                    Ex (upper, lda = n = 4, k = 1):
+                    A                             Represented matrix
+                    (0,0) (5,9) (6,8) (7,7)       (1, 0) (5, 9) (0, 0) (0, 0)
+                    (1,0) (2,0) (3,0) (4,0)       (5,-9) (2, 0) (6, 8) (0, 0)
+                    (0,0) (0,0) (0,0) (0,0)       (0, 0) (6,-8) (3, 0) (7, 7)
+                    (0,0) (0,0) (0,0) (0,0)       (0, 0) (0, 0) (7,-7) (4, 0)
+
+              if uplo == rocblas_fill_lower:
+                The leading (k + 1) by n part of each A_i must contain the lower
+                triangular band part of the Hermitian matrix, with the leading
+                diagonal in row (1), the first sub-diagonal on the LHS of
+                row 2, etc.
+                The bottom right k by k triangle of each A_i will not be referenced.
+                    Ex (lower, lda = 2, n = 4, k = 1):
+                    A                               Represented matrix
+                    (1,0) (2,0) (3,0) (4,0)         (1, 0) (5,-9) (0, 0) (0, 0)
+                    (5,9) (6,8) (7,7) (0,0)         (5, 9) (2, 0) (6,-8) (0, 0)
+                                                    (0, 0) (6, 8) (3, 0) (7,-7)
+                                                    (0, 0) (0, 0) (7, 7) (4, 0)
+
+              As a Hermitian matrix, the imaginary part of the main diagonal
+              of each A_i will not be referenced and is assumed to be == 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. must be >= max(1, n)
+    @param[in]
+    stride_A  [rocblas_stride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    x         device array pointing to the first vector y_1.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one vector (x_i) and the next one (x_i+1)
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device array pointing to the first vector y_1.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[in]
+    stride_y  [rocblas_stride]
+              stride from the start of one vector (y_i) and the next one (y_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhbmvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           int                         n,
@@ -2417,6 +3169,57 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemv(hipblasHandle_t       handle,
                                             hipblasComplex*       y,
                                             int                   incy);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHEMV performs one of the matrix-vector operations
+
+        y := alpha*A*x + beta*y
+
+    where alpha and beta are scalars, x and y are n element vectors and A is an
+    n by n Hermitian matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: the upper triangular part of the Hermitian matrix A is supplied.
+              rocblas_fill_lower: the lower triangular part of the Hermitian matrix A is supplied.
+    @param[in]
+    n         [rocblas_int]
+              the order of the matrix A.
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    A         device pointer storing matrix A. Of dimension (lda, n).
+              if uplo == rocblas_fill_upper:
+                The upper triangular part of A must contain
+                the upper triangular part of a Hermitian matrix. The lower
+                triangular part of A will not be referenced.
+              if uplo == rocblas_fill_lower:
+                The lower triangular part of A must contain
+                the lower triangular part of a Hermitian matrix. The upper
+                triangular part of A will not be referenced.
+              As a Hermitian matrix, the imaginary part of the main diagonal
+              of A will not be referenced and is assumed to be == 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A. must be >= max(1, n)
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhemv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             int                         n,
@@ -2443,6 +3246,60 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemvBatched(hipblasHandle_t             h
                                                    int                         incy,
                                                    int                         batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHEMV_BATCHED performs one of the matrix-vector operations
+
+        y_i := alpha*A_i*x_i + beta*y_i
+
+    where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
+    n by n Hermitian matrix, for each batch in i = [1, batch_count].
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: the upper triangular part of the Hermitian matrix A is supplied.
+              rocblas_fill_lower: the lower triangular part of the Hermitian matrix A is supplied.
+    @param[in]
+    n         [rocblas_int]
+              the order of each matrix A_i.
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    A         device array of device pointers storing each matrix A_i of dimension (lda, n).
+              if uplo == rocblas_fill_upper:
+                The upper triangular part of each A_i must contain
+                the upper triangular part of a Hermitian matrix. The lower
+                triangular part of each A_i will not be referenced.
+              if uplo == rocblas_fill_lower:
+                The lower triangular part of each A_i must contain
+                the lower triangular part of a Hermitian matrix. The upper
+                triangular part of each A_i will not be referenced.
+              As a Hermitian matrix, the imaginary part of the main diagonal
+              of each A_i will not be referenced and is assumed to be == 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. must be >= max(1, n)
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhemvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    int                               n,
@@ -2473,6 +3330,60 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stride_y,
                                                           int                   batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHEMV_STRIDED_BATCHED performs one of the matrix-vector operations
+
+        y_i := alpha*A_i*x_i + beta*y_i
+
+    where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
+    n by n Hermitian matrix, for each batch in i = [1, batch_count].
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: the upper triangular part of the Hermitian matrix A is supplied.
+              rocblas_fill_lower: the lower triangular part of the Hermitian matrix A is supplied.
+    @param[in]
+    n         [rocblas_int]
+              the order of each matrix A_i.
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    A         device array of device pointers storing each matrix A_i of dimension (lda, n).
+              if uplo == rocblas_fill_upper:
+                The upper triangular part of each A_i must contain
+                the upper triangular part of a Hermitian matrix. The lower
+                triangular part of each A_i will not be referenced.
+              if uplo == rocblas_fill_lower:
+                The lower triangular part of each A_i must contain
+                the lower triangular part of a Hermitian matrix. The upper
+                triangular part of each A_i will not be referenced.
+              As a Hermitian matrix, the imaginary part of the main diagonal
+              of each A_i will not be referenced and is assumed to be == 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. must be >= max(1, n)
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhemvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           int                         n,
@@ -2499,6 +3410,50 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher(hipblasHandle_t       handle,
                                            hipblasComplex*       A,
                                            int                   lda);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHER performs the matrix-vector operations
+
+        A := A + alpha*x*x**H
+
+    where alpha is a real scalar, x is a vector, and A is an
+    n by n Hermitian matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of A is supplied in A.
+              rocblas_fill_lower: The lower triangular part of A is supplied in A.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[inout]
+    A         device pointer storing the specified triangular portion of
+              the Hermitian matrix A. Of size (lda * n).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of the Hermitian matrix A is supplied. The lower
+                triangluar portion will not be touched.
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of the Hermitian matrix A is supplied. The upper
+                triangular portion will not be touched.
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A. Must be at least max(1, n).
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZher(hipblasHandle_t             handle,
                                            hipblasFillMode_t           uplo,
                                            int                         n,
@@ -2519,6 +3474,53 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherBatched(hipblasHandle_t             ha
                                                   int                         lda,
                                                   int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHER_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*x_i**H
+
+    where alpha is a real scalar, x_i is a vector, and A_i is an
+    n by n symmetric matrix, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in A.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in A.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[inout]
+    A         device array of device pointers storing the specified triangular portion of
+              each Hermitian matrix A_i of at least size ((n * (n + 1)) / 2). Array is of at least size batch_count.
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each Hermitian matrix A_i is supplied. The lower triangular portion
+                of each A_i will not be touched.
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each Hermitian matrix A_i is supplied. The upper triangular portion
+                of each A_i will not be touched.
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. Must be at least max(1, n).
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZherBatched(hipblasHandle_t                   handle,
                                                   hipblasFillMode_t                 uplo,
                                                   int                               n,
@@ -2542,6 +3544,59 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherStridedBatched(hipblasHandle_t       h
                                                          hipblasStride         strideA,
                                                          int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHER_STRIDED_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*x_i**H
+
+    where alpha is a real scalar, x_i is a vector, and A_i is an
+    n by n Hermitian matrix, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in A.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in A.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer pointing to the first vector (x_1).
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one vector (x_i) and the next one (x_i+1).
+    @param[inout]
+    A         device array of device pointers storing the specified triangular portion of
+              each Hermitian matrix A_i. Points to the first matrix (A_1).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each Hermitian matrix A_i is supplied. The lower triangular
+                portion of each A_i will not be touched.
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each Hermitian matrix A_i is supplied. The upper triangular
+                portion of each A_i will not be touched.
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    stride_A    [rocblas_stride]
+                stride from the start of one (A_i) and the next (A_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZherStridedBatched(hipblasHandle_t             handle,
                                                          hipblasFillMode_t           uplo,
                                                          int                         n,
@@ -2566,6 +3621,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2(hipblasHandle_t       handle,
                                             hipblasComplex*       A,
                                             int                   lda);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHER2 performs the matrix-vector operations
+
+        A := A + alpha*x*y**H + conj(alpha)*y*x**H
+
+    where alpha is a complex scalar, x and y are vectors, and A is an
+    n by n Hermitian matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of A is supplied.
+              rocblas_fill_lower: The lower triangular part of A is supplied.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[inout]
+    A         device pointer storing the specified triangular portion of
+              the Hermitian matrix A. Of size (lda, n).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of the Hermitian matrix A is supplied. The lower triangular
+                portion of A will not be touched.
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of the Hermitian matrix A is supplied. The upper triangular
+                portion of A will not be touched.
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A. Must be at least max(lda, 1).
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZher2(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             int                         n,
@@ -2590,6 +3694,58 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2Batched(hipblasHandle_t             h
                                                    int                         lda,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHER2_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*y_i**H + conj(alpha)*y_i*x_i**H
+
+    where alpha is a complex scalar, x_i and y_i are vectors, and A_i is an
+    n by n Hermitian matrix for each batch in i = [1, batch_count].
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each y_i.
+    @param[inout]
+    A         device array of device pointers storing the specified triangular portion of
+              each Hermitian matrix A_i of size (lda, n).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each Hermitian matrix A_i is supplied. The lower triangular
+                portion of each A_i will not be touched.
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each Hermitian matrix A_i is supplied. The upper triangular
+                portion of each A_i will not be touched.
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. Must be at least max(lda, 1).
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZher2Batched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    int                               n,
@@ -2618,6 +3774,67 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2StridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideA,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHER2_STRIDED_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*y_i**H + conj(alpha)*y_i*x_i**H
+
+    where alpha is a complex scalar, x_i and y_i are vectors, and A_i is an
+    n by n Hermitian matrix for each batch in i = [1, batch_count].
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer pointing to the first vector x_1.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              specifies the stride between the beginning of one vector (x_i) and the next (x_i+1).
+    @param[in]
+    y         device pointer pointing to the first vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each y_i.
+    @param[in]
+    stride_y  [rocblas_stride]
+              specifies the stride between the beginning of one vector (y_i) and the next (y_i+1).
+    @param[inout]
+    A         device pointer pointing to the first matrix (A_1). Stores the specified triangular portion of
+              each Hermitian matrix A_i.
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each Hermitian matrix A_i is supplied. The lower triangular
+                portion of each A_i will not be touched.
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each Hermitian matrix A_i is supplied. The upper triangular
+                portion of each A_i will not be touched.
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. Must be at least max(lda, 1).
+    @param[in]
+    stride_A  [rocblas_stride]
+              specifies the stride between the beginning of one matrix (A_i) and the next (A_i+1).
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZher2StridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           int                         n,
@@ -2645,6 +3862,69 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpmv(hipblasHandle_t       handle,
                                             hipblasComplex*       y,
                                             int                   incy);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHPMV performs the matrix-vector operation
+
+        y := alpha*A*x + beta*y
+
+    where alpha and beta are scalars, x and y are n element vectors and A is an
+    n by n Hermitian matrix, supplied in packed form (see description below).
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: the upper triangular part of the Hermitian matrix A is supplied in AP.
+              rocblas_fill_lower: the lower triangular part of the Hermitian matrix A is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the order of the matrix A, must be >= 0.
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    AP        device pointer storing the packed version of the specified triangular portion of
+              the Hermitian matrix A. Of at least size ((n * (n + 1)) / 2).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of the Hermitian matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 3)
+                        (1, 0) (2, 1) (3, 2)
+                        (2,-1) (4, 0) (5,-1)    -----> [(1,0), (2,1), (4,0), (3,2), (5,-1), (6,0)]
+                        (3,-2) (5, 1) (6, 0)
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of the Hermitian matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 3)
+                        (1, 0) (2, 1) (3, 2)
+                        (2,-1) (4, 0) (5,-1)    -----> [(1,0), (2,-1), (3,-2), (4,0), (5,1), (6,0)]
+                        (3,-2) (5, 1) (6, 0)
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhpmv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             int                         n,
@@ -2669,6 +3949,73 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpmvBatched(hipblasHandle_t             h
                                                    int                         incy,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHPMV_BATCHED performs the matrix-vector operation
+
+        y_i := alpha*A_i*x_i + beta*y_i
+
+    where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
+    n by n Hermitian matrix, supplied in packed form (see description below),
+    for each batch in i = [1, batch_count].
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: the upper triangular part of each Hermitian matrix A_i is supplied in AP.
+              rocblas_fill_lower: the lower triangular part of each Hermitian matrix A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the order of each matrix A_i.
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    AP      device pointer of device pointers storing the packed version of the specified triangular
+            portion of each Hermitian matrix A_i. Each A_i is of at least size ((n * (n + 1)) / 2).
+            if uplo == rocblas_fill_upper:
+            The upper triangular portion of each Hermitian matrix A_i is supplied.
+            The matrix is compacted so that each AP_i contains the triangular portion column-by-column
+            so that:
+            AP(0) = A(0,0)
+            AP(1) = A(0,1)
+            AP(2) = A(1,1), etc.
+                Ex: (rocblas_fill_upper; n = 3)
+                    (1, 0) (2, 1) (3, 2)
+                    (2,-1) (4, 0) (5,-1)    -----> [(1,0), (2,1), (4,0), (3,2), (5,-1), (6,0)]
+                    (3,-2) (5, 1) (6, 0)
+        if uplo == rocblas_fill_lower:
+            The lower triangular portion of each Hermitian matrix A_i is supplied.
+            The matrix is compacted so that each AP_i contains the triangular portion column-by-column
+            so that:
+            AP(0) = A(0,0)
+            AP(1) = A(1,0)
+            AP(2) = A(2,1), etc.
+                Ex: (rocblas_fill_lower; n = 3)
+                    (1, 0) (2, 1) (3, 2)
+                    (2,-1) (4, 0) (5,-1)    -----> [(1,0), (2,-1), (3,-2), (4,0), (5,1), (6,0)]
+                    (3,-2) (5, 1) (6, 0)
+        Note that the imaginary part of the diagonal elements are not accessed and are assumed
+        to be 0.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhpmvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    int                               n,
@@ -2697,6 +4044,82 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpmvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stridey,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHPMV_STRIDED_BATCHED performs the matrix-vector operation
+
+        y_i := alpha*A_i*x_i + beta*y_i
+
+    where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
+    n by n Hermitian matrix, supplied in packed form (see description below),
+    for each batch in i = [1, batch_count].
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: the upper triangular part of each Hermitian matrix A_i is supplied in AP.
+              rocblas_fill_lower: the lower triangular part of each Hermitian matrix A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the order of each matrix A_i.
+    @param[in]
+    alpha     device pointer or host pointer to scalar alpha.
+    @param[in]
+    AP        device pointer pointing to the beginning of the first matrix (AP_1). Stores the packed
+              version of the specified triangular portion of each Hermitian matrix AP_i of size ((n * (n + 1)) / 2).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that each AP_i contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 3)
+                        (1, 0) (2, 1) (3, 2)
+                        (2,-1) (4, 0) (5,-1)    -----> [(1,0), (2,1), (4,0), (3,2), (5,-1), (6,0)]
+                        (3,-2) (5, 1) (6, 0)
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that each AP_i contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 3)
+                        (1, 0) (2, 1) (3, 2)
+                        (2,-1) (4, 0) (5,-1)    -----> [(1,0), (2,-1), (3,-2), (4,0), (5,1), (6,0)]
+                        (3,-2) (5, 1) (6, 0)
+        Note that the imaginary part of the diagonal elements are not accessed and are assumed
+        to be 0.
+    @param[in]
+    stride_A  [rocblas_stride]
+              stride from the start of one matrix (AP_i) and the next one (AP_i+1).
+    @param[in]
+    x         device array pointing to the beginning of the first vector (x_1).
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one vector (x_i) and the next one (x_i+1).
+    @param[in]
+    beta      device pointer or host pointer to scalar beta.
+    @param[inout]
+    y         device array pointing to the beginning of the first vector (y_1).
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[in]
+    stride_y  [rocblas_stride]
+              stride from the start of one vector (y_i) and the next one (y_i+1).
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhpmvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           int                         n,
@@ -2721,6 +4144,63 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpr(hipblasHandle_t       handle,
                                            int                   incx,
                                            hipblasComplex*       AP);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHPR performs the matrix-vector operations
+
+        A := A + alpha*x*x**H
+
+    where alpha is a real scalar, x is a vector, and A is an
+    n by n Hermitian matrix, supplied in packed form.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of A is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of A is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[inout]
+    AP        device pointer storing the packed version of the specified triangular portion of
+              the Hermitian matrix A. Of at least size ((n * (n + 1)) / 2).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of the Hermitian matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,1), (3,0), (4,9), (5,3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of the Hermitian matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,-1), (4,-9), (3,0), (5,-3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhpr(hipblasHandle_t             handle,
                                            hipblasFillMode_t           uplo,
                                            int                         n,
@@ -2739,6 +4219,66 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChprBatched(hipblasHandle_t             ha
                                                   hipblasComplex* const       AP[],
                                                   int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHPR_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*x_i**H
+
+    where alpha is a real scalar, x_i is a vector, and A_i is an
+    n by n symmetric matrix, supplied in packed form, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[inout]
+    AP        device array of device pointers storing the packed version of the specified triangular portion of
+              each Hermitian matrix A_i of at least size ((n * (n + 1)) / 2). Array is of at least size batch_count.
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,1), (3,0), (4,9), (5,3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,-1), (4,-9), (3,0), (5,-3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhprBatched(hipblasHandle_t                   handle,
                                                   hipblasFillMode_t                 uplo,
                                                   int                               n,
@@ -2760,6 +4300,72 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChprStridedBatched(hipblasHandle_t       h
                                                          hipblasStride         strideAP,
                                                          int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHPR_STRIDED_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*x_i**H
+
+    where alpha is a real scalar, x_i is a vector, and A_i is an
+    n by n symmetric matrix, supplied in packed form, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer pointing to the first vector (x_1).
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one vector (x_i) and the next one (x_i+1).
+    @param[inout]
+    AP        device array of device pointers storing the packed version of the specified triangular portion of
+              each Hermitian matrix A_i. Points to the first matrix (A_1).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,1), (3,0), (4,9), (5,3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,-1), (4,-9), (3,0), (5,-3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    stride_A    [rocblas_stride]
+                stride from the start of one (A_i) and the next (A_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhprStridedBatched(hipblasHandle_t             handle,
                                                          hipblasFillMode_t           uplo,
                                                          int                         n,
@@ -2782,6 +4388,68 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpr2(hipblasHandle_t       handle,
                                             int                   incy,
                                             hipblasComplex*       AP);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHPR2 performs the matrix-vector operations
+
+        A := A + alpha*x*y**H + conj(alpha)*y*x**H
+
+    where alpha is a complex scalar, x and y are vectors, and A is an
+    n by n Hermitian matrix, supplied in packed form.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of A is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of A is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[inout]
+    AP        device pointer storing the packed version of the specified triangular portion of
+              the Hermitian matrix A. Of at least size ((n * (n + 1)) / 2).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of the Hermitian matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,1), (3,0), (4,9), (5,3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of the Hermitian matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,-1), (4,-9), (3,0), (5,-3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhpr2(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             int                         n,
@@ -2804,6 +4472,71 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpr2Batched(hipblasHandle_t             h
                                                    hipblasComplex* const       AP[],
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHPR2_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*y_i**H + conj(alpha)*y_i*x_i**H
+
+    where alpha is a complex scalar, x_i and y_i are vectors, and A_i is an
+    n by n symmetric matrix, supplied in packed form, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each y_i.
+    @param[inout]
+    AP        device array of device pointers storing the packed version of the specified triangular portion of
+              each Hermitian matrix A_i of at least size ((n * (n + 1)) / 2). Array is of at least size batch_count.
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,1), (3,0), (4,9), (5,3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,-1), (4,-9), (3,0), (5,-3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhpr2Batched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    int                               n,
@@ -2830,6 +4563,80 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpr2StridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideAP,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xHPR2_STRIDED_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*y_i**H + conj(alpha)*y_i*x_i**H
+
+    where alpha is a complex scalar, x_i and y_i are vectors, and A_i is an
+    n by n symmetric matrix, supplied in packed form, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer pointing to the first vector (x_1).
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one vector (x_i) and the next one (x_i+1).
+    @param[in]
+    y         device pointer pointing to the first vector (y_1).
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each y_i.
+    @param[in]
+    stride_y  [rocblas_stride]
+              stride from the start of one vector (y_i) and the next one (y_i+1).
+    @param[inout]
+    AP        device array of device pointers storing the packed version of the specified triangular portion of
+              each Hermitian matrix A_i. Points to the first matrix (A_1).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,1), (3,0), (4,9), (5,3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each Hermitian matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 3)
+                        (1, 0) (2, 1) (4,9)
+                        (2,-1) (3, 0) (5,3)  -----> [(1,0), (2,-1), (4,-9), (3,0), (5,-3), (6,0)]
+                        (4,-9) (5,-3) (6,0)
+            Note that the imaginary part of the diagonal elements are not accessed and are assumed
+            to be 0.
+    @param[in]
+    stride_A    [rocblas_stride]
+                stride from the start of one (A_i) and the next (A_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhpr2StridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           int                         n,
@@ -2858,6 +4665,51 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSsbmv(hipblasHandle_t   handle,
                                             float*            y,
                                             int               incy);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSBMV performs the matrix-vector operation:
+
+        y := alpha*A*x + beta*y,
+
+    where alpha and beta are scalars, x and y are n element vectors and
+    A should contain an upper or lower triangular n by n symmetric banded matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      rocblas_fill
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+    @param[in]
+    k         [rocblas_int]
+              specifies the number of sub- and super-diagonals
+    @param[in]
+    alpha
+              specifies the scalar alpha
+    @param[in]
+    A         pointer storing matrix A on the GPU
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of matrix A
+    @param[in]
+    x         pointer storing vector x on the GPU
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x
+    @param[in]
+    beta      specifies the scalar beta
+    @param[out]
+    y         pointer storing vector y on the GPU
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDsbmv(hipblasHandle_t   handle,
                                             hipblasFillMode_t uplo,
                                             int               n,
@@ -2886,6 +4738,57 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSsbmvBatched(hipblasHandle_t    handle,
                                                    int                incy,
                                                    int                batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSBMV_batched performs the matrix-vector operation:
+
+        y_i := alpha*A_i*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    n by n symmetric banded matrix, for i = 1, ..., batch_count.
+    A should contain an upper or lower triangular n by n symmetric banded matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              number of rows and columns of each matrix A_i
+    @param[in]
+    k         [rocblas_int]
+              specifies the number of sub- and super-diagonals
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha
+    @param[in]
+    A         device array of device pointers storing each matrix A_i
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each matrix A_i
+    @param[in]
+    x         device array of device pointers storing each vector x_i
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each vector x_i
+    @param[in]
+    beta      device pointer or host pointer to scalar beta
+    @param[out]
+    y         device array of device pointers storing each vector y_i
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each vector y_i
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDsbmvBatched(hipblasHandle_t     handle,
                                                    hipblasFillMode_t   uplo,
                                                    int                 n,
@@ -2918,6 +4821,72 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSsbmvStridedBatched(hipblasHandle_t   hand
                                                           hipblasStride     stridey,
                                                           int               batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSBMV_strided_batched performs the matrix-vector operation:
+
+        y_i := alpha*A_i*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    n by n symmetric banded matrix, for i = 1, ..., batch_count.
+    A should contain an upper or lower triangular n by n symmetric banded matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              number of rows and columns of each matrix A_i
+    @param[in]
+    k         [rocblas_int]
+              specifies the number of sub- and super-diagonals
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha
+    @param[in]
+    A         Device pointer to the first matrix A_1 on the GPU
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each matrix A_i
+    @param[in]
+    strideA     [rocblas_stride]
+                stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    x         Device pointer to the first vector x_1 on the GPU
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each vector x_i
+    @param[in]
+    stridex     [rocblas_stride]
+                stride from the start of one vector (x_i) and the next one (x_i+1).
+                There are no restrictions placed on stridex, however the user should
+                take care to ensure that stridex is of appropriate size.
+                This typically means stridex >= n * incx. stridex should be non zero.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta
+    @param[out]
+    y         Device pointer to the first vector y_1 on the GPU
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each vector y_i
+    @param[in]
+    stridey     [rocblas_stride]
+                stride from the start of one vector (y_i) and the next one (y_i+1).
+                There are no restrictions placed on stridey, however the user should
+                take care to ensure that stridey is of appropriate size.
+                This typically means stridey >= n * incy. stridey should be non zero.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDsbmvStridedBatched(hipblasHandle_t   handle,
                                                           hipblasFillMode_t uplo,
                                                           int               n,
@@ -2947,6 +4916,45 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspmv(hipblasHandle_t   handle,
                                             float*            y,
                                             int               incy);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSPMV performs the matrix-vector operation:
+
+        y := alpha*A*x + beta*y,
+
+    where alpha and beta are scalars, x and y are n element vectors and
+    A should contain an upper or lower triangular n by n packed symmetric matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      rocblas_fill
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+    @param[in]
+    alpha
+              specifies the scalar alpha
+    @param[in]
+    A         pointer storing matrix A on the GPU
+    @param[in]
+    x         pointer storing vector x on the GPU
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x
+    @param[in]
+    beta      specifies the scalar beta
+    @param[out]
+    y         pointer storing vector y on the GPU
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDspmv(hipblasHandle_t   handle,
                                             hipblasFillMode_t uplo,
                                             int               n,
@@ -2972,6 +4980,51 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspmvBatched(hipblasHandle_t    handle,
                                                    int                incy,
                                                    int                batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSPMV_batched performs the matrix-vector operation:
+
+        y_i := alpha*A_i*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    n by n symmetric matrix, for i = 1, ..., batch_count.
+    A should contain an upper or lower triangular n by n packed symmetric matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              number of rows and columns of each matrix A_i
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha
+    @param[in]
+    A         device array of device pointers storing each matrix A_i
+    @param[in]
+    x         device array of device pointers storing each vector x_i
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each vector x_i
+    @param[in]
+    beta      device pointer or host pointer to scalar beta
+    @param[out]
+    y         device array of device pointers storing each vector y_i
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each vector y_i
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDspmvBatched(hipblasHandle_t     handle,
                                                    hipblasFillMode_t   uplo,
                                                    int                 n,
@@ -3000,6 +5053,66 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspmvStridedBatched(hipblasHandle_t   hand
                                                           hipblasStride     stridey,
                                                           int               batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSPMV_strided_batched performs the matrix-vector operation:
+
+        y_i := alpha*A_i*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    n by n symmetric matrix, for i = 1, ..., batch_count.
+    A should contain an upper or lower triangular n by n packed symmetric matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              number of rows and columns of each matrix A_i
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha
+    @param[in]
+    A         Device pointer to the first matrix A_1 on the GPU
+    @param[in]
+    strideA     [rocblas_stride]
+                stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    x         Device pointer to the first vector x_1 on the GPU
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each vector x_i
+    @param[in]
+    stridex     [rocblas_stride]
+                stride from the start of one vector (x_i) and the next one (x_i+1).
+                There are no restrictions placed on stridex, however the user should
+                take care to ensure that stridex is of appropriate size.
+                This typically means stridex >= n * incx. stridex should be non zero.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta
+    @param[out]
+    y         Device pointer to the first vector y_1 on the GPU
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each vector y_i
+    @param[in]
+    stridey     [rocblas_stride]
+                stride from the start of one vector (y_i) and the next one (y_i+1).
+                There are no restrictions placed on stridey, however the user should
+                take care to ensure that stridey is of appropriate size.
+                This typically means stridey >= n * incy. stridey should be non zero.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDspmvStridedBatched(hipblasHandle_t   handle,
                                                           hipblasFillMode_t uplo,
                                                           int               n,
@@ -3040,6 +5153,63 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCspr(hipblasHandle_t       handle,
                                            int                   incx,
                                            hipblasComplex*       AP);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSPR performs the matrix-vector operations
+
+        A := A + alpha*x*x**T
+
+    where alpha is a scalar, x is a vector, and A is an
+    n by n symmetric matrix, supplied in packed form.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of A is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of A is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[inout]
+    AP        device pointer storing the packed version of the specified triangular portion of
+              the symmetric matrix A. Of at least size ((n * (n + 1)) / 2).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of the symmetric matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 4)
+                        1 2 4 7
+                        2 3 5 8   -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        4 5 6 9
+                        7 8 9 0
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of the symmetric matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 4)
+                        1 2 3 4
+                        2 5 6 7    -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        3 6 8 9
+                        4 7 9 0
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZspr(hipblasHandle_t             handle,
                                            hipblasFillMode_t           uplo,
                                            int                         n,
@@ -3076,6 +5246,66 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsprBatched(hipblasHandle_t             ha
                                                   hipblasComplex* const       AP[],
                                                   int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSPR_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*x_i**T
+
+    where alpha is a scalar, x_i is a vector, and A_i is an
+    n by n symmetric matrix, supplied in packed form, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[inout]
+    AP        device array of device pointers storing the packed version of the specified triangular portion of
+              each symmetric matrix A_i of at least size ((n * (n + 1)) / 2). Array is of at least size batch_count.
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each symmetric matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 4)
+                        1 2 4 7
+                        2 3 5 8   -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        4 5 6 9
+                        7 8 9 0
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each symmetric matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 4)
+                        1 2 3 4
+                        2 5 6 7    -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        3 6 8 9
+                        4 7 9 0
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsprBatched(hipblasHandle_t                   handle,
                                                   hipblasFillMode_t                 uplo,
                                                   int                               n,
@@ -3119,6 +5349,72 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsprStridedBatched(hipblasHandle_t       h
                                                          hipblasStride         strideAP,
                                                          int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSPR_STRIDED_BATCHED performs the matrix-vector operations
+
+        A_i := A_i + alpha*x_i*x_i**T
+
+    where alpha is a scalar, x_i is a vector, and A_i is an
+    n by n symmetric matrix, supplied in packed form, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer pointing to the first vector (x_1).
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one vector (x_i) and the next one (x_i+1).
+    @param[inout]
+    AP        device pointer storing the packed version of the specified triangular portion of
+              each symmetric matrix A_i. Points to the first A_1.
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each symmetric matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 4)
+                        1 2 4 7
+                        2 3 5 8   -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        4 5 6 9
+                        7 8 9 0
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each symmetric matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(2) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 4)
+                        1 2 3 4
+                        2 5 6 7    -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        3 6 8 9
+                        4 7 9 0
+    @param[in]
+    stride_A    [rocblas_stride]
+                stride from the start of one (A_i) and the next (A_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsprStridedBatched(hipblasHandle_t             handle,
                                                          hipblasFillMode_t           uplo,
                                                          int                         n,
@@ -3141,6 +5437,68 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspr2(hipblasHandle_t   handle,
                                             int               incy,
                                             float*            AP);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSPR2 performs the matrix-vector operation
+
+        A := A + alpha*x*y**T + alpha*y*x**T
+
+    where alpha is a scalar, x and y are vectors, and A is an
+    n by n symmetric matrix, supplied in packed form.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of A is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of A is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[inout]
+    AP        device pointer storing the packed version of the specified triangular portion of
+              the symmetric matrix A. Of at least size ((n * (n + 1)) / 2).
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of the symmetric matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 4)
+                        1 2 4 7
+                        2 3 5 8   -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        4 5 6 9
+                        7 8 9 0
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of the symmetric matrix A is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(n) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 4)
+                        1 2 3 4
+                        2 5 6 7    -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        3 6 8 9
+                        4 7 9 0
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDspr2(hipblasHandle_t   handle,
                                             hipblasFillMode_t uplo,
                                             int               n,
@@ -3163,6 +5521,71 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspr2Batched(hipblasHandle_t    handle,
                                                    float* const       AP[],
                                                    int                batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSPR2_BATCHED performs the matrix-vector operation
+
+        A_i := A_i + alpha*x_i*y_i**T + alpha*y_i*x_i**T
+
+    where alpha is a scalar, x_i and y_i are vectors, and A_i is an
+    n by n symmetric matrix, supplied in packed form, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each y_i.
+    @param[inout]
+    AP        device array of device pointers storing the packed version of the specified triangular portion of
+              each symmetric matrix A_i of at least size ((n * (n + 1)) / 2). Array is of at least size batch_count.
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each symmetric matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 4)
+                        1 2 4 7
+                        2 3 5 8   -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        4 5 6 9
+                        7 8 9 0
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each symmetric matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(n) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 4)
+                        1 2 3 4
+                        2 5 6 7    -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        3 6 8 9
+                        4 7 9 0
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDspr2Batched(hipblasHandle_t     handle,
                                                    hipblasFillMode_t   uplo,
                                                    int                 n,
@@ -3189,6 +5612,80 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspr2StridedBatched(hipblasHandle_t   hand
                                                           hipblasStride     strideAP,
                                                           int               batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSPR2_STRIDED_BATCHED performs the matrix-vector operation
+
+        A_i := A_i + alpha*x_i*y_i**T + alpha*y_i*x_i**T
+
+    where alpha is a scalar, x_i amd y_i are vectors, and A_i is an
+    n by n symmetric matrix, supplied in packed form, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              rocblas_fill_upper: The upper triangular part of each A_i is supplied in AP.
+              rocblas_fill_lower: The lower triangular part of each A_i is supplied in AP.
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A_i, must be at least 0.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer pointing to the first vector (x_1).
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one vector (x_i) and the next one (x_i+1).
+    @param[in]
+    y         device pointer pointing to the first vector (y_1).
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each y_i.
+    @param[in]
+    stride_y  [rocblas_stride]
+              stride from the start of one vector (y_i) and the next one (y_i+1).
+    @param[inout]
+    AP        device pointer storing the packed version of the specified triangular portion of
+              each symmetric matrix A_i. Points to the first A_1.
+              if uplo == rocblas_fill_upper:
+                The upper triangular portion of each symmetric matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(0,1)
+                AP(2) = A(1,1), etc.
+                    Ex: (rocblas_fill_upper; n = 4)
+                        1 2 4 7
+                        2 3 5 8   -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        4 5 6 9
+                        7 8 9 0
+            if uplo == rocblas_fill_lower:
+                The lower triangular portion of each symmetric matrix A_i is supplied.
+                The matrix is compacted so that AP contains the triangular portion column-by-column
+                so that:
+                AP(0) = A(0,0)
+                AP(1) = A(1,0)
+                AP(n) = A(2,1), etc.
+                    Ex: (rocblas_fill_lower; n = 4)
+                        1 2 3 4
+                        2 5 6 7    -----> [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+                        3 6 8 9
+                        4 7 9 0
+    @param[in]
+    stride_A    [rocblas_stride]
+                stride from the start of one (A_i) and the next (A_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDspr2StridedBatched(hipblasHandle_t   handle,
                                                           hipblasFillMode_t uplo,
                                                           int               n,
@@ -3240,6 +5737,48 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymv(hipblasHandle_t       handle,
                                             hipblasComplex*       y,
                                             int                   incy);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSYMV performs the matrix-vector operation:
+
+        y := alpha*A*x + beta*y,
+
+    where alpha and beta are scalars, x and y are n element vectors and
+    A should contain an upper or lower triangular n by n symmetric matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      rocblas_fill
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+    @param[in]
+    alpha
+              specifies the scalar alpha
+    @param[in]
+    A         pointer storing matrix A on the GPU
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A
+    @param[in]
+    x         pointer storing vector x on the GPU
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x
+    @param[in]
+    beta      specifies the scalar beta
+    @param[out]
+    y         pointer storing vector y on the GPU
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsymv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             int                         n,
@@ -3292,6 +5831,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymvBatched(hipblasHandle_t             h
                                                    int                         incy,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSYMV_batched performs the matrix-vector operation:
+
+        y_i := alpha*A_i*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    n by n symmetric matrix, for i = 1, ..., batch_count.
+    A a should contain an upper or lower triangular symmetric matrix
+    and the opposing triangular part of A is not referenced
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              number of rows and columns of each matrix A_i
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha
+    @param[in]
+    A         device array of device pointers storing each matrix A_i
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each matrix A_i
+    @param[in]
+    x         device array of device pointers storing each vector x_i
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each vector x_i
+    @param[in]
+    beta      device pointer or host pointer to scalar beta
+    @param[out]
+    y         device array of device pointers storing each vector y_i
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each vector y_i
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsymvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    int                               n,
@@ -3354,6 +5942,70 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stridey,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSYMV_strided_batched performs the matrix-vector operation:
+
+        y_i := alpha*A_i*x_i + beta*y_i,
+
+    where (A_i, x_i, y_i) is the i-th instance of the batch.
+    alpha and beta are scalars, x_i and y_i are vectors and A_i is an
+    n by n symmetric matrix, for i = 1, ..., batch_count.
+    A a should contain an upper or lower triangular symmetric matrix
+    and the opposing triangular part of A is not referenced
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              number of rows and columns of each matrix A_i
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha
+    @param[in]
+    A         Device pointer to the first matrix A_1 on the GPU
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each matrix A_i
+    @param[in]
+    strideA     [rocblas_stride]
+                stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    x         Device pointer to the first vector x_1 on the GPU
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each vector x_i
+    @param[in]
+    stridex     [rocblas_stride]
+                stride from the start of one vector (x_i) and the next one (x_i+1).
+                There are no restrictions placed on stride_x, however the user should
+                take care to ensure that stridex is of appropriate size.
+                This typically means stridex >= n * incx. stridex should be non zero.
+    @param[in]
+    beta      device pointer or host pointer to scalar beta
+    @param[out]
+    y         Device pointer to the first vector y_1 on the GPU
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each vector y_i
+    @param[in]
+    stridey     [rocblas_stride]
+                stride from the start of one vector (y_i) and the next one (y_i+1).
+                There are no restrictions placed on stride_y, however the user should
+                take care to ensure that stridey is of appropriate size.
+                This typically means stridey >= n * incy. stridey should be non zero.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsymvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           int                         n,
@@ -3398,6 +6050,43 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr(hipblasHandle_t       handle,
                                            hipblasComplex*       A,
                                            int                   lda);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSYR performs the matrix-vector operations
+
+        A := A + alpha*x*x**T
+
+    where alpha is a scalar, x is a vector, and A is an
+    n by n symmetric matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[inout]
+    A         device pointer storing matrix A.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr(hipblasHandle_t             handle,
                                            hipblasFillMode_t           uplo,
                                            int                         n,
@@ -3438,6 +6127,45 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrBatched(hipblasHandle_t             ha
                                                   int                         lda,
                                                   int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSYR_batched performs a batch of matrix-vector operations
+
+        A[i] := A[i] + alpha*x[i]*x[i]**T
+
+    where alpha is a scalar, x is an array of vectors, and A is an array of
+    n by n symmetric matrices, for i = 1 , ... , batch_count
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[inout]
+    A         device array of device pointers storing each matrix A_i.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrBatched(hipblasHandle_t                   handle,
                                                   hipblasFillMode_t                 uplo,
                                                   int                               n,
@@ -3485,6 +6213,51 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrStridedBatched(hipblasHandle_t       h
                                                          hipblasStride         stridey,
                                                          int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSYR_strided_batched performs the matrix-vector operations
+
+        A[i] := A[i] + alpha*x[i]*x[i]**T
+
+    where alpha is a scalar, vectors, and A is an array of
+    n by n symmetric matrices, for i = 1 , ... , batch_count
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer to the first vector x_1.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stridex   [rocblas_stride]
+              specifies the pointer increment between vectors (x_i) and (x_i+1).
+    @param[inout]
+    A         device pointer to the first matrix A_1.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    strideA   [rocblas_stride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+              number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrStridedBatched(hipblasHandle_t             handle,
                                                          hipblasFillMode_t           uplo,
                                                          int                         n,
@@ -3531,6 +6304,48 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2(hipblasHandle_t       handle,
                                             hipblasComplex*       A,
                                             int                   lda);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSYR2 performs the matrix-vector operations
+
+        A := A + alpha*x*y**T + alpha*y*x**T
+
+    where alpha is a scalar, x and y are vectors, and A is an
+    n by n symmetric matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+    @param[in]
+    y         device pointer storing vector y.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of y.
+    @param[inout]
+    A         device pointer storing matrix A.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             int                         n,
@@ -3579,6 +6394,50 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2Batched(hipblasHandle_t             h
                                                    int                         lda,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSYR2_BATCHED performs a batch of matrix-vector operations
+
+        A[i] := A[i] + alpha*x[i]*y[i]**T + alpha*y[i]*x[i]**T
+
+    where alpha is a scalar, x[i] and y[i] are vectors, and A[i] is a
+    n by n symmetric matrix, for i = 1 , ... , batch_count
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of matrix A.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each y_i.
+    @param[inout]
+    A         device array of device pointers storing each matrix A_i.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2Batched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    int                               n,
@@ -3637,6 +6496,59 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2StridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideA,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xSYR2_STRIDED_BATCHED the matrix-vector operations
+
+        A[i] := A[i] + alpha*x[i]*y[i]**T + alpha*y[i]*x[i]**T
+
+    where alpha is a scalar, x[i] and y[i] are vectors, and A[i] is a
+    n by n symmetric matrices, for i = 1 , ... , batch_count
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              specifies whether the upper 'rocblas_fill_upper' or lower 'rocblas_fill_lower'
+              if rocblas_fill_upper, the lower part of A is not referenced
+              if rocblas_fill_lower, the upper part of A is not referenced
+    @param[in]
+    n         [rocblas_int]
+              the number of rows and columns of each matrix A.
+    @param[in]
+    alpha
+              device pointer or host pointer to scalar alpha.
+    @param[in]
+    x         device pointer to the first vector x_1.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stridex   [rocblas_stride]
+              specifies the pointer increment between vectors (x_i) and (x_i+1).
+    @param[in]
+    y         device pointer to the first vector y_1.
+    @param[in]
+    incy      [rocblas_int]
+              specifies the increment for the elements of each y_i.
+    @param[in]
+    stridey   [rocblas_stride]
+              specifies the pointer increment between vectors (y_i) and (y_i+1).
+    @param[inout]
+    A         device pointer to the first matrix A_1.
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    strideA   [rocblas_stride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    batch_count [rocblas_int]
+              number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2StridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           int                         n,
@@ -3686,6 +6598,79 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmv(hipblasHandle_t       handle,
                                             hipblasComplex*       x,
                                             int                   incx);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xTBMV performs one of the matrix-vector operations
+
+        x := A*x      or
+        x := A**T*x   or
+        x := A**H*x,
+
+    x is a vectors and A is a banded m by m matrix (see description below).
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: A is an upper banded triangular matrix.
+              rocblas_fill_lower: A is a  lower banded triangular matrix.
+    @param[in]
+    trans     [rocblas_operation]
+              indicates whether matrix A is tranposed (conjugated) or not.
+    @param[in]
+    diag      [rocblas_diagonal]
+              rocblas_diagonal_unit: The main diagonal of A is assumed to consist of only
+                                     1's and is not referenced.
+              rocblas_diagonal_non_unit: No assumptions are made of A's main diagonal.
+    @param[in]
+    m         [rocblas_int]
+              the number of rows and columns of the matrix represented by A.
+    @param[in]
+    k         [rocblas_int]
+              if uplo == rocblas_fill_upper, k specifies the number of super-diagonals
+              of the matrix A.
+              if uplo == rocblas_fill_lower, k specifies the number of sub-diagonals
+              of the matrix A.
+              k must satisfy k > 0 && k < lda.
+    @param[in]
+    A         device pointer storing banded triangular matrix A.
+              if uplo == rocblas_fill_upper:
+                The matrix represented is an upper banded triangular matrix
+                with the main diagonal and k super-diagonals, everything
+                else can be assumed to be 0.
+                The matrix is compacted so that the main diagonal resides on the k'th
+                row, the first super diagonal resides on the RHS of the k-1'th row, etc,
+                with the k'th diagonal on the RHS of the 0'th row.
+                   Ex: (rocblas_fill_upper; m = 5; k = 2)
+                      1 6 9 0 0              0 0 9 8 7
+                      0 2 7 8 0              0 6 7 8 9
+                      0 0 3 8 7     ---->    1 2 3 4 5
+                      0 0 0 4 9              0 0 0 0 0
+                      0 0 0 0 5              0 0 0 0 0
+              if uplo == rocblas_fill_lower:
+                The matrix represnted is a lower banded triangular matrix
+                with the main diagonal and k sub-diagonals, everything else can be
+                assumed to be 0.
+                The matrix is compacted so that the main diagonal resides on the 0'th row,
+                working up to the k'th diagonal residing on the LHS of the k'th row.
+                   Ex: (rocblas_fill_lower; m = 5; k = 2)
+                      1 0 0 0 0              1 2 3 4 5
+                      6 2 0 0 0              6 7 8 9 0
+                      9 7 3 0 0     ---->    9 8 7 0 0
+                      0 8 8 4 0              0 0 0 0 0
+                      0 0 7 9 5              0 0 0 0 0
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A. lda must satisfy lda > k.
+    @param[inout]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
@@ -3734,6 +6719,83 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmvBatched(hipblasHandle_t             h
                                                    int                         incx,
                                                    int                         batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xTBMV_BATCHED performs one of the matrix-vector operations
+
+        x_i := A_i*x_i      or
+        x_i := A_i**T*x_i   or
+        x_i := A_i**H*x_i,
+
+    where (A_i, x_i) is the i-th instance of the batch.
+    x_i is a vector and A_i is an m by m matrix, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: each A_i is an upper banded triangular matrix.
+              rocblas_fill_lower: each A_i is a  lower banded triangular matrix.
+    @param[in]
+    trans     [rocblas_operation]
+              indicates whether each matrix A_i is tranposed (conjugated) or not.
+    @param[in]
+    diag      [rocblas_diagonal]
+              rocblas_diagonal_unit: The main diagonal of each A_i is assumed to consist of only
+                                     1's and is not referenced.
+              rocblas_diagonal_non_unit: No assumptions are made of each A_i's main diagonal.
+    @param[in]
+    m         [rocblas_int]
+              the number of rows and columns of the matrix represented by each A_i.
+    @param[in]
+    k         [rocblas_int]
+              if uplo == rocblas_fill_upper, k specifies the number of super-diagonals
+              of each matrix A_i.
+              if uplo == rocblas_fill_lower, k specifies the number of sub-diagonals
+              of each matrix A_i.
+              k must satisfy k > 0 && k < lda.
+    @param[in]
+    A         device array of device pointers storing each banded triangular matrix A_i.
+              if uplo == rocblas_fill_upper:
+                The matrix represented is an upper banded triangular matrix
+                with the main diagonal and k super-diagonals, everything
+                else can be assumed to be 0.
+                The matrix is compacted so that the main diagonal resides on the k'th
+                row, the first super diagonal resides on the RHS of the k-1'th row, etc,
+                with the k'th diagonal on the RHS of the 0'th row.
+                   Ex: (rocblas_fill_upper; m = 5; k = 2)
+                      1 6 9 0 0              0 0 9 8 7
+                      0 2 7 8 0              0 6 7 8 9
+                      0 0 3 8 7     ---->    1 2 3 4 5
+                      0 0 0 4 9              0 0 0 0 0
+                      0 0 0 0 5              0 0 0 0 0
+              if uplo == rocblas_fill_lower:
+                The matrix represnted is a lower banded triangular matrix
+                with the main diagonal and k sub-diagonals, everything else can be
+                assumed to be 0.
+                The matrix is compacted so that the main diagonal resides on the 0'th row,
+                working up to the k'th diagonal residing on the LHS of the k'th row.
+                   Ex: (rocblas_fill_lower; m = 5; k = 2)
+                      1 0 0 0 0              1 2 3 4 5
+                      6 2 0 0 0              6 7 8 9 0
+                      9 7 3 0 0     ---->    9 8 7 0 0
+                      0 8 8 4 0              0 0 0 0 0
+                      0 0 7 9 5              0 0 0 0 0
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. lda must satisfy lda > k.
+    @param[inout]
+    x         device array of device pointer storing each vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
@@ -3789,6 +6851,89 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stride_x,
                                                           int                   batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    xTBMV_STRIDED_BATCHED performs one of the matrix-vector operations
+
+        x_i := A_i*x_i      or
+        x_i := A_i**T*x_i   or
+        x_i := A_i**H*x_i,
+
+    where (A_i, x_i) is the i-th instance of the batch.
+    x_i is a vector and A_i is an m by m matrix, for i = 1, ..., batch_count.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+    @param[in]
+    uplo      [rocblas_fill]
+              rocblas_fill_upper: each A_i is an upper banded triangular matrix.
+              rocblas_fill_lower: each A_i is a  lower banded triangular matrix.
+    @param[in]
+    trans     [rocblas_operation]
+              indicates whether each matrix A_i is tranposed (conjugated) or not.
+    @param[in]
+    diag      [rocblas_diagonal]
+              rocblas_diagonal_unit: The main diagonal of each A_i is assumed to consist of only
+                                     1's and is not referenced.
+              rocblas_diagonal_non_unit: No assumptions are made of each A_i's main diagonal.
+    @param[in]
+    m         [rocblas_int]
+              the number of rows and columns of the matrix represented by each A_i.
+    @param[in]
+    k         [rocblas_int]
+              if uplo == rocblas_fill_upper, k specifies the number of super-diagonals
+              of each matrix A_i.
+              if uplo == rocblas_fill_lower, k specifies the number of sub-diagonals
+              of each matrix A_i.
+              k must satisfy k > 0 && k < lda.
+    @param[in]
+    A         device array to the first matrix A_i of the batch. Stores each banded triangular matrix A_i.
+              if uplo == rocblas_fill_upper:
+                The matrix represented is an upper banded triangular matrix
+                with the main diagonal and k super-diagonals, everything
+                else can be assumed to be 0.
+                The matrix is compacted so that the main diagonal resides on the k'th
+                row, the first super diagonal resides on the RHS of the k-1'th row, etc,
+                with the k'th diagonal on the RHS of the 0'th row.
+                   Ex: (rocblas_fill_upper; m = 5; k = 2)
+                      1 6 9 0 0              0 0 9 8 7
+                      0 2 7 8 0              0 6 7 8 9
+                      0 0 3 8 7     ---->    1 2 3 4 5
+                      0 0 0 4 9              0 0 0 0 0
+                      0 0 0 0 5              0 0 0 0 0
+              if uplo == rocblas_fill_lower:
+                The matrix represnted is a lower banded triangular matrix
+                with the main diagonal and k sub-diagonals, everything else can be
+                assumed to be 0.
+                The matrix is compacted so that the main diagonal resides on the 0'th row,
+                working up to the k'th diagonal residing on the LHS of the k'th row.
+                   Ex: (rocblas_fill_lower; m = 5; k = 2)
+                      1 0 0 0 0              1 2 3 4 5
+                      6 2 0 0 0              6 7 8 9 0
+                      9 7 3 0 0     ---->    9 8 7 0 0
+                      0 8 8 4 0              0 0 0 0 0
+                      0 0 7 9 5              0 0 0 0 0
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i. lda must satisfy lda > k.
+    @param[in]
+    stride_A  [rocblas_stride]
+              stride from the start of one A_i matrix to the next A_(i + 1).
+    @param[inout]
+    x         device array to the first vector x_i of the batch.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one x_i matrix to the next x_(i + 1).
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
@@ -3837,6 +6982,63 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbsv(hipblasHandle_t       handle,
                                             hipblasComplex*       x,
                                             int                   incx);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    tbsv solves
+
+         A*x = b or A**T*x = b or A**H*x = b,
+
+    where x and b are vectors and A is a banded triangular matrix.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A is an upper triangular matrix.
+            rocblas_fill_lower:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+               rocblas_operation_none: Solves A*x = b
+               rocblas_operation_transpose: Solves A**T*x = b
+               rocblas_operation_conjugate_transpose: Solves A**H*x = b
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A is assumed to be unit triangular (i.e. the diagonal elements
+                                       of A are not used in computations).
+            rocblas_diagonal_non_unit: A is not assumed to be unit triangular.
+
+    @param[in]
+    n         [rocblas_int]
+              n specifies the number of rows of b. n >= 0.
+    @param[in]
+    k         [rocblas_int]
+              if(uplo == rocblas_fill_upper)
+                k specifies the number of super-diagonals of A.
+              if(uplo == rocblas_fill_lower)
+                k specifies the number of sub-diagonals of A.
+              k >= 0.
+
+    @param[in]
+    A         device pointer storing the matrix A in banded format.
+
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A.
+              lda >= (k + 1).
+
+    @param[inout]
+    x         device pointer storing input vector b. Overwritten by the output vector x.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtbsv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
@@ -3885,6 +7087,69 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbsvBatched(hipblasHandle_t             h
                                                    int                         incx,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    tbsv_batched solves
+
+         A_i*x_i = b_i or A_i**T*x_i = b_i or A_i**H*x_i = b_i,
+
+    where x_i and b_i are vectors and A_i is a banded triangular matrix,
+    for i = [1, batch_count].
+
+    The input vectors b_i are overwritten by the output vectors x_i.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A_i is an upper triangular matrix.
+            rocblas_fill_lower:  A_i is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+               rocblas_operation_none: Solves A_i*x_i = b_i
+               rocblas_operation_transpose: Solves A_i**T*x_i = b_i
+               rocblas_operation_conjugate_transpose: Solves A_i**H*x_i = b_i
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     each A_i is assumed to be unit triangular (i.e. the diagonal elements
+                                       of each A_i are not used in computations).
+            rocblas_diagonal_non_unit: each A_i is not assumed to be unit triangular.
+
+    @param[in]
+    n         [rocblas_int]
+              n specifies the number of rows of each b_i. n >= 0.
+    @param[in]
+    k         [rocblas_int]
+              if(uplo == rocblas_fill_upper)
+                k specifies the number of super-diagonals of each A_i.
+              if(uplo == rocblas_fill_lower)
+                k specifies the number of sub-diagonals of each A_i.
+              k >= 0.
+
+    @param[in]
+    A         device vector of device pointers storing each matrix A_i in banded format.
+
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+              lda >= (k + 1).
+
+    @param[inout]
+    x         device vector of device pointers storing each input vector b_i. Overwritten by each output
+              vector x_i.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtbsvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
@@ -3940,6 +7205,74 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbsvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stridex,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    tbsv_strided_batched solves
+
+         A_i*x_i = b_i or A_i**T*x_i = b_i or A_i**H*x_i = b_i,
+
+    where x_i and b_i are vectors and A_i is a banded triangular matrix,
+    for i = [1, batch_count].
+
+    The input vectors b_i are overwritten by the output vectors x_i.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A_i is an upper triangular matrix.
+            rocblas_fill_lower:  A_i is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+               rocblas_operation_none: Solves A_i*x_i = b_i
+               rocblas_operation_transpose: Solves A_i**T*x_i = b_i
+               rocblas_operation_conjugate_transpose: Solves A_i**H*x_i = b_i
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     each A_i is assumed to be unit triangular (i.e. the diagonal elements
+                                       of each A_i are not used in computations).
+            rocblas_diagonal_non_unit: each A_i is not assumed to be unit triangular.
+
+    @param[in]
+    n         [rocblas_int]
+              n specifies the number of rows of each b_i. n >= 0.
+    @param[in]
+    k         [rocblas_int]
+              if(uplo == rocblas_fill_upper)
+                k specifies the number of super-diagonals of each A_i.
+              if(uplo == rocblas_fill_lower)
+                k specifies the number of sub-diagonals of each A_i.
+              k >= 0.
+
+    @param[in]
+    A         device pointer pointing to the first banded matrix A_1.
+
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+              lda >= (k + 1).
+    @param[in]
+    stride_A  [rocblas_stride]
+              specifies the distance between the start of one matrix (A_i) and the next (A_i+1).
+
+    @param[inout]
+    x         device pointer pointing to the first input vector b_1. Overwritten by output vectors x.
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              specifies the distance between the start of one vector (x_i) and the next (x_i+1).
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtbsvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
@@ -3982,6 +7315,60 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmv(hipblasHandle_t       handle,
                                             hipblasComplex*       x,
                                             int                   incx);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    tpmv performs one of the matrix-vector operations
+
+         x = A*x or x = A**T*x,
+
+    where x is an n element vector and A is an n by n unit, or non-unit, upper or lower triangular matrix, supplied in the pack form.
+
+    The vector x is overwritten.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A is an upper triangular matrix.
+            rocblas_fill_lower:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A is assumed to be unit triangular.
+            rocblas_diagonal_non_unit:  A is not assumed to be unit triangular.
+
+    @param[in]
+    m       [rocblas_int]
+            m specifies the number of rows of A. m >= 0.
+
+    @param[in]
+    A       device pointer storing matrix A,
+            of dimension at leat ( m * ( m + 1 ) / 2 ).
+          Before entry with uplo = rocblas_fill_upper, the array A
+          must contain the upper triangular matrix packed sequentially,
+          column by column, so that A[0] contains a_{0,0}, A[1] and A[2] contain
+          a_{0,1} and a_{1, 1} respectively, and so on.
+          Before entry with uplo = rocblas_fill_lower, the array A
+          must contain the lower triangular matrix packed sequentially,
+          column by column, so that A[0] contains a_{0,0}, A[1] and A[2] contain
+          a_{1,0} and a_{2,0} respectively, and so on.
+          Note that when DIAG = rocblas_diagonal_unit, the diagonal elements of A are
+          not referenced, but are assumed to be unity.
+
+    @param[in]
+    x       device pointer storing vector x.
+
+    @param[in]
+    incx    [rocblas_int]
+            specifies the increment for the elements of x. incx must not be zero.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
@@ -4022,6 +7409,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvBatched(hipblasHandle_t             h
                                                    int                         incx,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    tpmv_batched performs one of the matrix-vector operations
+
+         x_i = A_i*x_i or x_i = A**T*x_i, 0 \le i < batch_count
+
+    where x_i is an n element vector and A_i is an n by n (unit, or non-unit, upper or lower triangular matrix)
+
+    The vectors x_i are overwritten.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A_i is an upper triangular matrix.
+            rocblas_fill_lower:  A_i is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A_i is assumed to be unit triangular.
+            rocblas_diagonal_non_unit:  A_i is not assumed to be unit triangular.
+
+    @param[in]
+    m         [rocblas_int]
+              m specifies the number of rows of matrices A_i. m >= 0.
+
+    @param[in]
+    A         device pointer storing pointer of matrices A_i,
+              of dimension ( lda, m )
+
+    @param[in]
+    x         device pointer storing vectors x_i.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of vectors x_i.
+
+    @param[in]
+    batch_count [rocblas_int]
+              The number of batched matrices/vectors.
+
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
@@ -4069,6 +7505,64 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stride,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    tpmv_strided_batched performs one of the matrix-vector operations
+
+         x_i = A_i*x_i or x_i = A**T*x_i, 0 \le i < batch_count
+
+    where x_i is an n element vector and A_i is an n by n (unit, or non-unit, upper or lower triangular matrix)
+    with strides specifying how to retrieve $x_i$ (resp. $A_i$) from $x_{i-1}$ (resp. $A_i$).
+
+    The vectors x_i are overwritten.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A_i is an upper triangular matrix.
+            rocblas_fill_lower:  A_i is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A_i is assumed to be unit triangular.
+            rocblas_diagonal_non_unit:  A_i is not assumed to be unit triangular.
+
+    @param[in]
+    m         [rocblas_int]
+              m specifies the number of rows of matrices A_i. m >= 0.
+
+    @param[in]
+    A         device pointer of the matrix A_0,
+              of dimension ( lda, m )
+
+    @param[in]
+    stride_a  [rocblas_stride]
+              stride from the start of one A_i matrix to the next A_{i + 1}
+
+    @param[in]
+    x         device pointer storing the vector x_0.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of one vector x.
+
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one x_i vector to the next x_{i + 1}
+
+    @param[in]
+    batch_count [rocblas_int]
+              The number of batched matrices/vectors.
+
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
@@ -4109,6 +7603,54 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsv(hipblasHandle_t       handle,
                                             hipblasComplex*       x,
                                             int                   incx);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    TPSV solves
+
+         A*x = b or A**T*x = b, or A**H*x = b,
+
+    where x and b are vectors and A is a triangular matrix stored in the packed format.
+
+    The input vector b is overwritten by the output vector x.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A is an upper triangular matrix.
+            rocblas_fill_lower:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA  [rocblas_operation]
+            rocblas_operation_none: Solves A*x = b
+            rocblas_operation_transpose: Solves A**T*x = b
+            rocblas_operation_conjugate_transpose: Solves A**H*x = b
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A is assumed to be unit triangular (i.e. the diagonal elements
+                                       of A are not used in computations).
+            rocblas_diagonal_non_unit: A is not assumed to be unit triangular.
+
+    @param[in]
+    n         [rocblas_int]
+              n specifies the number of rows of b. n >= 0.
+
+    @param[in]
+    AP        device pointer storing the packed version of matrix A,
+              of dimension >= (n * (n + 1) / 2)
+
+    @param[inout]
+    x         device pointer storing vector b on input, overwritten by x on output.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
@@ -4149,6 +7691,58 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsvBatched(hipblasHandle_t             h
                                                    int                         incx,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    TPSV_BATCHED solves
+
+         A_i*x_i = b_i or A_i**T*x_i = b_i, or A_i**H*x_i = b_i,
+
+    where x_i and b_i are vectors and A_i is a triangular matrix stored in the packed format,
+    for i in [1, batch_count].
+
+    The input vectors b_i are overwritten by the output vectors x_i.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  each A_i is an upper triangular matrix.
+            rocblas_fill_lower:  each A_i is a  lower triangular matrix.
+
+    @param[in]
+    transA  [rocblas_operation]
+            rocblas_operation_none: Solves A*x = b
+            rocblas_operation_transpose: Solves A**T*x = b
+            rocblas_operation_conjugate_transpose: Solves A**H*x = b
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     each A_i is assumed to be unit triangular (i.e. the diagonal elements
+                                       of each A_i are not used in computations).
+            rocblas_diagonal_non_unit: each A_i is not assumed to be unit triangular.
+
+    @param[in]
+    n         [rocblas_int]
+              n specifies the number of rows of each b_i. n >= 0.
+
+    @param[in]
+    AP        device array of device pointers storing the packed versions of each matrix A_i,
+              of dimension >= (n * (n + 1) / 2)
+
+    @param[inout]
+    x         device array of device pointers storing each input vector b_i, overwritten by x_i on output.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    batch_count [rocblas_int]
+                specifies the number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
@@ -4196,6 +7790,65 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stridex,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    TPSV_STRIDED_BATCHED solves
+
+         A_i*x_i = b_i or A_i**T*x_i = b_i, or A_i**H*x_i = b_i,
+
+    where x_i and b_i are vectors and A_i is a triangular matrix stored in the packed format,
+    for i in [1, batch_count].
+
+    The input vectors b_i are overwritten by the output vectors x_i.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  each A_i is an upper triangular matrix.
+            rocblas_fill_lower:  each A_i is a  lower triangular matrix.
+
+    @param[in]
+    transA  [rocblas_operation]
+            rocblas_operation_none: Solves A*x = b
+            rocblas_operation_transpose: Solves A**T*x = b
+            rocblas_operation_conjugate_transpose: Solves A**H*x = b
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     each A_i is assumed to be unit triangular (i.e. the diagonal elements
+                                       of each A_i are not used in computations).
+            rocblas_diagonal_non_unit: each A_i is not assumed to be unit triangular.
+
+    @param[in]
+    n         [rocblas_int]
+              n specifies the number of rows of each b_i. n >= 0.
+
+    @param[in]
+    AP        device pointer pointing to the first packed matrix A_1,
+              of dimension >= (n * (n + 1) / 2)
+
+    @param[in]
+    stride_A  [rocblas_stride]
+              stride from the beginning of one packed matrix (AP_i) and the next (AP_i+1).
+
+    @param[inout]
+    x         device pointer pointing to the first input vector b_1. Overwritten by each x_i on output.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the beginning of one vector (x_i) and the next (x_i+1).
+    @param[in]
+    batch_count [rocblas_int]
+                specifies the number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
@@ -4239,6 +7892,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmv(hipblasHandle_t       handle,
                                             hipblasComplex*       x,
                                             int                   incx);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    trmv performs one of the matrix-vector operations
+
+         x = A*x or x = A**T*x,
+
+    where x is an n element vector and A is an n by n unit, or non-unit, upper or lower triangular matrix.
+
+    The vector x is overwritten.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A is an upper triangular matrix.
+            rocblas_fill_lower:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A is assumed to be unit triangular.
+            rocblas_diagonal_non_unit:  A is not assumed to be unit triangular.
+
+    @param[in]
+    m         [rocblas_int]
+              m specifies the number of rows of A. m >= 0.
+
+    @param[in]
+    A         device pointer storing matrix A,
+              of dimension ( lda, m )
+
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A.
+              lda = max( 1, m ).
+
+    @param[in]
+    x         device pointer storing vector x.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
@@ -4283,6 +7985,60 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmvBatched(hipblasHandle_t             h
                                                    int                         incx,
                                                    int                         batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    trmv_batched performs one of the matrix-vector operations
+
+         x_i = A_i*x_i or x_i = A**T*x_i, 0 \le i < batch_count
+
+    where x_i is an n element vector and A_i is an n by n (unit, or non-unit, upper or lower triangular matrix)
+
+    The vectors x_i are overwritten.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A_i is an upper triangular matrix.
+            rocblas_fill_lower:  A_i is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A_i is assumed to be unit triangular.
+            rocblas_diagonal_non_unit:  A_i is not assumed to be unit triangular.
+
+    @param[in]
+    m         [rocblas_int]
+              m specifies the number of rows of matrices A_i. m >= 0.
+
+    @param[in]
+    A         device pointer storing pointer of matrices A_i,
+              of dimension ( lda, m )
+
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A_i.
+              lda >= max( 1, m ).
+
+    @param[in]
+    x         device pointer storing vectors x_i.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of vectors x_i.
+
+    @param[in]
+    batch_count [rocblas_int]
+              The number of batched matrices/vectors.
+
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
@@ -4334,6 +8090,69 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stride_x,
                                                           int                   batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    trmv_strided_batched performs one of the matrix-vector operations
+
+         x_i = A_i*x_i or x_i = A**T*x_i, 0 \le i < batch_count
+
+    where x_i is an n element vector and A_i is an n by n (unit, or non-unit, upper or lower triangular matrix)
+    with strides specifying how to retrieve $x_i$ (resp. $A_i$) from $x_{i-1}$ (resp. $A_i$).
+
+    The vectors x_i are overwritten.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A_i is an upper triangular matrix.
+            rocblas_fill_lower:  A_i is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A_i is assumed to be unit triangular.
+            rocblas_diagonal_non_unit:  A_i is not assumed to be unit triangular.
+
+    @param[in]
+    m         [rocblas_int]
+              m specifies the number of rows of matrices A_i. m >= 0.
+
+    @param[in]
+    A         device pointer of the matrix A_0,
+              of dimension ( lda, m )
+
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A_i.
+              lda >= max( 1, m ).
+
+    @param[in]
+    stride_a  [rocblas_stride]
+              stride from the start of one A_i matrix to the next A_{i + 1}
+
+    @param[in]
+    x         device pointer storing the vector x_0.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of one vector x.
+
+    @param[in]
+    stride_x  [rocblas_stride]
+              stride from the start of one x_i vector to the next x_{i + 1}
+
+    @param[in]
+    batch_count [rocblas_int]
+              The number of batched matrices/vectors.
+
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
@@ -4378,6 +8197,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsv(hipblasHandle_t       handle,
                                             hipblasComplex*       x,
                                             int                   incx);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    trsv solves
+
+         A*x = b or A**T*x = b,
+
+    where x and b are vectors and A is a triangular matrix.
+
+    The vector x is overwritten on b.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A is an upper triangular matrix.
+            rocblas_fill_lower:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A is assumed to be unit triangular.
+            rocblas_diagonal_non_unit:  A is not assumed to be unit triangular.
+
+    @param[in]
+    m         [rocblas_int]
+              m specifies the number of rows of b. m >= 0.
+
+    @param[in]
+    A         device pointer storing matrix A,
+              of dimension ( lda, m )
+
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of A.
+              lda = max( 1, m ).
+
+    @param[in]
+    x         device pointer storing vector x.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
@@ -4422,6 +8290,60 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsvBatched(hipblasHandle_t             h
                                                    int                         incx,
                                                    int                         batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    trsv_batched solves
+
+         A_i*x_i = b_i or A_i**T*x_i = b_i,
+
+    where (A_i, x_i, b_i) is the i-th instance of the batch.
+    x_i and b_i are vectors and A_i is an
+    m by m triangular matrix.
+
+    The vector x is overwritten on b.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A is an upper triangular matrix.
+            rocblas_fill_lower:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A is assumed to be unit triangular.
+            rocblas_diagonal_non_unit:  A is not assumed to be unit triangular.
+
+    @param[in]
+    m         [rocblas_int]
+              m specifies the number of rows of b. m >= 0.
+
+    @param[in]
+    A         device array of device pointers storing each matrix A_i.
+
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+              lda = max(1, m)
+
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of x.
+
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
@@ -4473,6 +8395,67 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsvStridedBatched(hipblasHandle_t       
                                                           hipblasStride         stridex,
                                                           int                   batch_count);
 
+/*! \brief BLAS Level 2 API
+
+    \details
+    trsv_strided_batched solves
+
+         A_i*x_i = b_i or A_i**T*x_i = b_i,
+
+    where (A_i, x_i, b_i) is the i-th instance of the batch.
+    x_i and b_i are vectors and A_i is an m by m triangular matrix, for i = 1, ..., batch_count.
+
+    The vector x is overwritten on b.
+
+    @param[in]
+    handle    [rocblas_handle]
+              handle to the rocblas library context queue.
+
+    @param[in]
+    uplo    [rocblas_fill]
+            rocblas_fill_upper:  A is an upper triangular matrix.
+            rocblas_fill_lower:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA     [rocblas_operation]
+
+    @param[in]
+    diag    [rocblas_diagonal]
+            rocblas_diagonal_unit:     A is assumed to be unit triangular.
+            rocblas_diagonal_non_unit:  A is not assumed to be unit triangular.
+
+    @param[in]
+    m         [rocblas_int]
+              m specifies the number of rows of each b_i. m >= 0.
+
+    @param[in]
+    A         device pointer to the first matrix (A_1) in the batch, of dimension ( lda, m )
+
+    @param[in]
+    stride_A  [rocblas_stride]
+              stride from the start of one A_i matrix to the next A_(i + 1)
+
+    @param[in]
+    lda       [rocblas_int]
+              specifies the leading dimension of each A_i.
+              lda = max( 1, m ).
+
+    @param[in, out]
+    x         device pointer to the first vector (x_1) in the batch.
+
+    @param[in]
+    stride_x [rocblas_stride]
+             stride from the start of one x_i vector to the next x_(i + 1)
+
+    @param[in]
+    incx      [rocblas_int]
+              specifies the increment for the elements of each x_i.
+
+    @param[in]
+    batch_count [rocblas_int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
