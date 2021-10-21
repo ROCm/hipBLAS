@@ -13826,17 +13826,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle
     lda       int. lda >= m.\n
               Specifies the leading dimension of matrices A_i.
     @param[out]
-    ipiv      pointer to int. Array on the GPU (the size depends on the value of strideP).\n
+    ipiv      pointer to int. Array on the GPU.\n
               Contains the vectors of pivot indices ipiv_i (corresponding to A_i).
               Dimension of ipiv_i is min(m,n).
               Elements of ipiv_i are 1-based indices.
               For each instance A_i in the batch and for 1 <= j <= min(m,n), the row j of the
               matrix A_i was interchanged with row ipiv_i[j].
               Matrix P_i of the factorization can be derived from ipiv_i.
-    @param[in]
-    strideP   hipblasStride.\n
-              Stride from the start of one vector ipiv_i to the next one ipiv_(i+1).
-              There is no restriction for the value of strideP. Normal use case is strideP >= min(m,n).
     @param[out]
     info      pointer to int. Array of batchCount integers on the GPU.\n
               If info[i] = 0, successful exit for factorization of A_i.
@@ -14027,7 +14023,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
     @param[in]
     ldb         int. ldb >= n.\n
                 The leading dimension of B.
-
+    @param[out]
+    info      pointer to a int on the GPU.\n
+              If info = 0, successful exit.
+              If info = j > 0, U is singular. U[j,j] is the first zero pivot.
    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
                                              const hipblasOperation_t trans,
@@ -14112,12 +14111,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          han
     lda         int. lda >= n.\n
                 The leading dimension of matrices A_j.
     @param[in]
-    ipiv        pointer to int. Array on the GPU (the size depends on the value of strideP).\n
+    ipiv        pointer to int. Array on the GPU.\n
                 Contains the vectors ipiv_j of pivot indices returned by \ref hipblasSgetrfBatched "getrfBatched".
-    @param[in]
-    strideP     hipblasStride.\n
-                Stride from the start of one vector ipiv_j to the next one ipiv_(j+1).
-                There is no restriction for the value of strideP. Normal use case is strideP >= n.
     @param[in,out]
     B           Array of pointers to type. Each pointer points to an array on the GPU of dimension ldb*nrhs.\n
                 On entry, the right hand side matrices B_j.
@@ -14125,6 +14120,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          han
     @param[in]
     ldb         int. ldb >= n.\n
                 The leading dimension of matrices B_j.
+    @param[out]
+    info      pointer to int. Array of batchCount integers on the GPU.\n
+              If info[i] = 0, successful exit for factorization of A_i.
+              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of instances (systems) in the batch.
@@ -14245,6 +14244,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t      
     strideB     hipblasStride.\n
                 Stride from the start of one matrix B_j to the next one B_(j+1).
                 There is no restriction for the value of strideB. Normal use case is strideB >= ldb*nrhs.
+    @param[out]
+    info      pointer to int. Array of batchCount integers on the GPU.\n
+              If info[i] = 0, successful exit for factorization of A_i.
+              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of instances (systems) in the batch.
@@ -14326,10 +14329,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetriBatched(hipblasHandle_t       handle
     @param[in]
     ipiv      pointer to int. Array on the GPU (the size depends on the value of strideP).\n
               The pivot indices returned by \ref hipblasGetrfBatched "getrfBatched".
-    @param[in]
-    strideP   hipblasStride.\n
-              Stride from the start of one vector ipiv_j to the next one ipiv_(i+j).
-              There is no restriction for the value of strideP. Normal use case is strideP >= n.
     @param[out]
     info      pointer to int. Array of batchCount integers on the GPU.\n
               If info[j] = 0, successful exit for inversion of A_j.
@@ -14511,13 +14510,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle
     lda       int. lda >= m.\n
               Specifies the leading dimension of matrices A_j.
     @param[out]
-    ipiv      pointer to type. Array on the GPU (the size depends on the value of strideP).\n
+    ipiv      pointer to type. Array on the GPU.\n
               Contains the vectors ipiv_j of corresponding Householder scalars.
-    @param[in]
-    strideP   hipblasStride.\n
-              Stride from the start of one vector ipiv_j to the next one ipiv_(j+1).
-              There is no restriction for the value
-              of strideP. Normal use is strideP >= min(m,n).
+    @param[out]
+    info      pointer to int. Array of batchCount integers on the GPU.\n
+              If info[i] = 0, successful exit for factorization of A_i.
+              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
     @param[in]
     batchCount  int. batchCount >= 0.\n
                  Number of matrices in the batch.
@@ -14625,6 +14623,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t     h
               Stride from the start of one vector ipiv_j to the next one ipiv_(j+1).
               There is no restriction for the value
               of strideP. Normal use is strideP >= min(m,n).
+    @param[out]
+    info      pointer to int. Array of batchCount integers on the GPU.\n
+              If info[i] = 0, successful exit for factorization of A_i.
+              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
     @param[in]
     batchCount  int. batchCount >= 0.\n
                  Number of matrices in the batch.
