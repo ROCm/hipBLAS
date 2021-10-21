@@ -366,7 +366,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSetAtomicsMode(hipblasHandle_t      handle
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t       handle,
                                                      hipblasAtomicsMode_t* atomics_mode);
 
-
 //amax
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int* result);
@@ -415,7 +414,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIcamaxBatched(hipblasHandle_t             
                                                     int                         incx,
                                                     int                         batchCount,
                                                     int*                        result);
-                                                    
+
 /*! \brief BLAS Level 1 API
 
     \details
@@ -471,7 +470,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIcamaxStridedBatched(hipblasHandle_t      
                                                            hipblasStride         stridex,
                                                            int                   batchCount,
                                                            int*                  result);
-                                                    
+
 /*! \brief BLAS Level 1 API
 
     \details
@@ -543,7 +542,7 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t hipblasIzamin(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result);
 
-//aminBatched 
+//aminBatched
 HIPBLAS_EXPORT hipblasStatus_t hipblasIsaminBatched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* result);
 
@@ -686,7 +685,6 @@ HIPBLAS_EXPORT hipblasStatus_t
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDzasum(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, double* result);
-
 
 //asumBatched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSasumBatched(
@@ -1080,7 +1078,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       y,
                                             int                         incy);
 
-
 //copyBatched
 HIPBLAS_EXPORT hipblasStatus_t hipblasScopyBatched(hipblasHandle_t    handle,
                                                    int                n,
@@ -1233,7 +1230,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyStridedBatched(hipblasHandle_t       
                                                           hipblasStride               stridey,
                                                           int                         batchCount);
 
-//dot   
+//dot
 HIPBLAS_EXPORT hipblasStatus_t hipblasHdot(hipblasHandle_t    handle,
                                            int                n,
                                            const hipblasHalf* x,
@@ -1618,7 +1615,6 @@ HIPBLAS_EXPORT hipblasStatus_t
 HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, double* result);
 
-
 //nrm2Batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSnrm2Batched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, float* result);
@@ -1731,7 +1727,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t      
               return is 0.0 for each element if n <= 0, incx<=0.
 
     ********************************************************************/
-   
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2StridedBatched(hipblasHandle_t             handle,
                                                            int                         n,
                                                            const hipblasDoubleComplex* x,
@@ -2468,7 +2464,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmgBatched(hipblasHandle_t     handle,
                                                     double* const       param[],
                                                     int                 batchCount);
 
-
 //rotmgStridedBatched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmgStridedBatched(hipblasHandle_t handle,
                                                            float*          d1,
@@ -2595,7 +2590,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZscal(hipblasHandle_t             handle,
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdscal(
     hipblasHandle_t handle, int n, const double* alpha, hipblasDoubleComplex* x, int incx);
 
-
 //scalBatched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSscalBatched(
     hipblasHandle_t handle, int n, const float* alpha, float* const x[], int incx, int batchCount);
@@ -2658,7 +2652,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalBatched(hipblasHandle_t             
                                                     hipblasDoubleComplex* const x[],
                                                     int                         incx,
                                                     int                         batchCount);
-
 
 //scalStridedBatched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSscalStridedBatched(hipblasHandle_t handle,
@@ -2738,7 +2731,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalStridedBatched(hipblasHandle_t      
                                                            int                   incx,
                                                            hipblasStride         stridex,
                                                            int                   batchCount);
-
 
 //swap
 HIPBLAS_EXPORT hipblasStatus_t
@@ -2834,7 +2826,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZswapBatched(hipblasHandle_t       handle,
                                                    hipblasDoubleComplex* y[],
                                                    int                   incy,
                                                    int                   batchCount);
-
 
 //swapStridedBatched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSswapStridedBatched(hipblasHandle_t handle,
