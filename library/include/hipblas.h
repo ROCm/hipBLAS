@@ -8483,6 +8483,435 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvStridedBatched(hipblasHandle_t       
 // ========== LEVEL 3 =============
 // ================================
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasHgemm(hipblasHandle_t    handle,
+                                            hipblasOperation_t transa,
+                                            hipblasOperation_t transb,
+                                            int                m,
+                                            int                n,
+                                            int                k,
+                                            const hipblasHalf* alpha,
+                                            const hipblasHalf* A,
+                                            int                lda,
+                                            const hipblasHalf* B,
+                                            int                ldb,
+                                            const hipblasHalf* beta,
+                                            hipblasHalf*       C,
+                                            int                ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgemm(hipblasHandle_t    handle,
+                                            hipblasOperation_t transa,
+                                            hipblasOperation_t transb,
+                                            int                m,
+                                            int                n,
+                                            int                k,
+                                            const float*       alpha,
+                                            const float*       A,
+                                            int                lda,
+                                            const float*       B,
+                                            int                ldb,
+                                            const float*       beta,
+                                            float*             C,
+                                            int                ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgemm(hipblasHandle_t    handle,
+                                            hipblasOperation_t transa,
+                                            hipblasOperation_t transb,
+                                            int                m,
+                                            int                n,
+                                            int                k,
+                                            const double*      alpha,
+                                            const double*      A,
+                                            int                lda,
+                                            const double*      B,
+                                            int                ldb,
+                                            const double*      beta,
+                                            double*            C,
+                                            int                ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemm(hipblasHandle_t       handle,
+                                            hipblasOperation_t    transa,
+                                            hipblasOperation_t    transb,
+                                            int                   m,
+                                            int                   n,
+                                            int                   k,
+                                            const hipblasComplex* alpha,
+                                            const hipblasComplex* A,
+                                            int                   lda,
+                                            const hipblasComplex* B,
+                                            int                   ldb,
+                                            const hipblasComplex* beta,
+                                            hipblasComplex*       C,
+                                            int                   ldc);
+
+/*! \brief BLAS Level 3 API
+
+    \details
+    gemm performs one of the matrix-matrix operations
+
+        C = alpha*op( A )*op( B ) + beta*C,
+
+    where op( X ) is one of
+
+        op( X ) = X      or
+        op( X ) = X**T   or
+        op( X ) = X**H,
+
+    alpha and beta are scalars, and A, B and C are matrices, with
+    op( A ) an m by k matrix, op( B ) a k by n matrix and C an m by n matrix.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    transA    [hipblasOperation_t]
+              specifies the form of op( A )
+    @param[in]
+    transB    [hipblasOperation_t]
+              specifies the form of op( B )
+    @param[in]
+    m         [int]
+              number or rows of matrices op( A ) and C
+    @param[in]
+    n         [int]
+              number of columns of matrices op( B ) and C
+    @param[in]
+    k         [int]
+              number of columns of matrix op( A ) and number of rows of matrix op( B )
+    @param[in]
+    alpha     device pointer or host pointer specifying the scalar alpha.
+    @param[in]
+    A         device pointer storing matrix A.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of A.
+    @param[in]
+    B         device pointer storing matrix B.
+    @param[in]
+    ldb       [int]
+              specifies the leading dimension of B.
+    @param[in]
+    beta      device pointer or host pointer specifying the scalar beta.
+    @param[in, out]
+    C         device pointer storing matrix C on the GPU.
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of C.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemm(hipblasHandle_t             handle,
+                                            hipblasOperation_t          transa,
+                                            hipblasOperation_t          transb,
+                                            int                         m,
+                                            int                         n,
+                                            int                         k,
+                                            const hipblasDoubleComplex* alpha,
+                                            const hipblasDoubleComplex* A,
+                                            int                         lda,
+                                            const hipblasDoubleComplex* B,
+                                            int                         ldb,
+                                            const hipblasDoubleComplex* beta,
+                                            hipblasDoubleComplex*       C,
+                                            int                         ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasHgemmBatched(hipblasHandle_t          handle,
+                                                   hipblasOperation_t       transa,
+                                                   hipblasOperation_t       transb,
+                                                   int                      m,
+                                                   int                      n,
+                                                   int                      k,
+                                                   const hipblasHalf*       alpha,
+                                                   const hipblasHalf* const A[],
+                                                   int                      lda,
+                                                   const hipblasHalf* const B[],
+                                                   int                      ldb,
+                                                   const hipblasHalf*       beta,
+                                                   hipblasHalf* const       C[],
+                                                   int                      ldc,
+                                                   int                      batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t    handle,
+                                                   hipblasOperation_t transa,
+                                                   hipblasOperation_t transb,
+                                                   int                m,
+                                                   int                n,
+                                                   int                k,
+                                                   const float*       alpha,
+                                                   const float* const A[],
+                                                   int                lda,
+                                                   const float* const B[],
+                                                   int                ldb,
+                                                   const float*       beta,
+                                                   float* const       C[],
+                                                   int                ldc,
+                                                   int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t     handle,
+                                                   hipblasOperation_t  transa,
+                                                   hipblasOperation_t  transb,
+                                                   int                 m,
+                                                   int                 n,
+                                                   int                 k,
+                                                   const double*       alpha,
+                                                   const double* const A[],
+                                                   int                 lda,
+                                                   const double* const B[],
+                                                   int                 ldb,
+                                                   const double*       beta,
+                                                   double* const       C[],
+                                                   int                 ldc,
+                                                   int                 batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t             handle,
+                                                   hipblasOperation_t          transa,
+                                                   hipblasOperation_t          transb,
+                                                   int                         m,
+                                                   int                         n,
+                                                   int                         k,
+                                                   const hipblasComplex*       alpha,
+                                                   const hipblasComplex* const A[],
+                                                   int                         lda,
+                                                   const hipblasComplex* const B[],
+                                                   int                         ldb,
+                                                   const hipblasComplex*       beta,
+                                                   hipblasComplex* const       C[],
+                                                   int                         ldc,
+                                                   int                         batchCount);
+
+/*! \brief BLAS Level 3 API
+     \details
+    gemmBatched performs one of the batched matrix-matrix operations
+         C_i = alpha*op( A_i )*op( B_i ) + beta*C_i, for i = 1, ..., batchCount.
+     where op( X ) is one of
+         op( X ) = X      or
+        op( X ) = X**T   or
+        op( X ) = X**H,
+     alpha and beta are scalars, and A, B and C are strided batched matrices, with
+    op( A ) an m by k by batchCount strided_batched matrix,
+    op( B ) an k by n by batchCount strided_batched matrix and
+    C an m by n by batchCount strided_batched matrix.
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    transA    [hipblasOperation_t]
+              specifies the form of op( A )
+    @param[in]
+    transB    [hipblasOperation_t]
+              specifies the form of op( B )
+    @param[in]
+    m         [int]
+              matrix dimention m.
+    @param[in]
+    n         [int]
+              matrix dimention n.
+    @param[in]
+    k         [int]
+              matrix dimention k.
+    @param[in]
+    alpha     device pointer or host pointer specifying the scalar alpha.
+    @param[in]
+    A         device array of device pointers storing each matrix A_i.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    B         device array of device pointers storing each matrix B_i.
+    @param[in]
+    ldb       [int]
+              specifies the leading dimension of each B_i.
+    @param[in]
+    beta      device pointer or host pointer specifying the scalar beta.
+    @param[in, out]
+    C         device array of device pointers storing each matrix C_i.
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of each C_i.
+    @param[in]
+    batchCount
+              [int]
+              number of gemm operations in the batch
+     ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemmBatched(hipblasHandle_t                   handle,
+                                                   hipblasOperation_t                transa,
+                                                   hipblasOperation_t                transb,
+                                                   int                               m,
+                                                   int                               n,
+                                                   int                               k,
+                                                   const hipblasDoubleComplex*       alpha,
+                                                   const hipblasDoubleComplex* const A[],
+                                                   int                               lda,
+                                                   const hipblasDoubleComplex* const B[],
+                                                   int                               ldb,
+                                                   const hipblasDoubleComplex*       beta,
+                                                   hipblasDoubleComplex* const       C[],
+                                                   int                               ldc,
+                                                   int                               batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasHgemmStridedBatched(hipblasHandle_t    handle,
+                                                          hipblasOperation_t transa,
+                                                          hipblasOperation_t transb,
+                                                          int                m,
+                                                          int                n,
+                                                          int                k,
+                                                          const hipblasHalf* alpha,
+                                                          const hipblasHalf* A,
+                                                          int                lda,
+                                                          hipblasStride      strideA,
+                                                          const hipblasHalf* B,
+                                                          int                ldb,
+                                                          hipblasStride      strideB,
+                                                          const hipblasHalf* beta,
+                                                          hipblasHalf*       C,
+                                                          int                ldc,
+                                                          hipblasStride      strideC,
+                                                          int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t    handle,
+                                                          hipblasOperation_t transa,
+                                                          hipblasOperation_t transb,
+                                                          int                m,
+                                                          int                n,
+                                                          int                k,
+                                                          const float*       alpha,
+                                                          const float*       A,
+                                                          int                lda,
+                                                          hipblasStride      strideA,
+                                                          const float*       B,
+                                                          int                ldb,
+                                                          hipblasStride      strideB,
+                                                          const float*       beta,
+                                                          float*             C,
+                                                          int                ldc,
+                                                          hipblasStride      strideC,
+                                                          int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t    handle,
+                                                          hipblasOperation_t transa,
+                                                          hipblasOperation_t transb,
+                                                          int                m,
+                                                          int                n,
+                                                          int                k,
+                                                          const double*      alpha,
+                                                          const double*      A,
+                                                          int                lda,
+                                                          hipblasStride      strideA,
+                                                          const double*      B,
+                                                          int                ldb,
+                                                          hipblasStride      strideB,
+                                                          const double*      beta,
+                                                          double*            C,
+                                                          int                ldc,
+                                                          hipblasStride      strideC,
+                                                          int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmStridedBatched(hipblasHandle_t       handle,
+                                                          hipblasOperation_t    transa,
+                                                          hipblasOperation_t    transb,
+                                                          int                   m,
+                                                          int                   n,
+                                                          int                   k,
+                                                          const hipblasComplex* alpha,
+                                                          const hipblasComplex* A,
+                                                          int                   lda,
+                                                          hipblasStride         strideA,
+                                                          const hipblasComplex* B,
+                                                          int                   ldb,
+                                                          hipblasStride         strideB,
+                                                          const hipblasComplex* beta,
+                                                          hipblasComplex*       C,
+                                                          int                   ldc,
+                                                          hipblasStride         strideC,
+                                                          int                   batchCount);
+
+/*! \brief BLAS Level 3 API
+
+    \details
+    gemmStridedBatched performs one of the strided batched matrix-matrix operations
+
+        C_i = alpha*op( A_i )*op( B_i ) + beta*C_i, for i = 1, ..., batchCount.
+
+    where op( X ) is one of
+
+        op( X ) = X      or
+        op( X ) = X**T   or
+        op( X ) = X**H,
+
+    alpha and beta are scalars, and A, B and C are strided batched matrices, with
+    op( A ) an m by k by batchCount strided_batched matrix,
+    op( B ) an k by n by batchCount strided_batched matrix and
+    C an m by n by batchCount strided_batched matrix.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    transA    [hipblasOperation_t]
+              specifies the form of op( A )
+    @param[in]
+    transB    [hipblasOperation_t]
+              specifies the form of op( B )
+    @param[in]
+    m         [int]
+              matrix dimention m.
+    @param[in]
+    n         [int]
+              matrix dimention n.
+    @param[in]
+    k         [int]
+              matrix dimention k.
+    @param[in]
+    alpha     device pointer or host pointer specifying the scalar alpha.
+    @param[in]
+    A         device pointer pointing to the first matrix A_1.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one A_i matrix to the next A_(i + 1).
+    @param[in]
+    B         device pointer pointing to the first matrix B_1.
+    @param[in]
+    ldb       [int]
+              specifies the leading dimension of each B_i.
+    @param[in]
+    strideB  [hipblasStride]
+              stride from the start of one B_i matrix to the next B_(i + 1).
+    @param[in]
+    beta      device pointer or host pointer specifying the scalar beta.
+    @param[in, out]
+    C         device pointer pointing to the first matrix C_1.
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of each C_i.
+    @param[in]
+    strideC  [hipblasStride]
+              stride from the start of one C_i matrix to the next C_(i + 1).
+    @param[in]
+    batchCount
+              [int]
+              number of gemm operatons in the batch
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t             handle,
+                                                          hipblasOperation_t          transa,
+                                                          hipblasOperation_t          transb,
+                                                          int                         m,
+                                                          int                         n,
+                                                          int                         k,
+                                                          const hipblasDoubleComplex* alpha,
+                                                          const hipblasDoubleComplex* A,
+                                                          int                         lda,
+                                                          hipblasStride               strideA,
+                                                          const hipblasDoubleComplex* B,
+                                                          int                         ldb,
+                                                          hipblasStride               strideB,
+                                                          const hipblasDoubleComplex* beta,
+                                                          hipblasDoubleComplex*       C,
+                                                          int                         ldc,
+                                                          hipblasStride               strideC,
+                                                          int                         batchCount);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasCherk(hipblasHandle_t       handle,
                                             hipblasFillMode_t     uplo,
                                             hipblasOperation_t    transA,
@@ -13277,7 +13706,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmmStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideC,
                                                           int                         batchCount);
 
-// getrf
+// ================================
+// =========== SOLVER =============
+// ================================
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrf(
     hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info);
 
@@ -13287,6 +13719,49 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgetrf(
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrf(
     hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info);
 
+/*! \brief SOLVER API
+
+    \details
+    getrf computes the LU factorization of a general m-by-n matrix A
+    using partial pivoting with row interchanges.
+
+    The factorization has the form
+
+    \f[
+        A = PLU
+    \f]
+
+    where P is a permutation matrix, L is lower triangular with unit
+    diagonal elements (lower trapezoidal if m > n), and U is upper
+    triangular (upper trapezoidal if m < n).
+
+    @param[in]
+    handle    hipblasHandle_t.
+    @param[in]
+    m         int. m >= 0.\n
+              The number of rows of the matrix A.
+    @param[in]
+    n         int. n >= 0.\n
+              The number of columns of the matrix A.
+    @param[inout]
+    A         pointer to type. Array on the GPU of dimension lda*n.\n
+              On entry, the m-by-n matrix A to be factored.
+              On exit, the factors L and U from the factorization.
+              The unit diagonal elements of L are not stored.
+    @param[in]
+    lda       int. lda >= m.\n
+              Specifies the leading dimension of A.
+    @param[out]
+    ipiv      pointer to int. Array on the GPU of dimension min(m,n).\n
+              The vector of pivot indices. Elements of ipiv are 1-based indices.
+              For 1 <= i <= min(m,n), the row i of the
+              matrix was interchanged with row ipiv[i].
+              Matrix P of the factorization can be derived from ipiv.
+    @param[out]
+    info      pointer to a int on the GPU.\n
+              If info = 0, successful exit.
+              If info = j > 0, U is singular. U[j,j] is the first zero pivot.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
                                              const int             n,
                                              hipblasDoubleComplex* A,
@@ -13294,14 +13769,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
                                              int*                  ipiv,
                                              int*                  info);
 
-// getrf_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrfBatched(hipblasHandle_t handle,
                                                     const int       n,
                                                     float* const    A[],
                                                     const int       lda,
                                                     int*            ipiv,
                                                     int*            info,
-                                                    const int       batch_count);
+                                                    const int       batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgetrfBatched(hipblasHandle_t handle,
                                                     const int       n,
@@ -13309,7 +13783,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgetrfBatched(hipblasHandle_t handle,
                                                     const int       lda,
                                                     int*            ipiv,
                                                     int*            info,
-                                                    const int       batch_count);
+                                                    const int       batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle,
                                                     const int             n,
@@ -13317,17 +13791,68 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle
                                                     const int             lda,
                                                     int*                  ipiv,
                                                     int*                  info,
-                                                    const int             batch_count);
+                                                    const int             batchCount);
 
+/*! \brief SOLVER API
+
+    \details
+    getrfBatched computes the LU factorization of a batch of general
+    m-by-n matrices using partial pivoting with row interchanges.
+
+    The factorization of matrix \f$A_i\f$ in the batch has the form
+
+    \f[
+        A_i = P_iL_iU_i
+    \f]
+
+    where \f$P_i\f$ is a permutation matrix, \f$L_i\f$ is lower triangular with unit
+    diagonal elements (lower trapezoidal if m > n), and \f$U_i\f$ is upper
+    triangular (upper trapezoidal if m < n).
+
+    @param[in]
+    handle    hipblasHandle_t.
+    @param[in]
+    m         int. m >= 0.\n
+              The number of rows of all matrices A_i in the batch.
+    @param[in]
+    n         int. n >= 0.\n
+              The number of columns of all matrices A_i in the batch.
+    @param[inout]
+    A         array of pointers to type. Each pointer points to an array on the GPU of dimension lda*n.\n
+              On entry, the m-by-n matrices A_i to be factored.
+              On exit, the factors L_i and U_i from the factorizations.
+              The unit diagonal elements of L_i are not stored.
+    @param[in]
+    lda       int. lda >= m.\n
+              Specifies the leading dimension of matrices A_i.
+    @param[out]
+    ipiv      pointer to int. Array on the GPU (the size depends on the value of strideP).\n
+              Contains the vectors of pivot indices ipiv_i (corresponding to A_i).
+              Dimension of ipiv_i is min(m,n).
+              Elements of ipiv_i are 1-based indices.
+              For each instance A_i in the batch and for 1 <= j <= min(m,n), the row j of the
+              matrix A_i was interchanged with row ipiv_i[j].
+              Matrix P_i of the factorization can be derived from ipiv_i.
+    @param[in]
+    strideP   hipblasStride.\n
+              Stride from the start of one vector ipiv_i to the next one ipiv_(i+1).
+              There is no restriction for the value of strideP. Normal use case is strideP >= min(m,n).
+    @param[out]
+    info      pointer to int. Array of batchCount integers on the GPU.\n
+              If info[i] = 0, successful exit for factorization of A_i.
+              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
+    @param[in]
+    batchCount int. batchCount >= 0.\n
+                Number of matrices in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrfBatched(hipblasHandle_t             handle,
                                                     const int                   n,
                                                     hipblasDoubleComplex* const A[],
                                                     const int                   lda,
                                                     int*                        ipiv,
                                                     int*                        info,
-                                                    const int                   batch_count);
+                                                    const int                   batchCount);
 
-// getrf_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t     handle,
                                                            const int           n,
                                                            float*              A,
@@ -13336,7 +13861,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t     h
                                                            int*                ipiv,
                                                            const hipblasStride strideP,
                                                            int*                info,
-                                                           const int           batch_count);
+                                                           const int           batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t     handle,
                                                            const int           n,
@@ -13346,7 +13871,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t     h
                                                            int*                ipiv,
                                                            const hipblasStride strideP,
                                                            int*                info,
-                                                           const int           batch_count);
+                                                           const int           batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     handle,
                                                            const int           n,
@@ -13356,8 +13881,64 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     h
                                                            int*                ipiv,
                                                            const hipblasStride strideP,
                                                            int*                info,
-                                                           const int           batch_count);
+                                                           const int           batchCount);
 
+/*! \brief SOLVER API
+
+    \details
+    getrfStridedBatched computes the LU factorization of a batch of
+    general m-by-n matrices using partial pivoting with row interchanges.
+
+    The factorization of matrix \f$A_i\f$ in the batch has the form
+
+    \f[
+        A_i = P_iL_iU_i
+    \f]
+
+    where \f$P_i\f$ is a permutation matrix, \f$L_i\f$ is lower triangular with unit
+    diagonal elements (lower trapezoidal if m > n), and \f$U_i\f$ is upper
+    triangular (upper trapezoidal if m < n).
+
+    @param[in]
+    handle    hipblasHandle_t.
+    @param[in]
+    m         int. m >= 0.\n
+              The number of rows of all matrices A_i in the batch.
+    @param[in]
+    n         int. n >= 0.\n
+              The number of columns of all matrices A_i in the batch.
+    @param[inout]
+    A         pointer to type. Array on the GPU (the size depends on the value of strideA).\n
+              On entry, the m-by-n matrices A_i to be factored.
+              On exit, the factors L_i and U_i from the factorization.
+              The unit diagonal elements of L_i are not stored.
+    @param[in]
+    lda       int. lda >= m.\n
+              Specifies the leading dimension of matrices A_i.
+    @param[in]
+    strideA   hipblasStride.\n
+              Stride from the start of one matrix A_i to the next one A_(i+1).
+              There is no restriction for the value of strideA. Normal use case is strideA >= lda*n
+    @param[out]
+    ipiv      pointer to int. Array on the GPU (the size depends on the value of strideP).\n
+              Contains the vectors of pivots indices ipiv_i (corresponding to A_i).
+              Dimension of ipiv_i is min(m,n).
+              Elements of ipiv_i are 1-based indices.
+              For each instance A_i in the batch and for 1 <= j <= min(m,n), the row j of the
+              matrix A_i was interchanged with row ipiv_i[j].
+              Matrix P_i of the factorization can be derived from ipiv_i.
+    @param[in]
+    strideP   hipblasStride.\n
+              Stride from the start of one vector ipiv_i to the next one ipiv_(i+1).
+              There is no restriction for the value of strideP. Normal use case is strideP >= min(m,n).
+    @param[out]
+    info      pointer to int. Array of batchCount integers on the GPU.\n
+              If info[i] = 0, successful exit for factorization of A_i.
+              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
+    @param[in]
+    batchCount int. batchCount >= 0.\n
+                Number of matrices in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
                                                            const int             n,
                                                            hipblasDoubleComplex* A,
@@ -13366,9 +13947,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t      
                                                            int*                  ipiv,
                                                            const hipblasStride   strideP,
                                                            int*                  info,
-                                                           const int             batch_count);
+                                                           const int             batchCount);
 
-// getrs
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrs(hipblasHandle_t          handle,
                                              const hipblasOperation_t trans,
                                              const int                n,
@@ -13402,6 +13982,53 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
                                              const int                ldb,
                                              int*                     info);
 
+/*! \brief SOLVER API
+
+    \details
+    getrs solves a system of n linear equations on n variables in its factorized form.
+
+    It solves one of the following systems, depending on the value of trans:
+
+    \f[
+        \begin{array}{cl}
+        A X = B & \: \text{not transposed,}\\
+        A^T X = B & \: \text{transposed, or}\\
+        A^H X = B & \: \text{conjugate transposed.}
+        \end{array}
+    \f]
+
+    Matrix A is defined by its triangular factors as returned by \ref hipblasSgetrf "getrf".
+
+    @param[in]
+    handle      hipblasHandle_t.
+    @param[in]
+    trans       hipblasOperation_t.\n
+                Specifies the form of the system of equations.
+    @param[in]
+    n           int. n >= 0.\n
+                The order of the system, i.e. the number of columns and rows of A.
+    @param[in]
+    nrhs        int. nrhs >= 0.\n
+                The number of right hand sides, i.e., the number of columns
+                of the matrix B.
+    @param[in]
+    A           pointer to type. Array on the GPU of dimension lda*n.\n
+                The factors L and U of the factorization A = P*L*U returned by \ref hipblasSgetrf "getrf".
+    @param[in]
+    lda         int. lda >= n.\n
+                The leading dimension of A.
+    @param[in]
+    ipiv        pointer to int. Array on the GPU of dimension n.\n
+                The pivot indices returned by \ref hipblasSgetrf "getrf".
+    @param[in,out]
+    B           pointer to type. Array on the GPU of dimension ldb*nrhs.\n
+                On entry, the right hand side matrix B.
+                On exit, the solution matrix X.
+    @param[in]
+    ldb         int. ldb >= n.\n
+                The leading dimension of B.
+
+   ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
                                              const hipblasOperation_t trans,
                                              const int                n,
@@ -13413,7 +14040,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
                                              const int                ldb,
                                              int*                     info);
 
-// getrs_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrsBatched(hipblasHandle_t          handle,
                                                     const hipblasOperation_t trans,
                                                     const int                n,
@@ -13424,7 +14050,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrsBatched(hipblasHandle_t          han
                                                     float* const             B[],
                                                     const int                ldb,
                                                     int*                     info,
-                                                    const int                batch_count);
+                                                    const int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgetrsBatched(hipblasHandle_t          handle,
                                                     const hipblasOperation_t trans,
@@ -13436,7 +14062,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgetrsBatched(hipblasHandle_t          han
                                                     double* const            B[],
                                                     const int                ldb,
                                                     int*                     info,
-                                                    const int                batch_count);
+                                                    const int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          handle,
                                                     const hipblasOperation_t trans,
@@ -13448,8 +14074,62 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          han
                                                     hipblasComplex* const    B[],
                                                     const int                ldb,
                                                     int*                     info,
-                                                    const int                batch_count);
+                                                    const int                batchCount);
 
+/*! \brief SOLVER API
+
+    \details getrsBatched solves a batch of systems of n linear equations on n
+    variables in its factorized forms.
+
+    For each instance j in the batch, it solves one of the following systems, depending on the value of trans:
+
+    \f[
+        \begin{array}{cl}
+        A_j X_j = B_j & \: \text{not transposed,}\\
+        A_j^T X_j = B_j & \: \text{transposed, or}\\
+        A_j^H X_j = B_j & \: \text{conjugate transposed.}
+        \end{array}
+    \f]
+
+    Matrix \f$A_j\f$ is defined by its triangular factors as returned by \ref hipblasSgetrfBatched "getrfBatched".
+
+    @param[in]
+    handle      hipblasHandle_t.
+    @param[in]
+    trans       hipblasOperation_t.\n
+                Specifies the form of the system of equations of each instance in the batch.
+    @param[in]
+    n           int. n >= 0.\n
+                The order of the system, i.e. the number of columns and rows of all A_j matrices.
+    @param[in]
+    nrhs        int. nrhs >= 0.\n
+                The number of right hand sides, i.e., the number of columns
+                of all the matrices B_j.
+    @param[in]
+    A           Array of pointers to type. Each pointer points to an array on the GPU of dimension lda*n.\n
+                The factors L_j and U_j of the factorization A_j = P_j*L_j*U_j returned by \ref hipblasSgetrfBatched "getrfBatched".
+    @param[in]
+    lda         int. lda >= n.\n
+                The leading dimension of matrices A_j.
+    @param[in]
+    ipiv        pointer to int. Array on the GPU (the size depends on the value of strideP).\n
+                Contains the vectors ipiv_j of pivot indices returned by \ref hipblasSgetrfBatched "getrfBatched".
+    @param[in]
+    strideP     hipblasStride.\n
+                Stride from the start of one vector ipiv_j to the next one ipiv_(j+1).
+                There is no restriction for the value of strideP. Normal use case is strideP >= n.
+    @param[in,out]
+    B           Array of pointers to type. Each pointer points to an array on the GPU of dimension ldb*nrhs.\n
+                On entry, the right hand side matrices B_j.
+                On exit, the solution matrix X_j of each system in the batch.
+    @param[in]
+    ldb         int. ldb >= n.\n
+                The leading dimension of matrices B_j.
+    @param[in]
+    batchCount int. batchCount >= 0.\n
+                Number of instances (systems) in the batch.
+
+   ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             handle,
                                                     const hipblasOperation_t    trans,
                                                     const int                   n,
@@ -13460,9 +14140,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             
                                                     hipblasDoubleComplex* const B[],
                                                     const int                   ldb,
                                                     int*                        info,
-                                                    const int                   batch_count);
+                                                    const int                   batchCount);
 
-// getrs_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrsStridedBatched(hipblasHandle_t          handle,
                                                            const hipblasOperation_t trans,
                                                            const int                n,
@@ -13476,7 +14155,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrsStridedBatched(hipblasHandle_t      
                                                            const int                ldb,
                                                            const hipblasStride      strideB,
                                                            int*                     info,
-                                                           const int                batch_count);
+                                                           const int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgetrsStridedBatched(hipblasHandle_t          handle,
                                                            const hipblasOperation_t trans,
@@ -13491,7 +14170,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgetrsStridedBatched(hipblasHandle_t      
                                                            const int                ldb,
                                                            const hipblasStride      strideB,
                                                            int*                     info,
-                                                           const int                batch_count);
+                                                           const int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t          handle,
                                                            const hipblasOperation_t trans,
@@ -13506,8 +14185,71 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t      
                                                            const int                ldb,
                                                            const hipblasStride      strideB,
                                                            int*                     info,
-                                                           const int                batch_count);
+                                                           const int                batchCount);
 
+/*! \brief SOLVER API
+
+    \details
+    getrsStridedBatched solves a batch of systems of n linear equations
+    on n variables in its factorized forms.
+
+    For each instance j in the batch, it solves one of the following systems, depending on the value of trans:
+
+    \f[
+        \begin{array}{cl}
+        A_j X_j = B_j & \: \text{not transposed,}\\
+        A_j^T X_j = B_j & \: \text{transposed, or}\\
+        A_j^H X_j = B_j & \: \text{conjugate transposed.}
+        \end{array}
+    \f]
+
+    Matrix \f$A_j\f$ is defined by its triangular factors as returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
+
+    @param[in]
+    handle      hipblasHandle_t.
+    @param[in]
+    trans       hipblasOperation_t.\n
+                Specifies the form of the system of equations of each instance in the batch.
+    @param[in]
+    n           int. n >= 0.\n
+                The order of the system, i.e. the number of columns and rows of all A_j matrices.
+    @param[in]
+    nrhs        int. nrhs >= 0.\n
+                The number of right hand sides, i.e., the number of columns
+                of all the matrices B_j.
+    @param[in]
+    A           pointer to type. Array on the GPU (the size depends on the value of strideA).\n
+                The factors L_j and U_j of the factorization A_j = P_j*L_j*U_j returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
+    @param[in]
+    lda         int. lda >= n.\n
+                The leading dimension of matrices A_j.
+    @param[in]
+    strideA     hipblasStride.\n
+                Stride from the start of one matrix A_j to the next one A_(j+1).
+                There is no restriction for the value of strideA. Normal use case is strideA >= lda*n.
+    @param[in]
+    ipiv        pointer to int. Array on the GPU (the size depends on the value of strideP).\n
+                Contains the vectors ipiv_j of pivot indices returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
+    @param[in]
+    strideP     hipblasStride.\n
+                Stride from the start of one vector ipiv_j to the next one ipiv_(j+1).
+                There is no restriction for the value of strideP. Normal use case is strideP >= n.
+    @param[in,out]
+    B           pointer to type. Array on the GPU (size depends on the value of strideB).\n
+                On entry, the right hand side matrices B_j.
+                On exit, the solution matrix X_j of each system in the batch.
+    @param[in]
+    ldb         int. ldb >= n.\n
+                The leading dimension of matrices B_j.
+    @param[in]
+    strideB     hipblasStride.\n
+                Stride from the start of one matrix B_j to the next one B_(j+1).
+                There is no restriction for the value of strideB. Normal use case is strideB >= ldb*nrhs.
+    @param[in]
+    batchCount int. batchCount >= 0.\n
+                Number of instances (systems) in the batch.
+
+   ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
                                                            const hipblasOperation_t trans,
                                                            const int                n,
@@ -13521,9 +14263,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t      
                                                            const int                ldb,
                                                            const hipblasStride      strideB,
                                                            int*                     info,
-                                                           const int                batch_count);
+                                                           const int                batchCount);
 
-// getri_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetriBatched(hipblasHandle_t handle,
                                                     const int       n,
                                                     float* const    A[],
@@ -13532,7 +14273,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgetriBatched(hipblasHandle_t handle,
                                                     float* const    C[],
                                                     const int       ldc,
                                                     int*            info,
-                                                    const int       batch_count);
+                                                    const int       batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgetriBatched(hipblasHandle_t handle,
                                                     const int       n,
@@ -13542,7 +14283,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgetriBatched(hipblasHandle_t handle,
                                                     double* const   C[],
                                                     const int       ldc,
                                                     int*            info,
-                                                    const int       batch_count);
+                                                    const int       batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgetriBatched(hipblasHandle_t       handle,
                                                     const int             n,
@@ -13552,8 +14293,52 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetriBatched(hipblasHandle_t       handle
                                                     hipblasComplex* const C[],
                                                     const int             ldc,
                                                     int*                  info,
-                                                    const int             batch_count);
+                                                    const int             batchCount);
 
+/*! \brief SOVLER API
+
+    \details
+    getriBatched inverts a batch of general n-by-n matrices using
+    the LU factorization computed by \ref hipblasGetrfBatched "getrfBatched".
+
+    The inverse of matrix \f$A_j\f$ in the batch is computed by solving the linear system
+
+    \f[
+        A_j^{-1} L_j = U_j^{-1}
+    \f]
+
+    where \f$L_j\f$ is the lower triangular factor of \f$A_j\f$ with unit diagonal elements, and \f$U_j\f$ is the
+    upper triangular factor.
+
+    @param[in]
+    handle    hipblasHandle_t.
+    @param[in]
+    n         int. n >= 0.\n
+              The number of rows and columns of all matrices A_j in the batch.
+    @param[inout]
+    A         array of pointers to type. Each pointer points to an array on the GPU of dimension lda*n.\n
+              On entry, the factors L_j and U_j of the factorization A = P_j*L_j*U_j returned by
+              \ref hipblasGetrfBatched "getrfBatched".
+              On exit, the inverses of A_j if info[j] = 0; otherwise undefined.
+    @param[in]
+    lda       int. lda >= n.\n
+              Specifies the leading dimension of matrices A_j.
+    @param[in]
+    ipiv      pointer to int. Array on the GPU (the size depends on the value of strideP).\n
+              The pivot indices returned by \ref hipblasGetrfBatched "getrfBatched".
+    @param[in]
+    strideP   hipblasStride.\n
+              Stride from the start of one vector ipiv_j to the next one ipiv_(i+j).
+              There is no restriction for the value of strideP. Normal use case is strideP >= n.
+    @param[out]
+    info      pointer to int. Array of batchCount integers on the GPU.\n
+              If info[j] = 0, successful exit for inversion of A_j.
+              If info[j] = i > 0, U_j is singular. U_j[i,i] is the first zero pivot.
+    @param[in]
+    batchCount int. batchCount >= 0.\n
+                Number of matrices in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             handle,
                                                     const int                   n,
                                                     hipblasDoubleComplex* const A[],
@@ -13562,9 +14347,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             
                                                     hipblasDoubleComplex* const C[],
                                                     const int                   ldc,
                                                     int*                        info,
-                                                    const int                   batch_count);
+                                                    const int                   batchCount);
 
-// geqrf
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgeqrf(hipblasHandle_t handle,
                                              const int       m,
                                              const int       n,
@@ -13589,6 +14373,59 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
                                              hipblasComplex* ipiv,
                                              int*            info);
 
+/*! \brief SOLVER API
+
+    \details
+    geqrf computes a QR factorization of a general m-by-n matrix A.
+
+    (This is the blocked version of the algorithm).
+
+    The factorization has the form
+
+    \f[
+        A = Q\left[\begin{array}{c}
+        R\\
+        0
+        \end{array}\right]
+    \f]
+
+    where R is upper triangular (upper trapezoidal if m < n), and Q is
+    a m-by-m orthogonal/unitary matrix represented as the product of Householder matrices
+
+    \f[
+        Q = H_1H_2\cdots H_k, \quad \text{with} \: k = \text{min}(m,n)
+    \f]
+
+    Each Householder matrix \f$H_i\f$ is given by
+
+    \f[
+        H_i = I - \text{ipiv}[i] \cdot v_i v_i'
+    \f]
+
+    where the first i-1 elements of the Householder vector \f$v_i\f$ are zero, and \f$v_i[i] = 1\f$.
+
+    @param[in]
+    handle    hipblasHandle_t.
+    @param[in]
+    m         int. m >= 0.\n
+              The number of rows of the matrix A.
+    @param[in]
+    n         int. n >= 0.\n
+              The number of columns of the matrix A.
+    @param[inout]
+    A         pointer to type. Array on the GPU of dimension lda*n.\n
+              On entry, the m-by-n matrix to be factored.
+              On exit, the elements on and above the diagonal contain the
+              factor R; the elements below the diagonal are the last m - i elements
+              of Householder vector v_i.
+    @param[in]
+    lda       int. lda >= m.\n
+              Specifies the leading dimension of A.
+    @param[out]
+    ipiv      pointer to type. Array on the GPU of dimension min(m,n).\n
+              The Householder scalars.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
                                              const int             m,
                                              const int             n,
@@ -13597,7 +14434,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
                                              hipblasDoubleComplex* ipiv,
                                              int*                  info);
 
-// geqrf_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgeqrfBatched(hipblasHandle_t handle,
                                                     const int       m,
                                                     const int       n,
@@ -13605,7 +14441,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgeqrfBatched(hipblasHandle_t handle,
                                                     const int       lda,
                                                     float* const    ipiv[],
                                                     int*            info,
-                                                    const int       batch_count);
+                                                    const int       batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgeqrfBatched(hipblasHandle_t handle,
                                                     const int       m,
@@ -13614,7 +14450,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgeqrfBatched(hipblasHandle_t handle,
                                                     const int       lda,
                                                     double* const   ipiv[],
                                                     int*            info,
-                                                    const int       batch_count);
+                                                    const int       batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle,
                                                     const int             m,
@@ -13623,8 +14459,69 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle
                                                     const int             lda,
                                                     hipblasComplex* const ipiv[],
                                                     int*                  info,
-                                                    const int             batch_count);
+                                                    const int             batchCount);
 
+/*! \brief SOLVER API
+
+    \details
+    geqrfBatched computes the QR factorization of a batch of general
+    m-by-n matrices.
+
+    (This is the blocked version of the algorithm).
+
+    The factorization of matrix \f$A_j\f$ in the batch has the form
+
+    \f[
+        A_j = Q_j\left[\begin{array}{c}
+        R_j\\
+        0
+        \end{array}\right]
+    \f]
+
+    where \f$R_j\f$ is upper triangular (upper trapezoidal if m < n), and \f$Q_j\f$ is
+    a m-by-m orthogonal/unitary matrix represented as the product of Householder matrices
+
+    \f[
+        Q_j = H_{j_1}H_{j_2}\cdots H_{j_k}, \quad \text{with} \: k = \text{min}(m,n)
+    \f]
+
+    Each Householder matrix \f$H_{j_i}\f$ is given by
+
+    \f[
+        H_{j_i} = I - \text{ipiv}_j[i] \cdot v_{j_i} v_{j_i}'
+    \f]
+
+    where the first i-1 elements of Householder vector \f$v_{j_i}\f$ are zero, and \f$v_{j_i}[i] = 1\f$.
+
+    @param[in]
+    handle    hipblasHandle_t.
+    @param[in]
+    m         int. m >= 0.\n
+              The number of rows of all the matrices A_j in the batch.
+    @param[in]
+    n         int. n >= 0.\n
+              The number of columns of all the matrices A_j in the batch.
+    @param[inout]
+    A         Array of pointers to type. Each pointer points to an array on the GPU of dimension lda*n.\n
+              On entry, the m-by-n matrices A_j to be factored.
+              On exit, the elements on and above the diagonal contain the
+              factor R_j. The elements below the diagonal are the last m - i elements
+              of Householder vector v_(j_i).
+    @param[in]
+    lda       int. lda >= m.\n
+              Specifies the leading dimension of matrices A_j.
+    @param[out]
+    ipiv      pointer to type. Array on the GPU (the size depends on the value of strideP).\n
+              Contains the vectors ipiv_j of corresponding Householder scalars.
+    @param[in]
+    strideP   hipblasStride.\n
+              Stride from the start of one vector ipiv_j to the next one ipiv_(j+1).
+              There is no restriction for the value
+              of strideP. Normal use is strideP >= min(m,n).
+    @param[in]
+    batchCount  int. batchCount >= 0.\n
+                 Number of matrices in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             handle,
                                                     const int                   m,
                                                     const int                   n,
@@ -13632,9 +14529,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             
                                                     const int                   lda,
                                                     hipblasDoubleComplex* const ipiv[],
                                                     int*                        info,
-                                                    const int                   batch_count);
+                                                    const int                   batchCount);
 
-// geqrf_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgeqrfStridedBatched(hipblasHandle_t     handle,
                                                            const int           m,
                                                            const int           n,
@@ -13644,7 +14540,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgeqrfStridedBatched(hipblasHandle_t     h
                                                            float*              ipiv,
                                                            const hipblasStride strideP,
                                                            int*                info,
-                                                           const int           batch_count);
+                                                           const int           batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t     handle,
                                                            const int           m,
@@ -13655,7 +14551,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t     h
                                                            double*             ipiv,
                                                            const hipblasStride strideP,
                                                            int*                info,
-                                                           const int           batch_count);
+                                                           const int           batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t     handle,
                                                            const int           m,
@@ -13666,8 +14562,73 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t     h
                                                            hipblasComplex*     ipiv,
                                                            const hipblasStride strideP,
                                                            int*                info,
-                                                           const int           batch_count);
+                                                           const int           batchCount);
 
+/*! \brief SOLVER API
+
+    \details
+    geqrfStridedBatched computes the QR factorization of a batch of
+    general m-by-n matrices.
+
+    (This is the blocked version of the algorithm).
+
+    The factorization of matrix \f$A_j\f$ in the batch has the form
+
+    \f[
+        A_j = Q_j\left[\begin{array}{c}
+        R_j\\
+        0
+        \end{array}\right]
+    \f]
+
+    where \f$R_j\f$ is upper triangular (upper trapezoidal if m < n), and \f$Q_j\f$ is
+    a m-by-m orthogonal/unitary matrix represented as the product of Householder matrices
+
+    \f[
+        Q_j = H_{j_1}H_{j_2}\cdots H_{j_k}, \quad \text{with} \: k = \text{min}(m,n)
+    \f]
+
+    Each Householder matrix \f$H_{j_i}\f$ is given by
+
+    \f[
+        H_{j_i} = I - \text{ipiv}_j[i] \cdot v_{j_i} v_{j_i}'
+    \f]
+
+    where the first i-1 elements of Householder vector \f$v_{j_i}\f$ are zero, and \f$v_{j_i}[i] = 1\f$.
+
+    @param[in]
+    handle    hipblasHandle_t.
+    @param[in]
+    m         int. m >= 0.\n
+              The number of rows of all the matrices A_j in the batch.
+    @param[in]
+    n         int. n >= 0.\n
+              The number of columns of all the matrices A_j in the batch.
+    @param[inout]
+    A         pointer to type. Array on the GPU (the size depends on the value of strideA).\n
+              On entry, the m-by-n matrices A_j to be factored.
+              On exit, the elements on and above the diagonal contain the
+              factor R_j. The elements below the diagonal are the last m - i elements
+              of Householder vector v_(j_i).
+    @param[in]
+    lda       int. lda >= m.\n
+              Specifies the leading dimension of matrices A_j.
+    @param[in]
+    strideA   hipblasStride.\n
+              Stride from the start of one matrix A_j to the next one A_(j+1).
+              There is no restriction for the value of strideA. Normal use case is strideA >= lda*n.
+    @param[out]
+    ipiv      pointer to type. Array on the GPU (the size depends on the value of strideP).\n
+              Contains the vectors ipiv_j of corresponding Householder scalars.
+    @param[in]
+    strideP   hipblasStride.\n
+              Stride from the start of one vector ipiv_j to the next one ipiv_(j+1).
+              There is no restriction for the value
+              of strideP. Normal use is strideP >= min(m,n).
+    @param[in]
+    batchCount  int. batchCount >= 0.\n
+                 Number of matrices in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
                                                            const int             m,
                                                            const int             n,
@@ -13677,260 +14638,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
                                                            hipblasDoubleComplex* ipiv,
                                                            const hipblasStride   strideP,
                                                            int*                  info,
-                                                           const int             batch_count);
-
-// gemm
-HIPBLAS_EXPORT hipblasStatus_t hipblasHgemm(hipblasHandle_t    handle,
-                                            hipblasOperation_t transa,
-                                            hipblasOperation_t transb,
-                                            int                m,
-                                            int                n,
-                                            int                k,
-                                            const hipblasHalf* alpha,
-                                            const hipblasHalf* A,
-                                            int                lda,
-                                            const hipblasHalf* B,
-                                            int                ldb,
-                                            const hipblasHalf* beta,
-                                            hipblasHalf*       C,
-                                            int                ldc);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasSgemm(hipblasHandle_t    handle,
-                                            hipblasOperation_t transa,
-                                            hipblasOperation_t transb,
-                                            int                m,
-                                            int                n,
-                                            int                k,
-                                            const float*       alpha,
-                                            const float*       A,
-                                            int                lda,
-                                            const float*       B,
-                                            int                ldb,
-                                            const float*       beta,
-                                            float*             C,
-                                            int                ldc);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasDgemm(hipblasHandle_t    handle,
-                                            hipblasOperation_t transa,
-                                            hipblasOperation_t transb,
-                                            int                m,
-                                            int                n,
-                                            int                k,
-                                            const double*      alpha,
-                                            const double*      A,
-                                            int                lda,
-                                            const double*      B,
-                                            int                ldb,
-                                            const double*      beta,
-                                            double*            C,
-                                            int                ldc);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasCgemm(hipblasHandle_t       handle,
-                                            hipblasOperation_t    transa,
-                                            hipblasOperation_t    transb,
-                                            int                   m,
-                                            int                   n,
-                                            int                   k,
-                                            const hipblasComplex* alpha,
-                                            const hipblasComplex* A,
-                                            int                   lda,
-                                            const hipblasComplex* B,
-                                            int                   ldb,
-                                            const hipblasComplex* beta,
-                                            hipblasComplex*       C,
-                                            int                   ldc);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasZgemm(hipblasHandle_t             handle,
-                                            hipblasOperation_t          transa,
-                                            hipblasOperation_t          transb,
-                                            int                         m,
-                                            int                         n,
-                                            int                         k,
-                                            const hipblasDoubleComplex* alpha,
-                                            const hipblasDoubleComplex* A,
-                                            int                         lda,
-                                            const hipblasDoubleComplex* B,
-                                            int                         ldb,
-                                            const hipblasDoubleComplex* beta,
-                                            hipblasDoubleComplex*       C,
-                                            int                         ldc);
-
-// gemm batched
-HIPBLAS_EXPORT hipblasStatus_t hipblasHgemmBatched(hipblasHandle_t          handle,
-                                                   hipblasOperation_t       transa,
-                                                   hipblasOperation_t       transb,
-                                                   int                      m,
-                                                   int                      n,
-                                                   int                      k,
-                                                   const hipblasHalf*       alpha,
-                                                   const hipblasHalf* const A[],
-                                                   int                      lda,
-                                                   const hipblasHalf* const B[],
-                                                   int                      ldb,
-                                                   const hipblasHalf*       beta,
-                                                   hipblasHalf* const       C[],
-                                                   int                      ldc,
-                                                   int                      batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmBatched(hipblasHandle_t    handle,
-                                                   hipblasOperation_t transa,
-                                                   hipblasOperation_t transb,
-                                                   int                m,
-                                                   int                n,
-                                                   int                k,
-                                                   const float*       alpha,
-                                                   const float* const A[],
-                                                   int                lda,
-                                                   const float* const B[],
-                                                   int                ldb,
-                                                   const float*       beta,
-                                                   float* const       C[],
-                                                   int                ldc,
-                                                   int                batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmBatched(hipblasHandle_t     handle,
-                                                   hipblasOperation_t  transa,
-                                                   hipblasOperation_t  transb,
-                                                   int                 m,
-                                                   int                 n,
-                                                   int                 k,
-                                                   const double*       alpha,
-                                                   const double* const A[],
-                                                   int                 lda,
-                                                   const double* const B[],
-                                                   int                 ldb,
-                                                   const double*       beta,
-                                                   double* const       C[],
-                                                   int                 ldc,
-                                                   int                 batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t             handle,
-                                                   hipblasOperation_t          transa,
-                                                   hipblasOperation_t          transb,
-                                                   int                         m,
-                                                   int                         n,
-                                                   int                         k,
-                                                   const hipblasComplex*       alpha,
-                                                   const hipblasComplex* const A[],
-                                                   int                         lda,
-                                                   const hipblasComplex* const B[],
-                                                   int                         ldb,
-                                                   const hipblasComplex*       beta,
-                                                   hipblasComplex* const       C[],
-                                                   int                         ldc,
-                                                   int                         batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasZgemmBatched(hipblasHandle_t                   handle,
-                                                   hipblasOperation_t                transa,
-                                                   hipblasOperation_t                transb,
-                                                   int                               m,
-                                                   int                               n,
-                                                   int                               k,
-                                                   const hipblasDoubleComplex*       alpha,
-                                                   const hipblasDoubleComplex* const A[],
-                                                   int                               lda,
-                                                   const hipblasDoubleComplex* const B[],
-                                                   int                               ldb,
-                                                   const hipblasDoubleComplex*       beta,
-                                                   hipblasDoubleComplex* const       C[],
-                                                   int                               ldc,
-                                                   int                               batchCount);
-
-// gemm_strided_batched
-HIPBLAS_EXPORT hipblasStatus_t hipblasHgemmStridedBatched(hipblasHandle_t    handle,
-                                                          hipblasOperation_t transa,
-                                                          hipblasOperation_t transb,
-                                                          int                m,
-                                                          int                n,
-                                                          int                k,
-                                                          const hipblasHalf* alpha,
-                                                          const hipblasHalf* A,
-                                                          int                lda,
-                                                          long long          bsa,
-                                                          const hipblasHalf* B,
-                                                          int                ldb,
-                                                          long long          bsb,
-                                                          const hipblasHalf* beta,
-                                                          hipblasHalf*       C,
-                                                          int                ldc,
-                                                          long long          bsc,
-                                                          int                batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasSgemmStridedBatched(hipblasHandle_t    handle,
-                                                          hipblasOperation_t transa,
-                                                          hipblasOperation_t transb,
-                                                          int                m,
-                                                          int                n,
-                                                          int                k,
-                                                          const float*       alpha,
-                                                          const float*       A,
-                                                          int                lda,
-                                                          long long          bsa,
-                                                          const float*       B,
-                                                          int                ldb,
-                                                          long long          bsb,
-                                                          const float*       beta,
-                                                          float*             C,
-                                                          int                ldc,
-                                                          long long          bsc,
-                                                          int                batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasDgemmStridedBatched(hipblasHandle_t    handle,
-                                                          hipblasOperation_t transa,
-                                                          hipblasOperation_t transb,
-                                                          int                m,
-                                                          int                n,
-                                                          int                k,
-                                                          const double*      alpha,
-                                                          const double*      A,
-                                                          int                lda,
-                                                          long long          bsa,
-                                                          const double*      B,
-                                                          int                ldb,
-                                                          long long          bsb,
-                                                          const double*      beta,
-                                                          double*            C,
-                                                          int                ldc,
-                                                          long long          bsc,
-                                                          int                batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmStridedBatched(hipblasHandle_t       handle,
-                                                          hipblasOperation_t    transa,
-                                                          hipblasOperation_t    transb,
-                                                          int                   m,
-                                                          int                   n,
-                                                          int                   k,
-                                                          const hipblasComplex* alpha,
-                                                          const hipblasComplex* A,
-                                                          int                   lda,
-                                                          long long             bsa,
-                                                          const hipblasComplex* B,
-                                                          int                   ldb,
-                                                          long long             bsb,
-                                                          const hipblasComplex* beta,
-                                                          hipblasComplex*       C,
-                                                          int                   ldc,
-                                                          long long             bsc,
-                                                          int                   batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasZgemmStridedBatched(hipblasHandle_t             handle,
-                                                          hipblasOperation_t          transa,
-                                                          hipblasOperation_t          transb,
-                                                          int                         m,
-                                                          int                         n,
-                                                          int                         k,
-                                                          const hipblasDoubleComplex* alpha,
-                                                          const hipblasDoubleComplex* A,
-                                                          int                         lda,
-                                                          long long                   bsa,
-                                                          const hipblasDoubleComplex* B,
-                                                          int                         ldb,
-                                                          long long                   bsb,
-                                                          const hipblasDoubleComplex* beta,
-                                                          hipblasDoubleComplex*       C,
-                                                          int                         ldc,
-                                                          long long                   bsc,
-                                                          int                         batchCount);
+                                                           const int             batchCount);
 
 // gemmex
 HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
