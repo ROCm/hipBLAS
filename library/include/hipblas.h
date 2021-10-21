@@ -8483,7 +8483,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvStridedBatched(hipblasHandle_t       
 // ========== LEVEL 3 =============
 // ================================
 
-// herk
 HIPBLAS_EXPORT hipblasStatus_t hipblasCherk(hipblasHandle_t       handle,
                                             hipblasFillMode_t     uplo,
                                             hipblasOperation_t    transA,
@@ -8496,6 +8495,73 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherk(hipblasHandle_t       handle,
                                             hipblasComplex*       C,
                                             int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    herk performs one of the matrix-matrix operations for a Hermitian rank-k update
+
+    C := alpha*op( A )*op( A )^H + beta*C
+
+    where  alpha and beta are scalars, op(A) is an n by k matrix, and
+    C is a n x n Hermitian matrix stored as either upper or lower.
+
+        op( A ) = A,  and A is n by k if transA == HIPBLAS_OP_N
+        op( A ) = A^H and A is k by n if transA == HIPBLAS_OP_C
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C is a  lower triangular matrix
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_C:  op(A) = A^H
+            HIPBLAS_ON_N:  op(A) = A
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       pointer storing matrix A on the GPU.
+            Martrix dimension is ( lda, k ) when if transA = HIPBLAS_OP_N, otherwise (lda, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if transA = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       pointer storing matrix C on the GPU.
+            The imaginary component of the diagonal elements are not used but are set to zero unless quick return.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZherk(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
@@ -8508,7 +8574,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherk(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc);
 
-// herk_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasCherkBatched(hipblasHandle_t             handle,
                                                    hipblasFillMode_t           uplo,
                                                    hipblasOperation_t          transA,
@@ -8522,6 +8587,75 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkBatched(hipblasHandle_t             h
                                                    int                         ldc,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    herkBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
+
+    C_i := alpha*op( A_i )*op( A_i )^H + beta*C_i
+
+    where  alpha and beta are scalars, op(A) is an n by k matrix, and
+    C_i is a n x n Hermitian matrix stored as either upper or lower.
+
+        op( A_i ) = A_i, and A_i is n by k if transA == HIPBLAS_OP_N
+        op( A_i ) = A_i^H and A_i is k by n if transA == HIPBLAS_OP_C
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_C: op(A) = A^H
+            HIPBLAS_OP_N: op(A) = A
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       device array of device pointers storing each matrix_i A of dimension (lda, k)
+            when transA is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if transA = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       device array of device pointers storing each matrix C_i on the GPU.
+            The imaginary component of the diagonal elements are not used but are set to zero unless quick return.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZherkBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
@@ -8535,7 +8669,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkBatched(hipblasHandle_t              
                                                    int                               ldc,
                                                    int                               batchCount);
 
-// herk_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasCherkStridedBatched(hipblasHandle_t       handle,
                                                           hipblasFillMode_t     uplo,
                                                           hipblasOperation_t    transA,
@@ -8551,6 +8684,85 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkStridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideC,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    herkStridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
+
+    C_i := alpha*op( A_i )*op( A_i )^H + beta*C_i
+
+    where  alpha and beta are scalars, op(A) is an n by k matrix, and
+    C_i is a n x n Hermitian matrix stored as either upper or lower.
+
+        op( A_i ) = A_i, and A_i is n by k if transA == HIPBLAS_OP_N
+        op( A_i ) = A_i^H and A_i is k by n if transA == HIPBLAS_OP_C
+
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_C: op(A) = A^H
+            HIPBLAS_OP_N: op(A) = A
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       Device pointer to the first matrix A_1 on the GPU of dimension (lda, k)
+            when transA is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if transA = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       Device pointer to the first matrix C_1 on the GPU.
+            The imaginary component of the diagonal elements are not used but are set to zero unless quick return.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    @param[inout]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZherkStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
@@ -8566,7 +8778,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideC,
                                                           int                         batchCount);
 
-// herkx
 HIPBLAS_EXPORT hipblasStatus_t hipblasCherkx(hipblasHandle_t       handle,
                                              hipblasFillMode_t     uplo,
                                              hipblasOperation_t    transA,
@@ -8581,6 +8792,84 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkx(hipblasHandle_t       handle,
                                              hipblasComplex*       C,
                                              int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    herkx performs one of the matrix-matrix operations for a Hermitian rank-k update
+
+    C := alpha*op( A )*op( B )^H + beta*C
+
+    where  alpha and beta are scalars, op(A) and op(B) are n by k matrices, and
+    C is a n x n Hermitian matrix stored as either upper or lower.
+    This routine should only be used when the caller can guarantee that the result of op( A )*op( B )^T will be Hermitian.
+
+
+        op( A ) = A, op( B ) = B, and A and B are n by k if trans == HIPBLAS_OP_N
+        op( A ) = A^H, op( B ) = B^H,  and A and B are k by n if trans == HIPBLAS_OP_C
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_C:  op( A ) = A^H, op( B ) = B^H
+            HIPBLAS_OP_N:  op( A ) = A, op( B ) = B
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       pointer storing matrix A on the GPU.
+            Martrix dimension is ( lda, k ) when if trans = HIPBLAS_OP_N, otherwise (lda, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+    @param[in]
+    B       pointer storing matrix B on the GPU.
+            Martrix dimension is ( ldb, k ) when if trans = HIPBLAS_OP_N, otherwise (ldb, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       pointer storing matrix C on the GPU.
+            The imaginary component of the diagonal elements are not used but are set to zero unless quick return.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZherkx(hipblasHandle_t             handle,
                                              hipblasFillMode_t           uplo,
                                              hipblasOperation_t          transA,
@@ -8595,7 +8884,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkx(hipblasHandle_t             handle,
                                              hipblasDoubleComplex*       C,
                                              int                         ldc);
 
-// herkx_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxBatched(hipblasHandle_t             handle,
                                                     hipblasFillMode_t           uplo,
                                                     hipblasOperation_t          transA,
@@ -8611,6 +8899,87 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxBatched(hipblasHandle_t             
                                                     int                         ldc,
                                                     int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    herkxBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
+
+    C_i := alpha*op( A_i )*op( B_i )^H + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) and op(B_i) are n by k matrices, and
+    C_i is a n x n Hermitian matrix stored as either upper or lower.
+    This routine should only be used when the caller can guarantee that the result of op( A )*op( B )^T will be Hermitian.
+
+        op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
+        op( A_i ) = A_i^H, op( B_i ) = B_i^H,  and A_i and B_i are k by n if trans == HIPBLAS_OP_C
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_C: op(A) = A^H
+            HIPBLAS_OP_N: op(A) = A
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       device array of device pointers storing each matrix_i A of dimension (lda, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    B       device array of device pointers storing each matrix_i B of dimension (ldb, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (ldb, n)
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       device array of device pointers storing each matrix C_i on the GPU.
+            The imaginary component of the diagonal elements are not used but are set to zero unless quick return.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZherkxBatched(hipblasHandle_t                   handle,
                                                     hipblasFillMode_t                 uplo,
                                                     hipblasOperation_t                transA,
@@ -8626,7 +8995,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkxBatched(hipblasHandle_t             
                                                     int                               ldc,
                                                     int                               batchCount);
 
-// herkx_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxStridedBatched(hipblasHandle_t       handle,
                                                            hipblasFillMode_t     uplo,
                                                            hipblasOperation_t    transA,
@@ -8645,6 +9013,99 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxStridedBatched(hipblasHandle_t      
                                                            hipblasStride         strideC,
                                                            int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    herkxStridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-k update
+
+    C_i := alpha*op( A_i )*op( B_i )^H + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) and op(B_i) are n by k matrices, and
+    C_i is a n x n Hermitian matrix stored as either upper or lower.
+    This routine should only be used when the caller can guarantee that the result of op( A )*op( B )^T will be Hermitian.
+
+        op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
+        op( A_i ) = A_i^H, op( B_i ) = B_i^H,  and A_i and B_i are k by n if trans == HIPBLAS_OP_C
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_C: op( A_i ) = A_i^H, op( B_i ) = B_i^H
+            HIPBLAS_OP_N: op( A_i ) = A_i, op( B_i ) = B_i
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       Device pointer to the first matrix A_1 on the GPU of dimension (lda, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[in]
+    B       Device pointer to the first matrix B_1 on the GPU of dimension (ldb, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (ldb, n)
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+
+    @param[in]
+    strideB  [hipblasStride]
+              stride from the start of one matrix (B_i) and the next one (B_i+1)
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       Device pointer to the first matrix C_1 on the GPU.
+            The imaginary component of the diagonal elements are not used but are set to zero unless quick return.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    @param[inout]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZherkxStridedBatched(hipblasHandle_t             handle,
                                                            hipblasFillMode_t           uplo,
                                                            hipblasOperation_t          transA,
@@ -8663,7 +9124,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZherkxStridedBatched(hipblasHandle_t      
                                                            hipblasStride               strideC,
                                                            int                         batchCount);
 
-// her2k
 HIPBLAS_EXPORT hipblasStatus_t hipblasCher2k(hipblasHandle_t       handle,
                                              hipblasFillMode_t     uplo,
                                              hipblasOperation_t    transA,
@@ -8678,6 +9138,82 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2k(hipblasHandle_t       handle,
                                              hipblasComplex*       C,
                                              int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    her2k performs one of the matrix-matrix operations for a Hermitian rank-2k update
+
+    C := alpha*op( A )*op( B )^H + conj(alpha)*op( B )*op( A )^H + beta*C
+
+    where  alpha and beta are scalars, op(A) and op(B) are n by k matrices, and
+    C is a n x n Hermitian matrix stored as either upper or lower.
+
+        op( A ) = A, op( B ) = B, and A and B are n by k if trans == HIPBLAS_OP_N
+        op( A ) = A^H, op( B ) = B^H,  and A and B are k by n if trans == HIPBLAS_OP_C
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_C:  op( A ) = A^H, op( B ) = B^H
+            HIPBLAS_OP_N:  op( A ) = A, op( B ) = B
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       pointer storing matrix A on the GPU.
+            Martrix dimension is ( lda, k ) when if trans = HIPBLAS_OP_N, otherwise (lda, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+    @param[in]
+    B       pointer storing matrix B on the GPU.
+            Martrix dimension is ( ldb, k ) when if trans = HIPBLAS_OP_N, otherwise (ldb, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       pointer storing matrix C on the GPU.
+            The imaginary component of the diagonal elements are not used but are set to zero unless quick return.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZher2k(hipblasHandle_t             handle,
                                              hipblasFillMode_t           uplo,
                                              hipblasOperation_t          transA,
@@ -8692,7 +9228,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZher2k(hipblasHandle_t             handle,
                                              hipblasDoubleComplex*       C,
                                              int                         ldc);
 
-// her2k_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kBatched(hipblasHandle_t             handle,
                                                     hipblasFillMode_t           uplo,
                                                     hipblasOperation_t          transA,
@@ -8708,6 +9243,83 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kBatched(hipblasHandle_t             
                                                     int                         ldc,
                                                     int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    her2kBatched performs a batch of the matrix-matrix operations for a Hermitian rank-2k update
+
+    C_i := alpha*op( A_i )*op( B_i )^H + conj(alpha)*op( B_i )*op( A_i )^H + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) and op(B_i) are n by k matrices, and
+    C_i is a n x n Hermitian matrix stored as either upper or lower.
+
+        op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
+        op( A_i ) = A_i^H, op( B_i ) = B_i^H,  and A_i and B_i are k by n if trans == HIPBLAS_OP_C
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_C: op(A) = A^H
+            HIPBLAS_OP_N: op(A) = A
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       device array of device pointers storing each matrix_i A of dimension (lda, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+    @param[in]
+    B       device array of device pointers storing each matrix_i B of dimension (ldb, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (ldb, n)
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       device array of device pointers storing each matrix C_i on the GPU.
+            The imaginary component of the diagonal elements are not used but are set to zero unless quick return.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZher2kBatched(hipblasHandle_t                   handle,
                                                     hipblasFillMode_t                 uplo,
                                                     hipblasOperation_t                transA,
@@ -8723,7 +9335,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZher2kBatched(hipblasHandle_t             
                                                     int                               ldc,
                                                     int                               batchCount);
 
-// her2k_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kStridedBatched(hipblasHandle_t       handle,
                                                            hipblasFillMode_t     uplo,
                                                            hipblasOperation_t    transA,
@@ -8742,6 +9353,98 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kStridedBatched(hipblasHandle_t      
                                                            hipblasStride         strideC,
                                                            int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    her2kStridedBatched performs a batch of the matrix-matrix operations for a Hermitian rank-2k update
+
+    C_i := alpha*op( A_i )*op( B_i )^H + conj(alpha)*op( B_i )*op( A_i )^H + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) and op(B_i) are n by k matrices, and
+    C_i is a n x n Hermitian matrix stored as either upper or lower.
+
+        op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
+        op( A_i ) = A_i^H, op( B_i ) = B_i^H,  and A_i and B_i are k by n if trans == HIPBLAS_OP_C
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_C: op( A_i ) = A_i^H, op( B_i ) = B_i^H
+            HIPBLAS_OP_N: op( A_i ) = A_i, op( B_i ) = B_i
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       Device pointer to the first matrix A_1 on the GPU of dimension (lda, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[in]
+    B       Device pointer to the first matrix B_1 on the GPU of dimension (ldb, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (ldb, n)
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+
+    @param[in]
+    strideB  [hipblasStride]
+              stride from the start of one matrix (B_i) and the next one (B_i+1)
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       Device pointer to the first matrix C_1 on the GPU.
+            The imaginary component of the diagonal elements are not used but are set to zero unless quick return.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    @param[inout]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZher2kStridedBatched(hipblasHandle_t             handle,
                                                            hipblasFillMode_t           uplo,
                                                            hipblasOperation_t          transA,
@@ -8760,7 +9463,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZher2kStridedBatched(hipblasHandle_t      
                                                            hipblasStride               strideC,
                                                            int                         batchCount);
 
-// symm
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsymm(hipblasHandle_t   handle,
                                             hipblasSideMode_t side,
                                             hipblasFillMode_t uplo,
@@ -8803,6 +9505,79 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymm(hipblasHandle_t       handle,
                                             hipblasComplex*       C,
                                             int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    symm performs one of the matrix-matrix operations:
+
+    C := alpha*A*B + beta*C if side == HIPBLAS_SIDE_LEFT,
+    C := alpha*B*A + beta*C if side == HIPBLAS_SIDE_RIGHT,
+
+    where alpha and beta are scalars, B and C are m by n matrices, and
+    A is a symmetric matrix stored as either upper or lower.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side  [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:      C := alpha*A*B + beta*C
+            HIPBLAS_SIDE_RIGHT:     C := alpha*B*A + beta*C
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  A is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  A is a  lower triangular matrix
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B and C. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B and C. n >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A and B are not referenced.
+
+    @param[in]
+    A       pointer storing matrix A on the GPU.
+            A is m by m if side == HIPBLAS_SIDE_LEFT
+            A is n by n if side == HIPBLAS_SIDE_RIGHT
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            otherwise lda >= max( 1, n ).
+
+    @param[in]
+    B       pointer storing matrix B on the GPU.
+            Matrix dimension is m by n
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B. ldb >= max( 1, m )
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       pointer storing matrix C on the GPU.
+            Matrix dimension is m by n
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, m )
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsymm(hipblasHandle_t             handle,
                                             hipblasSideMode_t           side,
                                             hipblasFillMode_t           uplo,
@@ -8817,7 +9592,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsymm(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc);
 
-// symm_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsymmBatched(hipblasHandle_t    handle,
                                                    hipblasSideMode_t  side,
                                                    hipblasFillMode_t  uplo,
@@ -8863,6 +9637,83 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymmBatched(hipblasHandle_t             h
                                                    int                         ldc,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    symmBatched performs a batch of the matrix-matrix operations:
+
+    C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
+    C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
+
+    where alpha and beta are scalars, B_i and C_i are m by n matrices, and
+    A_i is a symmetric matrix stored as either upper or lower.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side  [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:      C_i := alpha*A_i*B_i + beta*C_i
+            HIPBLAS_SIDE_RIGHT:     C_i := alpha*B_i*A_i + beta*C_i
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  A_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  A_i is a  lower triangular matrix
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B_i and C_i. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B_i and C_i. n >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A_i and B_i are not referenced.
+
+    @param[in]
+    A       device array of device pointers storing each matrix A_i on the GPU.
+            A_i is m by m if side == HIPBLAS_SIDE_LEFT
+            A_i is n by n if side == HIPBLAS_SIDE_RIGHT
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            otherwise lda >= max( 1, n ).
+
+    @param[in]
+    B       device array of device pointers storing each matrix B_i on the GPU.
+            Matrix dimension is m by n
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i. ldb >= max( 1, m )
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C_i need not be set before entry.
+
+    @param[in]
+    C       device array of device pointers storing each matrix C_i on the GPU.
+            Matrix dimension is m by n
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C_i. ldc >= max( 1, m )
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsymmBatched(hipblasHandle_t                   handle,
                                                    hipblasSideMode_t                 side,
                                                    hipblasFillMode_t                 uplo,
@@ -8878,7 +9729,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsymmBatched(hipblasHandle_t              
                                                    int                               ldc,
                                                    int                               batchCount);
 
-// symm_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsymmStridedBatched(hipblasHandle_t   handle,
                                                           hipblasSideMode_t side,
                                                           hipblasFillMode_t uplo,
@@ -8933,6 +9783,92 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymmStridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideC,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    symmStridedBatched performs a batch of the matrix-matrix operations:
+
+    C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
+    C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
+
+    where alpha and beta are scalars, B_i and C_i are m by n matrices, and
+    A_i is a symmetric matrix stored as either upper or lower.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side  [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:      C_i := alpha*A_i*B_i + beta*C_i
+            HIPBLAS_SIDE_RIGHT:     C_i := alpha*B_i*A_i + beta*C_i
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  A_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  A_i is a  lower triangular matrix
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B_i and C_i. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B_i and C_i. n >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A_i and B_i are not referenced.
+
+    @param[in]
+    A       device pointer to first matrix A_1
+            A_i is m by m if side == HIPBLAS_SIDE_LEFT
+            A_i is n by n if side == HIPBLAS_SIDE_RIGHT
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            otherwise lda >= max( 1, n ).
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[in]
+    B       device pointer to first matrix B_1 of dimension (ldb, n) on the GPU.
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i. ldb >= max( 1, m )
+
+    @param[in]
+    strideB  [hipblasStride]
+              stride from the start of one matrix (B_i) and the next one (B_i+1)
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C        device pointer to first matrix C_1 of dimension (ldc, n) on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, m ).
+
+    @param[inout]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsymmStridedBatched(hipblasHandle_t             handle,
                                                           hipblasSideMode_t           side,
                                                           hipblasFillMode_t           uplo,
@@ -8951,7 +9887,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsymmStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideC,
                                                           int                         batchCount);
 
-// syrk
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyrk(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
@@ -8988,6 +9923,76 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrk(hipblasHandle_t       handle,
                                             hipblasComplex*       C,
                                             int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    syrk performs one of the matrix-matrix operations for a symmetric rank-k update
+
+    C := alpha*op( A )*op( A )^T + beta*C
+
+    where  alpha and beta are scalars, op(A) is an n by k matrix, and
+    C is a symmetric n x n matrix stored as either upper or lower.
+
+        op( A ) = A, and A is n by k if transA == HIPBLAS_OP_N
+        op( A ) = A^T and A is k by n if transA == HIPBLAS_OP_T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C is a  lower triangular matrix
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_T: op(A) = A^T
+            HIPBLAS_OP_N: op(A) = A
+            HIPBLAS_OP_C: op(A) = A^T
+
+            HIPBLAS_OP_C is not supported for complex types, see cherk
+            and zherk.
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       pointer storing matrix A on the GPU.
+            Martrix dimension is ( lda, k ) when if transA = HIPBLAS_OP_N, otherwise (lda, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if transA = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       pointer storing matrix C on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrk(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
@@ -9000,7 +10005,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrk(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc);
 
-// syrk_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyrkBatched(hipblasHandle_t    handle,
                                                    hipblasFillMode_t  uplo,
                                                    hipblasOperation_t transA,
@@ -9040,6 +10044,78 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkBatched(hipblasHandle_t             h
                                                    int                         ldc,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    syrkBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+
+    C_i := alpha*op( A_i )*op( A_i )^T + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) is an n by k matrix, and
+    C_i is a symmetric n x n matrix stored as either upper or lower.
+
+        op( A_i ) = A_i, and A_i is n by k if transA == HIPBLAS_OP_N
+        op( A_i ) = A_i^T and A_i is k by n if transA == HIPBLAS_OP_T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_T: op(A) = A^T
+            HIPBLAS_OP_N: op(A) = A
+            HIPBLAS_OP_C: op(A) = A^T
+
+            HIPBLAS_OP_C is not supported for complex types, see cherk
+            and zherk.
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       device array of device pointers storing each matrix_i A of dimension (lda, k)
+            when transA is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if transA = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       device array of device pointers storing each matrix C_i on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkBatched(hipblasHandle_t                   handle,
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
@@ -9053,7 +10129,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkBatched(hipblasHandle_t              
                                                    int                               ldc,
                                                    int                               batchCount);
 
-// syrk_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyrkStridedBatched(hipblasHandle_t    handle,
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
@@ -9099,6 +10174,87 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkStridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideC,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    syrkStridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+
+    C_i := alpha*op( A_i )*op( A_i )^T + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) is an n by k matrix, and
+    C_i is a symmetric n x n matrix stored as either upper or lower.
+
+        op( A_i ) = A_i, and A_i is n by k if transA == HIPBLAS_OP_N
+        op( A_i ) = A_i^T and A_i is k by n if transA == HIPBLAS_OP_T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_T: op(A) = A^T
+            HIPBLAS_OP_N: op(A) = A
+            HIPBLAS_OP_C: op(A) = A^T
+
+            HIPBLAS_OP_C is not supported for complex types, see cherk
+            and zherk.
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       Device pointer to the first matrix A_1 on the GPU of dimension (lda, k)
+            when transA is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if transA = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       Device pointer to the first matrix C_1 on the GPU. on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    @param[inout]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkStridedBatched(hipblasHandle_t             handle,
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
@@ -9114,7 +10270,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideC,
                                                           int                         batchCount);
 
-// syr2k
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyr2k(hipblasHandle_t    handle,
                                              hipblasFillMode_t  uplo,
                                              hipblasOperation_t transA,
@@ -9157,6 +10312,81 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2k(hipblasHandle_t       handle,
                                              hipblasComplex*       C,
                                              int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    syr2k performs one of the matrix-matrix operations for a symmetric rank-2k update
+
+    C := alpha*(op( A )*op( B )^T + op( B )*op( A )^T) + beta*C
+
+    where  alpha and beta are scalars, op(A) and op(B) are n by k matrix, and
+    C is a symmetric n x n matrix stored as either upper or lower.
+
+        op( A ) = A, op( B ) = B, and A and B are n by k if trans == HIPBLAS_OP_N
+        op( A ) = A^T, op( B ) = B^T,  and A and B are k by n if trans == HIPBLAS_OP_T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_T:      op( A ) = A^T, op( B ) = B^T
+            HIPBLAS_OP_N:           op( A ) = A, op( B ) = B
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A) and op(B). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       pointer storing matrix A on the GPU.
+            Martrix dimension is ( lda, k ) when if trans = HIPBLAS_OP_N, otherwise (lda, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+    @param[in]
+    B       pointer storing matrix B on the GPU.
+            Martrix dimension is ( ldb, k ) when if trans = HIPBLAS_OP_N, otherwise (ldb, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       pointer storing matrix C on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2k(hipblasHandle_t             handle,
                                              hipblasFillMode_t           uplo,
                                              hipblasOperation_t          transA,
@@ -9171,7 +10401,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2k(hipblasHandle_t             handle,
                                              hipblasDoubleComplex*       C,
                                              int                         ldc);
 
-// syr2k_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyr2kBatched(hipblasHandle_t    handle,
                                                     hipblasFillMode_t  uplo,
                                                     hipblasOperation_t transA,
@@ -9217,6 +10446,81 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2kBatched(hipblasHandle_t             
                                                     int                         ldc,
                                                     int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    syr2kBatched performs a batch of the matrix-matrix operations for a symmetric rank-2k update
+
+    C_i := alpha*(op( A_i )*op( B_i )^T + op( B_i )*op( A_i )^T) + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) and op(B_i) are n by k matrix, and
+    C_i is a symmetric n x n matrix stored as either upper or lower.
+
+        op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
+        op( A_i ) = A_i^T, op( B_i ) = B_i^T,  and A_i and B_i are k by n if trans == HIPBLAS_OP_T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_T:      op( A_i ) = A_i^T, op( B_i ) = B_i^T
+            HIPBLAS_OP_N:           op( A_i ) = A_i, op( B_i ) = B_i
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       device array of device pointers storing each matrix_i A of dimension (lda, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+    @param[in]
+    B       device array of device pointers storing each matrix_i B of dimension (ldb, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (ldb, n)
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       device array of device pointers storing each matrix C_i on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2kBatched(hipblasHandle_t                   handle,
                                                     hipblasFillMode_t                 uplo,
                                                     hipblasOperation_t                transA,
@@ -9232,7 +10536,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2kBatched(hipblasHandle_t             
                                                     int                               ldc,
                                                     int                               batchCount);
 
-// syr2k_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyr2kStridedBatched(hipblasHandle_t    handle,
                                                            hipblasFillMode_t  uplo,
                                                            hipblasOperation_t transA,
@@ -9287,6 +10590,97 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2kStridedBatched(hipblasHandle_t      
                                                            hipblasStride         strideC,
                                                            int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    syr2kStridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-2k update
+
+    C_i := alpha*(op( A_i )*op( B_i )^T + op( B_i )*op( A_i )^T) + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) and op(B_i) are n by k matrix, and
+    C_i is a symmetric n x n matrix stored as either upper or lower.
+
+        op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
+        op( A_i ) = A_i^T, op( B_i ) = B_i^T,  and A_i and B_i are k by n if trans == HIPBLAS_OP_T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_T:      op( A_i ) = A_i^T, op( B_i ) = B_i^T
+            HIPBLAS_OP_N:           op( A_i ) = A_i, op( B_i ) = B_i
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       Device pointer to the first matrix A_1 on the GPU of dimension (lda, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[in]
+    B       Device pointer to the first matrix B_1 on the GPU of dimension (ldb, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (ldb, n)
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+
+    @param[in]
+    stride_B  [hipblasStride]
+              stride from the start of one matrix (B_i) and the next one (B_i+1)
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       Device pointer to the first matrix C_1 on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    @param[inout]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2kStridedBatched(hipblasHandle_t             handle,
                                                            hipblasFillMode_t           uplo,
                                                            hipblasOperation_t          transA,
@@ -9305,7 +10699,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2kStridedBatched(hipblasHandle_t      
                                                            hipblasStride               strideC,
                                                            int                         batchCount);
 
-// syrkx
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyrkx(hipblasHandle_t    handle,
                                              hipblasFillMode_t  uplo,
                                              hipblasOperation_t transA,
@@ -9348,6 +10741,84 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkx(hipblasHandle_t       handle,
                                              hipblasComplex*       C,
                                              int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    syrkx performs one of the matrix-matrix operations for a symmetric rank-k update
+
+    C := alpha*op( A )*op( B )^T + beta*C
+
+    where  alpha and beta are scalars, op(A) and op(B) are n by k matrix, and
+    C is a symmetric n x n matrix stored as either upper or lower.
+    This routine should only be used when the caller can guarantee that the result of op( A )*op( B )^T will be symmetric.
+
+        op( A ) = A, op( B ) = B, and A and B are n by k if trans == HIPBLAS_OP_N
+        op( A ) = A^T, op( B ) = B^T,  and A and B are k by n if trans == HIPBLAS_OP_T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_T:      op( A ) = A^T, op( B ) = B^T
+            HIPBLAS_OP_N:           op( A ) = A, op( B ) = B
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A) and op(B). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       pointer storing matrix A on the GPU.
+            Martrix dimension is ( lda, k ) when if trans = HIPBLAS_OP_N, otherwise (lda, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    B       pointer storing matrix B on the GPU.
+            Martrix dimension is ( ldb, k ) when if trans = HIPBLAS_OP_N, otherwise (ldb, n)
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       pointer storing matrix C on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkx(hipblasHandle_t             handle,
                                              hipblasFillMode_t           uplo,
                                              hipblasOperation_t          transA,
@@ -9362,7 +10833,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkx(hipblasHandle_t             handle,
                                              hipblasDoubleComplex*       C,
                                              int                         ldc);
 
-// syrkx_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyrkxBatched(hipblasHandle_t    handle,
                                                     hipblasFillMode_t  uplo,
                                                     hipblasOperation_t transA,
@@ -9408,6 +10878,86 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkxBatched(hipblasHandle_t             
                                                     int                         ldc,
                                                     int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    syrkxBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+
+    C_i := alpha*op( A_i )*op( B_i )^T + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) and op(B_i) are n by k matrix, and
+    C_i is a symmetric n x n matrix stored as either upper or lower.
+    This routine should only be used when the caller can guarantee that the result of op( A_i )*op( B_i )^T will be symmetric.
+
+        op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
+        op( A_i ) = A_i^T, op( B_i ) = B_i^T,  and A_i and B_i are k by n if trans == HIPBLAS_OP_T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_T:      op( A_i ) = A_i^T, op( B_i ) = B_i^T
+            HIPBLAS_OP_N:           op( A_i ) = A_i, op( B_i ) = B_i
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       device array of device pointers storing each matrix_i A of dimension (lda, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    B       device array of device pointers storing each matrix_i B of dimension (ldb, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (ldb, n)
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       device array of device pointers storing each matrix C_i on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    @param[in]
+    batchCount [int]
+            number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkxBatched(hipblasHandle_t                   handle,
                                                     hipblasFillMode_t                 uplo,
                                                     hipblasOperation_t                transA,
@@ -9423,7 +10973,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkxBatched(hipblasHandle_t             
                                                     int                               ldc,
                                                     int                               batchCount);
 
-// syrkx_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSsyrkxStridedBatched(hipblasHandle_t    handle,
                                                            hipblasFillMode_t  uplo,
                                                            hipblasOperation_t transA,
@@ -9478,6 +11027,98 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkxStridedBatched(hipblasHandle_t      
                                                            hipblasStride         stridec,
                                                            int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    syrkxStridedBatched performs a batch of the matrix-matrix operations for a symmetric rank-k update
+
+    C_i := alpha*op( A_i )*op( B_i )^T + beta*C_i
+
+    where  alpha and beta are scalars, op(A_i) and op(B_i) are n by k matrix, and
+    C_i is a symmetric n x n matrix stored as either upper or lower.
+    This routine should only be used when the caller can guarantee that the result of op( A_i )*op( B_i )^T will be symmetric.
+
+        op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
+        op( A_i ) = A_i^T, op( B_i ) = B_i^T,  and A_i and B_i are k by n if trans == HIPBLAS_OP_T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  C_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  C_i is a  lower triangular matrix
+
+    @param[in]
+    trans  [hipblasOperation_t]
+            HIPBLAS_OP_T:      op( A_i ) = A_i^T, op( B_i ) = B_i^T
+            HIPBLAS_OP_N:           op( A_i ) = A_i, op( B_i ) = B_i
+
+    @param[in]
+    n       [int]
+            n specifies the number of rows and columns of C_i. n >= 0.
+
+    @param[in]
+    k       [int]
+            k specifies the number of columns of op(A). k >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and A need not be set before
+            entry.
+
+    @param[in]
+    A       Device pointer to the first matrix A_1 on the GPU of dimension (lda, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (lda, n)
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if trans = HIPBLAS_OP_N,  lda >= max( 1, n ),
+            otherwise lda >= max( 1, k ).
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[in]
+    B       Device pointer to the first matrix B_1 on the GPU of dimension (ldb, k)
+            when trans is HIPBLAS_OP_N, otherwise of dimension (ldb, n)
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i.
+            if trans = HIPBLAS_OP_N,  ldb >= max( 1, n ),
+            otherwise ldb >= max( 1, k ).
+
+    @param[in]
+    strideB  [hipblasStride]
+              stride from the start of one matrix (B_i) and the next one (B_i+1)
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       Device pointer to the first matrix C_1 on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, n ).
+
+    @param[inout]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkxStridedBatched(hipblasHandle_t             handle,
                                                            hipblasFillMode_t           uplo,
                                                            hipblasOperation_t          transA,
@@ -9496,7 +11137,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyrkxStridedBatched(hipblasHandle_t      
                                                            hipblasStride               stridec,
                                                            int                         batchCount);
 
-// geam
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgeam(hipblasHandle_t    handle,
                                             hipblasOperation_t transa,
                                             hipblasOperation_t transb,
@@ -9539,6 +11179,58 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeam(hipblasHandle_t       handle,
                                             hipblasComplex*       C,
                                             int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+    geam performs one of the matrix-matrix operations
+
+        C = alpha*op( A ) + beta*op( B ),
+
+    where op( X ) is one of
+
+        op( X ) = X      or
+        op( X ) = X**T   or
+        op( X ) = X**H,
+
+    alpha and beta are scalars, and A, B and C are matrices, with
+    op( A ) an m by n matrix, op( B ) an m by n matrix, and C an m by n matrix.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    transA    [hipblasOperation_t]
+              specifies the form of op( A )
+    @param[in]
+    transB    [hipblasOperation_t]
+              specifies the form of op( B )
+    @param[in]
+    m         [int]
+              matrix dimension m.
+    @param[in]
+    n         [int]
+              matrix dimension n.
+    @param[in]
+    alpha     device pointer or host pointer specifying the scalar alpha.
+    @param[in]
+    A         device pointer storing matrix A.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of A.
+    @param[in]
+    beta      device pointer or host pointer specifying the scalar beta.
+    @param[in]
+    B         device pointer storing matrix B.
+    @param[in]
+    ldb       [int]
+              specifies the leading dimension of B.
+    @param[in, out]
+    C         device pointer storing matrix C.
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of C.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgeam(hipblasHandle_t             handle,
                                             hipblasOperation_t          transa,
                                             hipblasOperation_t          transb,
@@ -9553,7 +11245,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeam(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc);
 
-// geam_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgeamBatched(hipblasHandle_t    handle,
                                                    hipblasOperation_t transa,
                                                    hipblasOperation_t transb,
@@ -9599,6 +11290,66 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamBatched(hipblasHandle_t             h
                                                    int                         ldc,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+    geamBatched performs one of the batched matrix-matrix operations
+
+        C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batchCount - 1
+
+    where alpha and beta are scalars, and op(A_i), op(B_i) and C_i are m by n matrices
+    and op( X ) is one of
+
+        op( X ) = X      or
+        op( X ) = X**T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    transA    [hipblasOperation_t]
+              specifies the form of op( A )
+    @param[in]
+    transB    [hipblasOperation_t]
+              specifies the form of op( B )
+    @param[in]
+    m         [int]
+              matrix dimension m.
+    @param[in]
+    n         [int]
+              matrix dimension n.
+    @param[in]
+    alpha     device pointer or host pointer specifying the scalar alpha.
+    @param[in]
+    A         device array of device pointers storing each matrix A_i on the GPU.
+              Each A_i is of dimension ( lda, k ), where k is m
+              when  transA == HIPBLAS_OP_N and
+              is  n  when  transA == HIPBLAS_OP_T.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of A.
+    @param[in]
+    beta      device pointer or host pointer specifying the scalar beta.
+    @param[in]
+    B         device array of device pointers storing each matrix B_i on the GPU.
+              Each B_i is of dimension ( ldb, k ), where k is m
+              when  transB == HIPBLAS_OP_N and
+              is  n  when  transB == HIPBLAS_OP_T.
+    @param[in]
+    ldb       [int]
+              specifies the leading dimension of B.
+    @param[in, out]
+    C         device array of device pointers storing each matrix C_i on the GPU.
+              Each C_i is of dimension ( ldc, n ).
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of C.
+
+    @param[in]
+    batchCount [int]
+                number of instances i in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgeamBatched(hipblasHandle_t                   handle,
                                                    hipblasOperation_t                transa,
                                                    hipblasOperation_t                transb,
@@ -9614,7 +11365,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeamBatched(hipblasHandle_t              
                                                    int                               ldc,
                                                    int                               batchCount);
 
-// geam_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgeamStridedBatched(hipblasHandle_t    handle,
                                                           hipblasOperation_t transa,
                                                           hipblasOperation_t transb,
@@ -9669,6 +11419,90 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideC,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+    geamStridedBatched performs one of the batched matrix-matrix operations
+
+        C_i = alpha*op( A_i ) + beta*op( B_i )  for i = 0, 1, ... batchCount - 1
+
+    where alpha and beta are scalars, and op(A_i), op(B_i) and C_i are m by n matrices
+    and op( X ) is one of
+
+        op( X ) = X      or
+        op( X ) = X**T
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    transA    [hipblasOperation_t]
+              specifies the form of op( A )
+
+    @param[in]
+    transB    [hipblasOperation_t]
+              specifies the form of op( B )
+
+    @param[in]
+    m         [int]
+              matrix dimension m.
+
+    @param[in]
+    n         [int]
+              matrix dimension n.
+
+    @param[in]
+    alpha     device pointer or host pointer specifying the scalar alpha.
+
+    @param[in]
+    A         device pointer to the first matrix A_0 on the GPU.
+              Each A_i is of dimension ( lda, k ), where k is m
+              when  transA == HIPBLAS_OP_N and
+              is  n  when  transA == HIPBLAS_OP_T.
+
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of A.
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[in]
+    beta      device pointer or host pointer specifying the scalar beta.
+
+    @param[in]
+    B         pointer to the first matrix B_0 on the GPU.
+              Each B_i is of dimension ( ldb, k ), where k is m
+              when  transB == HIPBLAS_OP_N and
+              is  n  when  transB == HIPBLAS_OP_T.
+
+    @param[in]
+    ldb       [int]
+              specifies the leading dimension of B.
+
+    @param[in]
+    strideB  [hipblasStride]
+              stride from the start of one matrix (B_i) and the next one (B_i+1)
+
+    @param[in, out]
+    C         pointer to the first matrix C_0 on the GPU.
+              Each C_i is of dimension ( ldc, n ).
+
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of C.
+
+    @param[in]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+
+    @param[in]
+    batchCount [int]
+                number of instances i in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgeamStridedBatched(hipblasHandle_t             handle,
                                                           hipblasOperation_t          transa,
                                                           hipblasOperation_t          transb,
@@ -9687,7 +11521,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeamStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideC,
                                                           int                         batchCount);
 
-// hemm
 HIPBLAS_EXPORT hipblasStatus_t hipblasChemm(hipblasHandle_t       handle,
                                             hipblasSideMode_t     side,
                                             hipblasFillMode_t     uplo,
@@ -9702,6 +11535,80 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemm(hipblasHandle_t       handle,
                                             hipblasComplex*       C,
                                             int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    hemm performs one of the matrix-matrix operations:
+
+    C := alpha*A*B + beta*C if side == HIPBLAS_SIDE_LEFT,
+    C := alpha*B*A + beta*C if side == HIPBLAS_SIDE_RIGHT,
+
+    where alpha and beta are scalars, B and C are m by n matrices, and
+    A is a Hermitian matrix stored as either upper or lower.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side  [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:      C := alpha*A*B + beta*C
+            HIPBLAS_SIDE_RIGHT:     C := alpha*B*A + beta*C
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  A is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  A is a  lower triangular matrix
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B and C. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B and C. n >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A and B are not referenced.
+
+    @param[in]
+    A       pointer storing matrix A on the GPU.
+            A is m by m if side == HIPBLAS_SIDE_LEFT
+            A is n by n if side == HIPBLAS_SIDE_RIGHT
+            Only the upper/lower triangular part is accessed.
+            The imaginary component of the diagonal elements is not used.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            otherwise lda >= max( 1, n ).
+
+    @param[in]
+    B       pointer storing matrix B on the GPU.
+            Matrix dimension is m by n
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B. ldb >= max( 1, m )
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C       pointer storing matrix C on the GPU.
+            Matrix dimension is m by n
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, m )
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhemm(hipblasHandle_t             handle,
                                             hipblasSideMode_t           side,
                                             hipblasFillMode_t           uplo,
@@ -9716,7 +11623,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemm(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc);
 
-// hemm_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasChemmBatched(hipblasHandle_t             handle,
                                                    hipblasSideMode_t           side,
                                                    hipblasFillMode_t           uplo,
@@ -9732,6 +11638,84 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemmBatched(hipblasHandle_t             h
                                                    int                         ldc,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    hemmBatched performs a batch of the matrix-matrix operations:
+
+    C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
+    C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
+
+    where alpha and beta are scalars, B_i and C_i are m by n matrices, and
+    A_i is a Hermitian matrix stored as either upper or lower.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side  [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:      C_i := alpha*A_i*B_i + beta*C_i
+            HIPBLAS_SIDE_RIGHT:     C_i := alpha*B_i*A_i + beta*C_i
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  A_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  A_i is a  lower triangular matrix
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B_i and C_i. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B_i and C_i. n >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A_i and B_i are not referenced.
+
+    @param[in]
+    A       device array of device pointers storing each matrix A_i on the GPU.
+            A_i is m by m if side == HIPBLAS_SIDE_LEFT
+            A_i is n by n if side == HIPBLAS_SIDE_RIGHT
+            Only the upper/lower triangular part is accessed.
+            The imaginary component of the diagonal elements is not used.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            otherwise lda >= max( 1, n ).
+
+    @param[in]
+    B       device array of device pointers storing each matrix B_i on the GPU.
+            Matrix dimension is m by n
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i. ldb >= max( 1, m )
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C_i need not be set before entry.
+
+    @param[in]
+    C       device array of device pointers storing each matrix C_i on the GPU.
+            Matrix dimension is m by n
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C_i. ldc >= max( 1, m )
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmBatched(hipblasHandle_t                   handle,
                                                    hipblasSideMode_t                 side,
                                                    hipblasFillMode_t                 uplo,
@@ -9747,7 +11731,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmBatched(hipblasHandle_t              
                                                    int                               ldc,
                                                    int                               batchCount);
 
-// hemm_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       handle,
                                                           hipblasSideMode_t     side,
                                                           hipblasFillMode_t     uplo,
@@ -9766,6 +11749,96 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideC,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    hemmStridedBatched performs a batch of the matrix-matrix operations:
+
+    C_i := alpha*A_i*B_i + beta*C_i if side == HIPBLAS_SIDE_LEFT,
+    C_i := alpha*B_i*A_i + beta*C_i if side == HIPBLAS_SIDE_RIGHT,
+
+    where alpha and beta are scalars, B_i and C_i are m by n matrices, and
+    A_i is a Hermitian matrix stored as either upper or lower.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side  [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:      C_i := alpha*A_i*B_i + beta*C_i
+            HIPBLAS_SIDE_RIGHT:     C_i := alpha*B_i*A_i + beta*C_i
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  A_i is an upper triangular matrix
+            HIPBLAS_FILL_MODE_LOWER:  A_i is a  lower triangular matrix
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B_i and C_i. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B_i and C_i. n >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A_i and B_i are not referenced.
+
+    @param[in]
+    A       device pointer to first matrix A_1
+            A_i is m by m if side == HIPBLAS_SIDE_LEFT
+            A_i is n by n if side == HIPBLAS_SIDE_RIGHT
+            Only the upper/lower triangular part is accessed.
+            The imaginary component of the diagonal elements is not used.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A_i.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            otherwise lda >= max( 1, n ).
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[in]
+    B       device pointer to first matrix B_1 of dimension (ldb, n) on the GPU
+
+    @param[in]
+    ldb     [int]
+            ldb specifies the first dimension of B_i.
+            if side = HIPBLAS_OP_N,  ldb >= max( 1, m ),
+            otherwise ldb >= max( 1, n ).
+
+    @param[in]
+    strideB  [hipblasStride]
+              stride from the start of one matrix (B_i) and the next one (B_i+1)
+
+    @param[in]
+    beta
+            beta specifies the scalar beta. When beta is
+            zero then C need not be set before entry.
+
+    @param[in]
+    C        device pointer to first matrix C_1 of dimension (ldc, n) on the GPU.
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, m )
+
+    @param[inout]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+
+    @param[in]
+    batchCount [int]
+                number of instances in the batch
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t             handle,
                                                           hipblasSideMode_t           side,
                                                           hipblasFillMode_t           uplo,
@@ -9829,6 +11902,98 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
                                             hipblasComplex*       B,
                                             int                   ldb);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    trmm performs one of the matrix-matrix operations
+
+    B := alpha*op( A )*B,   or   B := alpha*B*op( A )
+
+    where  alpha  is a scalar,  B  is an m by n matrix,  A  is a unit, or
+    non-unit,  upper or lower triangular matrix  and  op( A )  is one  of
+
+        op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side    [hipblasSideMode_t]
+            Specifies whether op(A) multiplies B from the left or right as follows:
+            HIPBLAS_SIDE_LEFT:       B := alpha*op( A )*B.
+            HIPBLAS_SIDE_RIGHT:      B := alpha*B*op( A ).
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            Specifies whether the matrix A is an upper or lower triangular matrix as follows:
+            HIPBLAS_FILL_MODE_UPPER:  A is an upper triangular matrix.
+            HIPBLAS_FILL_MODE_LOWER:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            Specifies the form of op(A) to be used in the matrix multiplication as follows:
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_OP_C:  op(A) = A^H.
+
+    @param[in]
+    diag    [hipblasDiagType_t]
+            Specifies whether or not A is unit triangular as follows:
+            HIPBLAS_DIAG_UNIT:      A is assumed to be unit triangular.
+            HIPBLAS_DIAG_NON_UNIT:  A is not assumed to be unit triangular.
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B. n >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A is not referenced and B need not be set before
+            entry.
+
+    @param[in]
+    A       Device pointer to matrix A on the GPU.
+            A has dimension ( lda, k ), where k is m
+            when  side == HIPBLAS_SIDE_LEFT  and
+            is  n  when  side == HIPBLAS_SIDE_RIGHT.
+
+        When uplo == HIPBLAS_FILL_MODE_UPPER the  leading  k by k
+        upper triangular part of the array  A must contain the upper
+        triangular matrix  and the strictly lower triangular part of
+        A is not referenced.
+
+        When uplo == HIPBLAS_FILL_MODE_LOWER the  leading  k by k
+        lower triangular part of the array  A must contain the lower
+        triangular matrix  and the strictly upper triangular part of
+        A is not referenced.
+
+        Note that when  diag == HIPBLAS_DIAG_UNIT  the diagonal elements of
+        A  are not referenced either,  but are assumed to be  unity.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if side == HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            if side == HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
+
+    @param[inout]
+    B       Device pointer to the first matrix B_0 on the GPU.
+            On entry,  the leading  m by n part of the array  B must
+           contain the matrix  B,  and  on exit  is overwritten  by the
+           transformed matrix.
+
+    @param[in]
+    ldb    [int]
+           ldb specifies the first dimension of B. ldb >= max( 1, m ).
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
                                             hipblasSideMode_t           side,
                                             hipblasFillMode_t           uplo,
@@ -9842,7 +12007,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       B,
                                             int                         ldb);
 
-// trmm_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmBatched(hipblasHandle_t    handle,
                                                    hipblasSideMode_t  side,
                                                    hipblasFillMode_t  uplo,
@@ -9885,6 +12049,101 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             h
                                                    int                         ldb,
                                                    int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    trmmBatched performs one of the batched matrix-matrix operations
+
+    B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
+
+    where  alpha  is a scalar,  B_i  is an m by n matrix,  A_i  is a unit, or
+    non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
+
+        op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side    [hipblasSideMode_t]
+            Specifies whether op(A_i) multiplies B_i from the left or right as follows:
+            HIPBLAS_SIDE_LEFT:       B_i := alpha*op( A_i )*B_i.
+            HIPBLAS_SIDE_RIGHT:      B_i := alpha*B_i*op( A_i ).
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            Specifies whether the matrix A is an upper or lower triangular matrix as follows:
+            HIPBLAS_FILL_MODE_UPPER:  A is an upper triangular matrix.
+            HIPBLAS_FILL_MODE_LOWER:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            Specifies the form of op(A_i) to be used in the matrix multiplication as follows:
+            HIPBLAS_OP_N:    op(A_i) = A_i.
+            HIPBLAS_OP_T:      op(A_i) = A_i^T.
+            HIPBLAS_OP_C:  op(A_i) = A_i^H.
+
+    @param[in]
+    diag    [hipblasDiagType_t]
+            Specifies whether or not A_i is unit triangular as follows:
+            HIPBLAS_DIAG_UNIT:      A_i is assumed to be unit triangular.
+            HIPBLAS_DIAG_NON_UNIT:  A_i is not assumed to be unit triangular.
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B_i. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B_i. n >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A_i is not referenced and B_i need not be set before
+            entry.
+
+    @param[in]
+    A       Device array of device pointers storing each matrix A_i on the GPU.
+            Each A_i is of dimension ( lda, k ), where k is m
+            when  side == HIPBLAS_SIDE_LEFT  and
+            is  n  when  side == HIPBLAS_SIDE_RIGHT.
+
+        When uplo == HIPBLAS_FILL_MODE_UPPER the  leading  k by k
+        upper triangular part of the array  A must contain the upper
+        triangular matrix  and the strictly lower triangular part of
+        A is not referenced.
+
+        When uplo == HIPBLAS_FILL_MODE_LOWER the  leading  k by k
+        lower triangular part of the array  A must contain the lower
+        triangular matrix  and the strictly upper triangular part of
+        A is not referenced.
+
+        Note that when  diag == HIPBLAS_DIAG_UNIT  the diagonal elements of
+        A_i  are not referenced either,  but are assumed to be  unity.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if side == HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            if side == HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
+
+    @param[inout]
+    B       device array of device pointers storing each matrix B_i on the GPU.
+            On entry,  the leading  m by n part of the array  B_i must
+           contain the matrix  B_i,  and  on exit  is overwritten  by the
+           transformed matrix.
+
+    @param[in]
+    ldb    [int]
+           ldb specifies the first dimension of B_i. ldb >= max( 1, m ).
+
+    @param[in]
+    batchCount [int]
+                number of instances i in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t                   handle,
                                                    hipblasSideMode_t                 side,
                                                    hipblasFillMode_t                 uplo,
@@ -9899,7 +12158,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
                                                    int                               ldb,
                                                    int                               batchCount);
 
-// trmm_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasSideMode_t  side,
                                                           hipblasFillMode_t  uplo,
@@ -9948,6 +12206,108 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideB,
                                                           int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    trmmStridedBatched performs one of the strided_batched matrix-matrix operations
+
+    B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
+
+    where  alpha  is a scalar,  B_i  is an m by n matrix,  A_i  is a unit, or
+    non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
+
+        op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side    [hipblasSideMode_t]
+            Specifies whether op(A_i) multiplies B_i from the left or right as follows:
+            HIPBLAS_SIDE_LEFT:       B_i := alpha*op( A_i )*B_i.
+            HIPBLAS_SIDE_RIGHT:      B_i := alpha*B_i*op( A_i ).
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            Specifies whether the matrix A is an upper or lower triangular matrix as follows:
+            HIPBLAS_FILL_MODE_UPPER:  A is an upper triangular matrix.
+            HIPBLAS_FILL_MODE_LOWER:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            Specifies the form of op(A_i) to be used in the matrix multiplication as follows:
+            HIPBLAS_OP_N:    op(A_i) = A_i.
+            HIPBLAS_OP_T:      op(A_i) = A_i^T.
+            HIPBLAS_OP_C:  op(A_i) = A_i^H.
+
+    @param[in]
+    diag    [hipblasDiagType_t]
+            Specifies whether or not A_i is unit triangular as follows:
+            HIPBLAS_DIAG_UNIT:      A_i is assumed to be unit triangular.
+            HIPBLAS_DIAG_NON_UNIT:  A_i is not assumed to be unit triangular.
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B_i. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B_i. n >= 0.
+
+    @param[in]
+    alpha
+            alpha specifies the scalar alpha. When alpha is
+            zero then A_i is not referenced and B_i need not be set before
+            entry.
+
+    @param[in]
+    A       Device pointer to the first matrix A_0 on the GPU.
+            Each A_i is of dimension ( lda, k ), where k is m
+            when  side == HIPBLAS_SIDE_LEFT  and
+            is  n  when  side == HIPBLAS_SIDE_RIGHT.
+
+        When uplo == HIPBLAS_FILL_MODE_UPPER the  leading  k by k
+        upper triangular part of the array  A must contain the upper
+        triangular matrix  and the strictly lower triangular part of
+        A is not referenced.
+
+        When uplo == HIPBLAS_FILL_MODE_LOWER the  leading  k by k
+        lower triangular part of the array  A must contain the lower
+        triangular matrix  and the strictly upper triangular part of
+        A is not referenced.
+
+        Note that when  diag == HIPBLAS_DIAG_UNIT  the diagonal elements of
+        A_i  are not referenced either,  but are assumed to be  unity.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if side == HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            if side == HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
+
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+
+    @param[inout]
+    B       Device pointer to the first matrix B_0 on the GPU.
+            On entry,  the leading  m by n part of the array  B_i must
+           contain the matrix  B_i,  and  on exit  is overwritten  by the
+           transformed matrix.
+
+    @param[in]
+    ldb    [int]
+           ldb specifies the first dimension of B_i. ldb >= max( 1, m ).
+
+           @param[in]
+    strideB  [hipblasStride]
+              stride from the start of one matrix (B_i) and the next one (B_i+1)
+    @param[in]
+    batchCount [int]
+                number of instances i in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t             handle,
                                                           hipblasSideMode_t           side,
                                                           hipblasFillMode_t           uplo,
@@ -9964,7 +12324,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideB,
                                                           int                         batchCount);
 
-// trsm
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrsm(hipblasHandle_t    handle,
                                             hipblasSideMode_t  side,
                                             hipblasFillMode_t  uplo,
@@ -10004,6 +12363,92 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsm(hipblasHandle_t       handle,
                                             hipblasComplex*       B,
                                             int                   ldb);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+
+    trsm solves
+
+        op(A)*X = alpha*B or  X*op(A) = alpha*B,
+
+    where alpha is a scalar, X and B are m by n matrices,
+    A is triangular matrix and op(A) is one of
+
+        op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
+
+    The matrix X is overwritten on B.
+
+    Note about memory allocation:
+    When trsm is launched with a k evenly divisible by the internal block size of 128,
+    and is no larger than 10 of these blocks, the API takes advantage of utilizing pre-allocated
+    memory found in the handle to increase overall performance. This memory can be managed by using
+    the environment variable WORKBUF_TRSM_B_CHNK. When this variable is not set the device memory
+    used for temporary storage will default to 1 MB and may result in chunking, which in turn may
+    reduce performance. Under these circumstances it is recommended that WORKBUF_TRSM_B_CHNK be set
+    to the desired chunk of right hand sides to be used at a time.
+
+    (where k is m when HIPBLAS_SIDE_LEFT and is n when HIPBLAS_SIDE_RIGHT)
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+
+    @param[in]
+    side    [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:       op(A)*X = alpha*B.
+            HIPBLAS_SIDE_RIGHT:      X*op(A) = alpha*B.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  A is an upper triangular matrix.
+            HIPBLAS_FILL_MODE_LOWER:  A is a  lower triangular matrix.
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_OP_C: op(A) = A^H.
+
+    @param[in]
+    diag    [hipblasDiagType_t]
+            HIPBLAS_DIAG_UNIT:     A is assumed to be unit triangular.
+            HIPBLAS_DIAG_NON_UNIT:  A is not assumed to be unit triangular.
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B. n >= 0.
+
+    @param[in]
+    alpha
+            device pointer or host pointer specifying the scalar alpha. When alpha is
+            &zero then A is not referenced and B need not be set before
+            entry.
+
+    @param[in]
+    A       device pointer storing matrix A.
+            of dimension ( lda, k ), where k is m
+            when  HIPBLAS_SIDE_LEFT  and
+            is  n  when  HIPBLAS_SIDE_RIGHT
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            if side = HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
+
+    @param[in,out]
+    B       device pointer storing matrix B.
+
+    @param[in]
+    ldb    [int]
+           ldb specifies the first dimension of B. ldb >= max( 1, m ).
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsm(hipblasHandle_t             handle,
                                             hipblasSideMode_t           side,
                                             hipblasFillMode_t           uplo,
@@ -10017,7 +12462,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsm(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       B,
                                             int                         ldb);
 
-// trsm_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmBatched(hipblasHandle_t    handle,
                                                    hipblasSideMode_t  side,
                                                    hipblasFillMode_t  uplo,
@@ -10030,7 +12474,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmBatched(hipblasHandle_t    handle,
                                                    int                lda,
                                                    float*             B[],
                                                    int                ldb,
-                                                   int                batch_count);
+                                                   int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t    handle,
                                                    hipblasSideMode_t  side,
@@ -10044,7 +12488,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t    handle,
                                                    int                lda,
                                                    double*            B[],
                                                    int                ldb,
-                                                   int                batch_count);
+                                                   int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t       handle,
                                                    hipblasSideMode_t     side,
@@ -10058,8 +12502,81 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t       handle,
                                                    int                   lda,
                                                    hipblasComplex*       B[],
                                                    int                   ldb,
-                                                   int                   batch_count);
+                                                   int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+    \details
+    trsmBatched performs the following batched operation:
+
+        op(A_i)*X_i = alpha*B_i or  X_i*op(A_i) = alpha*B_i, for i = 1, ..., batchCount.
+
+    where alpha is a scalar, X and B are batched m by n matrices,
+    A is triangular batched matrix and op(A) is one of
+
+        op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
+
+    Each matrix X_i is overwritten on B_i for i = 1, ..., batchCount.
+
+    Note about memory allocation:
+    When trsm is launched with a k evenly divisible by the internal block size of 128,
+    and is no larger than 10 of these blocks, the API takes advantage of utilizing pre-allocated
+    memory found in the handle to increase overall performance. This memory can be managed by using
+    the environment variable WORKBUF_TRSM_B_CHNK. When this variable is not set the device memory
+    used for temporary storage will default to 1 MB and may result in chunking, which in turn may
+    reduce performance. Under these circumstances it is recommended that WORKBUF_TRSM_B_CHNK be set
+    to the desired chunk of right hand sides to be used at a time.
+    (where k is m when HIPBLAS_SIDE_LEFT and is n when HIPBLAS_SIDE_RIGHT)
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    side    [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:       op(A)*X = alpha*B.
+            HIPBLAS_SIDE_RIGHT:      X*op(A) = alpha*B.
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  each A_i is an upper triangular matrix.
+            HIPBLAS_FILL_MODE_LOWER:  each A_i is a  lower triangular matrix.
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_OP_C: op(A) = A^H.
+    @param[in]
+    diag    [hipblasDiagType_t]
+            HIPBLAS_DIAG_UNIT:     each A_i is assumed to be unit triangular.
+            HIPBLAS_DIAG_NON_UNIT:  each A_i is not assumed to be unit triangular.
+    @param[in]
+    m       [int]
+            m specifies the number of rows of each B_i. m >= 0.
+    @param[in]
+    n       [int]
+            n specifies the number of columns of each B_i. n >= 0.
+    @param[in]
+    alpha
+            device pointer or host pointer specifying the scalar alpha. When alpha is
+            &zero then A is not referenced and B need not be set before
+            entry.
+    @param[in]
+    A       device array of device pointers storing each matrix A_i on the GPU.
+            Matricies are of dimension ( lda, k ), where k is m
+            when  HIPBLAS_SIDE_LEFT  and is  n  when  HIPBLAS_SIDE_RIGHT
+            only the upper/lower triangular part is accessed.
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of each A_i.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            if side = HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
+    @param[in,out]
+    B       device array of device pointers storing each matrix B_i on the GPU.
+    @param[in]
+    ldb    [int]
+           ldb specifies the first dimension of each B_i. ldb >= max( 1, m ).
+    @param[in]
+    batchCount [int]
+                number of trsm operatons in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t             handle,
                                                    hipblasSideMode_t           side,
                                                    hipblasFillMode_t           uplo,
@@ -10072,9 +12589,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t             h
                                                    int                         lda,
                                                    hipblasDoubleComplex*       B[],
                                                    int                         ldb,
-                                                   int                         batch_count);
+                                                   int                         batchCount);
 
-// trsm_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasSideMode_t  side,
                                                           hipblasFillMode_t  uplo,
@@ -10089,7 +12605,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    han
                                                           float*             B,
                                                           int                ldb,
                                                           hipblasStride      strideB,
-                                                          int                batch_count);
+                                                          int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasSideMode_t  side,
@@ -10105,7 +12621,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    han
                                                           double*            B,
                                                           int                ldb,
                                                           hipblasStride      strideB,
-                                                          int                batch_count);
+                                                          int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       handle,
                                                           hipblasSideMode_t     side,
@@ -10121,8 +12637,87 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       
                                                           hipblasComplex*       B,
                                                           int                   ldb,
                                                           hipblasStride         strideB,
-                                                          int                   batch_count);
+                                                          int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+    \details
+    trsmSridedBatched performs the following strided batched operation:
+
+        op(A_i)*X_i = alpha*B_i or  X_i*op(A_i) = alpha*B_i, for i = 1, ..., batchCount.
+
+    where alpha is a scalar, X and B are strided batched m by n matrices,
+    A is triangular strided batched matrix and op(A) is one of
+
+        op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
+
+    Each matrix X_i is overwritten on B_i for i = 1, ..., batchCount.
+
+    Note about memory allocation:
+    When trsm is launched with a k evenly divisible by the internal block size of 128,
+    and is no larger than 10 of these blocks, the API takes advantage of utilizing pre-allocated
+    memory found in the handle to increase overall performance. This memory can be managed by using
+    the environment variable WORKBUF_TRSM_B_CHNK. When this variable is not set the device memory
+    used for temporary storage will default to 1 MB and may result in chunking, which in turn may
+    reduce performance. Under these circumstances it is recommended that WORKBUF_TRSM_B_CHNK be set
+    to the desired chunk of right hand sides to be used at a time.
+    (where k is m when HIPBLAS_SIDE_LEFT and is n when HIPBLAS_SIDE_RIGHT)
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    side    [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:       op(A)*X = alpha*B.
+            HIPBLAS_SIDE_RIGHT:      X*op(A) = alpha*B.
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  each A_i is an upper triangular matrix.
+            HIPBLAS_FILL_MODE_LOWER:  each A_i is a  lower triangular matrix.
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_OP_C: op(A) = A^H.
+    @param[in]
+    diag    [hipblasDiagType_t]
+            HIPBLAS_DIAG_UNIT:     each A_i is assumed to be unit triangular.
+            HIPBLAS_DIAG_NON_UNIT:  each A_i is not assumed to be unit triangular.
+    @param[in]
+    m       [int]
+            m specifies the number of rows of each B_i. m >= 0.
+    @param[in]
+    n       [int]
+            n specifies the number of columns of each B_i. n >= 0.
+    @param[in]
+    alpha
+            device pointer or host pointer specifying the scalar alpha. When alpha is
+            &zero then A is not referenced and B need not be set before
+            entry.
+    @param[in]
+    A       device pointer pointing to the first matrix A_1.
+            of dimension ( lda, k ), where k is m
+            when  HIPBLAS_SIDE_LEFT  and
+            is  n  when  HIPBLAS_SIDE_RIGHT
+            only the upper/lower triangular part is accessed.
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of each A_i.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            if side = HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
+    @param[in]
+    strideA [hipblasStride]
+             stride from the start of one A_i matrix to the next A_(i + 1).
+    @param[in,out]
+    B       device pointer pointing to the first matrix B_1.
+    @param[in]
+    ldb    [int]
+           ldb specifies the first dimension of each B_i. ldb >= max( 1, m ).
+    @param[in]
+    strideB [hipblasStride]
+             stride from the start of one B_i matrix to the next B_(i + 1).
+    @param[in]
+    batchCount [int]
+                number of trsm operatons in the batch.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t             handle,
                                                           hipblasSideMode_t           side,
                                                           hipblasFillMode_t           uplo,
@@ -10137,9 +12732,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t       
                                                           hipblasDoubleComplex*       B,
                                                           int                         ldb,
                                                           hipblasStride               strideB,
-                                                          int                         batch_count);
+                                                          int                         batchCount);
 
-// trtri
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrtri(hipblasHandle_t   handle,
                                              hipblasFillMode_t uplo,
                                              hipblasDiagType_t diag,
@@ -10167,6 +12761,40 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtri(hipblasHandle_t       handle,
                                              hipblasComplex*       invA,
                                              int                   ldinvA);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+    trtri  compute the inverse of a matrix A, namely, invA
+
+        and write the result into invA;
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    uplo      [hipblasFillMode_t]
+              specifies whether the upper 'HIPBLAS_FILL_MODE_UPPER' or lower 'HIPBLAS_FILL_MODE_LOWER'
+              if HIPBLAS_FILL_MODE_UPPER, the lower part of A is not referenced
+              if HIPBLAS_FILL_MODE_LOWER, the upper part of A is not referenced
+    @param[in]
+    diag      [hipblasDiagType_t]
+              = 'HIPBLAS_DIAG_NON_UNIT', A is non-unit triangular;
+              = 'HIPBLAS_DIAG_UNIT', A is unit triangular;
+    @param[in]
+    n         [int]
+              size of matrix A and invA
+    @param[in]
+    A         device pointer storing matrix A.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of A.
+    @param[out]
+    invA      device pointer storing matrix invA.
+    @param[in]
+    ldinvA    [int]
+              specifies the leading dimension of invA.
+
+********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrtri(hipblasHandle_t             handle,
                                              hipblasFillMode_t           uplo,
                                              hipblasDiagType_t           diag,
@@ -10176,7 +12804,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrtri(hipblasHandle_t             handle,
                                              hipblasDoubleComplex*       invA,
                                              int                         ldinvA);
 
-// trtri_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrtriBatched(hipblasHandle_t    handle,
                                                     hipblasFillMode_t  uplo,
                                                     hipblasDiagType_t  diag,
@@ -10185,7 +12812,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrtriBatched(hipblasHandle_t    handle,
                                                     int                lda,
                                                     float*             invA[],
                                                     int                ldinvA,
-                                                    int                batch_count);
+                                                    int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrtriBatched(hipblasHandle_t     handle,
                                                     hipblasFillMode_t   uplo,
@@ -10195,7 +12822,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrtriBatched(hipblasHandle_t     handle,
                                                     int                 lda,
                                                     double*             invA[],
                                                     int                 ldinvA,
-                                                    int                 batch_count);
+                                                    int                 batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriBatched(hipblasHandle_t             handle,
                                                     hipblasFillMode_t           uplo,
@@ -10205,8 +12832,48 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriBatched(hipblasHandle_t             
                                                     int                         lda,
                                                     hipblasComplex*             invA[],
                                                     int                         ldinvA,
-                                                    int                         batch_count);
+                                                    int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+    trtriBatched  compute the inverse of A_i and write into invA_i where
+                   A_i and invA_i are the i-th matrices in the batch,
+                   for i = 1, ..., batchCount.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    uplo      [hipblasFillMode_t]
+              specifies whether the upper 'HIPBLAS_FILL_MODE_UPPER' or lower 'HIPBLAS_FILL_MODE_LOWER'
+    @param[in]
+    diag      [hipblasDiagType_t]
+              = 'HIPBLAS_DIAG_NON_UNIT', A is non-unit triangular;
+              = 'HIPBLAS_DIAG_UNIT', A is unit triangular;
+    @param[in]
+    n         [int]
+    @param[in]
+    A         device array of device pointers storing each matrix A_i.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of each A_i.
+    @param[out]
+    invA      device array of device pointers storing the inverse of each matrix A_i.
+              Partial inplace operation is supported, see below.
+              If UPLO = 'U', the leading N-by-N upper triangular part of the invA will store
+              the inverse of the upper triangular matrix, and the strictly lower
+              triangular part of invA is cleared.
+              If UPLO = 'L', the leading N-by-N lower triangular part of the invA will store
+              the inverse of the lower triangular matrix, and the strictly upper
+              triangular part of invA is cleared.
+    @param[in]
+    ldinvA    [int]
+              specifies the leading dimension of each invA_i.
+    @param[in]
+    batchCount [int]
+              numbers of matrices in the batch
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrtriBatched(hipblasHandle_t                   handle,
                                                     hipblasFillMode_t                 uplo,
                                                     hipblasDiagType_t                 diag,
@@ -10215,20 +12882,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrtriBatched(hipblasHandle_t             
                                                     int                               lda,
                                                     hipblasDoubleComplex*             invA[],
                                                     int                               ldinvA,
-                                                    int                               batch_count);
+                                                    int                               batchCount);
 
-// trtri_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrtriStridedBatched(hipblasHandle_t   handle,
                                                            hipblasFillMode_t uplo,
                                                            hipblasDiagType_t diag,
                                                            int               n,
                                                            const float*      A,
                                                            int               lda,
-                                                           hipblasStride     stride_A,
+                                                           hipblasStride     strideA,
                                                            float*            invA,
                                                            int               ldinvA,
                                                            hipblasStride     stride_invA,
-                                                           int               batch_count);
+                                                           int               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrtriStridedBatched(hipblasHandle_t   handle,
                                                            hipblasFillMode_t uplo,
@@ -10236,11 +12902,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrtriStridedBatched(hipblasHandle_t   han
                                                            int               n,
                                                            const double*     A,
                                                            int               lda,
-                                                           hipblasStride     stride_A,
+                                                           hipblasStride     strideA,
                                                            double*           invA,
                                                            int               ldinvA,
                                                            hipblasStride     stride_invA,
-                                                           int               batch_count);
+                                                           int               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t       handle,
                                                            hipblasFillMode_t     uplo,
@@ -10248,25 +12914,70 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t      
                                                            int                   n,
                                                            const hipblasComplex* A,
                                                            int                   lda,
-                                                           hipblasStride         stride_A,
+                                                           hipblasStride         strideA,
                                                            hipblasComplex*       invA,
                                                            int                   ldinvA,
                                                            hipblasStride         stride_invA,
-                                                           int                   batch_count);
+                                                           int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+    trtriStridedBatched compute the inverse of A_i and write into invA_i where
+                   A_i and invA_i are the i-th matrices in the batch,
+                   for i = 1, ..., batchCount
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    uplo      [hipblasFillMode_t]
+              specifies whether the upper 'HIPBLAS_FILL_MODE_UPPER' or lower 'HIPBLAS_FILL_MODE_LOWER'
+    @param[in]
+    diag      [hipblasDiagType_t]
+              = 'HIPBLAS_DIAG_NON_UNIT', A is non-unit triangular;
+              = 'HIPBLAS_DIAG_UNIT', A is unit triangular;
+    @param[in]
+    n         [int]
+    @param[in]
+    A         device pointer pointing to address of first matrix A_1.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of each A.
+    @param[in]
+    strideA  [hipblasStride]
+             "batch stride a": stride from the start of one A_i matrix to the next A_(i + 1).
+    @param[out]
+    invA      device pointer storing the inverses of each matrix A_i.
+              Partial inplace operation is supported, see below.
+              If UPLO = 'U', the leading N-by-N upper triangular part of the invA will store
+              the inverse of the upper triangular matrix, and the strictly lower
+              triangular part of invA is cleared.
+              If UPLO = 'L', the leading N-by-N lower triangular part of the invA will store
+              the inverse of the lower triangular matrix, and the strictly upper
+              triangular part of invA is cleared.
+    @param[in]
+    ldinvA    [int]
+              specifies the leading dimension of each invA_i.
+    @param[in]
+    stride_invA  [hipblasStride]
+                 "batch stride invA": stride from the start of one invA_i matrix to the next invA_(i + 1).
+    @param[in]
+    batchCount  [int]
+                 numbers of matrices in the batch
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrtriStridedBatched(hipblasHandle_t             handle,
                                                            hipblasFillMode_t           uplo,
                                                            hipblasDiagType_t           diag,
                                                            int                         n,
                                                            const hipblasDoubleComplex* A,
                                                            int                         lda,
-                                                           hipblasStride               stride_A,
+                                                           hipblasStride               strideA,
                                                            hipblasDoubleComplex*       invA,
                                                            int                         ldinvA,
                                                            hipblasStride               stride_invA,
-                                                           int                         batch_count);
+                                                           int                         batchCount);
 
-// dgmm
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdgmm(hipblasHandle_t   handle,
                                             hipblasSideMode_t side,
                                             int               m,
@@ -10300,6 +13011,48 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmm(hipblasHandle_t       handle,
                                             hipblasComplex*       C,
                                             int                   ldc);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+    dgmm performs one of the matrix-matrix operations
+
+        C = A * diag(x) if side == HIPBLAS_SIDE_RIGHT
+        C = diag(x) * A if side == HIPBLAS_SIDE_LEFT
+
+    where C and A are m by n dimensional matrices. diag( x ) is a diagonal matrix
+    and x is vector of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension m
+    if side == HIPBLAS_SIDE_LEFT.
+
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    side      [hipblasSideMode_t]
+              specifies the side of diag(x)
+    @param[in]
+    m         [int]
+              matrix dimension m.
+    @param[in]
+    n         [int]
+              matrix dimension n.
+    @param[in]
+    A         device pointer storing matrix A.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of A.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    incx      [int]
+              specifies the increment between values of x
+    @param[in, out]
+    C         device pointer storing matrix C.
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of C.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmm(hipblasHandle_t             handle,
                                             hipblasSideMode_t           side,
                                             int                         m,
@@ -10311,7 +13064,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmm(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       C,
                                             int                         ldc);
 
-// dgmm_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdgmmBatched(hipblasHandle_t    handle,
                                                    hipblasSideMode_t  side,
                                                    int                m,
@@ -10322,7 +13074,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSdgmmBatched(hipblasHandle_t    handle,
                                                    int                incx,
                                                    float* const       C[],
                                                    int                ldc,
-                                                   int                batch_count);
+                                                   int                batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDdgmmBatched(hipblasHandle_t     handle,
                                                    hipblasSideMode_t   side,
@@ -10334,7 +13086,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdgmmBatched(hipblasHandle_t     handle,
                                                    int                 incx,
                                                    double* const       C[],
                                                    int                 ldc,
-                                                   int                 batch_count);
+                                                   int                 batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmBatched(hipblasHandle_t             handle,
                                                    hipblasSideMode_t           side,
@@ -10346,8 +13098,56 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmBatched(hipblasHandle_t             h
                                                    int                         incx,
                                                    hipblasComplex* const       C[],
                                                    int                         ldc,
-                                                   int                         batch_count);
+                                                   int                         batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+    dgmmBatched performs one of the batched matrix-matrix operations
+
+        C_i = A_i * diag(x_i) for i = 0, 1, ... batchCount-1 if side == HIPBLAS_SIDE_RIGHT
+        C_i = diag(x_i) * A_i for i = 0, 1, ... batchCount-1 if side == HIPBLAS_SIDE_LEFT
+
+    where C_i and A_i are m by n dimensional matrices. diag(x_i) is a diagonal matrix
+    and x_i is vector of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension m
+    if side == HIPBLAS_SIDE_LEFT.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    side      [hipblasSideMode_t]
+              specifies the side of diag(x)
+    @param[in]
+    m         [int]
+              matrix dimension m.
+    @param[in]
+    n         [int]
+              matrix dimension n.
+    @param[in]
+    A         device array of device pointers storing each matrix A_i on the GPU.
+              Each A_i is of dimension ( lda, n )
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of A_i.
+    @param[in]
+    x         device array of device pointers storing each vector x_i on the GPU.
+              Each x_i is of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension
+              m if side == HIPBLAS_SIDE_LEFT
+    @param[in]
+    incx      [int]
+              specifies the increment between values of x_i
+    @param[in, out]
+    C         device array of device pointers storing each matrix C_i on the GPU.
+              Each C_i is of dimension ( ldc, n ).
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of C_i.
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmmBatched(hipblasHandle_t                   handle,
                                                    hipblasSideMode_t                 side,
                                                    int                               m,
@@ -10358,23 +13158,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmmBatched(hipblasHandle_t              
                                                    int                               incx,
                                                    hipblasDoubleComplex* const       C[],
                                                    int                               ldc,
-                                                   int                               batch_count);
+                                                   int                               batchCount);
 
-// dgmm_strided_batched
 HIPBLAS_EXPORT hipblasStatus_t hipblasSdgmmStridedBatched(hipblasHandle_t   handle,
                                                           hipblasSideMode_t side,
                                                           int               m,
                                                           int               n,
                                                           const float*      A,
                                                           int               lda,
-                                                          hipblasStride     stride_A,
+                                                          hipblasStride     strideA,
                                                           const float*      x,
                                                           int               incx,
-                                                          hipblasStride     stride_x,
+                                                          hipblasStride     stridex,
                                                           float*            C,
                                                           int               ldc,
-                                                          hipblasStride     stride_C,
-                                                          int               batch_count);
+                                                          hipblasStride     strideC,
+                                                          int               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDdgmmStridedBatched(hipblasHandle_t   handle,
                                                           hipblasSideMode_t side,
@@ -10382,14 +13181,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDdgmmStridedBatched(hipblasHandle_t   hand
                                                           int               n,
                                                           const double*     A,
                                                           int               lda,
-                                                          hipblasStride     stride_A,
+                                                          hipblasStride     strideA,
                                                           const double*     x,
                                                           int               incx,
-                                                          hipblasStride     stride_x,
+                                                          hipblasStride     stridex,
                                                           double*           C,
                                                           int               ldc,
-                                                          hipblasStride     stride_C,
-                                                          int               batch_count);
+                                                          hipblasStride     strideC,
+                                                          int               batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       handle,
                                                           hipblasSideMode_t     side,
@@ -10404,22 +13203,79 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       
                                                           hipblasComplex*       C,
                                                           int                   ldc,
                                                           hipblasStride         stride_C,
-                                                          int                   batch_count);
+                                                          int                   batchCount);
 
+/*! \brief BLAS Level 3 API
+
+    \details
+    dgmmStridedBatched performs one of the batched matrix-matrix operations
+
+        C_i = A_i * diag(x_i)   if side == HIPBLAS_SIDE_RIGHT   for i = 0, 1, ... batchCount-1
+        C_i = diag(x_i) * A_i   if side == HIPBLAS_SIDE_LEFT    for i = 0, 1, ... batchCount-1
+
+    where C_i and A_i are m by n dimensional matrices. diag(x_i) is a diagonal matrix
+    and x_i is vector of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension m
+    if side == HIPBLAS_SIDE_LEFT.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    side      [hipblasSideMode_t]
+              specifies the side of diag(x)
+    @param[in]
+    m         [int]
+              matrix dimension m.
+    @param[in]
+    n         [int]
+              matrix dimension n.
+    @param[in]
+    A         device pointer to the first matrix A_0 on the GPU.
+              Each A_i is of dimension ( lda, n )
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of A.
+    @param[in]
+    strideA  [hipblasStride]
+              stride from the start of one matrix (A_i) and the next one (A_i+1)
+    @param[in]
+    x         pointer to the first vector x_0 on the GPU.
+              Each x_i is of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension
+              m if side == HIPBLAS_SIDE_LEFT
+    @param[in]
+    incx      [int]
+              specifies the increment between values of x
+    @param[in]
+    stridex  [hipblasStride]
+              stride from the start of one vector(x_i) and the next one (x_i+1)
+    @param[in, out]
+    C         device pointer to the first matrix C_0 on the GPU.
+              Each C_i is of dimension ( ldc, n ).
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of C.
+    @param[in]
+    strideC  [hipblasStride]
+              stride from the start of one matrix (C_i) and the next one (C_i+1)
+    @param[in]
+    batchCount [int]
+                number of instances i in the batch.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdgmmStridedBatched(hipblasHandle_t             handle,
                                                           hipblasSideMode_t           side,
                                                           int                         m,
                                                           int                         n,
                                                           const hipblasDoubleComplex* A,
                                                           int                         lda,
-                                                          hipblasStride               stride_A,
+                                                          hipblasStride               strideA,
                                                           const hipblasDoubleComplex* x,
                                                           int                         incx,
-                                                          hipblasStride               stride_x,
+                                                          hipblasStride               stridex,
                                                           hipblasDoubleComplex*       C,
                                                           int                         ldc,
-                                                          hipblasStride               stride_C,
-                                                          int                         batch_count);
+                                                          hipblasStride               strideC,
+                                                          int                         batchCount);
 
 // getrf
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrf(
