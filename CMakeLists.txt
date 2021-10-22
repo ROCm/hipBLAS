@@ -63,7 +63,7 @@ endif( )
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${HIP_PATH}/lib/cmake/hip)
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
-list( APPEND CMAKE_PREFIX_PATH /opt/rocm)
+list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm)
 
 option( BUILD_VERBOSE "Output additional build information" OFF )
 
