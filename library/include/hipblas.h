@@ -13805,7 +13805,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle
     n-by-n matrices using partial pivoting with row interchanges. The LU factorization can
     be done without pivoting if ipiv is passed as a nullptr.
 
-    In the case that ipiv is null, the factorization of matrix \f$A_i\f$ in the batch has the form:
+    In the case that ipiv is not null, the factorization of matrix \f$A_i\f$ in the batch has the form:
 
     \f[
         A_i = P_iL_iU_i
@@ -13841,12 +13841,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle
               For each instance A_i in the batch and for 1 <= j <= n, the row j of the
               matrix A_i was interchanged with row ipiv_i[j].
               Matrix P_i of the factorization can be derived from ipiv_i.
+              The factorization here can be done without pivoting if ipiv is passed
+              in as a nullptr.
     @param[out]
     info      pointer to int. Array of batchCount integers on the GPU.\n
               If info[i] = 0, successful exit for factorization of A_i.
               If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
-              The factorization here can be done without pivoting if ipiv is passed
-              in as a nullptr.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of matrices in the batch.
@@ -13896,7 +13896,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     h
     general n-by-n matrices using partial pivoting with row interchanges. The LU factorization can
     be done without pivoting if ipiv is passed as a nullptr.
 
-    In the case that ipiv is null, the factorization of matrix \f$A_i\f$ in the batch has the form:
+    In the case that ipiv is not null, the factorization of matrix \f$A_i\f$ in the batch has the form:
 
     \f[
         A_i = P_iL_iU_i
@@ -14348,11 +14348,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetriBatched(hipblasHandle_t       handle
     ldc       int. ldc >= n.\n
               Specifies the leading dimension of C_i.
     @param[out]
-    info      pointer to int. Array of batch_count integers on the GPU.\n
+    info      pointer to int. Array of batchCount integers on the GPU.\n
               If info[i] = 0, successful exit for inversion of A_i.
               If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
     @param[in]
-    batch_count int. batch_count >= 0.\n
+    batchCount int. batchCount >= 0.\n
                 Number of matrices in the batch.
 
     ********************************************************************/
@@ -14528,7 +14528,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle
     lda       int. lda >= m.\n
               Specifies the leading dimension of matrices A_i.
     @param[out]
-    ipiv      array of pointers to type. Array on the GPU. Each pointer points to an array on the GPU
+    ipiv      array of pointers to type. Each pointer points to an array on the GPU
               of dimension min(m, n).\n
               Contains the vectors ipiv_i of corresponding Householder scalars.
     @param[out]
