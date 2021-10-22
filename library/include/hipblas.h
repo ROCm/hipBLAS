@@ -13722,41 +13722,46 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrf(
 /*! \brief SOLVER API
 
     \details
-    getrf computes the LU factorization of a general m-by-n matrix A
-    using partial pivoting with row interchanges.
+    getrf computes the LU factorization of a general n-by-n matrix A
+    using partial pivoting with row interchanges. The LU factorization can
+    be done without pivoting if ipiv is passed as a nullptr.
 
-    The factorization has the form
+    In the case that ipiv is not null, the factorization has the form:
 
     \f[
         A = PLU
     \f]
 
     where P is a permutation matrix, L is lower triangular with unit
-    diagonal elements (lower trapezoidal if m > n), and U is upper
-    triangular (upper trapezoidal if m < n).
+    diagonal elements, and U is upper triangular.
+
+    In the case that ipiv is null, the factorization is done without pivoting:
+
+    \f[
+        A = LU
+    \f]
 
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
-    m         int. m >= 0.\n
-              The number of rows of the matrix A.
-    @param[in]
     n         int. n >= 0.\n
-              The number of columns of the matrix A.
+              The number of columns and rows of the matrix A.
     @param[inout]
     A         pointer to type. Array on the GPU of dimension lda*n.\n
-              On entry, the m-by-n matrix A to be factored.
+              On entry, the n-by-n matrix A to be factored.
               On exit, the factors L and U from the factorization.
               The unit diagonal elements of L are not stored.
     @param[in]
-    lda       int. lda >= m.\n
+    lda       int. lda >= n.\n
               Specifies the leading dimension of A.
     @param[out]
-    ipiv      pointer to int. Array on the GPU of dimension min(m,n).\n
+    ipiv      pointer to int. Array on the GPU of dimension n.\n
               The vector of pivot indices. Elements of ipiv are 1-based indices.
-              For 1 <= i <= min(m,n), the row i of the
+              For 1 <= i <= n, the row i of the
               matrix was interchanged with row ipiv[i].
               Matrix P of the factorization can be derived from ipiv.
+              The factorization here can be done without pivoting if ipiv is passed
+              in as a nullptr.
     @param[out]
     info      pointer to a int on the GPU.\n
               If info = 0, successful exit.
@@ -13797,46 +13802,51 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle
 
     \details
     getrfBatched computes the LU factorization of a batch of general
-    m-by-n matrices using partial pivoting with row interchanges.
+    n-by-n matrices using partial pivoting with row interchanges. The LU factorization can
+    be done without pivoting if ipiv is passed as a nullptr.
 
-    The factorization of matrix \f$A_i\f$ in the batch has the form
+    In the case that ipiv is null, the factorization of matrix \f$A_i\f$ in the batch has the form:
 
     \f[
         A_i = P_iL_iU_i
     \f]
 
     where \f$P_i\f$ is a permutation matrix, \f$L_i\f$ is lower triangular with unit
-    diagonal elements (lower trapezoidal if m > n), and \f$U_i\f$ is upper
-    triangular (upper trapezoidal if m < n).
+    diagonal elements, and \f$U_i\f$ is upper triangular.
+
+    In the case that ipiv is null, the factorization is done without pivoting:
+
+    \f[
+        A_i = L_iU_i
+    \f]
 
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
-    m         int. m >= 0.\n
-              The number of rows of all matrices A_i in the batch.
-    @param[in]
     n         int. n >= 0.\n
-              The number of columns of all matrices A_i in the batch.
+              The number of columns and rows of all matrices A_i in the batch.
     @param[inout]
     A         array of pointers to type. Each pointer points to an array on the GPU of dimension lda*n.\n
-              On entry, the m-by-n matrices A_i to be factored.
+              On entry, the n-by-n matrices A_i to be factored.
               On exit, the factors L_i and U_i from the factorizations.
               The unit diagonal elements of L_i are not stored.
     @param[in]
-    lda       int. lda >= m.\n
+    lda       int. lda >= n.\n
               Specifies the leading dimension of matrices A_i.
     @param[out]
     ipiv      pointer to int. Array on the GPU.\n
               Contains the vectors of pivot indices ipiv_i (corresponding to A_i).
-              Dimension of ipiv_i is min(m,n).
+              Dimension of ipiv_i is n.
               Elements of ipiv_i are 1-based indices.
-              For each instance A_i in the batch and for 1 <= j <= min(m,n), the row j of the
+              For each instance A_i in the batch and for 1 <= j <= n, the row j of the
               matrix A_i was interchanged with row ipiv_i[j].
               Matrix P_i of the factorization can be derived from ipiv_i.
     @param[out]
     info      pointer to int. Array of batchCount integers on the GPU.\n
               If info[i] = 0, successful exit for factorization of A_i.
               If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
+              The factorization here can be done without pivoting if ipiv is passed
+              in as a nullptr.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of matrices in the batch.
@@ -13883,33 +13893,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     h
 
     \details
     getrfStridedBatched computes the LU factorization of a batch of
-    general m-by-n matrices using partial pivoting with row interchanges.
+    general n-by-n matrices using partial pivoting with row interchanges. The LU factorization can
+    be done without pivoting if ipiv is passed as a nullptr.
 
-    The factorization of matrix \f$A_i\f$ in the batch has the form
+    In the case that ipiv is null, the factorization of matrix \f$A_i\f$ in the batch has the form:
 
     \f[
         A_i = P_iL_iU_i
     \f]
 
     where \f$P_i\f$ is a permutation matrix, \f$L_i\f$ is lower triangular with unit
-    diagonal elements (lower trapezoidal if m > n), and \f$U_i\f$ is upper
-    triangular (upper trapezoidal if m < n).
+    diagonal elements, and \f$U_i\f$ is upper triangular.
+
+    In the case that ipiv is null, the factorization is done without pivoting:
+
+    \f[
+        A_i = L_iU_i
+    \f]
 
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
-    m         int. m >= 0.\n
-              The number of rows of all matrices A_i in the batch.
-    @param[in]
     n         int. n >= 0.\n
-              The number of columns of all matrices A_i in the batch.
+              The number of columns and rows of all matrices A_i in the batch.
     @param[inout]
     A         pointer to type. Array on the GPU (the size depends on the value of strideA).\n
-              On entry, the m-by-n matrices A_i to be factored.
+              On entry, the n-by-n matrices A_i to be factored.
               On exit, the factors L_i and U_i from the factorization.
               The unit diagonal elements of L_i are not stored.
     @param[in]
-    lda       int. lda >= m.\n
+    lda       int. lda >= n.\n
               Specifies the leading dimension of matrices A_i.
     @param[in]
     strideA   hipblasStride.\n
@@ -13918,15 +13931,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     h
     @param[out]
     ipiv      pointer to int. Array on the GPU (the size depends on the value of strideP).\n
               Contains the vectors of pivots indices ipiv_i (corresponding to A_i).
-              Dimension of ipiv_i is min(m,n).
+              Dimension of ipiv_i is n.
               Elements of ipiv_i are 1-based indices.
-              For each instance A_i in the batch and for 1 <= j <= min(m,n), the row j of the
+              For each instance A_i in the batch and for 1 <= j <= n, the row j of the
               matrix A_i was interchanged with row ipiv_i[j].
               Matrix P_i of the factorization can be derived from ipiv_i.
+              The factorization here can be done without pivoting if ipiv is passed
+              in as a nullptr.
     @param[in]
     strideP   hipblasStride.\n
               Stride from the start of one vector ipiv_i to the next one ipiv_(i+1).
-              There is no restriction for the value of strideP. Normal use case is strideP >= min(m,n).
+              There is no restriction for the value of strideP. Normal use case is strideP >= n.
     @param[out]
     info      pointer to int. Array of batchCount integers on the GPU.\n
               If info[i] = 0, successful exit for factorization of A_i.
@@ -14024,9 +14039,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
     ldb         int. ldb >= n.\n
                 The leading dimension of B.
     @param[out]
-    info      pointer to a int on the GPU.\n
+    info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = j > 0, U is singular. U[j,j] is the first zero pivot.
+              If info = j < 0, the j-th argument is invalid.
    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
                                              const hipblasOperation_t trans,
@@ -14080,17 +14095,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          han
     \details getrsBatched solves a batch of systems of n linear equations on n
     variables in its factorized forms.
 
-    For each instance j in the batch, it solves one of the following systems, depending on the value of trans:
+    For each instance i in the batch, it solves one of the following systems, depending on the value of trans:
 
     \f[
         \begin{array}{cl}
-        A_j X_j = B_j & \: \text{not transposed,}\\
-        A_j^T X_j = B_j & \: \text{transposed, or}\\
-        A_j^H X_j = B_j & \: \text{conjugate transposed.}
+        A_i X_i = B_i & \: \text{not transposed,}\\
+        A_i^T X_i = B_i & \: \text{transposed, or}\\
+        A_i^H X_i = B_i & \: \text{conjugate transposed.}
         \end{array}
     \f]
 
-    Matrix \f$A_j\f$ is defined by its triangular factors as returned by \ref hipblasSgetrfBatched "getrfBatched".
+    Matrix \f$A_i\f$ is defined by its triangular factors as returned by \ref hipblasSgetrfBatched "getrfBatched".
 
     @param[in]
     handle      hipblasHandle_t.
@@ -14099,31 +14114,31 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          han
                 Specifies the form of the system of equations of each instance in the batch.
     @param[in]
     n           int. n >= 0.\n
-                The order of the system, i.e. the number of columns and rows of all A_j matrices.
+                The order of the system, i.e. the number of columns and rows of all A_i matrices.
     @param[in]
     nrhs        int. nrhs >= 0.\n
                 The number of right hand sides, i.e., the number of columns
-                of all the matrices B_j.
+                of all the matrices B_i.
     @param[in]
     A           Array of pointers to type. Each pointer points to an array on the GPU of dimension lda*n.\n
-                The factors L_j and U_j of the factorization A_j = P_j*L_j*U_j returned by \ref hipblasSgetrfBatched "getrfBatched".
+                The factors L_i and U_i of the factorization A_i = P_i*L_i*U_i returned by \ref hipblasSgetrfBatched "getrfBatched".
     @param[in]
     lda         int. lda >= n.\n
-                The leading dimension of matrices A_j.
+                The leading dimension of matrices A_i.
     @param[in]
     ipiv        pointer to int. Array on the GPU.\n
-                Contains the vectors ipiv_j of pivot indices returned by \ref hipblasSgetrfBatched "getrfBatched".
+                Contains the vectors ipiv_i of pivot indices returned by \ref hipblasSgetrfBatched "getrfBatched".
     @param[in,out]
     B           Array of pointers to type. Each pointer points to an array on the GPU of dimension ldb*nrhs.\n
-                On entry, the right hand side matrices B_j.
-                On exit, the solution matrix X_j of each system in the batch.
+                On entry, the right hand side matrices B_i.
+                On exit, the solution matrix X_i of each system in the batch.
     @param[in]
     ldb         int. ldb >= n.\n
-                The leading dimension of matrices B_j.
+                The leading dimension of matrices B_i.
     @param[out]
-    info      pointer to int. Array of batchCount integers on the GPU.\n
-              If info[i] = 0, successful exit for factorization of A_i.
-              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
+    info      pointer to a int on the host.\n
+              If info = 0, successful exit.
+              If info = j < 0, the j-th argument is invalid.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of instances (systems) in the batch.
@@ -14192,17 +14207,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t      
     getrsStridedBatched solves a batch of systems of n linear equations
     on n variables in its factorized forms.
 
-    For each instance j in the batch, it solves one of the following systems, depending on the value of trans:
+    For each instance i in the batch, it solves one of the following systems, depending on the value of trans:
 
     \f[
         \begin{array}{cl}
-        A_j X_j = B_j & \: \text{not transposed,}\\
-        A_j^T X_j = B_j & \: \text{transposed, or}\\
-        A_j^H X_j = B_j & \: \text{conjugate transposed.}
+        A_i X_i = B_i & \: \text{not transposed,}\\
+        A_i^T X_i = B_i & \: \text{transposed, or}\\
+        A_i^H X_i = B_i & \: \text{conjugate transposed.}
         \end{array}
     \f]
 
-    Matrix \f$A_j\f$ is defined by its triangular factors as returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
+    Matrix \f$A_i\f$ is defined by its triangular factors as returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
 
     @param[in]
     handle      hipblasHandle_t.
@@ -14211,43 +14226,43 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t      
                 Specifies the form of the system of equations of each instance in the batch.
     @param[in]
     n           int. n >= 0.\n
-                The order of the system, i.e. the number of columns and rows of all A_j matrices.
+                The order of the system, i.e. the number of columns and rows of all A_i matrices.
     @param[in]
     nrhs        int. nrhs >= 0.\n
                 The number of right hand sides, i.e., the number of columns
-                of all the matrices B_j.
+                of all the matrices B_i.
     @param[in]
     A           pointer to type. Array on the GPU (the size depends on the value of strideA).\n
-                The factors L_j and U_j of the factorization A_j = P_j*L_j*U_j returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
+                The factors L_i and U_i of the factorization A_i = P_i*L_i*U_i returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
     @param[in]
     lda         int. lda >= n.\n
-                The leading dimension of matrices A_j.
+                The leading dimension of matrices A_i.
     @param[in]
     strideA     hipblasStride.\n
-                Stride from the start of one matrix A_j to the next one A_(j+1).
+                Stride from the start of one matrix A_i to the next one A_(i+1).
                 There is no restriction for the value of strideA. Normal use case is strideA >= lda*n.
     @param[in]
     ipiv        pointer to int. Array on the GPU (the size depends on the value of strideP).\n
-                Contains the vectors ipiv_j of pivot indices returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
+                Contains the vectors ipiv_i of pivot indices returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
     @param[in]
     strideP     hipblasStride.\n
-                Stride from the start of one vector ipiv_j to the next one ipiv_(j+1).
+                Stride from the start of one vector ipiv_i to the next one ipiv_(i+1).
                 There is no restriction for the value of strideP. Normal use case is strideP >= n.
     @param[in,out]
     B           pointer to type. Array on the GPU (size depends on the value of strideB).\n
-                On entry, the right hand side matrices B_j.
-                On exit, the solution matrix X_j of each system in the batch.
+                On entry, the right hand side matrices B_i.
+                On exit, the solution matrix X_i of each system in the batch.
     @param[in]
     ldb         int. ldb >= n.\n
-                The leading dimension of matrices B_j.
+                The leading dimension of matrices B_i.
     @param[in]
     strideB     hipblasStride.\n
-                Stride from the start of one matrix B_j to the next one B_(j+1).
+                Stride from the start of one matrix B_i to the next one B_(i+1).
                 There is no restriction for the value of strideB. Normal use case is strideB >= ldb*nrhs.
     @param[out]
-    info      pointer to int. Array of batchCount integers on the GPU.\n
-              If info[i] = 0, successful exit for factorization of A_i.
-              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
+    info      pointer to a int on the host.\n
+              If info = 0, successful exit.
+              If info = j < 0, the j-th argument is invalid.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of instances (systems) in the batch.
@@ -14298,43 +14313,46 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetriBatched(hipblasHandle_t       handle
                                                     int*                  info,
                                                     const int             batchCount);
 
-/*! \brief SOVLER API
+/*! \brief SOLVER API
 
     \details
-    getriBatched inverts a batch of general n-by-n matrices using
-    the LU factorization computed by \ref hipblasGetrfBatched "getrfBatched".
+    getriBatched computes the inverse \f$C_i = A_i^{-1}\f$ of a batch of general n-by-n matrices \f$A_i\f$.
 
-    The inverse of matrix \f$A_j\f$ in the batch is computed by solving the linear system
+    The inverse is computed by solving the linear system
 
     \f[
-        A_j^{-1} L_j = U_j^{-1}
+        A_i C_i = I
     \f]
 
-    where \f$L_j\f$ is the lower triangular factor of \f$A_j\f$ with unit diagonal elements, and \f$U_j\f$ is the
-    upper triangular factor.
+    where I is the identity matrix, and \f$A_i\f$ is factorized as \f$A_i = P_i  L_i  U_i\f$ as given by \ref hipblasSgetrfBatched "getrfBatched".
 
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
     n         int. n >= 0.\n
-              The number of rows and columns of all matrices A_j in the batch.
-    @param[inout]
+              The number of rows and columns of all matrices A_i in the batch.
+    @param[in]
     A         array of pointers to type. Each pointer points to an array on the GPU of dimension lda*n.\n
-              On entry, the factors L_j and U_j of the factorization A = P_j*L_j*U_j returned by
-              \ref hipblasGetrfBatched "getrfBatched".
-              On exit, the inverses of A_j if info[j] = 0; otherwise undefined.
+              The factors L_i and U_i of the factorization A_i = P_i*L_i*U_i returned by \ref hipblasSgetrfBatched "getrfBatched".
     @param[in]
     lda       int. lda >= n.\n
-              Specifies the leading dimension of matrices A_j.
+              Specifies the leading dimension of matrices A_i.
     @param[in]
     ipiv      pointer to int. Array on the GPU (the size depends on the value of strideP).\n
-              The pivot indices returned by \ref hipblasGetrfBatched "getrfBatched".
+              The pivot indices returned by \ref hipblasSgetrfBatched "getrfBatched".
+              ipiv can be passed in as a nullptr, this will assume that getrfBatched was called without partial pivoting.
     @param[out]
-    info      pointer to int. Array of batchCount integers on the GPU.\n
-              If info[j] = 0, successful exit for inversion of A_j.
-              If info[j] = i > 0, U_j is singular. U_j[i,i] is the first zero pivot.
+    C         array of pointers to type. Each pointer points to an array on the GPU of dimension ldc*n.\n
+              If info[i] = 0, the inverse of matrices A_i. Otherwise, undefined.
     @param[in]
-    batchCount int. batchCount >= 0.\n
+    ldc       int. ldc >= n.\n
+              Specifies the leading dimension of C_i.
+    @param[out]
+    info      pointer to int. Array of batch_count integers on the GPU.\n
+              If info[i] = 0, successful exit for inversion of A_i.
+              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
+    @param[in]
+    batch_count int. batch_count >= 0.\n
                 Number of matrices in the batch.
 
     ********************************************************************/
@@ -14376,8 +14394,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
 
     \details
     geqrf computes a QR factorization of a general m-by-n matrix A.
-
-    (This is the blocked version of the algorithm).
 
     The factorization has the form
 
@@ -14423,6 +14439,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
     @param[out]
     ipiv      pointer to type. Array on the GPU of dimension min(m,n).\n
               The Householder scalars.
+    @param[out]
+    info      pointer to a int on the host.\n
+              If info = 0, successful exit.
+              If info = j < 0, the j-th argument is invalid.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
@@ -14466,56 +14486,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle
     geqrfBatched computes the QR factorization of a batch of general
     m-by-n matrices.
 
-    (This is the blocked version of the algorithm).
-
-    The factorization of matrix \f$A_j\f$ in the batch has the form
+    The factorization of matrix \f$A_i\f$ in the batch has the form
 
     \f[
-        A_j = Q_j\left[\begin{array}{c}
-        R_j\\
+        A_i = Q_i\left[\begin{array}{c}
+        R_i\\
         0
         \end{array}\right]
     \f]
 
-    where \f$R_j\f$ is upper triangular (upper trapezoidal if m < n), and \f$Q_j\f$ is
+    where \f$R_i\f$ is upper triangular (upper trapezoidal if m < n), and \f$Q_i\f$ is
     a m-by-m orthogonal/unitary matrix represented as the product of Householder matrices
 
     \f[
-        Q_j = H_{j_1}H_{j_2}\cdots H_{j_k}, \quad \text{with} \: k = \text{min}(m,n)
+        Q_i = H_{i_1}H_{i_2}\cdots H_{i_k}, \quad \text{with} \: k = \text{min}(m,n)
     \f]
 
-    Each Householder matrix \f$H_{j_i}\f$ is given by
+    Each Householder matrix \f$H_{i_j}\f$ is given by
 
     \f[
-        H_{j_i} = I - \text{ipiv}_j[i] \cdot v_{j_i} v_{j_i}'
+        H_{i_j} = I - \text{ipiv}_i[j] \cdot v_{i_j} v_{i_j}'
     \f]
 
-    where the first i-1 elements of Householder vector \f$v_{j_i}\f$ are zero, and \f$v_{j_i}[i] = 1\f$.
+    where the first j-1 elements of Householder vector \f$v_{i_j}\f$ are zero, and \f$v_{i_j}[j] = 1\f$.
 
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
     m         int. m >= 0.\n
-              The number of rows of all the matrices A_j in the batch.
+              The number of rows of all the matrices A_i in the batch.
     @param[in]
     n         int. n >= 0.\n
-              The number of columns of all the matrices A_j in the batch.
+              The number of columns of all the matrices A_i in the batch.
     @param[inout]
     A         Array of pointers to type. Each pointer points to an array on the GPU of dimension lda*n.\n
-              On entry, the m-by-n matrices A_j to be factored.
+              On entry, the m-by-n matrices A_i to be factored.
               On exit, the elements on and above the diagonal contain the
-              factor R_j. The elements below the diagonal are the last m - i elements
-              of Householder vector v_(j_i).
+              factor R_i. The elements below the diagonal are the last m - j elements
+              of Householder vector v_(i_j).
     @param[in]
     lda       int. lda >= m.\n
-              Specifies the leading dimension of matrices A_j.
+              Specifies the leading dimension of matrices A_i.
     @param[out]
-    ipiv      pointer to type. Array on the GPU.\n
-              Contains the vectors ipiv_j of corresponding Householder scalars.
+    ipiv      array of pointers to type. Array on the GPU. Each pointer points to an array on the GPU
+              of dimension min(m, n).\n
+              Contains the vectors ipiv_i of corresponding Householder scalars.
     @param[out]
-    info      pointer to int. Array of batchCount integers on the GPU.\n
-              If info[i] = 0, successful exit for factorization of A_i.
-              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
+    info      pointer to a int on the host.\n
+              If info = 0, successful exit.
+              If info = k < 0, the k-th argument is invalid.
     @param[in]
     batchCount  int. batchCount >= 0.\n
                  Number of matrices in the batch.
@@ -14568,65 +14587,63 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t     h
     geqrfStridedBatched computes the QR factorization of a batch of
     general m-by-n matrices.
 
-    (This is the blocked version of the algorithm).
-
-    The factorization of matrix \f$A_j\f$ in the batch has the form
+    The factorization of matrix \f$A_i\f$ in the batch has the form
 
     \f[
-        A_j = Q_j\left[\begin{array}{c}
-        R_j\\
+        A_i = Q_i\left[\begin{array}{c}
+        R_i\\
         0
         \end{array}\right]
     \f]
 
-    where \f$R_j\f$ is upper triangular (upper trapezoidal if m < n), and \f$Q_j\f$ is
+    where \f$R_i\f$ is upper triangular (upper trapezoidal if m < n), and \f$Q_i\f$ is
     a m-by-m orthogonal/unitary matrix represented as the product of Householder matrices
 
     \f[
-        Q_j = H_{j_1}H_{j_2}\cdots H_{j_k}, \quad \text{with} \: k = \text{min}(m,n)
+        Q_i = H_{i_1}H_{i_2}\cdots H_{i_k}, \quad \text{with} \: k = \text{min}(m,n)
     \f]
 
-    Each Householder matrix \f$H_{j_i}\f$ is given by
+    Each Householder matrix \f$H_{i_j}\f$ is given by
 
     \f[
-        H_{j_i} = I - \text{ipiv}_j[i] \cdot v_{j_i} v_{j_i}'
+        H_{i_j} = I - \text{ipiv}_j[j] \cdot v_{i_j} v_{i_j}'
     \f]
 
-    where the first i-1 elements of Householder vector \f$v_{j_i}\f$ are zero, and \f$v_{j_i}[i] = 1\f$.
+    where the first j-1 elements of Householder vector \f$v_{i_j}\f$ are zero, and \f$v_{i_j}[j] = 1\f$.
 
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
     m         int. m >= 0.\n
-              The number of rows of all the matrices A_j in the batch.
+              The number of rows of all the matrices A_i in the batch.
     @param[in]
     n         int. n >= 0.\n
-              The number of columns of all the matrices A_j in the batch.
+              The number of columns of all the matrices A_i in the batch.
     @param[inout]
     A         pointer to type. Array on the GPU (the size depends on the value of strideA).\n
-              On entry, the m-by-n matrices A_j to be factored.
+              On entry, the m-by-n matrices A_i to be factored.
               On exit, the elements on and above the diagonal contain the
-              factor R_j. The elements below the diagonal are the last m - i elements
-              of Householder vector v_(j_i).
+              factor R_i. The elements below the diagonal are the last m - j elements
+              of Householder vector v_(i_j).
     @param[in]
     lda       int. lda >= m.\n
-              Specifies the leading dimension of matrices A_j.
+              Specifies the leading dimension of matrices A_i.
     @param[in]
     strideA   hipblasStride.\n
-              Stride from the start of one matrix A_j to the next one A_(j+1).
+              Stride from the start of one matrix A_i to the next one A_(i+1).
               There is no restriction for the value of strideA. Normal use case is strideA >= lda*n.
     @param[out]
     ipiv      pointer to type. Array on the GPU (the size depends on the value of strideP).\n
-              Contains the vectors ipiv_j of corresponding Householder scalars.
+              Contains the vectors ipiv_i of corresponding Householder scalars.
     @param[in]
     strideP   hipblasStride.\n
-              Stride from the start of one vector ipiv_j to the next one ipiv_(j+1).
+              Stride from the start of one vector ipiv_i to the next one ipiv_(i+1).
               There is no restriction for the value
               of strideP. Normal use is strideP >= min(m,n).
     @param[out]
-    info      pointer to int. Array of batchCount integers on the GPU.\n
-              If info[i] = 0, successful exit for factorization of A_i.
-              If info[i] = j > 0, U_i is singular. U_i[j,j] is the first zero pivot.
+    info      pointer to a int on the host.\n
+              If info = 0, successful exit.
+              If info = k < 0, the k-th argument is invalid.
     @param[in]
     batchCount  int. batchCount >= 0.\n
                  Number of matrices in the batch.
