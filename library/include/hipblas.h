@@ -15917,7 +15917,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
               matrix dimension k.
     @param[in]
     alpha     [const void *]
-              device pointer or host pointer specifying the scalar alpha. Same datatype as compute_type.
+              device pointer or host pointer specifying the scalar alpha. Same datatype as computeType.
     @param[in]
     a         [void *]
               device pointer storing matrix A.
