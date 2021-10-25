@@ -6,7 +6,7 @@
 - Added option ROCM_MATHLIBS_API_USE_HIP_COMPLEX to opt-in to use hipFloatComplex and hipDoubleComplex
 - Added compilation warning for future trmm changes
 - Added documentation to hipblas.h
-- Added npvt options for getrf and getri when ipiv is nullptr
+- Added option to forgo pivoting for getrf and getri when ipiv is nullptr
 - Added code coverage option
 
 ### Fixed
