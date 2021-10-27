@@ -67,8 +67,8 @@ endif( )
 
 # Package specific CPACK vars
 if( NOT USE_CUDA )
-    set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 2.42.0), rocsolver (>= 3.16.0)" )
-    set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 2.42.0, rocsolver >= 3.16.0" )
+    set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 2.43.0), rocsolver (>= 3.17.0)" )
+    set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 2.43.0, rocsolver >= 3.17.0" )
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md" )
