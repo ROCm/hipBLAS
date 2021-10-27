@@ -269,12 +269,13 @@ public:
         return {double(*this), double(*this)};
     }
 
-    // Random complex integers
-    explicit operator hipblasInt8Complex()
-    {
-        return static_cast<int8_t>(
-            std::uniform_int_distribution<unsigned short>(1, 3)(hipblas_rng));
-    }
+    // // Currently not needed
+    // // Random complex integers
+    // explicit operator hipblasInt8Complex()
+    // {
+    //     return static_cast<int8_t>(
+    //         std::uniform_int_distribution<unsigned short>(1, 3)(hipblas_rng));
+    // }
 };
 
 /* ============================================================================================ */
