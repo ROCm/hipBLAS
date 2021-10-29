@@ -53,6 +53,8 @@ target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx
 
 if(LINK_BLIS)
   target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
+else()
+  target_link_libraries( hipblas-bench PRIVATE blas )
 endif()
 
 # Internal header includes

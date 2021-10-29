@@ -150,6 +150,8 @@ target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack GTest::GTe
 
 if(LINK_BLIS)
   target_link_libraries( hipblas-test PRIVATE ${BLIS_LIBRARY} )
+else()
+  target_link_libraries( hipblas-test PRIVATE blas )
 endif()
 
 # need mf16c flag for float->half convertion
