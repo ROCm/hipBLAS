@@ -7,10 +7,7 @@ find_package( Threads REQUIRED )
 
 # Linking lapack library requires fortran flags
 enable_language( Fortran )
-find_package( cblas CONFIG REQUIRED )
-if( NOT cblas_FOUND )
-  message( FATAL_ERROR "cblas is a required dependency and is not found;  try adding cblas path to CMAKE_PREFIX_PATH" )
-endif( )
+find_package( cblas REQUIRED CONFIG )
 
 if(LINK_BLIS)
   set( BLIS_CPP ../common/blis_interface.cpp )
@@ -32,11 +29,7 @@ if(LINK_BLIS)
 endif()
 
 if( NOT TARGET hipblas )
-  find_package( hipblas CONFIG PATHS /opt/rocm/hipblas )
-
-  if( NOT hipblas_FOUND )
-    message( FATAL_ERROR "hipBLAS is a required dependency and is not found; try adding hipblas path to CMAKE_PREFIX_PATH")
-  endif( )
+  find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
 endif( )
 
 find_package( GTest REQUIRED )
