@@ -123,8 +123,10 @@ else( )
   target_link_libraries( hipblas-bench PRIVATE ${CUDA_LIBRARIES} Threads::Threads )
 endif( )
 
-set_target_properties( hipblas-bench PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
-set_target_properties( hipblas-bench PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
-#add_dependencies( hipblas-bench hipblas-bench-common )
+set_target_properties( hipblas-bench PROPERTIES
+  DEBUG_POSTFIX "-d"
+  CXX_EXTENSIONS OFF
+  RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
+)
 
 target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ROCM_USE_FLOAT16 )
