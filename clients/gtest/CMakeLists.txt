@@ -13,7 +13,6 @@ if( NOT TARGET hipblas )
 endif( )
 
 find_package( GTest REQUIRED )
-include_directories(${GTEST_INCLUDE_DIRS})
 
 set(hipblas_test_source
   hipblas_gtest_main.cpp
@@ -138,7 +137,6 @@ target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 # External header includes included as SYSTEM files
 target_include_directories( hipblas-test
   SYSTEM PRIVATE
-    $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
     ${ROCM_PATH}/hsa/include
@@ -148,7 +146,7 @@ if (NOT WIN32)
     target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
 endif()
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} )
+target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack GTest::GTest )
 
 if(LINK_BLIS)
   target_link_libraries( hipblas-test PRIVATE ${BLIS_LIBRARY} )

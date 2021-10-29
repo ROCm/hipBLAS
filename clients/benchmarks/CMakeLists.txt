@@ -32,9 +32,6 @@ if( NOT TARGET hipblas )
   find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
 endif( )
 
-find_package( GTest REQUIRED )
-include_directories(${GTEST_INCLUDE_DIRS})
-
 set( hipblas_benchmark_common
       ../common/utility.cpp
       ../common/cblas_interface.cpp
