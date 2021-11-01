@@ -24,27 +24,22 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
     int incx        = argus.incx;
     int incy        = argus.incy;
     int batch_count = argus.batch_count;
-    int abs_incx    = incx < 0 ? -incx : incx;
     int abs_incy    = incy < 0 ? -incy : incy;
+
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || !incx || !incy || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(!batch_count)
-    {
+        CHECK_HIPBLAS_ERROR(
+            hipblasAxpyBatchedFn(handle, N, nullptr, nullptr, incx, nullptr, incy, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * abs_incx;
-    int sizeY = N * abs_incy;
-    T   alpha = argus.alpha;
+    T alpha = argus.get_alpha<T>();
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);
@@ -71,28 +66,35 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dy_host.transfer_from(hy_host));
     CHECK_HIP_ERROR(dy_device.transfer_from(hy_device));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedFn(handle,
-                                             N,
-                                             d_alpha,
-                                             dx.ptr_on_device(),
-                                             incx,
-                                             dy_device.ptr_on_device(),
-                                             incy,
-                                             batch_count));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedFn(
-        handle, N, &alpha, dx.ptr_on_device(), incx, dy_host.ptr_on_device(), incy, batch_count));
-
-    CHECK_HIP_ERROR(hy_host.transfer_from(dy_host));
-    CHECK_HIP_ERROR(hy_device.transfer_from(dy_device));
 
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedFn(handle,
+                                                 N,
+                                                 d_alpha,
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 dy_device.ptr_on_device(),
+                                                 incy,
+                                                 batch_count));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedFn(handle,
+                                                 N,
+                                                 &alpha,
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 dy_host.ptr_on_device(),
+                                                 incy,
+                                                 batch_count));
+
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy_host));
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy_device));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -105,13 +107,15 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, abs_incx, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy_host);
             unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy_device);
         }
         if(argus.norm_check)
         {
-            norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host, batch_count);
-            norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device, batch_count);
+            hipblas_error_host
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host, batch_count);
+            hipblas_error_device
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device, batch_count);
         }
 
     } // end of if unit check

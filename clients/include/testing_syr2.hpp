@@ -33,14 +33,19 @@ hipblasStatus_t testing_syr2(const Arguments& argus)
     size_t x_size   = abs_incx * size_t(N);
     size_t y_size   = abs_incy * size_t(N);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || lda < 1 || lda < N || incx == 0 || incy == 0)
+    bool invalid_size = N < 0 || !incx || !incy || lda < N || lda < 1;
+    if(invalid_size || !N)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual
+            = hipblasSyr2Fn(handle, uplo, N, nullptr, nullptr, incx, nullptr, incy, nullptr, lda);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
-    if(incx < 0 || incy < 0)
-        return HIPBLAS_STATUS_SUCCESS;
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
@@ -57,8 +62,7 @@ hipblasStatus_t testing_syr2(const Arguments& argus)
 
     T h_alpha = argus.get_alpha<T>();
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     srand(1);
@@ -73,22 +77,22 @@ hipblasStatus_t testing_syr2(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * y_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasSyr2Fn(handle, uplo, N, &h_alpha, dx, incx, dy, incy, dA, lda));
-
-    CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasSyr2Fn(handle, uplo, N, d_alpha, dx, incx, dy, incy, dA, lda));
-
-    CHECK_HIP_ERROR(hipMemcpy(hA_device.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasSyr2Fn(handle, uplo, N, &h_alpha, dx, incx, dy, incy, dA, lda));
+
+        CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasSyr2Fn(handle, uplo, N, d_alpha, dx, incx, dy, incy, dA, lda));
+
+        CHECK_HIP_ERROR(hipMemcpy(hA_device.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */

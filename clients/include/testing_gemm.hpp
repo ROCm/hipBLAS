@@ -32,21 +32,8 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
 
-    float alpha_float = argus.alpha;
-    float beta_float  = argus.beta;
-
-    T h_alpha, h_beta;
-
-    if(is_same<T, hipblasHalf>::value)
-    {
-        h_alpha = float_to_half(alpha_float);
-        h_beta  = float_to_half(beta_float);
-    }
-    else
-    {
-        h_alpha = static_cast<T>(alpha_float);
-        h_beta  = static_cast<T>(beta_float);
-    }
+    T h_alpha = argus.get_alpha<T>();
+    T h_beta  = argus.get_beta<T>();
 
     int A_row, A_col, B_row, B_col;
 
@@ -115,26 +102,26 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-
-    // library interface
-    CHECK_HIPBLAS_ERROR(hipblasGemmFn(
-        handle, transA, transB, M, N, K, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
-
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * ldc * N, hipMemcpyHostToDevice));
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(
-        hipblasGemmFn(handle, transA, transB, M, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
-    CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+
+        // library interface
+        CHECK_HIPBLAS_ERROR(hipblasGemmFn(
+            handle, transA, transB, M, N, K, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
+
+        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * ldc * N, hipMemcpyHostToDevice));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGemmFn(
+            handle, transA, transB, M, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
+        CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -172,7 +159,10 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        // gemm has better performance in host mode. In rocBLAS in device mode
+        // we need to copy alpha and beta to the host.
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -181,7 +171,7 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGemmFn(
-                handle, transA, transB, M, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
+                handle, transA, transB, M, N, K, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

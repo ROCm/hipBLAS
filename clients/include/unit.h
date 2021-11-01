@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -53,18 +53,18 @@ void unit_check_error(T error, T tolerance)
 #endif
 }
 
-template <typename T>
+template <typename T, typename Tex = T>
 void unit_check_nrm2(T cpu_result, T gpu_result, int vector_length)
 {
-    T allowable_error = vector_length * std::numeric_limits<T>::epsilon() * cpu_result;
+    T allowable_error = vector_length * std::numeric_limits<Tex>::epsilon() * cpu_result;
     if(allowable_error == 0)
-        allowable_error = vector_length * std::numeric_limits<T>::epsilon();
+        allowable_error = vector_length * std::numeric_limits<Tex>::epsilon();
 #ifdef GOOGLE_TEST
     ASSERT_NEAR(cpu_result, gpu_result, allowable_error);
 #endif
 }
 
-template <typename T>
+template <typename T, typename Tex = T>
 void unit_check_nrm2(int            batch_count,
                      host_vector<T> cpu_result,
                      host_vector<T> gpu_result,
@@ -72,13 +72,25 @@ void unit_check_nrm2(int            batch_count,
 {
     for(int b = 0; b < batch_count; b++)
     {
-        T allowable_error = vector_length * std::numeric_limits<T>::epsilon() * cpu_result[b];
+        T allowable_error = vector_length * std::numeric_limits<Tex>::epsilon() * cpu_result[b];
         if(allowable_error == 0)
-            allowable_error = vector_length * std::numeric_limits<T>::epsilon();
+            allowable_error = vector_length * std::numeric_limits<Tex>::epsilon();
 #ifdef GOOGLE_TEST
         ASSERT_NEAR(cpu_result[b], gpu_result[b], allowable_error);
 #endif
     }
+}
+
+template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
+constexpr double get_epsilon()
+{
+    return std::numeric_limits<T>::epsilon();
+}
+
+template <typename T, std::enable_if_t<+is_complex<T>, int> = 0>
+constexpr auto get_epsilon()
+{
+    return get_epsilon<decltype(std::real(T{}))>();
 }
 
 #endif

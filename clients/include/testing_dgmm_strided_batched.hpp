@@ -32,8 +32,9 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    k            = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
+    int           abs_incx = incx >= 0 ? incx : -incx;
     hipblasStride stride_A = size_t(lda) * N * stride_scale;
-    hipblasStride stride_x = size_t(incx) * k * stride_scale;
+    hipblasStride stride_x = size_t(abs_incx) * k * stride_scale;
     hipblasStride stride_C = size_t(ldc) * N * stride_scale;
     if(!stride_x)
         stride_x = 1;
@@ -42,11 +43,30 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
     size_t C_size = size_t(stride_C) * batch_count;
     size_t X_size = size_t(stride_x) * batch_count;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < M || ldc < M || batch_count < 0)
+    bool invalid_size = M < 0 || N < 0 || ldc < M || lda < M || batch_count < 0;
+    if(invalid_size || !N || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual = hipblasDgmmStridedBatchedFn(handle,
+                                                             side,
+                                                             M,
+                                                             N,
+                                                             nullptr,
+                                                             lda,
+                                                             stride_A,
+                                                             nullptr,
+                                                             incx,
+                                                             stride_x,
+                                                             nullptr,
+                                                             ldc,
+                                                             stride_C,
+                                                             batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -62,13 +82,12 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
     device_vector<T> dx(X_size);
     device_vector<T> dC(C_size);
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, M, N, lda, stride_A, batch_count);
-    hipblas_init<T>(hx, 1, k, incx, stride_x, batch_count);
+    hipblas_init<T>(hx, 1, k, abs_incx, stride_x, batch_count);
     hipblas_init<T>(hC, M, N, ldc, stride_C, batch_count);
     hA_copy = hA;
     hx_copy = hx;
@@ -80,22 +99,35 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasDgmmStridedBatchedFn(
-        handle, side, M, N, dA, lda, stride_A, dx, incx, stride_x, dC, ldc, stride_C, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hC_1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasDgmmStridedBatchedFn(handle,
+                                                        side,
+                                                        M,
+                                                        N,
+                                                        dA,
+                                                        lda,
+                                                        stride_A,
+                                                        dx,
+                                                        incx,
+                                                        stride_x,
+                                                        dC,
+                                                        ldc,
+                                                        stride_C,
+                                                        batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hC_1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */
 
         // reference calculation
+        ptrdiff_t shift_x = incx < 0 ? -ptrdiff_t(incx) * (N - 1) : 0;
         for(int b = 0; b < batch_count; b++)
         {
             auto hC_goldb = hC_gold + b * stride_C;
@@ -107,11 +139,13 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
                 {
                     if(HIPBLAS_SIDE_RIGHT == side)
                     {
-                        hC_goldb[i1 + i2 * ldc] = hA_copyb[i1 + i2 * lda] * hx_copyb[i2 * incx];
+                        hC_goldb[i1 + i2 * ldc]
+                            = hA_copyb[i1 + i2 * lda] * hx_copyb[shift_x + i2 * incx];
                     }
                     else
                     {
-                        hC_goldb[i1 + i2 * ldc] = hA_copyb[i1 + i2 * lda] * hx_copyb[i1 * incx];
+                        hC_goldb[i1 + i2 * ldc]
+                            = hA_copyb[i1 + i2 * lda] * hx_copyb[shift_x + i1 * incx];
                     }
                 }
             }

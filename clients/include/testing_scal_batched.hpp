@@ -27,23 +27,20 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     int norm_check  = argus.norm_check;
     int timing      = argus.timing;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || batch_count < 0)
+    if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
+        CHECK_HIPBLAS_ERROR(hipblasScalBatchedFn(handle, N, nullptr, nullptr, incx, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int    sizeX         = N * incx;
-    U      alpha         = argus.alpha;
+    size_t sizeX         = size_t(N) * incx;
+    U      alpha         = argus.get_alpha<U>();
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);
@@ -60,17 +57,17 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dz.transfer_from(hx));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(
-        hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hx.transfer_from(dx));
-
     if(unit_check || norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(
+            hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hx.transfer_from(dx));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */

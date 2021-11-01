@@ -28,26 +28,22 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
     int norm_check  = argus.norm_check;
     int timing      = argus.timing;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0 || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
+        CHECK_HIPBLAS_ERROR(
+            hipblasSwapBatchedFn(handle, N, nullptr, incx, nullptr, incy, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
-    int sizeY = N * incy;
-
-    int device_pointer = 1;
+    int abs_incx = incx >= 0 ? incx : -incx;
+    int abs_incy = incy >= 0 ? incy : -incy;
 
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);
@@ -69,17 +65,17 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSwapBatchedFn(
-        handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
-
-    CHECK_HIP_ERROR(hx.transfer_from(dx));
-    CHECK_HIP_ERROR(hy.transfer_from(dy));
-
     if(unit_check || norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSwapBatchedFn(
+            handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
+
+        CHECK_HIP_ERROR(hx.transfer_from(dx));
+        CHECK_HIP_ERROR(hy.transfer_from(dy));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
@@ -90,14 +86,14 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
 
         if(unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incy, hy_cpu, hy);
-            unit_check_general<T>(1, N, batch_count, incx, hx_cpu, hx);
+            unit_check_general<T>(1, N, batch_count, abs_incx, hx_cpu, hx);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy);
         }
         if(norm_check)
         {
             hipblas_error
-                = std::max(norm_check_general<T>('F', 1, N, incx, hx_cpu, hx, batch_count),
-                           norm_check_general<T>('F', 1, N, incy, hy_cpu, hy, batch_count));
+                = std::max(norm_check_general<T>('F', 1, N, abs_incx, hx_cpu, hx, batch_count),
+                           norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy, batch_count));
         }
 
     } // end of if unit/norm check

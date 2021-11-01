@@ -15,6 +15,7 @@
 #include "hipblas_datatype2string.hpp"
 #include <cmath>
 #include <immintrin.h>
+#include <iostream>
 #include <random>
 #include <type_traits>
 #include <vector>
@@ -268,12 +269,13 @@ public:
         return {double(*this), double(*this)};
     }
 
-    // Random complex integers
-    explicit operator hipblasInt8Complex()
-    {
-        return static_cast<int8_t>(
-            std::uniform_int_distribution<unsigned short>(1, 3)(hipblas_rng));
-    }
+    // // Currently not needed
+    // // Random complex integers
+    // explicit operator hipblasInt8Complex()
+    // {
+    //     return static_cast<int8_t>(
+    //         std::uniform_int_distribution<unsigned short>(1, 3)(hipblas_rng));
+    // }
 };
 
 /* ============================================================================================ */
@@ -369,6 +371,9 @@ template <typename T>
 void hipblas_packInt8(
     std::vector<T>& A, size_t M, size_t N, size_t lda, size_t batch_count = 1, size_t stride_a = 0)
 {
+    if(N % 4 != 0)
+        std::cerr << "ERROR: dimension must be a multiple of 4 in order to pack" << std::endl;
+
     std::vector<T> temp(A);
     for(size_t b = 0; b < batch_count; b++)
         for(size_t colBase = 0; colBase < N; colBase += 4)
@@ -376,6 +381,18 @@ void hipblas_packInt8(
                 for(size_t colOffset = 0; colOffset < 4; colOffset++)
                     A[(colBase * lda + 4 * row) + colOffset + (stride_a * b)]
                         = temp[(colBase + colOffset) * lda + row + (stride_a * b)];
+}
+
+template <typename T>
+void hipblas_packInt8(T* A, const T* temp, size_t M, size_t N, size_t lda)
+{
+    if(N % 4 != 0)
+        std::cerr << "ERROR: dimension must be a multiple of 4 in order to pack" << std::endl;
+
+    for(size_t colBase = 0; colBase < N; colBase += 4)
+        for(size_t row = 0; row < lda; row++)
+            for(size_t colOffset = 0; colOffset < 4; colOffset++)
+                A[(colBase * lda + 4 * row) + colOffset] = temp[(colBase + colOffset) * lda + row];
 }
 
 /* ============================================================================================ */

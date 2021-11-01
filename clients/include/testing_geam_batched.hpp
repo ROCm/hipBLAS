@@ -108,57 +108,57 @@ hipblasStatus_t testing_geam_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    {
-        // &h_alpha and &h_beta are host pointers
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGeamBatchedFn(handle,
-                                                 transA,
-                                                 transB,
-                                                 M,
-                                                 N,
-                                                 &h_alpha,
-                                                 dA.ptr_on_device(),
-                                                 lda,
-                                                 &h_beta,
-                                                 dB.ptr_on_device(),
-                                                 ldb,
-                                                 dC.ptr_on_device(),
-                                                 ldc,
-                                                 batch_count));
-
-        CHECK_HIP_ERROR(hC1.transfer_from(dC));
-    }
-    {
-        CHECK_HIP_ERROR(dC.transfer_from(hC2));
-
-        // d_alpha and d_beta are device pointers
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasGeamBatchedFn(handle,
-                                                 transA,
-                                                 transB,
-                                                 M,
-                                                 N,
-                                                 d_alpha,
-                                                 dA.ptr_on_device(),
-                                                 lda,
-                                                 d_beta,
-                                                 dB.ptr_on_device(),
-                                                 ldb,
-                                                 dC.ptr_on_device(),
-                                                 ldc,
-                                                 batch_count));
-
-        CHECK_HIP_ERROR(hC2.transfer_from(dC));
-    }
-
-    /* =====================================================================
-            CPU BLAS
-    =================================================================== */
     if(argus.norm_check || argus.unit_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        {
+            // &h_alpha and &h_beta are host pointers
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+            CHECK_HIPBLAS_ERROR(hipblasGeamBatchedFn(handle,
+                                                     transA,
+                                                     transB,
+                                                     M,
+                                                     N,
+                                                     &h_alpha,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     &h_beta,
+                                                     dB.ptr_on_device(),
+                                                     ldb,
+                                                     dC.ptr_on_device(),
+                                                     ldc,
+                                                     batch_count));
+
+            CHECK_HIP_ERROR(hC1.transfer_from(dC));
+        }
+        {
+            CHECK_HIP_ERROR(dC.transfer_from(hC2));
+
+            // d_alpha and d_beta are device pointers
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+            CHECK_HIPBLAS_ERROR(hipblasGeamBatchedFn(handle,
+                                                     transA,
+                                                     transB,
+                                                     M,
+                                                     N,
+                                                     d_alpha,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     d_beta,
+                                                     dB.ptr_on_device(),
+                                                     ldb,
+                                                     dC.ptr_on_device(),
+                                                     ldc,
+                                                     batch_count));
+
+            CHECK_HIP_ERROR(hC2.transfer_from(dC));
+        }
+
+        /* =====================================================================
+                CPU BLAS
+        =================================================================== */
         // reference calculation
         for(int b = 0; b < batch_count; b++)
         {

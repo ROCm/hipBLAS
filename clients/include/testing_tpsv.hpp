@@ -34,11 +34,18 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     size_t size_AP  = size_t(N) * (N + 1) / 2;
     size_t size_x   = abs_incx * size_t(N);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx == 0)
+    bool invalid_size = N < 0 || !incx;
+    if(invalid_size || !N)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual
+            = hipblasTpsvFn(handle, uplo, transA, diag, N, nullptr, nullptr, incx);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -54,8 +61,7 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     device_vector<T> dAP(size_AP);
     device_vector<T> dx_or_b(size_x);
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
     srand(1);

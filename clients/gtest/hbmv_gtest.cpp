@@ -55,7 +55,7 @@ const vector<vector<int>> matrix_size_range = {
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 1}
 const vector<vector<int>> incx_incy_range = {
-    {1, 1}, {0, -1}, {2, 1},
+    {2, 1}, {0, -1}, {-1, -1},
     //              {10, 100},
 };
 
@@ -106,7 +106,6 @@ Arguments setup_hbmv_arguments(hbmv_tuple tup)
     char           transA       = std::get<3>(tup);
     double         stride_scale = std::get<4>(tup);
     int            batch_count  = std::get<5>(tup);
-    bool           fortran      = std::get<6>(tup);
 
     Arguments arg;
 

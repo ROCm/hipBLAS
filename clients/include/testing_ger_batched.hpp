@@ -29,26 +29,25 @@ hipblasStatus_t testing_ger_batched(const Arguments& argus)
     int lda         = argus.lda;
     int batch_count = argus.batch_count;
 
-    int A_size = lda * N;
-    int x_size = M * incx;
-    int y_size = N * incy;
+    size_t A_size = size_t(lda) * N;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     T h_alpha = argus.get_alpha<T>();
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < 0 || incx <= 0 || incy <= 0 || batch_count < 0)
+    bool invalid_size = M < 0 || N < 0 || !incx || !incy || lda < M || lda < 1 || batch_count < 0;
+    if(invalid_size || !M || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual = hipblasGerBatchedFn(
+            handle, M, N, nullptr, nullptr, incx, nullptr, incy, nullptr, lda, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(A_size, 1, batch_count);
@@ -80,42 +79,42 @@ hipblasStatus_t testing_ger_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dy.transfer_from(hy));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasGerBatchedFn(handle,
-                                            M,
-                                            N,
-                                            (T*)&h_alpha,
-                                            dx.ptr_on_device(),
-                                            incx,
-                                            dy.ptr_on_device(),
-                                            incy,
-                                            dA.ptr_on_device(),
-                                            lda,
-                                            batch_count));
-
-    CHECK_HIP_ERROR(hA_host.transfer_from(dA));
-    CHECK_HIP_ERROR(dA.transfer_from(hA));
-
-    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasGerBatchedFn(handle,
-                                            M,
-                                            N,
-                                            d_alpha,
-                                            dx.ptr_on_device(),
-                                            incx,
-                                            dy.ptr_on_device(),
-                                            incy,
-                                            dA.ptr_on_device(),
-                                            lda,
-                                            batch_count));
-
-    CHECK_HIP_ERROR(hA_device.transfer_from(dA));
-
     if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasGerBatchedFn(handle,
+                                                M,
+                                                N,
+                                                (T*)&h_alpha,
+                                                dx.ptr_on_device(),
+                                                incx,
+                                                dy.ptr_on_device(),
+                                                incy,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                batch_count));
+
+        CHECK_HIP_ERROR(hA_host.transfer_from(dA));
+        CHECK_HIP_ERROR(dA.transfer_from(hA));
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGerBatchedFn(handle,
+                                                M,
+                                                N,
+                                                d_alpha,
+                                                dx.ptr_on_device(),
+                                                incx,
+                                                dy.ptr_on_device(),
+                                                incy,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                batch_count));
+
+        CHECK_HIP_ERROR(hA_device.transfer_from(dA));
+
         /* =====================================================================
            CPU BLAS
         =================================================================== */
@@ -171,7 +170,7 @@ hipblasStatus_t testing_ger_batched(const Arguments& argus)
             std::cout,
             argus,
             gpu_time_used,
-            ger_gflop_count<T, CONJ>(M, N),
+            ger_gflop_count<T>(M, N),
             ger_gbyte_count<T>(M, N),
             hipblas_error_host,
             hipblas_error_device);

@@ -50,7 +50,7 @@ const vector<int> matrix_size_range = {
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 1}
 const vector<vector<int>> incx_incy_range = {
-    {1, 1}, {0, -1}, {2, 1},
+    {2, 1}, {0, -1}, {-1, -1},
     //              {10, 100},
 };
 
