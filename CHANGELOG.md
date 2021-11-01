@@ -1,5 +1,10 @@
 # Change Log for hipBLAS
 
+## (Unreleased) hipBLAS
+### Fixed
+- Added hipblasVersionMinor define. hipblaseVersionMinor remains defined
+  for backwards compatibility.
+
 ## (Unreleased) hipBLAS 0.49.0
 ### Added
 - Added rocSOLVER functions to hipblas-bench
