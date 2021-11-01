@@ -15,9 +15,8 @@
 - Allowing negative increments in hipblas-bench
 - Removed boost dependency
 
-## [hipBLAS 0.48.0 for ROCm 4.5.0]
+## hipBLAS 0.48.0 for ROCm 4.5.0
 ### Added
-- Added HIPBLAS_STATUS_UNKNOWN for unsupported backend status codes
 - Added more support for hipblas-bench
 - Added HIPBLAS_STATUS_UNKNOWN for unsupported backend status codes
 
