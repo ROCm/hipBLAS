@@ -31,21 +31,8 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
     int ldb = argus.ldb;
     int ldc = argus.ldc;
 
-    float alpha_float = argus.alpha;
-    float beta_float  = argus.beta;
-
-    T h_alpha, h_beta;
-
-    if(is_same<T, hipblasHalf>::value)
-    {
-        h_alpha = float_to_half(alpha_float);
-        h_beta  = float_to_half(beta_float);
-    }
-    else
-    {
-        h_alpha = static_cast<T>(alpha_float);
-        h_beta  = static_cast<T>(beta_float);
-    }
+    T h_alpha = argus.get_alpha<T>();
+    T h_beta  = argus.get_beta<T>();
 
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
@@ -231,7 +218,10 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+
+        // gemm has better performance in host mode. In rocBLAS in device mode
+        // we need to copy alpha and beta to the host.
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         int runs = argus.cold_iters + argus.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -245,12 +235,12 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
                                                      M,
                                                      N,
                                                      K,
-                                                     d_alpha,
+                                                     &h_alpha,
                                                      (const T* const*)dA.ptr_on_device(),
                                                      lda,
                                                      (const T* const*)dB.ptr_on_device(),
                                                      ldb,
-                                                     d_beta,
+                                                     &h_beta,
                                                      dC.ptr_on_device(),
                                                      ldc,
                                                      batch_count));

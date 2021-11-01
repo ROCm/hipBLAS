@@ -23,22 +23,24 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    int unit_check = argus.unit_check;
-    int timing     = argus.timing;
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0)
+    if(N <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(incx < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, nullptr, incx, nullptr, incy));
+        return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
-    int sizeY = N * incy;
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    int    abs_incy = incy >= 0 ? incy : -incy;
+    size_t sizeX    = size_t(N) * abs_incx;
+    size_t sizeY    = size_t(N) * abs_incy;
+    if(!sizeX)
+        sizeX = 1;
+    if(!sizeY)
+        sizeY = 1;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);
@@ -53,12 +55,10 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
 
-    hipblasLocalHandle handle(argus);
-
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, N, incx);
-    hipblas_init<T>(hy, 1, N, incy);
+    hipblas_init<T>(hx, 1, N, abs_incx);
+    hipblas_init<T>(hy, 1, N, abs_incy);
 
     hx_cpu = hx;
     hy_cpu = hy;
@@ -66,33 +66,36 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, dx, incx, dy, incy));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-
-    if(unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, dx, incx, dy, incy));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-
         cblas_copy<T>(N, hx_cpu.data(), incx, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, incy, hy_cpu.data(), hy.data());
+            unit_check_general<T>(1, N, abs_incy, hy_cpu.data(), hy.data());
+        }
+        if(argus.norm_check)
+        {
+            hipblas_error = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy);
         }
 
     } // end of if unit check
 
-    if(timing)
+    if(argus.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));

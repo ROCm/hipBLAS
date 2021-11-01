@@ -2,23 +2,6 @@
 # Copyright 2016-2021 Advanced Micro Devices, Inc.
 # ########################################################################
 
-# set( Boost_DEBUG ON )
-set( Boost_USE_MULTITHREADED ON )
-set( Boost_DETAILED_FAILURE_MSG ON )
-set( Boost_ADDITIONAL_VERSIONS 1.64.0 1.64 )
-set( Boost_USE_STATIC_LIBS OFF )
-find_package( Boost COMPONENTS program_options )
-
-if( NOT Boost_FOUND )
-  message( STATUS "Dynamic boost libraries not found. Attempting to find static libraries " )
-  set( Boost_USE_STATIC_LIBS ON )
-  find_package( Boost COMPONENTS program_options )
-
-  if( NOT Boost_FOUND )
-    message( FATAL_ERROR "boost is a required dependency and is not found;  try adding boost path to CMAKE_PREFIX_PATH" )
-  endif( )
-endif( )
-
 # Linking lapack library requires fortran flags
 if(NOT WIN32)
     enable_language( Fortran )
@@ -94,6 +77,7 @@ set(hipblas_test_source
   symm_gtest.cpp
   syrk_gtest.cpp
   syr2k_gtest.cpp
+  syrkx_gtest.cpp
   trsm_gtest.cpp
   trsm_ex_gtest.cpp
   trmm_gtest.cpp
@@ -161,7 +145,6 @@ target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 # External header includes included as SYSTEM files
 target_include_directories( hipblas-test
   SYSTEM PRIVATE
-    $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
@@ -172,7 +155,7 @@ if (NOT WIN32)
     target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
 endif()
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} ${Boost_LIBRARIES} )
+target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} )
 
 if(LINK_BLIS)
   target_link_libraries( hipblas-test PRIVATE ${BLIS_LIBRARY} )

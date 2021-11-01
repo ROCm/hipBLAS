@@ -1,9 +1,25 @@
 # Change Log for hipBLAS
 
-## (Unreleased) hipBLAS 0.48.0
+## (Unreleased) hipBLAS 0.49.0
+### Added
+- Added rocSOLVER functions to hipblas-bench
+- Added option ROCM_MATHLIBS_API_USE_HIP_COMPLEX to opt-in to use hipFloatComplex and hipDoubleComplex
+- Added compilation warning for future trmm changes
+- Added documentation to hipblas.h
+- Added option to forgo pivoting for getrf and getri when ipiv is nullptr
+- Added code coverage option
+
+### Fixed
+- Fixed use of incorrect 'HIP_PATH' when building from source.
+- Fixed windows packaging
+- Allowing negative increments in hipblas-bench
+- Removed boost dependency
+
+## [hipBLAS 0.48.0 for ROCm 4.5.0]
 ### Added
 - Added HIPBLAS_STATUS_UNKNOWN for unsupported backend status codes
 - Added more support for hipblas-bench
+- Added HIPBLAS_STATUS_UNKNOWN for unsupported backend status codes
 
 ### Fixed
 - Avoid large offset overflow for gemv and hemv in hipblas-test

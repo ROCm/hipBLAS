@@ -25,27 +25,21 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
     int incy        = argus.incy;
     int batch_count = argus.batch_count;
 
-    int unit_check = argus.unit_check;
-    int timing     = argus.timing;
+    hipblasLocalHandle handle(argus);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || incx < 0 || incy < 0 || batch_count < 0)
+    if(N <= 0 || batch_count <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
+        CHECK_HIPBLAS_ERROR(
+            hipblasCopyBatchedFn(handle, N, nullptr, incx, nullptr, incy, batch_count));
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    int sizeX = N * incx;
-    int sizeY = N * incy;
+    int abs_incy = incy >= 0 ? incy : -incy;
 
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
-
-    hipblasLocalHandle handle(argus);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_batch_vector<T> hx(N, incx, batch_count);
@@ -66,22 +60,21 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));
 
-    /* =====================================================================
-         HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasCopyBatchedFn(
-        handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hx.transfer_from(dx));
-    CHECK_HIP_ERROR(hy.transfer_from(dy));
-
-    if(unit_check)
+    if(argus.unit_check || argus.norm_check)
     {
+        /* =====================================================================
+                    HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasCopyBatchedFn(
+            handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hx.transfer_from(dx));
+        CHECK_HIP_ERROR(hy.transfer_from(dy));
+
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_copy<T>(N, hx_cpu[b], incx, hy_cpu[b], incy);
@@ -91,12 +84,16 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incy, hy_cpu, hy);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy);
+        }
+        if(argus.norm_check)
+        {
+            hipblas_error = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy, batch_count);
         }
 
     } // end of if unit check
 
-    if(timing)
+    if(argus.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));

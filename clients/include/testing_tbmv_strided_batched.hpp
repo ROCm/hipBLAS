@@ -28,8 +28,9 @@ hipblasStatus_t testing_tbmv_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasStride stride_A = lda * M * stride_scale;
-    hipblasStride stride_x = M * incx * stride_scale;
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    hipblasStride stride_A = size_t(lda) * M * stride_scale;
+    hipblasStride stride_x = size_t(M) * abs_incx * stride_scale;
 
     size_t A_size = stride_A * batch_count;
     size_t x_size = stride_x * batch_count;
@@ -38,11 +39,29 @@ hipblasStatus_t testing_tbmv_strided_batched(const Arguments& argus)
     hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || K < 0 || lda < M || incx == 0 || batch_count < 0)
+    bool invalid_size = M < 0 || K < 0 || lda < K + 1 || !incx || batch_count < 0;
+    if(invalid_size || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        hipblasStatus_t actual = hipblasTbmvStridedBatchedFn(handle,
+                                                             uplo,
+                                                             transA,
+                                                             diag,
+                                                             M,
+                                                             K,
+                                                             nullptr,
+                                                             lda,
+                                                             stride_A,
+                                                             nullptr,
+                                                             incx,
+                                                             stride_x,
+                                                             batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -54,34 +73,32 @@ hipblasStatus_t testing_tbmv_strided_batched(const Arguments& argus)
     device_vector<T> dA(A_size);
     device_vector<T> dx(x_size);
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hA, M, M, lda, stride_A, batch_count);
-    hipblas_init<T>(hx, 1, M, incx, stride_x, batch_count);
+    hipblas_init<T>(hx, 1, M, abs_incx, stride_x, batch_count);
     hx_cpu = hx;
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasTbmvStridedBatchedFn(
-        handle, uplo, transA, diag, M, K, dA, lda, stride_A, dx, incx, stride_x, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hx_res.data(), dx, sizeof(T) * x_size, hipMemcpyDeviceToHost));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasTbmvStridedBatchedFn(
+            handle, uplo, transA, diag, M, K, dA, lda, stride_A, dx, incx, stride_x, batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hipMemcpy(hx_res.data(), dx, sizeof(T) * x_size, hipMemcpyDeviceToHost));
+
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_tbmv<T>(uplo,
@@ -99,12 +116,12 @@ hipblasStatus_t testing_tbmv_strided_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, incx, stride_x, hx_cpu, hx_res);
+            unit_check_general<T>(1, M, batch_count, abs_incx, stride_x, hx_cpu, hx_res);
         }
         if(argus.norm_check)
         {
             hipblas_error = norm_check_general<T>(
-                'F', 1, M, incx, stride_x, hx_cpu.data(), hx_res.data(), batch_count);
+                'F', 1, M, abs_incx, stride_x, hx_cpu.data(), hx_res.data(), batch_count);
         }
     }
 

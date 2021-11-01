@@ -24,8 +24,8 @@ hipblasStatus_t testing_tpmv_batched(const Arguments& argus)
     int M    = argus.M;
     int incx = argus.incx;
 
-    size_t A_size = size_t(M) * (M + 1) / 2;
-    size_t X_size = size_t(M) * incx;
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    size_t A_size   = size_t(M) * (M + 1) / 2;
 
     int batch_count = argus.batch_count;
 
@@ -34,19 +34,21 @@ hipblasStatus_t testing_tpmv_batched(const Arguments& argus)
     hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
     hipblasStatus_t    status = HIPBLAS_STATUS_SUCCESS;
 
+    hipblasLocalHandle handle(argus);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || incx == 0 || batch_count < 0)
+    bool invalid_size = M < 0 || !incx || batch_count < 0;
+    if(invalid_size || !M || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    else if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        hipblasStatus_t actual = hipblasTpmvBatchedFn(
+            handle, uplo, transA, diag, M, nullptr, nullptr, incx, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        return actual;
     }
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    double gpu_time_used, hipblas_error;
 
     // arrays of pointers-to-host on host
     host_batch_vector<T> hA(A_size, 1, batch_count);
@@ -66,21 +68,27 @@ hipblasStatus_t testing_tpmv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
-    /* =====================================================================
-           HIPBLAS
-    =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasTpmvBatchedFn(
-        handle, uplo, transA, diag, M, dA.ptr_on_device(), dx.ptr_on_device(), incx, batch_count));
-
-    // copy output from device to CPU
-    CHECK_HIP_ERROR(hx_res.transfer_from(dx));
-
     if(argus.unit_check || argus.norm_check)
     {
         /* =====================================================================
+            HIPBLAS
+        =================================================================== */
+        CHECK_HIPBLAS_ERROR(hipblasTpmvBatchedFn(handle,
+                                                 uplo,
+                                                 transA,
+                                                 diag,
+                                                 M,
+                                                 dA.ptr_on_device(),
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 batch_count));
+
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(hx_res.transfer_from(dx));
+
+        /* =====================================================================
            CPU BLAS
         =================================================================== */
-
         for(int b = 0; b < batch_count; b++)
         {
             cblas_tpmv<T>(uplo, transA, diag, M, hA[b], hx[b], incx);
@@ -90,11 +98,11 @@ hipblasStatus_t testing_tpmv_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, incx, hx, hx_res);
+            unit_check_general<T>(1, M, batch_count, abs_incx, hx, hx_res);
         }
         if(argus.norm_check)
         {
-            hipblas_error = norm_check_general<T>('F', 1, M, incx, hx, hx_res, batch_count);
+            hipblas_error = norm_check_general<T>('F', 1, M, abs_incx, hx, hx_res, batch_count);
         }
     }
 
