@@ -1,6 +1,9 @@
 # Change Log for hipBLAS
 
 ## (Unreleased) hipBLAS
+### Added
+- Added library version and device information to hipblas-test output.
+
 ### Fixed
 - Added hipblasVersionMinor define. hipblaseVersionMinor remains defined
   for backwards compatibility.
