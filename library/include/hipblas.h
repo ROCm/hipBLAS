@@ -933,7 +933,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpyBatched(hipblasHandle_t             h
 
     @param[in]
     batchCount [int]
-              number of instances in the batch  
+              number of instances in the batch
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpyBatched(hipblasHandle_t                   handle,
@@ -1723,7 +1723,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t      
               number of instances in the batch
     @param[out]
     result
-              device pointer or host pointer to array for storing contiguous batch_count results.
+              device pointer or host pointer to array for storing contiguous batchCount results.
               return is 0.0 for each element if n <= 0, incx<=0.
 
     ********************************************************************/
@@ -15871,7 +15871,92 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
                                                            int*                  info,
                                                            const int             batchCount);
 
-// gemmex
+// ================================
+// ====== BLAS Extensions =========
+// ================================
+
+/*! \brief BLAS EX API
+
+    \details
+    gemmEx performs one of the matrix-matrix operations
+
+        C = alpha*op( A )*op( B ) + beta*C,
+
+    where op( X ) is one of
+
+        op( X ) = X      or
+        op( X ) = X**T   or
+        op( X ) = X**H,
+
+    alpha and beta are scalars, and A, B, and C are matrices, with
+    op( A ) an m by k matrix, op( B ) a k by n matrix and C is a m by n matrix.
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    Note for int8 users - For rocBLAS backend, please read rocblas_gemm_ex documentation on int8
+    data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
+    format for a given device as documented in rocBLAS.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    transA    [hipblasOperation_t]
+              specifies the form of op( A ).
+    @param[in]
+    transB    [hipblasOperation_t]
+              specifies the form of op( B ).
+    @param[in]
+    m         [int]
+              matrix dimension m.
+    @param[in]
+    n         [int]
+              matrix dimension n.
+    @param[in]
+    k         [int]
+              matrix dimension k.
+    @param[in]
+    alpha     [const void *]
+              device pointer or host pointer specifying the scalar alpha. Same datatype as computeType.
+    @param[in]
+    a         [void *]
+              device pointer storing matrix A.
+    @param[in]
+    aType    [hipblasDatatype_t]
+              specifies the datatype of matrix A.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of A.
+    @param[in]
+    b         [void *]
+              device pointer storing matrix B.
+    @param[in]
+    bType    [hipblasDatatype_t]
+              specifies the datatype of matrix B.
+    @param[in]
+    ldb       [int]
+              specifies the leading dimension of B.
+    @param[in]
+    beta      [const void *]
+              device pointer or host pointer specifying the scalar beta. Same datatype as computeType.
+    @param[in]
+    c         [void *]
+              device pointer storing matrix C.
+    @param[in]
+    cType    [hipblasDatatype_t]
+              specifies the datatype of matrix C.
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of C.
+    @param[in]
+    computeType
+              [hipblasDatatype_t]
+              specifies the datatype of computation.
+    @param[in]
+    algo      [hipblasGemmAlgo_t]
+              enumerant specifying the algorithm type.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                              hipblasOperation_t trans_a,
                                              hipblasOperation_t trans_b,
@@ -15880,18 +15965,103 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                              int                k,
                                              const void*        alpha,
                                              const void*        a,
-                                             hipblasDatatype_t  a_type,
+                                             hipblasDatatype_t  aType,
                                              int                lda,
                                              const void*        b,
-                                             hipblasDatatype_t  b_type,
+                                             hipblasDatatype_t  bType,
                                              int                ldb,
                                              const void*        beta,
                                              void*              c,
-                                             hipblasDatatype_t  c_type,
+                                             hipblasDatatype_t  cType,
                                              int                ldc,
-                                             hipblasDatatype_t  compute_type,
+                                             hipblasDatatype_t  computeType,
                                              hipblasGemmAlgo_t  algo);
 
+/*! \brief BLAS EX API
+    \details
+    gemmBatchedEx performs one of the batched matrix-matrix operations
+        C_i = alpha*op(A_i)*op(B_i) + beta*C_i, for i = 1, ..., batchCount.
+    where op( X ) is one of
+        op( X ) = X      or
+        op( X ) = X**T   or
+        op( X ) = X**H,
+    alpha and beta are scalars, and A, B, and C are batched pointers to matrices, with
+    op( A ) an m by k by batchCount batched matrix,
+    op( B ) a k by n by batchCount batched matrix and
+    C a m by n by batchCount batched matrix.
+    The batched matrices are an array of pointers to matrices.
+    The number of pointers to matrices is batchCount.
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    Note for int8 users - For rocBLAS backend, please read rocblas_gemm_batched_ex documentation on int8
+    data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
+    format for a given device as documented in rocBLAS.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    transA    [hipblasOperation_t]
+              specifies the form of op( A ).
+    @param[in]
+    transB    [hipblasOperation_t]
+              specifies the form of op( B ).
+    @param[in]
+    m         [int]
+              matrix dimension m.
+    @param[in]
+    n         [int]
+              matrix dimension n.
+    @param[in]
+    k         [int]
+              matrix dimension k.
+    @param[in]
+    alpha     [const void *]
+              device pointer or host pointer specifying the scalar alpha. Same datatype as computeType.
+    @param[in]
+    a         [void *]
+              device pointer storing array of pointers to each matrix A_i.
+    @param[in]
+    aType    [hipblasDatatype_t]
+              specifies the datatype of each matrix A_i.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    b         [void *]
+              device pointer storing array of pointers to each matrix B_i.
+    @param[in]
+    bType    [hipblasDatatype_t]
+              specifies the datatype of each matrix B_i.
+    @param[in]
+    ldb       [int]
+              specifies the leading dimension of each B_i.
+    @param[in]
+    beta      [const void *]
+              device pointer or host pointer specifying the scalar beta. Same datatype as computeType.
+    @param[in]
+    c         [void *]
+              device array of device pointers to each matrix C_i.
+    @param[in]
+    cType    [hipblasDatatype_t]
+              specifies the datatype of each matrix C_i.
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of each C_i.
+    @param[in]
+    batchCount
+              [int]
+              number of gemm operations in the batch.
+    @param[in]
+    computeType
+              [hipblasDatatype_t]
+              specifies the datatype of computation.
+    @param[in]
+    algo      [hipblasGemmAlgo_t]
+              enumerant specifying the algorithm type.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
                                                     hipblasOperation_t trans_a,
                                                     hipblasOperation_t trans_b,
@@ -15900,19 +16070,119 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
                                                     int                k,
                                                     const void*        alpha,
                                                     const void*        a[],
-                                                    hipblasDatatype_t  a_type,
+                                                    hipblasDatatype_t  aType,
                                                     int                lda,
                                                     const void*        b[],
-                                                    hipblasDatatype_t  b_type,
+                                                    hipblasDatatype_t  bType,
                                                     int                ldb,
                                                     const void*        beta,
                                                     void*              c[],
-                                                    hipblasDatatype_t  c_type,
+                                                    hipblasDatatype_t  cType,
                                                     int                ldc,
-                                                    int                batch_count,
-                                                    hipblasDatatype_t  compute_type,
+                                                    int                batchCount,
+                                                    hipblasDatatype_t  computeType,
                                                     hipblasGemmAlgo_t  algo);
 
+/*! \brief BLAS EX API
+
+    \details
+    gemmStridedBatchedEx performs one of the strided_batched matrix-matrix operations
+
+        C_i = alpha*op(A_i)*op(B_i) + beta*C_i, for i = 1, ..., batchCount
+
+    where op( X ) is one of
+
+        op( X ) = X      or
+        op( X ) = X**T   or
+        op( X ) = X**H,
+
+    alpha and beta are scalars, and A, B, and C are strided_batched matrices, with
+    op( A ) an m by k by batchCount strided_batched matrix,
+    op( B ) a k by n by batchCount strided_batched matrix and
+    C a m by n by batchCount strided_batched matrix.
+
+    The strided_batched matrices are multiple matrices separated by a constant stride.
+    The number of matrices is batchCount.
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    Note for int8 users - For rocBLAS backend, please read rocblas_gemm_strided_batched_ex documentation on int8
+    data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
+    format for a given device as documented in rocBLAS.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    transA    [hipblasOperation_t]
+              specifies the form of op( A ).
+    @param[in]
+    transB    [hipblasOperation_t]
+              specifies the form of op( B ).
+    @param[in]
+    m         [int]
+              matrix dimension m.
+    @param[in]
+    n         [int]
+              matrix dimension n.
+    @param[in]
+    k         [int]
+              matrix dimension k.
+    @param[in]
+    alpha     [const void *]
+              device pointer or host pointer specifying the scalar alpha. Same datatype as computeType.
+    @param[in]
+    a         [void *]
+              device pointer pointing to first matrix A_1.
+    @param[in]
+    aType    [hipblasDatatype_t]
+              specifies the datatype of each matrix A_i.
+    @param[in]
+    lda       [int]
+              specifies the leading dimension of each A_i.
+    @param[in]
+    strideA  [hipblasStride]
+              specifies stride from start of one A_i matrix to the next A_(i + 1).
+    @param[in]
+    b         [void *]
+              device pointer pointing to first matrix B_1.
+    @param[in]
+    bType    [hipblasDatatype_t]
+              specifies the datatype of each matrix B_i.
+    @param[in]
+    ldb       [int]
+              specifies the leading dimension of each B_i.
+    @param[in]
+    strideB  [hipblasStride]
+              specifies stride from start of one B_i matrix to the next B_(i + 1).
+    @param[in]
+    beta      [const void *]
+              device pointer or host pointer specifying the scalar beta. Same datatype as computeType.
+    @param[in]
+    c         [void *]
+              device pointer pointing to first matrix C_1.
+    @param[in]
+    cType    [hipblasDatatype_t]
+              specifies the datatype of each matrix C_i.
+    @param[in]
+    ldc       [int]
+              specifies the leading dimension of each C_i.
+    @param[in]
+    strideC  [hipblasStride]
+              specifies stride from start of one C_i matrix to the next C_(i + 1).
+    @param[in]
+    batchCount
+              [int]
+              number of gemm operations in the batch.
+    @param[in]
+    computeType
+              [hipblasDatatype_t]
+              specifies the datatype of computation.
+    @param[in]
+    algo      [hipblasGemmAlgo_t]
+              enumerant specifying the algorithm type.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
                                                            hipblasOperation_t trans_a,
                                                            hipblasOperation_t trans_b,
@@ -15921,23 +16191,143 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    ha
                                                            int                k,
                                                            const void*        alpha,
                                                            const void*        a,
-                                                           hipblasDatatype_t  a_type,
+                                                           hipblasDatatype_t  aType,
                                                            int                lda,
-                                                           hipblasStride      stride_A,
+                                                           hipblasStride      strideA,
                                                            const void*        b,
-                                                           hipblasDatatype_t  b_type,
+                                                           hipblasDatatype_t  bType,
                                                            int                ldb,
-                                                           hipblasStride      stride_B,
+                                                           hipblasStride      strideB,
                                                            const void*        beta,
                                                            void*              c,
-                                                           hipblasDatatype_t  c_type,
+                                                           hipblasDatatype_t  cType,
                                                            int                ldc,
-                                                           hipblasStride      stride_C,
-                                                           int                batch_count,
-                                                           hipblasDatatype_t  compute_type,
+                                                           hipblasStride      strideC,
+                                                           int                batchCount,
+                                                           hipblasDatatype_t  computeType,
                                                            hipblasGemmAlgo_t  algo);
 
-// trsm_ex
+/*! BLAS EX API
+
+    \details
+    trsmEx solves
+
+        op(A)*X = alpha*B or X*op(A) = alpha*B,
+
+    where alpha is a scalar, X and B are m by n matrices,
+    A is triangular matrix and op(A) is one of
+
+        op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
+
+    The matrix X is overwritten on B.
+
+    This function gives the user the ability to reuse the invA matrix between runs.
+    If invA == NULL, hipblasTrsmEx will automatically calculate invA on every run.
+
+    Setting up invA:
+    The accepted invA matrix consists of the packed 128x128 inverses of the diagonal blocks of
+    matrix A, followed by any smaller diagonal block that remains.
+    To set up invA it is recommended that hipblasTrtriBatched be used with matrix A as the input.
+
+    Device memory of size 128 x k should be allocated for invA ahead of time, where k is m when
+    HIPBLAS_SIDE_LEFT and is n when HIPBLAS_SIDE_RIGHT. The actual number of elements in invA
+    should be passed as invAsize.
+
+    To begin, hipblasTrtriBatched must be called on the full 128x128 sized diagonal blocks of
+    matrix A. Below are the restricted parameters:
+      - n = 128
+      - ldinvA = 128
+      - stride_invA = 128x128
+      - batchCount = k / 128,
+
+    Then any remaining block may be added:
+      - n = k % 128
+      - invA = invA + stride_invA * previousBatchCount
+      - ldinvA = 128
+      - batchCount = 1
+
+    @param[in]
+    handle  [hipblasHandle_t]
+            handle to the hipblas library context queue.
+
+    @param[in]
+    side    [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:       op(A)*X = alpha*B.
+            HIPBLAS_SIDE_RIGHT:      X*op(A) = alpha*B.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  A is an upper triangular matrix.
+            HIPBLAS_FILL_MODE_LOWER:  A is a lower triangular matrix.
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_ON_C: op(A) = A^H.
+
+    @param[in]
+    diag    [hipblasDiagType_t]
+            HIPBLAS_DIAG_UNIT:     A is assumed to be unit triangular.
+            HIPBLAS_DIAG_NON_UNIT:  A is not assumed to be unit triangular.
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of B. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of B. n >= 0.
+
+    @param[in]
+    alpha   [void *]
+            device pointer or host pointer specifying the scalar alpha. When alpha is
+            &zero then A is not referenced, and B need not be set before
+            entry.
+
+    @param[in]
+    A       [void *]
+            device pointer storing matrix A.
+            of dimension ( lda, k ), where k is m
+            when HIPBLAS_SIDE_LEFT and
+            is n when HIPBLAS_SIDE_RIGHT
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            if side = HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
+
+    @param[in, out]
+    B       [void *]
+            device pointer storing matrix B.
+            B is of dimension ( ldb, n ).
+            Before entry, the leading m by n part of the array B must
+            contain the right-hand side matrix B, and on exit is
+            overwritten by the solution matrix X.
+
+    @param[in]
+    ldb    [int]
+           ldb specifies the first dimension of B. ldb >= max( 1, m ).
+
+    @param[in]
+    invA    [void *]
+            device pointer storing the inverse diagonal blocks of A.
+            invA is of dimension ( ld_invA, k ), where k is m
+            when HIPBLAS_SIDE_LEFT and
+            is n when HIPBLAS_SIDE_RIGHT.
+            ld_invA must be equal to 128.
+
+    @param[in]
+    invAsize [int]
+            invAsize specifies the number of elements of device memory in invA.
+
+    @param[in]
+    computeType [hipblasDatatype_t]
+            specifies the datatype of computation
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
                                              hipblasSideMode_t  side,
                                              hipblasFillMode_t  uplo,
@@ -15951,9 +16341,135 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
                                              void*              B,
                                              int                ldb,
                                              const void*        invA,
-                                             int                invA_size,
-                                             hipblasDatatype_t  compute_type);
+                                             int                invAsize,
+                                             hipblasDatatype_t  computeType);
 
+/*! BLAS EX API
+
+    \details
+    trsmBatchedEx solves
+
+        op(A_i)*X_i = alpha*B_i or X_i*op(A_i) = alpha*B_i,
+
+    for i = 1, ..., batchCount; and where alpha is a scalar, X and B are arrays of m by n matrices,
+    A is an array of triangular matrix and each op(A_i) is one of
+
+        op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
+
+    Each matrix X_i is overwritten on B_i.
+
+    This function gives the user the ability to reuse the invA matrix between runs.
+    If invA == NULL, hipblasTrsmBatchedEx will automatically calculate each invA_i on every run.
+
+    Setting up invA:
+    Each accepted invA_i matrix consists of the packed 128x128 inverses of the diagonal blocks of
+    matrix A_i, followed by any smaller diagonal block that remains.
+    To set up each invA_i it is recommended that hipblasTrtriBatched be used with matrix A_i as the input.
+    invA is an array of pointers of batchCount length holding each invA_i.
+
+    Device memory of size 128 x k should be allocated for each invA_i ahead of time, where k is m when
+    HIPBLAS_SIDE_LEFT and is n when HIPBLAS_SIDE_RIGHT. The actual number of elements in each invA_i
+    should be passed as invAsize.
+
+    To begin, hipblasTrtriBatched must be called on the full 128x128 sized diagonal blocks of each
+    matrix A_i. Below are the restricted parameters:
+      - n = 128
+      - ldinvA = 128
+      - stride_invA = 128x128
+      - batchCount = k / 128,
+
+    Then any remaining block may be added:
+      - n = k % 128
+      - invA = invA + stride_invA * previousBatchCount
+      - ldinvA = 128
+      - batchCount = 1
+
+    @param[in]
+    handle  [hipblasHandle_t]
+            handle to the hipblas library context queue.
+
+    @param[in]
+    side    [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:       op(A)*X = alpha*B.
+            HIPBLAS_SIDE_RIGHT:      X*op(A) = alpha*B.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  each A_i is an upper triangular matrix.
+            HIPBLAS_FILL_MODE_LOWER:  each A_i is a lower triangular matrix.
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_OP_C: op(A) = A^H.
+
+    @param[in]
+    diag    [hipblasDiagType_t]
+            HIPBLAS_DIAG_UNIT:     each A_i is assumed to be unit triangular.
+            HIPBLAS_DIAG_NON_UNIT:  each A_i is not assumed to be unit triangular.
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of each B_i. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of each B_i. n >= 0.
+
+    @param[in]
+    alpha   [void *]
+            device pointer or host pointer alpha specifying the scalar alpha. When alpha is
+            &zero then A is not referenced, and B need not be set before
+            entry.
+
+    @param[in]
+    A       [void *]
+            device array of device pointers storing each matrix A_i.
+            each A_i is of dimension ( lda, k ), where k is m
+            when HIPBLAS_SIDE_LEFT and
+            is n when HIPBLAS_SIDE_RIGHT
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of each A_i.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            if side = HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
+
+    @param[in, out]
+    B       [void *]
+            device array of device pointers storing each matrix B_i.
+            each B_i is of dimension ( ldb, n ).
+            Before entry, the leading m by n part of the array B_i must
+            contain the right-hand side matrix B_i, and on exit is
+            overwritten by the solution matrix X_i
+
+    @param[in]
+    ldb    [int]
+           ldb specifies the first dimension of each B_i. ldb >= max( 1, m ).
+
+    @param[in]
+    batchCount [int]
+            specifies how many batches.
+
+    @param[in]
+    invA    [void *]
+            device array of device pointers storing the inverse diagonal blocks of each A_i.
+            each invA_i is of dimension ( ld_invA, k ), where k is m
+            when HIPBLAS_SIDE_LEFT and
+            is n when HIPBLAS_SIDE_RIGHT.
+            ld_invA must be equal to 128.
+
+    @param[in]
+    invAsize [int]
+            invAsize specifies the number of elements of device memory in each invA_i.
+
+    @param[in]
+    computeType [hipblasDatatype_t]
+            specifies the datatype of computation
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
                                                     hipblasSideMode_t  side,
                                                     hipblasFillMode_t  uplo,
@@ -15966,11 +16482,150 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
                                                     int                lda,
                                                     void*              B,
                                                     int                ldb,
-                                                    int                batch_count,
+                                                    int                batchCount,
                                                     const void*        invA,
-                                                    int                invA_size,
-                                                    hipblasDatatype_t  compute_type);
+                                                    int                invAsize,
+                                                    hipblasDatatype_t  computeType);
 
+/*! BLAS EX API
+
+    \details
+    trsmStridedBatchedEx solves
+
+        op(A_i)*X_i = alpha*B_i or X_i*op(A_i) = alpha*B_i,
+
+    for i = 1, ..., batchCount; and where alpha is a scalar, X and B are strided batched m by n matrices,
+    A is a strided batched triangular matrix and op(A_i) is one of
+
+        op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
+
+    Each matrix X_i is overwritten on B_i.
+
+    This function gives the user the ability to reuse each invA_i matrix between runs.
+    If invA == NULL, hipblasTrsmStridedBatchedEx will automatically calculate each invA_i on every run.
+
+    Setting up invA:
+    Each accepted invA_i matrix consists of the packed 128x128 inverses of the diagonal blocks of
+    matrix A_i, followed by any smaller diagonal block that remains.
+    To set up invA_i it is recommended that hipblasTrtriBatched be used with matrix A_i as the input.
+    invA is a contiguous piece of memory holding each invA_i.
+
+    Device memory of size 128 x k should be allocated for each invA_i ahead of time, where k is m when
+    HIPBLAS_SIDE_LEFT and is n when HIPBLAS_SIDE_RIGHT. The actual number of elements in each invA_i
+    should be passed as invAsize.
+
+    To begin, hipblasTrtriBatched must be called on the full 128x128 sized diagonal blocks of each
+    matrix A_i. Below are the restricted parameters:
+      - n = 128
+      - ldinvA = 128
+      - stride_invA = 128x128
+      - batchCount = k / 128,
+
+    Then any remaining block may be added:
+      - n = k % 128
+      - invA = invA + stride_invA * previousBatchCount
+      - ldinvA = 128
+      - batchCount = 1
+
+    @param[in]
+    handle  [hipblasHandle_t]
+            handle to the hipblas library context queue.
+
+    @param[in]
+    side    [hipblasSideMode_t]
+            HIPBLAS_SIDE_LEFT:       op(A)*X = alpha*B.
+            HIPBLAS_SIDE_RIGHT:      X*op(A) = alpha*B.
+
+    @param[in]
+    uplo    [hipblasFillMode_t]
+            HIPBLAS_FILL_MODE_UPPER:  each A_i is an upper triangular matrix.
+            HIPBLAS_FILL_MODE_LOWER:  each A_i is a lower triangular matrix.
+
+    @param[in]
+    transA  [hipblasOperation_t]
+            HIPBLAS_OP_N: op(A) = A.
+            HIPBLAS_OP_T: op(A) = A^T.
+            HIPBLAS_OP_C: op(A) = A^H.
+
+    @param[in]
+    diag    [hipblasDiagType_t]
+            HIPBLAS_DIAG_UNIT:     each A_i is assumed to be unit triangular.
+            HIPBLAS_DIAG_NON_UNIT:  each A_i is not assumed to be unit triangular.
+
+    @param[in]
+    m       [int]
+            m specifies the number of rows of each B_i. m >= 0.
+
+    @param[in]
+    n       [int]
+            n specifies the number of columns of each B_i. n >= 0.
+
+    @param[in]
+    alpha   [void *]
+            device pointer or host pointer specifying the scalar alpha. When alpha is
+            &zero then A is not referenced, and B need not be set before
+            entry.
+
+    @param[in]
+    A       [void *]
+            device pointer storing matrix A.
+            of dimension ( lda, k ), where k is m
+            when HIPBLAS_SIDE_LEFT and
+            is n when HIPBLAS_SIDE_RIGHT
+            only the upper/lower triangular part is accessed.
+
+    @param[in]
+    lda     [int]
+            lda specifies the first dimension of A.
+            if side = HIPBLAS_SIDE_LEFT,  lda >= max( 1, m ),
+            if side = HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
+
+    @param[in]
+    strideA [hipblasStride]
+            The stride between each A matrix.
+
+    @param[in, out]
+    B       [void *]
+            device pointer pointing to first matrix B_i.
+            each B_i is of dimension ( ldb, n ).
+            Before entry, the leading m by n part of each array B_i must
+            contain the right-hand side of matrix B_i, and on exit is
+            overwritten by the solution matrix X_i.
+
+    @param[in]
+    ldb    [int]
+           ldb specifies the first dimension of each B_i. ldb >= max( 1, m ).
+
+    @param[in]
+    strideB [hipblasStride]
+            The stride between each B_i matrix.
+
+    @param[in]
+    batchCount [int]
+            specifies how many batches.
+
+    @param[in]
+    invA    [void *]
+            device pointer storing the inverse diagonal blocks of each A_i.
+            invA points to the first invA_1.
+            each invA_i is of dimension ( ld_invA, k ), where k is m
+            when HIPBLAS_SIDE_LEFT and
+            is n when HIPBLAS_SIDE_RIGHT.
+            ld_invA must be equal to 128.
+
+    @param[in]
+    invAsize [int]
+            invAsize specifies the number of elements of device memory in each invA_i.
+
+    @param[in]
+    strideInvA [hipblasStride]
+            The stride between each invA matrix.
+
+    @param[in]
+    computeType [hipblasDatatype_t]
+            specifies the datatype of computation
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
                                                            hipblasSideMode_t  side,
                                                            hipblasFillMode_t  uplo,
@@ -15981,47 +16636,57 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
                                                            const void*        alpha,
                                                            void*              A,
                                                            int                lda,
-                                                           hipblasStride      stride_A,
+                                                           hipblasStride      strideA,
                                                            void*              B,
                                                            int                ldb,
-                                                           hipblasStride      stride_B,
-                                                           int                batch_count,
+                                                           hipblasStride      strideB,
+                                                           int                batchCount,
                                                            const void*        invA,
-                                                           int                invA_size,
-                                                           hipblasStride      stride_invA,
-                                                           hipblasDatatype_t  compute_type);
+                                                           int                invAsize,
+                                                           hipblasStride      strideInvA,
+                                                           hipblasDatatype_t  computeType);
 
-// // syrk_ex
-// HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkEx(hipblasHandle_t       handle,
-//                                               hipblasFillMode_t     uplo,
-//                                               hipblasOperation_t    trans,
-//                                               int                   n,
-//                                               int                   k,
-//                                               const hipblasComplex* alpha,
-//                                               const void*           A,
-//                                               hipblasDatatype_t     Atype,
-//                                               int                   lda,
-//                                               const hipblasComplex* beta,
-//                                               hipblasComplex*       C,
-//                                               hipblasDatatype_t     Ctype,
-//                                               int                   ldc);
+/*! \brief BLAS EX API
 
-// // herk_ex
-// HIPBLAS_EXPORT hipblasStatus_t hipblasCherkEx(hipblasHandle_t    handle,
-//                                               hipblasFillMode_t  uplo,
-//                                               hipblasOperation_t trans,
-//                                               int                n,
-//                                               int                k,
-//                                               const float*       alpha,
-//                                               const void*        A,
-//                                               hipblasDatatype_t  Atype,
-//                                               int                lda,
-//                                               const float*       beta,
-//                                               hipblasComplex*    C,
-//                                               hipblasDatatype_t  Ctype,
-//                                               int                ldc);
+    \details
+    axpyEx computes constant alpha multiplied by vector x, plus vector y
 
-// axpy_ex
+        y := alpha * x + y
+
+        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in x and y.
+    @param[in]
+    alpha     device pointer or host pointer to specify the scalar alpha.
+    @param[in]
+    alphaType [hipblasDatatype_t]
+              specifies the datatype of alpha.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of vector x.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of x.
+    @param[inout]
+    y         device pointer storing vector y.
+    @param[in]
+    yType [hipblasDatatype_t]
+          specifies the datatype of vector y.
+    @param[in]
+    incy      [int]
+              specifies the increment for the elements of y.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                  specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
                                              int               n,
                                              const void*       alpha,
@@ -16034,6 +16699,51 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
                                              int               incy,
                                              hipblasDatatype_t executionType);
 
+/*! \brief BLAS EX API
+
+    \details
+    axpyBatchedEx computes constant alpha multiplied by vector x, plus vector y over
+                      a set of batched vectors.
+
+        y := alpha * x + y
+
+        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in each x_i and y_i.
+    @param[in]
+    alpha     device pointer or host pointer to specify the scalar alpha.
+    @param[in]
+    alphaType [hipblasDatatype_t]
+              specifies the datatype of alpha.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of each x_i.
+    @param[inout]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    yType [hipblasDatatype_t]
+          specifies the datatype of each vector y_i.
+    @param[in]
+    incy      [int]
+              specifies the increment for the elements of each y_i.
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                  specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
                                                     int               n,
                                                     const void*       alpha,
@@ -16044,9 +16754,66 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
                                                     void*             y,
                                                     hipblasDatatype_t yType,
                                                     int               incy,
-                                                    int               batch_count,
+                                                    int               batchCount,
                                                     hipblasDatatype_t executionType);
 
+/*! \brief BLAS EX API
+
+    \details
+    axpyStridedBatchedEx computes constant alpha multiplied by vector x, plus vector y over
+                      a set of strided batched vectors.
+
+        y := alpha * x + y
+
+        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in each x_i and y_i.
+    @param[in]
+    alpha     device pointer or host pointer to specify the scalar alpha.
+    @param[in]
+    alphaType [hipblasDatatype_t]
+              specifies the datatype of alpha.
+    @param[in]
+    x         device pointer to the first vector x_1.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stridex   [hipblasStride]
+              stride from the start of one vector (x_i) to the next one (x_i+1).
+              There are no restrictions placed on stridex, however the user should
+              take care to ensure that stridex is of appropriate size, for a typical
+              case this means stridex >= n * incx.
+    @param[inout]
+    y         device pointer to the first vector y_1.
+    @param[in]
+    yType [hipblasDatatype_t]
+          specifies the datatype of each vector y_i.
+    @param[in]
+    incy      [int]
+              specifies the increment for the elements of each y_i.
+    @param[in]
+    stridey   [hipblasStride]
+              stride from the start of one vector (y_i) to the next one (y_i+1).
+              There are no restrictions placed on stridey, however the user should
+              take care to ensure that stridey is of appropriate size, for a typical
+              case this means stridey >= n * incy.
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                  specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   handle,
                                                            int               n,
                                                            const void*       alpha,
@@ -16059,10 +16826,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   han
                                                            hipblasDatatype_t yType,
                                                            int               incy,
                                                            hipblasStride     stridey,
-                                                           int               batch_count,
+                                                           int               batchCount,
                                                            hipblasDatatype_t executionType);
 
-// dot_ex
 HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
                                             int               n,
                                             const void*       x,
@@ -16075,6 +16841,53 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
                                             hipblasDatatype_t resultType,
                                             hipblasDatatype_t executionType);
 
+/*! \brief BLAS EX API
+
+    \details
+    dotEx  performs the dot product of vectors x and y
+
+        result = x * y;
+
+    dotcEx  performs the dot product of the conjugate of complex vector x and complex vector y
+
+        result = conjugate (x) * y;
+
+        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in x and y.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of vector x.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of y.
+    @param[in]
+    y         device pointer storing vector y.
+    @param[in]
+    yType [hipblasDatatype_t]
+          specifies the datatype of vector y.
+    @param[in]
+    incy      [int]
+              specifies the increment for the elements of y.
+    @param[inout]
+    result
+              device pointer or host pointer to store the dot product.
+              return is 0.0 if n <= 0.
+    @param[in]
+    resultType [hipblasDatatype_t]
+                specifies the datatype of the result.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                  specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
                                              int               n,
                                              const void*       x,
@@ -16095,11 +16908,64 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
                                                    const void*       y,
                                                    hipblasDatatype_t yType,
                                                    int               incy,
-                                                   int               batch_count,
+                                                   int               batchCount,
                                                    void*             result,
                                                    hipblasDatatype_t resultType,
                                                    hipblasDatatype_t executionType);
 
+/*! \brief BLAS EX API
+
+    \details
+    dotBatchedEx performs a batch of dot products of vectors x and y
+
+        result_i = x_i * y_i;
+
+    dotcBatchedEx  performs a batch of dot products of the conjugate of complex vector x and complex vector y
+
+        result_i = conjugate (x_i) * y_i;
+
+    where (x_i, y_i) is the i-th instance of the batch.
+    x_i and y_i are vectors, for i = 1, ..., batchCount
+
+        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in each x_i and y_i.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    y         device array of device pointers storing each vector y_i.
+    @param[in]
+    yType [hipblasDatatype_t]
+          specifies the datatype of each vector y_i.
+    @param[in]
+    incy      [int]
+              specifies the increment for the elements of each y_i.
+    @param[in]
+    batchCount [int]
+                number of instances in the batch
+    @param[inout]
+    result
+              device array or host array of batchCount size to store the dot products of each batch.
+              return 0.0 for each element if n <= 0.
+    @param[in]
+    resultType [hipblasDatatype_t]
+                specifies the datatype of the result.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                  specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
                                                     int               n,
                                                     const void*       x,
@@ -16108,7 +16974,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
                                                     const void*       y,
                                                     hipblasDatatype_t yType,
                                                     int               incy,
-                                                    int               batch_count,
+                                                    int               batchCount,
                                                     void*             result,
                                                     hipblasDatatype_t resultType,
                                                     hipblasDatatype_t executionType);
@@ -16123,11 +16989,70 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   hand
                                                           hipblasDatatype_t yType,
                                                           int               incy,
                                                           hipblasStride     stridey,
-                                                          int               batch_count,
+                                                          int               batchCount,
                                                           void*             result,
                                                           hipblasDatatype_t resultType,
                                                           hipblasDatatype_t executionType);
 
+/*! \brief BLAS EX API
+
+    \details
+    dotStridedBatchedEx  performs a batch of dot products of vectors x and y
+
+        result_i = x_i * y_i;
+
+    dotc_strided_batched_ex  performs a batch of dot products of the conjugate of complex vector x and complex vector y
+
+        result_i = conjugate (x_i) * y_i;
+
+    where (x_i, y_i) is the i-th instance of the batch.
+    x_i and y_i are vectors, for i = 1, ..., batchCount
+
+        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in each x_i and y_i.
+    @param[in]
+    x         device pointer to the first vector (x_1) in the batch.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stridex    [hipblasStride]
+                stride from the start of one vector (x_i) and the next one (x_i+1)
+    @param[in]
+    y         device pointer to the first vector (y_1) in the batch.
+    @param[in]
+    yType [hipblasDatatype_t]
+          specifies the datatype of each vector y_i.
+    @param[in]
+    incy      [int]
+              specifies the increment for the elements of each y_i.
+    @param[in]
+    stridey    [hipblasStride]
+                stride from the start of one vector (y_i) and the next one (y_i+1)
+    @param[in]
+    batchCount [int]
+                number of instances in the batch
+    @param[inout]
+    result
+              device array or host array of batchCount size to store the dot products of each batch.
+              return 0.0 for each element if n <= 0.
+    @param[in]
+    resultType [hipblasDatatype_t]
+                specifies the datatype of the result.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                  specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   handle,
                                                            int               n,
                                                            const void*       x,
@@ -16138,12 +17063,47 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   han
                                                            hipblasDatatype_t yType,
                                                            int               incy,
                                                            hipblasStride     stridey,
-                                                           int               batch_count,
+                                                           int               batchCount,
                                                            void*             result,
                                                            hipblasDatatype_t resultType,
                                                            hipblasDatatype_t executionType);
 
-// nrm2_ex
+/*! \brief BLAS_EX API
+
+    \details
+    nrm2Ex computes the euclidean norm of a real or complex vector
+
+              result := sqrt( x'*x ) for real vectors
+              result := sqrt( x**H*x ) for complex vectors
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in x.
+    @param[in]
+    x         device pointer storing vector x.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of the vector x.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of y.
+    @param[inout]
+    result
+              device pointer or host pointer to store the nrm2 product.
+              return is 0.0 if n, incx<=0.
+    @param[in]
+    resultType [hipblasDatatype_t]
+                specifies the datatype of the result.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                  specifies the datatype of computation.
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
                                              int               n,
                                              const void*       x,
@@ -16153,28 +17113,161 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
                                              hipblasDatatype_t resultType,
                                              hipblasDatatype_t executionType);
 
+/*! \brief BLAS_EX API
+
+    \details
+    nrm2BatchedEx computes the euclidean norm over a batch of real or complex vectors
+
+              result := sqrt( x_i'*x_i ) for real vectors x, for i = 1, ..., batchCount
+              result := sqrt( x_i**H*x_i ) for complex vectors x, for i = 1, ..., batchCount
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              number of elements in each x_i.
+    @param[in]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of each x_i. incx must be > 0.
+    @param[in]
+    batchCount [int]
+              number of instances in the batch
+    @param[out]
+    results
+              device pointer or host pointer to array of batchCount size for nrm2 results.
+              return is 0.0 for each element if n <= 0, incx<=0.
+    @param[in]
+    resultType [hipblasDatatype_t]
+                specifies the datatype of the result.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                  specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
                                                     int               n,
                                                     const void*       x,
                                                     hipblasDatatype_t xType,
                                                     int               incx,
-                                                    int               batch_count,
+                                                    int               batchCount,
                                                     void*             result,
                                                     hipblasDatatype_t resultType,
                                                     hipblasDatatype_t executionType);
 
+/*! \brief BLAS_EX API
+
+    \details
+    nrm2StridedBatchedEx computes the euclidean norm over a batch of real or complex vectors
+
+              := sqrt( x_i'*x_i ) for real vectors x, for i = 1, ..., batchCount
+              := sqrt( x_i**H*x_i ) for complex vectors, for i = 1, ..., batchCount
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              number of elements in each x_i.
+    @param[in]
+    x         device pointer to the first vector x_1.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of each x_i. incx must be > 0.
+    @param[in]
+    stridex   [hipblasStride]
+              stride from the start of one vector (x_i) and the next one (x_i+1).
+              There are no restrictions placed on stride_x, however the user should
+              take care to ensure that stride_x is of appropriate size, for a typical
+              case this means stride_x >= n * incx.
+    @param[in]
+    batchCount [int]
+              number of instances in the batch
+    @param[out]
+    results
+              device pointer or host pointer to array for storing contiguous batchCount results.
+              return is 0.0 for each element if n <= 0, incx<=0.
+    @param[in]
+    resultType [hipblasDatatype_t]
+                specifies the datatype of the result.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                  specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   handle,
                                                            int               n,
                                                            const void*       x,
                                                            hipblasDatatype_t xType,
                                                            int               incx,
                                                            hipblasStride     stridex,
-                                                           int               batch_count,
+                                                           int               batchCount,
                                                            void*             result,
                                                            hipblasDatatype_t resultType,
                                                            hipblasDatatype_t executionType);
 
-// rot_ex
+/*! \brief BLAS EX API
+
+    \details
+    rotEx applies the Givens rotation matrix defined by c=cos(alpha) and s=sin(alpha) to vectors x and y.
+        Scalars c and s may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
+
+    In the case where cs_type is real:
+        x := c * x + s * y
+            y := c * y - s * x
+
+    In the case where cs_type is complex, the imaginary part of c is ignored:
+        x := real(c) * x + s * y
+            y := real(c) * y - conj(s) * x
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle  [hipblasHandle_t]
+            handle to the hipblas library context queue.
+    @param[in]
+    n       [int]
+            number of elements in the x and y vectors.
+    @param[inout]
+    x       device pointer storing vector x.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of vector x.
+    @param[in]
+    incx    [int]
+            specifies the increment between elements of x.
+    @param[inout]
+    y       device pointer storing vector y.
+    @param[in]
+    yType [hipblasDatatype_t]
+           specifies the datatype of vector y.
+    @param[in]
+    incy    [int]
+            specifies the increment between elements of y.
+    @param[in]
+    c       device pointer or host pointer storing scalar cosine component of the rotation matrix.
+    @param[in]
+    s       device pointer or host pointer storing scalar sine component of the rotation matrix.
+    @param[in]
+    csType [hipblasDatatype_t]
+            specifies the datatype of c and s.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                   specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
                                             int               n,
                                             void*             x,
@@ -16188,6 +17281,59 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
                                             hipblasDatatype_t csType,
                                             hipblasDatatype_t executionType);
 
+/*! \brief BLAS EX API
+
+    \details
+    rotBatchedEx applies the Givens rotation matrix defined by c=cos(alpha) and s=sin(alpha) to batched vectors x_i and y_i, for i = 1, ..., batchCount.
+        Scalars c and s may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
+
+    In the case where cs_type is real:
+            x := c * x + s * y
+            y := c * y - s * x
+
+        In the case where cs_type is complex, the imaginary part of c is ignored:
+            x := real(c) * x + s * y
+            y := real(c) * y - conj(s) * x
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle  [hipblasHandle_t]
+            handle to the hipblas library context queue.
+    @param[in]
+    n       [int]
+            number of elements in each x_i and y_i vectors.
+    @param[inout]
+    x       device array of deivce pointers storing each vector x_i.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx    [int]
+            specifies the increment between elements of each x_i.
+    @param[inout]
+    y       device array of device pointers storing each vector y_i.
+    @param[in]
+    yType [hipblasDatatype_t]
+           specifies the datatype of each vector y_i.
+    @param[in]
+    incy    [int]
+            specifies the increment between elements of each y_i.
+    @param[in]
+    c       device pointer or host pointer to scalar cosine component of the rotation matrix.
+    @param[in]
+    s       device pointer or host pointer to scalar sine component of the rotation matrix.
+    @param[in]
+    cs_type [hipblasDatatype_t]
+            specifies the datatype of c and s.
+    @param[in]
+    batchCount [int]
+                the number of x and y arrays, i.e. the number of batches.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                   specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
                                                    int               n,
                                                    void*             x,
@@ -16199,9 +17345,68 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
                                                    const void*       c,
                                                    const void*       s,
                                                    hipblasDatatype_t csType,
-                                                   int               batch_count,
+                                                   int               batchCount,
                                                    hipblasDatatype_t executionType);
 
+/*! \brief BLAS Level 1 API
+
+    \details
+    rotStridedBatchedEx applies the Givens rotation matrix defined by c=cos(alpha) and s=sin(alpha) to strided batched vectors x_i and y_i, for i = 1, ..., batchCount.
+        Scalars c and s may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
+
+    In the case where cs_type is real:
+            x := c * x + s * y
+            y := c * y - s * x
+
+        In the case where cs_type is complex, the imaginary part of c is ignored:
+            x := real(c) * x + s * y
+            y := real(c) * y - conj(s) * x
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle  [hipblasHandle_t]
+            handle to the hipblas library context queue.
+    @param[in]
+    n       [int]
+            number of elements in each x_i and y_i vectors.
+    @param[inout]
+    x       device pointer to the first vector x_1.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx    [int]
+            specifies the increment between elements of each x_i.
+    @param[in]
+    stridex [hipblasStride]
+             specifies the increment from the beginning of x_i to the beginning of x_(i+1)
+    @param[inout]
+    y       device pointer to the first vector y_1.
+    @param[in]
+    yType [hipblasDatatype_t]
+           specifies the datatype of each vector y_i.
+    @param[in]
+    incy    [int]
+            specifies the increment between elements of each y_i.
+    @param[in]
+    stridey [hipblasStride]
+             specifies the increment from the beginning of y_i to the beginning of y_(i+1)
+    @param[in]
+    c       device pointer or host pointer to scalar cosine component of the rotation matrix.
+    @param[in]
+    s       device pointer or host pointer to scalar sine component of the rotation matrix.
+    @param[in]
+    csType [hipblasDatatype_t]
+            specifies the datatype of c and s.
+    @param[in]
+    batchCount [int]
+            the number of x and y arrays, i.e. the number of batches.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                   specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
                                                           int               n,
                                                           void*             x,
@@ -16215,10 +17420,42 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   hand
                                                           const void*       c,
                                                           const void*       s,
                                                           hipblasDatatype_t csType,
-                                                          int               batch_count,
+                                                          int               batchCount,
                                                           hipblasDatatype_t executionType);
 
-// scal_ex
+/*! \brief BLAS EX API
+
+    \details
+    scalEx  scales each element of vector x with scalar alpha.
+
+        x := alpha * x
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in x.
+    @param[in]
+    alpha     device pointer or host pointer for the scalar alpha.
+    @param[in]
+    alphaType [hipblasDatatype_t]
+               specifies the datatype of alpha.
+    @param[inout]
+    x         device pointer storing vector x.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of vector x.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of x.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                   specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
                                              int               n,
                                              const void*       alpha,
@@ -16228,6 +17465,42 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
                                              int               incx,
                                              hipblasDatatype_t executionType);
 
+/*! \brief BLAS EX API
+
+    \details
+    scalBatchedEx  scales each element of each vector x_i with scalar alpha.
+
+        x_i := alpha * x_i
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in x.
+    @param[in]
+    alpha     device pointer or host pointer for the scalar alpha.
+    @param[in]
+    alphaType [hipblasDatatype_t]
+               specifies the datatype of alpha.
+    @param[inout]
+    x         device array of device pointers storing each vector x_i.
+    @param[in]
+    xType [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                   specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
                                                     int               n,
                                                     const void*       alpha,
@@ -16235,9 +17508,52 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
                                                     void*             x,
                                                     hipblasDatatype_t xType,
                                                     int               incx,
-                                                    int               batch_count,
+                                                    int               batchCount,
                                                     hipblasDatatype_t executionType);
 
+/*! \brief BLAS EX API
+
+    \details
+    scalStridedBatchedEx  scales each element of vector x with scalar alpha over a set
+                             of strided batched vectors.
+
+        x := alpha * x
+
+    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    @param[in]
+    handle    [hipblasHandle_t]
+              handle to the hipblas library context queue.
+    @param[in]
+    n         [int]
+              the number of elements in x.
+    @param[in]
+    alpha     device pointer or host pointer for the scalar alpha.
+    @param[in]
+    alpha_type [hipblasDatatype_t]
+               specifies the datatype of alpha.
+    @param[inout]
+    x         device pointer to the first vector x_1.
+    @param[in]
+    x_type [hipblasDatatype_t]
+           specifies the datatype of each vector x_i.
+    @param[in]
+    incx      [int]
+              specifies the increment for the elements of each x_i.
+    @param[in]
+    stridex   [hipblasStride]
+              stride from the start of one vector (x_i) to the next one (x_i+1).
+              There are no restrictions placed on stridex, however the user should
+              take care to ensure that stridex is of appropriate size, for a typical
+              case this means stridex >= n * incx.
+    @param[in]
+    batchCount [int]
+                number of instances in the batch.
+    @param[in]
+    executionType [hipblasDatatype_t]
+                   specifies the datatype of computation.
+
+    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
                                                            int               n,
                                                            const void*       alpha,
@@ -16246,7 +17562,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   han
                                                            hipblasDatatype_t xType,
                                                            int               incx,
                                                            hipblasStride     stridex,
-                                                           int               batch_count,
+                                                           int               batchCount,
                                                            hipblasDatatype_t executionType);
 
 /*! HIPBLAS Auxiliary API
