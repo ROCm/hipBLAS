@@ -147,8 +147,6 @@ TEST_P(geqrf_strided_batched_gtest, geqrf_strided_batched_gtest_double_complex)
     }
 }
 
-#endif
-
 // notice we are using vector of vector
 // so each elment in xxx_range is a vector,
 // ValuesIn takes each element (a vector), combines them, and feeds them to test_p
@@ -160,3 +158,5 @@ INSTANTIATE_TEST_SUITE_P(hipblasGeqrfStridedBatched,
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
+
+#endif

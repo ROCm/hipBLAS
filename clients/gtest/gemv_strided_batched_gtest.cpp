@@ -224,8 +224,6 @@ TEST_P(gemv_gtest_strided_batched, gemv_gtest_float_complex)
     }
 }
 
-#endif
-
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
@@ -240,3 +238,5 @@ INSTANTIATE_TEST_SUITE_P(hipblasGemvStridedBatched,
                                  ValuesIn(transA_range),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
+
+#endif

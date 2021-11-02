@@ -179,8 +179,6 @@ TEST_P(trtri_gtest, trtri_strided_batched_float)
     }
 }
 
-#endif
-
 // notice we are using vector of vector for matrix size, and vector for uplo, diag
 // ValuesIn take each element (a vector or a char) and combine them and feed them to test_p
 // The combinations are  { {N, lda}, uplo, diag }
@@ -193,3 +191,5 @@ INSTANTIATE_TEST_SUITE_P(hipblasTrtri,
                                  ValuesIn(diag_range),
                                  ValuesIn(batch_range),
                                  ValuesIn(is_fortran)));
+
+#endif
