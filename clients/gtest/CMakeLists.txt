@@ -6,21 +6,13 @@
 if(NOT WIN32)
     enable_language( Fortran )
 endif()
-find_package( cblas CONFIG REQUIRED PATHS ${LAPACK_DIR} )
-if( NOT cblas_FOUND )
-  message( FATAL_ERROR "cblas is a required dependency and is not found;  try adding cblas path to CMAKE_PREFIX_PATH" )
-endif( )
+find_package( cblas REQUIRED CONFIG PATHS ${LAPACK_DIR} )
 
 if( NOT TARGET hipblas )
-  find_package( hipblas CONFIG PATHS /opt/rocm/hipblas )
-
-  if( NOT hipblas_FOUND )
-    message( FATAL_ERROR "hipBLAS is a required dependency and is not found; try adding hipblas path to CMAKE_PREFIX_PATH")
-  endif( )
+  find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
 endif( )
 
 find_package( GTest REQUIRED )
-include_directories(${GTEST_INCLUDE_DIRS})
 
 set(hipblas_test_source
   hipblas_gtest_main.cpp
@@ -145,7 +137,6 @@ target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 # External header includes included as SYSTEM files
 target_include_directories( hipblas-test
   SYSTEM PRIVATE
-    $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
     ${ROCM_PATH}/hsa/include
@@ -155,10 +146,12 @@ if (NOT WIN32)
     target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
 endif()
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack ${GTEST_LIBRARIES} )
+target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack GTest::GTest )
 
 if(LINK_BLIS)
   target_link_libraries( hipblas-test PRIVATE ${BLIS_LIBRARY} )
+else()
+  target_link_libraries( hipblas-test PRIVATE blas )
 endif()
 
 # need mf16c flag for float->half convertion
