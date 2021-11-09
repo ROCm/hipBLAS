@@ -94,7 +94,7 @@ ci: {
     }
 
     String hostBuildCommand = './install.sh -c --compiler=g++'
-    String hipClangBuildCommand = './install.sh -c --compiler=/opt/rocm/hip/bin/hipcc'
+    String hipClangBuildCommand = './install.sh -c --compiler=/opt/rocm/bin/hipcc'
     String clangBuildCommand = './install.sh -c --compiler=clang++'
 
     setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
