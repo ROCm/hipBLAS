@@ -64,17 +64,17 @@ set ( VERSION_STRING "0.50.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 if( NOT DEFINED ENV{HIP_PATH})
-    set( HIP_PATH "/opt/rocm/hip" )
+    set( HIP_PATH "/opt/rocm" )
 else( )
     set (HIP_PATH $ENV{HIP_PATH} )
 endif( )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${HIP_PATH}/cmake)
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${HIP_PATH}/lib/cmake/hip)
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
-list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
+list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm)
 
 option( BUILD_VERBOSE "Output additional build information" OFF )
 
@@ -97,7 +97,7 @@ endif()
 if( USE_CUDA)
     find_package( HIP MODULE REQUIRED )
 else( )
-    find_package( hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH} /opt/rocm)
+    find_package( hip REQUIRED CONFIG PATHS ${ROCM_PATH} /opt/rocm)
 endif( )
 
 if( USE_CUDA )
