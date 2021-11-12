@@ -96,3 +96,9 @@ The number of lines of output can be reduced with:
 .. code-block:: bash
 
    GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_filter=*quick*
+
+
+CUDA unit test failures
+-----------------------
+There are a few library unit tests failing with cuBLAS; we believe these failures are benign and can be ignored. Our unit tests are testing with negative strides and edge cases which are handled differently between the two libraries, and our unit tests don't account for these differences yet. These errors will be resolved in an upcoming release.
+
