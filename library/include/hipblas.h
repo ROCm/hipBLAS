@@ -43,14 +43,19 @@
 #define HIPBLAS_DEPRECATED_MSG(MSG) __attribute__((deprecated(#MSG)))
 #endif
 
+/*! \brief hipblasHanlde_t is a void pointer, to store the library context (either rocBLAS or cuBLAS)*/
 typedef void* hipblasHandle_t;
 
+/*! \brief To specify the datatype to be signed short */
 typedef uint16_t hipblasHalf;
 
+/*! \brief  To specify the datatype to be signed char */
 typedef int8_t hipblasInt8;
 
+/*! \brief  Stride between matrices or vectors in strided_batched functions.*/
 typedef int64_t hipblasStride;
 
+/*! \brief  Struct to represent a 16 bit Brain floating-point number.*/
 typedef struct hipblasBfloat16
 {
     uint16_t data;
@@ -70,6 +75,7 @@ typedef hipDoubleComplex hipblasDoubleComplex;
 #else
 // using internal complex class for API
 
+/*! \brief Struct to represent a complex number with single precision real and imaginary parts.*/
 typedef struct hipblasComplex
 {
 #ifndef __cplusplus
@@ -114,6 +120,7 @@ public:
 #endif
 } hipblasComplex;
 
+/*! \brief Struct to represent a complex number with double precision real and imaginary parts.*/
 typedef struct hipblasDoubleComplex
 {
 #ifndef __cplusplus
@@ -225,56 +232,65 @@ static_assert(sizeof(hipblasComplex) == sizeof(float) * 2
               "Sizes of hipblasComplex or hipblasDoubleComplex are inconsistent");
 #endif
 
+/*! \brief hipblas status codes definition */
 typedef enum
 {
-    HIPBLAS_STATUS_SUCCESS           = 0, // Function succeeds
-    HIPBLAS_STATUS_NOT_INITIALIZED   = 1, // HIPBLAS library not initialized
-    HIPBLAS_STATUS_ALLOC_FAILED      = 2, // resource allocation failed
-    HIPBLAS_STATUS_INVALID_VALUE     = 3, // unsupported numerical value was passed to function
-    HIPBLAS_STATUS_MAPPING_ERROR     = 4, // access to GPU memory space failed
-    HIPBLAS_STATUS_EXECUTION_FAILED  = 5, // GPU program failed to execute
-    HIPBLAS_STATUS_INTERNAL_ERROR    = 6, // an internal HIPBLAS operation failed
-    HIPBLAS_STATUS_NOT_SUPPORTED     = 7, // function not implemented
-    HIPBLAS_STATUS_ARCH_MISMATCH     = 8,
-    HIPBLAS_STATUS_HANDLE_IS_NULLPTR = 9, // hipBLAS handle is null pointer
-    HIPBLAS_STATUS_INVALID_ENUM      = 10, // unsupported enum value was passed to function
-    HIPBLAS_STATUS_UNKNOWN           = 11, // back-end returned an unsupported status code
+    HIPBLAS_STATUS_SUCCESS           = 0, /**< Function succeeds */
+    HIPBLAS_STATUS_NOT_INITIALIZED   = 1, /**< HIPBLAS library not initialized */
+    HIPBLAS_STATUS_ALLOC_FAILED      = 2, /**< resource allocation failed */
+    HIPBLAS_STATUS_INVALID_VALUE     = 3, /**< unsupported numerical value was passed to function */
+    HIPBLAS_STATUS_MAPPING_ERROR     = 4, /**< access to GPU memory space failed */
+    HIPBLAS_STATUS_EXECUTION_FAILED  = 5, /**< GPU program failed to execute */
+    HIPBLAS_STATUS_INTERNAL_ERROR    = 6, /**< an internal HIPBLAS operation failed */
+    HIPBLAS_STATUS_NOT_SUPPORTED     = 7, /**< function not implemented */
+    HIPBLAS_STATUS_ARCH_MISMATCH     = 8, /**< architecture mismatch */
+    HIPBLAS_STATUS_HANDLE_IS_NULLPTR = 9, /**< hipBLAS handle is null pointer */
+    HIPBLAS_STATUS_INVALID_ENUM      = 10, /**<  unsupported enum value was passed to function */
+    HIPBLAS_STATUS_UNKNOWN           = 11, /**<  back-end returned an unsupported status code */
 } hipblasStatus_t;
 
 // set the values of enum constants to be the same as those used in cblas
+/*! \brief Used to specify whether the matrix is to be transposed or not. */
 typedef enum
 {
-    HIPBLAS_OP_N = 111,
-    HIPBLAS_OP_T = 112,
-    HIPBLAS_OP_C = 113,
+    HIPBLAS_OP_N = 111, /**<  Operate with the matrix. */
+    HIPBLAS_OP_T = 112, /**<  Operate with the transpose of the matrix. */
+    HIPBLAS_OP_C = 113 /**< Operate with the conjugate transpose of the matrix. */
 } hipblasOperation_t;
 
+/*! \brief Indicates if scalar pointers are on host or device. This is used for scalars alpha and beta and for scalar function return values. */
 typedef enum
 {
-    HIPBLAS_POINTER_MODE_HOST,
-    HIPBLAS_POINTER_MODE_DEVICE,
+    HIPBLAS_POINTER_MODE_HOST, /**< Scalar values affected by this variable will be located on the host. */
+    HIPBLAS_POINTER_MODE_DEVICE /**<  Scalar values affected by this variable will be located on the device. */
 } hipblasPointerMode_t;
 
+/*! \brief Used by the Hermitian, symmetric and triangular matrix routines to specify whether the upper or lower triangle is being referenced. */
 typedef enum
 {
-    HIPBLAS_FILL_MODE_UPPER = 121,
-    HIPBLAS_FILL_MODE_LOWER = 122,
-    HIPBLAS_FILL_MODE_FULL  = 123,
+    HIPBLAS_FILL_MODE_UPPER = 121, /**<  Upper triangle */
+    HIPBLAS_FILL_MODE_LOWER = 122, /**<  Lower triangle */
+    HIPBLAS_FILL_MODE_FULL  = 123
 } hipblasFillMode_t;
 
+/*! \brief It is used by the triangular matrix routines to specify whether the matrix is unit triangular.*/
 typedef enum
 {
-    HIPBLAS_DIAG_NON_UNIT = 131,
-    HIPBLAS_DIAG_UNIT     = 132,
+    HIPBLAS_DIAG_NON_UNIT = 131, /**<  Non-unit triangular. */
+    HIPBLAS_DIAG_UNIT     = 132 /**<  Unit triangular. */
 } hipblasDiagType_t;
 
+/*! \brief Indicates the side matrix A is located relative to matrix B during multiplication. */
 typedef enum
 {
-    HIPBLAS_SIDE_LEFT  = 141,
-    HIPBLAS_SIDE_RIGHT = 142,
-    HIPBLAS_SIDE_BOTH  = 143,
+    HIPBLAS_SIDE_LEFT
+    = 141, /**< Multiply general matrix by symmetric, Hermitian or triangular matrix on the left. */
+    HIPBLAS_SIDE_RIGHT
+    = 142, /**< Multiply general matrix by symmetric, Hermitian or triangular matrix on the right. */
+    HIPBLAS_SIDE_BOTH = 143
 } hipblasSideMode_t;
 
+/*! \brief Indicates the precision width of data stored in a blas type. */
 typedef enum
 {
     HIPBLAS_R_16F = 150, /**< 16 bit floating point, real */
@@ -295,53 +311,204 @@ typedef enum
     HIPBLAS_C_16B = 169, /**< 16 bit bfloat, complex */
 } hipblasDatatype_t;
 
+/*! \brief Indicates if layer is active with bitmask. */
 typedef enum
 {
-    HIPBLAS_GEMM_DEFAULT = 160,
+    HIPBLAS_GEMM_DEFAULT = 160 /**<  enumerator rocblas_gemm_algo_standard */
 } hipblasGemmAlgo_t;
 
+/*! \brief Indicates if atomics operations are allowed. Not allowing atomic operations may generally improve determinism and repeatability of results at a cost of performance. */
 typedef enum
 {
-    HIPBLAS_ATOMICS_NOT_ALLOWED = 0,
-    HIPBLAS_ATOMICS_ALLOWED     = 1,
+    HIPBLAS_ATOMICS_NOT_ALLOWED = 0, /**<  Algorithms will refrain from atomics where applicable. */
+    HIPBLAS_ATOMICS_ALLOWED = 1 /**< Algorithms will take advantage of atomics where applicable. */
 } hipblasAtomicsMode_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/*! \brief Create hipblas handle. */
 HIPBLAS_EXPORT hipblasStatus_t hipblasCreate(hipblasHandle_t* handle);
 
+/*! \brief Destroys the library context created using hipblasCreate() */
 HIPBLAS_EXPORT hipblasStatus_t hipblasDestroy(hipblasHandle_t handle);
 
+/*! \brief Set stream for handle */
 HIPBLAS_EXPORT hipblasStatus_t hipblasSetStream(hipblasHandle_t handle, hipStream_t streamId);
 
+/*! \brief Get stream[0] for handle */
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetStream(hipblasHandle_t handle, hipStream_t* streamId);
 
+/*! \brief Set hipblas pointer mode */
 HIPBLAS_EXPORT hipblasStatus_t hipblasSetPointerMode(hipblasHandle_t      handle,
                                                      hipblasPointerMode_t mode);
-
+/*! \brief Get hipblas pointer mode */
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetPointerMode(hipblasHandle_t       handle,
                                                      hipblasPointerMode_t* mode);
 
+/*! \brief copy vector from host to device
+    @param[in]
+    n           [int]
+                number of elements in the vector
+    @param[in]
+    elemSize    [int]
+                Size of both vectors in bytes
+    @param[in]
+    x           pointer to vector on the host
+    @param[in]
+    incx        [int]
+                specifies the increment for the elements of the vector
+    @param[out]
+    y           pointer to vector on the device
+    @param[in]
+    incy        [int]
+                specifies the increment for the elements of the vector
+     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSetVector(int n, int elemSize, const void* x, int incx, void* y, int incy);
 
+/*! \brief copy vector from device to host
+    @param[in]
+    n           [int]
+                number of elements in the vector
+    @param[in]
+    elemSize    [int]
+                Size of both vectors in bytes
+    @param[in]
+    x           pointer to vector on the device
+    @param[in]
+    incx        [int]
+                specifies the increment for the elements of the vector
+    @param[out]
+    y           pointer to vector on the host
+    @param[in]
+    incy        [int]
+                specifies the increment for the elements of the vector
+     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasGetVector(int n, int elemSize, const void* x, int incx, void* y, int incy);
 
+/*! \brief copy matrix from host to device
+    @param[in]
+    rows        [int]
+                number of rows in matrices
+    @param[in]
+    cols        [int]
+                number of columns in matrices
+    @param[in]
+    elem_size   [int]
+                number of bytes per element in the matrix
+    @param[in]
+    a           pointer to matrix on the host
+    @param[in]
+    lda         [int]
+                specifies the leading dimension of A, lda >= rows
+    @param[out]
+    b           pointer to matrix on the GPU
+    @param[in]
+    ldb         [int]
+                specifies the leading dimension of B, ldb >= rows
+     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSetMatrix(int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb);
 
+/*! \brief copy matrix from device to host
+    @param[in]
+    rows        [int]
+                number of rows in matrices
+    @param[in]
+    cols        [int]
+                number of columns in matrices
+    @param[in]
+    elem_size   [int]
+                number of bytes per element in the matrix
+    @param[in]
+    a           pointer to matrix on the GPU
+    @param[in]
+    lda         [int]
+                specifies the leading dimension of A, lda >= rows
+    @param[out]
+    b           pointer to matrix on the host
+    @param[in]
+    ldb         [int]
+                specifies the leading dimension of B, ldb >= rows
+     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasGetMatrix(int rows, int cols, int elemSize, const void* A, int lda, void* B, int ldb);
 
+/*! \brief asynchronously copy vector from host to device
+    \details
+    hipblasSetVectorAsync copies a vector from pinned host memory to device memory asynchronously.
+    Memory on the host must be allocated with hipHostMalloc or the transfer will be synchronous.
+    @param[in]
+    n           [int]
+                number of elements in the vector
+    @param[in]
+    x           pointer to vector on the host
+    @param[in]
+    incx        [int]
+                specifies the increment for the elements of the vector
+    @param[out]
+    y           pointer to vector on the device
+    @param[in]
+    incy        [int]
+                specifies the increment for the elements of the vector
+    @param[in]
+    stream      specifies the stream into which this transfer request is queued
+     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasSetVectorAsync(
     int n, int elem_size, const void* x, int incx, void* y, int incy, hipStream_t stream);
 
+/*! \brief asynchronously copy vector from device to host
+    \details
+    hipblasGetVectorAsync copies a vector from pinned host memory to device memory asynchronously.
+    Memory on the host must be allocated with hipHostMalloc or the transfer will be synchronous.
+    @param[in]
+    n           [int]
+                number of elements in the vector
+    @param[in]
+    x           pointer to vector on the device
+    @param[in]
+    incx        [int]
+                specifies the increment for the elements of the vector
+    @param[out]
+    y           pointer to vector on the host
+    @param[in]
+    incy        [int]
+                specifies the increment for the elements of the vector
+    @param[in]
+    stream      specifies the stream into which this transfer request is queued
+     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetVectorAsync(
     int n, int elem_size, const void* x, int incx, void* y, int incy, hipStream_t stream);
 
+/*! \brief asynchronously copy matrix from host to device
+    \details
+    hipblasSetMatrixAsync copies a matrix from pinned host memory to device memory asynchronously.
+    Memory on the host must be allocated with hipHostMalloc or the transfer will be synchronous.
+    @param[in]
+    rows        [int]
+                number of rows in matrices
+    @param[in]
+    cols        [int]
+                number of columns in matrices
+    @param[in]
+    elem_size   [int]
+                number of bytes per element in the matrix
+    @param[in]
+    a           pointer to matrix on the host
+    @param[in]
+    lda         [int]
+                specifies the leading dimension of A, lda >= rows
+    @param[out]
+    b           pointer to matrix on the GPU
+    @param[in]
+    ldb         [int]
+                specifies the leading dimension of B, ldb >= rows
+    @param[in]
+    stream      specifies the stream into which this transfer request is queued
+     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasSetMatrixAsync(int         rows,
                                                      int         cols,
                                                      int         elem_size,
@@ -350,7 +517,32 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSetMatrixAsync(int         rows,
                                                      void*       B,
                                                      int         ldb,
                                                      hipStream_t stream);
-
+/*! \brief asynchronously copy matrix from device to host
+    \details
+    hipblasGetMatrixAsync copies a matrix from device memory to pinned host memory asynchronously.
+    Memory on the host must be allocated with hipHostMalloc or the transfer will be synchronous.
+    @param[in]
+    rows        [int]
+                number of rows in matrices
+    @param[in]
+    cols        [int]
+                number of columns in matrices
+    @param[in]
+    elem_size   [int]
+                number of bytes per element in the matrix
+    @param[in]
+    a           pointer to matrix on the GPU
+    @param[in]
+    lda         [int]
+                specifies the leading dimension of A, lda >= rows
+    @param[out]
+    b           pointer to matrix on the host
+    @param[in]
+    ldb         [int]
+                specifies the leading dimension of B, ldb >= rows
+    @param[in]
+    stream      specifies the stream into which this transfer request is queued
+     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetMatrixAsync(int         rows,
                                                      int         cols,
                                                      int         elem_size,
@@ -360,9 +552,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGetMatrixAsync(int         rows,
                                                      int         ldb,
                                                      hipStream_t stream);
 
+/*! \brief Set hipblasSetAtomicsMode*/
 HIPBLAS_EXPORT hipblasStatus_t hipblasSetAtomicsMode(hipblasHandle_t      handle,
                                                      hipblasAtomicsMode_t atomics_mode);
 
+/*! \brief Get hipblasSetAtomicsMode*/
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t       handle,
                                                      hipblasAtomicsMode_t* atomics_mode);
 
@@ -1212,9 +1406,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyStridedBatched(hipblasHandle_t       
                 take care to ensure that stride_y is of appropriate size, for a typical
                 case this means stride_y >= n * incy. stridey should be non zero.
     @param[in]
-    incy      [int]
-              specifies the increment for the elements of y.
-    @param[in]
     batchCount [int]
                 number of instances in the batch
 
@@ -1990,7 +2181,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrotStridedBatched(hipblasHandle_t        
     incx    [int]
             specifies the increment between elements of each x_i.
     @param[in]
-    stride_x [hipblasStride]
+    stridex [hipblasStride]
              specifies the increment from the beginning of x_i to the beginning of x_(i+1)
     @param[inout]
     y       device pointer to the first vector y_1.
@@ -2324,7 +2515,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmStridedBatched(hipblasHandle_t handle
     incx    [int]
             specifies the increment between elements of each x_i.
     @param[in]
-    stride_x [hipblasStride]
+    stridex [hipblasStride]
              specifies the increment between the beginning of x_i and x_(i + 1)
     @param[inout]
     y       device pointer pointing to first strided batched vector y_1.
@@ -2557,6 +2748,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCscal(
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasCsscal(hipblasHandle_t handle, int n, const float* alpha, hipblasComplex* x, int incx);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasZscal(hipblasHandle_t             handle,
+                                            int                         n,
+                                            const hipblasDoubleComplex* alpha,
+                                            hipblasDoubleComplex*       x,
+                                            int                         incx);
 /*! \brief BLAS Level 1 API
 
     \details
@@ -2580,13 +2776,6 @@ HIPBLAS_EXPORT hipblasStatus_t
 
 
     ********************************************************************/
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasZscal(hipblasHandle_t             handle,
-                                            int                         n,
-                                            const hipblasDoubleComplex* alpha,
-                                            hipblasDoubleComplex*       x,
-                                            int                         incx);
-
 HIPBLAS_EXPORT hipblasStatus_t hipblasZdscal(
     hipblasHandle_t handle, int n, const double* alpha, hipblasDoubleComplex* x, int incx);
 
