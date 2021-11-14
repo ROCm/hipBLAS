@@ -4,7 +4,7 @@
  * ************************************************************************ */
 
 #include "hipblas_datatype2string.hpp"
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 
 // clang-format off
 hipblas_initialization string2hipblas_initialization(const std::string& value)

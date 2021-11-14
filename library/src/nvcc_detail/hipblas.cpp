@@ -2,7 +2,7 @@
  * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "exceptions.hpp"
 #include <cublas.h>
 #include <cublas_v2.h>

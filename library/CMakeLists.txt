@@ -30,11 +30,15 @@ endif( )
 find_package( HIP REQUIRED )
 
 # configure a header file to pass the CMake version settings to the source, and package the header files in the output archive
-configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas-version.h.in" "${PROJECT_BINARY_DIR}/include/hipblas-version.h" )
+configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas/hipblas-version.h.in" "${PROJECT_BINARY_DIR}/include/hipblas/hipblas-version.h" )
+
+# Copy Headers to Build Dir
+configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas/hipblas.h" "${PROJECT_BINARY_DIR}/include/hipblas/hipblas.h" COPYONLY)
+
 
 set( hipblas_headers_public
-  include/hipblas.h
-  ${PROJECT_BINARY_DIR}/include/hipblas-version.h
+  include/hipblas/hipblas.h
+  ${PROJECT_BINARY_DIR}/include/hipblas/hipblas-version.h
 )
 
 source_group( "Header Files\\Public" FILES ${hipblas_headers_public} )

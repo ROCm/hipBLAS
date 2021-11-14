@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include <cinttypes>
 #include <gtest/gtest.h>
 

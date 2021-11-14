@@ -8,7 +8,7 @@
 #define _HIPBLAS_HPP_
 
 /* library headers */
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 
 /*!\file
  * \brief hipblasTemplate_api.h provides Basic Linear Algebra Subprograms of Level 1, 2 and 3,

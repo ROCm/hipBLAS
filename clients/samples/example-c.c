@@ -2,7 +2,7 @@
  * Copyright 2020 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "utility.h"
 #include <stdbool.h>
 #include <stdio.h>

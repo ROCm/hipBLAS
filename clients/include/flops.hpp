@@ -6,7 +6,7 @@
 #ifndef _HIPBLAS_FLOPS_H_
 #define _HIPBLAS_FLOPS_H_
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 
 /*!\file
  * \brief provides Floating point counts of Basic Linear Algebra Subprograms (BLAS) of Level 1, 2,

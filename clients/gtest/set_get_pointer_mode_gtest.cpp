@@ -3,7 +3,7 @@
  *
  * ************************************************************************ */
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include <gtest/gtest.h>
 #include <stdexcept>
 //#include "utility.h"

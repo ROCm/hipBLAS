@@ -4,7 +4,7 @@
  * ************************************************************************ */
 
 #include "utility.h"
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include <sys/time.h>
 
 hipblas_rng_t hipblas_rng(69069);

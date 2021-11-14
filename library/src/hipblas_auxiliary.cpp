@@ -1,7 +1,7 @@
 /* ************************************************************************
  * Copyright 2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
-#include <hipblas.h>
+#include <hipblas/hipblas.h>
 
 // Convert hipblas_status to string
 extern "C" const char* hipblasStatusToString(hipblasStatus_t status)

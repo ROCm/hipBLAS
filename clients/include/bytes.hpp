@@ -6,7 +6,7 @@
 #ifndef _HIPBLAS_BYTES_H_
 #define _HIPBLAS_BYTES_H_
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 
 /*!\file
  * \brief provides bandwidth measure as byte counts Basic Linear Algebra Subprograms (BLAS) of
