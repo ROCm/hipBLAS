@@ -26,6 +26,7 @@ function display_help()
   echo "    [-v|--rocm-dev] Set specific rocm-dev version"
   echo "    [-b|--rocblas] Set specific rocblas version"
   echo "    [--rocblas-path] Set specific path to custom built rocblas"
+  echo "    [--rocsolver-path] Set specific path to custom built rocsolver"
   echo "    [--static] Create static library instead of shared library"
   echo "    [--codecoverage] build with code coverage profiling enabled"
   echo "    [--address-sanitizer] Build with address sanitizer enabled. Uses hipcc as compiler"
@@ -170,11 +171,14 @@ install_packages( )
       fi
     fi
 
-    if [[ "${build_solver}" == true ]]; then
-      library_dependencies_ubuntu+=( "rocsolver" )
-      library_dependencies_centos+=( "rocsolver" )
-      library_dependencies_fedora+=( "rocsolver" )
-      library_dependencies_sles+=( "rocsolver" )
+    # Do not install rocsolver if --rocsolver_path flag is set,
+    if [[ -z ${rocsolver_path+foo} ]]; then
+      if [[ "${build_solver}" == true ]]; then
+        library_dependencies_ubuntu+=( "rocsolver" )
+        library_dependencies_centos+=( "rocsolver" )
+        library_dependencies_fedora+=( "rocsolver" )
+        library_dependencies_sles+=( "rocsolver" )
+      fi
     fi
   fi
 
@@ -299,7 +303,7 @@ build_codecoverage=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target:,address-sanitizer --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -376,6 +380,9 @@ while true; do
          shift 2;;
     --rocblas-path)
         rocblas_path=${2}
+        shift 2 ;;
+    --rocsolver-path)
+        rocsolver_path=${2}
         shift 2 ;;
     --prefix)
         install_prefix=${2}
@@ -500,6 +507,11 @@ pushd .
   # custom rocblas
   if [[ ${rocblas_path+foo} ]]; then
     cmake_common_options="${cmake_common_options} -DCUSTOM_ROCBLAS=${rocblas_path}"
+  fi
+
+  # custom rocsolver
+  if [[ ${rocsolver_path+foo} ]]; then
+    cmake_common_options="${cmake_common_options} -DCUSTOM_ROCSOLVER=${rocsolver_path}"
   fi
 
   # code coverage
