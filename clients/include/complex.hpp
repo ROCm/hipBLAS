@@ -4,7 +4,7 @@
 #ifndef HIPBLAS_COMPLEX_HPP
 #define HIPBLAS_COMPLEX_HPP
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include <complex>
 
 inline hipblasComplex& operator+=(hipblasComplex& lhs, const hipblasComplex& rhs)

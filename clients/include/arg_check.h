@@ -6,7 +6,7 @@
 #ifndef _ARG_CHECK_H
 #define _ARG_CHECK_H
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 
 #ifdef GOOGLE_TEST
 #include "gtest/gtest.h"

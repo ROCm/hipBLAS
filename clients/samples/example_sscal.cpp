@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "utility.h"
 
 /* ============================================================================================ */

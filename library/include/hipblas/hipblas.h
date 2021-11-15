@@ -13,8 +13,8 @@
 #ifndef HIPBLAS_H
 #define HIPBLAS_H
 
-#include "hipblas-export.h"
-#include "hipblas-version.h"
+#include "hipblas/hipblas-export.h"
+#include "hipblas/hipblas-version.h"
 #include <hip/hip_runtime_api.h>
 #include <stdint.h>
 

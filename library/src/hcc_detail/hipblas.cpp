@@ -1,7 +1,7 @@
 /* ************************************************************************
  * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "exceptions.hpp"
 #include "limits.h"
 #include "rocblas/rocblas.h"

@@ -7,7 +7,7 @@
 #include <windows.h>
 #endif
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "utility.h"
 #include <chrono>
 

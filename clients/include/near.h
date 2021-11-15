@@ -7,7 +7,7 @@
 #ifndef _NEAR_H
 #define _NEAR_H
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "hipblas_vector.hpp"
 
 #ifdef GOOGLE_TEST

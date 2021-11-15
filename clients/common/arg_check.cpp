@@ -3,7 +3,7 @@
  * ************************************************************************ */
 
 #include "arg_check.h"
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include <iostream>
 
 void verify_hipblas_status_invalid_value(hipblasStatus_t status, const char* message)

@@ -5,7 +5,7 @@
 
 #include "norm.h"
 #include "cblas.h"
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include <stdio.h>
 
 /* =====================================================================
