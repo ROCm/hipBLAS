@@ -8,7 +8,7 @@
 #include <string>
 
 #include <gtest/gtest.h>
-#include <hipblas.h>
+#include <hipblas/hipblas.h>
 
 #include "utility.h"
 

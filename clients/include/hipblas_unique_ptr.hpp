@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 
 #define PRINT_IF_HIP_ERROR(INPUT_STATUS_FOR_CHECK)                \
     {                                                             \

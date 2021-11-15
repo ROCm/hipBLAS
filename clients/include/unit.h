@@ -7,7 +7,7 @@
 #ifndef _UNIT_H
 #define _UNIT_H
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "hipblas_vector.hpp"
 
 #ifdef GOOGLE_TEST
