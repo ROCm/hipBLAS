@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <vector>
 
 #define ROCM_MATHLIBS_API_USE_HIP_COMPLEX
-#include <hipblas.h>
+#include <hipblas/hipblas.h>
 
 #ifndef CHECK_HIP_ERROR
 #define CHECK_HIP_ERROR(error)                    \
