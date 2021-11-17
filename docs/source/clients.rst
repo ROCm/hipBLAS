@@ -8,7 +8,7 @@ There are two client executables that can be used with hipBLAS. They are,
 
 2. hipblas-test
 
-These two clients can be built by following the instructions at `Building and Installing hipBLAS github page <https://github.com/ROCmSoftwarePlatform/hipBLAS/blob/develop/docs/source/install.rst>`_. After building the hipBLAS clients, they can be found in the directory ``hipBLAS/build/release/clients/staging``.
+These two clients can be built by following the instructions in the `Building and Installing hipBLAS github page <https://github.com/ROCmSoftwarePlatform/hipBLAS/blob/develop/docs/source/install.rst>`_ . After building the hipBLAS clients, they can be found in the directory ``hipBLAS/build/release/clients/staging``.
 
 The next two sections will cover a brief explanation and the usage of each hipBLAS client.
 
@@ -64,41 +64,9 @@ hipblas-test
 
 hipblas-test is used in performing hipBLAS unit tests and it uses Googletest framework.
 
-The tests are in 4 categories:
 
-- quick
-- pre_checkin
-- nightly
-- known_bug
-
-To run the quick tests:
+To run the hipblas  tests:
 
 .. code-block:: bash
 
-   ./hipblas-test --gtest_filter=*quick*
-
-The other tests can also be run using the above command by replacing ``*quick*`` with ``*pre_checkin*``, ``*nightly*``, and ``*known_bug*``.
-
-The pattern for ``--gtest_filter`` is:
-
-.. code-block:: bash
-
-   --gtest_filter=POSTIVE_PATTERNS[-NEGATIVE_PATTERNS]
-
-gtest_filter can also be used to run tests for a particular function, and a particular set of input parameters. For example, to run all quick tests for the function hipblas_saxpy:
-
-.. code-block:: bash
-
-   ./hipblas-test --gtest_filter=*quick*axpy*f32_r*
-
-The number of lines of output can be reduced with:
-
-.. code-block:: bash
-
-   GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_filter=*quick*
-
-
-CUDA unit test failures
------------------------
-There are a few library unit tests failing with cuBLAS; we believe these failures are benign and can be ignored. Our unit tests are testing with negative strides and edge cases which are handled differently between the two libraries, and our unit tests don't account for these differences yet. These errors will be resolved in an upcoming release.
-
+   ./hipblas-test

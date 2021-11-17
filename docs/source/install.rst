@@ -20,7 +20,7 @@ Quickstart hipBLAS build
 
 Build library dependencies + library
 ------------------------------------
-The root of this repository has a helper bash script `install.sh` to build and install hipBLAS on Ubuntu with a single command.  It does take a lot of options and hard-codes configuration that can be specified through invoking cmake directly, but it's a great way to get started quickly and can serve as an example of how to build/install.
+The root of this repository has a helper bash script `install.sh` to build and install hipBLAS with a single command.  It does take a lot of options and hard-codes configuration that can be specified through invoking cmake directly, but it's a great way to get started quickly and can serve as an example of how to build/install.
 A few commands in the script need sudo access so that it may prompt you for a password.
 
 Typical uses of install.sh to build (library dependencies + library) are
@@ -136,15 +136,14 @@ in the table below.
 Dependencies
 ============
 
-Dependencies are listed in the script install.sh. The -d flag to install.sh installs dependencies.
-
+Dependencies are listed in the script install.sh. Use ``install.sh`` with ``-d`` option to install dependencies.
 CMake has a minimum version requirement listed in the file install.sh. See --cmake_install flag in install.sh to upgrade automatically.
 
 
 Manual build (all supported platforms)
 =======================================
 
-If you use a distro other than Ubuntu, or would like more control over the build process, this section has useful information on how to configure cmake and manually build.
+This section has useful information on how to configure cmake and manually build.
 
 Dependencies For Building Library
 ---------------------------------
@@ -158,13 +157,6 @@ Install one-liners cmake:
 
 - Ubuntu: ``sudo apt install cmake-qt-gui``
 - Fedora: ``sudo dnf install cmake-gui``
-
-Build Library Using Script (Ubuntu only)
-----------------------------------------
-The root of this repository has a helper bash script install.sh to build and install hipBLAS on Ubuntu with a single command. It does not take a lot of options and hard-codes configuration that can be specified through invoking cmake directly, but it's a great way to get started quickly and can serve as an example of how to build/install. A few commands in the script need sudo access, so it may prompt you for a password.
-
-- ``./install.sh -h`` -- shows help
-- ``./install.sh -id`` -- build library, build dependencies and install (-d flag only needs to be passed once on a system)
 
 Build Library Using Individual Commands
 ---------------------------------------
@@ -216,17 +208,3 @@ Once dependencies are available on the system, it is possible to configure the c
    CXX=/opt/rocm/bin/hcc ccmake -DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON [HIPBLAS_SOURCE]
    make -j$(nproc)
    sudo make install   # sudo required if installing into system directory such as /opt/rocm
-
-Common Build Problems
-=====================
-- Issue: HIP (/opt/rocm/hip) was built using hcc 1.0.xxx-xxx-xxx-xxx, but you are using /opt/rocm/hcc/hcc with version 1.0.yyy-yyy-yyy-yyy from hipcc. (version does not match) . Please rebuild HIP including cmake or update HCC_HOME variable.
-
-- Solution: Download HIP from github and use hcc to `build from source<https://github.com/ROCm-Developer-Tools/HIP/blob/master/INSTALL.md>`_ and then use the build HIP instead of /opt/rocm/hip one or singly overwrite the new build HIP to this location.
-
-- Issue: For Carrizo - HCC RUNTIME ERROR: Fail to find compatible kernel
-
-- Solution: Add the following to the cmake command when configuring: -DCMAKE_CXX_FLAGS="--amdgpu-target=gfx801"
-
-- Issue: For MI25 (Vega10 Server) - HCC RUNTIME ERROR: Fail to find compatible kernel
-
-- Solution: export HCC_AMDGPU_TARGET=gfx900
