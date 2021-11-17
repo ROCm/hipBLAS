@@ -125,11 +125,11 @@ install_packages( )
   fi
 
   # dependencies needed for library and clients to build
-  local library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" )
-  local library_dependencies_centos=( "epel-release" "make" "cmake3" "gcc-c++" "rpm-build" )
-  local library_dependencies_centos8=( "epel-release" "make" "cmake3" "gcc-c++" "rpm-build" )
-  local library_dependencies_fedora=( "make" "cmake" "gcc-c++" "libcxx-devel" "rpm-build" )
-  local library_dependencies_sles=( "make" "cmake" "gcc-c++" "libcxxtools9" "rpm-build" )
+  local library_dependencies_ubuntu=( "make" "pkg-config" )
+  local library_dependencies_centos=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_centos8=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_fedora=( "make" "gcc-c++" "libcxx-devel" "rpm-build" )
+  local library_dependencies_sles=( "make" "gcc-c++" "libcxxtools9" "rpm-build" )
 
   if [[ "${build_cuda}" == true ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
@@ -422,12 +422,6 @@ fi
 
 # Default cmake executable is called cmake
 cmake_executable=cmake
-
-case "${ID}" in
-  centos|rhel)
-  cmake_executable=cmake3
-  ;;
-esac
 
 # #################################################
 # dependencies
