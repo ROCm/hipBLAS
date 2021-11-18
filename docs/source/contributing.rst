@@ -18,17 +18,13 @@ Pull-request guidelines
 
 Our code contriubtion guidelines closely follows the model of `GitHub
 pull-requests <https://help.github.com/articles/using-pull-requests/>`__.
-The rocBLAS repository follows the `git
-flow <http://nvie.com/posts/a-successful-git-branching-model/>`__
-workflow, which dictates a /master branch where releases are cut, and a
+The hipBLAS repository follows a workflow which dictates a /master branch where releases are cut, and a
 /develop branch which serves as an integration branch for new code. Pull requests should:
 
 -  target the **develop** branch for integration
 -  ensure code builds successfully.
 -  do not break existing test cases
--  new functionality will only be merged with new unit tests
--  new unit tests should integrate within the existing `googletest
-   framework <https://github.com/google/googletest/blob/master/googletest/docs/primer.md>`__
+-  new unit tests should integrate within the existing googletest framework.
 -  tests must have good code coverage
 -  code must also have benchmark tests, and performance must approach
    the compute bound limit or memory bound limit.
@@ -150,3 +146,5 @@ Users can use the following command to run cppcheck locally to generate the repo
 
    $ cd hipBLAS
    $ cppcheck --enable=all --inconclusive --library=googletest --inline-suppr -i./build --suppressions-list=./CppCheckSuppressions.txt --template="{file}:{line}: {severity}: {id} :{message}" . 2> cppcheck_report.txt
+
+For more information on the command line options, refer to the cppcheck manual on the web.

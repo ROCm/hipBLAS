@@ -9,7 +9,7 @@
 //! and terminology of CUDA, but with a portable path to other accelerators as well.
 //!
 //!  This is the master include file for hipblas, wrapping around rocblas and cublas "version 2"
-//
+
 #ifndef HIPBLAS_H
 #define HIPBLAS_H
 
@@ -19,8 +19,6 @@
 #include <stdint.h>
 
 /* Workaround clang bug:
-
-   https://bugs.llvm.org/show_bug.cgi?id=35863
 
    This macro expands to static if clang is used; otherwise it expands empty.
    It is intended to be used in variable template specializations, where clang
@@ -42,6 +40,26 @@
 #ifndef HIPBLAS_DEPRECATED_MSG
 #define HIPBLAS_DEPRECATED_MSG(MSG) __attribute__((deprecated(#MSG)))
 #endif
+
+/*
+ *  Naming conventions and Notations:
+ *
+ *  1. Please follow the naming convention
+ *      Big case for matrix, e.g. matrix A, B, C   GEMM (C = A*B)
+ *      Lower case for vector, e.g. vector x, y    GEMV (y = A*x)
+ *
+ *  2. Specify the supported precisions for both rocBLAS and cuBLAS backend for any new functions:
+ *     For eg:
+ *          - Supported precisions in rocBLAS : h,bf,s,d,c,z
+ *          - Supported precisions in cuBLAS  : s,d,c,z
+ *     Use the following notations,
+ *     h  = half
+ *     bf = 16 bit brian floating point
+ *     s  = single
+ *     d  = double
+ *     c  = single complex
+ *     z  = double complex
+ */
 
 /*! \brief hipblasHanlde_t is a void pointer, to store the library context (either rocBLAS or cuBLAS)*/
 typedef void* hipblasHandle_t;
@@ -575,6 +593,9 @@ HIPBLAS_EXPORT hipblasStatus_t
     \details
     amax finds the first index of the element of maximum magnitude of a vector x.
 
+    - Supported precisions in rocBLAS : s,d,c,z.
+    - Supported precisions in cuBLAS  : s,d,c,z.
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -613,6 +634,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIcamaxBatched(hipblasHandle_t             
 
     \details
      amaxBatched finds the first index of the element of maximum magnitude of each vector x_i in a batch, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z.
+    - Supported precisions in cuBLAS  : No support.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -670,6 +694,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIcamaxStridedBatched(hipblasHandle_t      
     \details
      amaxStridedBatched finds the first index of the element of maximum magnitude of each vector x_i in a batch, for i = 1, ..., batchCount.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -717,6 +744,9 @@ HIPBLAS_EXPORT hipblasStatus_t
     \details
     amin finds the first index of the element of minimum magnitude of a vector x.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -754,6 +784,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIcaminBatched(hipblasHandle_t             
 
     \details
     aminBatched finds the first index of the element of minimum magnitude of each vector x_i in a batch, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -811,6 +844,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIcaminStridedBatched(hipblasHandle_t      
     \details
      aminStridedBatched finds the first index of the element of minimum magnitude of each vector x_i in a batch, for i = 1, ..., batchCount.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -859,6 +895,9 @@ HIPBLAS_EXPORT hipblasStatus_t
     asum computes the sum of the magnitudes of elements of a real vector x,
          or the sum of magnitudes of the real and imaginary parts of elements if x is a complex vector.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -904,6 +943,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScasumBatched(hipblasHandle_t             
     asumBatched computes the sum of the magnitudes of the elements in a batch of real vectors x_i,
         or the sum of magnitudes of the real and imaginary parts of elements if x_i is a complex
         vector, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -961,7 +1003,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScasumStridedBatched(hipblasHandle_t      
     \details
     asumStridedBatched computes the sum of the magnitudes of elements of a real vectors x_i,
         or the sum of magnitudes of the real and imaginary parts of elements if x_i is a complex
-        vector, for i = 1, ..., batchCount
+        vector, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -1036,6 +1081,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpy(hipblasHandle_t       handle,
 
         y := alpha * x + y
 
+    - Supported precisions in rocBLAS : h,s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -1105,6 +1153,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpyBatched(hipblasHandle_t             h
 
     \details
     axpyBatched   compute y := alpha * x + y over a set of batched vectors.
+
+    - Supported precisions in rocBLAS : h,s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -1188,6 +1239,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCaxpyStridedBatched(hipblasHandle_t       
     \details
     axpyStridedBatched   compute y := alpha * x + y over a set of strided batched vectors.
 
+    - Supported precisions in rocBLAS : h,s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -1245,6 +1299,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy(
     copy  copies each element x[i] into y[i], for  i = 1 , ... , n
 
         y := x,
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -1305,6 +1362,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyBatched(hipblasHandle_t             h
 
     where (x_i, y_i) is the i-th instance of the batch.
     x_i and y_i are vectors.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -1376,6 +1436,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyStridedBatched(hipblasHandle_t       
 
     where (x_i, y_i) is the i-th instance of the batch.
     x_i and y_i are vectors.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -1489,6 +1552,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotc(hipblasHandle_t             handle,
 
         result = conjugate (x) * y;
 
+    - Supported precisions in rocBLAS : h,bf,s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -1597,6 +1663,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcBatched(hipblasHandle_t              
 
     where (x_i, y_i) is the i-th instance of the batch.
     x_i and y_i are vectors, for i = 1, ..., batchCount
+
+    - Supported precisions in rocBLAS : h,bf,s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -1725,6 +1794,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotcStridedBatched(hipblasHandle_t       
     where (x_i, y_i) is the i-th instance of the batch.
     x_i and y_i are vectors, for i = 1, ..., batchCount
 
+    - Supported precisions in rocBLAS : h,bf,s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -1786,6 +1858,9 @@ HIPBLAS_EXPORT hipblasStatus_t
               result := sqrt( x'*x ) for real vectors
               result := sqrt( x**H*x ) for complex vectors
 
+    - Supported precisions in rocBLAS : s,d,c,z,sc,dz
+    - Supported precisions in cuBLAS  : s,d,sc,dz
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -1830,6 +1905,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2Batched(hipblasHandle_t             
 
               result := sqrt( x_i'*x_i ) for real vectors x, for i = 1, ..., batchCount
               result := sqrt( x_i**H*x_i ) for complex vectors x, for i = 1, ..., batchCount
+
+    - Supported precisions in rocBLAS : s,d,c,z,sc,dz
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -1891,6 +1969,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2StridedBatched(hipblasHandle_t      
 
               := sqrt( x_i'*x_i ) for real vectors x, for i = 1, ..., batchCount
               := sqrt( x_i**H*x_i ) for complex vectors, for i = 1, ..., batchCount
+
+    - Supported precisions in rocBLAS : s,d,c,z,sc,dz
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -1977,6 +2058,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrot(hipblasHandle_t             handle,
     \details
     rot applies the Givens rotation matrix defined by c=cos(alpha) and s=sin(alpha) to vectors x and y.
         Scalars c and s may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
+
+    - Supported precisions in rocBLAS : s,d,sc,dz
+    - Supported precisions in cuBLAS  : s,d,c,z,cs,zd
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -2066,6 +2150,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrotBatched(hipblasHandle_t             ha
     \details
     rotBatched applies the Givens rotation matrix defined by c=cos(alpha) and s=sin(alpha) to batched vectors x_i and y_i, for i = 1, ..., batchCount.
         Scalars c and s may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
+
+    - Supported precisions in rocBLAS : s,d,sc,dz
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -2169,6 +2256,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrotStridedBatched(hipblasHandle_t        
     rotStridedBatched applies the Givens rotation matrix defined by c=cos(alpha) and s=sin(alpha) to strided batched vectors x_i and y_i, for i = 1, ..., batchCount.
         Scalars c and s may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
 
+    - Supported precisions in rocBLAS : s,d,sc,dz
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle  [hipblasHandle_t]
             handle to the hipblas library context queue.
@@ -2231,6 +2321,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCrotg(
          If the pointer mode is set to HIPBLAS_POINTER_MODE_HOST, this function blocks the CPU until the GPU has finished and the results are available in host memory.
          If the pointer mode is set to HIPBLAS_POINTER_MODE_DEVICE, this function returns immediately and synchronization is required to read the results.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle  [hipblasHandle_t]
             handle to the hipblas library context queue.
@@ -2279,6 +2372,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCrotgBatched(hipblasHandle_t       handle,
          a, b, c, and s may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
          If the pointer mode is set to HIPBLAS_POINTER_MODE_HOST, this function blocks the CPU until the GPU has finished and the results are available in host memory.
          If the pointer mode is set to HIPBLAS_POINTER_MODE_DEVICE, this function returns immediately and synchronization is required to read the results.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -2344,6 +2440,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCrotgStridedBatched(hipblasHandle_t handle
          If the pointer mode is set to HIPBLAS_POINTER_MODE_HOST, this function blocks the CPU until the GPU has finished and the results are available in host memory.
          If the pointer mode is set to HIPBLAS_POINTER_MODE_HOST, this function returns immediately and synchronization is required to read the results.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle  [hipblasHandle_t]
             handle to the hipblas library context queue.
@@ -2391,6 +2490,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSrotm(
 
     \details
     rotm applies the modified Givens rotation matrix defined by param to vectors x and y.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : s,d
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -2441,6 +2543,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmBatched(hipblasHandle_t    handle,
 
     \details
     rotmBatched applies the modified Givens rotation matrix defined by param_i to batched vectors x_i and y_i, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -2502,6 +2607,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmStridedBatched(hipblasHandle_t handle
 
     \details
     rotmStridedBatched applies the modified Givens rotation matrix defined by param_i to strided batched vectors x_i and y_i, for i = 1, ..., batchCount
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -2571,6 +2679,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmg(
           If the pointer mode is set to HIPBLAS_POINTER_MODE_HOST, this function blocks the CPU until the GPU has finished and the results are available in host memory.
           If the pointer mode is set to HIPBLAS_POINTER_MODE_DEVICE, this function returns immediately and synchronization is required to read the results.
 
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : s,d
+
     @param[in]
     handle  [hipblasHandle_t]
             handle to the hipblas library context queue.
@@ -2616,6 +2727,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmgBatched(hipblasHandle_t    handle,
           Parameters may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
           If the pointer mode is set to HIPBLAS_POINTER_MODE_HOST, this function blocks the CPU until the GPU has finished and the results are available in host memory.
           If the pointer mode is set to HIPBLAS_POINTER_MODE_DEVICE, this function returns immediately and synchronization is required to read the results.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -2676,6 +2790,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmgStridedBatched(hipblasHandle_t handl
           Parameters may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
           If the pointer mode is set to HIPBLAS_POINTER_MODE_HOST, this function blocks the CPU until the GPU has finished and the results are available in host memory.
           If the pointer mode is set to HIPBLAS_POINTER_MODE_DEVICE, this function returns immediately and synchronization is required to read the results.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -2760,6 +2877,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZscal(hipblasHandle_t             handle,
 
         x := alpha * x
 
+    - Supported precisions in rocBLAS : s,d,c,z,cs,zd
+    - Supported precisions in cuBLAS  : s,d,c,z,cs,zd
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -2817,6 +2937,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsscalBatched(hipblasHandle_t       handle
          x_i := alpha * x_i
 
      where (x_i) is the i-th instance of the batch.
+
+    - Supported precisions in rocBLAS : s,d,c,z,cs,zd
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle      [hipblasHandle_t]
                 handle to the hipblas library context queue.
@@ -2889,6 +3013,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsscalStridedBatched(hipblasHandle_t handl
          x_i := alpha * x_i ,
 
      where (x_i) is the i-th instance of the batch.
+
+    - Supported precisions in rocBLAS : s,d,c,z,cs,zd
+    - Supported precisions in cuBLAS  : No support
+
      @param[in]
     handle      [hipblasHandle_t]
                 handle to the hipblas library context queue.
@@ -2938,6 +3066,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCswap(
 
         y := x; x := y
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -2985,6 +3116,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCswapBatched(hipblasHandle_t handle,
     swapBatched interchanges vectors x_i and y_i, for i = 1 , ... , batchCount
 
         y_i := x_i; x_i := y_i
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -3052,6 +3186,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCswapStridedBatched(hipblasHandle_t handle
     swapStridedBatched interchanges vectors x_i and y_i, for i = 1 , ... , batchCount
 
         y_i := x_i; x_i := y_i
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -3158,6 +3295,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgbmv(hipblasHandle_t       handle,
 
     where alpha and beta are scalars, x and y are vectors and A is an
     m by n banded matrix with kl sub-diagonals and ku super-diagonals.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -3290,6 +3430,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgbmvBatched(hipblasHandle_t             h
     alpha and beta are scalars, x_i and y_i are vectors and A_i is an
     m by n banded matrix with kl sub-diagonals and ku super-diagonals,
     for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -3436,6 +3579,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgbmvStridedBatched(hipblasHandle_t       
     m by n banded matrix with kl sub-diagonals and ku super-diagonals,
     for i = 1, ..., batchCount.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -3573,6 +3719,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgemv(hipblasHandle_t       handle,
     where alpha and beta are scalars, x and y are vectors and A is an
     m by n matrix.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -3674,6 +3823,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgemvBatched(hipblasHandle_t             h
     where (A_i, x_i, y_i) is the i-th instance of the batch.
     alpha and beta are scalars, x_i and y_i are vectors and A_i is an
     m by n matrix, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle      [hipblasHandle_t]
@@ -3789,6 +3941,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t       
     where (A_i, x_i, y_i) is the i-th instance of the batch.
     alpha and beta are scalars, x_i and y_i are vectors and A_i is an
     m by n matrix, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle      [hipblasHandle_t]
@@ -3925,6 +4080,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeru(hipblasHandle_t             handle,
     where alpha is a scalar, x and y are vectors, and A is an
     m by n matrix.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -4038,6 +4196,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeruBatched(hipblasHandle_t              
     where (A_i, x_i, y_i) is the i-th instance of the batch.
     alpha is a scalar, x_i and y_i are vectors and A_i is an
     m by n matrix, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -4172,6 +4333,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeruStridedBatched(hipblasHandle_t       
     alpha is a scalar, x_i and y_i are vectors and A_i is an
     m by n matrix, for i = 1, ..., batchCount.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -4258,6 +4422,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChbmv(hipblasHandle_t       handle,
 
     where alpha and beta are scalars, x and y are n element vectors and A is an
     n by n Hermitian band matrix, with k super-diagonals.
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -4358,6 +4525,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChbmvBatched(hipblasHandle_t             h
 
     where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
     n by n Hermitian band matrix with k super-diagonals, for each batch in i = [1, batchCount].
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -4465,6 +4635,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChbmvStridedBatched(hipblasHandle_t       
 
     where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
     n by n Hermitian band matrix with k super-diagonals, for each batch in i = [1, batchCount].
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -4580,6 +4753,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemv(hipblasHandle_t       handle,
     where alpha and beta are scalars, x and y are n element vectors and A is an
     n by n Hermitian matrix.
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -4656,6 +4832,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemvBatched(hipblasHandle_t             h
 
     where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
     n by n Hermitian matrix, for each batch in i = [1, batchCount].
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -4740,6 +4919,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemvStridedBatched(hipblasHandle_t       
 
     where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
     n by n Hermitian matrix, for each batch in i = [1, batchCount].
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -4831,6 +5013,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher(hipblasHandle_t       handle,
     where alpha is a real scalar, x is a vector, and A is an
     n by n Hermitian matrix.
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -4894,6 +5079,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherBatched(hipblasHandle_t             ha
 
     where alpha is a real scalar, x_i is a vector, and A_i is an
     n by n symmetric matrix, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -4964,6 +5152,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherStridedBatched(hipblasHandle_t       h
 
     where alpha is a real scalar, x_i is a vector, and A_i is an
     n by n Hermitian matrix, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -5042,6 +5233,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2(hipblasHandle_t       handle,
     where alpha is a complex scalar, x and y are vectors, and A is an
     n by n Hermitian matrix.
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -5114,6 +5308,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2Batched(hipblasHandle_t             h
 
     where alpha is a complex scalar, x_i and y_i are vectors, and A_i is an
     n by n Hermitian matrix for each batch in i = [1, batchCount].
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -5194,6 +5391,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2StridedBatched(hipblasHandle_t       
 
     where alpha is a complex scalar, x_i and y_i are vectors, and A_i is an
     n by n Hermitian matrix for each batch in i = [1, batchCount].
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -5283,6 +5483,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpmv(hipblasHandle_t       handle,
     where alpha and beta are scalars, x and y are n element vectors and A is an
     n by n Hermitian matrix, supplied in packed form (see description below).
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -5370,6 +5573,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpmvBatched(hipblasHandle_t             h
     where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
     n by n Hermitian matrix, supplied in packed form (see description below),
     for each batch in i = [1, batchCount].
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -5465,6 +5671,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpmvStridedBatched(hipblasHandle_t       
     where alpha and beta are scalars, x_i and y_i are n element vectors and A_i is an
     n by n Hermitian matrix, supplied in packed form (see description below),
     for each batch in i = [1, batchCount].
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -5565,6 +5774,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpr(hipblasHandle_t       handle,
     where alpha is a real scalar, x is a vector, and A is an
     n by n Hermitian matrix, supplied in packed form.
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -5639,6 +5851,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChprBatched(hipblasHandle_t             ha
 
     where alpha is a real scalar, x_i is a vector, and A_i is an
     n by n symmetric matrix, supplied in packed form, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -5720,6 +5935,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChprStridedBatched(hipblasHandle_t       h
 
     where alpha is a real scalar, x_i is a vector, and A_i is an
     n by n symmetric matrix, supplied in packed form, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -5809,6 +6027,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpr2(hipblasHandle_t       handle,
     where alpha is a complex scalar, x and y are vectors, and A is an
     n by n Hermitian matrix, supplied in packed form.
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -5892,6 +6113,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpr2Batched(hipblasHandle_t             h
 
     where alpha is a complex scalar, x_i and y_i are vectors, and A_i is an
     n by n symmetric matrix, supplied in packed form, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -5983,6 +6207,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChpr2StridedBatched(hipblasHandle_t       
 
     where alpha is a complex scalar, x_i and y_i are vectors, and A_i is an
     n by n symmetric matrix, supplied in packed form, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -6086,6 +6313,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSsbmv(hipblasHandle_t   handle,
     where alpha and beta are scalars, x and y are n element vectors and
     A should contain an upper or lower triangular n by n symmetric banded matrix.
 
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : s,d
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -6160,6 +6390,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSsbmvBatched(hipblasHandle_t    handle,
     alpha and beta are scalars, x_i and y_i are vectors and A_i is an
     n by n symmetric banded matrix, for i = 1, ..., batchCount.
     A should contain an upper or lower triangular n by n symmetric banded matrix.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -6243,6 +6476,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSsbmvStridedBatched(hipblasHandle_t   hand
     alpha and beta are scalars, x_i and y_i are vectors and A_i is an
     n by n symmetric banded matrix, for i = 1, ..., batchCount.
     A should contain an upper or lower triangular n by n symmetric banded matrix.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -6337,6 +6573,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspmv(hipblasHandle_t   handle,
     where alpha and beta are scalars, x and y are n element vectors and
     A should contain an upper or lower triangular n by n packed symmetric matrix.
 
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : s,d
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -6402,6 +6641,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspmvBatched(hipblasHandle_t    handle,
     alpha and beta are scalars, x_i and y_i are vectors and A_i is an
     n by n symmetric matrix, for i = 1, ..., batchCount.
     A should contain an upper or lower triangular n by n packed symmetric matrix.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -6475,6 +6717,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspmvStridedBatched(hipblasHandle_t   hand
     alpha and beta are scalars, x_i and y_i are vectors and A_i is an
     n by n symmetric matrix, for i = 1, ..., batchCount.
     A should contain an upper or lower triangular n by n packed symmetric matrix.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -6574,6 +6819,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCspr(hipblasHandle_t       handle,
     where alpha is a scalar, x is a vector, and A is an
     n by n symmetric matrix, supplied in packed form.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -6666,6 +6914,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsprBatched(hipblasHandle_t             ha
 
     where alpha is a scalar, x_i is a vector, and A_i is an
     n by n symmetric matrix, supplied in packed form, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -6770,6 +7021,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsprStridedBatched(hipblasHandle_t       h
     where alpha is a scalar, x_i is a vector, and A_i is an
     n by n symmetric matrix, supplied in packed form, for i = 1, ..., batchCount.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -6858,6 +7112,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspr2(hipblasHandle_t   handle,
     where alpha is a scalar, x and y are vectors, and A is an
     n by n symmetric matrix, supplied in packed form.
 
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : s,d
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -6941,6 +7198,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspr2Batched(hipblasHandle_t    handle,
 
     where alpha is a scalar, x_i and y_i are vectors, and A_i is an
     n by n symmetric matrix, supplied in packed form, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -7032,6 +7292,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspr2StridedBatched(hipblasHandle_t   hand
 
     where alpha is a scalar, x_i amd y_i are vectors, and A_i is an
     n by n symmetric matrix, supplied in packed form, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -7158,6 +7421,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymv(hipblasHandle_t       handle,
     where alpha and beta are scalars, x and y are n element vectors and
     A should contain an upper or lower triangular n by n symmetric matrix.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -7254,6 +7520,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymvBatched(hipblasHandle_t             h
     n by n symmetric matrix, for i = 1, ..., batchCount.
     A a should contain an upper or lower triangular symmetric matrix
     and the opposing triangular part of A is not referenced
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -7366,6 +7635,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymvStridedBatched(hipblasHandle_t       
     A a should contain an upper or lower triangular symmetric matrix
     and the opposing triangular part of A is not referenced
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue
@@ -7471,6 +7743,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr(hipblasHandle_t       handle,
     where alpha is a scalar, x is a vector, and A is an
     n by n symmetric matrix.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -7546,7 +7821,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrBatched(hipblasHandle_t             ha
         A[i] := A[i] + alpha*x[i]*x[i]**T
 
     where alpha is a scalar, x is an array of vectors, and A is an array of
-    n by n symmetric matrices, for i = 1 , ... , batchCount
+    n by n symmetric matrices, for i = 1 , ... , batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -7632,7 +7910,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrStridedBatched(hipblasHandle_t       h
         A[i] := A[i] + alpha*x[i]*x[i]**T
 
     where alpha is a scalar, vectors, and A is an array of
-    n by n symmetric matrices, for i = 1 , ... , batchCount
+    n by n symmetric matrices, for i = 1 , ... , batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -7725,6 +8006,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2(hipblasHandle_t       handle,
     where alpha is a scalar, x and y are vectors, and A is an
     n by n symmetric matrix.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -7813,7 +8097,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2Batched(hipblasHandle_t             h
         A[i] := A[i] + alpha*x[i]*y[i]**T + alpha*y[i]*x[i]**T
 
     where alpha is a scalar, x[i] and y[i] are vectors, and A[i] is a
-    n by n symmetric matrix, for i = 1 , ... , batchCount
+    n by n symmetric matrix, for i = 1 , ... , batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -7915,7 +8202,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2StridedBatched(hipblasHandle_t       
         A[i] := A[i] + alpha*x[i]*y[i]**T + alpha*y[i]*x[i]**T
 
     where alpha is a scalar, x[i] and y[i] are vectors, and A[i] is a
-    n by n symmetric matrices, for i = 1 , ... , batchCount
+    n by n symmetric matrices, for i = 1 , ... , batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -8019,6 +8309,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmv(hipblasHandle_t       handle,
         x := A**H*x,
 
     x is a vectors and A is a banded m by m matrix (see description below).
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -8141,6 +8434,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmvBatched(hipblasHandle_t             h
 
     where (A_i, x_i) is the i-th instance of the batch.
     x_i is a vector and A_i is an m by m matrix, for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -8274,6 +8570,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmvStridedBatched(hipblasHandle_t       
     where (A_i, x_i) is the i-th instance of the batch.
     x_i is a vector and A_i is an m by m matrix, for i = 1, ..., batchCount.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -8402,6 +8701,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbsv(hipblasHandle_t       handle,
 
     where x and b are vectors and A is a banded triangular matrix.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -8509,6 +8811,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbsvBatched(hipblasHandle_t             h
     for i = [1, batchCount].
 
     The input vectors b_i are overwritten by the output vectors x_i.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -8628,6 +8933,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbsvStridedBatched(hipblasHandle_t       
 
     The input vectors b_i are overwritten by the output vectors x_i.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -8737,6 +9045,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmv(hipblasHandle_t       handle,
 
     The vector x is overwritten.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -8830,6 +9141,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvBatched(hipblasHandle_t             h
     where x_i is an n element vector and A_i is an n by n (unit, or non-unit, upper or lower triangular matrix)
 
     The vectors x_i are overwritten.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -8928,6 +9242,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvStridedBatched(hipblasHandle_t       
 
     The vectors x_i are overwritten.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -9025,6 +9342,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsv(hipblasHandle_t       handle,
 
     The input vector b is overwritten by the output vector x.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -9113,6 +9433,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsvBatched(hipblasHandle_t             h
     for i in [1, batchCount].
 
     The input vectors b_i are overwritten by the output vectors x_i.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -9212,6 +9535,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsvStridedBatched(hipblasHandle_t       
     for i in [1, batchCount].
 
     The input vectors b_i are overwritten by the output vectors x_i.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -9314,6 +9640,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmv(hipblasHandle_t       handle,
 
     The vector x is overwritten.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -9406,6 +9735,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmvBatched(hipblasHandle_t             h
     where x_i is an n element vector and A_i is an n by n (unit, or non-unit, upper or lower triangular matrix)
 
     The vectors x_i are overwritten.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -9513,6 +9845,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmvStridedBatched(hipblasHandle_t       
 
     The vectors x_i are overwritten.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -9619,6 +9954,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsv(hipblasHandle_t       handle,
 
     The vector x is overwritten on b.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -9713,6 +10051,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsvBatched(hipblasHandle_t             h
     m by m triangular matrix.
 
     The vector x is overwritten on b.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -9817,6 +10158,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsvStridedBatched(hipblasHandle_t       
     x_i and b_i are vectors and A_i is an m by m triangular matrix, for i = 1, ..., batchCount.
 
     The vector x is overwritten on b.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -9960,6 +10304,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgemm(hipblasHandle_t       handle,
     alpha and beta are scalars, and A, B and C are matrices, with
     op( A ) an m by k matrix, op( B ) a k by n matrix and C an m by n matrix.
 
+    - Supported precisions in rocBLAS : h,s,d,c,z
+    - Supported precisions in cuBLAS  : h,s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -10090,6 +10437,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmBatched(hipblasHandle_t             h
     op( A ) an m by k by batchCount strided_batched matrix,
     op( B ) an k by n by batchCount strided_batched matrix and
     C an m by n by batchCount strided_batched matrix.
+
+    - Supported precisions in rocBLAS : h,s,d,c,z
+    - Supported precisions in cuBLAS  : h,s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -10242,6 +10593,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgemmStridedBatched(hipblasHandle_t       
     op( B ) an k by n by batchCount strided_batched matrix and
     C an m by n by batchCount strided_batched matrix.
 
+    - Supported precisions in rocBLAS : h,s,d,c,z
+    - Supported precisions in cuBLAS  : h,s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -10339,6 +10693,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherk(hipblasHandle_t       handle,
         op( A ) = A,  and A is n by k if transA == HIPBLAS_OP_N
         op( A ) = A^H and A is k by n if transA == HIPBLAS_OP_C
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -10430,6 +10787,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkBatched(hipblasHandle_t             h
 
         op( A_i ) = A_i, and A_i is n by k if transA == HIPBLAS_OP_N
         op( A_i ) = A_i^H and A_i is k by n if transA == HIPBLAS_OP_C
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -10528,6 +10888,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkStridedBatched(hipblasHandle_t       
         op( A_i ) = A_i, and A_i is n by k if transA == HIPBLAS_OP_N
         op( A_i ) = A_i^H and A_i is k by n if transA == HIPBLAS_OP_C
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -10638,6 +11000,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkx(hipblasHandle_t       handle,
         op( A ) = A, op( B ) = B, and A and B are n by k if trans == HIPBLAS_OP_N
         op( A ) = A^H, op( B ) = B^H,  and A and B are k by n if trans == HIPBLAS_OP_C
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -10743,6 +11108,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxBatched(hipblasHandle_t             
 
         op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
         op( A_i ) = A_i^H, op( B_i ) = B_i^H,  and A_i and B_i are k by n if trans == HIPBLAS_OP_C
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -10857,6 +11225,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCherkxStridedBatched(hipblasHandle_t      
 
         op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
         op( A_i ) = A_i^H, op( B_i ) = B_i^H,  and A_i and B_i are k by n if trans == HIPBLAS_OP_C
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -10982,6 +11353,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2k(hipblasHandle_t       handle,
         op( A ) = A, op( B ) = B, and A and B are n by k if trans == HIPBLAS_OP_N
         op( A ) = A^H, op( B ) = B^H,  and A and B are k by n if trans == HIPBLAS_OP_C
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -11086,6 +11460,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kBatched(hipblasHandle_t             
 
         op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
         op( A_i ) = A_i^H, op( B_i ) = B_i^H,  and A_i and B_i are k by n if trans == HIPBLAS_OP_C
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -11196,6 +11573,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCher2kStridedBatched(hipblasHandle_t      
 
         op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
         op( A_i ) = A_i^H, op( B_i ) = B_i^H,  and A_i and B_i are k by n if trans == HIPBLAS_OP_C
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -11347,6 +11727,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymm(hipblasHandle_t       handle,
     where alpha and beta are scalars, B and C are m by n matrices, and
     A is a symmetric matrix stored as either upper or lower.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -11478,6 +11861,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymmBatched(hipblasHandle_t             h
 
     where alpha and beta are scalars, B_i and C_i are m by n matrices, and
     A_i is a symmetric matrix stored as either upper or lower.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -11625,6 +12011,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymmStridedBatched(hipblasHandle_t       
     where alpha and beta are scalars, B_i and C_i are m by n matrices, and
     A_i is a symmetric matrix stored as either upper or lower.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -11767,6 +12156,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrk(hipblasHandle_t       handle,
         op( A ) = A, and A is n by k if transA == HIPBLAS_OP_N
         op( A ) = A^T and A is k by n if transA == HIPBLAS_OP_T
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -11887,6 +12279,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkBatched(hipblasHandle_t             h
 
         op( A_i ) = A_i, and A_i is n by k if transA == HIPBLAS_OP_N
         op( A_i ) = A_i^T and A_i is k by n if transA == HIPBLAS_OP_T
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -12017,6 +12412,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkStridedBatched(hipblasHandle_t       
 
         op( A_i ) = A_i, and A_i is n by k if transA == HIPBLAS_OP_N
         op( A_i ) = A_i^T and A_i is k by n if transA == HIPBLAS_OP_T
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -12156,6 +12554,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2k(hipblasHandle_t       handle,
         op( A ) = A, op( B ) = B, and A and B are n by k if trans == HIPBLAS_OP_N
         op( A ) = A^T, op( B ) = B^T,  and A and B are k by n if trans == HIPBLAS_OP_T
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -12289,6 +12690,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2kBatched(hipblasHandle_t             
 
         op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
         op( A_i ) = A_i^T, op( B_i ) = B_i^T,  and A_i and B_i are k by n if trans == HIPBLAS_OP_T
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -12433,6 +12837,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyr2kStridedBatched(hipblasHandle_t      
 
         op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
         op( A_i ) = A_i^T, op( B_i ) = B_i^T,  and A_i and B_i are k by n if trans == HIPBLAS_OP_T
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -12586,6 +12993,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkx(hipblasHandle_t       handle,
         op( A ) = A, op( B ) = B, and A and B are n by k if trans == HIPBLAS_OP_N
         op( A ) = A^T, op( B ) = B^T,  and A and B are k by n if trans == HIPBLAS_OP_T
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -12722,6 +13132,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkxBatched(hipblasHandle_t             
 
         op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
         op( A_i ) = A_i^T, op( B_i ) = B_i^T,  and A_i and B_i are k by n if trans == HIPBLAS_OP_T
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -12871,6 +13284,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsyrkxStridedBatched(hipblasHandle_t      
 
         op( A_i ) = A_i, op( B_i ) = B_i, and A_i and B_i are n by k if trans == HIPBLAS_OP_N
         op( A_i ) = A_i^T, op( B_i ) = B_i^T,  and A_i and B_i are k by n if trans == HIPBLAS_OP_T
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -13025,6 +13441,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeam(hipblasHandle_t       handle,
     alpha and beta are scalars, and A, B and C are matrices, with
     op( A ) an m by n matrix, op( B ) an m by n matrix, and C an m by n matrix.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -13132,6 +13551,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamBatched(hipblasHandle_t             h
 
         op( X ) = X      or
         op( X ) = X**T
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -13262,6 +13684,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeamStridedBatched(hipblasHandle_t       
         op( X ) = X      or
         op( X ) = X**T
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -13377,6 +13803,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemm(hipblasHandle_t       handle,
     where alpha and beta are scalars, B and C are m by n matrices, and
     A is a Hermitian matrix stored as either upper or lower.
 
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -13479,6 +13908,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemmBatched(hipblasHandle_t             h
 
     where alpha and beta are scalars, B_i and C_i are m by n matrices, and
     A_i is a Hermitian matrix stored as either upper or lower.
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -13590,6 +14022,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       
 
     where alpha and beta are scalars, B_i and C_i are m by n matrices, and
     A_i is a Hermitian matrix stored as either upper or lower.
+
+    - Supported precisions in rocBLAS : c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -13745,6 +14180,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
 
         op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
 
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -13891,6 +14330,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             h
     non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
 
         op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -14048,6 +14490,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       
     non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
 
         op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -14219,6 +14664,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsm(hipblasHandle_t       handle,
 
     (where k is m when HIPBLAS_SIDE_LEFT and is n when HIPBLAS_SIDE_RIGHT)
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -14357,6 +14805,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t       handle,
     to the desired chunk of right hand sides to be used at a time.
     (where k is m when HIPBLAS_SIDE_LEFT and is n when HIPBLAS_SIDE_RIGHT)
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -14491,6 +14942,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       
     reduce performance. Under these circumstances it is recommended that WORKBUF_TRSM_B_CHNK be set
     to the desired chunk of right hand sides to be used at a time.
     (where k is m when HIPBLAS_SIDE_LEFT and is n when HIPBLAS_SIDE_RIGHT)
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -14598,6 +15053,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtri(hipblasHandle_t       handle,
 
         and write the result into invA;
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -14670,6 +15128,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriBatched(hipblasHandle_t             
     trtriBatched  compute the inverse of A_i and write into invA_i where
                    A_i and invA_i are the i-th matrices in the batch,
                    for i = 1, ..., batchCount.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -14756,6 +15217,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrtriStridedBatched(hipblasHandle_t      
     trtriStridedBatched compute the inverse of A_i and write into invA_i where
                    A_i and invA_i are the i-th matrices in the batch,
                    for i = 1, ..., batchCount
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -14853,6 +15317,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmm(hipblasHandle_t       handle,
     and x is vector of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension m
     if side == HIPBLAS_SIDE_LEFT.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : s,d,c,z
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -14941,6 +15407,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmBatched(hipblasHandle_t             h
     where C_i and A_i are m by n dimensional matrices. diag(x_i) is a diagonal matrix
     and x_i is vector of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension m
     if side == HIPBLAS_SIDE_LEFT.
+
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -15047,6 +15516,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCdgmmStridedBatched(hipblasHandle_t       
     and x_i is vector of dimension n if side == HIPBLAS_SIDE_RIGHT and dimension m
     if side == HIPBLAS_SIDE_LEFT.
 
+    - Supported precisions in rocBLAS : s,d,c,z
+    - Supported precisions in cuBLAS  : No support
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -15142,6 +15614,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrf(
         A = LU
     \f]
 
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : s,d,c,z
+
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
@@ -15220,6 +15695,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle
     \f[
         A_i = L_iU_i
     \f]
+
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : s,d,c,z
 
     @param[in]
     handle    hipblasHandle_t.
@@ -15311,6 +15789,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     h
     \f[
         A_i = L_iU_i
     \f]
+
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : s,d,c,z
 
     @param[in]
     handle    hipblasHandle_t.
@@ -15411,6 +15892,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
 
     Matrix A is defined by its triangular factors as returned by \ref hipblasSgetrf "getrf".
 
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : s,d,c,z
+
+
     @param[in]
     handle      hipblasHandle_t.
     @param[in]
@@ -15507,6 +15992,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          han
     \f]
 
     Matrix \f$A_i\f$ is defined by its triangular factors as returned by \ref hipblasSgetrfBatched "getrfBatched".
+
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : s,d,c,z
 
     @param[in]
     handle      hipblasHandle_t.
@@ -15620,6 +16108,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t      
 
     Matrix \f$A_i\f$ is defined by its triangular factors as returned by \ref hipblasSgetrfStridedBatched "getrfStridedBatched".
 
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : No support
+
     @param[in]
     handle      hipblasHandle_t.
     @param[in]
@@ -15727,6 +16218,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgetriBatched(hipblasHandle_t       handle
 
     where I is the identity matrix, and \f$A_i\f$ is factorized as \f$A_i = P_i  L_i  U_i\f$ as given by \ref hipblasSgetrfBatched "getrfBatched".
 
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : s,d,c,z
+
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
@@ -15820,6 +16314,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
 
     where the first i-1 elements of the Householder vector \f$v_i\f$ are zero, and \f$v_i[i] = 1\f$.
 
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : s,d,c,z
+
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
@@ -15910,6 +16407,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle
     \f]
 
     where the first j-1 elements of Householder vector \f$v_{i_j}\f$ are zero, and \f$v_{i_j}[j] = 1\f$.
+
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : s,d,c,z
 
     @param[in]
     handle    hipblasHandle_t.
@@ -16012,6 +16512,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t     h
 
     where the first j-1 elements of Householder vector \f$v_{i_j}\f$ are zero, and \f$v_{i_j}[j] = 1\f$.
 
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : No support
+
     @param[in]
     handle    hipblasHandle_t.
     @param[in]
@@ -16080,7 +16583,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
     alpha and beta are scalars, and A, B, and C are matrices, with
     op( A ) an m by k matrix, op( B ) a k by n matrix and C is a m by n matrix.
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     Note for int8 users - For rocBLAS backend, please read rocblas_gemm_ex documentation on int8
     data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
@@ -16181,7 +16684,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
     The batched matrices are an array of pointers to matrices.
     The number of pointers to matrices is batchCount.
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     Note for int8 users - For rocBLAS backend, please read rocblas_gemm_batched_ex documentation on int8
     data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
@@ -16293,7 +16796,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
     The strided_batched matrices are multiple matrices separated by a constant stride.
     The number of matrices is batchCount.
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     Note for int8 users - For rocBLAS backend, please read rocblas_gemm_strided_batched_ex documentation on int8
     data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
@@ -16842,7 +17345,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
 
         y := alpha * x + y
 
-        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+        - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -16896,7 +17399,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
 
         y := alpha * x + y
 
-        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+        - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -16954,7 +17457,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
 
         y := alpha * x + y
 
-        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+        - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17041,7 +17544,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
 
         result = conjugate (x) * y;
 
-        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+        - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17116,7 +17619,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
     where (x_i, y_i) is the i-th instance of the batch.
     x_i and y_i are vectors, for i = 1, ..., batchCount
 
-        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+        - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17197,7 +17700,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   hand
     where (x_i, y_i) is the i-th instance of the batch.
     x_i and y_i are vectors, for i = 1, ..., batchCount
 
-        Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+        - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17265,7 +17768,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   han
               result := sqrt( x'*x ) for real vectors
               result := sqrt( x**H*x ) for complex vectors
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
 
     @param[in]
@@ -17310,7 +17813,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
               result := sqrt( x_i'*x_i ) for real vectors x, for i = 1, ..., batchCount
               result := sqrt( x_i**H*x_i ) for complex vectors x, for i = 1, ..., batchCount
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17359,7 +17862,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
               := sqrt( x_i'*x_i ) for real vectors x, for i = 1, ..., batchCount
               := sqrt( x_i**H*x_i ) for complex vectors, for i = 1, ..., batchCount
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17421,7 +17924,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   han
         x := real(c) * x + s * y
             y := real(c) * y - conj(s) * x
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -17484,7 +17987,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
             x := real(c) * x + s * y
             y := real(c) * y - conj(s) * x
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -17551,7 +18054,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
             x := real(c) * x + s * y
             y := real(c) * y - conj(s) * x
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -17619,7 +18122,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   hand
 
         x := alpha * x
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17661,7 +18164,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
 
         x_i := alpha * x_i
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17708,7 +18211,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
 
         x := alpha * x
 
-    Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     @param[in]
     handle    [hipblasHandle_t]

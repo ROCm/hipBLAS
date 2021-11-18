@@ -15,7 +15,7 @@ Download pre-built packages either from `ROCm's package servers <https://rocm.gi
 .. code-block::bash
    sudo apt update && sudo apt install hipblas
 
-Quickstart hipBLAS build
+hipBLAS build
 ========================
 
 Build library dependencies + library
@@ -52,7 +52,7 @@ in the table below.
 | ``./install.sh -i``                       | Build library, then      |
 |                                           | build and install        |
 |                                           | hipBLAS package in       |
-|                                           | /opt/rocm/hipblas. You   |
+|                                           | `/opt/rocm/hipblas`. You |
 |                                           | will be prompted for     |
 |                                           | sudo access. This will   |
 |                                           | install for all users.   |
@@ -180,9 +180,9 @@ Dependencies (only necessary for hipBLAS clients)
 
 The hipBLAS samples have no external dependencies, but our unit test and benchmarking applications do. These clients introduce the following dependencies:
 
-- `boost<https://www.boost.org/>`_
-- `lapack<https://github.com/Reference-LAPACK/lapack-release>`_  lapack itself brings a dependency on a fortran compiler
-- `googletest<https://github.com/google/googletest>`_
+- `boost <https://www.boost.org/>`_
+- `lapack <https://github.com/Reference-LAPACK/lapack-release>`_,  lapack itself brings a dependency on a fortran compiler
+- `googletest <https://github.com/google/googletest>`_
 
 Linux distros typically have an easy installation mechanism for boost through the native package manager.
 

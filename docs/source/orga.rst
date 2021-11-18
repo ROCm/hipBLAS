@@ -2,7 +2,7 @@
 Library Source Code Organization
 ********************************
 
-The hipBLAS code is split into three major parts:
+The hipBLAS code is split into two major parts:
 
 - The `library` directory contains all source code for the library.
 - The `clients` directory contains all test code and code to build clients.
