@@ -11,5 +11,7 @@ User Guide
    disclaimer
    intro
    install
+   orga
    api
    functions
+   contributing

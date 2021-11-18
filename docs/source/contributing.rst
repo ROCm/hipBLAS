@@ -125,7 +125,7 @@ Also, githooks can be installed to format the code per-commit:
 
 Guidelines:
 -----------
--  Do not use unnamed ``namespace``s inside of header files.
+-  Do not use unnamed namespaces inside of header files.
 
 -  Use either ``template`` or ``inline`` (or both) for functions defined outside of classes in header files.
 

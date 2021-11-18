@@ -11,5 +11,5 @@ bash run_doxygen.sh
 # Build sphinx docs
 cd source
 make clean
-make html
-make latexpdf
+make SPHINXOPTS='-W --keep-going' html
+make SPHINXOPTS='-W --keep-going' latexpdf

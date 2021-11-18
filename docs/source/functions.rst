@@ -17,7 +17,7 @@ hipBLAS follows the following naming conventions,
 Notations
 =========
 
-hipBLAS functions uses the following notations to denote precisions,
+hipBLAS function uses the following notations to denote precisions,
 
 - h  = half
 - bf = 16 bit brian floating point
@@ -34,7 +34,7 @@ Definitions
 ===========
 
 hipblasHandle_t
---------------
+---------------
 .. doxygentypedef:: hipblasHandle_t
 
 hipblasHalf
@@ -42,7 +42,7 @@ hipblasHalf
 .. doxygentypedef:: hipblasHalf
 
 hipblasInt8
------------
+------------
 .. doxygentypedef:: hipblasInt8
 
 hipblasStride
@@ -54,7 +54,7 @@ hipblasBfloat16
 .. doxygenstruct:: hipblasBfloat16
 
 hipblasComplex
----------------------
+---------------
 .. doxygenstruct:: hipblasComplex
 
 hipblasDoubleComplex
@@ -70,35 +70,35 @@ hipblasStatus_t
 .. doxygenenum:: hipblasStatus_t
 
 hipblasOperation_t
-------------
+------------------
 .. doxygenenum:: hipblasOperation_t
 
 hipblasPointerMode_t
-----------------
+--------------------
 .. doxygenenum:: hipblasPointerMode_t
 
 hipblasFillMode_t
-------------
+------------------
 .. doxygenenum:: hipblasFillMode_t
 
 hipblasDiagType_t
---------------
+-----------------
 .. doxygenenum:: hipblasDiagType_t
 
 hipblasSideMode_t
-----------------
+-----------------
 .. doxygenenum:: hipblasSideMode_t
 
 hipblasDatatype_t
---------------------
+------------------
 .. doxygenenum:: hipblasDatatype_t
 
 hipblasGemmAlgo_t
---------------------
+------------------
 .. doxygenenum:: hipblasGemmAlgo_t
 
 hipblasAtomicsMode_t
-------------------
+---------------------
 .. doxygenenum:: hipblasAtomicsMode_t
 
 *****************
@@ -261,7 +261,7 @@ hipblasXrot + Batched, StridedBatched
 
 .. doxygenfunction:: hipblasSrotStridedBatched
 .. doxygenfunction:: hipblasDrotStridedBatched
-.. doxygenfunction:: hipblasCsrotStridedBatched
+.. doxygenfunction:: hipblasCrotStridedBatched
 .. doxygenfunction:: hipblasCsrotStridedBatched
 .. doxygenfunction:: hipblasZrotStridedBatched
 .. doxygenfunction:: hipblasZdrotStridedBatched
@@ -597,7 +597,7 @@ hipblasXtbmv + Batched, StridedBatched
 .. doxygenfunction:: hipblasZtbmvBatched
 
 .. doxygenfunction:: hipblasStbmvStridedBatched
-.. doxygenfunction:: hipblasCtbmvStridedBatched
+.. doxygenfunction:: hipblasDtbmvStridedBatched
 .. doxygenfunction:: hipblasCtbmvStridedBatched
 .. doxygenfunction:: hipblasZtbmvStridedBatched
 
@@ -1026,15 +1026,15 @@ Auxiliary
 =========
 
 hipblasCreate
------------------------
+--------------
 .. doxygenfunction:: hipblasCreate
 
 hipblasDestroy
----------------------
+---------------
 .. doxygenfunction:: hipblasDestroy
 
 hipblasSetStream
-----------------------
+-----------------
 .. doxygenfunction:: hipblasSetStream
 
 hipblasGetStream
@@ -1042,23 +1042,23 @@ hipblasGetStream
 .. doxygenfunction:: hipblasGetStream
 
 hipblasSetPointerMode
-------------------
+----------------------
 .. doxygenfunction:: hipblasSetPointerMode
 
 hipblasGetPointerMode
-------------------------
+----------------------
 .. doxygenfunction:: hipblasGetPointerMode
 
 hipblasSetVector
-------------------------
+----------------
 .. doxygenfunction:: hipblasSetVector
 
 hipblasGetVector
-------------------------
+-----------------
 .. doxygenfunction:: hipblasGetVector
 
 hipblasSetMatrix
-------------------------
+-----------------
 .. doxygenfunction:: hipblasSetMatrix
 
 hipblasGetMatrix
@@ -1066,29 +1066,29 @@ hipblasGetMatrix
 .. doxygenfunction:: hipblasGetMatrix
 
 hipblasSetVectorAsync
-------------------------
+----------------------
 .. doxygenfunction:: hipblasSetVectorAsync
 
 hipblasGetVectorAsync
-------------------
+----------------------
 .. doxygenfunction:: hipblasGetVectorAsync
 
 hipblasSetMatrixAsync
-------------------------
+-----------------------
 .. doxygenfunction:: hipblasSetMatrixAsync
 
 hipblasGetMatrixAsync
-------------------
+---------------------
 .. doxygenfunction:: hipblasGetMatrixAsync
 
 hipblasSetAtomicsMode
-------------------------
+----------------------
 .. doxygenfunction:: hipblasSetAtomicsMode
 
 hipblasGetAtomicsMode
-------------------
+----------------------
 .. doxygenfunction:: hipblasGetAtomicsMode
 
 hipblasStatusToString
----------------------
+----------------------
 .. doxygenfunction:: hipblasStatusToString
