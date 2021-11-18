@@ -1,6 +1,6 @@
 # **hipBLAS**
 
-**hipBLAS** is a [BLAS](https://www.netlib.org/blas/) marshalling library, with multiple supported backends.  It sits between the application and a 'worker' BLAS library, marshalling inputs into the backend library and marshalling results back to the application.  **hipBLAS** exports an interface that does not require the client to change, regardless of the chosen backend.  Currently, **hipBLAS** supports **rocBLAS** and **cuBLAS** as backends.
+**hipBLAS** is a **BLAS** marshalling library, with multiple supported backends.  It sits between the application and a 'worker' BLAS library, marshalling inputs into the backend library and marshalling results back to the application.  **hipBLAS** exports an interface that does not require the client to change, regardless of the chosen backend.  Currently, **hipBLAS** supports **rocBLAS** and **cuBLAS** as backends.
 
 
 | Acronym  | Expansion                                                   |

@@ -180,14 +180,8 @@ Dependencies (only necessary for hipBLAS clients)
 
 The hipBLAS samples have no external dependencies, but our unit test and benchmarking applications do. These clients introduce the following dependencies:
 
-- `boost <https://www.boost.org/>`_
 - `lapack <https://github.com/Reference-LAPACK/lapack-release>`_,  lapack itself brings a dependency on a fortran compiler
 - `googletest <https://github.com/google/googletest>`_
-
-Linux distros typically have an easy installation mechanism for boost through the native package manager.
-
-- Ubuntu: sudo apt install libboost-program-options-dev
-- Fedora: sudo dnf install boost-program-options
 
 Unfortunately, googletest and lapack are not as easy to install. Many distros do not provide a googletest package with pre-compiled libraries, and the lapack packages do not have the necessary cmake config files for cmake to configure linking the cblas library. hipBLAS provide a cmake script that builds the above dependencies from source. This is an optional step; users can provide their own builds of these dependencies and help cmake find them by setting the CMAKE_PREFIX_PATH definition. The following is a sequence of steps to build dependencies and install them to the cmake default /usr/local.
 
