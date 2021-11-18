@@ -2,27 +2,29 @@
 
 
 *************
-Functions
+Guidelines
 *************
 
 Naming conventions
 ==================
 
-    hipBLAS follows the following naming conventions,
-    - Big case for matrix, e.g. matrix A, B, C   GEMM (C = A*B)
-    - Lower case for vector, e.g. vector x, y    GEMV (y = A*x)
+hipBLAS follows the following naming conventions,
+
+- Big case for matrix, e.g. matrix A, B, C   GEMM (C = A*B)
+- Lower case for vector, e.g. vector x, y    GEMV (y = A*x)
 
 
 Notations
 =========
 
-    hipBLAS functions uses the following notations to denote precisions,
-    - h  = half
-    - bf = 16 bit brian floating point
-    - s  = single
-    - d  = double
-    - c  = single complex
-    - z  = double complex
+hipBLAS functions uses the following notations to denote precisions,
+
+- h  = half
+- bf = 16 bit brian floating point
+- s  = single
+- d  = double
+- c  = single complex
+- z  = double complex
 
 *************
 hipBLAS Types
