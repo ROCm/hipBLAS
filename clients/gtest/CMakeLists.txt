@@ -147,6 +147,7 @@ target_include_directories( hipblas-test
   SYSTEM PRIVATE
     $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
     ${ROCM_PATH}/hsa/include
 )

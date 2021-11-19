@@ -75,6 +75,7 @@ target_include_directories( hipblas-bench
 target_include_directories( hipblas-bench
   SYSTEM PRIVATE
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
 )
 
