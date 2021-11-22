@@ -8,28 +8,65 @@
 # #################################################
 function display_help()
 {
-  echo "hipBLAS build & installation helper script"
-  echo "./install [-h|--help] "
-  echo "    [-h|--help] prints this help message"
-  echo "    [-i|--install] install after build"
-  echo "    [-d|--dependencies] install build dependencies"
-  echo "    [-c|--clients] build library clients too (combines with -i & -d)"
-  echo "    [-n|--no-solver] build library without rocSOLVER dependency"
-  echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
-  echo "    [-k|--relwithdebinfo] -DCMAKE_BUILD_TYPE=RelWithDebInfo"
-  echo "    [-r]--relocatable] create a package to support relocatable ROCm"
-  echo "    [--cuda|--use-cuda] build library for cuda backend"
-  echo "    [--[no-]hip-clang] Whether to build library with hip-clang"
-  echo "    [--compiler] specify host compiler"
-  echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
-  echo "    [--custom-target] link against custom target (e.g. host, device)"
-  echo "    [-v|--rocm-dev] Set specific rocm-dev version"
-  echo "    [-b|--rocblas] Set specific rocblas version"
-  echo "    [--rocblas-path] Set specific path to custom built rocblas"
-  echo "    [--rocsolver-path] Set specific path to custom built rocsolver"
-  echo "    [--static] Create static library instead of shared library"
-  echo "    [--codecoverage] build with code coverage profiling enabled"
-  echo "    [--address-sanitizer] Build with address sanitizer enabled. Uses hipcc as compiler"
+cat <<EOF
+
+  hipBLAS library build & installation helper script.
+
+  Usage:
+    $0 (build hipblas and put library files at ./build/hipblas-install)
+    $0 <options> (modify default behavior according to the following flags)
+
+  Options:
+    -h | --help                   Print this help message.
+
+    -i | --install                Pass this flag to generate and install library package after build.
+
+    -d | --dependencies           Pass this flag to also build and install external dependencies.
+                                  Dependecies are to be installed in /usr/local. This should be done only once.
+                                  (this does not install rocBLAS or rocSolver)
+
+    -c | --clients                Pass this flag to also build the library clients benchmark and gtest.
+                                  (Generated binaries will be located at builddir/clients/staging)
+
+    -n | --no-solver              Pass this flag to build hipLBAS library without rocSOLVER dependency
+
+    -g | --debug                  Pass this flag to build in Debug mode (equivalent to set CMAKE_BUILD_TYPE=Debug).
+                                  (Default build type is Release)
+
+    -s | --static                 Pass this flag to build hipblas as a static library.
+                                  (hipblas must be built statically when the used companion rocblas is also static).
+
+    -r | --relocatable            Pass this to add RUNPATH(based on ROCM_RPATH) and remove ldconf entry.
+
+    -k | --relwithdebinfo         Pass this flag to build in release debug mode (equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo).
+                                  (Default build type is Release)
+
+    --rocblas-path <blasdir>      Specify path to an existing rocBLAS install directory.
+                                  (e.g. /src/rocBLAS/build/release/rocblas-install)
+
+    -b | --rocblas                Pass this flag to specify rocblas version.
+
+    --rocsolver-path <solverdir>  Specify path to an existing rocSOLVER install directory.
+                                  (e.g. /src/rocSOLVER/build/release/rocsolver-install)
+
+    --compiler </compier/path>    Specify path to host compiler.
+
+    --hip-clang                   Pass this flag to build using the hip-clang compiler.
+
+    --no-hip-clang                Pass this flag to build library without using hip-clang compiler.
+
+    --cuda | --use-cuda           Pass this flag to build library for cuda backend.
+
+    -p | --cmakepp                Pass this flag for to add CMAKE_PREFIX_PATH
+
+    --custom-target <target>      Pass this flag to link the library against custom target (eg. host, device).
+
+    -v | --rocm-dev <version>     Pass this flag to set specific rocm-dev version.
+
+    --address-sanitizer           Pass this flag to build with address sanitizer enabled. Uses hipcc as compiler.
+
+    --codecoverage                Build with code coverage profiling enabled, excluding release mode.
+EOF
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
