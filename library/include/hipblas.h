@@ -2065,7 +2065,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrot(hipblasHandle_t             handle,
     rot applies the Givens rotation matrix defined by c=cos(alpha) and s=sin(alpha) to vectors x and y.
         Scalars c and s may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
 
-    - Supported precisions in rocBLAS : s,d,sc,dz
+    - Supported precisions in rocBLAS : s,d,c,z,sc,dz
     - Supported precisions in cuBLAS  : s,d,c,z,cs,zd
 
     @param[in]

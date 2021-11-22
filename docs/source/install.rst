@@ -148,16 +148,6 @@ This section has useful information on how to configure cmake and manually build
 Dependencies For Building Library
 ---------------------------------
 
-CMake 3.5 or later
-~~~~~~~~~~~~~~~~~~
-
-The build infrastructure for hipBLAS is based on Cmake v3.5. This is the version of `cmake <https://cmake.org/>`_ available on ROCm supported platforms. If you are on a headless machine without the x-windows system, we recommend using ccmake; if you have access to X-windows, we recommend using cmake-gui.
-
-Install one-liners cmake:
-
-- Ubuntu: ``sudo apt install cmake-qt-gui``
-- Fedora: ``sudo dnf install cmake-gui``
-
 Build Library Using Individual Commands
 ---------------------------------------
 .. code-block::bash
