@@ -20,32 +20,34 @@ def parse_args():
     parser = argparse.ArgumentParser(description="""Checks build arguments""")
     # common
     parser.add_argument('-g', '--debug', required=False, default = False,  action='store_true',
-                        help='Generate Debug build (optional, default: False)')
+                        help='Pass this flag to build in Debug mode.(optional, default: False)')
     parser.add_argument(      '--build_dir', type=str, required=False, default = "build",
-                        help='Build directory path (optional, default: build)')
+                        help='Specify path to the configure & build process output directory.(optional, default: ./build)')
     parser.add_argument(      '--skip_ld_conf_entry', required=False, default = False)
     parser.add_argument(      '--static', required=False, default = False, dest='static_lib', action='store_true',
-                        help='Generate static library build (optional, default: False)')
+                        help='Pass this flag to build hipblas as a static library.(optional, default: False)')
     parser.add_argument('-c', '--clients', required=False, default = False, dest='build_clients', action='store_true',
-                        help='Generate all client builds (optional, default: False)')
+                        help='Pass this flag to also build the library clients benchmark and gtest (optional, default: False. Generated binaries will be located at builddir/clients/staging)')
     parser.add_argument('-i', '--install', required=False, default = False, dest='install', action='store_true',
-                        help='Install after build (optional, default: False)')
+                        help='Pass this flag to generate and install library package after build. (optional, default: False)')
     parser.add_argument(      '--cmake-darg', required=False, dest='cmake_dargs', action='append', default=[],
                         help='List of additional cmake defines for builds (optional, e.g. CMAKE)')
     parser.add_argument('-v', '--verbose', required=False, default = False, action='store_true',
                         help='Verbose build (optional, default: False)')
     # hipblas
     parser.add_argument(      '--rocm_dev', type=str, required=False, default = "",
-                        help='Set specific rocm-dev version')
+                        help='Pass this flag to set specific rocm-dev version.')
     parser.add_argument(      '--cpu_ref_lib', type=str, required=False, default = "blis",
                         help='Specify library to use for CPU reference code in testing (blis or lapack)')
     # rocblas/rocsolver
-    parser.add_argument('-n', '--no-solver', dest='build_solver', required=False, default=True, action='store_false')
+    parser.add_argument('-n', '--no-solver', dest='build_solver', required=False, default=True, action='store_false',
+                        help='Pass this flag to build hipLBAS library without rocSOLVER dependency')
     parser.add_argument('-b', '--rocblas', dest='rocblas_version', type=str, required=False, default="",
-                        help='Set a specific rocBLAS vesrion (optional)')
+                        help='Pass this flag to specify rocblas version (optional).')
     parser.add_argument('--rocblas-path', dest='rocblas_path', type=str, required=False, default="C:/hipSDK/rocblas",
-                        help='Set specific path to custom build rocBLAS (optional)')
-    parser.add_argument('--rocsolver-path', dest='rocsolver_path', type=str, required=False, default="C:/hipSDK/rocsolver")
+                        help='Specify path to an existing rocBLAS install directory(optional, e.g. /src/rocBLAS/build/release/rocblas-install).')
+    parser.add_argument('--rocsolver-path', dest='rocsolver_path', type=str, required=False, default="C:/hipSDK/rocsolver",
+                        help='Specify path to an existing rocSOLVER install directory (optional, e.g. /src/rocSOLVER/build/release/rocsolver-install).')
 
     return parser.parse_args()
 
