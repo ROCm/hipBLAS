@@ -121,7 +121,7 @@ endif()
 # Package that helps me set visibility for function names exported from shared library
 include( GenerateExportHeader )
 set_target_properties( hipblas PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON )
-generate_export_header( hipblas EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/hipblas-export.h )
+generate_export_header( hipblas EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/hipblas/hipblas-export.h )
 
 # Following Boost conventions of prefixing 'lib' on static built libraries, across all platforms
 if( NOT BUILD_SHARED_LIBS )
@@ -133,31 +133,32 @@ endif( )
 
 rocm_install_targets(
   TARGETS hipblas
-  INCLUDE
-    ${CMAKE_SOURCE_DIR}/library/include
-    ${CMAKE_BINARY_DIR}/include
-  PREFIX hipblas
 )
+
+install( DIRECTORY "${CMAKE_SOURCE_DIR}/library/include/hipblas/" "${CMAKE_BINARY_DIR}/include/hipblas/"
+       DESTINATION include/hipblas
+  FILES_MATCHING
+  PATTERN "*.h"
+  PATTERN "*.hpp"
+  PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ )
+
+
 #         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
 
 if ( NOT USE_CUDA )
     rocm_export_targets(
         TARGETS roc::hipblas
-	PREFIX hipblas
 	DEPENDS PACKAGE hip
 	NAMESPACE roc::
     )
 else( )
     rocm_export_targets(
         TARGETS roc::hipblas
-	PREFIX hipblas
 	DEPENDS PACKAGE hip
 	NAMESPACE roc::
     )
 endif( )
 
 # Force installation of .f90 module files
-rocm_install(FILES "hipblas_module.f90"
-        DESTINATION "hipblas/include")
-
-rocm_install_symlink_subdir( hipblas )
+install(FILES "hipblas_module.f90"
+        DESTINATION "include/hipblas")
