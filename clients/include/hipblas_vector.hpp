@@ -7,7 +7,7 @@
 
 #include "d_vector.hpp"
 #include "device_batch_vector.hpp"
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "host_batch_vector.hpp"
 #include "utility.h"
 #include <cinttypes>

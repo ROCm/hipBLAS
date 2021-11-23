@@ -5,7 +5,7 @@
 
 #include "cblas_interface.h"
 #include "cblas.h"
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "utility.h"
 #include <cmath>
 #include <memory>

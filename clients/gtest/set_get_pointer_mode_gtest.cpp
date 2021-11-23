@@ -3,7 +3,7 @@
  *
  * ************************************************************************ */
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #ifdef GOOGLE_TEST
 #include <gtest/gtest.h>
 #endif

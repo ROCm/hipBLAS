@@ -7,7 +7,7 @@
 #ifndef _NORM_H
 #define _NORM_H
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "hipblas_vector.hpp"
 
 /* =====================================================================

@@ -7,7 +7,7 @@
 #ifndef _CBLAS_INTERFACE_
 #define _CBLAS_INTERFACE_
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 
 /*!\file
  * \brief provide template functions interfaces to CBLAS C89 interfaces, it is only used for testing

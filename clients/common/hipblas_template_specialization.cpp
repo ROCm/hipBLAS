@@ -3,7 +3,7 @@
  *
  * ************************************************************************/
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "hipblas.hpp"
 
 #ifndef WIN32

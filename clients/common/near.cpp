@@ -4,7 +4,7 @@
  * ************************************************************************ */
 
 #include "near.h"
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "hipblas_vector.hpp"
 #include "utility.h"
 

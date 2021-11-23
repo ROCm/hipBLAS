@@ -7,7 +7,7 @@
 #define _HIPBLAS_ARGUMENTS_HPP_
 
 #include "complex.hpp"
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include "hipblas_datatype2string.hpp"
 #include "utility.h"
 #include <cmath>

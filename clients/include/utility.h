@@ -6,7 +6,7 @@
 #ifndef _TESTING_UTILITY_H_
 #define _TESTING_UTILITY_H_
 
-#include "hipblas.h"
+#include "hipblas/hipblas.h"
 #include <stdbool.h>
 
 #ifdef __cplusplus
