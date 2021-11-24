@@ -151,7 +151,7 @@ else( )
     rocm_export_targets(
         TARGETS roc::hipblas
 	PREFIX hipblas
-	DEPENDS PACKAGE hip
+	DEPENDS PACKAGE HIP
 	NAMESPACE roc::
     )
 endif( )
