@@ -17,55 +17,49 @@ cat <<EOF
     $0 <options> (modify default behavior according to the following flags)
 
   Options:
-    -h | --help                   Print this help message.
+    --address-sanitizer           Build with address sanitizer enabled. Uses hipcc as compiler.
 
-    -i | --install                Pass this flag to generate and install library package after build.
+    -b, --rocblas <version>       Specify rocblas version (e.g. 2.42.0).
 
-    -d | --dependencies           Pass this flag to also build and install external dependencies.
-                                  Dependecies are to be installed in /usr/local. This should be done only once.
-                                  (this does not install rocBLAS or rocSolver)
-
-    -c | --clients                Pass this flag to also build the library clients benchmark and gtest.
+    -c, --clients                 Build the library clients benchmark and gtest.
                                   (Generated binaries will be located at builddir/clients/staging)
 
-    -n | --no-solver              Pass this flag to build hipLBAS library without rocSOLVER dependency
+    --cuda, --use-cuda            Build library for CUDA backend.
 
-    -g | --debug                  Pass this flag to build in Debug mode (equivalent to set CMAKE_BUILD_TYPE=Debug).
-                                  (Default build type is Release)
+    --compiler </compier/path>    Specify path to host compiler. (e.g. /opt/bin/hipcc)
 
-    -s | --static                 Pass this flag to build hipblas as a static library.
-                                  (hipblas must be built statically when the used companion rocblas is also static).
-
-    -r | --relocatable            Pass this to add RUNPATH(based on ROCM_RPATH) and remove ldconf entry.
-
-    -k | --relwithdebinfo         Pass this flag to build in release debug mode (equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo).
-                                  (Default build type is Release)
-
-    --rocblas-path <blasdir>      Specify path to an existing rocBLAS install directory.
-                                  (e.g. /src/rocBLAS/build/release/rocblas-install)
-
-    -b | --rocblas                Pass this flag to specify rocblas version.
-
-    --rocsolver-path <solverdir>  Specify path to an existing rocSOLVER install directory.
-                                  (e.g. /src/rocSOLVER/build/release/rocsolver-install)
-
-    --compiler </compier/path>    Specify path to host compiler.
-
-    --hip-clang                   Pass this flag to build using the hip-clang compiler.
-
-    --no-hip-clang                Pass this flag to build library without using hip-clang compiler.
-
-    --cuda | --use-cuda           Pass this flag to build library for cuda backend.
-
-    -p | --cmakepp                Pass this flag for to add CMAKE_PREFIX_PATH
-
-    --custom-target <target>      Pass this flag to link the library against custom target (eg. host, device).
-
-    -v | --rocm-dev <version>     Pass this flag to set specific rocm-dev version.
-
-    --address-sanitizer           Pass this flag to build with address sanitizer enabled. Uses hipcc as compiler.
+    --custom-target <target>      Specify custom target to link the library against (eg. host, device).
 
     --codecoverage                Build with code coverage profiling enabled, excluding release mode.
+
+    -d, --dependencies            Build and install external dependencies. Dependecies are to be installed in /usr/local.
+                                  This should be done only once (this does not install rocBLAS or rocSolver).
+
+    -g, --debug                   Build in Debug mode, equivalent to set CMAKE_BUILD_TYPE=Debug. (Default build type is Release)
+
+    -h, --help                    Print this help message.
+
+    --hip-clang                   Build library using the hip-clang compiler.
+
+    -i, -install                  Generate and install library package after build.
+
+    -k,  --relwithdebinfo         Build in release debug mode, equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo.(Default build type is Release)
+
+    -n, --no-solver               Build hipLBAS library without rocSOLVER dependency
+
+    --no-hip-clang                Build library without using hip-clang compiler.
+
+    -p, --cmakepp                 To add CMAKE_PREFIX_PATH
+
+    -r, --relocatable             Create a package to support relocatable ROCm
+
+    --rocblas-path <blasdir>      Specify path to an existing rocBLAS install directory (e.g. /src/rocBLAS/build/release/rocblas-install).
+
+    --rocsolver-path <solverdir>  Specify path to an existing rocSOLVER install directory (e.g. /src/rocSOLVER/build/release/rocsolver-install).
+
+    -s, --static                  Build hipblas as a static library (hipblas must be built statically when the used companion rocblas is also static).
+
+    -v, --rocm-dev <version>      Specify specific rocm-dev version. (e.g. 4.5.0)
 EOF
 }
 
