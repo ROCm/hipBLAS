@@ -156,11 +156,11 @@ install_packages( )
   fi
 
   # dependencies needed for library and clients to build
-  local library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" )
-  local library_dependencies_centos=( "epel-release" "make" "cmake3" "gcc-c++" "rpm-build" )
-  local library_dependencies_centos8=( "epel-release" "make" "cmake3" "gcc-c++" "rpm-build" )
-  local library_dependencies_fedora=( "make" "cmake" "gcc-c++" "libcxx-devel" "rpm-build" )
-  local library_dependencies_sles=( "make" "cmake" "gcc-c++" "libcxxtools9" "rpm-build" )
+  local library_dependencies_ubuntu=( "make" "pkg-config" )
+  local library_dependencies_centos=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_centos8=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_fedora=( "make" "gcc-c++" "libcxx-devel" "rpm-build" )
+  local library_dependencies_sles=( "make" "gcc-c++" "libcxxtools9" "rpm-build" )
 
   if [[ "${build_cuda}" == true ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
@@ -210,6 +210,17 @@ install_packages( )
         library_dependencies_fedora+=( "rocsolver" )
         library_dependencies_sles+=( "rocsolver" )
       fi
+    fi
+  fi
+
+  # wget is needed for cmake
+  if [ -z "$CMAKE_VERSION" ] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
+    if $update_cmake == true; then
+      library_dependencies_ubuntu+=("wget")
+      library_dependencies_centos_rhel+=("wget")
+      library_dependencies_centos_rhel_8+=("wget")
+      library_dependencies_fedora+=("wget")
+      library_dependencies_sles+=("wget")
     fi
   fi
 
@@ -326,6 +337,7 @@ compiler=g++
 build_static=false
 build_release_debug=false
 build_codecoverage=false
+update_cmake=false
 
 # #################################################
 # Parameter parsing
@@ -334,7 +346,7 @@ build_codecoverage=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -392,6 +404,9 @@ while true; do
         shift ;;
     --static)
         build_static=true
+        shift ;;
+    --cmake_install)
+        update_cmake=true
         shift ;;
     --address-sanitizer)
         build_address_sanitizer=true
@@ -454,18 +469,31 @@ fi
 # Default cmake executable is called cmake
 cmake_executable=cmake
 
-case "${ID}" in
-  centos|rhel)
-  cmake_executable=cmake3
-  ;;
-esac
-
 # #################################################
 # dependencies
 # #################################################
 if [[ "${install_dependencies}" == true ]]; then
 
+  CMAKE_VERSION=$(cmake --version | grep -oP '(?<=version )[^ ]*' )
+
   install_packages
+
+  if [ -z "$CMAKE_VERSION"] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
+      if $update_cmake == true; then
+        CMAKE_REPO="https://github.com/Kitware/CMake/releases/download/v3.16.8/"
+        wget -nv ${CMAKE_REPO}/cmake-3.16.8.tar.gz
+        tar -xvf cmake-3.16.8.tar.gz
+        cd cmake-3.16.8
+        ./bootstrap --prefix=/usr --no-system-curl --parallel=16
+        make -j16
+        sudo make install
+        cd ..
+        rm -rf cmake-3.16.8.tar.gz cmake-3.16.8
+      else
+          echo "hipBLAS requires CMake version >= 3.16.8 and CMake version ${CMAKE_VERSION} is installed. Run install.sh again with --cmake_install flag and CMake version ${CMAKE_VERSION} will be uninstalled and CMake version 3.16.8 will be installed"
+          exit 2
+      fi
+  fi
 
   # The following builds googletest & lapack from source, installs into cmake default /usr/local
   pushd .
