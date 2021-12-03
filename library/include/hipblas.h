@@ -16926,9 +16926,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
                                                            const int             batchCount);
 //! @}
 
-// ================================
-// ====== BLAS Extensions =========
-// ================================
+/*
+ * ===========================================================================
+ *   BLAS Extensions
+ * ===========================================================================
+ */
 
 /*! \brief BLAS EX API
 
@@ -17884,19 +17886,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   han
                                                            int               batchCount,
                                                            hipblasDatatype_t executionType);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
-                                            int               n,
-                                            const void*       x,
-                                            hipblasDatatype_t xType,
-                                            int               incx,
-                                            const void*       y,
-                                            hipblasDatatype_t yType,
-                                            int               incy,
-                                            void*             result,
-                                            hipblasDatatype_t resultType,
-                                            hipblasDatatype_t executionType);
-
-/*! \brief BLAS EX API
+/*! @{
+    \brief BLAS EX API
 
     \details
     dotEx  performs the dot product of vectors x and y
@@ -17943,6 +17934,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
                   specifies the datatype of computation.
 
     ********************************************************************/
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
+                                            int               n,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            int               incx,
+                                            const void*       y,
+                                            hipblasDatatype_t yType,
+                                            int               incy,
+                                            void*             result,
+                                            hipblasDatatype_t resultType,
+                                            hipblasDatatype_t executionType);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
                                              int               n,
                                              const void*       x,
@@ -17954,21 +17958,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
                                              void*             result,
                                              hipblasDatatype_t resultType,
                                              hipblasDatatype_t executionType);
+//! @}
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
-                                                   int               n,
-                                                   const void*       x,
-                                                   hipblasDatatype_t xType,
-                                                   int               incx,
-                                                   const void*       y,
-                                                   hipblasDatatype_t yType,
-                                                   int               incy,
-                                                   int               batchCount,
-                                                   void*             result,
-                                                   hipblasDatatype_t resultType,
-                                                   hipblasDatatype_t executionType);
-
-/*! \brief BLAS EX API
+/*! @{
+    \brief BLAS EX API
 
     \details
     dotBatchedEx performs a batch of dot products of vectors x and y
@@ -18021,6 +18014,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
                   specifies the datatype of computation.
 
     ********************************************************************/
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
+                                                   int               n,
+                                                   const void*       x,
+                                                   hipblasDatatype_t xType,
+                                                   int               incx,
+                                                   const void*       y,
+                                                   hipblasDatatype_t yType,
+                                                   int               incy,
+                                                   int               batchCount,
+                                                   void*             result,
+                                                   hipblasDatatype_t resultType,
+                                                   hipblasDatatype_t executionType);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
                                                     int               n,
                                                     const void*       x,
@@ -18033,23 +18040,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
                                                     void*             result,
                                                     hipblasDatatype_t resultType,
                                                     hipblasDatatype_t executionType);
+//! @}
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   handle,
-                                                          int               n,
-                                                          const void*       x,
-                                                          hipblasDatatype_t xType,
-                                                          int               incx,
-                                                          hipblasStride     stridex,
-                                                          const void*       y,
-                                                          hipblasDatatype_t yType,
-                                                          int               incy,
-                                                          hipblasStride     stridey,
-                                                          int               batchCount,
-                                                          void*             result,
-                                                          hipblasDatatype_t resultType,
-                                                          hipblasDatatype_t executionType);
-
-/*! \brief BLAS EX API
+/*! @{
+    \brief BLAS EX API
 
     \details
     dotStridedBatchedEx  performs a batch of dot products of vectors x and y
@@ -18108,6 +18102,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   hand
                   specifies the datatype of computation.
 
     ********************************************************************/
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   handle,
+                                                          int               n,
+                                                          const void*       x,
+                                                          hipblasDatatype_t xType,
+                                                          int               incx,
+                                                          hipblasStride     stridex,
+                                                          const void*       y,
+                                                          hipblasDatatype_t yType,
+                                                          int               incy,
+                                                          hipblasStride     stridey,
+                                                          int               batchCount,
+                                                          void*             result,
+                                                          hipblasDatatype_t resultType,
+                                                          hipblasDatatype_t executionType);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   handle,
                                                            int               n,
                                                            const void*       x,
@@ -18122,6 +18132,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   han
                                                            void*             result,
                                                            hipblasDatatype_t resultType,
                                                            hipblasDatatype_t executionType);
+//! @}
 
 /*! \brief BLAS_EX API
 
