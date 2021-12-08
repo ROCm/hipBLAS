@@ -9,6 +9,7 @@ Prerequisites
 
   * A ROCm enabled platform, more information `here <https://rocm.github.io/>`_.
   * A compatible version of rocBLAS
+  * A compatible version of rocSOLVER for full functionality
 
 * If using the cuBLAS backend on a Nvidia machine:
 
