@@ -5,7 +5,15 @@ Building and Installing
 Prerequisites
 =============
 
--  A ROCm enabled platform, more information `here <https://rocm.github.io/>`_.
+* If using the rocBLAS backend on an AMD machine:
+
+  * A ROCm enabled platform, more information `here <https://rocm.github.io/>`_.
+  * A compatible version of rocBLAS
+
+* If using the cuBLAS backend on a Nvidia machine:
+
+  * A HIP enabled platform, more information `here <https://rocmdocs.amd.com/en/latest/Installation_Guide/HIP-Installation.html#nvidia-platform/>`_.
+  * A working CUDA toolkit, including cuBLAS, see `here <https://developer.nvidia.com/accelerated-computing-toolkit/>`_.
 
 Installing pre-built packages
 =============================
