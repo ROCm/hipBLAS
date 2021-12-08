@@ -175,6 +175,10 @@ if( NOT USE_CUDA )
   if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
     # hip-clang needs specific flag to turn on pthread and m
     target_link_libraries( hipblas-test PRIVATE -lpthread -lm )
+
+    if(BUILD_ADDRESS_SANITIZER)
+      target_link_libraries( hipblas-test PRIVATE -fuse-ld=lld -lgfortran )
+    endif()
   endif()
 else( )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_NVCC__ )

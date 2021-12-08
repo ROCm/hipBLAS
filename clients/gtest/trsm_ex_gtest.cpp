@@ -308,8 +308,6 @@ TEST_P(trsm_ex_gtest, trsm_strided_batched_ex_gtest_double_complex)
     }
 }
 
-#endif
-
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
@@ -327,3 +325,5 @@ INSTANTIATE_TEST_SUITE_P(hipblasTrsm_matrix_size,
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
+
+#endif
