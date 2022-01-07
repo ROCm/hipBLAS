@@ -8,7 +8,7 @@
 - Added hipblasVersionMinor define. hipblaseVersionMinor remains defined
   for backwards compatibility.
 
-## (Unreleased) hipBLAS 0.49.0
+## [hipBLAS 0.49.0 for ROCm 5.0.0]
 ### Added
 - Added rocSOLVER functions to hipblas-bench
 - Added option ROCM_MATHLIBS_API_USE_HIP_COMPLEX to opt-in to use hipFloatComplex and hipDoubleComplex
