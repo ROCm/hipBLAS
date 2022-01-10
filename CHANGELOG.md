@@ -2,9 +2,9 @@
 
 ## (Unreleased) hipBLAS 0.50
 ### Added
-- Added library version and device information to hipblas-test output.
+- Added library version and device information to hipblas-test output
 - Added --rocsolver-path command line option to choose path to pre-built rocSOLVER, as
-  absolute or relative path.
+  absolute or relative path
 - Added --cmake_install command line option to update cmake to minimum version if required
 - Added cmake-arg parameter to pass in cmake arguments while building
 
@@ -13,7 +13,7 @@
   for backwards compatibility.
 
 ### Changed
-- rocblas-path command line option can specify either absoulute or relative path now
+- rocblas-path command line option can be specified as either absolute or relative path
 - Help message improvements in install.sh and rmake.py
 - Updated googletest dependency from 1.10.0 to 1.11.0
 
