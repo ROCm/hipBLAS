@@ -7,10 +7,7 @@ find_package( Threads REQUIRED )
 
 # Linking lapack library requires fortran flags
 enable_language( Fortran )
-find_package( cblas CONFIG REQUIRED )
-if( NOT cblas_FOUND )
-  message( FATAL_ERROR "cblas is a required dependency and is not found;  try adding cblas path to CMAKE_PREFIX_PATH" )
-endif( )
+find_package( cblas REQUIRED CONFIG )
 
 if(LINK_BLIS)
   set( BLIS_CPP ../common/blis_interface.cpp )
@@ -32,15 +29,8 @@ if(LINK_BLIS)
 endif()
 
 if( NOT TARGET hipblas )
-  find_package( hipblas CONFIG PATHS /opt/rocm/hipblas )
-
-  if( NOT hipblas_FOUND )
-    message( FATAL_ERROR "hipBLAS is a required dependency and is not found; try adding hipblas path to CMAKE_PREFIX_PATH")
-  endif( )
+  find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
 endif( )
-
-find_package( GTest REQUIRED )
-include_directories(${GTEST_INCLUDE_DIRS})
 
 set( hipblas_benchmark_common
       ../common/utility.cpp
@@ -63,6 +53,8 @@ target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx
 
 if(LINK_BLIS)
   target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
+else()
+  target_link_libraries( hipblas-bench PRIVATE blas )
 endif()
 
 # Internal header includes
@@ -136,8 +128,10 @@ else( )
   target_link_libraries( hipblas-bench PRIVATE ${CUDA_LIBRARIES} Threads::Threads )
 endif( )
 
-set_target_properties( hipblas-bench PROPERTIES DEBUG_POSTFIX "-d" CXX_EXTENSIONS NO )
-set_target_properties( hipblas-bench PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
-#add_dependencies( hipblas-bench hipblas-bench-common )
+set_target_properties( hipblas-bench PROPERTIES
+  DEBUG_POSTFIX "-d"
+  CXX_EXTENSIONS OFF
+  RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
+)
 
 target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ROCM_USE_FLOAT16 )

@@ -27,12 +27,6 @@ if( BUILD_VERBOSE )
   message( STATUS "\t==>CMAKE_EXE_LINKER link flags: " ${CMAKE_EXE_LINKER_FLAGS} )
 endif( )
 
-if( NOT USE_CUDA )
-  find_package( hip REQUIRED )
-else()
-  find_package( HIP REQUIRED )
-endif()
-
 # configure a header file to pass the CMake version settings to the source, and package the header files in the output archive
 configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas-version.h.in" "${PROJECT_BINARY_DIR}/include/hipblas-version.h" )
 
@@ -67,8 +61,8 @@ endif( )
 
 # Package specific CPACK vars
 if( NOT USE_CUDA )
-    set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 2.42.0), rocsolver (>= 3.16.0)" )
-    set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 2.42.0, rocsolver >= 3.16.0" )
+    set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 2.43.0), rocsolver (>= 3.17.0)" )
+    set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 2.43.0, rocsolver >= 3.17.0" )
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md" )

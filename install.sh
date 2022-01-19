@@ -8,27 +8,61 @@
 # #################################################
 function display_help()
 {
-  echo "hipBLAS build & installation helper script"
-  echo "./install [-h|--help] "
-  echo "    [-h|--help] prints this help message"
-  echo "    [-i|--install] install after build"
-  echo "    [-d|--dependencies] install build dependencies"
-  echo "    [-c|--clients] build library clients too (combines with -i & -d)"
-  echo "    [-n|--no-solver] build library without rocSOLVER dependency"
-  echo "    [-g|--debug] -DCMAKE_BUILD_TYPE=Debug (default is =Release)"
-  echo "    [-k|--relwithdebinfo] -DCMAKE_BUILD_TYPE=RelWithDebInfo"
-  echo "    [-r]--relocatable] create a package to support relocatable ROCm"
-  echo "    [--cuda|--use-cuda] build library for cuda backend"
-  echo "    [--[no-]hip-clang] Whether to build library with hip-clang"
-  echo "    [--compiler] specify host compiler"
-  echo "    [-p|--cmakepp] addition to CMAKE_PREFIX_PATH"
-  echo "    [--custom-target] link against custom target (e.g. host, device)"
-  echo "    [-v|--rocm-dev] Set specific rocm-dev version"
-  echo "    [-b|--rocblas] Set specific rocblas version"
-  echo "    [--rocblas-path] Set specific path to custom built rocblas"
-  echo "    [--static] Create static library instead of shared library"
-  echo "    [--codecoverage] build with code coverage profiling enabled"
-  echo "    [--address-sanitizer] Build with address sanitizer enabled. Uses hipcc as compiler"
+cat <<EOF
+
+  hipBLAS library build & installation helper script.
+
+  Usage:
+    $0 (build hipblas and put library files at ./build/hipblas-install)
+    $0 <options> (modify default behavior according to the following flags)
+
+  Options:
+    --address-sanitizer           Build with address sanitizer enabled. Uses hipcc as compiler.
+
+    -b, --rocblas <version>       Specify rocblas version (e.g. 2.42.0).
+
+    -c, --clients                 Build the library clients benchmark and gtest.
+                                  (Generated binaries will be located at builddir/clients/staging)
+
+    --cuda, --use-cuda            Build library for CUDA backend.
+
+    --cmake-arg                   Forward the given argument to CMake when configuring the build.
+
+    --compiler </compier/path>    Specify path to host compiler. (e.g. /opt/bin/hipcc)
+
+    --custom-target <target>      Specify custom target to link the library against (eg. host, device).
+
+    --codecoverage                Build with code coverage profiling enabled, excluding release mode.
+
+    -d, --dependencies            Build and install external dependencies. Dependecies are to be installed in /usr/local.
+                                  This should be done only once (this does not install rocBLAS or rocSolver).
+
+    -g, --debug                   Build in Debug mode, equivalent to set CMAKE_BUILD_TYPE=Debug. (Default build type is Release)
+
+    -h, --help                    Print this help message.
+
+    --hip-clang                   Build library using the hip-clang compiler.
+
+    -i, -install                  Generate and install library package after build.
+
+    -k,  --relwithdebinfo         Build in release debug mode, equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo.(Default build type is Release)
+
+    -n, --no-solver               Build hipLBAS library without rocSOLVER dependency
+
+    --no-hip-clang                Build library without using hip-clang compiler.
+
+    -p, --cmakepp                 To add CMAKE_PREFIX_PATH
+
+    -r, --relocatable             Create a package to support relocatable ROCm
+
+    --rocblas-path <blasdir>      Specify path to an existing rocBLAS install directory (e.g. /src/rocBLAS/build/release/rocblas-install).
+
+    --rocsolver-path <solverdir>  Specify path to an existing rocSOLVER install directory (e.g. /src/rocSOLVER/build/release/rocsolver-install).
+
+    -s, --static                  Build hipblas as a static library (hipblas must be built statically when the used companion rocblas is also static).
+
+    -v, --rocm-dev <version>      Specify specific rocm-dev version. (e.g. 4.5.0)
+EOF
 }
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
@@ -124,11 +158,11 @@ install_packages( )
   fi
 
   # dependencies needed for library and clients to build
-  local library_dependencies_ubuntu=( "make" "cmake-curses-gui" "pkg-config" )
-  local library_dependencies_centos=( "epel-release" "make" "cmake3" "gcc-c++" "rpm-build" )
-  local library_dependencies_centos8=( "epel-release" "make" "cmake3" "gcc-c++" "rpm-build" )
-  local library_dependencies_fedora=( "make" "cmake" "gcc-c++" "libcxx-devel" "rpm-build" )
-  local library_dependencies_sles=( "make" "cmake" "gcc-c++" "libcxxtools9" "rpm-build" )
+  local library_dependencies_ubuntu=( "make" "pkg-config" )
+  local library_dependencies_centos=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_centos8=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_fedora=( "make" "gcc-c++" "libcxx-devel" "rpm-build" )
+  local library_dependencies_sles=( "make" "gcc-c++" "libcxxtools9" "rpm-build" )
 
   if [[ "${build_cuda}" == true ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
@@ -170,11 +204,25 @@ install_packages( )
       fi
     fi
 
-    if [[ "${build_solver}" == true ]]; then
-      library_dependencies_ubuntu+=( "rocsolver" )
-      library_dependencies_centos+=( "rocsolver" )
-      library_dependencies_fedora+=( "rocsolver" )
-      library_dependencies_sles+=( "rocsolver" )
+    # Do not install rocsolver if --rocsolver_path flag is set,
+    if [[ -z ${rocsolver_path+foo} ]]; then
+      if [[ "${build_solver}" == true ]]; then
+        library_dependencies_ubuntu+=( "rocsolver" )
+        library_dependencies_centos+=( "rocsolver" )
+        library_dependencies_fedora+=( "rocsolver" )
+        library_dependencies_sles+=( "rocsolver" )
+      fi
+    fi
+  fi
+
+  # wget is needed for cmake
+  if [ -z "$CMAKE_VERSION" ] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
+    if $update_cmake == true; then
+      library_dependencies_ubuntu+=("wget")
+      library_dependencies_centos_rhel+=("wget")
+      library_dependencies_centos_rhel_8+=("wget")
+      library_dependencies_fedora+=("wget")
+      library_dependencies_sles+=("wget")
     fi
   fi
 
@@ -247,6 +295,11 @@ install_zypper_packages( )
   done
 }
 
+# given a relative path, returns the absolute path
+make_absolute_path( ) {
+  (cd "$1" && pwd -P)
+}
+
 # #################################################
 # Pre-requisites check
 # #################################################
@@ -291,6 +344,9 @@ compiler=g++
 build_static=false
 build_release_debug=false
 build_codecoverage=false
+update_cmake=false
+declare -a cmake_common_options
+declare -a cmake_client_options
 
 # #################################################
 # Parameter parsing
@@ -299,7 +355,7 @@ build_codecoverage=false
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,custom-target:,address-sanitizer --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,cmake-arg: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -358,6 +414,9 @@ while true; do
     --static)
         build_static=true
         shift ;;
+    --cmake_install)
+        update_cmake=true
+        shift ;;
     --address-sanitizer)
         build_address_sanitizer=true
         compiler=hipcc
@@ -377,8 +436,14 @@ while true; do
     --rocblas-path)
         rocblas_path=${2}
         shift 2 ;;
+    --rocsolver-path)
+        rocsolver_path=${2}
+        shift 2 ;;
     --prefix)
         install_prefix=${2}
+        shift 2 ;;
+    --cmake-arg)
+        cmake_common_options+=("${2}")
         shift 2 ;;
     --) shift ; break ;;
     *)  echo "Unexpected command line parameter received; aborting";
@@ -413,21 +478,42 @@ else
   rm -rf ${build_dir}/debug
 fi
 
+# resolve relative paths
+if [[ -n "${rocblas_path+x}" ]]; then
+  rocblas_path="$(make_absolute_path "${rocblas_path}")"
+fi
+if [[ -n "${rocsolver_path+x}" ]]; then
+  rocsolver_path="$(make_absolute_path "${rocsolver_path}")"
+fi
+
 # Default cmake executable is called cmake
 cmake_executable=cmake
-
-case "${ID}" in
-  centos|rhel)
-  cmake_executable=cmake3
-  ;;
-esac
 
 # #################################################
 # dependencies
 # #################################################
 if [[ "${install_dependencies}" == true ]]; then
 
+  CMAKE_VERSION=$(cmake --version | grep -oP '(?<=version )[^ ]*' )
+
   install_packages
+
+  if [ -z "$CMAKE_VERSION"] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
+      if $update_cmake == true; then
+        CMAKE_REPO="https://github.com/Kitware/CMake/releases/download/v3.16.8/"
+        wget -nv ${CMAKE_REPO}/cmake-3.16.8.tar.gz
+        tar -xvf cmake-3.16.8.tar.gz
+        cd cmake-3.16.8
+        ./bootstrap --prefix=/usr --no-system-curl --parallel=16
+        make -j16
+        sudo make install
+        cd ..
+        rm -rf cmake-3.16.8.tar.gz cmake-3.16.8
+      else
+          echo "hipBLAS requires CMake version >= 3.16.8 and CMake version ${CMAKE_VERSION} is installed. Run install.sh again with --cmake_install flag and CMake version ${CMAKE_VERSION} will be uninstalled and CMake version 3.16.8 will be installed"
+          exit 2
+      fi
+  fi
 
   # The following builds googletest & lapack from source, installs into cmake default /usr/local
   pushd .
@@ -447,15 +533,13 @@ pushd .
   # #################################################
   # configure & build
   # #################################################
-  cmake_common_options=""
-  cmake_client_options=""
 
   if [[ "${build_static}" == true ]]; then
     if [[ "${build_cuda}" == true ]]; then
       printf "Static library not supported for CUDA backend.\n"
       exit 1
     fi
-    cmake_common_options="${cmake_common_options} -DBUILD_SHARED_LIBS=OFF"
+    cmake_common_options+=("-DBUILD_SHARED_LIBS=OFF")
     compiler="${rocm_path}/bin/hipcc" #force hipcc for static libs, g++ doesn't work
     printf "Forcing compiler to hipcc for static library.\n"
   fi
@@ -463,44 +547,49 @@ pushd .
   # build type
   if [[ "${build_release}" == true ]]; then
     mkdir -p ${build_dir}/release/clients && cd ${build_dir}/release
-    cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Release"
+    cmake_common_options+=("-DCMAKE_BUILD_TYPE=Release")
   elif [[ "${build_release_debug}" == true ]]; then
     mkdir -p ${build_dir}/release-debug/clients && cd ${build_dir}/release-debug
-    cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+    cmake_common_options+=("-DCMAKE_BUILD_TYPE=RelWithDebInfo")
   else
     mkdir -p ${build_dir}/debug/clients && cd ${build_dir}/debug
-    cmake_common_options="${cmake_common_options} -DCMAKE_BUILD_TYPE=Debug"
+    cmake_common_options+=("-DCMAKE_BUILD_TYPE=Debug")
   fi
 
   # cuda
   if [[ "${build_cuda}" == true ]]; then
-    cmake_common_options="${cmake_common_options} -DUSE_CUDA=ON"
+    cmake_common_options+=("-DUSE_CUDA=ON")
   else
-    cmake_common_options="${cmake_common_options} -DUSE_CUDA=OFF"
+    cmake_common_options+=("-DUSE_CUDA=OFF")
   fi
 
   # clients
   if [[ "${build_clients}" == true ]]; then
-    cmake_client_options="${cmake_client_options} -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON"
+    cmake_client_options+=("-DBUILD_CLIENTS_TESTS=ON" "-DBUILD_CLIENTS_BENCHMARKS=ON" "-DBUILD_CLIENTS_SAMPLES=ON")
   fi
 
   # solver
   if [[ "${build_solver}" == false ]]; then
-    cmake_client_options="${cmake_client_options} -DBUILD_WITH_SOLVER=OFF"
+    cmake_common_options+=("-DBUILD_WITH_SOLVER=OFF")
   fi
 
   # sanitizer
   if [[ "${build_address_sanitizer}" == true ]]; then
-    cmake_common_options="${cmake_common_options} -DBUILD_ADDRESS_SANITIZER=ON"
+    cmake_common_options+=("-DBUILD_ADDRESS_SANITIZER=ON")
   fi
 
   if [[ ${custom_target+foo} ]]; then
-    cmake_common_options="${cmake_common_options} -DCUSTOM_TARGET=${custom_target}"
+    cmake_common_options+=("-DCUSTOM_TARGET=${custom_target}")
   fi
 
   # custom rocblas
   if [[ ${rocblas_path+foo} ]]; then
-    cmake_common_options="${cmake_common_options} -DCUSTOM_ROCBLAS=${rocblas_path}"
+    cmake_common_options+=("-DCUSTOM_ROCBLAS=${rocblas_path}")
+  fi
+
+  # custom rocsolver
+  if [[ ${rocsolver_path+foo} ]]; then
+    cmake_common_options+=("-DCUSTOM_ROCSOLVER=${rocsolver_path}")
   fi
 
   # code coverage
@@ -509,19 +598,19 @@ pushd .
           echo "Code coverage is disabled in Release mode, to enable code coverage select either Debug mode (-g | --debug) or RelWithDebInfo mode (-k | --relwithdebinfo); aborting";
           exit 1
       fi
-      cmake_common_options="${cmake_common_options} -DBUILD_CODE_COVERAGE=ON"
+      cmake_common_options+=("-DBUILD_CODE_COVERAGE=ON")
   fi
 
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
-    CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
+    CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
     -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;/usr/local/cuda;${cmake_prefix_path}" \
     -DCMAKE_SHARED_LINKER_FLAGS="${rocm_rpath}" \
     -DCMAKE_EXE_LINKER_FLAGS=" -Wl,--enable-new-dtags -Wl,--rpath,${rocm_path}/lib:${rocm_path}/lib64" \
     -DROCM_DISABLE_LDCONFIG=ON \
     -DROCM_PATH="${rocm_path}" ../..
   else
-    CXX=${compiler} ${cmake_executable} ${cmake_common_options} ${cmake_client_options} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
+    CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
   fi
   check_exit_code "$?"
 
