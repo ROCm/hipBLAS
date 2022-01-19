@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2020 Advanced Micro Devices, Inc.
+ * Copyright 2016-2021 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #ifndef HIPBLAS_VERSION_H_
@@ -9,7 +9,8 @@
  */
 // clang-format off
 #define hipblasVersionMajor @hipblas_VERSION_MAJOR@
-#define hipblaseVersionMinor @hipblas_VERSION_MINOR@
+#define hipblaseVersionMinor @hipblas_VERSION_MINOR@ // typo preserved for compatibility
+#define hipblasVersionMinor @hipblas_VERSION_MINOR@
 #define hipblasVersionPatch @hipblas_VERSION_PATCH@
 #define hipblasVersionTweak @hipblas_VERSION_TWEAK@
 // clang-format on

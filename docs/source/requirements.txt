@@ -1,0 +1,5 @@
+docutils==0.16
+sphinx==3.5.3
+sphinx_rtd_theme==0.4.3
+readthedocs_sphinx_ext==2.1.4
+breathe==4.28.0
