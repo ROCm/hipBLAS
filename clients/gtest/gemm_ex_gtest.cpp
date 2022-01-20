@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "testing_gemm_batched_ex.hpp"
@@ -410,9 +410,14 @@ TEST_P(parameterized_gemm_batched_ex, standard_batched)
         }
         else
         {
+#ifndef __HIP_PLATFORM_NVCC__
+            // on HIP we should pass all tests
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+#else
             // cublas/rocblas do not have identical support
             // (i.e. cublas doesn't support i8/i32 here)
             EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+#endif
         }
     }
 }
@@ -452,9 +457,14 @@ TEST_P(parameterized_gemm_batched_ex, standard_strided_batched)
         }
         else
         {
+#ifndef __HIP_PLATFORM_NVCC__
+            // on HIP we should pass all tests
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+#else
             // cublas/rocblas do not have identical support
             // (i.e. cublas doesn't support i8/i32 here)
             EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+#endif
         }
     }
 }
@@ -514,14 +524,14 @@ TEST_P(parameterized_gemm_batched_ex, standard_strided_batched)
 //     virtual void TearDown() {}
 // };
 
-// INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
-//                          parameterized_gemm_ex,
-//                          Combine(ValuesIn(int8_matrix_size_range),
-//                                  ValuesIn(alpha_beta_range_int8),
-//                                  ValuesIn(transA_transB_range),
-//                                  ValuesIn(precision_int8),
-//                                  ValuesIn(batch_count_range_small),
-//                                  ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
+                         parameterized_gemm_ex,
+                         Combine(ValuesIn(int8_matrix_size_range),
+                                 ValuesIn(alpha_beta_range_int8),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_int8),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran)));
 
 // TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
 
@@ -672,11 +682,11 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
 
-// INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
-//                          parameterized_gemm_batched_ex,
-//                          Combine(ValuesIn(int8_matrix_size_range),
-//                                  ValuesIn(alpha_beta_range_int8),
-//                                  ValuesIn(transA_transB_range),
-//                                  ValuesIn(precision_int8),
-//                                  ValuesIn(batch_count_range),
-//                                  ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
+                         parameterized_gemm_batched_ex,
+                         Combine(ValuesIn(int8_matrix_size_range),
+                                 ValuesIn(alpha_beta_range_int8),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_int8),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
