@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 #include "hipblas.h"
 #include "exceptions.hpp"
@@ -17392,8 +17392,12 @@ hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
                                      hipblasGemmAlgo_t  algo)
 try
 {
-    uint32_t solution_index = 0;
-    uint32_t flags          = 0;
+    uint32_t           solution_index = 0;
+    rocblas_gemm_flags flags          = rocblas_gemm_flags_none;
+
+    rocblas_status status = rocblas_query_int8_layout_flag((rocblas_handle)handle, &flags);
+    if(status != rocblas_status_success)
+        return rocBLASStatusToHIPStatus(status);
 
     return rocBLASStatusToHIPStatus(
         rocblas_gemm_batched_ex((rocblas_handle)handle,
@@ -17452,8 +17456,12 @@ hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
                                             hipblasGemmAlgo_t  algo)
 try
 {
-    uint32_t solution_index = 0;
-    uint32_t flags          = 0;
+    uint32_t           solution_index = 0;
+    rocblas_gemm_flags flags          = rocblas_gemm_flags_none;
+
+    rocblas_status status = rocblas_query_int8_layout_flag((rocblas_handle)handle, &flags);
+    if(status != rocblas_status_success)
+        return rocBLASStatusToHIPStatus(status);
 
     return rocBLASStatusToHIPStatus(
         rocblas_gemm_strided_batched_ex((rocblas_handle)handle,
