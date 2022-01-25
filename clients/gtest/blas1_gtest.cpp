@@ -48,7 +48,6 @@ using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 typedef std::tuple<int, vector<double>, vector<int>, double, int, bool> blas1_tuple;
@@ -84,13 +83,11 @@ Yet, the goal of this file is to verify result correctness not argument-checkers
 Representative sampling is sufficient, endless brute-force sampling is not necessary
 =================================================================== */
 
-const int N_range[]     = {-1, 10, 500, 1000, 7111, 10000};
-const int N_range_nan[] = {5};
+const int N_range[] = {-1, 10, 500, 1000, 7111, 10000};
 
 // vector of vector, each pair is a {alpha, alphai, beta, betai};
 // add/delete this list in pairs, like {2.0, 3.0, 4.0, 5.0}
-const vector<vector<double>> alpha_beta_range     = {{1.0, 2.0, 0.0, 0.0}, {2.0, -1.0, -1.0, 2.0}};
-const vector<vector<double>> alpha_beta_range_nan = {{2.0, 2.0, 2.0, 2.0}};
+const vector<vector<double>> alpha_beta_range = {{1.0, 2.0, 0.0, 0.0}, {2.0, -1.0, -1.0, 2.0}};
 
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 2}
@@ -102,13 +99,10 @@ const vector<vector<int>> incx_incy_range = {
     {1, 2},
     {-1, -1},
 };
-const vector<vector<int>> incx_incy_range_nan = {{1, 1}};
 
-const double stride_scale_range[]     = {1.0, 2.5};
-const double stride_scale_range_nan[] = {1.0};
+const double stride_scale_range[] = {1.0, 2.5};
 
-const int batch_count_range[]     = {-1, 0, 1, 2, 10};
-const int batch_count_range_nan[] = {2};
+const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 const bool is_fortran[] = {false, true};
 
@@ -2409,56 +2403,6 @@ TEST_P(blas1_gtest, amin_strided_batched_float_complex)
 
 #endif
 
-class blas1_nan_gtest : public ::TestWithParam<blas1_tuple>
-{
-protected:
-    blas1_nan_gtest() {}
-    virtual ~blas1_nan_gtest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
-};
-
-Arguments setup_blas1_nan_arguments(blas1_tuple tup)
-{
-
-    int            N            = std::get<0>(tup);
-    vector<double> alpha_beta   = std::get<1>(tup);
-    vector<int>    incx_incy    = std::get<2>(tup);
-    double         stride_scale = std::get<3>(tup);
-    int            batch_count  = std::get<4>(tup);
-    bool           fortran      = std::get<5>(tup);
-
-    Arguments arg;
-    arg.N      = N;
-    arg.alpha  = std::numeric_limits<double>::quiet_NaN();
-    arg.alphai = alpha_beta[1];
-    arg.beta   = alpha_beta[2];
-    arg.betai  = alpha_beta[3];
-    arg.incx   = incx_incy[0];
-    arg.incy   = incx_incy[1];
-
-    arg.stride_scale = stride_scale;
-    arg.batch_count  = batch_count;
-
-    arg.fortran = fortran;
-
-    arg.timing
-        = 0; // disable timing data print out. Not supposed to collect performance data in gtest
-
-    return arg;
-}
-
-TEST_P(blas1_nan_gtest, all_tests_nan)
-{
-    Arguments arg = setup_blas1_nan_arguments(GetParam());
-    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, testing_asum<float>(arg));
-    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, testing_asum_batched<float>(arg));
-    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, testing_asum_strided_batched<float>(arg));
-    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, testing_asum<hipblasComplex>(arg));
-    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, testing_asum_batched<hipblasComplex>(arg));
-    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, testing_asum_strided_batched<hipblasComplex>(arg));
-}
-
 // Values is for a single item; ValuesIn is for an array
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
@@ -2471,13 +2415,4 @@ INSTANTIATE_TEST_SUITE_P(hipblasBlas1,
                                  ValuesIn(incx_incy_range),
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
-
-INSTANTIATE_TEST_SUITE_P(hipblasBlas1Nan,
-                         blas1_nan_gtest,
-                         Combine(ValuesIn(N_range_nan),
-                                 ValuesIn(alpha_beta_range_nan),
-                                 ValuesIn(incx_incy_range_nan),
-                                 ValuesIn(stride_scale_range_nan),
-                                 ValuesIn(batch_count_range_nan),
                                  ValuesIn(is_fortran)));

@@ -9,8 +9,6 @@
 
 #include "testing_common.hpp"
 
-using namespace std;
-
 /* ============================================================================================ */
 
 template <typename T>

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include "program_options.hpp"
@@ -1328,7 +1328,7 @@ try
          "Options: h,s,d,c,z,f16_r,f32_r,f64_r,bf16_r,f32_c,f64_c,i8_r,i32_r")
 
         ("initialization",
-         value<std::string>(&initialization)->default_value("rand_int"),
+         value<std::string>(&initialization)->default_value("hpl"),
          "Intialize with random integers, trig functions sin and cos, or hpl-like input. "
          "Options: rand_int, trig_float, hpl")
 
