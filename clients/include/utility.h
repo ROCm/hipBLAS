@@ -405,13 +405,14 @@ inline T random_hpl_generator()
     return std::uniform_real_distribution<double>(-0.5, 0.5)(hipblas_rng);
 }
 
-// // for hipblasBfloat16, generate float, and convert to hipblasBfloat16
-// /*! \brief  generate a random number in HPL-like [-0.5,0.5] doubles  */
-// template <>
-// inline hipblasBfloat16 random_hpl_generator()
-// {
-//     return hipblasBfloat16(std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng));
-// }
+// for hipblasBfloat16, generate float, and convert to hipblasBfloat16
+/*! \brief  generate a random number in HPL-like [-0.5,0.5] doubles  */
+template <>
+inline hipblasBfloat16 random_hpl_generator()
+{
+    return hipblasBfloat16(
+        float_to_bfloat16(std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng)));
+}
 
 /* ============================================================================================ */
 
