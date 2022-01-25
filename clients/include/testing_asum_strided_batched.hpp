@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -68,8 +68,8 @@ hipblasStatus_t testing_asum_strided_batched(const Arguments& argus)
     device_vector<Tr> d_hipblas_result(batch_count);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hx, 1, N, incx, stridex, batch_count);
+    hipblas_init_vector(
+        hx, argus, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
