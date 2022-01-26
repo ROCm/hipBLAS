@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -10,7 +10,7 @@
 #include <stdexcept>
 //#include "utility.h"
 
-using namespace std;
+using std::vector;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
