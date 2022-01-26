@@ -89,7 +89,7 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
             for(int j = 0; j < N; j++)
             {
                 hAb[i + j * N] = AATb[i + j * N];
-                t += abs(AATb[i + j * N]);
+                t += std::abs(AATb[i + j * N]);
             }
             hAb[i + i * N] = t;
         }

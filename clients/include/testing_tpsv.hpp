@@ -87,7 +87,7 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
         for(int j = 0; j < N; j++)
         {
             hA[i + j * N] = AAT[i + j * N];
-            t += abs(AAT[i + j * N]);
+            t += std::abs(AAT[i + j * N]);
         }
         hA[i + i * N] = t;
     }
