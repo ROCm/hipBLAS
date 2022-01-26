@@ -210,7 +210,7 @@ void hipblas_init_template(U& that, T rand_gen(), bool seedReset, bool alternati
             for(int i = 0; i < n; i++)
             {
                 auto value            = rand_gen();
-                batched_data[i * inc] = (i ^ 0) & 1 ? value : negate(value);
+                batched_data[i * inc] = (i ^ 0) & 1 ? value : hipblas_negate(value);
             }
         }
         else

@@ -279,14 +279,15 @@ public:
 /* ============================================================================================ */
 /*! \brief negate a value */
 
+// Can rename to simply "negate" after removing usage of `using namespace std;`
 template <class T>
-inline T negate(T x)
+inline T hipblas_negate(T x)
 {
     return -x;
 }
 
 template <>
-inline hipblasHalf negate(hipblasHalf arg)
+inline hipblasHalf hipblas_negate(hipblasHalf arg)
 {
     union
     {
@@ -299,7 +300,7 @@ inline hipblasHalf negate(hipblasHalf arg)
 }
 
 template <>
-inline hipblasBfloat16 negate(hipblasBfloat16 x)
+inline hipblasBfloat16 hipblas_negate(hipblasBfloat16 x)
 {
     x.data ^= 0x8000;
     return x;
@@ -522,7 +523,7 @@ void hipblas_init_hpl_alternating_sign(
             for(size_t i = 0; i < M; ++i)
             {
                 auto value    = random_hpl_generator<T>();
-                A[i + offset] = (i ^ j) & 1 ? value : negate(value);
+                A[i + offset] = (i ^ j) & 1 ? value : hipblas_negate(value);
             }
         }
 }
