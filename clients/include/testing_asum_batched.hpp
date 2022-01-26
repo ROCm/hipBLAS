@@ -65,7 +65,7 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
 
     // Initial Data on CPU
-    hipblas_init(hx, true);
+    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true);
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     /* =====================================================================
