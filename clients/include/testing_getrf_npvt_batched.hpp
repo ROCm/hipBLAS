@@ -23,7 +23,7 @@ hipblasStatus_t testing_getrf_npvt_batched(const Arguments& argus)
     int lda         = argus.lda;
     int batch_count = argus.batch_count;
 
-    hipblasStride strideP   = min(M, N);
+    hipblasStride strideP   = std::min(M, N);
     size_t        A_size    = size_t(lda) * N;
     size_t        Ipiv_size = strideP * batch_count;
 

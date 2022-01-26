@@ -20,11 +20,12 @@ hipblasStatus_t testing_geqrf_batched(const Arguments& argus)
 
     int M           = argus.M;
     int N           = argus.N;
+    int K           = std::min(M, N);
     int lda         = argus.lda;
     int batch_count = argus.batch_count;
 
     size_t A_size    = size_t(lda) * N;
-    int    Ipiv_size = min(M, N);
+    int    Ipiv_size = K;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M || batch_count < 0)
@@ -99,7 +100,7 @@ hipblasStatus_t testing_geqrf_batched(const Arguments& argus)
         }
 
         double e1 = norm_check_general<T>('F', M, N, lda, hA, hA1, batch_count);
-        double e2 = norm_check_general<T>('F', min(M, N), 1, min(M, N), hIpiv, hIpiv1, batch_count);
+        double e2 = norm_check_general<T>('F', Ipiv_size, 1, Ipiv_size, hIpiv, hIpiv1, batch_count);
         hipblas_error = e1 + e2;
 
         if(argus.unit_check)

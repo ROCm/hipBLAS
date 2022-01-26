@@ -20,12 +20,13 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
 
     int    M            = argus.M;
     int    N            = argus.N;
+    int    K            = std::min(M, N);
     int    lda          = argus.lda;
     int    batch_count  = argus.batch_count;
     double stride_scale = argus.stride_scale;
 
     hipblasStride strideA   = lda * N * stride_scale;
-    hipblasStride strideP   = min(M, N) * stride_scale;
+    hipblasStride strideP   = K * stride_scale;
     int           A_size    = strideA * batch_count;
     int           Ipiv_size = strideP * batch_count;
 
@@ -106,9 +107,8 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
                 M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP, work.data(), N);
         }
 
-        double e1 = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);
-        double e2 = norm_check_general<T>(
-            'F', min(M, N), 1, min(M, N), strideP, hIpiv, hIpiv1, batch_count);
+        double e1     = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);
+        double e2     = norm_check_general<T>('F', K, 1, K, strideP, hIpiv, hIpiv1, batch_count);
         hipblas_error = e1 + e2;
 
         if(argus.unit_check)

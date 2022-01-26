@@ -22,7 +22,7 @@ hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
     int lda = argus.lda;
 
     size_t A_size    = size_t(lda) * N;
-    size_t Ipiv_size = min(M, N);
+    size_t Ipiv_size = std::min(M, N);
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M)

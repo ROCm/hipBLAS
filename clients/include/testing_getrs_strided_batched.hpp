@@ -89,7 +89,7 @@ hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
         info = cblas_getrf<T>(N, N, hAb, lda, hIpivb);
         if(info != 0)
         {
-            cerr << "LU decomposition failed" << endl;
+            std::cerr << "LU decomposition failed" << std::endl;
             return HIPBLAS_STATUS_INTERNAL_ERROR;
         }
     }
