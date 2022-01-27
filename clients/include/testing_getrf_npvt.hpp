@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 template <typename T>
 hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
@@ -24,7 +22,7 @@ hipblasStatus_t testing_getrf_npvt(const Arguments& argus)
     int lda = argus.lda;
 
     size_t A_size    = size_t(lda) * N;
-    size_t Ipiv_size = min(M, N);
+    size_t Ipiv_size = std::min(M, N);
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M)

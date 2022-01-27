@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -93,7 +91,7 @@ hipblasStatus_t testing_trsv_batched(const Arguments& argus)
             for(int j = 0; j < M; j++)
             {
                 hA[b][i + j * lda] = AAT[b][i + j * lda];
-                t += abs(AAT[b][i + j * lda]);
+                t += std::abs(AAT[b][i + j * lda]);
             }
             hA[b][i + i * lda] = t;
         }

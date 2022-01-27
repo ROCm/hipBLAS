@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 template <typename T>
 hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
@@ -91,7 +89,7 @@ hipblasStatus_t testing_getrs_strided_batched(const Arguments& argus)
         info = cblas_getrf<T>(N, N, hAb, lda, hIpivb);
         if(info != 0)
         {
-            cerr << "LU decomposition failed" << endl;
+            std::cerr << "LU decomposition failed" << std::endl;
             return HIPBLAS_STATUS_INTERNAL_ERROR;
         }
     }

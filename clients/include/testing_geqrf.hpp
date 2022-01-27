@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -10,8 +10,6 @@
 
 #include "testing_common.hpp"
 
-using namespace std;
-
 template <typename T>
 hipblasStatus_t testing_geqrf(const Arguments& argus)
 {
@@ -21,10 +19,11 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
 
     int M   = argus.M;
     int N   = argus.N;
+    int K   = std::min(M, N);
     int lda = argus.lda;
 
     size_t A_size    = size_t(lda) * N;
-    int    Ipiv_size = min(M, N);
+    int    Ipiv_size = K;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M)
@@ -90,7 +89,7 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
         cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), lwork);
 
         double e1     = norm_check_general<T>('F', M, N, lda, hA, hA1);
-        double e2     = norm_check_general<T>('F', min(M, N), 1, min(M, N), hIpiv, hIpiv1);
+        double e2     = norm_check_general<T>('F', K, 1, K, hIpiv, hIpiv1);
         hipblas_error = e1 + e2;
 
         if(argus.unit_check)
