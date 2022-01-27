@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -84,7 +82,7 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
         }
 
         // proprocess the matrix to avoid ill-conditioned matrix
-        vector<int> ipiv(K);
+        std::vector<int> ipiv(K);
         cblas_getrf(K, K, hA[b], lda, ipiv.data());
         for(int i = 0; i < K; i++)
         {

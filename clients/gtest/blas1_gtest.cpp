@@ -44,6 +44,7 @@
 #include <stdexcept>
 #include <vector>
 
+using std::vector;
 using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;

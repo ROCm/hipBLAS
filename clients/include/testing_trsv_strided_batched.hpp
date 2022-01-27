@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -97,7 +95,7 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
             for(int j = 0; j < M; j++)
             {
                 hAb[i + j * lda] = AATb[i + j * lda];
-                t += abs(AATb[i + j * lda]);
+                t += std::abs(AATb[i + j * lda]);
             }
             hAb[i + i * lda] = t;
         }

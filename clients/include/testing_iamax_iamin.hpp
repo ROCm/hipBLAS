@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 template <typename T>
 using hipblas_iamax_iamin_t
