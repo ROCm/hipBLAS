@@ -88,9 +88,9 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
     hipblas_init_vector(
         hx_host, arg, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(
-        hy_host, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hc, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hs, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
+        hy_host, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hc, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hs, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
 
     hx_cpu = hx_device = hx_host;
     hy_cpu = hy_device = hy_host;

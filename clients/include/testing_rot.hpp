@@ -61,8 +61,8 @@ hipblasStatus_t testing_rot(const Arguments& arg)
     host_vector<int> alpha(1);
 
     hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(alpha, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(alpha, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
 
     // cos and sin of alpha (in rads)
     hc[0] = cos(alpha[0]);
