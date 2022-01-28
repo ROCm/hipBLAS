@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -32,11 +32,10 @@ hipblasStatus_t testing_rotg(const Arguments& arg)
     host_vector<T> hs(1);
 
     // Initial data on CPU
-    srand(1);
-    hipblas_init<T>(ha, 1, 1, 1);
-    hipblas_init<T>(hb, 1, 1, 1);
-    hipblas_init<U>(hc, 1, 1, 1);
-    hipblas_init<T>(hs, 1, 1, 1);
+    hipblas_init_vector(ha, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hb, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hc, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hs, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
 
     // CPU BLAS
     host_vector<T> ca = ha;

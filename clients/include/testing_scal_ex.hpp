@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -54,8 +54,7 @@ hipblasStatus_t testing_scal_ex_template(const Arguments& argus)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<Tx>(hx_host, 1, N, incx);
+    hipblas_init_vector(hx_host, argus, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
     hx_device = hx_cpu = hx_host;

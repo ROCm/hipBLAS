@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -51,7 +51,7 @@ hipblasStatus_t testing_scal_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
     CHECK_HIP_ERROR(dz.memcheck());
 
-    hipblas_init(hx, true);
+    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true);
     hz.copy_from(hx);
 
     CHECK_HIP_ERROR(dx.transfer_from(hx));

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -83,9 +83,10 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<Tx>(hx, 1, N, abs_incx, stridex, batch_count);
-    hipblas_init<Ty>(hy_host, 1, N, abs_incy, stridey, batch_count);
+    hipblas_init_vector(
+        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(
+        hy_host, argus, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
 
     hy_device = hy_host;
     hy_cpu    = hy_host;

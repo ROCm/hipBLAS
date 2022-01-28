@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -28,8 +28,7 @@ hipblasStatus_t testing_rotmg(const Arguments& arg)
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
     // Initial data on CPU
-    srand(1);
-    hipblas_init<T>(hparams, 1, 9, 1);
+    hipblas_init_vector(hparams, arg, 9, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     host_vector<T>   cparams   = hparams;
     host_vector<T>   hparams_d = hparams;

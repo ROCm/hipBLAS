@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -46,8 +46,7 @@ hipblasStatus_t testing_scal(const Arguments& argus)
     double hipblas_error = 0.0;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hx, 1, N, incx);
+    hipblas_init_vector(hx, argus, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
     hz = hx;

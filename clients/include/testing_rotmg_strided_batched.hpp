@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -58,12 +58,16 @@ hipblasStatus_t testing_rotmg_strided_batched(const Arguments& arg)
     host_vector<T> hy1(size_y1);
     host_vector<T> hparams(size_param);
 
-    srand(1);
-    hipblas_init<T>(hparams, 1, 5, 1, stride_param, batch_count);
-    hipblas_init<T>(hd1, 1, 1, 1, stride_d1, batch_count);
-    hipblas_init<T>(hd2, 1, 1, 1, stride_d2, batch_count);
-    hipblas_init<T>(hx1, 1, 1, 1, stride_x1, batch_count);
-    hipblas_init<T>(hy1, 1, 1, 1, stride_y1, batch_count);
+    hipblas_init_vector(
+        hparams, arg, 5, 1, stride_param, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(
+        hd1, arg, 1, 1, stride_d1, batch_count, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(
+        hd2, arg, 1, 1, stride_d2, batch_count, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(
+        hx1, arg, 1, 1, stride_x1, batch_count, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(
+        hy1, arg, 1, 1, stride_y1, batch_count, hipblas_client_alpha_sets_nan, false);
 
     // host data for CBLAS test
     host_vector<T> cparams = hparams;

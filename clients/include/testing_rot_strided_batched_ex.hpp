@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -84,12 +84,13 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
     host_vector<Ty>  hy_cpu(size_y);
     host_vector<Tcs> hc(1);
     host_vector<Tcs> hs(1);
-    srand(1);
-    hipblas_init<Tx>(hx_host, 1, N, abs_incx, stridex, batch_count);
-    hipblas_init<Ty>(hy_host, 1, N, abs_incy, stridey, batch_count);
 
-    hipblas_init<Tcs>(hc, 1, 1, 1);
-    hipblas_init<Tcs>(hs, 1, 1, 1);
+    hipblas_init_vector(
+        hx_host, arg, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(
+        hy_host, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hc, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hs, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     hx_cpu = hx_device = hx_host;
     hy_cpu = hy_device = hy_host;

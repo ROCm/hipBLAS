@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -52,9 +52,9 @@ hipblasStatus_t testing_rotm_batched(const Arguments& arg)
     host_batch_vector<T> hdata(4, 1, batch_count);
     host_batch_vector<T> hparam(5, 1, batch_count);
 
-    hipblas_init(hx, true);
-    hipblas_init(hy, false);
-    hipblas_init(hdata, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hdata, arg, hipblas_client_alpha_sets_nan, false);
 
     for(int b = 0; b < batch_count; b++)
     {

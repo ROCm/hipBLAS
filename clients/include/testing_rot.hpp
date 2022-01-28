@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -56,13 +56,13 @@ hipblasStatus_t testing_rot(const Arguments& arg)
     host_vector<T> hy(size_y);
     host_vector<U> hc(1);
     host_vector<V> hs(1);
-    srand(1);
-    hipblas_init<T>(hx, 1, N, abs_incx);
-    hipblas_init<T>(hy, 1, N, abs_incy);
 
     // Random alpha (0 - 10)
     host_vector<int> alpha(1);
-    hipblas_init<int>(alpha, 1, 1, 1);
+
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(alpha, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     // cos and sin of alpha (in rads)
     hc[0] = cos(alpha[0]);
