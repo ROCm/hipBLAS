@@ -84,10 +84,13 @@ hipblasStatus_t testing_spmv_strided_batched(const Arguments& argus)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, 1, dim_A, 1, stride_A, batch_count);
-    hipblas_init<T>(hx, 1, M, abs_incx, stride_x, batch_count);
-    hipblas_init<T>(hy, 1, M, abs_incy, stride_y, batch_count);
+    hipblas_init_matrix(
+        hA, argus, dim_A, 1, 1, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(
+        hx, argus, M, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(
+        hy, argus, M, abs_incy, stride_y, batch_count, hipblas_client_beta_sets_nan);
+
     hy_cpu = hy;
 
     // copy data from CPU to device

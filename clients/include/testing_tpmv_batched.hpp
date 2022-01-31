@@ -60,8 +60,8 @@ hipblasStatus_t testing_tpmv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
 
     // Initial Data on CPU
-    hipblas_init(hA, true);
-    hipblas_init(hx);
+    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, argus, hipblas_client_never_set_nan, false, true);
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
