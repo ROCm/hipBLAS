@@ -432,7 +432,7 @@ inline void hipblas_init_vector(host_batch_vector<T>&  hx,
 //! @param lda Leading dimension of the host matrix.
 //! @param stride_A Incement between the host matrix.
 //! @param batch_count number of instances in the batch.
-//! @param nan_init Initialize matrix with Nan's depending upon the rocblas_check_nan_init enum value.
+//! @param nan_init Initialize matrix with Nan's depending upon the hipblas_check_nan_init enum value.
 //! @param seedReset reset the seed if true, do not reset the seed otherwise. Use init_cos if seedReset is true else use init_sin.
 //! @param alternating_sign Initialize matrix so adjacent entries have alternating sign.
 //!

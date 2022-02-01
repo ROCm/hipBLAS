@@ -65,7 +65,7 @@ hipblasStatus_t testing_spr_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, argus, A_dim, 1, 1, strideA, batch_count, hipblas_client_alpha_sets_nan, true);
+        hA, argus, A_dim, 1, 1, strideA, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
         hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, false, true);
 

@@ -63,7 +63,7 @@ hipblasStatus_t testing_spr2(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, argus, A_size, 1, 1, 0, 1, hipblas_client_never_set_nan, true, false);
-    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan);
     hipblas_init_vector(hy, argus, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan);
     hA_cpu = hA;
 

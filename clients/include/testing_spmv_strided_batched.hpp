@@ -87,7 +87,7 @@ hipblasStatus_t testing_spmv_strided_batched(const Arguments& argus)
     hipblas_init_matrix(
         hA, argus, dim_A, 1, 1, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(
-        hx, argus, M, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan, false, true);
+        hx, argus, M, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan);
     hipblas_init_vector(
         hy, argus, M, abs_incy, stride_y, batch_count, hipblas_client_beta_sets_nan);
 

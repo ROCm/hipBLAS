@@ -80,7 +80,7 @@ hipblasStatus_t testing_tbsv_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, argus, size_A, 1, 1, strideA, batch_count, hipblas_client_never_set_nan, true);
+        hA, argus, M, M, M, strideA, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
         hx, argus, M, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
     hb = hx;

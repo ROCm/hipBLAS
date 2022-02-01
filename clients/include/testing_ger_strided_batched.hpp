@@ -83,11 +83,11 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, argus, M, N, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+        hA, argus, M, N, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
         hx, argus, M, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan, false, true);
     hipblas_init_vector(
-        hy, argus, N, abs_incy, stride_y, batch_count, hipblas_client_beta_sets_nan);
+        hy, argus, N, abs_incy, stride_y, batch_count, hipblas_client_alpha_sets_nan);
 
     // copy matrix is easy in STL; hB = hA: save a copy in hB which will be output of CPU BLAS
     hA_cpu = hA;

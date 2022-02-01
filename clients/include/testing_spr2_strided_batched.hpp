@@ -84,7 +84,7 @@ hipblasStatus_t testing_spr2_strided_batched(const Arguments& argus)
     hipblas_init_matrix(
         hA, argus, A_dim, 1, 1, strideA, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
-        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, false, true);
+        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan);
     hipblas_init_vector(
         hy, argus, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan);
     hA_cpu = hA;
