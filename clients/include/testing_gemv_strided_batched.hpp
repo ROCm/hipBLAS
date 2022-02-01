@@ -104,10 +104,19 @@ hipblasStatus_t testing_gemv_strided_batched(const Arguments& argus)
     T h_beta  = argus.get_beta<T>();
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, N, lda, stride_A, batch_count);
-    hipblas_init<T>(hx, 1, dim_x, abs_incx, stride_x, batch_count);
-    hipblas_init<T>(hy, 1, dim_y, abs_incy, stride_y, batch_count);
+    hipblas_init_matrix(
+        hA, argus, M, N, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx,
+                        argus,
+                        dim_x,
+                        abs_incx,
+                        stride_x,
+                        batch_count,
+                        hipblas_client_alpha_sets_nan,
+                        false,
+                        true);
+    hipblas_init_vector(
+        hy, argus, dim_y, abs_incy, stride_y, batch_count, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hy_cpu = hy: save a copy in hy_cpu which will be output of CPU BLAS
     hy_cpu = hy;

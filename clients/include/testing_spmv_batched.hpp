@@ -68,9 +68,9 @@ hipblasStatus_t testing_spmv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
     CHECK_HIP_ERROR(dy.memcheck());
 
-    hipblas_init(hA, true);
-    hipblas_init(hx);
-    hipblas_init(hy);
+    hipblas_init_vector(hA, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan);
+    hipblas_init_vector(hy, argus, hipblas_client_beta_sets_nan);
 
     hy_cpu.copy_from(hy);
 

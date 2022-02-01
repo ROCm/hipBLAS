@@ -67,8 +67,8 @@ hipblasStatus_t testing_tpsv_batched(const Arguments& argus)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
 
     // Initial Data on CPU
-    hipblas_init(hA, true);
-    hipblas_init(hx);
+    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, argus, hipblas_client_never_set_nan, false, true);
     hb.copy_from(hx);
 
     for(int b = 0; b < batch_count; b++)
