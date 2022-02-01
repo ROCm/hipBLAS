@@ -90,7 +90,7 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_vector(
-        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true, true);
     hipblas_init_vector(
         hy, argus, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
 

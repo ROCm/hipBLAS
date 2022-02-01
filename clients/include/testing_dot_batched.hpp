@@ -73,7 +73,7 @@ hipblasStatus_t testing_dot_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
     CHECK_HIP_ERROR(dy.memcheck());
 
-    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true, true);
     hipblas_init_vector(hy, argus, hipblas_client_alpha_sets_nan, false);
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));
