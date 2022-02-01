@@ -68,4 +68,4 @@ hipBLAS assumes matrices A and vectors x, y are allocated in GPU memory space fi
 
 ## Supported functionality
 
-For a complete list of all supported functions, see the [hipBLAS user guide](https://hipblas.readthedocs.io/en/latest/usermanual.html) and [hipBLAS functions](https://rocblas.readthedocs.io/en/latest/functions.html#hipblas-functions).
+For a complete list of all supported functions, see the [hipBLAS user guide](https://hipblas.readthedocs.io/en/latest/usermanual.html) and [hipBLAS functions](https://hipblas.readthedocs.io/en/latest/functions.html#hipblas-functions).
