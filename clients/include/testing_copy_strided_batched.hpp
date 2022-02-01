@@ -59,9 +59,10 @@ hipblasStatus_t testing_copy_strided_batched(const Arguments& argus)
     double hipblas_error = 0.0;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hx, 1, N, abs_incx, stridex, batch_count);
-    hipblas_init<T>(hy, 1, N, abs_incy, stridey, batch_count);
+    hipblas_init_vector(
+        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(
+        hy, argus, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
 
     hx_cpu = hx;
     hy_cpu = hy;

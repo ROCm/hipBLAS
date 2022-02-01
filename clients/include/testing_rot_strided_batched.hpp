@@ -70,13 +70,15 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
     host_vector<T> hy(size_y);
     host_vector<U> hc(1);
     host_vector<V> hs(1);
-    srand(1);
-    hipblas_init<T>(hx, 1, N, abs_incx, stride_x, batch_count);
-    hipblas_init<T>(hy, 1, N, abs_incy, stride_y, batch_count);
 
     // Random alpha (0 - 10)
     host_vector<int> alpha(1);
-    hipblas_init<int>(alpha, 1, 1, 1);
+
+    hipblas_init_vector(
+        hx, arg, N, abs_incx, stride_x, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(
+        hy, arg, N, abs_incy, stride_y, batch_count, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(alpha, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
 
     // cos and sin of alpha (in rads)
     hc[0] = cos(alpha[0]);

@@ -557,8 +557,8 @@ void hipblas_init_hpl(
 }
 
 template <typename T>
-void hipblas_init_cos(
-    T* A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+inline void
+    hipblas_init_cos(T* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
 {
     for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
 #pragma omp parallel for
@@ -572,14 +572,14 @@ void hipblas_init_cos(
 
 template <typename T>
 inline void hipblas_init_cos(
-    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
 {
     hipblas_init_cos(A.data(), M, N, lda, stride, batch_count);
 }
 
 template <typename T>
-void hipblas_init_sin(
-    T* A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+inline void
+    hipblas_init_sin(T* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
 {
     for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
 #pragma omp parallel for
@@ -593,9 +593,59 @@ void hipblas_init_sin(
 
 template <typename T>
 inline void hipblas_init_sin(
-    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
 {
     hipblas_init_sin(A.data(), M, N, lda, stride, batch_count);
+}
+
+template <>
+inline void hipblas_init_cos<hipblasBfloat16>(
+    hipblasBfloat16* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#pragma omp parallel for
+        for(size_t j = 0; j < N; ++j)
+        {
+            size_t offset = j * lda + i_batch * stride;
+            for(size_t i = 0; i < M; ++i)
+                A[i + offset] = float_to_bfloat16(cos(i + offset));
+        }
+}
+
+template <>
+inline void hipblas_init_cos<hipblasBfloat16>(std::vector<hipblasBfloat16>& A,
+                                              size_t                        M,
+                                              size_t                        N,
+                                              size_t                        lda,
+                                              size_t                        stride,
+                                              size_t                        batch_count)
+{
+    hipblas_init_cos<hipblasBfloat16>(A.data(), M, N, lda, stride, batch_count);
+}
+
+template <>
+inline void hipblas_init_sin<hipblasBfloat16>(
+    hipblasBfloat16* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#pragma omp parallel for
+        for(size_t j = 0; j < N; ++j)
+        {
+            size_t offset = j * lda + i_batch * stride;
+            for(size_t i = 0; i < M; ++i)
+                A[i + offset] = float_to_bfloat16(sin(i + offset));
+        }
+}
+
+template <>
+inline void hipblas_init_sin<hipblasBfloat16>(std::vector<hipblasBfloat16>& A,
+                                              size_t                        M,
+                                              size_t                        N,
+                                              size_t                        lda,
+                                              size_t                        stride,
+                                              size_t                        batch_count)
+{
+    hipblas_init_sin<hipblasBfloat16>(A.data(), M, N, lda, stride, batch_count);
 }
 
 /*! \brief  symmetric matrix initialization: */

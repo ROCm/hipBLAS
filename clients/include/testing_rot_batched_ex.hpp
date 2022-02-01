@@ -69,10 +69,10 @@ hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
     device_vector<Tcs>      dc(1);
     device_vector<Tcs>      ds(1);
 
-    hipblas_init(hx_host, true);
-    hipblas_init(hy_host);
-    hipblas_init<Tcs>(hc, 1, 1, 1);
-    hipblas_init<Tcs>(hs, 1, 1, 1);
+    hipblas_init_vector(hx_host, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hy_host, arg, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(hc, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(hs, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
 
     hx_device.copy_from(hx_host);
     hx_cpu.copy_from(hx_host);
