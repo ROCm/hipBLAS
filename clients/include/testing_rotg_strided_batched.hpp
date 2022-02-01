@@ -53,11 +53,10 @@ hipblasStatus_t testing_rotg_strided_batched(const Arguments& arg)
     host_vector<T> hs(size_s);
 
     // Initial data on CPU
-    srand(1);
-    hipblas_init<T>(ha, 1, 1, 1, stride_a, batch_count);
-    hipblas_init<T>(hb, 1, 1, 1, stride_b, batch_count);
-    hipblas_init<U>(hc, 1, 1, 1, stride_c, batch_count);
-    hipblas_init<T>(hs, 1, 1, 1, stride_s, batch_count);
+    hipblas_init_vector(ha, arg, 1, 1, stride_a, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hb, arg, 1, 1, stride_b, batch_count, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hc, arg, 1, 1, stride_c, batch_count, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hs, arg, 1, 1, stride_s, batch_count, hipblas_client_alpha_sets_nan, false);
 
     // CPU_BLAS
     host_vector<T> ca = ha;

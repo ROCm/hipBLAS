@@ -58,9 +58,8 @@ hipblasStatus_t testing_swap(const Arguments& argus)
     double hipblas_error = 0.0;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hx, 1, N, abs_incx);
-    hipblas_init<T>(hy, 1, N, abs_incy);
+    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy, argus, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
     hx_cpu = hx;
     hy_cpu = hy;
 

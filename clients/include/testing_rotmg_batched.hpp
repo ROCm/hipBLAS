@@ -65,11 +65,12 @@ hipblasStatus_t testing_rotmg_batched(const Arguments& arg)
     device_batch_vector<T> dy1(1, 1, batch_count);
     device_batch_vector<T> dparams(5, 1, batch_count);
 
-    hipblas_init(hd1, true);
-    hipblas_init(hd2, false);
-    hipblas_init(hx1, false);
-    hipblas_init(hy1, false);
-    hipblas_init(hparams, false);
+    hipblas_init_vector(hd1, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hd2, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx1, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hy1, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hparams, arg, hipblas_client_alpha_sets_nan, false);
+
     cd1.copy_from(hd1);
     cd2.copy_from(hd2);
     cx1.copy_from(hx1);

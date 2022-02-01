@@ -54,8 +54,8 @@ hipblasStatus_t testing_axpy_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dy_host.memcheck());
     CHECK_HIP_ERROR(dy_device.memcheck());
 
-    hipblas_init(hx, true);
-    hipblas_init(hy_host, false);
+    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy_host, argus, hipblas_client_alpha_sets_nan, false);
     hy_device.copy_from(hy_host);
     hx_cpu.copy_from(hx);
     hy_cpu.copy_from(hy_host);
