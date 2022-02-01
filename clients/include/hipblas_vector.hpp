@@ -424,6 +424,65 @@ inline void hipblas_init_vector(host_batch_vector<T>&  hx,
 }
 
 //!
+//! @brief Initialize a host matrix.
+//! @param hA The host matrix.
+//! @param arg Specifies the argument class.
+//! @param M Length of the host matrix.
+//! @param N Length of the host matrix.
+//! @param lda Leading dimension of the host matrix.
+//! @param stride_A Incement between the host matrix.
+//! @param batch_count number of instances in the batch.
+//! @param nan_init Initialize matrix with Nan's depending upon the hipblas_check_nan_init enum value.
+//! @param seedReset reset the seed if true, do not reset the seed otherwise. Use init_cos if seedReset is true else use init_sin.
+//! @param alternating_sign Initialize matrix so adjacent entries have alternating sign.
+//!
+template <typename T>
+inline void hipblas_init_matrix(host_vector<T>&        hA,
+                                const Arguments&       arg,
+                                size_t                 M,
+                                size_t                 N,
+                                size_t                 lda,
+                                hipblasStride          stride_A,
+                                int                    batch_count,
+                                hipblas_check_nan_init nan_init,
+                                bool                   seedReset        = false,
+                                bool                   alternating_sign = false)
+{
+    if(seedReset)
+        hipblas_seedrand();
+
+    if(nan_init == hipblas_client_alpha_sets_nan && hipblas_isnan(arg.alpha))
+    {
+        hipblas_init_nan(hA, M, N, lda, stride_A, batch_count);
+    }
+    else if(nan_init == hipblas_client_beta_sets_nan && hipblas_isnan(arg.beta))
+    {
+        hipblas_init_nan(hA, M, N, lda, stride_A, batch_count);
+    }
+    else if(arg.initialization == hipblas_initialization::hpl)
+    {
+        if(alternating_sign)
+            hipblas_init_hpl_alternating_sign(hA, M, N, lda, stride_A, batch_count);
+        else
+            hipblas_init_hpl(hA, M, N, lda, stride_A, batch_count);
+    }
+    else if(arg.initialization == hipblas_initialization::rand_int)
+    {
+        if(alternating_sign)
+            hipblas_init_alternating_sign(hA, M, N, lda, stride_A, batch_count);
+        else
+            hipblas_init(hA, M, N, lda, stride_A, batch_count);
+    }
+    else if(arg.initialization == hipblas_initialization::trig_float)
+    {
+        if(seedReset)
+            hipblas_init_cos(hA, M, N, lda, stride_A, batch_count);
+        else
+            hipblas_init_sin(hA, M, N, lda, stride_A, batch_count);
+    }
+}
+
+//!
 //! @brief Template for initializing a host (non_batched|batched|strided_batched)vector.
 //! @param that That vector.
 //! @param rand_gen The random number generator for odd elements

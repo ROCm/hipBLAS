@@ -118,17 +118,17 @@ Arguments setup_her2k_arguments(her2k_tuple tup)
     return arg;
 }
 
-class blas2_her2k_gtest : public ::TestWithParam<her2k_tuple>
+class blas3_her2k_gtest : public ::TestWithParam<her2k_tuple>
 {
 protected:
-    blas2_her2k_gtest() {}
-    virtual ~blas2_her2k_gtest() {}
+    blas3_her2k_gtest() {}
+    virtual ~blas3_her2k_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
 // her2k
-TEST_P(blas2_her2k_gtest, her2k_gtest_float)
+TEST_P(blas3_her2k_gtest, her2k_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -155,7 +155,7 @@ TEST_P(blas2_her2k_gtest, her2k_gtest_float)
     }
 }
 
-TEST_P(blas2_her2k_gtest, her2k_gtest_double)
+TEST_P(blas3_her2k_gtest, her2k_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -185,7 +185,7 @@ TEST_P(blas2_her2k_gtest, her2k_gtest_double)
 #ifndef __HIP_PLATFORM_NVCC__
 
 // her2k_batched
-TEST_P(blas2_her2k_gtest, her2k_batched_gtest_float)
+TEST_P(blas3_her2k_gtest, her2k_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -213,7 +213,7 @@ TEST_P(blas2_her2k_gtest, her2k_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_her2k_gtest, her2k_batched_gtest_double)
+TEST_P(blas3_her2k_gtest, her2k_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -242,7 +242,7 @@ TEST_P(blas2_her2k_gtest, her2k_batched_gtest_double)
 }
 
 // her2k_strided_batched
-TEST_P(blas2_her2k_gtest, her2k_strided_batched_gtest_float)
+TEST_P(blas3_her2k_gtest, her2k_strided_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -270,7 +270,7 @@ TEST_P(blas2_her2k_gtest, her2k_strided_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_her2k_gtest, her2k_strided_batched_gtest_double)
+TEST_P(blas3_her2k_gtest, her2k_strided_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -306,7 +306,7 @@ TEST_P(blas2_her2k_gtest, her2k_strided_batched_gtest_double)
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
 INSTANTIATE_TEST_SUITE_P(hipblasHer2k,
-                         blas2_her2k_gtest,
+                         blas3_her2k_gtest,
                          Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(uplo_range),

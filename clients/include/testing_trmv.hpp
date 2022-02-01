@@ -55,9 +55,8 @@ hipblasStatus_t testing_trmv(const Arguments& argus)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, M, lda);
-    hipblas_init<T>(hx, 1, M, abs_incx);
+    hipblas_init_matrix(hA, argus, M, M, lda, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(hx, argus, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hres = hx;

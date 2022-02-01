@@ -56,9 +56,8 @@ hipblasStatus_t testing_hpr(const Arguments& argus)
     U h_alpha = argus.get_alpha<U>();
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, 1, A_size, 1);
-    hipblas_init<T>(hx, 1, N, abs_incx);
+    hipblas_init_matrix(hA, argus, A_size, 1, 1, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
 
     // copy matrix is easy in STL; hA_cpu = hA: save a copy in hA_cpu which will be output of CPU BLAS
     hA_cpu = hA;

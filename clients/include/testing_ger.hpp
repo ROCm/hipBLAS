@@ -63,10 +63,9 @@ hipblasStatus_t testing_ger(const Arguments& argus)
     T h_alpha = argus.get_alpha<T>();
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, N, lda);
-    hipblas_init<T>(hx, 1, M, abs_incx);
-    hipblas_init<T>(hy, 1, N, abs_incy);
+    hipblas_init_matrix(hA, argus, lda, N, lda, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(hx, argus, M, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(hy, argus, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan);
 
     // copy matrix is easy in STL; hB = hA: save a copy in hB which will be output of CPU BLAS
     hA_cpu = hA;
