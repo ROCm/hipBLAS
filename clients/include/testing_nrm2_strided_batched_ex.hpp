@@ -79,8 +79,8 @@ hipblasStatus_t testing_nrm2_strided_batched_ex_template(const Arguments& argus)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<Tx>(hx, 1, N, incx, stridex, batch_count);
+    hipblas_init_vector(
+        hx, argus, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));

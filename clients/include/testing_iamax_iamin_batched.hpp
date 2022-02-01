@@ -61,7 +61,7 @@ hipblasStatus_t testing_iamax_iamin_batched(const Arguments&                 arg
     CHECK_HIP_ERROR(dx.memcheck());
 
     // Initial Data on CPU
-    hipblas_init(hx, true);
+    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true);
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     double gpu_time_used;

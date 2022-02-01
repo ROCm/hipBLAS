@@ -310,7 +310,7 @@ inline void hipblas_init_trig(host_batch_vector<T>& that, bool init_cos = false)
             if(inc < 0)
                 batched_data -= (n - 1) * inc;
 
-            hipblas_init_cos(batched_data, 1, n, inc);
+            hipblas_init_cos(batched_data, 1, n, inc, 0, 1);
         }
     }
     else
@@ -324,7 +324,7 @@ inline void hipblas_init_trig(host_batch_vector<T>& that, bool init_cos = false)
             if(inc < 0)
                 batched_data -= (n - 1) * inc;
 
-            hipblas_init_sin(batched_data, 1, n, inc);
+            hipblas_init_sin(batched_data, 1, n, inc, 0, 1);
         }
     }
 }

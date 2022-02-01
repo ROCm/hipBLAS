@@ -89,9 +89,10 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init_alternating_sign<T>(hx, 1, N, abs_incx, stridex, batch_count);
-    hipblas_init<T>(hy, 1, N, abs_incy, stridey, batch_count);
+    hipblas_init_vector(
+        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(
+        hy, argus, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
