@@ -84,7 +84,7 @@ hipblasStatus_t testing_hpmv_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, argus, A_size, 1, 1, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+        hA, argus, dim_A, 1, 1, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(
         hx, argus, N, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan, false, true);
     hipblas_init_vector(
