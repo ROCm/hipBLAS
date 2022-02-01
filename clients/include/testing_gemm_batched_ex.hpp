@@ -83,9 +83,9 @@ hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& argus)
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(argus);
 
-    hipblas_init(hA, true);
-    hipblas_init_alternating_sign(hB);
-    hipblas_init(hC_host);
+    hipblas_init_vector(hA, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hB, argus, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(hC_host, argus, hipblas_client_beta_sets_nan);
 
     hC_device.copy_from(hC_host);
     hC_gold.copy_from(hC_host);

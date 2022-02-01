@@ -62,10 +62,9 @@ hipblasStatus_t testing_syr2k(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, N, K1, lda);
-    hipblas_init<T>(hB, N, K1, ldb);
-    hipblas_init<T>(hC_host, N, N, ldc);
+    hipblas_init_matrix(hA, argus, N, K1, lda, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hB, argus, N, K1, ldb, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(hC_host, argus, N, N, ldc, 0, 1, hipblas_client_never_set_nan);
 
     hC_device = hC_host;
     hC_gold   = hC_host;

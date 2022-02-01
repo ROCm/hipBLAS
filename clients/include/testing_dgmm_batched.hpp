@@ -66,9 +66,9 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init(hA, true);
-    hipblas_init(hx);
-    hipblas_init(hC);
+    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, argus, hipblas_client_never_set_nan, false, true);
+    hipblas_init_vector(hC, argus, hipblas_client_never_set_nan);
 
     hA_copy.copy_from(hA);
     hx_copy.copy_from(hx);

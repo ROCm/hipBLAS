@@ -58,8 +58,13 @@ hipblasStatus_t testing_trsm(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Initial hA on CPU
-    srand(1);
-    hipblas_init_symmetric<T>(hA, K, lda);
+    // srand(1);
+    // hipblas_init_symmetric<T>(hA, K, lda);
+    hipblas_init_matrix(hA, argus, K, K, lda, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(
+        hB_host, argus, M, N, ldb, 0, 1, hipblas_client_never_set_nan); //, false, true);
+    // hipblas_init<T>(hB_host, M, N, ldb);
+
     // pad untouched area into zero
     for(int i = K; i < lda; i++)
     {
@@ -84,8 +89,6 @@ hipblasStatus_t testing_trsm(const Arguments& argus)
         }
     }
 
-    // Initial hB, hX on CPU
-    hipblas_init<T>(hB_host, M, N, ldb);
     // pad untouched area into zero
     for(int i = M; i < ldb; i++)
     {
