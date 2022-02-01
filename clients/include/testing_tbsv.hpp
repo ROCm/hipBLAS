@@ -62,8 +62,9 @@ hipblasStatus_t testing_tbsv(const Arguments& argus)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, M, M);
+    hipblas_init_matrix(hA, argus, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, argus, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hb = hx;
 
     banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, M, M, K);
 
@@ -75,9 +76,6 @@ hipblasStatus_t testing_tbsv(const Arguments& argus)
 
     regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, M, (T*)hAB, lda, M, K);
     CHECK_HIP_ERROR(hipMemcpy(dAB, hAB.data(), sizeof(T) * size_AB, hipMemcpyHostToDevice));
-
-    hipblas_init<T>(hx, 1, M, abs_incx);
-    hb = hx;
 
     cblas_tbmv<T>(uplo, transA, diag, M, K, hAB, lda, hb, incx);
     hx_or_b_1 = hb;
