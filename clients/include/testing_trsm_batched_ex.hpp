@@ -71,7 +71,7 @@ hipblasStatus_t testing_trsm_batched_ex(const Arguments& argus)
 
     // Initial hA on CPU
     hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hB_host, argus, hipblas_client_never_set_nan, false, true);
+    hipblas_init_vector(hB_host, argus, hipblas_client_never_set_nan);
     for(int b = 0; b < batch_count; b++)
     {
         // pad untouched area into zero

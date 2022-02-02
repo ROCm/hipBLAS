@@ -76,7 +76,7 @@ hipblasStatus_t testing_trsm_strided_batched_ex(const Arguments& argus)
     hipblas_init_matrix(
         hA, argus, K, K, lda, strideA, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_matrix(
-        hB_host, argus, M, N, ldb, strideB, batch_count, hipblas_client_never_set_nan, false, true);
+        hB_host, argus, M, N, ldb, strideB, batch_count, hipblas_client_never_set_nan);
 
     for(int b = 0; b < batch_count; b++)
     {
