@@ -46,7 +46,7 @@ const vector<char> uplo_range = {'U', 'L'};
 const vector<char> diag_range = {'N', 'U'};
 
 // it applies on trtri_batched only
-const vector<int> batch_range = {-1, 1, 100};
+const vector<int> batch_range = {-1, 1, 100, 1000};
 
 const bool is_fortran[] = {false, true};
 
