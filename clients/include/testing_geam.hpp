@@ -84,10 +84,9 @@ hipblasStatus_t testing_geam(const Arguments& argus)
     host_vector<T> hC_copy(C_size);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, A_row, A_col, lda);
-    hipblas_init<T>(hB, B_row, B_col, ldb);
-    hipblas_init<T>(hC1, M, N, ldc);
+    hipblas_init_matrix(hA, argus, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(hB, argus, B_row, B_col, ldb, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hC1, argus, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
 
     hC2     = hC1;
     hC_copy = hC1;

@@ -80,10 +80,10 @@ hipblasStatus_t testing_gemm_ex_template(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<Ta>(hA, A_row, A_col, lda);
-    hipblas_init_alternating_sign<Tb>(hB, B_row, B_col, ldb);
-    hipblas_init<Tc>(hC_host, M, N, ldc);
+    hipblas_init_matrix(hA, argus, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(
+        hB, argus, B_row, B_col, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_matrix(hC_host, argus, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
 
     hC_gold = hC_device = hC_host;
 

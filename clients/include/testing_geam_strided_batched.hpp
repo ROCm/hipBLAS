@@ -97,10 +97,11 @@ hipblasStatus_t testing_geam_strided_batched(const Arguments& argus)
     host_vector<T> hC_copy(C_size);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, A_row, A_col, lda, stride_A, batch_count);
-    hipblas_init<T>(hB, B_row, B_col, ldb, stride_B, batch_count);
-    hipblas_init<T>(hC1, M, N, ldc, stride_C, batch_count);
+    hipblas_init_matrix(
+        hA, argus, A_row, A_col, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(
+        hB, argus, B_row, B_col, ldb, stride_B, batch_count, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hC1, argus, M, N, ldc, stride_C, batch_count, hipblas_client_beta_sets_nan);
 
     hC2     = hC1;
     hC_copy = hC1;

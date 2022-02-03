@@ -63,9 +63,18 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init_symmetric<T>(hA, K, lda, stride_A, batch_count);
-    hipblas_init<T>(hB_host, M, N, ldb, stride_B, batch_count);
+    hipblas_init_matrix(
+        hA, argus, K, K, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(hB_host,
+                        argus,
+                        M,
+                        N,
+                        ldb,
+                        stride_B,
+                        batch_count,
+                        hipblas_client_alpha_sets_nan,
+                        false,
+                        true);
     hB_device = hB_host;
     hB_gold   = hB_host;
 

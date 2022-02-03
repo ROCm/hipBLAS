@@ -64,9 +64,10 @@ hipblasStatus_t testing_syrk_strided_batched(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, N, K1, lda, stride_A, batch_count);
-    hipblas_init<T>(hC_host, N, N, ldc, stride_C, batch_count);
+    hipblas_init_matrix(
+        hA, argus, N, K1, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(
+        hC_host, argus, N, N, ldc, stride_C, batch_count, hipblas_client_beta_sets_nan);
 
     hC_device = hC_host;
     hC_gold   = hC_host;
