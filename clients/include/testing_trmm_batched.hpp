@@ -66,8 +66,8 @@ hipblasStatus_t testing_trmm_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.memcheck());
     CHECK_HIP_ERROR(dB.memcheck());
 
-    hipblas_init(hA, true);
-    hipblas_init(hB_host);
+    hipblas_init_vector(hA, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hB_host, argus, hipblas_client_alpha_sets_nan, false, true);
     hB_device.copy_from(hB_host);
     hB_gold.copy_from(hB_host);
 

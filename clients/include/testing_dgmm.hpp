@@ -64,10 +64,9 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, N, lda);
-    hipblas_init<T>(hx, 1, k, abs_incx);
-    hipblas_init<T>(hC, M, N, ldc);
+    hipblas_init_matrix(hA, argus, M, N, lda, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, argus, k, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(hC, argus, M, N, ldc, 0, 1, hipblas_client_never_set_nan);
     hA_copy = hA;
     hx_copy = hx;
     hC_1    = hC;

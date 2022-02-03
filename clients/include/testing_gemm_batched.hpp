@@ -123,9 +123,9 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dB.memcheck());
     CHECK_HIP_ERROR(dC.memcheck());
 
-    hipblas_init(hA, true);
-    hipblas_init(hB);
-    hipblas_init(hC_host);
+    hipblas_init_vector(hA, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hB, argus, hipblas_client_alpha_sets_nan);
+    hipblas_init_vector(hC_host, argus, hipblas_client_beta_sets_nan);
 
     hC_device.copy_from(hC_host);
     hC_copy.copy_from(hC_host);

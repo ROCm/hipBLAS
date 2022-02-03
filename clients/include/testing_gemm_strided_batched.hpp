@@ -88,10 +88,12 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
     device_vector<T> d_beta(1);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, A_row, A_col * batch_count, lda);
-    hipblas_init<T>(hB, B_row, B_col * batch_count, ldb);
-    hipblas_init<T>(hC_host, M, N * batch_count, ldc);
+    hipblas_init_matrix(
+        hA, argus, A_row, A_col, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(
+        hB, argus, B_row, B_col, ldb, stride_B, batch_count, hipblas_client_alpha_sets_nan);
+    hipblas_init_matrix(
+        hC_host, argus, M, N, ldc, stride_C, batch_count, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hz = hx: save a copy in hC_copy which will be output of CPU BLAS
     hC_copy   = hC_host;
