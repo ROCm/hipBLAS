@@ -400,7 +400,7 @@ def validversioncomponents(cuda, smi=None):
     # currently only driver according to /opt/rocm/bin/rocm_smi.py
     # driver corresponds to 0 in /opt/rocm/bin/rocm_smi.py
     if cuda:
-        return [0]
+        return ['driver']
     else:
         return [0]
 
