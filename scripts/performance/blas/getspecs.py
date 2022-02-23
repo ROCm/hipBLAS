@@ -397,11 +397,12 @@ def getmeminfo(devicenum, mem_type, cuda, smi=None):
         return smi.getMemInfo(devicenum, mem_type)
 
 def validversioncomponents(cuda, smi=None):
+    # currently only driver according to /opt/rocm/bin/rocm_smi.py
+    # driver corresponds to 0 in /opt/rocm/bin/rocm_smi.py
     if cuda:
-        return ['driver']
+        return [0]
     else:
-        # currently only driver according to /opt/rocm/bin/rocm_smi.py
-        return ['driver']
+        return [0]
 
 def getversion(devicenum, component, cuda, smi=None):
     if cuda:

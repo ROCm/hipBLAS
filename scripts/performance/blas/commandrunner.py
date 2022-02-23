@@ -636,7 +636,7 @@ class MachineSpecs(dict):
                 total_bytes_int = total_bytes.split()[0] if cuda else total_bytes
                 smi_info[key] = '{} / {}'.format(to_mem_units(used_bytes_int), to_mem_units(total_bytes_int))
             for component in getspecs.validversioncomponents(cuda, smi):
-                smi_info[component.capitalize() + ' Version'] = getspecs.getversion(device, component, cuda, smi)
+                smi_info[smi.component_str(component).capitalize() + ' Version'] = getspecs.getversion(device, component, cuda, smi)
             rv['Card' + str(device)] = smi_info
 
         return rv
