@@ -23,6 +23,17 @@ def get_smi_exec(cuda):
     else:
         return "/opt/rocm/bin/rocm-smi"
 
+def getgfx(devicenum, cuda):
+    if cuda:
+        return "N/A"
+    else:
+        cmd = ["/opt/rocm/bin/rocm_agent_enumerator"]
+        success, cout = _subprocess_helper(cmd)
+        if not success:
+            return "N/A"
+        # Add 1 to devicenum since rocm-agent-enum always prints gfx900 first
+        return cout.splitlines()[devicenum+1]
+
 # Get the hostname
 def gethostname():
     import socket

@@ -132,6 +132,10 @@ class SystemMonitor(object):
         if smi is None:
             return 0.0
         elif metric == 'fan_speed_percent':
+            # Not querying fan speed on 908 or 90a
+            gfx = getspecs.getgfx(device, cuda)
+            if gfx == 'gfx908' or gfx == 'gfx90a' or gfx == 'N/A':
+                return 'N/A'
             return getspecs.getfanspeedpercent(device, cuda, smi)[1]
         elif metric.find('clk') >=0 and metric.split('_')[0] in getspecs.validclocknames(cuda, smi):
             return int(getspecs.getcurrentclockfreq(device, metric.split('_')[0], cuda, smi).strip('Mhz'))
