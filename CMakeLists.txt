@@ -59,6 +59,7 @@ include( ROCMCreatePackage )
 include( ROCMInstallTargets )
 include( ROCMPackageConfigHelpers )
 include( ROCMInstallSymlinks )
+include( ROCMHeaderWrapper )
 
 set ( VERSION_STRING "0.51.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
@@ -120,9 +121,12 @@ endif()
 # FOR HANDLING ENABLE/DISABLE OPTIONAL BACKWARD COMPATIBILITY for FILE/FOLDER REORG
 option(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY "Build with file/folder reorg with backward compatibility enabled" OFF)
 if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
-  include(cmake/hipblas-backward-compat.cmake)
-  package_gen_bkwdcomp_hdrs()
-  message (STATUS "Completed package_gen_bkwdcomp_hdrs() Configuration")
+  rocm_wrap_header_dir(
+    ${CMAKE_SOURCE_DIR}/library/include
+    PATTERNS "*.h"
+    GUARDS SYMLINK WRAPPER
+    WRAPPER_LOCATIONS include
+  )
 endif()
 
 add_subdirectory( library )

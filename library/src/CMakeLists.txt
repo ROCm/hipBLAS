@@ -102,6 +102,7 @@ endif( )
 # Internal header includes
 target_include_directories( hipblas
   PUBLIC  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/library/include>
+          $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/hipblas>
           $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
           $<INSTALL_INTERFACE:include>
   PRIVATE
@@ -127,9 +128,11 @@ set_target_properties( hipblas PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBIL
 generate_export_header( hipblas EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/hipblas/hipblas-export.h )
 
 if (BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
-  include(${PROJECT_SOURCE_DIR}/cmake/hipblas-backward-compat.cmake)
-  package_gen_bkwdcomp_hdrfile("${PROJECT_BINARY_DIR}/include/hipblas/hipblas-export.h")
-  message (STATUS "Completed package_gen_bkwdcomp_hdrfile() Configuration for Generated Files")
+  rocm_wrap_header_file(
+    hipblas-version.h hipblas-export.h
+    GUARDS SYMLINK WRAPPER
+    WRAPPER_LOCATIONS include hipblas/include
+  )
 endif( )
 
 
@@ -171,6 +174,23 @@ if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
     DIRECTORY
        "${PROJECT_BINARY_DIR}/hipblas"
         DESTINATION "." )
+
+  if ( NOT WIN32 )
+
+    #Create SymLink for Fortran Object Module for backward compatibility
+    rocm_install(
+      CODE "
+        set(PREFIX \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX})
+	set(INPUT_FILE \${PREFIX}/include/hipblas/hipblas_module.f90)
+        set(SYMLINK_LOCATIONS \${PREFIX}/hipblas/include \${PREFIX}/include)
+        foreach(LOCATION IN LISTS SYMLINK_LOCATIONS)
+          file(MAKE_DIRECTORY \${LOCATION})
+          execute_process(COMMAND ln -sfr \${INPUT_FILE} \${LOCATION})
+          message(STATUS \"Created symlink in \${LOCATION} to \${INPUT_FILE}.\")
+        endforeach()
+        "
+    )
+  endif() #NOT WIN32
   message( STATUS "Backward Compatible Sym Link Created for include directories" )
 endif()
  
