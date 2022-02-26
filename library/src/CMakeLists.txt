@@ -124,7 +124,14 @@ endif()
 # Package that helps me set visibility for function names exported from shared library
 include( GenerateExportHeader )
 set_target_properties( hipblas PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON )
-generate_export_header( hipblas EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/hipblas-export.h )
+generate_export_header( hipblas EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/hipblas/hipblas-export.h )
+
+if (BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
+  include(${PROJECT_SOURCE_DIR}/cmake/hipblas-backward-compat.cmake)
+  package_gen_bkwdcomp_hdrfile("${PROJECT_BINARY_DIR}/include/hipblas/hipblas-export.h")
+  message (STATUS "Completed package_gen_bkwdcomp_hdrfile() Configuration for Generated Files")
+endif( )
+
 
 # Following Boost conventions of prefixing 'lib' on static built libraries, across all platforms
 if( NOT BUILD_SHARED_LIBS )
@@ -137,23 +144,19 @@ endif( )
 rocm_install_targets(
   TARGETS hipblas
   INCLUDE
-    ${CMAKE_SOURCE_DIR}/library/include
     ${CMAKE_BINARY_DIR}/include
-  PREFIX hipblas
 )
 #         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
 
 if ( NOT USE_CUDA )
     rocm_export_targets(
         TARGETS roc::hipblas
-	PREFIX hipblas
 	DEPENDS PACKAGE hip
 	NAMESPACE roc::
     )
 else( )
     rocm_export_targets(
         TARGETS roc::hipblas
-	PREFIX hipblas
 	DEPENDS PACKAGE HIP
 	NAMESPACE roc::
     )
@@ -161,6 +164,13 @@ endif( )
 
 # Force installation of .f90 module files
 rocm_install(FILES "hipblas_module.f90"
-        DESTINATION "hipblas/include")
+        DESTINATION "include/hipblas")
 
-rocm_install_symlink_subdir( hipblas )
+if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
+  rocm_install(
+    DIRECTORY
+       "${PROJECT_BINARY_DIR}/hipblas"
+        DESTINATION "." )
+  message( STATUS "Backward Compatible Sym Link Created for include directories" )
+endif()
+ 
