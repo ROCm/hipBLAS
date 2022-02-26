@@ -28,11 +28,22 @@ if( BUILD_VERBOSE )
 endif( )
 
 # configure a header file to pass the CMake version settings to the source, and package the header files in the output archive
-configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas-version.h.in" "${PROJECT_BINARY_DIR}/include/hipblas-version.h" )
+configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas-version.h.in" "${PROJECT_BINARY_DIR}/include/hipblas/hipblas-version.h" )
+
+# Copy Public Headers to Build Dir
+configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas/hipblas.h" "${PROJECT_BINARY_DIR}/include/hipblas/hipblas.h" COPYONLY)
+
+if (BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
+  include(${PROJECT_SOURCE_DIR}/cmake/hipblas-backward-compat.cmake)
+  package_gen_bkwdcomp_hdrfile( "${PROJECT_BINARY_DIR}/include/hipblas/hipblas-version.h" )
+  message( STATUS "Completed package_gen_bkwdcomp_hdrfile() for hipblas version")
+endif( )
+
+
 
 set( hipblas_headers_public
   include/hipblas.h
-  ${PROJECT_BINARY_DIR}/include/hipblas-version.h
+  ${PROJECT_BINARY_DIR}/include/hipblas/hipblas-version.h
 )
 
 source_group( "Header Files\\Public" FILES ${hipblas_headers_public} )
