@@ -63,7 +63,7 @@ cat <<EOF
 
     -v, --rocm-dev <version>      Specify specific rocm-dev version. (e.g. 4.5.0)
 
-    --freorg-bkwdcomp 		  Build with backward compatibility for Package file/folder reorg enabled.
+    --rm-legacy-include-dir       Remove legacy include dir Packaging added for file/folder reorg backward compatibility.
 EOF
 }
 
@@ -347,7 +347,7 @@ build_static=false
 build_release_debug=false
 build_codecoverage=false
 update_cmake=false
-build_freorg_bkwdcomp=false
+build_freorg_bkwdcomp=true
 declare -a cmake_common_options
 declare -a cmake_client_options
 
@@ -358,7 +358,7 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,freorg-bkwdcomp cmake-arg: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,rm-legacy-include-dir,cmake-arg: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -424,8 +424,8 @@ while true; do
         build_address_sanitizer=true
         compiler=hipcc
         shift ;;
-    --freorg-bkwdcomp)
-        build_freorg_bkwdcomp=true
+    --rm-legacy-include-dir)
+        build_freorg_bkwdcomp=false
         shift ;;
     -p|--cmakepp)
         cmake_prefix_path=${2}
@@ -608,7 +608,9 @@ pushd .
   fi
 
   if [[ "${build_freorg_bkwdcomp}" == true ]]; then
-    cmake_common_options="${cmake_common_options} -DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=ON"
+    cmake_common_options+=("-DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=ON")
+  else
+    cmake_common_options+=("-DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=OFF")
   fi
   
   # Build library
