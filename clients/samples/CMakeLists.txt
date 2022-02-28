@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2021 Advanced Micro Devices, Inc.
+# Copyright 2016-2022 Advanced Micro Devices, Inc.
 # ########################################################################
 
 set( hipblas_samples_common ../common/utility.cpp )
@@ -76,5 +76,7 @@ foreach( exe IN LISTS example-executables)
     CXX_EXTENSIONS ON
     DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
+
+  rocm_install(TARGETS ${exe} COMPONENT samples)
 
 endforeach( )
