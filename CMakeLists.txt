@@ -112,16 +112,34 @@ set(CMAKE_INSTALL_LIBDIR "lib" CACHE INTERNAL "Installation directory for librar
 
 # Build clients of the library
 if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
+  if(NOT CLIENTS_OS)
+    rocm_set_os_id(CLIENTS_OS)
+    rocm_read_os_release(CLIENTS_OS_VERSION VERSION_ID)
+  endif()
+  set(GFORTRAN_PKG "gcc-gfortran")
+  if(CLIENTS_OS STREQUAL "centos" AND CLIENTS_OS_VERSION EQUAL 7)
+    set(GFORTRAN_PKG "devtoolset-7-gcc-gfortran")
+  endif()
   rocm_package_setup_component(clients)
   rocm_package_setup_client_component(clients-common)
   if(BUILD_CLIENTS_SAMPLES)
     rocm_package_setup_client_component(samples)
   endif()
   if(BUILD_CLIENTS_TESTS)
-    rocm_package_setup_client_component(tests)
+    rocm_package_setup_client_component(
+      tests
+      DEPENDS
+        COMPONENT clients-common
+        DEB "gfortran"
+        RPM "${GFORTRAN_PKG}")
   endif()
   if(BUILD_CLIENTS_BENCHMARKS)
-    rocm_package_setup_client_component(benchmarks)
+    rocm_package_setup_client_component(
+      benchmarks
+      DEPENDS
+        COMPONENT clients-common
+        DEB "gfortran"
+        RPM "${GFORTRAN_PKG}")
   endif()
   add_subdirectory( clients )
 endif( )
