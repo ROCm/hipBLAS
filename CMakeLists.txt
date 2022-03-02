@@ -122,9 +122,6 @@ if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
   endif()
   rocm_package_setup_component(clients)
   rocm_package_setup_client_component(clients-common)
-  if(BUILD_CLIENTS_SAMPLES)
-    rocm_package_setup_client_component(samples)
-  endif()
   if(BUILD_CLIENTS_TESTS)
     rocm_package_setup_client_component(
       tests
