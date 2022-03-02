@@ -1,5 +1,10 @@
 # Change Log for hipBLAS
 
+## (Unreleased) hipBLAS
+### Added
+- File/Folder Reorg
+  - Added File/Folder Reorg Changes with backward compatibility support enabled using ROCM-CMAKE wrapper functions.
+
 ## (Unreleased) hipBLAS 0.50
 ### Added
 - Added library version and device information to hipblas-test output
