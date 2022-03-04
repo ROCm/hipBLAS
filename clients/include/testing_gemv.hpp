@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -86,10 +84,10 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
     T h_beta  = argus.get_beta<T>();
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, N, lda);
-    hipblas_init<T>(hx, 1, dim_x, abs_incx);
-    hipblas_init<T>(hy, 1, dim_y, abs_incy);
+    hipblas_init_matrix(hA, argus, lda, N, lda, 0, 1, hipblas_client_alpha_sets_nan, true, false);
+    hipblas_init_vector(
+        hx, argus, dim_x, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(hy, argus, dim_y, abs_incy, 0, 1, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hy_cpu = hy;

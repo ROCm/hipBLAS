@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 template <typename T>
 hipblasStatus_t testing_getrf_strided_batched(const Arguments& argus)
@@ -27,7 +25,7 @@ hipblasStatus_t testing_getrf_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
 
     hipblasStride strideA   = size_t(lda) * N * stride_scale;
-    hipblasStride strideP   = min(M, N) * stride_scale;
+    hipblasStride strideP   = std::min(M, N) * stride_scale;
     size_t        A_size    = strideA * batch_count;
     size_t        Ipiv_size = strideP * batch_count;
 

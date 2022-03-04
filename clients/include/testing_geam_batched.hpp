@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #include <fstream>
@@ -11,8 +11,6 @@
 
 #include "hipblas_unique_ptr.hpp"
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -96,9 +94,9 @@ hipblasStatus_t testing_geam_batched(const Arguments& argus)
     host_batch_vector<T> hC2(C_size, 1, batch_count);
     host_batch_vector<T> hC_copy(C_size, 1, batch_count);
 
-    hipblas_init(hA, true);
-    hipblas_init(hB);
-    hipblas_init(hC1);
+    hipblas_init_vector(hA, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hB, argus, hipblas_client_beta_sets_nan);
+    hipblas_init_vector(hC1, argus, hipblas_client_beta_sets_nan);
     hC2.copy_from(hC1);
     hC_copy.copy_from(hC1);
 

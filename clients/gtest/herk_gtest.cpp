@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -11,11 +11,11 @@
 #include <stdexcept>
 #include <vector>
 
+using std::vector;
 using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
@@ -114,17 +114,17 @@ Arguments setup_herk_arguments(herk_tuple tup)
     return arg;
 }
 
-class blas2_herk_gtest : public ::TestWithParam<herk_tuple>
+class blas3_herk_gtest : public ::TestWithParam<herk_tuple>
 {
 protected:
-    blas2_herk_gtest() {}
-    virtual ~blas2_herk_gtest() {}
+    blas3_herk_gtest() {}
+    virtual ~blas3_herk_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
 // herk
-TEST_P(blas2_herk_gtest, herk_gtest_float)
+TEST_P(blas3_herk_gtest, herk_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -151,7 +151,7 @@ TEST_P(blas2_herk_gtest, herk_gtest_float)
     }
 }
 
-TEST_P(blas2_herk_gtest, herk_gtest_double)
+TEST_P(blas3_herk_gtest, herk_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -181,7 +181,7 @@ TEST_P(blas2_herk_gtest, herk_gtest_double)
 #ifndef __HIP_PLATFORM_NVCC__
 
 // herk_batched
-TEST_P(blas2_herk_gtest, herk_batched_gtest_float)
+TEST_P(blas3_herk_gtest, herk_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -208,7 +208,7 @@ TEST_P(blas2_herk_gtest, herk_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_herk_gtest, herk_batched_gtest_double)
+TEST_P(blas3_herk_gtest, herk_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -236,7 +236,7 @@ TEST_P(blas2_herk_gtest, herk_batched_gtest_double)
 }
 
 // herk_strided_batched
-TEST_P(blas2_herk_gtest, herk_strided_batched_gtest_float)
+TEST_P(blas3_herk_gtest, herk_strided_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -263,7 +263,7 @@ TEST_P(blas2_herk_gtest, herk_strided_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_herk_gtest, herk_strided_batched_gtest_double)
+TEST_P(blas3_herk_gtest, herk_strided_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -298,7 +298,7 @@ TEST_P(blas2_herk_gtest, herk_strided_batched_gtest_double)
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
 INSTANTIATE_TEST_SUITE_P(hipblasHerk,
-                         blas2_herk_gtest,
+                         blas3_herk_gtest,
                          Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(uplo_range),

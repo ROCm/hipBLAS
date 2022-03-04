@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -64,8 +62,13 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, N, N, 1);
+    // srand(1);
+    // hipblas_init<T>(hA, N, N, 1);
+    // hipblas_init<T>(hx, 1, N, abs_incx);
+    hipblas_init_matrix(hA, argus, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(
+        hx, argus, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, false); //true);
+    hb = hx;
 
     //  calculate AAT = hA * hA ^ T
     cblas_gemm<T>(HIPBLAS_OP_N,
@@ -89,7 +92,7 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
         for(int j = 0; j < N; j++)
         {
             hA[i + j * N] = AAT[i + j * N];
-            t += abs(AAT[i + j * N]);
+            t += std::abs(AAT[i + j * N]);
         }
         hA[i + i * N] = t;
     }
@@ -114,9 +117,6 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
                     hA[i + j * N] = hA[i + j * N] / diag;
             }
     }
-
-    hipblas_init<T>(hx, 1, N, abs_incx);
-    hb = hx;
 
     // Calculate hb = hA*hx;
     cblas_trmv<T>(uplo, transA, diag, N, hA.data(), N, hb.data(), incx);

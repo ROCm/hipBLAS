@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #pragma once
@@ -277,6 +277,36 @@ public:
 };
 
 /* ============================================================================================ */
+/*! \brief negate a value */
+
+// Can rename to simply "negate" after removing usage of `using namespace std;`
+template <class T>
+inline T hipblas_negate(T x)
+{
+    return -x;
+}
+
+template <>
+inline hipblasHalf hipblas_negate(hipblasHalf arg)
+{
+    union
+    {
+        hipblasHalf fp;
+        uint16_t    data;
+    } x = {arg};
+
+    x.data ^= 0x8000;
+    return x.fp;
+}
+
+template <>
+inline hipblasBfloat16 hipblas_negate(hipblasBfloat16 x)
+{
+    x.data ^= 0x8000;
+    return x;
+}
+
+/* ============================================================================================ */
 /* generate random number :*/
 
 /*! \brief  generate a random number in range [1,2,3,4,5,6,7,8,9,10] */
@@ -286,6 +316,13 @@ T random_generator()
     // return rand()/( (T)RAND_MAX + 1);
     return T(rand() % 10 + 1);
 };
+
+/*! \brief  generate a random NaN number */
+template <typename T>
+inline T random_nan_generator()
+{
+    return T(hipblas_nan_rng{});
+}
 
 // for hipblasHalf, generate float, and convert to hipblasHalf
 /*! \brief  generate a random number in range [1,2,3] */
@@ -359,6 +396,23 @@ template <>
 inline hipblasDoubleComplex random_generator_negative<hipblasDoubleComplex>()
 {
     return {double(-(rand() % 10 + 1)), double(-(rand() % 10 + 1))};
+}
+
+// HPL
+/*! \brief  generate a random number in HPL-like [-0.5,0.5] doubles  */
+template <typename T>
+inline T random_hpl_generator()
+{
+    return std::uniform_real_distribution<double>(-0.5, 0.5)(hipblas_rng);
+}
+
+// for hipblasBfloat16, generate float, and convert to hipblasBfloat16
+/*! \brief  generate a random number in HPL-like [-0.5,0.5] doubles  */
+template <>
+inline hipblasBfloat16 random_hpl_generator()
+{
+    return hipblasBfloat16(
+        float_to_bfloat16(std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng)));
 }
 
 /* ============================================================================================ */
@@ -454,6 +508,144 @@ void hipblas_init_alternating_sign(
                     A[i + j * lda + i_batch * stride] = random_generator<T>();
                 else
                     A[i + j * lda + i_batch * stride] = random_generator_negative<T>();
+}
+
+// Initialize matrix so adjacent entries have alternating sign.
+template <typename T>
+void hipblas_init_hpl_alternating_sign(
+    T* A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#pragma omp parallel for
+        for(size_t j = 0; j < N; ++j)
+        {
+            size_t offset = j * lda + i_batch * stride;
+            for(size_t i = 0; i < M; ++i)
+            {
+                auto value    = random_hpl_generator<T>();
+                A[i + offset] = (i ^ j) & 1 ? value : hipblas_negate(value);
+            }
+        }
+}
+
+template <typename T>
+void hipblas_init_hpl_alternating_sign(
+    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+{
+    hipblas_init_hpl_alternating_sign(A.data(), M, N, lda, stride, batch_count);
+}
+
+// Initialize vector with HPL-like random values
+template <typename T>
+void hipblas_init_hpl(
+    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+        for(size_t i = 0; i < M; ++i)
+            for(size_t j = 0; j < N; ++j)
+                A[i + j * lda + i_batch * stride] = random_hpl_generator<T>();
+}
+
+template <typename T>
+void hipblas_init_hpl(
+    T* A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+        for(size_t i = 0; i < M; ++i)
+            for(size_t j = 0; j < N; ++j)
+                A[i + j * lda + i_batch * stride] = random_hpl_generator<T>();
+}
+
+template <typename T>
+inline void
+    hipblas_init_cos(T* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#pragma omp parallel for
+        for(size_t j = 0; j < N; ++j)
+        {
+            size_t offset = j * lda + i_batch * stride;
+            for(size_t i = 0; i < M; ++i)
+                A[i + offset] = T(cos(i + offset));
+        }
+}
+
+template <typename T>
+inline void hipblas_init_cos(
+    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
+{
+    hipblas_init_cos(A.data(), M, N, lda, stride, batch_count);
+}
+
+template <typename T>
+inline void
+    hipblas_init_sin(T* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#pragma omp parallel for
+        for(size_t j = 0; j < N; ++j)
+        {
+            size_t offset = j * lda + i_batch * stride;
+            for(size_t i = 0; i < M; ++i)
+                A[i + offset] = T(sin(i + offset));
+        }
+}
+
+template <typename T>
+inline void hipblas_init_sin(
+    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
+{
+    hipblas_init_sin(A.data(), M, N, lda, stride, batch_count);
+}
+
+template <>
+inline void hipblas_init_cos<hipblasBfloat16>(
+    hipblasBfloat16* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#pragma omp parallel for
+        for(size_t j = 0; j < N; ++j)
+        {
+            size_t offset = j * lda + i_batch * stride;
+            for(size_t i = 0; i < M; ++i)
+                A[i + offset] = float_to_bfloat16(cos(i + offset));
+        }
+}
+
+template <>
+inline void hipblas_init_cos<hipblasBfloat16>(std::vector<hipblasBfloat16>& A,
+                                              size_t                        M,
+                                              size_t                        N,
+                                              size_t                        lda,
+                                              size_t                        stride,
+                                              size_t                        batch_count)
+{
+    hipblas_init_cos<hipblasBfloat16>(A.data(), M, N, lda, stride, batch_count);
+}
+
+template <>
+inline void hipblas_init_sin<hipblasBfloat16>(
+    hipblasBfloat16* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
+{
+    for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#pragma omp parallel for
+        for(size_t j = 0; j < N; ++j)
+        {
+            size_t offset = j * lda + i_batch * stride;
+            for(size_t i = 0; i < M; ++i)
+                A[i + offset] = float_to_bfloat16(sin(i + offset));
+        }
+}
+
+template <>
+inline void hipblas_init_sin<hipblasBfloat16>(std::vector<hipblasBfloat16>& A,
+                                              size_t                        M,
+                                              size_t                        N,
+                                              size_t                        lda,
+                                              size_t                        stride,
+                                              size_t                        batch_count)
+{
+    hipblas_init_sin<hipblasBfloat16>(A.data(), M, N, lda, stride, batch_count);
 }
 
 /*! \brief  symmetric matrix initialization: */

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -11,11 +11,11 @@
 #include <stdexcept>
 #include <vector>
 
+using std::vector;
 using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using namespace std;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
@@ -118,17 +118,17 @@ Arguments setup_herkx_arguments(herkx_tuple tup)
     return arg;
 }
 
-class blas2_herkx_gtest : public ::TestWithParam<herkx_tuple>
+class blas3_herkx_gtest : public ::TestWithParam<herkx_tuple>
 {
 protected:
-    blas2_herkx_gtest() {}
-    virtual ~blas2_herkx_gtest() {}
+    blas3_herkx_gtest() {}
+    virtual ~blas3_herkx_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
 // herkx
-TEST_P(blas2_herkx_gtest, herkx_gtest_float)
+TEST_P(blas3_herkx_gtest, herkx_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -155,7 +155,7 @@ TEST_P(blas2_herkx_gtest, herkx_gtest_float)
     }
 }
 
-TEST_P(blas2_herkx_gtest, herkx_gtest_double)
+TEST_P(blas3_herkx_gtest, herkx_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -185,7 +185,7 @@ TEST_P(blas2_herkx_gtest, herkx_gtest_double)
 #ifndef __HIP_PLATFORM_NVCC__
 
 // herkx_batched
-TEST_P(blas2_herkx_gtest, herkx_batched_gtest_float)
+TEST_P(blas3_herkx_gtest, herkx_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -213,7 +213,7 @@ TEST_P(blas2_herkx_gtest, herkx_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_herkx_gtest, herkx_batched_gtest_double)
+TEST_P(blas3_herkx_gtest, herkx_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -242,7 +242,7 @@ TEST_P(blas2_herkx_gtest, herkx_batched_gtest_double)
 }
 
 // herkx_strided_batched
-TEST_P(blas2_herkx_gtest, herkx_strided_batched_gtest_float)
+TEST_P(blas3_herkx_gtest, herkx_strided_batched_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -270,7 +270,7 @@ TEST_P(blas2_herkx_gtest, herkx_strided_batched_gtest_float)
     }
 }
 
-TEST_P(blas2_herkx_gtest, herkx_strided_batched_gtest_double)
+TEST_P(blas3_herkx_gtest, herkx_strided_batched_gtest_double)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -306,7 +306,7 @@ TEST_P(blas2_herkx_gtest, herkx_strided_batched_gtest_double)
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha} }
 
 INSTANTIATE_TEST_SUITE_P(hipblasHerkx,
-                         blas2_herkx_gtest,
+                         blas3_herkx_gtest,
                          Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(uplo_range),

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -84,10 +82,12 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
     T h_alpha = argus.get_alpha<T>();
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, N, lda, stride_A, batch_count);
-    hipblas_init<T>(hx, 1, M, abs_incx, stride_x, batch_count);
-    hipblas_init<T>(hy, 1, N, abs_incy, stride_y, batch_count);
+    hipblas_init_matrix(
+        hA, argus, M, N, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(
+        hx, argus, M, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(
+        hy, argus, N, abs_incy, stride_y, batch_count, hipblas_client_alpha_sets_nan);
 
     // copy matrix is easy in STL; hB = hA: save a copy in hB which will be output of CPU BLAS
     hA_cpu = hA;

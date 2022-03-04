@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -61,8 +59,9 @@ hipblasStatus_t testing_trsv(const Arguments& argus)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, M, lda);
+    hipblas_init_matrix(hA, argus, M, M, lda, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(hx, argus, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hb = hx;
 
     //  calculate AAT = hA * hA ^ T
     cblas_gemm<T>(HIPBLAS_OP_N,
@@ -111,9 +110,6 @@ hipblasStatus_t testing_trsv(const Arguments& argus)
                     hA[i + j * lda] = hA[i + j * lda] / diag;
             }
     }
-
-    hipblas_init<T>(hx, 1, M, abs_incx);
-    hb = hx;
 
     // Calculate hb = hA*hx;
     cblas_trmv<T>(uplo, transA, diag, M, hA.data(), lda, hb.data(), incx);

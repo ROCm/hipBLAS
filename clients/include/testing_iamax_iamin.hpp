@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 template <typename T>
 using hipblas_iamax_iamin_t
@@ -56,8 +54,7 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
     device_vector<int> d_hipblas_result(1);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hx, 1, N, incx);
+    hipblas_init_vector(hx, argus, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));

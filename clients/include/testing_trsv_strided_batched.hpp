@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -76,9 +74,10 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, M, lda, strideA, batch_count);
-    hipblas_init<T>(hx, 1, M, abs_incx, stridex, batch_count);
+    hipblas_init_matrix(
+        hA, argus, M, M, lda, strideA, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(
+        hx, argus, M, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
     for(int b = 0; b < batch_count; b++)
@@ -97,7 +96,7 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
             for(int j = 0; j < M; j++)
             {
                 hAb[i + j * lda] = AATb[i + j * lda];
-                t += abs(AATb[i + j * lda]);
+                t += std::abs(AATb[i + j * lda]);
             }
             hAb[i + i * lda] = t;
         }

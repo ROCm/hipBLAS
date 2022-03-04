@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 #define TRSM_BLOCK 128
 
@@ -72,8 +70,8 @@ hipblasStatus_t testing_trsm_batched_ex(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Initial hA on CPU
-    hipblas_init(hA, true);
-    hipblas_init(hB_host);
+    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hB_host, argus, hipblas_client_never_set_nan);
     for(int b = 0; b < batch_count; b++)
     {
         // pad untouched area into zero

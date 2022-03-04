@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -10,11 +10,11 @@
 #include <stdexcept>
 #include <vector>
 
+using std::vector;
 using ::testing::Combine;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-using namespace std;
 
 typedef std::tuple<vector<int>, double, int, bool> getrf_tuple;
 

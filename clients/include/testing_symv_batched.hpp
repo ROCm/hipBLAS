@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -82,9 +80,9 @@ hipblasStatus_t testing_symv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dy.memcheck());
 
     // Initial Data on CPU
-    hipblas_init(hA, true);
-    hipblas_init(hx);
-    hipblas_init(hy);
+    hipblas_init_vector(hA, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan);
+    hipblas_init_vector(hy, argus, hipblas_client_beta_sets_nan);
     hy_cpu.copy_from(hy);
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));

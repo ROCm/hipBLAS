@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -63,10 +61,9 @@ hipblasStatus_t testing_hemm(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, N, lda);
-    hipblas_init<T>(hB, M, N, ldb);
-    hipblas_init<T>(hC_host, M, N, ldc);
+    hipblas_init_matrix(hA, argus, M, N, lda, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hB, argus, M, N, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_matrix(hC_host, argus, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
     hC_gold   = hC_host;
     hC_device = hC_host;
 

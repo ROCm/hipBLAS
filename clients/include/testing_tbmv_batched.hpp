@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -64,8 +62,8 @@ hipblasStatus_t testing_tbmv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.memcheck());
     CHECK_HIP_ERROR(dx.memcheck());
 
-    hipblas_init(hA, true);
-    hipblas_init(hx);
+    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, argus, hipblas_client_never_set_nan, false, true);
 
     hx_cpu.copy_from(hx);
 
