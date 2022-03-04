@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -71,8 +69,11 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Initial hA on CPU
-    srand(1);
-    hipblas_init_symmetric<T>(hA, K, lda, strideA, batch_count);
+    hipblas_init_matrix(
+        hA, argus, K, K, lda, strideA, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(
+        hB_host, argus, M, N, ldb, strideB, batch_count, hipblas_client_never_set_nan);
+
     for(int b = 0; b < batch_count; b++)
     {
         T* hAb = hA.data() + b * strideA;
@@ -88,7 +89,7 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
         }
 
         // proprocess the matrix to avoid ill-conditioned matrix
-        vector<int> ipiv(K);
+        std::vector<int> ipiv(K);
         cblas_getrf(K, K, hAb, lda, ipiv.data());
         for(int i = 0; i < K; i++)
         {
@@ -103,8 +104,6 @@ hipblasStatus_t testing_trsm_strided_batched(const Arguments& argus)
             }
         }
 
-        // Initial hB, hX on CPU
-        hipblas_init<T>(hBb, M, N, ldb);
         // pad untouched area into zero
         for(int i = M; i < ldb; i++)
         {

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -81,9 +79,10 @@ hipblasStatus_t testing_tbsv_strided_batched(const Arguments& argus)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, M, M, strideA, batch_count);
-    hipblas_init<T>(hx, 1, M, abs_incx, stridex, batch_count);
+    hipblas_init_matrix(
+        hA, argus, M, M, M, strideA, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(
+        hx, argus, M, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
     for(int b = 0; b < batch_count; b++)

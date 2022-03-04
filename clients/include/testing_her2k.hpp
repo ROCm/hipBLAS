@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -65,10 +63,9 @@ hipblasStatus_t testing_her2k(const Arguments& argus)
     hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
-    srand(1);
-    hipblas_init<T>(hA, N, K1, lda);
-    hipblas_init<T>(hB, N, K1, ldb);
-    hipblas_init<T>(hC_host, N, N, ldc);
+    hipblas_init_matrix(hA, argus, N, K1, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(hB, argus, N, K1, ldb, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(hC_host, argus, N, N, ldc, 0, 1, hipblas_client_never_set_nan);
 
     // copy matrix is easy in STL; hB = hA: save a copy in hB which will be output of CPU BLAS
     hC_device = hC_host;

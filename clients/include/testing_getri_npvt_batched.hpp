@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 template <typename T>
 hipblasStatus_t testing_getri_npvt_batched(const Arguments& argus)
@@ -25,7 +23,7 @@ hipblasStatus_t testing_getri_npvt_batched(const Arguments& argus)
     int lda         = argus.lda;
     int batch_count = argus.batch_count;
 
-    hipblasStride strideP   = min(M, N);
+    hipblasStride strideP   = std::min(M, N);
     size_t        A_size    = size_t(lda) * N;
     size_t        Ipiv_size = strideP * batch_count;
 

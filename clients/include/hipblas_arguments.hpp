@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  * ************************************************************************ */
 
 #pragma once
@@ -93,7 +93,7 @@ struct Arguments
 
     int atomics_mode;
 
-    hipblas_initialization initialization;
+    hipblas_initialization initialization = hipblas_initialization::rand_int;
 
     // clang-format off
 

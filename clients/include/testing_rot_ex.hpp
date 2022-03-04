@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -75,16 +73,15 @@ hipblasStatus_t testing_rot_ex_template(const Arguments& arg)
     host_vector<Tcs> hc(1);
     host_vector<Tcs> hs(1);
 
-    srand(1);
-    hipblas_init<Tx>(hx_host, 1, N, abs_incx);
-    hipblas_init<Ty>(hy_host, 1, N, abs_incy);
-
     // Random alpha (0 - 10)
     host_vector<int> alpha(1);
-    hipblas_init<int>(alpha, 1, 1, 1);
 
-    hipblas_init<Tcs>(hc, 1, 1, 1);
-    hipblas_init<Tcs>(hs, 1, 1, 1);
+    hipblas_init_vector(hx_host, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hy_host, arg, N, abs_incy, 0, 1, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(alpha, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(hc, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(hs, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
+
     // // cos and sin of alpha (in rads)
     // hc[0] = cos(alpha[0]);
     // hs[0] = sin(alpha[0]);

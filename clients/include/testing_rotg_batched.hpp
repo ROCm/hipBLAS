@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -64,10 +62,10 @@ hipblasStatus_t testing_rotg_batched(const Arguments& arg)
     device_batch_vector<U> dc(1, 1, batch_count);
     device_batch_vector<T> ds(1, 1, batch_count);
 
-    hipblas_init(ha, true);
-    hipblas_init(hb, false);
-    hipblas_init(hc, false);
-    hipblas_init(hs, false);
+    hipblas_init_vector(ha, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hb, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hc, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hs, arg, hipblas_client_alpha_sets_nan, false);
     ca.copy_from(ha);
     cb.copy_from(hb);
     cc.copy_from(hc);

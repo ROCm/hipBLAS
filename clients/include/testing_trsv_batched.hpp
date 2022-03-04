@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -65,12 +63,12 @@ hipblasStatus_t testing_trsv_batched(const Arguments& argus)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error;
 
     // Initial Data on CPU
-    srand(1);
+    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, argus, hipblas_client_never_set_nan, false, true);
+    hb.copy_from(hx);
+
     for(int b = 0; b < batch_count; b++)
     {
-        srand(1);
-        hipblas_init<T>(hA[b], M, M, lda);
-
         //  calculate AAT = hA * hA ^ T
         cblas_gemm<T>(HIPBLAS_OP_N,
                       HIPBLAS_OP_T,
@@ -93,7 +91,7 @@ hipblasStatus_t testing_trsv_batched(const Arguments& argus)
             for(int j = 0; j < M; j++)
             {
                 hA[b][i + j * lda] = AAT[b][i + j * lda];
-                t += abs(AAT[b][i + j * lda]);
+                t += std::abs(AAT[b][i + j * lda]);
             }
             hA[b][i + i * lda] = t;
         }
@@ -120,9 +118,6 @@ hipblasStatus_t testing_trsv_batched(const Arguments& argus)
                 }
         }
     }
-
-    hipblas_init(hx, false);
-    hb.copy_from(hx);
 
     for(int b = 0; b < batch_count; b++)
     {

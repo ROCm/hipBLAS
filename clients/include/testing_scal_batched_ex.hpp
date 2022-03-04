@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2016-2021 Advanced Micro Devices, Inc.
+ * Copyright 2016-2022 Advanced Micro Devices, Inc.
  *
  * ************************************************************************ */
 
@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "testing_common.hpp"
-
-using namespace std;
 
 /* ============================================================================================ */
 
@@ -56,7 +54,7 @@ hipblasStatus_t testing_scal_batched_ex_template(const Arguments& argus)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init(hx_host, true);
+    hipblas_init_vector(hx_host, argus, hipblas_client_alpha_sets_nan, true);
 
     hx_device.copy_from(hx_host);
     hx_cpu.copy_from(hx_host);
