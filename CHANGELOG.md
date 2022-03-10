@@ -1,6 +1,6 @@
 # Change Log for hipBLAS
 
-## (Unreleased) hipBLAS 0.50
+## hipBLAS 0.50.0 for ROCm 5.1.0
 ### Added
 - Added library version and device information to hipblas-test output
 - Added --rocsolver-path command line option to choose path to pre-built rocSOLVER, as
