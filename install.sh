@@ -62,6 +62,8 @@ cat <<EOF
     -s, --static                  Build hipblas as a static library (hipblas must be built statically when the used companion rocblas is also static).
 
     -v, --rocm-dev <version>      Specify specific rocm-dev version. (e.g. 4.5.0)
+
+    --rm-legacy-include-dir       Remove legacy include dir Packaging added for file/folder reorg backward compatibility.
 EOF
 }
 
@@ -345,6 +347,7 @@ build_static=false
 build_release_debug=false
 build_codecoverage=false
 update_cmake=false
+build_freorg_bkwdcomp=true
 declare -a cmake_common_options
 declare -a cmake_client_options
 
@@ -355,7 +358,7 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,cmake-arg: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,rm-legacy-include-dir,cmake-arg: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -420,6 +423,9 @@ while true; do
     --address-sanitizer)
         build_address_sanitizer=true
         compiler=hipcc
+        shift ;;
+    --rm-legacy-include-dir)
+        build_freorg_bkwdcomp=false
         shift ;;
     -p|--cmakepp)
         cmake_prefix_path=${2}
@@ -601,6 +607,12 @@ pushd .
       cmake_common_options+=("-DBUILD_CODE_COVERAGE=ON")
   fi
 
+  if [[ "${build_freorg_bkwdcomp}" == true ]]; then
+    cmake_common_options+=("-DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=ON")
+  else
+    cmake_common_options+=("-DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=OFF")
+  fi
+  
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
     CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
