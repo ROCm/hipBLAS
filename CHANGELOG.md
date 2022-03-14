@@ -1,5 +1,11 @@
 # Change Log for hipBLAS
 
+## (Unreleased) hipBLAS
+### Added
+- File/Folder Reorg
+  - Added File/Folder Reorg Changes with backward compatibility support enabled using ROCM-CMAKE wrapper functions.
+- Packages for test and benchmark executables on all supported OSes using CPack.
+
 ## (Unreleased) hipBLAS 0.50
 ### Added
 - Added library version and device information to hipblas-test output
@@ -8,7 +14,6 @@
 - Added --cmake_install command line option to update cmake to minimum version if required
 - Added cmake-arg parameter to pass in cmake arguments while building
 - Added infrastructure to support readthedocs hipBLAS documentation.
-- Packages for test and benchmark executables on all supported OSes using CPack.
 
 ### Fixed
 - Added hipblasVersionMinor define. hipblaseVersionMinor remains defined
