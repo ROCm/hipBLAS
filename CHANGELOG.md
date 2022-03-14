@@ -8,6 +8,7 @@
 - Added --cmake_install command line option to update cmake to minimum version if required
 - Added cmake-arg parameter to pass in cmake arguments while building
 - Added infrastructure to support readthedocs hipBLAS documentation.
+- Packages for test and benchmark executables on all supported OSes using CPack.
 
 ### Fixed
 - Added hipblasVersionMinor define. hipblaseVersionMinor remains defined
