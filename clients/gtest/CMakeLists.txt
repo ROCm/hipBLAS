@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2021 Advanced Micro Devices, Inc.
+# Copyright 2016-2022 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # Linking lapack library requires fortran flags
@@ -214,3 +214,5 @@ set_target_properties( hipblas-test PROPERTIES
     LINKER_LANGUAGE CXX
     DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
+
+rocm_install(TARGETS hipblas-test COMPONENT tests)
