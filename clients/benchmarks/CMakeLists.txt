@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2021 Advanced Micro Devices, Inc.
+# Copyright 2016-2022 Advanced Micro Devices, Inc.
 # ########################################################################
 
 set( THREADS_PREFER_PTHREAD_FLAG ON )
@@ -47,7 +47,6 @@ set( hipblas_benchmark_common
     )
 
 add_executable( hipblas-bench client.cpp ${hipblas_benchmark_common} )
-
 
 target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 
@@ -135,3 +134,5 @@ set_target_properties( hipblas-bench PROPERTIES
 )
 
 target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ROCM_USE_FLOAT16 )
+
+rocm_install(TARGETS hipblas-bench COMPONENT benchmarks)

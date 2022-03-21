@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2021 Advanced Micro Devices, Inc.
+# Copyright 2016-2022 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # The ROCm platform requires Ubuntu 16.04 or Fedora 24, which has cmake 3.5
@@ -59,6 +59,7 @@ include( ROCMCreatePackage )
 include( ROCMInstallTargets )
 include( ROCMPackageConfigHelpers )
 include( ROCMInstallSymlinks )
+include( ROCMClients )
 include( ROCMHeaderWrapper )
 
 set ( VERSION_STRING "0.51.0" )
@@ -138,8 +139,83 @@ set(CMAKE_INSTALL_LIBDIR "lib" CACHE INTERNAL "Installation directory for librar
 
 # Build clients of the library
 if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
+  if(NOT CLIENTS_OS)
+    rocm_set_os_id(CLIENTS_OS)
+    string(TOLOWER "${CLIENTS_OS}" CLIENTS_OS)
+    rocm_read_os_release(CLIENTS_OS_VERSION VERSION_ID)
+  endif()
+  set(GFORTRAN_PKG "gcc-gfortran")
+  if(CLIENTS_OS STREQUAL "sles")
+    set(GFORTRAN_PKG "gcc-fortran")
+  elseif(CLIENTS_OS STREQUAL "centos" AND CLIENTS_OS_VERSION EQUAL 7)
+    set(GFORTRAN_PKG "devtoolset-7-gcc-gfortran")
+  endif()
+  rocm_package_setup_component(clients)
+  rocm_package_setup_client_component(clients-common)
+  if(BUILD_CLIENTS_TESTS)
+    rocm_package_setup_client_component(
+      tests
+      DEPENDS
+        COMPONENT clients-common
+        DEB "gfortran"
+        RPM "${GFORTRAN_PKG}")
+  endif()
+  if(BUILD_CLIENTS_BENCHMARKS)
+    rocm_package_setup_client_component(
+      benchmarks
+      DEPENDS
+        COMPONENT clients-common
+        DEB "gfortran"
+        RPM "${GFORTRAN_PKG}")
+  endif()
   add_subdirectory( clients )
 endif( )
+
+# The following code is setting variables to control the behavior of CPack to generate our
+if( WIN32 )
+    set( CPACK_SOURCE_GENERATOR "ZIP" )
+    set( CPACK_GENERATOR "ZIP" )
+endif( )
+
+# Package specific CPACK vars
+if( NOT USE_CUDA )
+  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.44.0" "rocsolver >= 3.18.0")
+endif( )
+
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
+set( CPACK_RPM_PACKAGE_LICENSE "MIT")
+
+if (WIN32)
+  SET( CMAKE_INSTALL_PREFIX "C:/hipSDK" CACHE PATH "Install path" FORCE )
+  SET( INSTALL_PREFIX "C:/hipSDK" )
+  SET( CPACK_SET_DESTDIR FALSE )
+  SET( CPACK_PACKAGE_INSTALL_DIRECTORY "C:/hipSDK" )
+  SET( CPACK_PACKAGING_INSTALL_PREFIX "" )
+  set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF )
+else()
+  if( NOT CPACK_PACKAGING_INSTALL_PREFIX )
+    set( CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" )
+  endif()
+endif( )
+
+set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/include" "\${CPACK_PACKAGING_INSTALL_PREFIX}/lib" )
+
+# Give hipblas compiled for CUDA backend a different name
+if( NOT USE_CUDA )
+    set( package_name hipblas )
+else( )
+    set( package_name hipblas-alt )
+endif( )
+
+set( HIPBLAS_CONFIG_DIR "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" CACHE PATH "Path placed into ldconfig file" )
+
+rocm_create_package(
+    NAME ${package_name}
+    DESCRIPTION "Radeon Open Compute BLAS marshalling library"
+    MAINTAINER "hipBLAS Maintainer <hipblas-maintainer@amd.com>"
+    LDCONFIG
+    LDCONFIG_DIR ${HIPBLAS_CONFIG_DIR}
+)
 
 
 #

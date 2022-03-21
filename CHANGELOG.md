@@ -2,6 +2,7 @@
 
 ## (Unreleased) hipBLAS 0.51.0
 ### Added
+- Packages for test and benchmark executables on all supported OSes using CPack.
 - Added File/Folder Reorg Changes with backward compatibility support enabled using ROCM-CMAKE wrapper functions
 - Added user-specified initialization option to hipblas-bench
 

@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2021 Advanced Micro Devices, Inc.
+# Copyright 2016-2022 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # ########################################################################
@@ -193,4 +193,4 @@ if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
   endif() #NOT WIN32
   message( STATUS "Backward Compatible Sym Link Created for include directories" )
 endif()
- 
+
