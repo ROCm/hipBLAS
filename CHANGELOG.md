@@ -1,6 +1,15 @@
 # Change Log for hipBLAS
 
-## (Unreleased) hipBLAS 0.50
+## (Unreleased) hipBLAS 0.51.0
+### Added
+- Packages for test and benchmark executables on all supported OSes using CPack.
+- Added File/Folder Reorg Changes with backward compatibility support enabled using ROCM-CMAKE wrapper functions
+- Added user-specified initialization option to hipblas-bench
+
+### Fixed
+- Fixed version gathering in performance measuring script
+
+## hipBLAS 0.50.0 for ROCm 5.1.0
 ### Added
 - Added library version and device information to hipblas-test output
 - Added --rocsolver-path command line option to choose path to pre-built rocSOLVER, as

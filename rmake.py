@@ -43,10 +43,10 @@ def parse_args():
     parser.add_argument('-n', '--no-solver', dest='build_solver', required=False, default=True, action='store_false',
                         help='Build hipLBAS library without rocSOLVER dependency')
 
-    parser.add_argument('--rocblas-path', dest='rocblas_path', type=str, required=False, default="C:/hipSDK/rocblas",
+    parser.add_argument('--rocblas-path', dest='rocblas_path', type=str, required=False, default="C:/hipSDK",
                         help='Specify path to an existing rocBLAS install directory(optional, e.g. /src/rocBLAS/build/release/rocblas-install).')
 
-    parser.add_argument('--rocsolver-path', dest='rocsolver_path', type=str, required=False, default="C:/hipSDK/rocsolver",
+    parser.add_argument('--rocsolver-path', dest='rocsolver_path', type=str, required=False, default="C:/hipSDK",
                         help='Specify path to an existing rocSOLVER install directory (optional, e.g. /src/rocSOLVER/build/release/rocsolver-install).')
 
     parser.add_argument(      '--rocm_dev', type=str, required=False, default = "",

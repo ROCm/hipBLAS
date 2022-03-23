@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2021 Advanced Micro Devices, Inc.
+# Copyright 2016-2022 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # The ROCm platform requires Ubuntu 16.04 or Fedora 24, which has cmake 3.5
@@ -38,7 +38,7 @@ project( hipblas LANGUAGES CXX ${fortran_language} )
 # This finds the rocm-cmake project, and installs it if not found
 # rocm-cmake contains common cmake code for rocm projects to help setup and install
 set( PROJECT_EXTERN_DIR ${CMAKE_CURRENT_BINARY_DIR}/extern )
-find_package( ROCM 0.6 CONFIG QUIET PATHS /opt/rocm )
+find_package( ROCM 0.7.3 CONFIG QUIET PATHS /opt/rocm )
 if( NOT ROCM_FOUND )
   set( rocm_cmake_tag "master" CACHE STRING "rocm-cmake tag to download" )
   file( DOWNLOAD https://github.com/RadeonOpenCompute/rocm-cmake/archive/${rocm_cmake_tag}.zip
@@ -51,7 +51,7 @@ if( NOT ROCM_FOUND )
   execute_process( COMMAND ${CMAKE_COMMAND} --build rocm-cmake-${rocm_cmake_tag} --target install
     WORKING_DIRECTORY ${PROJECT_EXTERN_DIR})
 
-  find_package( ROCM 0.6 REQUIRED CONFIG PATHS ${PROJECT_EXTERN_DIR}/rocm-cmake )
+  find_package( ROCM 0.7.3 REQUIRED CONFIG PATHS ${PROJECT_EXTERN_DIR}/rocm-cmake )
 endif( )
 
 include( ROCMSetupVersion )
@@ -59,6 +59,8 @@ include( ROCMCreatePackage )
 include( ROCMInstallTargets )
 include( ROCMPackageConfigHelpers )
 include( ROCMInstallSymlinks )
+include( ROCMClients )
+include( ROCMHeaderWrapper )
 
 set ( VERSION_STRING "0.51.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
@@ -71,7 +73,7 @@ endif( )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${HIP_PATH}/cmake)
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${ROCM_PATH}/lib/cmake/hip /opt/rocm/lib/cmake/hip ${HIP_PATH}/cmake)
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
 list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
@@ -116,6 +118,18 @@ if(BUILD_ADDRESS_SANITIZER)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -shared-libasan")
 endif()
 
+
+# FOR HANDLING ENABLE/DISABLE OPTIONAL BACKWARD COMPATIBILITY for FILE/FOLDER REORG
+option(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY "Build with file/folder reorg with backward compatibility enabled" ON)
+if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
+  rocm_wrap_header_dir(
+    ${CMAKE_SOURCE_DIR}/library/include
+    PATTERNS "*.h"
+    GUARDS SYMLINK WRAPPER
+    WRAPPER_LOCATIONS include
+  )
+endif()
+
 add_subdirectory( library )
 
 include( clients/cmake/build-options.cmake )
@@ -125,8 +139,83 @@ set(CMAKE_INSTALL_LIBDIR "lib" CACHE INTERNAL "Installation directory for librar
 
 # Build clients of the library
 if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
+  if(NOT CLIENTS_OS)
+    rocm_set_os_id(CLIENTS_OS)
+    string(TOLOWER "${CLIENTS_OS}" CLIENTS_OS)
+    rocm_read_os_release(CLIENTS_OS_VERSION VERSION_ID)
+  endif()
+  set(GFORTRAN_PKG "gcc-gfortran")
+  if(CLIENTS_OS STREQUAL "sles")
+    set(GFORTRAN_PKG "gcc-fortran")
+  elseif(CLIENTS_OS STREQUAL "centos" AND CLIENTS_OS_VERSION EQUAL 7)
+    set(GFORTRAN_PKG "devtoolset-7-gcc-gfortran")
+  endif()
+  rocm_package_setup_component(clients)
+  rocm_package_setup_client_component(clients-common)
+  if(BUILD_CLIENTS_TESTS)
+    rocm_package_setup_client_component(
+      tests
+      DEPENDS
+        COMPONENT clients-common
+        DEB "gfortran"
+        RPM "${GFORTRAN_PKG}")
+  endif()
+  if(BUILD_CLIENTS_BENCHMARKS)
+    rocm_package_setup_client_component(
+      benchmarks
+      DEPENDS
+        COMPONENT clients-common
+        DEB "gfortran"
+        RPM "${GFORTRAN_PKG}")
+  endif()
   add_subdirectory( clients )
 endif( )
+
+# The following code is setting variables to control the behavior of CPack to generate our
+if( WIN32 )
+    set( CPACK_SOURCE_GENERATOR "ZIP" )
+    set( CPACK_GENERATOR "ZIP" )
+endif( )
+
+# Package specific CPACK vars
+if( NOT USE_CUDA )
+  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.44.0" "rocsolver >= 3.18.0")
+endif( )
+
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
+set( CPACK_RPM_PACKAGE_LICENSE "MIT")
+
+if (WIN32)
+  SET( CMAKE_INSTALL_PREFIX "C:/hipSDK" CACHE PATH "Install path" FORCE )
+  SET( INSTALL_PREFIX "C:/hipSDK" )
+  SET( CPACK_SET_DESTDIR FALSE )
+  SET( CPACK_PACKAGE_INSTALL_DIRECTORY "C:/hipSDK" )
+  SET( CPACK_PACKAGING_INSTALL_PREFIX "" )
+  set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF )
+else()
+  if( NOT CPACK_PACKAGING_INSTALL_PREFIX )
+    set( CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" )
+  endif()
+endif( )
+
+set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/include" "\${CPACK_PACKAGING_INSTALL_PREFIX}/lib" )
+
+# Give hipblas compiled for CUDA backend a different name
+if( NOT USE_CUDA )
+    set( package_name hipblas )
+else( )
+    set( package_name hipblas-alt )
+endif( )
+
+set( HIPBLAS_CONFIG_DIR "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" CACHE PATH "Path placed into ldconfig file" )
+
+rocm_create_package(
+    NAME ${package_name}
+    DESCRIPTION "Radeon Open Compute BLAS marshalling library"
+    MAINTAINER "hipBLAS Maintainer <hipblas-maintainer@amd.com>"
+    LDCONFIG
+    LDCONFIG_DIR ${HIPBLAS_CONFIG_DIR}
+)
 
 
 #
