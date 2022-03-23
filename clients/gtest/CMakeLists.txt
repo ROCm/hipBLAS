@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2021 Advanced Micro Devices, Inc.
+# Copyright 2016-2022 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # Linking lapack library requires fortran flags
@@ -202,7 +202,7 @@ if (WIN32)
     add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy ${file_i} ${PROJECT_BINARY_DIR}/staging/ )
   endforeach( file_i )
 
-  add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${ROCBLAS_PATH}/bin/library/ ${PROJECT_BINARY_DIR}/staging/library/)
+  add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${ROCBLAS_PATH}/bin/rocblas/library/ ${PROJECT_BINARY_DIR}/staging/library/)
 endif()
 
 set_target_properties( hipblas-test PROPERTIES
@@ -214,3 +214,5 @@ set_target_properties( hipblas-test PROPERTIES
     LINKER_LANGUAGE CXX
     DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
+
+rocm_install(TARGETS hipblas-test COMPONENT tests)

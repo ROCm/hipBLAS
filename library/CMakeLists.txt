@@ -28,11 +28,14 @@ if( BUILD_VERBOSE )
 endif( )
 
 # configure a header file to pass the CMake version settings to the source, and package the header files in the output archive
-configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas-version.h.in" "${PROJECT_BINARY_DIR}/include/hipblas-version.h" )
+configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas-version.h.in" "${PROJECT_BINARY_DIR}/include/hipblas/hipblas-version.h" )
+
+# Copy Public Headers to Build Dir
+configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/include/hipblas.h" "${PROJECT_BINARY_DIR}/include/hipblas/hipblas.h" COPYONLY)
 
 set( hipblas_headers_public
   include/hipblas.h
-  ${PROJECT_BINARY_DIR}/include/hipblas-version.h
+  ${PROJECT_BINARY_DIR}/include/hipblas/hipblas-version.h
 )
 
 source_group( "Header Files\\Public" FILES ${hipblas_headers_public} )
@@ -49,53 +52,3 @@ endif()
 
 # Build into subdirectories
 add_subdirectory( src )
-
-# The following code is setting variables to control the behavior of CPack to generate our
-if( WIN32 )
-    set( CPACK_SOURCE_GENERATOR "ZIP" )
-    set( CPACK_GENERATOR "ZIP" )
-# else( )
-#     set( CPACK_SOURCE_GENERATOR "TGZ" )
-#     set( CPACK_GENERATOR "DEB;RPM" CACHE STRING "cpack list: 7Z, DEB, IFW, NSIS, NSIS64, RPM, STGZ, TBZ2, TGZ, TXZ, TZ, ZIP" )
-endif( )
-
-# Package specific CPACK vars
-if( NOT USE_CUDA )
-    set( CPACK_DEBIAN_PACKAGE_DEPENDS "rocblas (>= 2.44.0), rocsolver (>= 3.18.0)" )
-    set( CPACK_RPM_PACKAGE_REQUIRES "rocblas >= 2.44.0, rocsolver >= 3.18.0" )
-endif( )
-
-set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md" )
-set( CPACK_RPM_PACKAGE_LICENSE "MIT")
-
-if (WIN32)
-  SET( CMAKE_INSTALL_PREFIX "C:/hipSDK" CACHE PATH "Install path" FORCE )
-  SET( INSTALL_PREFIX "C:/hipSDK" )
-  SET( CPACK_SET_DESTDIR FALSE )
-  SET( CPACK_PACKAGE_INSTALL_DIRECTORY "C:/hipSDK" )
-  SET( CPACK_PACKAGING_INSTALL_PREFIX "" )
-  set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF )
-else()
-  if( NOT CPACK_PACKAGING_INSTALL_PREFIX )
-    set( CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" )
-  endif()
-endif( )
-
-set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/include" "\${CPACK_PACKAGING_INSTALL_PREFIX}/lib" )
-
-# Give hipblas compiled for CUDA backend a different name
-if( NOT USE_CUDA )
-    set( package_name hipblas )
-else( )
-    set( package_name hipblas-alt )
-endif( )
-
-set( HIPBLAS_CONFIG_DIR "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" CACHE PATH "Path placed into ldconfig file" )
-
-rocm_create_package(
-    NAME ${package_name}
-    DESCRIPTION "Radeon Open Compute BLAS marshalling library"
-    MAINTAINER "hipBLAS Maintainer <hipblas-maintainer@amd.com>"
-    LDCONFIG
-    LDCONFIG_DIR ${HIPBLAS_CONFIG_DIR}
-)
