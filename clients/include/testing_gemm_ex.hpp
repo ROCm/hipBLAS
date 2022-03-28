@@ -232,7 +232,7 @@ hipblasStatus_t testing_gemm_ex_template(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA_option, e_transA_option, e_M, e_N, e_K, e_lda, e_ldb, e_ldc>{}
+        ArgumentModel<e_transA_option, e_transB_option, e_M, e_N, e_K, e_lda, e_ldb, e_ldc>{}
             .log_args<Tc>(std::cout,
                           argus,
                           gpu_time_used,
