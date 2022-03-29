@@ -13,7 +13,7 @@ Prerequisites
 
 * If using the cuBLAS backend on a Nvidia machine:
 
-  * A HIP enabled platform, more information `HIP installation <https://docs.amd.com/bundle/HIP_Installation/page/HIP_Installation.html/>`_.
+  * A HIP enabled platform, more information `HIP installation <https://docs.amd.com/bundle/HIP_Installation/page/HIP_Installation.html#d2e131>`_.
   * A working CUDA toolkit, including cuBLAS, see `CUDA toolkit <https://developer.nvidia.com/accelerated-computing-toolkit/>`_.
 
 Installing pre-built packages
