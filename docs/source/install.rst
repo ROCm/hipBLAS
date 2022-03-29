@@ -7,13 +7,13 @@ Prerequisites
 
 * If using the rocBLAS backend on an AMD machine:
 
-  * A ROCm enabled platform, more information `ROCm Documentation <https://rocm.github.io/>`_.
+  * A ROCm enabled platform, more information `ROCm Documentation <https://docs.amd.com/>`_.
   * A compatible version of rocBLAS
   * A compatible version of rocSOLVER for full functionality
 
 * If using the cuBLAS backend on a Nvidia machine:
 
-  * A HIP enabled platform, more information `HIP installation <https://rocmdocs.amd.com/en/latest/Installation_Guide/HIP-Installation.html#nvidia-platform/>`_.
+  * A HIP enabled platform, more information `HIP installation <https://https://docs.amd.com/bundle/HIP_Installation/page/HIP_Installation.html/>`_.
   * A working CUDA toolkit, including cuBLAS, see `CUDA toolkit <https://developer.nvidia.com/accelerated-computing-toolkit/>`_.
 
 Installing pre-built packages
