@@ -26,6 +26,8 @@ cat <<EOF
 
     --cuda, --use-cuda            Build library for CUDA backend.
 
+    --cudapath <cudadir>          Specify path of CUDA install (default /usr/local/cuda).
+
     --cmake-arg                   Forward the given argument to CMake when configuring the build.
 
     --compiler </compier/path>    Specify path to host compiler. (e.g. /opt/bin/hipcc)
@@ -39,7 +41,7 @@ cat <<EOF
 
     --installcuda                 Install cuda pacakge
 
-    --cudaversion <version>       Used with --installcuda, optionally specify cuda version to install.
+    --installcudaversion <version> Used with --installcuda, optionally specify cuda version to install.
 
     -g, --debug                   Build in Debug mode, equivalent to set CMAKE_BUILD_TYPE=Debug. (Default build type is Release)
 
@@ -126,8 +128,8 @@ install_apt_packages( )
 
 install_apt_packages_version( )
 {
-  package_dependencies=("$@")
-  package_versions=("$@")
+  package_dependencies=("$1")
+  package_versions=("$2")
   for index in ${package_dependencies[*]}; do
     printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manager \033[0m\n"
     elevate_if_not_root apt install -y --no-install-recommends ${package_dependencies[$index]}=${package_versions[$index]}
@@ -148,8 +150,8 @@ install_yum_packages( )
 
 install_yum_packages_version( )
 {
-  package_dependencies=("$@")
-  package_versions=("$@")
+  package_dependencies=("$1")
+  package_versions=("$2")
   for index in ${package_dependencies[*]}; do
     printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manage
 r \033[0m\n"
@@ -171,8 +173,8 @@ install_dnf_packages( )
 
 install_dnf_packages_version( )
 {
-  package_dependencies=("$@")
-  package_versions=("$@")
+  package_dependencies=("$1")
+  package_versions=("$2")
   for index in ${package_dependencies[*]}; do
     printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manage
 r \033[0m\n"
@@ -321,7 +323,7 @@ install_packages( )
   esac
 }
 
-install_cuda()
+install_cuda_package()
 {
   if [ -z ${ID+foo} ]; then
     printf "install_packages(): \$ID must be set\n"
@@ -380,8 +382,8 @@ install_zypper_packages( )
 
 install_zypper_packages_version( )
 {
-  package_dependencies=("$@")
-  package_versions=("$@")
+  package_dependencies=("$1")
+  package_versions=("$2")
   for index in ${package_dependencies[*]}; do
     printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manage
 r \033[0m\n"
@@ -434,6 +436,7 @@ build_relocatable=false
 build_address_sanitizer=false
 install_cuda=false
 cuda_version_install=default
+cuda_path=/usr/local/cuda
 cmake_prefix_path=/opt/rocm
 rocm_path=/opt/rocm
 compiler=g++
@@ -452,7 +455,7 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,installcuda,cudaversion,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,rm-legacy-include-dir,cmake-arg: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,cudapath:installcuda,installcudaversion:,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,rm-legacy-include-dir,cmake-arg: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -508,10 +511,13 @@ while true; do
     --cuda|--use-cuda)
         build_cuda=true
         shift ;;
+    --cudapath)
+	cuda_path=${2}
+	shift 2 ;;
     --installcuda)
-	install_cuda = true
+	install_cuda=true
 	shift ;;
-    --cudaversion)
+    --installcudaversion)
 	cuda_version_install=${2}
 	shift 2 ;;
     --static)
@@ -633,7 +639,8 @@ if [[ "${install_dependencies}" == true ]]; then
 fi
 
 if [[ "${install_cuda}" == true ]]; then
-  if # FIND HERE
+  install_cuda_package
+fi
 
 # We append customary rocm path; if user provides custom rocm path in ${path}, our
 # hard-coded path has lesser priority
@@ -719,7 +726,7 @@ pushd .
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
     CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
-    -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;/usr/local/cuda;${cmake_prefix_path}" \
+    -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;${cuda_path};${cmake_prefix_path}" \
     -DCMAKE_SHARED_LINKER_FLAGS="${rocm_rpath}" \
     -DCMAKE_EXE_LINKER_FLAGS=" -Wl,--enable-new-dtags -Wl,--rpath,${rocm_path}/lib:${rocm_path}/lib64" \
     -DROCM_DISABLE_LDCONFIG=ON \
