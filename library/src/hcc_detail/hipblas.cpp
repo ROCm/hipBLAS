@@ -4,9 +4,9 @@
 #include "hipblas.h"
 #include "exceptions.hpp"
 #include "limits.h"
-#include "rocblas.h"
+#include "rocblas/rocblas.h"
 #ifdef __HIP_PLATFORM_SOLVER__
-#include "rocsolver.h"
+#include "rocsolver/rocsolver.h"
 #endif
 #include <algorithm>
 #include <functional>

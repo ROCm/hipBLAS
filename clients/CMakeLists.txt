@@ -48,6 +48,7 @@ if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_SAMPLES )
     rocm_install(TARGETS hipblas_fortran_client COMPONENT clients-common)
     add_dependencies(hipblas_fortran_client hipblas_fortran)
   endif()
+  include_directories(${CMAKE_BINARY_DIR}/include/hipblas)
   include_directories(${CMAKE_BINARY_DIR}/include)
 endif( )
 
