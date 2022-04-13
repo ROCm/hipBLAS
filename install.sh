@@ -455,7 +455,7 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,cudapath:installcuda,installcudaversion:,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,rm-legacy-include-dir,cmake-arg: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,cudapath:,installcuda,installcudaversion:,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,rm-legacy-include-dir,cmake-arg: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -513,6 +513,7 @@ while true; do
         shift ;;
     --cudapath)
 	cuda_path=${2}
+	CUDA_BIN_PATH=${cuda_path}
 	shift 2 ;;
     --installcuda)
 	install_cuda=true
@@ -732,7 +733,7 @@ pushd .
     -DROCM_DISABLE_LDCONFIG=ON \
     -DROCM_PATH="${rocm_path}" ../..
   else
-    CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
+    CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} -DCUDA_PATH=${cuda_path} ../..
   fi
   check_exit_code "$?"
 
