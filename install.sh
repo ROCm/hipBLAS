@@ -39,7 +39,7 @@ cat <<EOF
     -d, --dependencies            Build and install external dependencies. Dependecies are to be installed in /usr/local.
                                   This should be done only once (this does not install rocBLAS, rocSolver, or cuda).
 
-    --installcuda                 Install cuda pacakge
+    --installcuda                 Install cuda package.
 
     --installcudaversion <version> Used with --installcuda, optionally specify cuda version to install.
 
@@ -332,40 +332,44 @@ install_cuda_package()
 
   local cuda_dependencies=("cuda")
   case "${ID}" in
-	  ubuntu)
-		  elevate_if_not_root apt update
-		  if [[ "${cuda_version_install}" == "default" ]]; then
-			  install_apt_packages "${cuda_dependencies[@]}"
-	          else
-		 	  install_apt_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
-                  fi
-		  ;;
-	  centos|rhel)
-		  if [[ "${cuda_version_install}" == "default" ]]; then
-			  install_yum_packages "${cuda_dependencies[@]}"
-		  else
-		  	  install_yum_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
-		  fi
-		  ;;
-	  fedora)
-		  if [[ "${cuda_version_install}" == "default" ]]; then
-			  install_dnf_packages "${cuda_dependencies[@]}"
-		  else
-		  	  install_dnf_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
-		  fi
-		  ;;
-	  sles|opensuse-leap)
-		  if [[ "${cuda_version_install}" == "default" ]]; then
-			  install_zypper_packages "${cuda_dependencies[@]}"
-		  else
-		  	install_zypper_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
-	          fi
-		  ;;
-	  *)
-		  echo "This script is currently supported on Ubuntu, SLES, CentOS, RHEL and Fedora"
-		  exit 2
-		  ;;
- esac
+    ubuntu)
+      elevate_if_not_root apt update
+      if [[ "${cuda_version_install}" == "default" ]]; then
+        install_apt_packages "${cuda_dependencies[@]}"
+      else
+        install_apt_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
+      fi
+      ;;
+
+    centos|rhel)
+      if [[ "${cuda_version_install}" == "default" ]]; then
+        install_yum_packages "${cuda_dependencies[@]}"
+      else
+        install_yum_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
+      fi
+      ;;
+
+    fedora)
+      if [[ "${cuda_version_install}" == "default" ]]; then
+        install_dnf_packages "${cuda_dependencies[@]}"
+      else
+        install_dnf_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
+      fi
+      ;;
+
+    sles|opensuse-leap)
+      if [[ "${cuda_version_install}" == "default" ]]; then
+        install_zypper_packages "${cuda_dependencies[@]}"
+      else
+        install_zypper_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
+      fi
+      ;;
+
+    *)
+      echo "This script is currently supported on Ubuntu, SLES, CentOS, RHEL and Fedora"
+      exit 2
+      ;;
+  esac
 }
 
 # Take an array of packages as input, and install those packages with 'zypper' if they are not already installed
@@ -513,7 +517,7 @@ while true; do
         shift ;;
     --cudapath)
 	cuda_path=${2}
-	CUDA_BIN_PATH=${cuda_path}
+	export CUDA_BIN_PATH=${cuda_path}
 	shift 2 ;;
     --installcuda)
 	install_cuda=true
@@ -733,7 +737,7 @@ pushd .
     -DROCM_DISABLE_LDCONFIG=ON \
     -DROCM_PATH="${rocm_path}" ../..
   else
-    CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} -DCUDA_PATH=${cuda_path} ../..
+    CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
   fi
   check_exit_code "$?"
 
