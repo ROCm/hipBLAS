@@ -26,6 +26,8 @@ cat <<EOF
 
     --cuda, --use-cuda            Build library for CUDA backend.
 
+    --cudapath <cudadir>          Specify path of CUDA install (default /usr/local/cuda).
+
     --cmake-arg                   Forward the given argument to CMake when configuring the build.
 
     --compiler </compier/path>    Specify path to host compiler. (e.g. /opt/bin/hipcc)
@@ -35,7 +37,11 @@ cat <<EOF
     --codecoverage                Build with code coverage profiling enabled, excluding release mode.
 
     -d, --dependencies            Build and install external dependencies. Dependecies are to be installed in /usr/local.
-                                  This should be done only once (this does not install rocBLAS or rocSolver).
+                                  This should be done only once (this does not install rocBLAS, rocSolver, or cuda).
+
+    --installcuda                 Install cuda package.
+
+    --installcudaversion <version> Used with --installcuda, optionally specify cuda version to install.
 
     -g, --debug                   Build in Debug mode, equivalent to set CMAKE_BUILD_TYPE=Debug. (Default build type is Release)
 
@@ -120,6 +126,16 @@ install_apt_packages( )
   done
 }
 
+install_apt_packages_version( )
+{
+  package_dependencies=("$1")
+  package_versions=("$2")
+  for index in ${package_dependencies[*]}; do
+    printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manager \033[0m\n"
+    elevate_if_not_root apt install -y --no-install-recommends ${package_dependencies[$index]}=${package_versions[$index]}
+  done
+}
+
 # Take an array of packages as input, and install those packages with 'yum' if they are not already installed
 install_yum_packages( )
 {
@@ -132,6 +148,17 @@ install_yum_packages( )
   done
 }
 
+install_yum_packages_version( )
+{
+  package_dependencies=("$1")
+  package_versions=("$2")
+  for index in ${package_dependencies[*]}; do
+    printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manage
+r \033[0m\n"
+    elevate_if_not_root yum -y --nogpgcheck install ${package_dependencies[$index]}-${package_versions[$index]}
+  done
+}
+
 # Take an array of packages as input, and install those packages with 'dnf' if they are not already installed
 install_dnf_packages( )
 {
@@ -141,6 +168,17 @@ install_dnf_packages( )
       printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
       elevate_if_not_root dnf install -y ${package}
     fi
+  done
+}
+
+install_dnf_packages_version( )
+{
+  package_dependencies=("$1")
+  package_versions=("$2")
+  for index in ${package_dependencies[*]}; do
+    printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manage
+r \033[0m\n"
+    elevate_if_not_root dnf install -y ${package_dependencies[$index]}-${package_versions[$index]}
   done
 }
 
@@ -168,7 +206,7 @@ install_packages( )
 
   if [[ "${build_cuda}" == true ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
-    library_dependencies_ubuntu+=( "cuda" )
+    library_dependencies_ubuntu+=( "" )
     library_dependencies_centos+=( "" ) # how to install cuda on centos?
     library_dependencies_fedora+=( "" ) # how to install cuda on fedora?
   elif [[ "${build_hip_clang}" == false ]]; then
@@ -285,6 +323,55 @@ install_packages( )
   esac
 }
 
+install_cuda_package()
+{
+  if [ -z ${ID+foo} ]; then
+    printf "install_packages(): \$ID must be set\n"
+    exit 2
+  fi
+
+  local cuda_dependencies=("cuda")
+  case "${ID}" in
+    ubuntu)
+      elevate_if_not_root apt update
+      if [[ "${cuda_version_install}" == "default" ]]; then
+        install_apt_packages "${cuda_dependencies[@]}"
+      else
+        install_apt_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
+      fi
+      ;;
+
+    centos|rhel)
+      if [[ "${cuda_version_install}" == "default" ]]; then
+        install_yum_packages "${cuda_dependencies[@]}"
+      else
+        install_yum_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
+      fi
+      ;;
+
+    fedora)
+      if [[ "${cuda_version_install}" == "default" ]]; then
+        install_dnf_packages "${cuda_dependencies[@]}"
+      else
+        install_dnf_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
+      fi
+      ;;
+
+    sles|opensuse-leap)
+      if [[ "${cuda_version_install}" == "default" ]]; then
+        install_zypper_packages "${cuda_dependencies[@]}"
+      else
+        install_zypper_packages_version "${cuda_dependencies[@]}" "${cuda_version_install}"
+      fi
+      ;;
+
+    *)
+      echo "This script is currently supported on Ubuntu, SLES, CentOS, RHEL and Fedora"
+      exit 2
+      ;;
+  esac
+}
+
 # Take an array of packages as input, and install those packages with 'zypper' if they are not already installed
 install_zypper_packages( )
 {
@@ -294,6 +381,17 @@ install_zypper_packages( )
       printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
       elevate_if_not_root zypper -n --no-gpg-checks install ${package}
     fi
+  done
+}
+
+install_zypper_packages_version( )
+{
+  package_dependencies=("$1")
+  package_versions=("$2")
+  for index in ${package_dependencies[*]}; do
+    printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manage
+r \033[0m\n"
+    elevate_if_not_root zypper -n --no-gpg-checks install ${package_dependencies[$index]}-${package_versions[$index]}
   done
 }
 
@@ -340,6 +438,9 @@ build_hip_clang=true
 build_release=true
 build_relocatable=false
 build_address_sanitizer=false
+install_cuda=false
+cuda_version_install=default
+cuda_path=/usr/local/cuda
 cmake_prefix_path=/opt/rocm
 rocm_path=/opt/rocm
 compiler=g++
@@ -358,7 +459,7 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,rm-legacy-include-dir,cmake-arg: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,cudapath:,installcuda,installcudaversion:,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,rm-legacy-include-dir,cmake-arg: --options rhicndgp:v:b: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -414,6 +515,16 @@ while true; do
     --cuda|--use-cuda)
         build_cuda=true
         shift ;;
+    --cudapath)
+	cuda_path=${2}
+	export CUDA_BIN_PATH=${cuda_path}
+	shift 2 ;;
+    --installcuda)
+	install_cuda=true
+	shift ;;
+    --installcudaversion)
+	cuda_version_install=${2}
+	shift 2 ;;
     --static)
         build_static=true
         shift ;;
@@ -530,7 +641,11 @@ if [[ "${install_dependencies}" == true ]]; then
     make -j$(nproc)
     make install
   popd
-  fi
+fi
+
+if [[ "${install_cuda}" == true ]]; then
+  install_cuda_package
+fi
 
 # We append customary rocm path; if user provides custom rocm path in ${path}, our
 # hard-coded path has lesser priority
@@ -616,7 +731,7 @@ pushd .
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
     CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
-    -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;/usr/local/cuda;${cmake_prefix_path}" \
+    -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;${cuda_path};${cmake_prefix_path}" \
     -DCMAKE_SHARED_LINKER_FLAGS="${rocm_rpath}" \
     -DCMAKE_EXE_LINKER_FLAGS=" -Wl,--enable-new-dtags -Wl,--rpath,${rocm_path}/lib:${rocm_path}/lib64" \
     -DROCM_DISABLE_LDCONFIG=ON \
