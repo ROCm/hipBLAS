@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2022 Advanced Micro Devices, Inc.
+# Copyright 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
 # ########################################################################
 
 # This is incremented when the ABI to the library changes

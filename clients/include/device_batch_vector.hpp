@@ -1,5 +1,5 @@
 //
-// Copyright 2018-2021 Advanced Micro Devices, Inc.
+// Copyright 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
 //
 #pragma once
 
@@ -163,7 +163,7 @@ public:
     //!
     //! @brief Const cast of the data on host.
     //!
-    operator const T* const *() const
+    operator const T* const*() const
     {
         return this->m_data;
     }

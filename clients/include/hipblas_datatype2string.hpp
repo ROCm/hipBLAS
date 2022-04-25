@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2018-2020 Advanced Micro Devices, Inc.
+ * Copyright 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
  * ************************************************************************ */
 
 #ifndef hipblas_DATATYPE2STRING_H_
