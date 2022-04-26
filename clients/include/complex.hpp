@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2020-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2022 Advanced Micro Devices, Inc. All rights reserved.
  * ************************************************************************ */
 #ifndef HIPBLAS_COMPLEX_HPP
 #define HIPBLAS_COMPLEX_HPP

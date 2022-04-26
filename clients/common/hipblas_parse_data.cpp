@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright 2019-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2019-2022 Advanced Micro Devices, Inc. All rights reserved.
  * ************************************************************************ */
 
 #include "hipblas_parse_data.hpp"

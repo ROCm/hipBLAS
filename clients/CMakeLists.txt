@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
 # ########################################################################
 
 # The ROCm platform requires Ubuntu 16.04 or Fedora 24, which has cmake 3.5
