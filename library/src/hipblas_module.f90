@@ -1,5 +1,5 @@
 ! ************************************************************************
-!  Copyright 2016-2020 Advanced Micro Devices, Inc. All rights reserved.
+!  Copyright (C) 2016-2020 Advanced Micro Devices, Inc. All rights reserved.
 ! ************************************************************************
 
 module hipblas_enums

@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Copyright 2018-2020 Advanced Micro Devices, Inc. All rights reserved.
+"""Copyright (C) 2018-2020 Advanced Micro Devices, Inc. All rights reserved.
 Expand hipBLAS YAML test data file into binary Arguments records"""
 
 import re
