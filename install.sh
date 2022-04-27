@@ -283,7 +283,7 @@ install_packages( )
     library_dependencies_centos+=( "devtoolset-7-gcc-gfortran" )
     library_dependencies_centos8+=( "gcc-gfortran" )
     library_dependencies_fedora+=( "gcc-gfortran" )
-    library_dependencies_sles+=( "pkg-config" "dpkg" )
+    library_dependencies_sles+=( "gcc-fortran pkg-config" "dpkg" )
   fi
 
   case "${ID}" in
