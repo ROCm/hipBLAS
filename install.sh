@@ -222,12 +222,14 @@ install_packages( )
       # Install base rocm-dev package unless -v/--rocm-dev flag is passed
       library_dependencies_ubuntu+=( "rocm-dev" )
       library_dependencies_centos+=( "rocm-dev" )
+      library_dependencies_centos8=( "rocm-dev" )
       library_dependencies_fedora+=( "rocm-dev" )
       library_dependencies_sles+=( "rocm-dev" )
     else
       # Install rocm-specific rocm-dev package
       library_dependencies_ubuntu+=( "${custom_rocm_dev}" )
       library_dependencies_centos+=( "${custom_rocm_dev}" )
+      library_dependencies_centos8+=( "${custom_rocm_dev}" )
       library_dependencies_fedora+=( "${custom_rocm_dev}" )
       library_dependencies_sles+=( "${custom_rocm_dev}" )
     fi
@@ -240,12 +242,14 @@ install_packages( )
         # Install base rocblas package unless -b/--rocblas flag is passed
         library_dependencies_ubuntu+=( "rocblas" )
         library_dependencies_centos+=( "rocblas" )
+	library_dependencies_centos8+=( "rocblas" )
         library_dependencies_fedora+=( "rocblas" )
         library_dependencies_sles+=( "rocblas" )
       else
         # Install rocm-specific rocblas package
         library_dependencies_ubuntu+=( "${custom_rocblas}" )
         library_dependencies_centos+=( "${custom_rocblas}" )
+	library_dependencies_centos8+=( "${custom_rocblas}" )
         library_dependencies_fedora+=( "${custom_rocblas}" )
         library_dependencies_sles+=( "${custom_rocblas}" )
       fi
@@ -256,6 +260,7 @@ install_packages( )
       if [[ "${build_solver}" == true ]]; then
         library_dependencies_ubuntu+=( "rocsolver" )
         library_dependencies_centos+=( "rocsolver" )
+	library_dependencies_centos8+=( "rocsolver" )
         library_dependencies_fedora+=( "rocsolver" )
         library_dependencies_sles+=( "rocsolver" )
       fi
@@ -266,8 +271,8 @@ install_packages( )
   if [ -z "$CMAKE_VERSION" ] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
     if $update_cmake == true; then
       library_dependencies_ubuntu+=("wget")
-      library_dependencies_centos_rhel+=("wget")
-      library_dependencies_centos_rhel_8+=("wget")
+      library_dependencies_centos+=("wget")
+      library_dependencies_centos8+=("wget")
       library_dependencies_fedora+=("wget")
       library_dependencies_sles+=("wget")
     fi
@@ -275,8 +280,8 @@ install_packages( )
 
   if [[ "${build_clients}" == true ]]; then
     library_dependencies_ubuntu+=( "gfortran" )
-    library_dependencies_centos_rhel+=( "devtoolset-7-gcc-gfortran" )
-    library_dependencies_centos_rhel_8+=( "gcc-gfortran" )
+    library_dependencies_centos+=( "devtoolset-7-gcc-gfortran" )
+    library_dependencies_centos8+=( "gcc-gfortran" )
     library_dependencies_fedora+=( "gcc-gfortran" )
     library_dependencies_sles+=( "pkg-config" "dpkg" )
   fi
