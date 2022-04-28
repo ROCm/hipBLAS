@@ -68,8 +68,7 @@ const vector<char> transA_range = {
 const vector<int> batch_count_range = {
     -1,
     0,
-    1,
-    5,
+    2,
 };
 
 const bool is_fortran[] = {false, true};

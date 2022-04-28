@@ -63,7 +63,7 @@ const vector<vector<char>> side_uplo_range = {
 
 const vector<double> stride_scale_range = {2};
 
-const vector<int> batch_count_range = {1, 5};
+const vector<int> batch_count_range = {2};
 
 /* ===============Google Unit Test==================================================== */
 

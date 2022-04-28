@@ -76,7 +76,7 @@ const vector<char> transA_range = {
 };
 
 const vector<double> stride_scale_range = {2.0};
-const vector<int>    batch_count_range  = {-1, 0, 1, 5};
+const vector<int>    batch_count_range  = {-1, 0, 2};
 
 const bool is_fortran[] = {false, true};
 

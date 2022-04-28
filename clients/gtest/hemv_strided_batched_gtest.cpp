@@ -74,8 +74,9 @@ const vector<char> transA_range = {
 
 // number of gemms in batched gemm
 const vector<int> batch_count_range = {
-    -1, 0, 1, 5,
-    //               100,
+    -1,
+    0,
+    2,
 };
 
 const bool is_fortran[] = {false, true};
