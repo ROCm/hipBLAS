@@ -206,30 +206,28 @@ install_packages( )
 
   # dependencies needed for library and clients to build
   local library_dependencies_ubuntu=( "make" "pkg-config" )
-  local library_dependencies_centos=( "epel-release" "make" "gcc-c++" "rpm-build" )
-  local library_dependencies_centos8=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_centos_rhel=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_centos_rhel_8=( "epel-release" "make" "gcc-c++" "rpm-build" )
   local library_dependencies_fedora=( "make" "gcc-c++" "libcxx-devel" "rpm-build" )
   local library_dependencies_sles=( "make" "gcc-c++" "libcxxtools9" "rpm-build" )
 
   if [[ "${build_cuda}" == true ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
-    library_dependencies_ubuntu+=( "" )
-    library_dependencies_centos+=( "" ) # how to install cuda on centos?
-    library_dependencies_fedora+=( "" ) # how to install cuda on fedora?
+    library_dependencies_ubuntu+=( "" ) # removed, use --installcuda option to install cuda
   elif [[ "${build_hip_clang}" == false ]]; then
     # Custom rocm-dev installation
     if [[ -z ${custom_rocm_dev+foo} ]]; then
       # Install base rocm-dev package unless -v/--rocm-dev flag is passed
       library_dependencies_ubuntu+=( "rocm-dev" )
-      library_dependencies_centos+=( "rocm-dev" )
-      library_dependencies_centos8=( "rocm-dev" )
+      library_dependencies_centos_rhel+=( "rocm-dev" )
+      library_dependencies_centos_rhel_8=( "rocm-dev" )
       library_dependencies_fedora+=( "rocm-dev" )
       library_dependencies_sles+=( "rocm-dev" )
     else
       # Install rocm-specific rocm-dev package
       library_dependencies_ubuntu+=( "${custom_rocm_dev}" )
-      library_dependencies_centos+=( "${custom_rocm_dev}" )
-      library_dependencies_centos8+=( "${custom_rocm_dev}" )
+      library_dependencies_centos_rhel+=( "${custom_rocm_dev}" )
+      library_dependencies_centos_rhel_8+=( "${custom_rocm_dev}" )
       library_dependencies_fedora+=( "${custom_rocm_dev}" )
       library_dependencies_sles+=( "${custom_rocm_dev}" )
     fi
@@ -241,15 +239,15 @@ install_packages( )
       if [[ -z ${custom_rocblas+foo} ]]; then
         # Install base rocblas package unless -b/--rocblas flag is passed
         library_dependencies_ubuntu+=( "rocblas" )
-        library_dependencies_centos+=( "rocblas" )
-	library_dependencies_centos8+=( "rocblas" )
+        library_dependencies_centos_rhel+=( "rocblas" )
+        library_dependencies_centos_rhel_8+=( "rocblas" )
         library_dependencies_fedora+=( "rocblas" )
         library_dependencies_sles+=( "rocblas" )
       else
         # Install rocm-specific rocblas package
         library_dependencies_ubuntu+=( "${custom_rocblas}" )
-        library_dependencies_centos+=( "${custom_rocblas}" )
-	library_dependencies_centos8+=( "${custom_rocblas}" )
+        library_dependencies_centos_rhel+=( "${custom_rocblas}" )
+        library_dependencies_centos_rhel_8+=( "${custom_rocblas}" )
         library_dependencies_fedora+=( "${custom_rocblas}" )
         library_dependencies_sles+=( "${custom_rocblas}" )
       fi
@@ -259,8 +257,8 @@ install_packages( )
     if [[ -z ${rocsolver_path+foo} ]]; then
       if [[ "${build_solver}" == true ]]; then
         library_dependencies_ubuntu+=( "rocsolver" )
-        library_dependencies_centos+=( "rocsolver" )
-	library_dependencies_centos8+=( "rocsolver" )
+        library_dependencies_centos_rhel+=( "rocsolver" )
+        library_dependencies_centos_rhel_8+=( "rocsolver" )
         library_dependencies_fedora+=( "rocsolver" )
         library_dependencies_sles+=( "rocsolver" )
       fi
@@ -271,8 +269,8 @@ install_packages( )
   if [ -z "$CMAKE_VERSION" ] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
     if $update_cmake == true; then
       library_dependencies_ubuntu+=("wget")
-      library_dependencies_centos+=("wget")
-      library_dependencies_centos8+=("wget")
+      library_dependencies_centos_rhel+=("wget")
+      library_dependencies_centos_rhel_8+=("wget")
       library_dependencies_fedora+=("wget")
       library_dependencies_sles+=("wget")
     fi
@@ -280,8 +278,8 @@ install_packages( )
 
   if [[ "${build_clients}" == true ]]; then
     library_dependencies_ubuntu+=( "gfortran" )
-    library_dependencies_centos+=( "devtoolset-7-gcc-gfortran" )
-    library_dependencies_centos8+=( "gcc-gfortran" )
+    library_dependencies_centos_rhel+=( "devtoolset-7-gcc-gfortran" )
+    library_dependencies_centos_rhel_8+=( "gcc-gfortran" )
     library_dependencies_fedora+=( "gcc-gfortran" )
     library_dependencies_sles+=( "gcc-fortran pkg-config" "dpkg" )
   fi
@@ -297,9 +295,9 @@ install_packages( )
 #     without seeking user approval
 #     elevate_if_not_root yum -y update
       if [[ "${VERSION_ID}" == "8" ]]; then
-        install_yum_packages "${library_dependencies_centos8[@]}"
+        install_yum_packages "${library_dependencies_centos_rhel_8[@]}"
       else
-        install_yum_packages "${library_dependencies_centos[@]}"
+        install_yum_packages "${library_dependencies_centos_rhel[@]}"
       fi
       ;;
 
