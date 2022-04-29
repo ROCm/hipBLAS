@@ -61,7 +61,6 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
     {-1, -1, -1},
-    {10, 20, 15},
     //        {10, 10, 2},
     //        {600,500, 500},
     {1000, 1000, 501},
@@ -94,8 +93,8 @@ const vector<char> transA_range = {
     'C',
 };
 
-const vector<double> stride_scale_range = {1.0, 2.5};
-const vector<int>    batch_count_range  = {-1, 0, 1, 2, 10};
+const vector<double> stride_scale_range = {2.0};
+const vector<int>    batch_count_range  = {-1, 0, 2};
 
 const bool is_fortran[] = {false, true};
 

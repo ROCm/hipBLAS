@@ -59,28 +59,20 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
     {-1, -1, -1},
-    //        {10, 10, 2},
-    //        {600,500, 500},
     {1000, 1000, 1000},
-    //        {2000, 2000, 2000},
-    //        {4011, 4011, 4011},
-    //        {8000, 8000, 8000},
 };
 
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 1}
 const vector<vector<int>> incx_incy_range = {
-    {2, 1}, {0, -1}, {-1, -1},
-    //              {10, 100},
+    {2, 1},
+    {-1, -1},
 };
 
 // vector of vector, each pair is a {alpha, beta};
 // add/delete this list in pairs, like {2.0, 4.0}
 const vector<vector<double>> alpha_beta_range = {
-    {1.0, 0.0},
-    {-1.0, -1.0},
     {2.0, 1.0},
-    {0.0, 1.0},
 };
 
 // for single/double precision, 'C'(conjTranspose) will downgraded to 'T' (transpose) internally in
@@ -92,8 +84,9 @@ const vector<char> transA_range = {
 
 // number of gemms in batched gemm
 const vector<int> batch_count_range = {
-    -1, 0, 1, 2, 10,
-    //               100,
+    -1,
+    0,
+    2,
 };
 
 const bool is_fortran[] = {false, true};
