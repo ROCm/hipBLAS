@@ -61,16 +61,10 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
     {-1, -1, 1, 1, 1},
-    {10, 10, 20, 100, 100},
     {600, 500, 600, 600, 700},
 };
 
-const vector<vector<int>> full_matrix_size_range = {
-    {192, 192, 192, 192, 192},
-    {640, 640, 960, 960, 960},
-};
-
-const vector<vector<double>> alpha_beta_range = {{1.0, 1.0, 1.0, 1.0}, {-5.0, 2.0, 3.0, -2.0}};
+const vector<vector<double>> alpha_beta_range = {{-5.0, 2.0, 3.0, -2.0}};
 
 // vector of vector, each pair is a {side, uplo};
 // side has two option "Lefe (L), Right (R)"
@@ -84,20 +78,11 @@ const vector<vector<char>> side_uplo_range = {
     {'R', 'U'},
 };
 
-// has all the 16 options
-const vector<vector<char>> full_side_uplo_range = {
-    {'L', 'L'},
-    {'R', 'L'},
-    {'L', 'U'},
-    {'R', 'U'},
-};
+const vector<double> stride_scale_range = {2};
 
-const vector<double> stride_scale_range = {1, 3};
+const vector<int> batch_count_range = {2};
 
-const vector<int> batch_count_range = {1, 3, 5};
-
-const bool is_fortran[]       = {false, true};
-const bool is_fortran_false[] = {false};
+const bool is_fortran[] = {false, true};
 
 /* ===============Google Unit Test==================================================== */
 
@@ -331,27 +316,11 @@ TEST_P(symm_gtest, symm_strided_batched_gtest_double_complex)
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
 // The combinations are  { {M, N, lda, ldb}, alpha, {side, diag} }
-
-// THis function mainly test the scope of matrix_size. the scope of side_uplo_range is
-// small
-// Testing order: side_uplo_xx first, alpha_beta_range second, full_matrix_size last
-// i.e fix the matrix size and alpha, test all the side_uplo_xx first.
 INSTANTIATE_TEST_SUITE_P(hipblassymm_matrix_size,
                          symm_gtest,
-                         Combine(ValuesIn(full_matrix_size_range),
+                         Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(side_uplo_range),
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
-
-// THis function mainly test the scope of  full_side_uplo_range,.the scope of
-// matrix_size_range is small
-INSTANTIATE_TEST_SUITE_P(hipblassymm_scalar_transpose,
-                         symm_gtest,
-                         Combine(ValuesIn(matrix_size_range),
-                                 ValuesIn(alpha_beta_range),
-                                 ValuesIn(full_side_uplo_range),
-                                 ValuesIn(stride_scale_range),
-                                 ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran_false)));

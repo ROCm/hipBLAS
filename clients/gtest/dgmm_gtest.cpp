@@ -60,7 +60,7 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 // vector of vector, each vector is a {M, N, lda, incx, ldc};
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
-    {-1, -1, -1, -1, -1}, {128, 128, 150, -1, 150}, {1000, 1000, 1000, 2, 1000},
+    {-1, -1, -1, -1, -1}, {128, 128, 150, 2, 150}, {1000, 1000, 1000, 2, 1000},
 
     // TODO: rocBLAS dgmm is currently broken when (M != N && incx < 0 && side == L)
     // {128, 130, 150, -1, 150},
@@ -71,8 +71,8 @@ const vector<char> side_range = {
     'R',
 };
 
-const vector<double> stride_scale_range = {1.0, 2.5};
-const vector<int>    batch_count_range  = {-1, 1, 2, 10};
+const vector<double> stride_scale_range = {2.5};
+const vector<int>    batch_count_range  = {-1, 1, 5};
 
 const bool is_fortran[] = {false, true};
 
