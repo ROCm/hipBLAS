@@ -139,13 +139,9 @@ elevate_if_not_root( )
 # Take an array of packages as input, and install those packages with 'apt' if they are not already installed
 install_apt_packages( )
 {
-  package_dependencies=("$@")
-  for package in "${package_dependencies[@]}"; do
-    if [[ $(dpkg-query --show --showformat='${db:Status-Abbrev}\n' ${package} 2> /dev/null | grep -q "ii"; echo $?) -ne 0 ]]; then
-      printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
-      elevate_if_not_root apt install -y --no-install-recommends ${package}
-    fi
-  done
+  package_dependencies="$@"
+  printf "\033[32mInstalling following packages from distro package manager: \033[33m${package_dependencies}\033[32m \033[0m\n"
+  elevate_if_not_root apt-get -y --no-install-recommends install ${package_dependencies}
 }
 
 install_apt_packages_version( )
@@ -161,13 +157,9 @@ install_apt_packages_version( )
 # Take an array of packages as input, and install those packages with 'yum' if they are not already installed
 install_yum_packages( )
 {
-  package_dependencies=("$@")
-  for package in "${package_dependencies[@]}"; do
-    if [[ $(yum list installed ${package} &> /dev/null; echo $? ) -ne 0 ]]; then
-      printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
-      elevate_if_not_root yum -y --nogpgcheck install ${package}
-    fi
-  done
+  package_dependencies="$@"
+  printf "\033[32mInstalling following packages from distro package manager: \033[33m${package_dependencies}\033[32m \033[0m\n"
+  elevate_if_not_root yum -y --nogpgcheck install ${package_dependencies}
 }
 
 install_yum_packages_version( )
@@ -184,13 +176,9 @@ r \033[0m\n"
 # Take an array of packages as input, and install those packages with 'dnf' if they are not already installed
 install_dnf_packages( )
 {
-  package_dependencies=("$@")
-  for package in "${package_dependencies[@]}"; do
-    if [[ $(dnf list installed ${package} &> /dev/null; echo $? ) -ne 0 ]]; then
-      printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
-      elevate_if_not_root dnf install -y ${package}
-    fi
-  done
+  package_dependencies="$@"
+  printf "\033[32mInstalling following packages from distro package manager: \033[33m${package_dependencies}\033[32m \033[0m\n"
+  elevate_if_not_root dnf install -y ${package_dependencies}
 }
 
 install_dnf_packages_version( )
@@ -201,6 +189,25 @@ install_dnf_packages_version( )
     printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manage
 r \033[0m\n"
     elevate_if_not_root dnf install -y ${package_dependencies[$index]}-${package_versions[$index]}
+  done
+}
+
+# Take an array of packages as input, and install those packages with 'zypper' if they are not already installed
+install_zypper_packages( )
+{
+  package_dependencies="$@"
+  printf "\033[32mInstalling following packages from distro package manager: \033[33m${package_dependencies}\033[32m \033[0m\n"
+  elevate_if_not_root zypper install -y ${package_dependencies}
+}
+
+install_zypper_packages_version( )
+{
+  package_dependencies=("$1")
+  package_versions=("$2")
+  for index in ${package_dependencies[*]}; do
+    printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manage
+r \033[0m\n"
+    elevate_if_not_root zypper -n --no-gpg-checks install ${package_dependencies[$index]}-${package_versions[$index]}
   done
 }
 
@@ -221,28 +228,28 @@ install_packages( )
 
   # dependencies needed for library and clients to build
   local library_dependencies_ubuntu=( "make" "pkg-config" )
-  local library_dependencies_centos=( "epel-release" "make" "gcc-c++" "rpm-build" )
-  local library_dependencies_centos8=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_centos_rhel=( "epel-release" "make" "gcc-c++" "rpm-build" )
+  local library_dependencies_centos_rhel_8=( "epel-release" "make" "gcc-c++" "rpm-build" )
   local library_dependencies_fedora=( "make" "gcc-c++" "libcxx-devel" "rpm-build" )
   local library_dependencies_sles=( "make" "gcc-c++" "libcxxtools9" "rpm-build" )
 
   if [[ "${build_cuda}" == true ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
-    library_dependencies_ubuntu+=( "" )
-    library_dependencies_centos+=( "" ) # how to install cuda on centos?
-    library_dependencies_fedora+=( "" ) # how to install cuda on fedora?
+    library_dependencies_ubuntu+=( "" ) # removed, use --installcuda option to install cuda
   elif [[ "${build_hip_clang}" == false ]]; then
     # Custom rocm-dev installation
     if [[ -z ${custom_rocm_dev+foo} ]]; then
       # Install base rocm-dev package unless -v/--rocm-dev flag is passed
       library_dependencies_ubuntu+=( "rocm-dev" )
-      library_dependencies_centos+=( "rocm-dev" )
+      library_dependencies_centos_rhel+=( "rocm-dev" )
+      library_dependencies_centos_rhel_8=( "rocm-dev" )
       library_dependencies_fedora+=( "rocm-dev" )
       library_dependencies_sles+=( "rocm-dev" )
     else
       # Install rocm-specific rocm-dev package
       library_dependencies_ubuntu+=( "${custom_rocm_dev}" )
-      library_dependencies_centos+=( "${custom_rocm_dev}" )
+      library_dependencies_centos_rhel+=( "${custom_rocm_dev}" )
+      library_dependencies_centos_rhel_8+=( "${custom_rocm_dev}" )
       library_dependencies_fedora+=( "${custom_rocm_dev}" )
       library_dependencies_sles+=( "${custom_rocm_dev}" )
     fi
@@ -254,13 +261,15 @@ install_packages( )
       if [[ -z ${custom_rocblas+foo} ]]; then
         # Install base rocblas package unless -b/--rocblas flag is passed
         library_dependencies_ubuntu+=( "rocblas" )
-        library_dependencies_centos+=( "rocblas" )
+        library_dependencies_centos_rhel+=( "rocblas" )
+        library_dependencies_centos_rhel_8+=( "rocblas" )
         library_dependencies_fedora+=( "rocblas" )
         library_dependencies_sles+=( "rocblas" )
       else
         # Install rocm-specific rocblas package
         library_dependencies_ubuntu+=( "${custom_rocblas}" )
-        library_dependencies_centos+=( "${custom_rocblas}" )
+        library_dependencies_centos_rhel+=( "${custom_rocblas}" )
+        library_dependencies_centos_rhel_8+=( "${custom_rocblas}" )
         library_dependencies_fedora+=( "${custom_rocblas}" )
         library_dependencies_sles+=( "${custom_rocblas}" )
       fi
@@ -270,7 +279,8 @@ install_packages( )
     if [[ -z ${rocsolver_path+foo} ]]; then
       if [[ "${build_solver}" == true ]]; then
         library_dependencies_ubuntu+=( "rocsolver" )
-        library_dependencies_centos+=( "rocsolver" )
+        library_dependencies_centos_rhel+=( "rocsolver" )
+        library_dependencies_centos_rhel_8+=( "rocsolver" )
         library_dependencies_fedora+=( "rocsolver" )
         library_dependencies_sles+=( "rocsolver" )
       fi
@@ -288,20 +298,18 @@ install_packages( )
     fi
   fi
 
-  local client_dependencies_ubuntu=( "gfortran" )
-  local client_dependencies_centos=( "devtoolset-7-gcc-gfortran" )
-  local client_dependencies_centos8=( "gcc-gfortran" )
-  local client_dependencies_fedora=( "gcc-gfortran" )
-  local client_dependencies_sles=( "pkg-config" "dpkg" )
+  if [[ "${build_clients}" == true ]]; then
+    library_dependencies_ubuntu+=( "gfortran" )
+    library_dependencies_centos_rhel+=( "devtoolset-7-gcc-gfortran" )
+    library_dependencies_centos_rhel_8+=( "gcc-gfortran" )
+    library_dependencies_fedora+=( "gcc-gfortran" )
+    library_dependencies_sles+=( "gcc-fortran pkg-config" "dpkg" )
+  fi
 
   case "${ID}" in
     ubuntu)
       elevate_if_not_root apt update
       install_apt_packages "${library_dependencies_ubuntu[@]}"
-
-      if [[ "${build_clients}" == true ]]; then
-        install_apt_packages "${client_dependencies_ubuntu[@]}"
-      fi
       ;;
 
     centos|rhel)
@@ -309,34 +317,20 @@ install_packages( )
 #     without seeking user approval
 #     elevate_if_not_root yum -y update
       if [[ "${VERSION_ID}" == "8" ]]; then
-        install_yum_packages "${library_dependencies_centos8[@]}"
-        if [[ "${build_clients}" == true ]]; then
-          install_yum_packages "${client_dependencies_centos8[@]}"
-        fi
+        install_yum_packages "${library_dependencies_centos_rhel_8[@]}"
       else
-        install_yum_packages "${library_dependencies_centos[@]}"
-        if [[ "${build_clients}" == true ]]; then
-          install_yum_packages "${client_dependencies_centos[@]}"
-        fi
+        install_yum_packages "${library_dependencies_centos_rhel[@]}"
       fi
       ;;
 
     fedora)
 #     elevate_if_not_root dnf -y update
       install_dnf_packages "${library_dependencies_fedora[@]}"
-
-      if [[ "${build_clients}" == true ]]; then
-        install_dnf_packages "${client_dependencies_fedora[@]}"
-      fi
       ;;
 
     sles|opensuse-leap)
 #     elevate_if_not_root zypper -y update
       install_zypper_packages "${library_dependencies_sles[@]}"
-
-      if [[ "${build_clients}" == true ]]; then
-        install_zypper_packages "${client_dependencies_sles[@]}"
-      fi
       ;;
     *)
       echo "This script is currently supported on Ubuntu, SLES, CentOS, RHEL and Fedora"
@@ -392,29 +386,6 @@ install_cuda_package()
       exit 2
       ;;
   esac
-}
-
-# Take an array of packages as input, and install those packages with 'zypper' if they are not already installed
-install_zypper_packages( )
-{
-  package_dependencies=("$@")
-  for package in "${package_dependencies[@]}"; do
-    if [[ $(rpm -q ${package} &> /dev/null; echo $? ) -ne 0 ]]; then
-      printf "\033[32mInstalling \033[33m${package}\033[32m from distro package manager\033[0m\n"
-      elevate_if_not_root zypper -n --no-gpg-checks install ${package}
-    fi
-  done
-}
-
-install_zypper_packages_version( )
-{
-  package_dependencies=("$1")
-  package_versions=("$2")
-  for index in ${package_dependencies[*]}; do
-    printf "\033[32mInstalling \033[33m${package_dependencies[$index]} version ${package_versions[$index]} from distro package manage
-r \033[0m\n"
-    elevate_if_not_root zypper -n --no-gpg-checks install ${package_dependencies[$index]}-${package_versions[$index]}
-  done
 }
 
 # given a relative path, returns the absolute path
@@ -637,7 +608,7 @@ if [[ "${install_dependencies}" == true ]]; then
 
   install_packages
 
-  if [ -z "$CMAKE_VERSION"] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
+  if [ -z "$CMAKE_VERSION" ] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
       if $update_cmake == true; then
         CMAKE_REPO="https://github.com/Kitware/CMake/releases/download/v3.16.8/"
         wget -nv ${CMAKE_REPO}/cmake-3.16.8.tar.gz
