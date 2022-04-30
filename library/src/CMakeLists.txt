@@ -127,7 +127,7 @@ include( GenerateExportHeader )
 set_target_properties( hipblas PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON )
 generate_export_header( hipblas EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/hipblas/hipblas-export.h )
 
-if (BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
+if (BUILD_FILE_REORG_BACKWARD_COMPATIBILITY AND NOT WIN32)
   rocm_wrap_header_file(
     hipblas-version.h hipblas-export.h
     GUARDS SYMLINK WRAPPER
