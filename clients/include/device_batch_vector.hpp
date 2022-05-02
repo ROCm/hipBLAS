@@ -26,6 +26,7 @@
 
 // #include "d_vector.hpp"
 // #include "hipblas_vector.hpp"
+#include <cmath>
 
 //
 // Local declaration of the host strided batch vector.
@@ -184,7 +185,7 @@ public:
     //!
     //! @brief Const cast of the data on host.
     //!
-    operator const T* const *() const
+    operator const T* const*() const
     {
         return this->m_data;
     }

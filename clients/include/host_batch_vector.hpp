@@ -24,6 +24,7 @@
 //
 #pragma once
 
+#include <cmath>
 #include <string.h>
 
 //
@@ -153,7 +154,7 @@ public:
     //!
     //! @brief Constant cast to a double pointer.
     //!
-    operator const T* const *()
+    operator const T* const*()
     {
         return this->m_data;
     }
