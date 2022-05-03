@@ -26,6 +26,7 @@
 
 // #include "d_vector.hpp"
 // #include "hipblas_vector.hpp"
+#include <cmath>
 
 //
 // Local declaration of the host strided batch vector.
