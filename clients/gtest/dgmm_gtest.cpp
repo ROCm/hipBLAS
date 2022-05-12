@@ -1,5 +1,23 @@
 /* ************************************************************************
- * Copyright 2016-2022 Advanced Micro Devices, Inc.
+ * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *
  * ************************************************************************ */
 
@@ -42,7 +60,7 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 // vector of vector, each vector is a {M, N, lda, incx, ldc};
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
-    {-1, -1, -1, -1, -1}, {128, 128, 150, -1, 150}, {1000, 1000, 1000, 2, 1000},
+    {-1, -1, -1, -1, -1}, {128, 128, 150, 2, 150}, {1000, 1000, 1000, 2, 1000},
 
     // TODO: rocBLAS dgmm is currently broken when (M != N && incx < 0 && side == L)
     // {128, 130, 150, -1, 150},
@@ -53,8 +71,8 @@ const vector<char> side_range = {
     'R',
 };
 
-const vector<double> stride_scale_range = {1.0, 2.5};
-const vector<int>    batch_count_range  = {-1, 1, 2, 10};
+const vector<double> stride_scale_range = {2.5};
+const vector<int>    batch_count_range  = {-1, 1, 5};
 
 const bool is_fortran[] = {false, true};
 
