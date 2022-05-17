@@ -169,7 +169,7 @@ endif( )
 rocm_install(FILES "hipblas_module.f90"
         DESTINATION "include/hipblas")
 
-if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
+if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY AND NOT WIN32)
   rocm_install(
     DIRECTORY
        "${PROJECT_BINARY_DIR}/hipblas"
