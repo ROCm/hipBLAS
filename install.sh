@@ -316,7 +316,7 @@ install_packages( )
 #     yum -y update brings *all* installed packages up to date
 #     without seeking user approval
 #     elevate_if_not_root yum -y update
-      if [[ "${VERSION_ID}" == "8" ]]; then
+      if [[ ( "${MAJORVERSION}" -ge 8 ) ]]; then
         install_yum_packages "${library_dependencies_centos_rhel_8[@]}"
       else
         install_yum_packages "${library_dependencies_centos_rhel[@]}"
@@ -407,13 +407,17 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-# os-release file describes the system
+# /etc/*-release files describe the system
 if [[ -e "/etc/os-release" ]]; then
   source /etc/os-release
+elif [[ -e "/etc/centos-release" ]]; then
+  ID=$(cat /etc/centos-release | awk '{print tolower($1)}')
+  VERSION_ID=$(cat /etc/centos-release | grep -oP '(?<=release )[^ ]*' | cut -d "." -f1)
 else
-  echo "This script depends on the /etc/os-release file"
+  echo "This script depends on the /etc/*-release files"
   exit 2
 fi
+MAJORVERSION=$(echo $VERSION_ID | cut -f1 -d.)
 
 # The following function exits script if an unsupported distro is detected
 supported_distro
