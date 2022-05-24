@@ -316,7 +316,7 @@ install_packages( )
 #     yum -y update brings *all* installed packages up to date
 #     without seeking user approval
 #     elevate_if_not_root yum -y update
-      if [[ "${VERSION_ID}" == "8" ]]; then
+      if (( "${VERSION_ID%%.*}" >= "8" )); then
         install_yum_packages "${library_dependencies_centos_rhel_8[@]}"
       else
         install_yum_packages "${library_dependencies_centos_rhel[@]}"
