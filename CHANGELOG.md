@@ -1,6 +1,6 @@
 # Change Log for hipBLAS
 
-## (Unreleased) hipBLAS 0.51.0
+## hipBLAS 0.51.0 for ROCm 5.2.0
 ### Added
 - Packages for test and benchmark executables on all supported OSes using CPack.
 - Added File/Folder Reorg Changes with backward compatibility support enabled using ROCM-CMAKE wrapper functions
