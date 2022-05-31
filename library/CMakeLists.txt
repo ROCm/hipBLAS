@@ -57,12 +57,6 @@ set( hipblas_headers_public
 
 source_group( "Header Files\\Public" FILES ${hipblas_headers_public} )
 
-include( GNUInstallDirs )
-
-set( BIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR} )
-set( LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} )
-set( INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} )
-
 if (NOT WIN32)
     set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/include)
 endif()
