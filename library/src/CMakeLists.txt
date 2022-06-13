@@ -121,7 +121,7 @@ target_include_directories( hipblas
   PUBLIC  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/library/include>
           $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/hipblas>
           $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
-          $<INSTALL_INTERFACE:include>
+          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/include
           ${CMAKE_CURRENT_SOURCE_DIR}
@@ -148,7 +148,7 @@ if (BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
   rocm_wrap_header_file(
     hipblas-version.h hipblas-export.h
     GUARDS SYMLINK WRAPPER
-    WRAPPER_LOCATIONS include hipblas/include
+    WRAPPER_LOCATIONS ${CMAKE_INSTALL_INCLUDEDIR} hipblas/${CMAKE_INSTALL_INCLUDEDIR}
   )
 endif( )
 
@@ -184,7 +184,7 @@ endif( )
 
 # Force installation of .f90 module files
 rocm_install(FILES "hipblas_module.f90"
-        DESTINATION "include/hipblas")
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/hipblas")
 
 if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
   rocm_install(
