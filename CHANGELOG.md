@@ -2,13 +2,9 @@
 
 ## (Unreleased) hipBLAS 0.52.0
 ### Added
-- Added --cudpath option to install.sh to allow user to specify which cuda build they would like to use.
+- Added --cudapath option to install.sh to allow user to specify which cuda build they would like to use.
 - Added --installcuda option to install.sh to install cuda via a package manager. Can by used with new --installcudaversion
   option to specify which version of cuda to install.
-
-### Fixed
-- Fixed some #includes to support a compiler version.
-- Fixed some client dependency support in install.sh
 
 ## hipBLAS 0.51.0 for ROCm 5.2.0
 ### Added
