@@ -2,9 +2,6 @@
 
 ## (Unreleased) hipBLAS 0.52.0
 ### Added
--
-
-### Changed
 - Added --cudpath option to install.sh to allow user to specify which cuda build they would like to use.
 - Added --installcuda option to install.sh to install cuda via a package manager. Can by used with new --installcudaversion
   option to specify which version of cuda to install.
