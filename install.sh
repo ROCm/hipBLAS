@@ -721,6 +721,9 @@ pushd .
     cmake_common_options+=("-DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=OFF")
   fi
 
+  #Setting default GNU LIBDIR in build scripts as per architecture board decision
+  cmake_common_options+=("-DCMAKE_INSTALL_LIBDIR=lib")
+
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
     CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
