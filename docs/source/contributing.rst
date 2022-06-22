@@ -22,8 +22,7 @@ The hipBLAS repository follows a workflow which dictates a /master branch where 
 StyleGuide
 ==========
 
-This project follows the `CPP Core
-guidelines <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md>`__,
+This project follows the **CPP Core guidelines**,
 with few modifications or additions noted below. All pull-requests
 should in good faith attempt to follow the guidelines stated therein,
 but we recognize that the content is lengthy. Below we list our primary
@@ -42,49 +41,32 @@ Interface
 Philosophy
 ----------
 
--  `P.2 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rp-Cplusplus>`__:
-   Write in ISO Standard C++14 (especially to support windows, linux and
-   macos plaforms )
--  `P.5 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rp-compile-time>`__:
-   Prefer compile-time checking to run-time checking
+-  **P.2**: Write in ISO Standard C++14 (especially to support windows, linux and macos plaforms )
+-  **P.5**: Prefer compile-time checking to run-time checking
 
 Implementation
 --------------
 
--  `SF.1 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rs-file-suffix>`__:
-   Use a ``.cpp`` suffix for code files and an ``.h`` suffix for
-   interface files if your project doesn't already follow another
-   convention
+-  **SF.1**: Use a ``.cpp`` suffix for code files and an ``.h`` suffix for
+   interface files if your project doesn't already follow another convention
 -  We modify this rule:
 
    -  ``.h``: C header files
    -  ``.hpp``: C++ header files
 
--  `SF.5 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rs-consistency>`__:
-   A ``.cpp`` file must include the ``.h`` file(s) that defines its
-   interface
--  `SF.7 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rs-using-directive>`__:
-   Don't put a ``using``-directive in a header file
--  `SF.8 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rs-guards>`__:
+-  **SF.5**: A ``.cpp`` file must include the ``.h`` file(s) that defines its interface
+-  **SF.7**: Don't put a ``using``-directive in a header file
+-  **SF.8**:
    Use ``#include`` guards for all ``.h`` files
--  `SF.21 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rs-unnamed>`__:
-   Don't use an unnamed (anonymous) ``namespace`` in a header
--  `SL.10 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rsl-arrays>`__:
-   Prefer using ``std::array`` or ``std::vector`` instead of a C array
--  `C.9 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rc-private>`__:
-   Minimize the exposure of class members
--  `F.3 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rf-single>`__:
-   Keep functions short and simple
--  `ES.11 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Res-auto>`__:
-   Use ``auto`` to avoid redundant repetition of type names
--  `ES.20 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Res-always>`__:
-   Always initialize an object
--  `ES.23 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Res-list>`__:
-   Prefer the ``{}`` initializer syntax
--  `CP.1 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#S-concurrency>`__:
-   Assume that your code will run as part of a multi-threaded program
--  `I.2 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Ri-global>`__:
-   Avoid global variables
+-  **SF.21**: Don't use an unnamed (anonymous) ``namespace`` in a header
+-  **SL.10**: Prefer using ``std::array`` or ``std::vector`` instead of a C array
+-  **C.9**: Minimize the exposure of class members
+-  **F.3**: Keep functions short and simple
+-  **ES.11**: Use ``auto`` to avoid redundant repetition of type names
+-  **ES.20**: Always initialize an object
+-  **ES.23**: Prefer the ``{}`` initializer syntax
+-  **CP.1**: Assume that your code will run as part of a multi-threaded program
+-  **I.2**: Avoid global variables
 
 Format
 ------
