@@ -721,7 +721,7 @@ pushd .
     cmake_common_options+=("-DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=OFF")
   fi
 
-  #Setting default GNU LIBDIR in build scripts as per architecture board decision
+  #Setting default GNU LIBDIR in build scripts as per arch board recommendation
   cmake_common_options+=("-DCMAKE_INSTALL_LIBDIR=lib")
 
   # Build library
