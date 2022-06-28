@@ -138,21 +138,18 @@ endif()
 
 # FOR HANDLING ENABLE/DISABLE OPTIONAL BACKWARD COMPATIBILITY for FILE/FOLDER REORG
 option(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY "Build with file/folder reorg with backward compatibility enabled" ON)
-if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
+if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY AND NOT WIN32)
   rocm_wrap_header_dir(
     ${CMAKE_SOURCE_DIR}/library/include
     PATTERNS "*.h"
     GUARDS SYMLINK WRAPPER
-    WRAPPER_LOCATIONS include
+    WRAPPER_LOCATIONS ${CMAKE_INSTALL_INCLUDEDIR}
   )
 endif()
 
 add_subdirectory( library )
 
 include( clients/cmake/build-options.cmake )
-
-# force library install path to lib (CentOS 7 defaults to lib64)
-set(CMAKE_INSTALL_LIBDIR "lib" CACHE INTERNAL "Installation directory for libraries" FORCE)
 
 # Build clients of the library
 if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
@@ -215,7 +212,7 @@ else()
   endif()
 endif( )
 
-set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/include" "\${CPACK_PACKAGING_INSTALL_PREFIX}/lib" )
+set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" )
 
 # Give hipblas compiled for CUDA backend a different name
 if( NOT USE_CUDA )
