@@ -688,8 +688,12 @@ pushd .
   fi
 
   # sanitizer
+  #Set default LIBDIR - 'libasan' with address sanitizer else 'lib'
   if [[ "${build_address_sanitizer}" == true ]]; then
     cmake_common_options+=("-DBUILD_ADDRESS_SANITIZER=ON")
+    cmake_common_options+=("-DCMAKE_INSTALL_LIBDIR=libasan")
+  else
+    cmake_common_options+=("-DCMAKE_INSTALL_LIBDIR=lib")
   fi
 
   if [[ ${custom_target+foo} ]]; then
@@ -721,8 +725,6 @@ pushd .
     cmake_common_options+=("-DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=OFF")
   fi
 
-  #Setting default GNU LIBDIR in build scripts as per arch board recommendation
-  cmake_common_options+=("-DCMAKE_INSTALL_LIBDIR=lib")
 
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
