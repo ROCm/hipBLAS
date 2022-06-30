@@ -1,5 +1,22 @@
 # ########################################################################
-# Copyright 2016-2022 Advanced Micro Devices, Inc.
+# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell cop-
+# ies of the Software, and to permit persons to whom the Software is furnished
+# to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IM-
+# PLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNE-
+# CTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # ########################################################################
 
 # The ROCm platform requires Ubuntu 16.04 or Fedora 24, which has cmake 3.5
@@ -62,7 +79,7 @@ include( ROCMInstallSymlinks )
 include( ROCMClients )
 include( ROCMHeaderWrapper )
 
-set ( VERSION_STRING "0.51.0" )
+set ( VERSION_STRING "0.53.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 if( NOT DEFINED ENV{HIP_PATH})
@@ -73,7 +90,7 @@ endif( )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${ROCM_PATH}/lib/cmake/hip /opt/rocm/lib/cmake/hip ${HIP_PATH}/cmake)
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${ROCM_PATH}/lib/cmake/hip /opt/rocm/lib/cmake/hip ${HIP_PATH}/cmake )
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
 list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
@@ -92,7 +109,7 @@ option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 # Find CUDA if the user wants a CUDA version.
 option(USE_CUDA "Look for CUDA and use that as a backend if found" OFF)
 if (USE_CUDA)
-    find_package( CUDA REQUIRED )
+	find_package( CUDA REQUIRED )
 endif()
 
 # Hip headers required of all clients; clients use hip to allocate device memory
@@ -121,21 +138,18 @@ endif()
 
 # FOR HANDLING ENABLE/DISABLE OPTIONAL BACKWARD COMPATIBILITY for FILE/FOLDER REORG
 option(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY "Build with file/folder reorg with backward compatibility enabled" ON)
-if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY)
+if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY AND NOT WIN32)
   rocm_wrap_header_dir(
     ${CMAKE_SOURCE_DIR}/library/include
     PATTERNS "*.h"
     GUARDS SYMLINK WRAPPER
-    WRAPPER_LOCATIONS include
+    WRAPPER_LOCATIONS ${CMAKE_INSTALL_INCLUDEDIR}
   )
 endif()
 
 add_subdirectory( library )
 
 include( clients/cmake/build-options.cmake )
-
-# force library install path to lib (CentOS 7 defaults to lib64)
-set(CMAKE_INSTALL_LIBDIR "lib" CACHE INTERNAL "Installation directory for libraries" FORCE)
 
 # Build clients of the library
 if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
@@ -179,7 +193,7 @@ endif( )
 
 # Package specific CPACK vars
 if( NOT USE_CUDA )
-  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.44.0" "rocsolver >= 3.18.0")
+  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.46.0" "rocsolver >= 3.20.0")
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
@@ -198,7 +212,7 @@ else()
   endif()
 endif( )
 
-set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/include" "\${CPACK_PACKAGING_INSTALL_PREFIX}/lib" )
+set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}" "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" )
 
 # Give hipblas compiled for CUDA backend a different name
 if( NOT USE_CUDA )
