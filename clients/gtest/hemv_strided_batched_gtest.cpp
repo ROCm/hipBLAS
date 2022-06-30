@@ -1,5 +1,23 @@
 /* ************************************************************************
- * Copyright 2016-2022 Advanced Micro Devices, Inc.
+ * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *
  * ************************************************************************ */
 
@@ -41,19 +59,14 @@ Representative sampling is sufficient, endless brute-force sampling is not neces
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
     {-1, -1},
-    //        {10, 10, 2},
-    //        {600,500, 500},
     {1000, 1000},
-    //        {2000, 2000, 2000},
-    //        {4011, 4011, 4011},
-    //        {8000, 8000, 8000},
 };
 
 // vector of vector, each pair is a {incx, incy};
 // add/delete this list in pairs, like {1, 1}
 const vector<vector<int>> incx_incy_range = {
-    {2, 1}, {0, -1}, {-1, -1},
-    //              {10, 100},
+    {2, 1},
+    {-1, -1},
 };
 
 // a vector of single double values. This value will be multiplied by
@@ -67,10 +80,7 @@ const vector<double> stride_scale_range = {
 // vector of vector, each pair is a {alpha, beta};
 // add/delete this list in pairs, like {2.0, 4.0}
 const vector<vector<double>> alpha_beta_range = {
-    {1.0, 0.0},
-    {-1.0, -1.0},
     {2.0, 1.0},
-    {0.0, 1.0},
 };
 
 // for single/double precision, 'C'(conjTranspose) will downgraded to 'T' (transpose) internally in
@@ -82,8 +92,9 @@ const vector<char> transA_range = {
 
 // number of gemms in batched gemm
 const vector<int> batch_count_range = {
-    -1, 0, 1, 2, 10,
-    //               100,
+    -1,
+    0,
+    2,
 };
 
 const bool is_fortran[] = {false, true};
