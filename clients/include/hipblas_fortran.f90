@@ -10271,7 +10271,7 @@ module hipblas_interface
 
     ! trmm
     function hipblasStrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, B, ldb) &
+            A, lda, B, ldb, C, ldc) &
             result(res) &
             bind(c, name = 'hipblasStrmmFortran')
         use iso_c_binding
@@ -10289,13 +10289,15 @@ module hipblas_interface
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int) :: res
         res = hipblasStrmm(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, B, ldb)
+              A, lda, B, ldb, C, ldc)
     end function hipblasStrmmFortran
 
     function hipblasDtrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, B, ldb) &
+            A, lda, B, ldb, C, ldc) &
             result(res) &
             bind(c, name = 'hipblasDtrmmFortran')
         use iso_c_binding
@@ -10313,13 +10315,15 @@ module hipblas_interface
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int) :: res
         res = hipblasDtrmm(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, B, ldb)
+              A, lda, B, ldb, C, ldc)
     end function hipblasDtrmmFortran
 
     function hipblasCtrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, B, ldb) &
+            A, lda, B, ldb, C, ldc) &
             result(res) &
             bind(c, name = 'hipblasCtrmmFortran')
         use iso_c_binding
@@ -10337,13 +10341,15 @@ module hipblas_interface
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int) :: res
         res = hipblasCtrmm(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, B, ldb)
+              A, lda, B, ldb, C, ldc)
     end function hipblasCtrmmFortran
 
     function hipblasZtrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, B, ldb) &
+            A, lda, B, ldb, C, ldc) &
             result(res) &
             bind(c, name = 'hipblasZtrmmFortran')
         use iso_c_binding
@@ -10361,14 +10367,16 @@ module hipblas_interface
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int) :: res
         res = hipblasZtrmm(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, B, ldb)
+              A, lda, B, ldb, C, ldc)
     end function hipblasZtrmmFortran
 
     ! trmmBatched
     function hipblasStrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, B, ldb, batch_count) &
+            A, lda, B, ldb, C, ldc, batch_count) &
             result(res) &
             bind(c, name = 'hipblasStrmmBatchedFortran')
         use iso_c_binding
@@ -10386,14 +10394,16 @@ module hipblas_interface
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int), value :: batch_count
         integer(c_int) :: res
         res = hipblasStrmmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, B, ldb, batch_count)
+              A, lda, B, ldb, C, ldc, batch_count)
     end function hipblasStrmmBatchedFortran
 
     function hipblasDtrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, B, ldb, batch_count) &
+            A, lda, B, ldb, C, ldc, batch_count) &
             result(res) &
             bind(c, name = 'hipblasDtrmmBatchedFortran')
         use iso_c_binding
@@ -10411,14 +10421,16 @@ module hipblas_interface
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int), value :: batch_count
         integer(c_int) :: res
         res = hipblasDtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, B, ldb, batch_count)
+              A, lda, B, ldb, C, ldc, batch_count)
     end function hipblasDtrmmBatchedFortran
 
     function hipblasCtrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, B, ldb, batch_count) &
+            A, lda, B, ldb, C, ldc, batch_count) &
             result(res) &
             bind(c, name = 'hipblasCtrmmBatchedFortran')
         use iso_c_binding
@@ -10436,14 +10448,16 @@ module hipblas_interface
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int), value :: batch_count
         integer(c_int) :: res
         res = hipblasCtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, B, ldb, batch_count)
+              A, lda, B, ldb, C, ldc, batch_count)
     end function hipblasCtrmmBatchedFortran
 
     function hipblasZtrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, B, ldb, batch_count) &
+            A, lda, B, ldb, C, ldc, batch_count) &
             result(res) &
             bind(c, name = 'hipblasZtrmmBatchedFortran')
         use iso_c_binding
@@ -10461,15 +10475,17 @@ module hipblas_interface
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int), value :: batch_count
         integer(c_int) :: res
         res = hipblasZtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, B, ldb, batch_count)
+              A, lda, B, ldb, C, ldc, batch_count)
     end function hipblasZtrmmBatchedFortran
 
     ! trmmStridedBatched
     function hipblasStrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
             result(res) &
             bind(c, name = 'hipblasStrmmStridedBatchedFortran')
         use iso_c_binding
@@ -10489,14 +10505,17 @@ module hipblas_interface
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
         integer(c_int), value :: batch_count
         integer(c_int) :: res
         res = hipblasStrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, stride_A, B, ldb, stride_B, batch_count)
+              A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count)
     end function hipblasStrmmStridedBatchedFortran
 
     function hipblasDtrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
             result(res) &
             bind(c, name = 'hipblasDtrmmStridedBatchedFortran')
         use iso_c_binding
@@ -10516,14 +10535,17 @@ module hipblas_interface
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         integer(c_int64_t), value :: stride_B
+        type(c_ptr), value:: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
         integer(c_int), value :: batch_count
         integer(c_int) :: res
         res = hipblasDtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, stride_A, B, ldb, stride_B, batch_count)
+              A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count)
     end function hipblasDtrmmStridedBatchedFortran
 
     function hipblasCtrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
             result(res) &
             bind(c, name = 'hipblasCtrmmStridedBatchedFortran')
         use iso_c_binding
@@ -10543,14 +10565,17 @@ module hipblas_interface
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
         integer(c_int), value :: batch_count
         integer(c_int) :: res
         res = hipblasCtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, stride_A, B, ldb, stride_B, batch_count)
+              A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count)
     end function hipblasCtrmmStridedBatchedFortran
 
     function hipblasZtrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-            A, lda, stride_A, B, ldb, stride_B, batch_count) &
+            A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
             result(res) &
             bind(c, name = 'hipblasZtrmmStridedBatchedFortran')
         use iso_c_binding
@@ -10570,10 +10595,13 @@ module hipblas_interface
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
         integer(c_int), value :: batch_count
         integer(c_int) :: res
         res = hipblasZtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha,&
-              A, lda, stride_A, B, ldb, stride_B, batch_count)
+              A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count)
     end function hipblasZtrmmStridedBatchedFortran
 
     ! trtri

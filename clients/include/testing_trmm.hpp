@@ -36,10 +36,14 @@ hipblasStatus_t testing_trmm(const Arguments& argus)
     bool FORTRAN       = argus.fortran;
     auto hipblasTrmmFn = FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
 
-    int M   = argus.M;
-    int N   = argus.N;
-    int lda = argus.lda;
-    int ldb = argus.ldb;
+    bool inplace = argus.inplace;
+
+    int M     = argus.M;
+    int N     = argus.N;
+    int lda   = argus.lda;
+    int ldb   = argus.ldb;
+    int ldc   = argus.ldc;
+    int ldOut = inplace ? ldb : ldc;
 
     char char_side   = argus.side_option;
     char char_uplo   = argus.uplo_option;
@@ -56,35 +60,50 @@ hipblasStatus_t testing_trmm(const Arguments& argus)
     size_t A_size = size_t(lda) * K;
     size_t B_size = size_t(ldb) * N;
 
+    // avoid unnecessary allocation if inplace
+    size_t C_size   = inplace ? 1 : size_t(ldc) * N;
+    size_t out_size = ldOut * N;
+
     // check here to prevent undefined memory allocation error
-    if(M < 0 || N < 0 || lda < K || ldb < M)
+    if(M < 0 || N < 0 || lda < K || ldb < M || ldOut < M)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
-    host_vector<T> hB_host(B_size);
-    host_vector<T> hB_device(B_size);
-    host_vector<T> hB_gold(B_size);
+    host_vector<T> hB(B_size);
+    host_vector<T> hC(C_size);
+
+    host_vector<T> hOut_host(out_size);
+    host_vector<T> hOut_device(out_size);
+    host_vector<T> hOut_gold(out_size);
 
     device_vector<T> dA(A_size);
     device_vector<T> dB(B_size);
+    device_vector<T> dC(C_size);
     device_vector<T> d_alpha(1);
+
+    device_vector<T>* dOut = inplace ? &dB : &dC;
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(argus);
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, argus, K, K, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(
-        hB_host, argus, M, N, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
-    hB_device = hB_host;
-    hB_gold   = hB_host;
+    hipblas_init_matrix(hB, argus, M, N, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+
+    if(!inplace)
+        hipblas_init_matrix(hC, argus, M, N, ldc, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+
+    hOut_host   = inplace ? hB : hC;
+    hOut_device = hOut_host;
+    hOut_gold   = hOut_host;
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB_host, sizeof(T) * B_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(T) * B_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dC, hC, sizeof(T) * C_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
     if(argus.unit_check || argus.norm_check)
@@ -93,34 +112,38 @@ hipblasStatus_t testing_trmm(const Arguments& argus)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(
-            hipblasTrmmFn(handle, side, uplo, transA, diag, M, N, &h_alpha, dA, lda, dB, ldb));
+
+        CHECK_HIPBLAS_ERROR(hipblasTrmmFn(
+            handle, side, uplo, transA, diag, M, N, &h_alpha, dA, lda, dB, ldb, *dOut, ldOut));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dB, hB_device, sizeof(T) * B_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(hOut_host, *dOut, sizeof(T) * out_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(T) * B_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dC, hC, sizeof(T) * C_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(
-            hipblasTrmmFn(handle, side, uplo, transA, diag, M, N, d_alpha, dA, lda, dB, ldb));
-        CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+
+        CHECK_HIPBLAS_ERROR(hipblasTrmmFn(
+            handle, side, uplo, transA, diag, M, N, d_alpha, dA, lda, dB, ldb, *dOut, ldOut));
+
+        CHECK_HIP_ERROR(hipMemcpy(hOut_device, *dOut, sizeof(T) * out_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA, lda, hB_gold, ldb);
+        cblas_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA, lda, hOut_gold, ldOut);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(M, N, ldb, hB_gold, hB_host);
-            unit_check_general<T>(M, N, ldb, hB_gold, hB_device);
+            unit_check_general<T>(M, N, ldOut, hOut_gold, hOut_host);
+            unit_check_general<T>(M, N, ldOut, hOut_gold, hOut_device);
         }
         if(argus.norm_check)
         {
-            hipblas_error_host   = norm_check_general<T>('F', M, N, ldb, hB_gold, hB_host);
-            hipblas_error_device = norm_check_general<T>('F', M, N, ldb, hB_gold, hB_device);
+            hipblas_error_host   = norm_check_general<T>('F', M, N, ldOut, hOut_gold, hOut_host);
+            hipblas_error_device = norm_check_general<T>('F', M, N, ldOut, hOut_gold, hOut_device);
         }
     }
 
@@ -136,8 +159,8 @@ hipblasStatus_t testing_trmm(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(
-                hipblasTrmmFn(handle, side, uplo, transA, diag, M, N, d_alpha, dA, lda, dB, ldb));
+            CHECK_HIPBLAS_ERROR(hipblasTrmmFn(
+                handle, side, uplo, transA, diag, M, N, d_alpha, dA, lda, dB, ldb, *dOut, ldOut));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -148,7 +171,8 @@ hipblasStatus_t testing_trmm(const Arguments& argus)
                       e_M,
                       e_N,
                       e_lda,
-                      e_ldb>{}
+                      e_ldb,
+                      e_ldc>{}
             .log_args<T>(std::cout,
                          argus,
                          gpu_time_used,

@@ -37,7 +37,7 @@ using ::testing::ValuesIn;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, double, vector<char>, double, int, bool> trmm_tuple;
+typedef std::tuple<vector<int>, double, vector<char>, double, int, bool, bool> trmm_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -57,10 +57,10 @@ Yet, the goal of this file is to verify result correctness not argument-checkers
 Representative sampling is sufficient, endless brute-force sampling is not necessary
 =================================================================== */
 
-// vector of vector, each vector is a {M, N, lda, ldb};
+// vector of vector, each vector is a {M, N, lda, ldb, ldc};
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
-    {-1, -1, 1, 1}, {10, 10, 20, 100},
+    {-1, -1, 1, 1, 1}, {10, 10, 20, 100, 150},
     //                {600, 500, 600, 600} ,
     //                {1024, 1024, 1024, 1024}
 };
@@ -118,6 +118,8 @@ const vector<int> batch_count_range = {1, 3};
 const bool is_fortran[]       = {false, true};
 const bool is_fortran_false[] = {false};
 
+const bool is_inplace[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -143,6 +145,7 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     double       stride_scale          = std::get<3>(tup);
     int          batch_count           = std::get<4>(tup);
     bool         fortran               = std::get<5>(tup);
+    bool         inplace               = std::get<6>(tup);
 
     Arguments arg;
 
@@ -151,6 +154,7 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     arg.N   = matrix_size[1];
     arg.lda = matrix_size[2];
     arg.ldb = matrix_size[3];
+    arg.ldc = matrix_size[4];
 
     arg.alpha = alpha;
 
@@ -165,6 +169,7 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     arg.batch_count  = batch_count;
 
     arg.fortran = fortran;
+    arg.inplace = inplace;
 
     return arg;
 }
@@ -360,7 +365,8 @@ INSTANTIATE_TEST_SUITE_P(hipblastrmm_matrix_size,
                                  ValuesIn(side_uplo_transA_diag_range),
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(is_inplace)));
 
 // THis function mainly test the scope of  full_side_uplo_transA_diag_range,.the scope of
 // matrix_size_range is small
@@ -371,4 +377,5 @@ INSTANTIATE_TEST_SUITE_P(hipblastrmm_scalar_transpose,
                                  ValuesIn(full_side_uplo_transA_diag_range),
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran_false)));
+                                 ValuesIn(is_fortran_false),
+                                 ValuesIn(is_inplace)));

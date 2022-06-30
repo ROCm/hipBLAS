@@ -37,10 +37,14 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
     auto hipblasTrmmStridedBatchedFn
         = FORTRAN ? hipblasTrmmStridedBatched<T, true> : hipblasTrmmStridedBatched<T, false>;
 
+    bool inplace = argus.inplace;
+
     int    M            = argus.M;
     int    N            = argus.N;
     int    lda          = argus.lda;
     int    ldb          = argus.ldb;
+    int    ldc          = argus.ldc;
+    int    ldOut        = inplace ? ldb : ldc;
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
@@ -51,29 +55,39 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    int           K        = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    hipblasStride stride_A = size_t(lda) * K * stride_scale;
-    hipblasStride stride_B = size_t(ldb) * N * stride_scale;
+    int           K          = (side == HIPBLAS_SIDE_LEFT ? M : N);
+    hipblasStride stride_A   = size_t(lda) * K * stride_scale;
+    hipblasStride stride_B   = size_t(ldb) * N * stride_scale;
+    hipblasStride stride_C   = inplace ? 1 : size_t(ldc) * N * stride_scale;
+    hipblasStride stride_out = inplace ? stride_B : stride_C;
 
-    size_t A_size = stride_A * batch_count;
-    size_t B_size = stride_B * batch_count;
+    size_t A_size   = stride_A * batch_count;
+    size_t B_size   = stride_B * batch_count;
+    size_t C_size   = stride_C * batch_count;
+    size_t out_size = stride_out * batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < K || ldb < M || batch_count < 0)
+    if(M < 0 || N < 0 || lda < K || ldb < M || ldOut < M || batch_count < 0)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
-    host_vector<T> hB_host(B_size);
-    host_vector<T> hB_device(B_size);
-    host_vector<T> hB_gold(B_size);
+    host_vector<T> hB(B_size);
+    host_vector<T> hC(C_size);
+
+    host_vector<T> hOut_host(out_size);
+    host_vector<T> hOut_device(out_size);
+    host_vector<T> hOut_gold(out_size);
 
     device_vector<T> dA(A_size);
     device_vector<T> dB(B_size);
+    device_vector<T> dC(C_size);
     device_vector<T> d_alpha(1);
+
+    device_vector<T>* dOut = inplace ? &dB : &dC;
 
     T h_alpha = argus.get_alpha<T>();
 
@@ -83,22 +97,28 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
     // Initial Data on CPU
     hipblas_init_matrix(
         hA, argus, K, K, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(hB_host,
-                        argus,
-                        M,
-                        N,
-                        ldb,
-                        stride_B,
-                        batch_count,
-                        hipblas_client_alpha_sets_nan,
-                        false,
-                        true);
-    hB_device = hB_host;
-    hB_gold   = hB_host;
+    hipblas_init_matrix(
+        hB, argus, M, N, ldb, stride_B, batch_count, hipblas_client_alpha_sets_nan, false, true);
+    if(!inplace)
+        hipblas_init_matrix(hC,
+                            argus,
+                            M,
+                            N,
+                            ldc,
+                            stride_C,
+                            batch_count,
+                            hipblas_client_alpha_sets_nan,
+                            false,
+                            true);
+
+    hOut_host   = inplace ? hB : hC;
+    hOut_device = hOut_host;
+    hOut_gold   = hOut_host;
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB_host, sizeof(T) * B_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(T) * B_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dC, hC, sizeof(T) * C_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
     if(argus.unit_check || argus.norm_check)
@@ -121,10 +141,14 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
                                                         dB,
                                                         ldb,
                                                         stride_B,
+                                                        *dOut,
+                                                        ldOut,
+                                                        stride_out,
                                                         batch_count));
 
-        CHECK_HIP_ERROR(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dB, hB_device, sizeof(T) * B_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(hOut_host, *dOut, sizeof(T) * out_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(T) * B_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dC, hC, sizeof(T) * C_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         CHECK_HIPBLAS_ERROR(hipblasTrmmStridedBatchedFn(handle,
@@ -141,9 +165,12 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
                                                         dB,
                                                         ldb,
                                                         stride_B,
+                                                        *dOut,
+                                                        ldOut,
+                                                        stride_out,
                                                         batch_count));
 
-        CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hOut_device, *dOut, sizeof(T) * out_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
@@ -159,7 +186,7 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
                           h_alpha,
                           hA.data() + b * stride_A,
                           lda,
-                          hB_gold.data() + b * stride_B,
+                          hOut_gold.data() + b * stride_out,
                           ldb);
         }
 
@@ -167,15 +194,15 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
         // unit check and norm check can not be interchanged their order
         if(argus.unit_check)
         {
-            unit_check_general<T>(M, N, batch_count, ldb, stride_B, hB_gold, hB_host);
-            unit_check_general<T>(M, N, batch_count, ldb, stride_B, hB_gold, hB_device);
+            unit_check_general<T>(M, N, batch_count, ldOut, stride_out, hOut_gold, hOut_host);
+            unit_check_general<T>(M, N, batch_count, ldOut, stride_out, hOut_gold, hOut_device);
         }
         if(argus.norm_check)
         {
-            hipblas_error_host
-                = norm_check_general<T>('F', M, N, ldb, stride_B, hB_gold, hB_host, batch_count);
-            hipblas_error_device
-                = norm_check_general<T>('F', M, N, ldb, stride_B, hB_gold, hB_device, batch_count);
+            hipblas_error_host = norm_check_general<T>(
+                'F', M, N, ldOut, stride_out, hOut_gold, hOut_host, batch_count);
+            hipblas_error_device = norm_check_general<T>(
+                'F', M, N, ldOut, stride_out, hOut_gold, hOut_device, batch_count);
         }
     }
 
@@ -205,6 +232,9 @@ hipblasStatus_t testing_trmm_strided_batched(const Arguments& argus)
                                                             dB,
                                                             ldb,
                                                             stride_B,
+                                                            *dOut,
+                                                            ldOut,
+                                                            stride_out,
                                                             batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;

@@ -1794,8 +1794,10 @@ hipblasStatus_t hipblasTrmm(hipblasHandle_t    handle,
                             const T*           alpha,
                             const T*           A,
                             int                lda,
-                            T*                 B,
-                            int                ldb);
+                            const T*           B,
+                            int                ldb,
+                            T*                 C,
+                            int                ldc);
 
 template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasTrmmBatched(hipblasHandle_t    handle,
@@ -1808,8 +1810,10 @@ hipblasStatus_t hipblasTrmmBatched(hipblasHandle_t    handle,
                                    const T*           alpha,
                                    const T* const     A[],
                                    int                lda,
-                                   T* const           B[],
+                                   const T* const     B[],
                                    int                ldb,
+                                   T* const           C[],
+                                   int                ldc,
                                    int                batchCount);
 
 template <typename T, bool FORTRAN = false>
@@ -1824,9 +1828,12 @@ hipblasStatus_t hipblasTrmmStridedBatched(hipblasHandle_t    handle,
                                           const T*           A,
                                           int                lda,
                                           hipblasStride      strideA,
-                                          T*                 B,
+                                          const T*           B,
                                           int                ldb,
                                           hipblasStride      strideB,
+                                          T*                 C,
+                                          int                ldc,
+                                          hipblasStride      strideC,
                                           int                batchCount);
 
 // trsm

@@ -9966,7 +9966,7 @@ module hipblas
     ! trmm
     interface
         function hipblasStrmm(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, B, ldb) &
+                A, lda, B, ldb, C, ldc) &
                 result(c_int) &
                 bind(c, name = 'hipblasStrmm')
             use iso_c_binding
@@ -9984,12 +9984,14 @@ module hipblas
             integer(c_int), value :: lda
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
         end function hipblasStrmm
     end interface
 
     interface
         function hipblasDtrmm(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, B, ldb) &
+                A, lda, B, ldb, C, ldc) &
                 result(c_int) &
                 bind(c, name = 'hipblasDtrmm')
             use iso_c_binding
@@ -10007,12 +10009,14 @@ module hipblas
             integer(c_int), value :: lda
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
         end function hipblasDtrmm
     end interface
 
     interface
         function hipblasCtrmm(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, B, ldb) &
+                A, lda, B, ldb, C, ldc) &
                 result(c_int) &
                 bind(c, name = 'hipblasCtrmm')
             use iso_c_binding
@@ -10030,12 +10034,14 @@ module hipblas
             integer(c_int), value :: lda
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
         end function hipblasCtrmm
     end interface
 
     interface
         function hipblasZtrmm(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, B, ldb) &
+                A, lda, B, ldb, C, ldc) &
                 result(c_int) &
                 bind(c, name = 'hipblasZtrmm')
             use iso_c_binding
@@ -10053,13 +10059,15 @@ module hipblas
             integer(c_int), value :: lda
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
         end function hipblasZtrmm
     end interface
 
     ! trmmBatched
     interface
         function hipblasStrmmBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, B, ldb, batch_count) &
+                A, lda, B, ldb, C, ldc, batch_count) &
                 result(c_int) &
                 bind(c, name = 'hipblasStrmmBatched')
             use iso_c_binding
@@ -10077,13 +10085,15 @@ module hipblas
             integer(c_int), value :: lda
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
             integer(c_int), value :: batch_count
         end function hipblasStrmmBatched
     end interface
 
     interface
         function hipblasDtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, B, ldb, batch_count) &
+                A, lda, B, ldb, C, ldc, batch_count) &
                 result(c_int) &
                 bind(c, name = 'hipblasDtrmmBatched')
             use iso_c_binding
@@ -10101,13 +10111,15 @@ module hipblas
             integer(c_int), value :: lda
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
             integer(c_int), value :: batch_count
         end function hipblasDtrmmBatched
     end interface
 
     interface
         function hipblasCtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, B, ldb, batch_count) &
+                A, lda, B, ldb, C, ldc, batch_count) &
                 result(c_int) &
                 bind(c, name = 'hipblasCtrmmBatched')
             use iso_c_binding
@@ -10125,13 +10137,15 @@ module hipblas
             integer(c_int), value :: lda
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
             integer(c_int), value :: batch_count
         end function hipblasCtrmmBatched
     end interface
 
     interface
         function hipblasZtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, B, ldb, batch_count) &
+                A, lda, B, ldb, C, ldc, batch_count) &
                 result(c_int) &
                 bind(c, name = 'hipblasZtrmmBatched')
             use iso_c_binding
@@ -10149,6 +10163,8 @@ module hipblas
             integer(c_int), value :: lda
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
             integer(c_int), value :: batch_count
         end function hipblasZtrmmBatched
     end interface
@@ -10156,7 +10172,7 @@ module hipblas
     ! trmmStridedBatched
     interface
         function hipblasStrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, stride_A, B, ldb, stride_B, batch_count) &
+                A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
                 result(c_int) &
                 bind(c, name = 'hipblasStrmmStridedBatched')
             use iso_c_binding
@@ -10176,13 +10192,16 @@ module hipblas
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
             integer(c_int64_t), value :: stride_B
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
+            integer(c_int64_t), value :: stride_C
             integer(c_int), value :: batch_count
         end function hipblasStrmmStridedBatched
     end interface
 
     interface
         function hipblasDtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, stride_A, B, ldb, stride_B, batch_count) &
+                A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
                 result(c_int) &
                 bind(c, name = 'hipblasDtrmmStridedBatched')
             use iso_c_binding
@@ -10202,13 +10221,16 @@ module hipblas
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
             integer(c_int64_t), value :: stride_B
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
+            integer(c_int64_t), value :: stride_C
             integer(c_int), value :: batch_count
         end function hipblasDtrmmStridedBatched
     end interface
 
     interface
         function hipblasCtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, stride_A, B, ldb, stride_B, batch_count) &
+                A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
                 result(c_int) &
                 bind(c, name = 'hipblasCtrmmStridedBatched')
             use iso_c_binding
@@ -10228,13 +10250,16 @@ module hipblas
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
             integer(c_int64_t), value :: stride_B
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
+            integer(c_int64_t), value :: stride_C
             integer(c_int), value :: batch_count
         end function hipblasCtrmmStridedBatched
     end interface
 
     interface
         function hipblasZtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                A, lda, stride_A, B, ldb, stride_B, batch_count) &
+                A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
                 result(c_int) &
                 bind(c, name = 'hipblasZtrmmStridedBatched')
             use iso_c_binding
@@ -10254,6 +10279,9 @@ module hipblas
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
             integer(c_int64_t), value :: stride_B
+            type(c_ptr), value :: C
+            integer(c_int), value :: ldc
+            integer(c_int64_t), value :: stride_C
             integer(c_int), value :: batch_count
         end function hipblasZtrmmStridedBatched
     end interface
