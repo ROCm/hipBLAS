@@ -920,7 +920,7 @@ void copy_matrix_with_different_leading_dimensions(T&     hB,
                 C[i + j * ldc] = B[i + j * ldb];
     }
 }
-// #include "host_batch_vector.hpp"
+
 template <typename T, typename U>
 void copy_matrix_with_different_leading_dimensions_batched(
     T& hB, U& hC, int M, int N, size_t ldb, size_t ldc)
