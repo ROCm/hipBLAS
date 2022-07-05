@@ -131,7 +131,11 @@ hipblasStatus_t testing_trmm(const Arguments& argus)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA, lda, hOut_gold, ldOut);
+        // use hB matrix for cblas, copy into C matrix for !inplace version to compare with hipblas
+        cblas_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA, lda, hB, ldb);
+
+        if(!inplace)
+            copy_matrix_with_different_leading_dimensions(hB, hOut_gold, M, N, ldb, ldOut);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
