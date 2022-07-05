@@ -164,8 +164,7 @@ hipblasStatus_t testing_trmm_batched(const Arguments& argus)
             cblas_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA[b], lda, hB[b], ldb);
         }
 
-        if(!inplace)
-            copy_matrix_with_different_leading_dimensions_batched(hB, hOut_gold, M, N, ldb, ldOut);
+        copy_matrix_with_different_leading_dimensions_batched(hB, hOut_gold, M, N, ldb, ldOut);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
