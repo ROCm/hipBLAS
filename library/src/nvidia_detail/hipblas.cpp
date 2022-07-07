@@ -347,6 +347,26 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasSetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t int8Datatype)
+try
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t* int8Datatype)
+try
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // note: no handle
 hipblasStatus_t hipblasSetVector(int n, int elemSize, const void* x, int incx, void* y, int incy)
 try
