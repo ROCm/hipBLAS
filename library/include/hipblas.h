@@ -16635,6 +16635,113 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             
 //! @}
 
 /*! @{
+    \brief GELS solves an overdetermined (or underdetermined) linear system defined by an m-by-n
+    matrix A, and a corresponding matrix B, using the QR factorization computed by \ref hipblasSgeqrf "GEQRF" (or the LQ
+    factorization computed by \ref rocsolver_sgelqf "GELQF").
+
+    \details
+    Depending on the value of trans, the problem solved by this function is either of the form
+
+    \f[
+        \begin{array}{cl}
+        A X = B & \: \text{not transposed, or}\\
+        A' X = B & \: \text{transposed if real, or conjugate transposed if complex}
+        \end{array}
+    \f]
+
+    If m >= n (or m < n in the case of transpose/conjugate transpose), the system is overdetermined
+    and a least-squares solution approximating X is found by minimizing
+
+    \f[
+        || B - A  X || \quad \text{(or} \: || B - A' X ||\text{)}
+    \f]
+
+    If m < n (or m >= n in the case of transpose/conjugate transpose), the system is underdetermined
+    and a unique solution for X is chosen such that \f$|| X ||\f$ is minimal.
+
+    @param[in]
+    handle      hipblasHandle_t.
+    @param[in]
+    trans       hipblasOperation_t.\n
+                Specifies the form of the system of equations.
+    @param[in]
+    m           int. m >= 0.\n
+                The number of rows of matrix A.
+    @param[in]
+    n           int. n >= 0.\n
+                The number of columns of matrix A.
+    @param[in]
+    nrhs        int. nrhs >= 0.\n
+                The number of columns of matrices B and X;
+                i.e., the columns on the right hand side.
+    @param[inout]
+    A           pointer to type. Array on the GPU of dimension lda*n.\n
+                On entry, the matrix A.
+                On exit, the QR (or LQ) factorization of A as returned by \ref rocsolver_sgeqrf "GEQRF" (or \ref rocsolver_sgelqf "GELQF").
+    @param[in]
+    lda         int. lda >= m.\n
+                Specifies the leading dimension of matrix A.
+    @param[inout]
+    B           pointer to type. Array on the GPU of dimension ldb*nrhs.\n
+                On entry, the matrix B.
+                On exit, when info = 0, B is overwritten by the solution vectors (and the residuals in
+                the overdetermined cases) stored as columns.
+    @param[in]
+    ldb         int. ldb >= max(m,n).\n
+                Specifies the leading dimension of matrix B.
+    @param[out]
+    info        pointer to int on the GPU.\n
+                If info = 0, successful exit.
+                If info = i > 0, the solution could not be computed because input matrix A is
+                rank deficient; the i-th diagonal element of its triangular factor is zero.
+    ********************************************************************/
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgels(hipblasHandle_t    handle,
+                                            hipblasOperation_t trans,
+                                            const int          m,
+                                            const int          n,
+                                            const int          nrhs,
+                                            float*             A,
+                                            const int          lda,
+                                            float*             B,
+                                            const int          ldb,
+                                            int*               info);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgels(hipblasHandle_t    handle,
+                                            hipblasOperation_t trans,
+                                            const int          m,
+                                            const int          n,
+                                            const int          nrhs,
+                                            double*            A,
+                                            const int          lda,
+                                            double*            B,
+                                            const int          ldb,
+                                            int*               info);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgels(hipblasHandle_t    handle,
+                                            hipblasOperation_t trans,
+                                            const int          m,
+                                            const int          n,
+                                            const int          nrhs,
+                                            hipblasComplex*    A,
+                                            const int          lda,
+                                            hipblasComplex*    B,
+                                            const int          ldb,
+                                            int*               info);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
+                                            hipblasOperation_t    trans,
+                                            const int             m,
+                                            const int             n,
+                                            const int             nrhs,
+                                            hipblasDoubleComplex* A,
+                                            const int             lda,
+                                            hipblasDoubleComplex* B,
+                                            const int             ldb,
+                                            int*                  info);
+///@}
+
+/*! @{
     \brief SOLVER API
 
     \details

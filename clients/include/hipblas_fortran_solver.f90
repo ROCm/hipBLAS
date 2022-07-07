@@ -845,4 +845,85 @@ end function hipblasDgeqrfStridedBatchedFortran
                     tau, stride_T, info, batch_count)
     end function hipblasZgeqrfStridedBatchedFortran
 
+    ! gels
+    function hipblasSgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info) &
+            result(res) &
+            bind(c, name = 'hipblasSgelsFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: info
+        integer(c_int) :: res
+        res = hipblasSgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info)
+    end function hipblasSgelsFortran
+
+    function hipblasDgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info) &
+            result(res) &
+            bind(c, name = 'hipblasDgelsFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: info
+        integer(c_int) :: res
+        res = hipblasDgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info)
+    end function hipblasDgelsFortran
+
+    function hipblasCgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info) &
+            result(res) &
+            bind(c, name = 'hipblasCgelsFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: info
+        integer(c_int) :: res
+        res = hipblasCgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info)
+    end function hipblasCgelsFortran
+
+    function hipblasZgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info) &
+            result(res) &
+            bind(c, name = 'hipblasZgelsFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: info
+        integer(c_int) :: res
+        res = hipblasZgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info)
+    end function hipblasZgelsFortran
+
 end module hipblas_interface

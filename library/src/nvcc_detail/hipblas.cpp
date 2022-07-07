@@ -10764,6 +10764,122 @@ hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+hipblasStatus_t hipblasSgels(hipblasHandle_t    handle,
+                             hipblasOperation_t trans,
+                             const int          m,
+                             const int          n,
+                             const int          nrhs,
+                             float*             A,
+                             const int          lda,
+                             float*             B,
+                             const int          ldb,
+                             int*               info)
+try
+{
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_sgels((cublasHandle_t)handle,
+                                                 hipOperationToCudaOperation(trans),
+                                                 m,
+                                                 n,
+                                                 nrhs,
+                                                 A,
+                                                 lda,
+                                                 B,
+                                                 ldb,
+                                                 info)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDgels(hipblasHandle_t    handle,
+                             hipblasOperation_t trans,
+                             const int          m,
+                             const int          n,
+                             const int          nrhs,
+                             double*            A,
+                             const int          lda,
+                             double*            B,
+                             const int          ldb,
+                             int*               info)
+try
+{
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_dgels((cublasHandle_t)handle,
+                                                 hipOperationToCudaOperation(trans),
+                                                 m,
+                                                 n,
+                                                 nrhs,
+                                                 A,
+                                                 lda,
+                                                 B,
+                                                 ldb,
+                                                 info)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCgels(hipblasHandle_t    handle,
+                             hipblasOperation_t trans,
+                             const int          m,
+                             const int          n,
+                             const int          nrhs,
+                             hipblasComplex*    A,
+                             const int          lda,
+                             hipblasComplex*    B,
+                             const int          ldb,
+                             int*               info)
+try
+{
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_cgels((cublasHandle_t)handle,
+                                                 hipOperationToCudaOperation(trans),
+                                                 m,
+                                                 n,
+                                                 nrhs,
+                                                 (cuComplex*)A,
+                                                 lda,
+                                                 (cuComplex*)B,
+                                                 ldb,
+                                                 info)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
+                             hipblasOperation_t    trans,
+                             const int             m,
+                             const int             n,
+                             const int             nrhs,
+                             hipblasDoubleComplex* A,
+                             const int             lda,
+                             hipblasDoubleComplex* B,
+                             const int             ldb,
+                             int*                  info)
+try
+{
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_zgels((cublasHandle_t)handle,
+                                                 hipOperationToCudaOperation(trans),
+                                                 m,
+                                                 n,
+                                                 nrhs,
+                                                 (cuDoubleComplex*)A,
+                                                 lda,
+                                                 (cuDoubleComplex*)B,
+                                                 ldb,
+                                                 info)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 #endif
 
 // gemm
