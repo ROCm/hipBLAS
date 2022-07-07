@@ -117,7 +117,7 @@ hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& argus)
         CHECK_HIP_ERROR(dA.transfer_from(hA));
         CHECK_HIP_ERROR(dB.transfer_from(hB));
 #else
-        if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N && layout_pack_int8())
+        if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N && layout_pack_int8(handle))
         {
             host_batch_vector<Ta> hA_packed(size_A, 1, batch_count);
             hA_packed.copy_from(hA);
@@ -130,7 +130,7 @@ hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& argus)
             CHECK_HIP_ERROR(dA.transfer_from(hA));
         }
 
-        if(std::is_same<Tb, int8_t>{} && transB != HIPBLAS_OP_N && layout_pack_int8())
+        if(std::is_same<Tb, int8_t>{} && transB != HIPBLAS_OP_N && layout_pack_int8(handle))
         {
             host_batch_vector<Tb> hB_packed(size_B, 1, batch_count);
             hB_packed.copy_from(hB);

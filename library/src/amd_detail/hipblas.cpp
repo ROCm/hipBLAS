@@ -315,6 +315,34 @@ hipblasAtomicsMode_t RocblasAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode mod
     throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
+rocblas_int8_type_for_hipblas HIPInt8DatatypeToRocblasInt8Datatype(hipblasInt8Datatype_t flags)
+{
+    switch(flags)
+    {
+    case HIPBLAS_INT8_DATATYPE_DEFAULT:
+        return rocblas_int8_type_for_hipblas_default;
+    case HIPBLAS_INT8_DATATYPE_PACK_INT8x4:
+        return rocblas_int8_type_for_hipblas_pack_int8x4;
+    case HIPBLAS_INT8_DATATYPE_INT8:
+        return rocblas_int8_type_for_hipblas_int8;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
+hipblasInt8Datatype_t RocblasInt8DatatypeToHIPInt8Datatype(rocblas_int8_type_for_hipblas flags)
+{
+    switch(flags)
+    {
+    case rocblas_int8_type_for_hipblas_default:
+        return HIPBLAS_INT8_DATATYPE_DEFAULT;
+    case rocblas_int8_type_for_hipblas_pack_int8x4:
+        return HIPBLAS_INT8_DATATYPE_PACK_INT8x4;
+    case rocblas_int8_type_for_hipblas_int8:
+        return HIPBLAS_INT8_DATATYPE_INT8;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
 hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
 {
     switch(error)
@@ -409,6 +437,31 @@ try
     rocblas_pointer_mode rocblas_mode;
     rocblas_status       status = rocblas_get_pointer_mode((rocblas_handle)handle, &rocblas_mode);
     *mode                       = RocblasPointerModeToHIPPointerMode(rocblas_mode);
+    return rocBLASStatusToHIPStatus(status);
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasSetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t int8Type)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_set_int8_type_for_hipblas(
+        (rocblas_handle)handle, HIPInt8DatatypeToRocblasInt8Datatype(int8Type)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t* int8Type)
+try
+{
+    rocblas_int8_type_for_hipblas rocblas_type;
+    rocblas_status                status
+        = rocblas_get_int8_type_for_hipblas((rocblas_handle)handle, &rocblas_type);
+    *int8Type = RocblasInt8DatatypeToHIPInt8Datatype(rocblas_type);
     return rocBLASStatusToHIPStatus(status);
 }
 catch(...)
