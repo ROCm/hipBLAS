@@ -43,7 +43,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
     char transc = argus.transA_option;
     if(is_complex<T> && transc == 'T')
         transc = 'C';
-    else if(!is_complex<> T && transc == 'C')
+    else if(!is_complex<T> && transc == 'C')
         transc = 'T';
 
     hipblasOperation_t trans = char2hipblas_operation(transc);
@@ -143,7 +143,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
         ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
                                                        argus,
                                                        gpu_time_used,
-                                                       gels_gflop_count<T>(M, N, nrhs),
+                                                       ArgumentLogging::NA_value,
                                                        ArgumentLogging::NA_value,
                                                        hipblas_error);
     }
