@@ -76,7 +76,7 @@ protected:
     virtual void TearDown() {}
 };
 
-// #ifndef __HIP_PLATFORM_NVCC__
+#ifndef __HIP_PLATFORM_NVCC__
 
 TEST_P(gels_gtest, gels_gtest_float)
 {
@@ -181,4 +181,4 @@ INSTANTIATE_TEST_SUITE_P(hipblasGels,
                                  ValuesIn(trans_range),
                                  ValuesIn(is_fortran)));
 
-// #endif
+#endif
