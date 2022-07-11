@@ -16825,7 +16825,7 @@ try
                                                  lda,
                                                  (rocblas_double_complex*)B,
                                                  ldb,
-                                                 info)));
+                                                 deviceInfo)));
 }
 catch(...)
 {

@@ -16693,9 +16693,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             
     ldb         int. ldb >= max(m,n).\n
                 Specifies the leading dimension of matrix B.
     @param[out]
-    info      pointer to a int on the host.\n
-              If info = 0, successful exit.
-              If info = j < 0, the j-th argument is invalid.
+    info        pointer to a int on the host.\n
+                If info = 0, successful exit.
+                If info = j < 0, the j-th argument is invalid.
     @param[out]
     deviceInfo  pointer to int on the GPU.\n
                 If info = 0, successful exit.
