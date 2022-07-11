@@ -846,7 +846,7 @@ end function hipblasDgeqrfStridedBatchedFortran
     end function hipblasZgeqrfStridedBatchedFortran
 
     ! gels
-    function hipblasSgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info) &
+    function hipblasSgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo) &
             result(res) &
             bind(c, name = 'hipblasSgelsFortran')
         use iso_c_binding
@@ -862,11 +862,12 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
         integer(c_int) :: res
-        res = hipblasSgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info)
+        res = hipblasSgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
     end function hipblasSgelsFortran
 
-    function hipblasDgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info) &
+    function hipblasDgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo) &
             result(res) &
             bind(c, name = 'hipblasDgelsFortran')
         use iso_c_binding
@@ -882,11 +883,12 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
         integer(c_int) :: res
-        res = hipblasDgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info)
+        res = hipblasDgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
     end function hipblasDgelsFortran
 
-    function hipblasCgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info) &
+    function hipblasCgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo) &
             result(res) &
             bind(c, name = 'hipblasCgelsFortran')
         use iso_c_binding
@@ -902,11 +904,12 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
         integer(c_int) :: res
-        res = hipblasCgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info)
+        res = hipblasCgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
     end function hipblasCgelsFortran
 
-    function hipblasZgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info) &
+    function hipblasZgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo) &
             result(res) &
             bind(c, name = 'hipblasZgelsFortran')
         use iso_c_binding
@@ -922,8 +925,9 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
         integer(c_int) :: res
-        res = hipblasZgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info)
+        res = hipblasZgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
     end function hipblasZgelsFortran
 
 end module hipblas_interface

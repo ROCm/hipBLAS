@@ -7169,7 +7169,8 @@ hipblasStatus_t hipblasSgelsFortran(hipblasHandle_t    handle,
                                     const int          lda,
                                     float*             B,
                                     const int          ldb,
-                                    int*               info);
+                                    int*               info,
+                                    int*               deviceInfo);
 
 hipblasStatus_t hipblasDgelsFortran(hipblasHandle_t    handle,
                                     hipblasOperation_t trans,
@@ -7180,7 +7181,8 @@ hipblasStatus_t hipblasDgelsFortran(hipblasHandle_t    handle,
                                     const int          lda,
                                     double*            B,
                                     const int          ldb,
-                                    int*               info);
+                                    int*               info,
+                                    int*               deviceInfo);
 
 hipblasStatus_t hipblasCgelsFortran(hipblasHandle_t    handle,
                                     hipblasOperation_t trans,
@@ -7191,7 +7193,8 @@ hipblasStatus_t hipblasCgelsFortran(hipblasHandle_t    handle,
                                     const int          lda,
                                     hipblasComplex*    B,
                                     const int          ldb,
-                                    int*               info);
+                                    int*               info,
+                                    int*               deviceInfo);
 
 hipblasStatus_t hipblasZgelsFortran(hipblasHandle_t       handle,
                                     hipblasOperation_t    trans,
@@ -7202,7 +7205,8 @@ hipblasStatus_t hipblasZgelsFortran(hipblasHandle_t       handle,
                                     const int             lda,
                                     hipblasDoubleComplex* B,
                                     const int             ldb,
-                                    int*                  info);
+                                    int*                  info,
+                                    int*                  deviceInfo);
 }
 
 #endif

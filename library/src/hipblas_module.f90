@@ -13238,7 +13238,7 @@ module hipblas
 
     ! gels
     interface
-        function hipblasSgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info) &
+        function hipblasSgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
                 result(c_int) &
                 bind(c, name = 'hipblasSgels')
             use iso_c_binding
@@ -13254,11 +13254,12 @@ module hipblas
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
             type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
         end function hipblasSgels
     end interface
 
     interface
-        function hipblasDgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info) &
+        function hipblasDgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
                 result(c_int) &
                 bind(c, name = 'hipblasDgels')
             use iso_c_binding
@@ -13274,11 +13275,12 @@ module hipblas
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
             type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
         end function hipblasDgels
     end interface
 
     interface
-        function hipblasCgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info) &
+        function hipblasCgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
                 result(c_int) &
                 bind(c, name = 'hipblasCgels')
             use iso_c_binding
@@ -13294,11 +13296,12 @@ module hipblas
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
             type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
         end function hipblasCgels
     end interface
 
     interface
-        function hipblasZgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info) &
+        function hipblasZgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
                 result(c_int) &
                 bind(c, name = 'hipblasZgels')
             use iso_c_binding
@@ -13314,6 +13317,7 @@ module hipblas
             type(c_ptr), value :: B
             integer(c_int), value :: ldb
             type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
         end function hipblasZgels
     end interface
 

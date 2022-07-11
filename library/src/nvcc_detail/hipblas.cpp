@@ -10773,7 +10773,8 @@ hipblasStatus_t hipblasSgels(hipblasHandle_t    handle,
                              const int          lda,
                              float*             B,
                              const int          ldb,
-                             int*               info)
+                             int*               info,
+                             int*               deviceInfo)
 {
     // only batched variants of gels are supported in cuBLAS
     return HIPBLAS_STATUS_NOT_SUPPORTED;
@@ -10788,7 +10789,8 @@ hipblasStatus_t hipblasDgels(hipblasHandle_t    handle,
                              const int          lda,
                              double*            B,
                              const int          ldb,
-                             int*               info)
+                             int*               info,
+                             int*               deviceInfo)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -10802,7 +10804,8 @@ hipblasStatus_t hipblasCgels(hipblasHandle_t    handle,
                              const int          lda,
                              hipblasComplex*    B,
                              const int          ldb,
-                             int*               info)
+                             int*               info,
+                             int*               deviceInfo)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -10816,7 +10819,8 @@ hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
                              const int             lda,
                              hipblasDoubleComplex* B,
                              const int             ldb,
-                             int*                  info)
+                             int*                  info,
+                             int*                  deviceInfo)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }

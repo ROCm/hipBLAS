@@ -10121,9 +10121,10 @@ hipblasStatus_t hipblasGels<float>(hipblasHandle_t    handle,
                                    const int          lda,
                                    float*             B,
                                    const int          ldb,
-                                   int*               info)
+                                   int*               info,
+                                   int*               deviceInfo)
 {
-    return hipblasSgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info);
+    return hipblasSgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
 }
 
 template <>
@@ -10136,9 +10137,10 @@ hipblasStatus_t hipblasGels<double>(hipblasHandle_t    handle,
                                     const int          lda,
                                     double*            B,
                                     const int          ldb,
-                                    int*               info)
+                                    int*               info,
+                                    int*               deviceInfo)
 {
-    return hipblasDgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info);
+    return hipblasDgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
 }
 
 template <>
@@ -10151,9 +10153,10 @@ hipblasStatus_t hipblasGels<hipblasComplex>(hipblasHandle_t    handle,
                                             const int          lda,
                                             hipblasComplex*    B,
                                             const int          ldb,
-                                            int*               info)
+                                            int*               info,
+                                            int*               deviceInfo)
 {
-    return hipblasCgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info);
+    return hipblasCgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
 }
 
 template <>
@@ -10166,9 +10169,10 @@ hipblasStatus_t hipblasGels<hipblasDoubleComplex>(hipblasHandle_t       handle,
                                                   const int             lda,
                                                   hipblasDoubleComplex* B,
                                                   const int             ldb,
-                                                  int*                  info)
+                                                  int*                  info,
+                                                  int*                  deviceInfo)
 {
-    return hipblasZgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info);
+    return hipblasZgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
 }
 
 #endif
@@ -20369,9 +20373,10 @@ hipblasStatus_t hipblasGels<float, true>(hipblasHandle_t    handle,
                                          const int          lda,
                                          float*             B,
                                          const int          ldb,
-                                         int*               info)
+                                         int*               info,
+                                         int*               deviceInfo)
 {
-    return hipblasSgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info);
+    return hipblasSgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
 }
 
 template <>
@@ -20384,9 +20389,10 @@ hipblasStatus_t hipblasGels<double, true>(hipblasHandle_t    handle,
                                           const int          lda,
                                           double*            B,
                                           const int          ldb,
-                                          int*               info)
+                                          int*               info,
+                                          int*               deviceInfo)
 {
-    return hipblasDgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info);
+    return hipblasDgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
 }
 
 template <>
@@ -20399,9 +20405,10 @@ hipblasStatus_t hipblasGels<hipblasComplex, true>(hipblasHandle_t    handle,
                                                   const int          lda,
                                                   hipblasComplex*    B,
                                                   const int          ldb,
-                                                  int*               info)
+                                                  int*               info,
+                                                  int*               deviceInfo)
 {
-    return hipblasCgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info);
+    return hipblasCgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
 }
 
 template <>
@@ -20414,9 +20421,10 @@ hipblasStatus_t hipblasGels<hipblasDoubleComplex, true>(hipblasHandle_t       ha
                                                         const int             lda,
                                                         hipblasDoubleComplex* B,
                                                         const int             ldb,
-                                                        int*                  info)
+                                                        int*                  info,
+                                                        int*                  deviceInfo)
 {
-    return hipblasZgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info);
+    return hipblasZgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
 }
 
 #endif

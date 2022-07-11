@@ -1993,7 +1993,8 @@ hipblasStatus_t hipblasGels(hipblasHandle_t    handle,
                             const int          lda,
                             T*                 B,
                             const int          ldb,
-                            int*               info);
+                            int*               info,
+                            int*               deviceInfo);
 
 // dgmm
 template <typename T, bool FORTRAN = false>

@@ -62,6 +62,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
     host_vector<T> hB(B_size);
     host_vector<T> hB_res(B_size);
     int            info, info_res;
+    int            info_input(-1);
 
     device_vector<T>   dA(A_size);
     device_vector<T>   dB(B_size);
@@ -97,7 +98,8 @@ hipblasStatus_t testing_gels(const Arguments& argus)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasGelsFn(handle, trans, M, N, nrhs, dA, lda, dB, ldb, dInfo));
+        CHECK_HIPBLAS_ERROR(
+            hipblasGelsFn(handle, trans, M, N, nrhs, dA, lda, dB, ldb, &info_input, dInfo));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hB_res, dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
@@ -113,7 +115,9 @@ hipblasStatus_t testing_gels(const Arguments& argus)
 
         hipblas_error
             = norm_check_general<T>('F', std::max(M, N), nrhs, ldb, hB.data(), hB_res.data());
-        if(info != info_res)
+        if(info_input != info_res)
+            hipblas_error++;
+        if(info != 0)
             hipblas_error++;
 
         if(argus.unit_check)
@@ -136,7 +140,8 @@ hipblasStatus_t testing_gels(const Arguments& argus)
             if(iter == argus.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGelsFn(handle, trans, M, N, nrhs, dA, lda, dB, ldb, dInfo));
+            CHECK_HIPBLAS_ERROR(
+                hipblasGelsFn(handle, trans, M, N, nrhs, dA, lda, dB, ldb, &info_input, dInfo));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

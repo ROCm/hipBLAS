@@ -90,7 +90,7 @@ TEST_P(gels_gtest, gels_gtest_float)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.M < 0 || arg.N < 0 || arg.K < 0 || arg.lda < arg.M || arg.ldb < arg.M
-           || arg.ldb < arg.N || arg.transA_option == 'C')
+           || arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -113,7 +113,7 @@ TEST_P(gels_gtest, gels_gtest_double)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.M < 0 || arg.N < 0 || arg.K < 0 || arg.lda < arg.M || arg.ldb < arg.M
-           || arg.ldb < arg.N || arg.transA_option == 'C')
+           || arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -136,7 +136,7 @@ TEST_P(gels_gtest, gels_gtest_float_complex)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.M < 0 || arg.N < 0 || arg.K < 0 || arg.lda < arg.M || arg.ldb < arg.M
-           || arg.ldb < arg.N || arg.transA_option == 'T')
+           || arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -159,7 +159,7 @@ TEST_P(gels_gtest, gels_gtest_double_complex)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.M < 0 || arg.N < 0 || arg.K < 0 || arg.lda < arg.M || arg.ldb < arg.M
-           || arg.ldb < arg.N || arg.transA_option == 'T')
+           || arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

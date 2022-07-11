@@ -16693,7 +16693,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             
     ldb         int. ldb >= max(m,n).\n
                 Specifies the leading dimension of matrix B.
     @param[out]
-    info        pointer to int on the GPU.\n
+    info      pointer to a int on the host.\n
+              If info = 0, successful exit.
+              If info = j < 0, the j-th argument is invalid.
+    @param[out]
+    deviceInfo  pointer to int on the GPU.\n
                 If info = 0, successful exit.
                 If info = i > 0, the solution could not be computed because input matrix A is
                 rank deficient; the i-th diagonal element of its triangular factor is zero.
@@ -16708,7 +16712,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgels(hipblasHandle_t    handle,
                                             const int          lda,
                                             float*             B,
                                             const int          ldb,
-                                            int*               info);
+                                            int*               info,
+                                            int*               deviceInfo);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgels(hipblasHandle_t    handle,
                                             hipblasOperation_t trans,
@@ -16719,7 +16724,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgels(hipblasHandle_t    handle,
                                             const int          lda,
                                             double*            B,
                                             const int          ldb,
-                                            int*               info);
+                                            int*               info,
+                                            int*               deviceInfo);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgels(hipblasHandle_t    handle,
                                             hipblasOperation_t trans,
@@ -16730,7 +16736,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgels(hipblasHandle_t    handle,
                                             const int          lda,
                                             hipblasComplex*    B,
                                             const int          ldb,
-                                            int*               info);
+                                            int*               info,
+                                            int*               deviceInfo);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
                                             hipblasOperation_t    trans,
@@ -16741,7 +16748,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
                                             const int             lda,
                                             hipblasDoubleComplex* B,
                                             const int             ldb,
-                                            int*                  info);
+                                            int*                  info,
+                                            int*                  deviceInfo);
 ///@}
 
 /*! @{
