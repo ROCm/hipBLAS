@@ -847,11 +847,11 @@ end function hipblasDgeqrfStridedBatchedFortran
 
     ! gels
     function hipblasSgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo) &
-            result(res) &
             bind(c, name = 'hipblasSgelsFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgelsFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -863,16 +863,16 @@ end function hipblasDgeqrfStridedBatchedFortran
         integer(c_int), value :: ldb
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
-        integer(c_int) :: res
-        res = hipblasSgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
+        hipblasSgelsFortran = &
+            hipblasSgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
     end function hipblasSgelsFortran
 
     function hipblasDgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo) &
-            result(res) &
             bind(c, name = 'hipblasDgelsFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgelsFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -884,16 +884,16 @@ end function hipblasDgeqrfStridedBatchedFortran
         integer(c_int), value :: ldb
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
-        integer(c_int) :: res
-        res = hipblasDgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
+        hipblasDgelsFortran = &
+            hipblasDgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
     end function hipblasDgelsFortran
 
     function hipblasCgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo) &
-            result(res) &
             bind(c, name = 'hipblasCgelsFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgelsFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -905,16 +905,16 @@ end function hipblasDgeqrfStridedBatchedFortran
         integer(c_int), value :: ldb
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
-        integer(c_int) :: res
-        res = hipblasCgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
+        hipblasCgelsFortran = &
+            hipblasCgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
     end function hipblasCgelsFortran
 
     function hipblasZgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo) &
-            result(res) &
             bind(c, name = 'hipblasZgelsFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgelsFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -926,18 +926,18 @@ end function hipblasDgeqrfStridedBatchedFortran
         integer(c_int), value :: ldb
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
-        integer(c_int) :: res
-        res = hipblasZgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
+        hipblasZgelsFortran = &
+            hipblasZgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
     end function hipblasZgelsFortran
 
     ! gelsBatched
     function hipblasSgelsBatchedFortran(handle, trans, m, n, nrhs, A, &
         lda, B, ldb, info, deviceInfo, batchCount) &
-            result(res) &
             bind(c, name = 'hipblasSgelsBatchedFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgelsBatchedFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -950,17 +950,17 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
         integer(c_int), value :: batchCount
-        integer(c_int) :: res
-        res = hipblasSgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
+        hipblasSgelsBatchedFortran = &
+            hipblasSgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
     end function hipblasSgelsBatchedFortran
 
     function hipblasDgelsBatchedFortran(handle, trans, m, n, nrhs, A, &
         lda, B, ldb, info, deviceInfo, batchCount) &
-            result(res) &
             bind(c, name = 'hipblasDgelsBatchedFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgelsBatchedFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -973,17 +973,17 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
         integer(c_int), value :: batchCount
-        integer(c_int) :: res
-        res = hipblasDgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
+        hipblasDgelsBatchedFortran = &
+            hipblasDgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
     end function hipblasDgelsBatchedFortran
 
     function hipblasCgelsBatchedFortran(handle, trans, m, n, nrhs, A, &
         lda, B, ldb, info, deviceInfo, batchCount) &
-            result(res) &
             bind(c, name = 'hipblasCgelsBatchedFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgelsBatchedFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -996,17 +996,17 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
         integer(c_int), value :: batchCount
-        integer(c_int) :: res
-        res = hipblasCgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
+        hipblasCgelsBatchedFortran = &
+            hipblasCgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
     end function hipblasCgelsBatchedFortran
 
     function hipblasZgelsBatchedFortran(handle, trans, m, n, nrhs, A, &
         lda, B, ldb, info, deviceInfo, batchCount) &
-            result(res) &
             bind(c, name = 'hipblasZgelsBatchedFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgelsBatchedFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -1019,18 +1019,18 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
         integer(c_int), value :: batchCount
-        integer(c_int) :: res
-        res = hipblasZgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
+        hipblasZgelsBatchedFortran = &
+            hipblasZgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
     end function hipblasZgelsBatchedFortran
 
     ! gelsStridedBatched
     function hipblasSgelsStridedBatchedFortran(handle, trans, m, n, nrhs, A, &
         lda, strideA, B, ldb, strideB, info, deviceInfo, batchCount) &
-            result(res) &
             bind(c, name = 'hipblasSgelsStridedBatchedFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgelsStridedBatchedFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -1045,18 +1045,18 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
         integer(c_int), value :: batchCount
-        integer(c_int) :: res
-        res = hipblasSgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
+        hipblasSgelsStridedBatchedFortran = &
+            hipblasSgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
         B, ldb, strideB, info, deviceInfo, batchCount)
     end function hipblasSgelsStridedBatchedFortran
 
     function hipblasDgelsStridedBatchedFortran(handle, trans, m, n, nrhs, A, &
         lda, strideA, B, ldb, strideB, info, deviceInfo, batchCount) &
-            result(res) &
             bind(c, name = 'hipblasDgelsStridedBatchedFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgelsStridedBatchedFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -1071,18 +1071,18 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
         integer(c_int), value :: batchCount
-        integer(c_int) :: res
-        res = hipblasDgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
+        hipblasDgelsStridedBatchedFortran = &
+            hipblasDgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
         B, ldb, strideB, info, deviceInfo, batchCount)
     end function hipblasDgelsStridedBatchedFortran
 
     function hipblasCgelsStridedBatchedFortran(handle, trans, m, n, nrhs, A, &
         lda, strideA, B, ldb, strideB, info, deviceInfo, batchCount) &
-            result(res) &
             bind(c, name = 'hipblasCgelsStridedBatchedFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgelsStridedBatchedFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -1097,18 +1097,18 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
         integer(c_int), value :: batchCount
-        integer(c_int) :: res
-        res = hipblasCgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
+        hipblasCgelsStridedBatchedFortran = &
+            hipblasCgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
         B, ldb, strideB, info, deviceInfo, batchCount)
     end function hipblasCgelsStridedBatchedFortran
 
     function hipblasZgelsStridedBatchedFortran(handle, trans, m, n, nrhs, A, &
         lda, strideA, B, ldb, strideB, info, deviceInfo, batchCount) &
-            result(res) &
             bind(c, name = 'hipblasZgelsStridedBatchedFortran')
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgelsStridedBatchedFortran
         type(c_ptr), value :: handle
         integer(kind(HIPBLAS_OP_N)), value :: trans
         integer(c_int), value :: m
@@ -1123,8 +1123,8 @@ end function hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: info
         type(c_ptr), value :: deviceInfo
         integer(c_int), value :: batchCount
-        integer(c_int) :: res
-        res = hipblasZgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
+        hipblasZgelsStridedBatchedFortran = &
+            hipblasZgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
         B, ldb, strideB, info, deviceInfo, batchCount)
     end function hipblasZgelsStridedBatchedFortran
 

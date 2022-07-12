@@ -13239,11 +13239,11 @@ module hipblas
     ! gels
     interface
         function hipblasSgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
-                result(c_int) &
                 bind(c, name = 'hipblasSgels')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgels
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13260,11 +13260,11 @@ module hipblas
 
     interface
         function hipblasDgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
-                result(c_int) &
                 bind(c, name = 'hipblasDgels')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgels
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13281,11 +13281,11 @@ module hipblas
 
     interface
         function hipblasCgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
-                result(c_int) &
                 bind(c, name = 'hipblasCgels')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgels
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13302,11 +13302,11 @@ module hipblas
 
     interface
         function hipblasZgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
-                result(c_int) &
                 bind(c, name = 'hipblasZgels')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgels
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13324,11 +13324,11 @@ module hipblas
     ! gelsBatched
     interface
         function hipblasSgelsBatched(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo, batchCount) &
-                result(c_int) &
                 bind(c, name = 'hipblasSgelsBatched')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgelsBatched
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13346,11 +13346,11 @@ module hipblas
 
     interface
         function hipblasDgelsBatched(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo, batchCount) &
-                result(c_int) &
                 bind(c, name = 'hipblasDgelsBatched')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgelsBatched
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13368,11 +13368,11 @@ module hipblas
 
     interface
         function hipblasCgelsBatched(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo, batchCount) &
-                result(c_int) &
                 bind(c, name = 'hipblasCgelsBatched')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgelsBatched
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13390,11 +13390,11 @@ module hipblas
 
     interface
         function hipblasZgelsBatched(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo, batchCount) &
-                result(c_int) &
                 bind(c, name = 'hipblasZgelsBatched')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgelsBatched
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13414,11 +13414,11 @@ module hipblas
     interface
         function hipblasSgelsStridedBatched(handle, m, n, nrhs, trans, A, lda, strideA, &
             B, ldb, strideB, info, deviceInfo, batchCount) &
-                result(c_int) &
                 bind(c, name = 'hipblasSgelsStridedBatched')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgelsStridedBatched
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13439,11 +13439,11 @@ module hipblas
     interface
         function hipblasDgelsStridedBatched(handle, m, n, nrhs, trans, A, lda, strideA, &
             B, ldb, strideB, info, deviceInfo, batchCount) &
-                result(c_int) &
                 bind(c, name = 'hipblasDgelsStridedBatched')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgelsStridedBatched
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13464,11 +13464,11 @@ module hipblas
     interface
         function hipblasCgelsStridedBatched(handle, m, n, nrhs, trans, A, lda, strideA, &
             B, ldb, strideB, info, deviceInfo, batchCount) &
-                result(c_int) &
                 bind(c, name = 'hipblasCgelsStridedBatched')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgelsStridedBatched
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
@@ -13489,11 +13489,11 @@ module hipblas
     interface
         function hipblasZgelsStridedBatched(handle, m, n, nrhs, trans, A, lda, strideA, &
             B, ldb, strideB, info, deviceInfo, batchCount) &
-                result(c_int) &
                 bind(c, name = 'hipblasZgelsStridedBatched')
             use iso_c_binding
             use hipblas_enums
             implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgelsStridedBatched
             type(c_ptr), value :: handle
             integer(kind(HIPBLAS_OP_N)), value :: trans
             integer(c_int), value :: m
