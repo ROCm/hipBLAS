@@ -41,7 +41,7 @@ const vector<vector<int>> matrix_size_range
 
 const vector<char> trans_range = {
     'N',
-    'T',
+    // 'T', // commenting this out for now as cuBLAS only supports non-transpose
 };
 
 const vector<int> batch_count_range = {-1, 0, 1, 2};
