@@ -10842,17 +10842,17 @@ hipblasStatus_t hipblasSgelsBatched(hipblasHandle_t    handle,
 try
 {
     return hipCUBLASStatusToHIPStatus(cublasSgelsBatched((cublasHandle_t)handle,
-                                                 hipOperationToCudaOperation(trans),
-                                                 m,
-                                                 n,
-                                                 nrhs,
-                                                 A,
-                                                 lda,
-                                                 B,
-                                                 ldb,
-                                                 info,
-                                                 deviceInfo,
-                                                 batchCount)));
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         A,
+                                                         lda,
+                                                         B,
+                                                         ldb,
+                                                         info,
+                                                         deviceInfo,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -10874,17 +10874,17 @@ hipblasStatus_t hipblasDgelsBatched(hipblasHandle_t    handle,
 try
 {
     return hipCUBLASStatusToHIPStatus(cublasDgelsBatched((cublasHandle_t)handle,
-                                                 hipOperationToCudaOperation(trans),
-                                                 m,
-                                                 n,
-                                                 nrhs,
-                                                 A,
-                                                 lda,
-                                                 B,
-                                                 ldb,
-                                                 info,
-                                                 deviceInfo,
-                                                 batchCount)));
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         A,
+                                                         lda,
+                                                         B,
+                                                         ldb,
+                                                         info,
+                                                         deviceInfo,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -10906,17 +10906,17 @@ hipblasStatus_t hipblasCgelsBatched(hipblasHandle_t       handle,
 try
 {
     return hipCUBLASStatusToHIPStatus(cublasCgelsBatched((cublasHandle_t)handle,
-                                                 hipOperationToCudaOperation(trans),
-                                                 m,
-                                                 n,
-                                                 nrhs,
-                                                 (cuComplex**)A,
-                                                 lda,
-                                                 (cuComplex**)B,
-                                                 ldb,
-                                                 info,
-                                                 deviceInfo,
-                                                 batchCount)));
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         (cuComplex**)A,
+                                                         lda,
+                                                         (cuComplex**)B,
+                                                         ldb,
+                                                         info,
+                                                         deviceInfo,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -10938,17 +10938,17 @@ hipblasStatus_t hipblasZgelsBatched(hipblasHandle_t             handle,
 try
 {
     return hipCUBLASStatusToHIPStatus(cublasZgelsBatched((cublasHandle_t)handle,
-                                                 hipOperationToCudaOperation(trans),
-                                                 m,
-                                                 n,
-                                                 nrhs,
-                                                 (cuDoubleComplex**)A,
-                                                 lda,
-                                                 (cuDoubleComplex**)B,
-                                                 ldb,
-                                                 info,
-                                                 deviceInfo,
-                                                 batchCount)));
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         (cuDoubleComplex**)A,
+                                                         lda,
+                                                         (cuDoubleComplex**)B,
+                                                         ldb,
+                                                         info,
+                                                         deviceInfo,
+                                                         batchCount));
 }
 catch(...)
 {
