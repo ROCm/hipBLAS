@@ -13321,4 +13321,194 @@ module hipblas
         end function hipblasZgels
     end interface
 
+    ! gelsBatched
+    interface
+        function hipblasSgelsBatched(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo, batchCount) &
+                result(c_int) &
+                bind(c, name = 'hipblasSgelsBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+            integer(c_int), value :: batchCount
+        end function hipblasSgelsBatched
+    end interface
+
+    interface
+        function hipblasDgelsBatched(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo, batchCount) &
+                result(c_int) &
+                bind(c, name = 'hipblasDgelsBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+            integer(c_int), value :: batchCount
+        end function hipblasDgelsBatched
+    end interface
+
+    interface
+        function hipblasCgelsBatched(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo, batchCount) &
+                result(c_int) &
+                bind(c, name = 'hipblasCgelsBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+            integer(c_int), value :: batchCount
+        end function hipblasCgelsBatched
+    end interface
+
+    interface
+        function hipblasZgelsBatched(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo, batchCount) &
+                result(c_int) &
+                bind(c, name = 'hipblasZgelsBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+            integer(c_int), value :: batchCount
+        end function hipblasZgelsBatched
+    end interface
+
+    ! gelsStridedBatched
+    interface
+        function hipblasSgelsStridedBatched(handle, m, n, nrhs, trans, A, lda, strideA, &
+            B, ldb, strideB, info, deviceInfo, batchCount) &
+                result(c_int) &
+                bind(c, name = 'hipblasSgelsStridedBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            integer(c_int64_t), value :: strideA
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            integer(c_int64_t), value :: strideB
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+            integer(c_int), value :: batchCount
+        end function hipblasSgelsStridedBatched
+    end interface
+
+    interface
+        function hipblasDgelsStridedBatched(handle, m, n, nrhs, trans, A, lda, strideA, &
+            B, ldb, strideB, info, deviceInfo, batchCount) &
+                result(c_int) &
+                bind(c, name = 'hipblasDgelsStridedBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            integer(c_int64_t), value :: strideA
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            integer(c_int64_t), value :: strideB
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+            integer(c_int), value :: batchCount
+        end function hipblasDgelsStridedBatched
+    end interface
+
+    interface
+        function hipblasCgelsStridedBatched(handle, m, n, nrhs, trans, A, lda, strideA, &
+            B, ldb, strideB, info, deviceInfo, batchCount) &
+                result(c_int) &
+                bind(c, name = 'hipblasCgelsStridedBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            integer(c_int64_t), value :: strideA
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            integer(c_int64_t), value :: strideB
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+            integer(c_int), value :: batchCount
+        end function hipblasCgelsStridedBatched
+    end interface
+
+    interface
+        function hipblasZgelsStridedBatched(handle, m, n, nrhs, trans, A, lda, strideA, &
+            B, ldb, strideB, info, deviceInfo, batchCount) &
+                result(c_int) &
+                bind(c, name = 'hipblasZgelsStridedBatched')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            integer(c_int64_t), value :: strideA
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            integer(c_int64_t), value :: strideB
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+            integer(c_int), value :: batchCount
+        end function hipblasZgelsStridedBatched
+    end interface
+
 end module hipblas
