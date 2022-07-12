@@ -785,6 +785,7 @@ contains
         use iso_c_binding
         use hipblas_enums
         implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgeqrfStridedBatchedFortran
         type(c_ptr), value :: handle
         integer(c_int), value :: m
         integer(c_int), value :: n
