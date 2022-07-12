@@ -13236,4 +13236,89 @@ module hipblas
         end function hipblasZgeqrfStridedBatched
     end interface
 
+    ! gels
+    interface
+        function hipblasSgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
+                result(c_int) &
+                bind(c, name = 'hipblasSgels')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+        end function hipblasSgels
+    end interface
+
+    interface
+        function hipblasDgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
+                result(c_int) &
+                bind(c, name = 'hipblasDgels')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+        end function hipblasDgels
+    end interface
+
+    interface
+        function hipblasCgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
+                result(c_int) &
+                bind(c, name = 'hipblasCgels')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+        end function hipblasCgels
+    end interface
+
+    interface
+        function hipblasZgels(handle, m, n, nrhs, trans, A, lda, B, ldb, info, deviceInfo) &
+                result(c_int) &
+                bind(c, name = 'hipblasZgels')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int), value :: m
+            integer(c_int), value :: n
+            integer(c_int), value :: nrhs
+            type(c_ptr), value :: A
+            integer(c_int), value :: lda
+            type(c_ptr), value :: B
+            integer(c_int), value :: ldb
+            type(c_ptr), value :: info
+            type(c_ptr), value :: deviceInfo
+        end function hipblasZgels
+    end interface
+
 end module hipblas

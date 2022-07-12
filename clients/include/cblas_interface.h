@@ -461,6 +461,10 @@ int cblas_getri(int n, T* A, int lda, int* ipiv, T* work, int lwork);
 
 template <typename T>
 int cblas_geqrf(int m, int n, T* A, int lda, T* tau, T* work, int lwork);
+
+template <typename T>
+int cblas_gels(
+    char trans, int m, int n, int nrhs, T* A, int lda, T* B, int ldb, T* work, int lwork);
 /* ============================================================================================ */
 
 #endif /* _CBLAS_INTERFACE_ */

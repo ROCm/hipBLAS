@@ -105,6 +105,7 @@ if( BUILD_WITH_SOLVER )
     geqrf_gtest.cpp
     geqrf_batched_gtest.cpp
     geqrf_strided_batched_gtest.cpp
+    gels_gtest.cpp
   )
 endif( )
 
