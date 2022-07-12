@@ -795,8 +795,9 @@ contains
         integer(c_int), value :: stride_T
         type(c_ptr), value :: info
         integer(c_int), value :: batch_count
-        res = hipblasDgeqrfStridedBatched(handle, m, n, A, lda, stride_A, &
-                                          tau, stride_T, info, batch_count)
+        hipblasDgeqrfStridedBatchedFortran = &
+            hipblasDgeqrfStridedBatched(handle, m, n, A, lda, stride_A, &
+                                        tau, stride_T, info, batch_count)
     end function hipblasDgeqrfStridedBatchedFortran
 
     function hipblasCgeqrfStridedBatchedFortran(handle, m, n, A, lda, stride_A, &
