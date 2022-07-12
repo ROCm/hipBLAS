@@ -10110,6 +10110,71 @@ hipblasStatus_t hipblasGeqrfStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
 }
 
+// gels
+template <>
+hipblasStatus_t hipblasGels<float>(hipblasHandle_t    handle,
+                                   hipblasOperation_t trans,
+                                   const int          m,
+                                   const int          n,
+                                   const int          nrhs,
+                                   float*             A,
+                                   const int          lda,
+                                   float*             B,
+                                   const int          ldb,
+                                   int*               info,
+                                   int*               deviceInfo)
+{
+    return hipblasSgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
+}
+
+template <>
+hipblasStatus_t hipblasGels<double>(hipblasHandle_t    handle,
+                                    hipblasOperation_t trans,
+                                    const int          m,
+                                    const int          n,
+                                    const int          nrhs,
+                                    double*            A,
+                                    const int          lda,
+                                    double*            B,
+                                    const int          ldb,
+                                    int*               info,
+                                    int*               deviceInfo)
+{
+    return hipblasDgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
+}
+
+template <>
+hipblasStatus_t hipblasGels<hipblasComplex>(hipblasHandle_t    handle,
+                                            hipblasOperation_t trans,
+                                            const int          m,
+                                            const int          n,
+                                            const int          nrhs,
+                                            hipblasComplex*    A,
+                                            const int          lda,
+                                            hipblasComplex*    B,
+                                            const int          ldb,
+                                            int*               info,
+                                            int*               deviceInfo)
+{
+    return hipblasCgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
+}
+
+template <>
+hipblasStatus_t hipblasGels<hipblasDoubleComplex>(hipblasHandle_t       handle,
+                                                  hipblasOperation_t    trans,
+                                                  const int             m,
+                                                  const int             n,
+                                                  const int             nrhs,
+                                                  hipblasDoubleComplex* A,
+                                                  const int             lda,
+                                                  hipblasDoubleComplex* B,
+                                                  const int             ldb,
+                                                  int*                  info,
+                                                  int*                  deviceInfo)
+{
+    return hipblasZgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
+}
+
 #endif
 
 /////////////
@@ -20295,6 +20360,71 @@ hipblasStatus_t hipblasGeqrfStridedBatched<hipblasDoubleComplex, true>(hipblasHa
 {
     return hipblasZgeqrfStridedBatchedFortran(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+}
+
+// gels
+template <>
+hipblasStatus_t hipblasGels<float, true>(hipblasHandle_t    handle,
+                                         hipblasOperation_t trans,
+                                         const int          m,
+                                         const int          n,
+                                         const int          nrhs,
+                                         float*             A,
+                                         const int          lda,
+                                         float*             B,
+                                         const int          ldb,
+                                         int*               info,
+                                         int*               deviceInfo)
+{
+    return hipblasSgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
+}
+
+template <>
+hipblasStatus_t hipblasGels<double, true>(hipblasHandle_t    handle,
+                                          hipblasOperation_t trans,
+                                          const int          m,
+                                          const int          n,
+                                          const int          nrhs,
+                                          double*            A,
+                                          const int          lda,
+                                          double*            B,
+                                          const int          ldb,
+                                          int*               info,
+                                          int*               deviceInfo)
+{
+    return hipblasDgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
+}
+
+template <>
+hipblasStatus_t hipblasGels<hipblasComplex, true>(hipblasHandle_t    handle,
+                                                  hipblasOperation_t trans,
+                                                  const int          m,
+                                                  const int          n,
+                                                  const int          nrhs,
+                                                  hipblasComplex*    A,
+                                                  const int          lda,
+                                                  hipblasComplex*    B,
+                                                  const int          ldb,
+                                                  int*               info,
+                                                  int*               deviceInfo)
+{
+    return hipblasCgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
+}
+
+template <>
+hipblasStatus_t hipblasGels<hipblasDoubleComplex, true>(hipblasHandle_t       handle,
+                                                        hipblasOperation_t    trans,
+                                                        const int             m,
+                                                        const int             n,
+                                                        const int             nrhs,
+                                                        hipblasDoubleComplex* A,
+                                                        const int             lda,
+                                                        hipblasDoubleComplex* B,
+                                                        const int             ldb,
+                                                        int*                  info,
+                                                        int*                  deviceInfo)
+{
+    return hipblasZgelsFortran(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo);
 }
 
 #endif

@@ -672,6 +672,10 @@
 #define hipblasDgeqrfFortran hipblasDgeqrf
 #define hipblasCgeqrfFortran hipblasCgeqrf
 #define hipblasZgeqrfFortran hipblasZgeqrf
+#define hipblasSgelsFortran hipblasSgels
+#define hipblasDgelsFortran hipblasDgels
+#define hipblasCgelsFortran hipblasCgels
+#define hipblasZgelsFortran hipblasZgels
 #define hipblasSgeqrfBatchedFortran hipblasSgeqrfBatched
 #define hipblasDgeqrfBatchedFortran hipblasDgeqrfBatched
 #define hipblasCgeqrfBatchedFortran hipblasCgeqrfBatched
