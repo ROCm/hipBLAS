@@ -16658,8 +16658,6 @@ try
         *info = -7;
     else if(ldb < m || ldb < n)
         *info = -8;
-    else if(info == NULL)
-        *info = -9;
     else if(deviceInfo == NULL)
         *info = -10;
     else
@@ -16711,8 +16709,6 @@ try
         *info = -7;
     else if(ldb < m || ldb < n)
         *info = -8;
-    else if(info == NULL)
-        *info = -9;
     else if(deviceInfo == NULL)
         *info = -10;
     else
@@ -16764,8 +16760,6 @@ try
         *info = -7;
     else if(ldb < m || ldb < n)
         *info = -8;
-    else if(info == NULL)
-        *info = -9;
     else if(deviceInfo == NULL)
         *info = -10;
     else
@@ -16817,8 +16811,6 @@ try
         *info = -7;
     else if(ldb < m || ldb < n)
         *info = -8;
-    else if(info == NULL)
-        *info = -9;
     else if(deviceInfo == NULL)
         *info = -10;
     else
@@ -16872,8 +16864,6 @@ try
         *info = -7;
     else if(ldb < m || ldb < n)
         *info = -8;
-    else if(info == NULL)
-        *info = -9;
     else if(deviceInfo == NULL)
         *info = -10;
     else if(batchCount < 0)
@@ -16929,8 +16919,6 @@ try
         *info = -7;
     else if(ldb < m || ldb < n)
         *info = -8;
-    else if(info == NULL)
-        *info = -9;
     else if(deviceInfo == NULL)
         *info = -10;
     else if(batchCount < 0)
@@ -16986,8 +16974,6 @@ try
         *info = -7;
     else if(ldb < m || ldb < n)
         *info = -8;
-    else if(info == NULL)
-        *info = -9;
     else if(deviceInfo == NULL)
         *info = -10;
     else if(batchCount < 0)
@@ -17043,8 +17029,6 @@ try
         *info = -7;
     else if(ldb < m || ldb < n)
         *info = -8;
-    else if(info == NULL)
-        *info = -9;
     else if(deviceInfo == NULL)
         *info = -10;
     else if(batchCount < 0)
@@ -17103,8 +17087,6 @@ try
         *info = -8;
     else if(ldb < m || ldb < n)
         *info = -9;
-    else if(info == NULL)
-        *info = -11;
     else if(deviceInfo == NULL)
         *info = -12;
     else if(batchCount < 0)
@@ -17164,8 +17146,6 @@ try
         *info = -8;
     else if(ldb < m || ldb < n)
         *info = -9;
-    else if(info == NULL)
-        *info = -11;
     else if(deviceInfo == NULL)
         *info = -12;
     else if(batchCount < 0)
@@ -17225,8 +17205,6 @@ try
         *info = -8;
     else if(ldb < m || ldb < n)
         *info = -9;
-    else if(info == NULL)
-        *info = -11;
     else if(deviceInfo == NULL)
         *info = -12;
     else if(batchCount < 0)
@@ -17286,8 +17264,6 @@ try
         *info = -8;
     else if(ldb < m || ldb < n)
         *info = -9;
-    else if(info == NULL)
-        *info = -11;
     else if(deviceInfo == NULL)
         *info = -12;
     else if(batchCount < 0)

@@ -115,9 +115,10 @@ hipblasStatus_t testing_gels(const Arguments& argus)
 
         hipblas_error
             = norm_check_general<T>('F', std::max(M, N), nrhs, ldb, hB.data(), hB_res.data());
-        if(info_input != info_res)
+
+        if(info != info_res)
             hipblas_error += 1.0;
-        if(info != 0)
+        if(info_input != 0)
             hipblas_error += 1.0;
 
         if(argus.unit_check)

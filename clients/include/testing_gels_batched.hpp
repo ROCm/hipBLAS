@@ -140,11 +140,11 @@ hipblasStatus_t testing_gels_batched(const Arguments& argus)
         hipblas_error
             = norm_check_general<T>('F', std::max(M, N), nrhs, ldb, hB, hB_res, batchCount);
 
+        if(info_input != 0)
+            hipblas_error += 1.0;
         for(int b = 0; b < batchCount; b++)
         {
-            if(info_res[b] != 0)
-                hipblas_error += 1.0;
-            if(info[b] != info_input)
+            if(info[b] != info_res[b])
                 hipblas_error += 1.0;
         }
 
