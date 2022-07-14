@@ -930,4 +930,203 @@ contains
             hipblasZgels(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo)
     end function hipblasZgelsFortran
 
+    ! gelsBatched
+    function hipblasSgelsBatchedFortran(handle, trans, m, n, nrhs, A, &
+        lda, B, ldb, info, deviceInfo, batchCount) &
+            bind(c, name = 'hipblasSgelsBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgelsBatchedFortran
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
+        integer(c_int), value :: batchCount
+        hipblasSgelsBatchedFortran = &
+            hipblasSgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
+    end function hipblasSgelsBatchedFortran
+
+    function hipblasDgelsBatchedFortran(handle, trans, m, n, nrhs, A, &
+        lda, B, ldb, info, deviceInfo, batchCount) &
+            bind(c, name = 'hipblasDgelsBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgelsBatchedFortran
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
+        integer(c_int), value :: batchCount
+        hipblasDgelsBatchedFortran = &
+            hipblasDgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
+    end function hipblasDgelsBatchedFortran
+
+    function hipblasCgelsBatchedFortran(handle, trans, m, n, nrhs, A, &
+        lda, B, ldb, info, deviceInfo, batchCount) &
+            bind(c, name = 'hipblasCgelsBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgelsBatchedFortran
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
+        integer(c_int), value :: batchCount
+        hipblasCgelsBatchedFortran = &
+            hipblasCgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
+    end function hipblasCgelsBatchedFortran
+
+    function hipblasZgelsBatchedFortran(handle, trans, m, n, nrhs, A, &
+        lda, B, ldb, info, deviceInfo, batchCount) &
+            bind(c, name = 'hipblasZgelsBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgelsBatchedFortran
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
+        integer(c_int), value :: batchCount
+        hipblasZgelsBatchedFortran = &
+            hipblasZgelsBatched(handle, trans, m, n, nrhs, A, lda, B, ldb, info, deviceInfo, batchCount)
+    end function hipblasZgelsBatchedFortran
+
+    ! gelsStridedBatched
+    function hipblasSgelsStridedBatchedFortran(handle, trans, m, n, nrhs, A, &
+        lda, strideA, B, ldb, strideB, info, deviceInfo, batchCount) &
+            bind(c, name = 'hipblasSgelsStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgelsStridedBatchedFortran
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: strideA
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: strideB
+        type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
+        integer(c_int), value :: batchCount
+        hipblasSgelsStridedBatchedFortran = &
+            hipblasSgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
+        B, ldb, strideB, info, deviceInfo, batchCount)
+    end function hipblasSgelsStridedBatchedFortran
+
+    function hipblasDgelsStridedBatchedFortran(handle, trans, m, n, nrhs, A, &
+        lda, strideA, B, ldb, strideB, info, deviceInfo, batchCount) &
+            bind(c, name = 'hipblasDgelsStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgelsStridedBatchedFortran
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: strideA
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: strideB
+        type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
+        integer(c_int), value :: batchCount
+        hipblasDgelsStridedBatchedFortran = &
+            hipblasDgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
+        B, ldb, strideB, info, deviceInfo, batchCount)
+    end function hipblasDgelsStridedBatchedFortran
+
+    function hipblasCgelsStridedBatchedFortran(handle, trans, m, n, nrhs, A, &
+        lda, strideA, B, ldb, strideB, info, deviceInfo, batchCount) &
+            bind(c, name = 'hipblasCgelsStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgelsStridedBatchedFortran
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: strideA
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: strideB
+        type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
+        integer(c_int), value :: batchCount
+        hipblasCgelsStridedBatchedFortran = &
+            hipblasCgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
+        B, ldb, strideB, info, deviceInfo, batchCount)
+    end function hipblasCgelsStridedBatchedFortran
+
+    function hipblasZgelsStridedBatchedFortran(handle, trans, m, n, nrhs, A, &
+        lda, strideA, B, ldb, strideB, info, deviceInfo, batchCount) &
+            bind(c, name = 'hipblasZgelsStridedBatchedFortran')
+        use iso_c_binding
+        use hipblas_enums
+        implicit none
+        integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgelsStridedBatchedFortran
+        type(c_ptr), value :: handle
+        integer(kind(HIPBLAS_OP_N)), value :: trans
+        integer(c_int), value :: m
+        integer(c_int), value :: n
+        integer(c_int), value :: nrhs
+        type(c_ptr), value :: A
+        integer(c_int), value :: lda
+        integer(c_int64_t), value :: strideA
+        type(c_ptr), value :: B
+        integer(c_int), value :: ldb
+        integer(c_int64_t), value :: strideB
+        type(c_ptr), value :: info
+        type(c_ptr), value :: deviceInfo
+        integer(c_int), value :: batchCount
+        hipblasZgelsStridedBatchedFortran = &
+            hipblasZgelsStridedBatched(handle, trans, m, n, nrhs, A, lda, strideA, &
+        B, ldb, strideB, info, deviceInfo, batchCount)
+    end function hipblasZgelsStridedBatchedFortran
+
+
 end module hipblas_interface

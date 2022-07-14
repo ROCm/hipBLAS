@@ -16693,7 +16693,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             
     ldb         int. ldb >= max(m,n).\n
                 Specifies the leading dimension of matrix B.
     @param[out]
-    info        pointer to a int on the host.\n
+    info        pointer to an int on the host.\n
                 If info = 0, successful exit.
                 If info = j < 0, the j-th argument is invalid.
     @param[out]
@@ -16750,6 +16750,276 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
                                             const int             ldb,
                                             int*                  info,
                                             int*                  deviceInfo);
+///@}
+
+/*! @{
+    \brief gelsBatched solves a batch of overdetermined (or underdetermined) linear systems
+    defined by a set of m-by-n matrices \f$A_j\f$, and corresponding matrices \f$B_j\f$, using the
+    QR factorizations computed by "GEQRF_BATCHED" (or the LQ factorizations computed by "GELQF_BATCHED").
+
+    \details
+    For each instance in the batch, depending on the value of trans, the problem solved by this function is either of the form
+
+    \f[
+        \begin{array}{cl}
+        A_j X_j = B_j & \: \text{not transposed, or}\\
+        A_j' X_j = B_j & \: \text{transposed if real, or conjugate transposed if complex}
+        \end{array}
+    \f]
+
+    If m >= n (or m < n in the case of transpose/conjugate transpose), the system is overdetermined
+    and a least-squares solution approximating X_j is found by minimizing
+
+    \f[
+        || B_j - A_j  X_j || \quad \text{(or} \: || B_j - A_j' X_j ||\text{)}
+    \f]
+
+    If m < n (or m >= n in the case of transpose/conjugate transpose), the system is underdetermined
+    and a unique solution for X_j is chosen such that \f$|| X_j ||\f$ is minimal.
+
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : s,d,c,z
+    Note that cuBLAS backend supports only the non-transpose operation and only solves over-determined systems (m >= n).
+
+    @param[in]
+    handle      hipblasHandle_t.
+    @param[in]
+    trans       hipblasOperation_t.\n
+                Specifies the form of the system of equations.
+    @param[in]
+    m           int. m >= 0.\n
+                The number of rows of all matrices A_j in the batch.
+    @param[in]
+    n           int. n >= 0.\n
+                The number of columns of all matrices A_j in the batch.
+    @param[in]
+    nrhs        int. nrhs >= 0.\n
+                The number of columns of all matrices B_j and X_j in the batch;
+                i.e., the columns on the right hand side.
+    @param[inout]
+    A           array of pointer to type. Each pointer points to an array on the GPU of dimension lda*n.\n
+                On entry, the matrices A_j.
+                On exit, the QR (or LQ) factorizations of A_j as returned by "GEQRF_BATCHED"
+                (or "GELQF_BATCHED").
+    @param[in]
+    lda         int. lda >= m.\n
+                Specifies the leading dimension of matrices A_j.
+    @param[inout]
+    B           array of pointer to type. Each pointer points to an array on the GPU of dimension ldb*nrhs.\n
+                On entry, the matrices B_j.
+                On exit, when info[j] = 0, B_j is overwritten by the solution vectors (and the residuals in
+                the overdetermined cases) stored as columns.
+    @param[in]
+    ldb         int. ldb >= max(m,n).\n
+                Specifies the leading dimension of matrices B_j.
+    @param[out]
+    info        pointer to an int on the host.\n
+                If info = 0, successful exit.
+                If info = j < 0, the j-th argument is invalid.
+    @param[out]
+    deviceInfo  pointer to int. Array of batchCount integers on the GPU.\n
+                If deviceInfo[j] = 0, successful exit for solution of A_j.
+                If deviceInfo[j] = i > 0, the solution of A_j could not be computed because input
+                matrix A_j is rank deficient; the i-th diagonal element of its triangular factor is zero.
+    @param[in]
+    batchCount  int. batchCount >= 0.\n
+                Number of matrices in the batch.
+    ********************************************************************/
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgelsBatched(hipblasHandle_t    handle,
+                                                   hipblasOperation_t trans,
+                                                   const int          m,
+                                                   const int          n,
+                                                   const int          nrhs,
+                                                   float* const       A[],
+                                                   const int          lda,
+                                                   float* const       B[],
+                                                   const int          ldb,
+                                                   int*               info,
+                                                   int*               deviceInfo,
+                                                   const int          batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgelsBatched(hipblasHandle_t    handle,
+                                                   hipblasOperation_t trans,
+                                                   const int          m,
+                                                   const int          n,
+                                                   const int          nrhs,
+                                                   double* const      A[],
+                                                   const int          lda,
+                                                   double* const      B[],
+                                                   const int          ldb,
+                                                   int*               info,
+                                                   int*               deviceInfo,
+                                                   const int          batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgelsBatched(hipblasHandle_t       handle,
+                                                   hipblasOperation_t    trans,
+                                                   const int             m,
+                                                   const int             n,
+                                                   const int             nrhs,
+                                                   hipblasComplex* const A[],
+                                                   const int             lda,
+                                                   hipblasComplex* const B[],
+                                                   const int             ldb,
+                                                   int*                  info,
+                                                   int*                  deviceInfo,
+                                                   const int             batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgelsBatched(hipblasHandle_t             handle,
+                                                   hipblasOperation_t          trans,
+                                                   const int                   m,
+                                                   const int                   n,
+                                                   const int                   nrhs,
+                                                   hipblasDoubleComplex* const A[],
+                                                   const int                   lda,
+                                                   hipblasDoubleComplex* const B[],
+                                                   const int                   ldb,
+                                                   int*                        info,
+                                                   int*                        deviceInfo,
+                                                   const int                   batchCount);
+///@}
+
+/*! @{
+    \brief gelsStridedBatched solves a batch of overdetermined (or underdetermined) linear
+    systems defined by a set of m-by-n matrices \f$A_j\f$, and corresponding matrices \f$B_j\f$,
+    using the QR factorizations computed by "GEQRF_STRIDED_BATCHED"
+    (or the LQ factorizations computed by "GELQF_STRIDED_BATCHED").
+
+    \details
+    For each instance in the batch, depending on the value of trans, the problem solved by this function is either of the form
+
+    \f[
+        \begin{array}{cl}
+        A_j X_j = B_j & \: \text{not transposed, or}\\
+        A_j' X_j = B_j & \: \text{transposed if real, or conjugate transposed if complex}
+        \end{array}
+    \f]
+
+    If m >= n (or m < n in the case of transpose/conjugate transpose), the system is overdetermined
+    and a least-squares solution approximating X_j is found by minimizing
+
+    \f[
+        || B_j - A_j  X_j || \quad \text{(or} \: || B_j - A_j' X_j ||\text{)}
+    \f]
+
+    If m < n (or m >= n in the case of transpose/conjugate transpose), the system is underdetermined
+    and a unique solution for X_j is chosen such that \f$|| X_j ||\f$ is minimal.
+
+    - Supported precisions in rocSOLVER : s,d,c,z
+    - Supported precisions in cuBLAS    : currently unsupported
+
+    @param[in]
+    handle      hipblasHandle_t.
+    @param[in]
+    trans       hipblasOperation_t.\n
+                Specifies the form of the system of equations.
+    @param[in]
+    m           int. m >= 0.\n
+                The number of rows of all matrices A_j in the batch.
+    @param[in]
+    n           int. n >= 0.\n
+                The number of columns of all matrices A_j in the batch.
+    @param[in]
+    nrhs        int. nrhs >= 0.\n
+                The number of columns of all matrices B_j and X_j in the batch;
+                i.e., the columns on the right hand side.
+    @param[inout]
+    A           pointer to type. Array on the GPU (the size depends on the value of strideA).\n
+                On entry, the matrices A_j.
+                On exit, the QR (or LQ) factorizations of A_j as returned by "GEQRF_STRIDED_BATCHED"
+                (or "GELQF_STRIDED_BATCHED").
+    @param[in]
+    lda         int. lda >= m.\n
+                Specifies the leading dimension of matrices A_j.
+    @param[in]
+    strideA     hipblasStride.\n
+                Stride from the start of one matrix A_j to the next one A_(j+1).
+                There is no restriction for the value of strideA. Normal use case is strideA >= lda*n
+    @param[inout]
+    B           pointer to type. Array on the GPU (the size depends on the value of strideB).\n
+                On entry, the matrices B_j.
+                On exit, when info[j] = 0, each B_j is overwritten by the solution vectors (and the residuals in
+                the overdetermined cases) stored as columns.
+    @param[in]
+    ldb         int. ldb >= max(m,n).\n
+                Specifies the leading dimension of matrices B_j.
+    @param[in]
+    strideB     hipblasStride.\n
+                Stride from the start of one matrix B_j to the next one B_(j+1).
+                There is no restriction for the value of strideB. Normal use case is strideB >= ldb*nrhs
+    @param[out]
+    info        pointer to an int on the host.\n
+                If info = 0, successful exit.
+                If info = j < 0, the j-th argument is invalid.
+    @param[out]
+    deviceInfo  pointer to int. Array of batchCount integers on the GPU.\n
+                If deviceInfo[j] = 0, successful exit for solution of A_j.
+                If deviceInfo[j] = i > 0, the solution of A_j could not be computed because input
+                matrix A_j is rank deficient; the i-th diagonal element of its triangular factor is zero.
+    @param[in]
+    batchCount  int. batchCount >= 0.\n
+                Number of matrices in the batch.
+    ********************************************************************/
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasSgelsStridedBatched(hipblasHandle_t     handle,
+                                                          hipblasOperation_t  trans,
+                                                          const int           m,
+                                                          const int           n,
+                                                          const int           nrhs,
+                                                          float*              A,
+                                                          const int           lda,
+                                                          const hipblasStride strideA,
+                                                          float*              B,
+                                                          const int           ldb,
+                                                          const hipblasStride strideB,
+                                                          int*                info,
+                                                          int*                deviceInfo,
+                                                          const int           batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDgelsStridedBatched(hipblasHandle_t     handle,
+                                                          hipblasOperation_t  trans,
+                                                          const int           m,
+                                                          const int           n,
+                                                          const int           nrhs,
+                                                          double*             A,
+                                                          const int           lda,
+                                                          const hipblasStride strideA,
+                                                          double*             B,
+                                                          const int           ldb,
+                                                          const hipblasStride strideB,
+                                                          int*                info,
+                                                          int*                deviceInfo,
+                                                          const int           batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgelsStridedBatched(hipblasHandle_t     handle,
+                                                          hipblasOperation_t  trans,
+                                                          const int           m,
+                                                          const int           n,
+                                                          const int           nrhs,
+                                                          hipblasComplex*     A,
+                                                          const int           lda,
+                                                          const hipblasStride strideA,
+                                                          hipblasComplex*     B,
+                                                          const int           ldb,
+                                                          const hipblasStride strideB,
+                                                          int*                info,
+                                                          int*                deviceInfo,
+                                                          const int           batch_count);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgelsStridedBatched(hipblasHandle_t       handle,
+                                                          hipblasOperation_t    trans,
+                                                          const int             m,
+                                                          const int             n,
+                                                          const int             nrhs,
+                                                          hipblasDoubleComplex* A,
+                                                          const int             lda,
+                                                          const hipblasStride   strideA,
+                                                          hipblasDoubleComplex* B,
+                                                          const int             ldb,
+                                                          const hipblasStride   strideB,
+                                                          int*                  info,
+                                                          int*                  deviceInfo,
+                                                          const int             batch_count);
 ///@}
 
 /*! @{

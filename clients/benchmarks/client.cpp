@@ -220,6 +220,8 @@
 // solver functions
 #ifdef __HIP_PLATFORM_SOLVER__
 #include "testing_gels.hpp"
+#include "testing_gels_batched.hpp"
+#include "testing_gels_strided_batched.hpp"
 #include "testing_geqrf.hpp"
 #include "testing_geqrf_batched.hpp"
 #include "testing_geqrf_strided_batched.hpp"
@@ -514,6 +516,8 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"getrs_batched", testing_getrs_batched<T>},
             {"getrs_strided_batched", testing_getrs_strided_batched<T>},
             {"gels", testing_gels<T>},
+            {"gels_batched", testing_gels_batched<T>},
+            {"gels_strided_batched", testing_gels_strided_batched<T>},
 #endif
 
             // Aux
@@ -735,6 +739,8 @@ struct perf_blas<
             {"getrs_batched", testing_getrs_batched<T>},
             {"getrs_strided_batched", testing_getrs_strided_batched<T>},
             {"gels", testing_gels<T>},
+            {"gels_batched", testing_gels_batched<T>},
+            {"gels_strided_batched", testing_gels_strided_batched<T>},
 #endif
         };
         run_function(map, arg);
