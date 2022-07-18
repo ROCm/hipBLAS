@@ -185,7 +185,7 @@ if( NOT USE_CUDA )
     target_link_libraries( hipblas-test PRIVATE hip::${CUSTOM_TARGET} )
   endif( )
 
-  if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
     # hip-clang needs specific flag to turn on pthread and m
     target_link_libraries( hipblas-test PRIVATE -lpthread -lm )
 
