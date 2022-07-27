@@ -2,8 +2,8 @@
 Deprecations by version
 #######################
 
-Announced in 0.49
-*****************
+Announced in hipBLAS 0.49
+*************************
 
 Replace inplace hipblasXtrmm with out of place hipblasXtrmm
 ===========================================================
@@ -12,8 +12,8 @@ The hipblasXtrmm API, along with batched versions, will be changing in hipBLAS 1
 release to allow in-place and out-of-place behavior. This change will introduce an
 output matrix 'C', matching the rocblas_xtrmm_outofplace API and the cublasXtrmm API.
 
-Announced in 0.53
-*****************
+Announced in hipBLAS 0.53
+*************************
 
 Remove packed_int8x4 datatype
 =============================
