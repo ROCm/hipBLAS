@@ -98,6 +98,14 @@ module hipblas_enums
         enumerator :: HIPBLAS_ATOMICS_ALLOWED = 1
     end enum
 
+    enum, bind(c)
+        enumerator :: HIPBLAS_INT8_DATATYPE_DEFAULT = 0
+        enumerator :: HIPBLAS_INT8_DATATYPE_INT8 = 1
+        enumerator :: HIPBLAS_INT8_DATATYPE_PACK_INT8x4 = 2
+    end enum
+
+
+
 end module hipblas_enums
 
 module hipblas

@@ -923,7 +923,7 @@ int getArch();
 /* query what rocBLAS recommends for int8 layout. We are /always/ passing in the flag which
  * rocBLAS recommends, thus we need to know what layout to format our data in our tests.
  * returns true if should be packed. */
-bool layout_pack_int8();
+bool layout_pack_int8(hipblasHandle_t handle);
 
 /* ============================================================================================ */
 /*  timing: HIP only provides very limited timers function clock() and not general;
