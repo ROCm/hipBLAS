@@ -1982,6 +1982,50 @@ hipblasStatus_t hipblasGeqrfStridedBatched(hipblasHandle_t     handle,
                                            int*                info,
                                            const int           batchCount);
 
+// gels
+template <typename T, bool FORTRAN = false>
+hipblasStatus_t hipblasGels(hipblasHandle_t    handle,
+                            hipblasOperation_t trans,
+                            const int          m,
+                            const int          n,
+                            const int          nrhs,
+                            T*                 A,
+                            const int          lda,
+                            T*                 B,
+                            const int          ldb,
+                            int*               info,
+                            int*               deviceInfo);
+
+template <typename T, bool FORTRAN = false>
+hipblasStatus_t hipblasGelsBatched(hipblasHandle_t    handle,
+                                   hipblasOperation_t trans,
+                                   const int          m,
+                                   const int          n,
+                                   const int          nrhs,
+                                   T* const           A[],
+                                   const int          lda,
+                                   T* const           B[],
+                                   const int          ldb,
+                                   int*               info,
+                                   int*               deviceInfo,
+                                   const int          batchCount);
+
+template <typename T, bool FORTRAN = false>
+hipblasStatus_t hipblasGelsStridedBatched(hipblasHandle_t     handle,
+                                          hipblasOperation_t  trans,
+                                          const int           m,
+                                          const int           n,
+                                          const int           nrhs,
+                                          T*                  A,
+                                          const int           lda,
+                                          const hipblasStride strideA,
+                                          T*                  B,
+                                          const int           ldb,
+                                          const hipblasStride strideB,
+                                          int*                info,
+                                          int*                deviceInfo,
+                                          const int           batchCount);
+
 // dgmm
 template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasDgmm(hipblasHandle_t   handle,

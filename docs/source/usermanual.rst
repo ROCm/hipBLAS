@@ -11,6 +11,7 @@ User Guide
    disclaimer
    intro
    install
+   deprecation
    orga
    api
    functions

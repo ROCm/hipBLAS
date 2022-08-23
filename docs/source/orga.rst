@@ -16,11 +16,11 @@ library/include
 Contains C98 include files for the external API. These files also contain Doxygen
 comments that document the API.
 
-library/src/hcc_detail
+library/src/amd_detail
 ```````````````````````
 Implementation of hipBLAS interface compatible with rocBLAS APIs.
 
-library/src/nvcc_detail
+library/src/nvidia_detail
 `````````````````````````
 Implementation of hipBLAS interface compatible with cuBLAS-v2 APIs.
 
