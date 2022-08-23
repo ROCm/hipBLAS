@@ -282,10 +282,32 @@ int getArch()
 /*******************************************************************************
  * gemm_ex int8 layout
  ******************************************************************************/
-bool layout_pack_int8()
+bool layout_pack_int8(hipblasHandle_t handle)
 {
-    int arch = getArch();
-    return arch != 908;
+    // This function should match the rocBLAS function: rocblas_query_int8_layout_flag
+    //
+    // Default behavior is from when int8 was supported on gfx908 and other architectures
+    // used packed_int8x4. All architectures support int8 since the following two PRs
+    // for ROCm 4.2:
+    // - Tensile PR 680
+    // - rocBLAS-internal PR 1328
+
+    hipblasInt8Datatype_t int8Type;
+    hipblasGetInt8Datatype(handle, &int8Type);
+    if(HIPBLAS_INT8_DATATYPE_DEFAULT == int8Type)
+    {
+        int arch = getArch();
+        return arch != 908;
+    }
+    else if(HIPBLAS_INT8_DATATYPE_INT8 == int8Type)
+    {
+        return false;
+    }
+    else if(HIPBLAS_INT8_DATATYPE_PACK_INT8x4 == int8Type)
+    {
+        return true;
+    }
+    return false;
 }
 
 #ifdef __cplusplus
