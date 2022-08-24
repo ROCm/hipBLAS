@@ -27,7 +27,7 @@ add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp 
 add_executable( example-c example-c.c ${hipblas_samples_common} )
 add_executable( example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
 
-if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
+if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   add_executable( example-hgemm example_hgemm.cpp ${hipblas_samples_common} )
 endif( )
 
@@ -50,7 +50,7 @@ if( NOT TARGET hipblas )
 endif( )
 
 list (APPEND example-executables example-sscal example-sgemm example-sgemm-strided-batched example-c example-hip-complex-her2)
-if( CMAKE_CXX_COMPILER MATCHES ".*/hcc$|.*/hipcc$" )
+if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND example-executables example-hgemm)
 endif( )
 

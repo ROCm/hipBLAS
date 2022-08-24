@@ -880,4 +880,25 @@ constexpr double getrs_gflop_count<hipblasDoubleComplex>(int n, int nrhs)
     return 4.0 * getrs_gflop_count<float>(n, nrhs);
 }
 
+/* \brief floating point counts of GELS */
+template <typename T>
+constexpr double gels_gflop_count(int m, int n)
+{
+    // Not using this for now as better to just use exe. time
+    int k = m >= n ? n : m;
+    return ((2 * m * n * n) - ((2.0 / 3.0) * k * k * k)) / 1e9;
+}
+
+template <>
+constexpr double gels_gflop_count<hipblasComplex>(int m, int n)
+{
+    return 4 * gels_gflop_count<float>(m, n);
+}
+
+template <>
+constexpr double gels_gflop_count<hipblasDoubleComplex>(int m, int n)
+{
+    return 4 * gels_gflop_count<float>(m, n);
+}
+
 #endif /* _HIPBLAS_FLOPS_H_ */

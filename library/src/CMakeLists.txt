@@ -39,9 +39,9 @@ endfunction( )
 prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
 
 if( NOT USE_CUDA )
-  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/hcc_detail/hipblas.cpp" )
+  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/hipblas.cpp" )
 else( )
-  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvcc_detail/hipblas.cpp" )
+  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvidia_detail/hipblas.cpp" )
 endif( )
 
 set (hipblas_f90_source

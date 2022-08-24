@@ -1406,6 +1406,32 @@ hipblasXgeqrf + Batched, stridedBatched
     :outline:
 .. doxygenfunction:: hipblasZgeqrfStridedBatched
 
+hipblasXgels + Batched, StridedBatched
+----------------------------------------
+.. doxygenfunction:: hipblasSgels
+    :outline:
+.. doxygenfunction:: hipblasDgels
+    :outline:
+.. doxygenfunction:: hipblasCgels
+    :outline:
+.. doxygenfunction:: hipblasZgels
+
+.. doxygenfunction:: hipblasSgelsBatched
+    :outline:
+.. doxygenfunction:: hipblasDgelsBatched
+    :outline:
+.. doxygenfunction:: hipblasCgelsBatched
+    :outline:
+.. doxygenfunction:: hipblasZgelsBatched
+
+.. doxygenfunction:: hipblasSgelsStridedBatched
+    :outline:
+.. doxygenfunction:: hipblasDgelsStridedBatched
+    :outline:
+.. doxygenfunction:: hipblasCgelsStridedBatched
+    :outline:
+.. doxygenfunction:: hipblasZgelsStridedBatched
+
 BLAS Extensions
 ===============
 .. contents:: List of BLAS Extension Functions

@@ -315,6 +315,34 @@ hipblasAtomicsMode_t RocblasAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode mod
     throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
+rocblas_int8_type_for_hipblas HIPInt8DatatypeToRocblasInt8Datatype(hipblasInt8Datatype_t flags)
+{
+    switch(flags)
+    {
+    case HIPBLAS_INT8_DATATYPE_DEFAULT:
+        return rocblas_int8_type_for_hipblas_default;
+    case HIPBLAS_INT8_DATATYPE_PACK_INT8x4:
+        return rocblas_int8_type_for_hipblas_pack_int8x4;
+    case HIPBLAS_INT8_DATATYPE_INT8:
+        return rocblas_int8_type_for_hipblas_int8;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
+hipblasInt8Datatype_t RocblasInt8DatatypeToHIPInt8Datatype(rocblas_int8_type_for_hipblas flags)
+{
+    switch(flags)
+    {
+    case rocblas_int8_type_for_hipblas_default:
+        return HIPBLAS_INT8_DATATYPE_DEFAULT;
+    case rocblas_int8_type_for_hipblas_pack_int8x4:
+        return HIPBLAS_INT8_DATATYPE_PACK_INT8x4;
+    case rocblas_int8_type_for_hipblas_int8:
+        return HIPBLAS_INT8_DATATYPE_INT8;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
 hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
 {
     switch(error)
@@ -409,6 +437,31 @@ try
     rocblas_pointer_mode rocblas_mode;
     rocblas_status       status = rocblas_get_pointer_mode((rocblas_handle)handle, &rocblas_mode);
     *mode                       = RocblasPointerModeToHIPPointerMode(rocblas_mode);
+    return rocBLASStatusToHIPStatus(status);
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasSetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t int8Type)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_set_int8_type_for_hipblas(
+        (rocblas_handle)handle, HIPInt8DatatypeToRocblasInt8Datatype(int8Type)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t* int8Type)
+try
+{
+    rocblas_int8_type_for_hipblas rocblas_type;
+    rocblas_status                status
+        = rocblas_get_int8_type_for_hipblas((rocblas_handle)handle, &rocblas_type);
+    *int8Type = RocblasInt8DatatypeToHIPInt8Datatype(rocblas_type);
     return rocBLASStatusToHIPStatus(status);
 }
 catch(...)
@@ -15091,6 +15144,7 @@ catch(...)
 }
 
 #ifdef __HIP_PLATFORM_SOLVER__
+
 //--------------------------------------------------------------------------------------
 //rocSOLVER functions
 //--------------------------------------------------------------------------------------
@@ -16621,6 +16675,669 @@ try
                                                                   (rocblas_double_complex*)tau,
                                                                   strideT,
                                                                   batch_count)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+// gels
+hipblasStatus_t hipblasSgels(hipblasHandle_t    handle,
+                             hipblasOperation_t trans,
+                             const int          m,
+                             const int          n,
+                             const int          nrhs,
+                             float*             A,
+                             const int          lda,
+                             float*             B,
+                             const int          ldb,
+                             int*               info,
+                             int*               deviceInfo)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < m || ldb < n)
+        *info = -8;
+    else if(deviceInfo == NULL)
+        *info = -10;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_sgels((rocblas_handle)handle,
+                                                 hipOperationToHCCOperation(trans),
+                                                 m,
+                                                 n,
+                                                 nrhs,
+                                                 A,
+                                                 lda,
+                                                 B,
+                                                 ldb,
+                                                 deviceInfo)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDgels(hipblasHandle_t    handle,
+                             hipblasOperation_t trans,
+                             const int          m,
+                             const int          n,
+                             const int          nrhs,
+                             double*            A,
+                             const int          lda,
+                             double*            B,
+                             const int          ldb,
+                             int*               info,
+                             int*               deviceInfo)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < m || ldb < n)
+        *info = -8;
+    else if(deviceInfo == NULL)
+        *info = -10;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_dgels((rocblas_handle)handle,
+                                                 hipOperationToHCCOperation(trans),
+                                                 m,
+                                                 n,
+                                                 nrhs,
+                                                 A,
+                                                 lda,
+                                                 B,
+                                                 ldb,
+                                                 deviceInfo)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCgels(hipblasHandle_t    handle,
+                             hipblasOperation_t trans,
+                             const int          m,
+                             const int          n,
+                             const int          nrhs,
+                             hipblasComplex*    A,
+                             const int          lda,
+                             hipblasComplex*    B,
+                             const int          ldb,
+                             int*               info,
+                             int*               deviceInfo)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < m || ldb < n)
+        *info = -8;
+    else if(deviceInfo == NULL)
+        *info = -10;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_cgels((rocblas_handle)handle,
+                                                 hipOperationToHCCOperation(trans),
+                                                 m,
+                                                 n,
+                                                 nrhs,
+                                                 (rocblas_float_complex*)A,
+                                                 lda,
+                                                 (rocblas_float_complex*)B,
+                                                 ldb,
+                                                 deviceInfo)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
+                             hipblasOperation_t    trans,
+                             const int             m,
+                             const int             n,
+                             const int             nrhs,
+                             hipblasDoubleComplex* A,
+                             const int             lda,
+                             hipblasDoubleComplex* B,
+                             const int             ldb,
+                             int*                  info,
+                             int*                  deviceInfo)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < m || ldb < n)
+        *info = -8;
+    else if(deviceInfo == NULL)
+        *info = -10;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_zgels((rocblas_handle)handle,
+                                                 hipOperationToHCCOperation(trans),
+                                                 m,
+                                                 n,
+                                                 nrhs,
+                                                 (rocblas_double_complex*)A,
+                                                 lda,
+                                                 (rocblas_double_complex*)B,
+                                                 ldb,
+                                                 deviceInfo)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+// gelsBatched
+hipblasStatus_t hipblasSgelsBatched(hipblasHandle_t    handle,
+                                    hipblasOperation_t trans,
+                                    const int          m,
+                                    const int          n,
+                                    const int          nrhs,
+                                    float* const       A[],
+                                    const int          lda,
+                                    float* const       B[],
+                                    const int          ldb,
+                                    int*               info,
+                                    int*               deviceInfo,
+                                    const int          batchCount)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < m || ldb < n)
+        *info = -8;
+    else if(deviceInfo == NULL)
+        *info = -10;
+    else if(batchCount < 0)
+        *info = -11;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_sgels_batched((rocblas_handle)handle,
+                                                         hipOperationToHCCOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         A,
+                                                         lda,
+                                                         B,
+                                                         ldb,
+                                                         deviceInfo,
+                                                         batchCount)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDgelsBatched(hipblasHandle_t    handle,
+                                    hipblasOperation_t trans,
+                                    const int          m,
+                                    const int          n,
+                                    const int          nrhs,
+                                    double* const      A[],
+                                    const int          lda,
+                                    double* const      B[],
+                                    const int          ldb,
+                                    int*               info,
+                                    int*               deviceInfo,
+                                    const int          batchCount)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < m || ldb < n)
+        *info = -8;
+    else if(deviceInfo == NULL)
+        *info = -10;
+    else if(batchCount < 0)
+        *info = -11;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_dgels_batched((rocblas_handle)handle,
+                                                         hipOperationToHCCOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         A,
+                                                         lda,
+                                                         B,
+                                                         ldb,
+                                                         deviceInfo,
+                                                         batchCount)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCgelsBatched(hipblasHandle_t       handle,
+                                    hipblasOperation_t    trans,
+                                    const int             m,
+                                    const int             n,
+                                    const int             nrhs,
+                                    hipblasComplex* const A[],
+                                    const int             lda,
+                                    hipblasComplex* const B[],
+                                    const int             ldb,
+                                    int*                  info,
+                                    int*                  deviceInfo,
+                                    const int             batchCount)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < m || ldb < n)
+        *info = -8;
+    else if(deviceInfo == NULL)
+        *info = -10;
+    else if(batchCount < 0)
+        *info = -11;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_cgels_batched((rocblas_handle)handle,
+                                                         hipOperationToHCCOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         (rocblas_float_complex**)A,
+                                                         lda,
+                                                         (rocblas_float_complex**)B,
+                                                         ldb,
+                                                         deviceInfo,
+                                                         batchCount)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZgelsBatched(hipblasHandle_t             handle,
+                                    hipblasOperation_t          trans,
+                                    const int                   m,
+                                    const int                   n,
+                                    const int                   nrhs,
+                                    hipblasDoubleComplex* const A[],
+                                    const int                   lda,
+                                    hipblasDoubleComplex* const B[],
+                                    const int                   ldb,
+                                    int*                        info,
+                                    int*                        deviceInfo,
+                                    const int                   batchCount)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -7;
+    else if(ldb < m || ldb < n)
+        *info = -8;
+    else if(deviceInfo == NULL)
+        *info = -10;
+    else if(batchCount < 0)
+        *info = -11;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_zgels_batched((rocblas_handle)handle,
+                                                         hipOperationToHCCOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         (rocblas_double_complex**)A,
+                                                         lda,
+                                                         (rocblas_double_complex**)B,
+                                                         ldb,
+                                                         deviceInfo,
+                                                         batchCount)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+// gelsStridedBatched
+hipblasStatus_t hipblasSgelsStridedBatched(hipblasHandle_t     handle,
+                                           hipblasOperation_t  trans,
+                                           const int           m,
+                                           const int           n,
+                                           const int           nrhs,
+                                           float*              A,
+                                           const int           lda,
+                                           const hipblasStride strideA,
+                                           float*              B,
+                                           const int           ldb,
+                                           const hipblasStride strideB,
+                                           int*                info,
+                                           int*                deviceInfo,
+                                           const int           batchCount)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -8;
+    else if(ldb < m || ldb < n)
+        *info = -9;
+    else if(deviceInfo == NULL)
+        *info = -12;
+    else if(batchCount < 0)
+        *info = -13;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_sgels_strided_batched((rocblas_handle)handle,
+                                                                 hipOperationToHCCOperation(trans),
+                                                                 m,
+                                                                 n,
+                                                                 nrhs,
+                                                                 A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 deviceInfo,
+                                                                 batchCount)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDgelsStridedBatched(hipblasHandle_t     handle,
+                                           hipblasOperation_t  trans,
+                                           const int           m,
+                                           const int           n,
+                                           const int           nrhs,
+                                           double*             A,
+                                           const int           lda,
+                                           const hipblasStride strideA,
+                                           double*             B,
+                                           const int           ldb,
+                                           const hipblasStride strideB,
+                                           int*                info,
+                                           int*                deviceInfo,
+                                           const int           batchCount)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -8;
+    else if(ldb < m || ldb < n)
+        *info = -9;
+    else if(deviceInfo == NULL)
+        *info = -12;
+    else if(batchCount < 0)
+        *info = -13;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_dgels_strided_batched((rocblas_handle)handle,
+                                                                 hipOperationToHCCOperation(trans),
+                                                                 m,
+                                                                 n,
+                                                                 nrhs,
+                                                                 A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 deviceInfo,
+                                                                 batchCount)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCgelsStridedBatched(hipblasHandle_t     handle,
+                                           hipblasOperation_t  trans,
+                                           const int           m,
+                                           const int           n,
+                                           const int           nrhs,
+                                           hipblasComplex*     A,
+                                           const int           lda,
+                                           const hipblasStride strideA,
+                                           hipblasComplex*     B,
+                                           const int           ldb,
+                                           const hipblasStride strideB,
+                                           int*                info,
+                                           int*                deviceInfo,
+                                           const int           batchCount)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -8;
+    else if(ldb < m || ldb < n)
+        *info = -9;
+    else if(deviceInfo == NULL)
+        *info = -12;
+    else if(batchCount < 0)
+        *info = -13;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_cgels_strided_batched((rocblas_handle)handle,
+                                                                 hipOperationToHCCOperation(trans),
+                                                                 m,
+                                                                 n,
+                                                                 nrhs,
+                                                                 (rocblas_float_complex*)A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 (rocblas_float_complex*)B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 deviceInfo,
+                                                                 batchCount)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZgelsStridedBatched(hipblasHandle_t       handle,
+                                           hipblasOperation_t    trans,
+                                           const int             m,
+                                           const int             n,
+                                           const int             nrhs,
+                                           hipblasDoubleComplex* A,
+                                           const int             lda,
+                                           const hipblasStride   strideA,
+                                           hipblasDoubleComplex* B,
+                                           const int             ldb,
+                                           const hipblasStride   strideB,
+                                           int*                  info,
+                                           int*                  deviceInfo,
+                                           const int             batchCount)
+try
+{
+    if(info == NULL)
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    else if(m < 0)
+        *info = -2;
+    else if(n < 0)
+        *info = -3;
+    else if(nrhs < 0)
+        *info = -4;
+    else if(A == NULL)
+        *info = -5;
+    else if(lda < m)
+        *info = -6;
+    else if(B == NULL)
+        *info = -8;
+    else if(ldb < m || ldb < n)
+        *info = -9;
+    else if(deviceInfo == NULL)
+        *info = -12;
+    else if(batchCount < 0)
+        *info = -13;
+    else
+        *info = 0;
+
+    return HIPBLAS_DEMAND_ALLOC(
+        rocBLASStatusToHIPStatus(rocsolver_zgels_strided_batched((rocblas_handle)handle,
+                                                                 hipOperationToHCCOperation(trans),
+                                                                 m,
+                                                                 n,
+                                                                 nrhs,
+                                                                 (rocblas_double_complex*)A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 (rocblas_double_complex*)B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 deviceInfo,
+                                                                 batchCount)));
 }
 catch(...)
 {

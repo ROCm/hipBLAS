@@ -98,122 +98,138 @@ hipblasStatus_t testing_gemm_ex_template(const Arguments& argus)
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(argus);
 
-    // Initial Data on CPU
-    hipblas_init_matrix(hA, argus, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(
-        hB, argus, B_row, B_col, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
-    hipblas_init_matrix(hC_host, argus, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
+    for(auto int8Type : {HIPBLAS_INT8_DATATYPE_DEFAULT,
+                         HIPBLAS_INT8_DATATYPE_INT8,
+                         HIPBLAS_INT8_DATATYPE_PACK_INT8x4})
+    {
+        // only need to test multiple int8Type for int8_t, for other datatypes break
+        if(!(std::is_same<Ta, int8_t>{}) && HIPBLAS_INT8_DATATYPE_DEFAULT != int8Type)
+            break;
 
-    hC_gold = hC_device = hC_host;
+        hipblasSetInt8Datatype(handle, int8Type);
 
-    // copy data from CPU to device
+        // Initial Data on CPU
+        hipblas_init_matrix(
+            hA, argus, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
+        hipblas_init_matrix(
+            hB, argus, B_row, B_col, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+        hipblas_init_matrix(hC_host, argus, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
 
-    // CUDA doesn't do packing
+        hC_gold = hC_device = hC_host;
+
+        // copy data from CPU to device
+
+        // CUDA doesn't do packing
 #ifdef __HIP_PLATFORM_NVCC__
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(Ta) * size_A, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(Tb) * size_B, hipMemcpyHostToDevice));
-#else
-    if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N && layout_pack_int8())
-    {
-        host_vector<Ta> hA_packed(hA);
-        hipblas_packInt8(hA_packed, M, K, lda);
-        CHECK_HIP_ERROR(hipMemcpy(dA, hA_packed, sizeof(Ta) * size_A, hipMemcpyHostToDevice));
-    }
-    else
-    {
+        if(HIPBLAS_INT8_DATATYPE_DEFAULT != int8Type)
+            break;
         CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(Ta) * size_A, hipMemcpyHostToDevice));
-    }
-
-    if(std::is_same<Tb, int8_t>{} && transB != HIPBLAS_OP_N && layout_pack_int8())
-    {
-        host_vector<Tb> hB_packed(hB);
-        hipblas_packInt8(hB_packed, N, K, ldb);
-        CHECK_HIP_ERROR(hipMemcpy(dB, hB_packed, sizeof(Tb) * size_B, hipMemcpyHostToDevice));
-    }
-    else
-    {
         CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(Tb) * size_B, hipMemcpyHostToDevice));
-    }
-#endif
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha_Tc, sizeof(Tex), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta_Tc, sizeof(Tex), hipMemcpyHostToDevice));
-
-    if(unit_check || norm_check)
-    {
-        // hipBLAS
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
-                                            transA,
-                                            transB,
-                                            M,
-                                            N,
-                                            K,
-                                            &h_alpha_Tc,
-                                            dA,
-                                            a_type,
-                                            lda,
-                                            dB,
-                                            b_type,
-                                            ldb,
-                                            &h_beta_Tc,
-                                            dC,
-                                            c_type,
-                                            ldc,
-                                            compute_type,
-                                            algo));
-
-        CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
-
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
-                                            transA,
-                                            transB,
-                                            M,
-                                            N,
-                                            K,
-                                            d_alpha,
-                                            dA,
-                                            a_type,
-                                            lda,
-                                            dB,
-                                            b_type,
-                                            ldb,
-                                            d_beta,
-                                            dC,
-                                            c_type,
-                                            ldc,
-                                            compute_type,
-                                            algo));
-
-        CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
-
-        // reference BLAS
-        cblas_gemm<Ta, Tc, Tex>(transA,
-                                transB,
-                                M,
-                                N,
-                                K,
-                                h_alpha_Tc,
-                                hA.data(),
-                                lda,
-                                hB.data(),
-                                ldb,
-                                h_beta_Tc,
-                                hC_gold.data(),
-                                ldc);
-
-        if(unit_check)
+#else
+        if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N && layout_pack_int8(handle))
         {
-            unit_check_general<Tc>(M, N, ldc, hC_gold, hC_host);
-            unit_check_general<Tc>(M, N, ldc, hC_gold, hC_device);
+            host_vector<Ta> hA_packed(hA);
+            hipblas_packInt8(hA_packed, M, K, lda);
+            CHECK_HIP_ERROR(hipMemcpy(dA, hA_packed, sizeof(Ta) * size_A, hipMemcpyHostToDevice));
         }
-        if(norm_check)
+        else
         {
-            hipblas_error_host = std::abs(norm_check_general<Tc>('F', M, N, ldc, hC_gold, hC_host));
-            hipblas_error_device
-                = std::abs(norm_check_general<Tc>('F', M, N, ldc, hC_gold, hC_device));
+            CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(Ta) * size_A, hipMemcpyHostToDevice));
+        }
+
+        if(std::is_same<Tb, int8_t>{} && transB != HIPBLAS_OP_N && layout_pack_int8(handle))
+        {
+            host_vector<Tb> hB_packed(hB);
+            hipblas_packInt8(hB_packed, N, K, ldb);
+            CHECK_HIP_ERROR(hipMemcpy(dB, hB_packed, sizeof(Tb) * size_B, hipMemcpyHostToDevice));
+        }
+        else
+        {
+            CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(Tb) * size_B, hipMemcpyHostToDevice));
+        }
+#endif
+
+        CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha_Tc, sizeof(Tex), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta_Tc, sizeof(Tex), hipMemcpyHostToDevice));
+
+        if(unit_check || norm_check)
+        {
+            // hipBLAS
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+            CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
+                                                transA,
+                                                transB,
+                                                M,
+                                                N,
+                                                K,
+                                                &h_alpha_Tc,
+                                                dA,
+                                                a_type,
+                                                lda,
+                                                dB,
+                                                b_type,
+                                                ldb,
+                                                &h_beta_Tc,
+                                                dC,
+                                                c_type,
+                                                ldc,
+                                                compute_type,
+                                                algo));
+
+            CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
+
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+            CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
+                                                transA,
+                                                transB,
+                                                M,
+                                                N,
+                                                K,
+                                                d_alpha,
+                                                dA,
+                                                a_type,
+                                                lda,
+                                                dB,
+                                                b_type,
+                                                ldb,
+                                                d_beta,
+                                                dC,
+                                                c_type,
+                                                ldc,
+                                                compute_type,
+                                                algo));
+
+            CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
+
+            // reference BLAS
+            cblas_gemm<Ta, Tc, Tex>(transA,
+                                    transB,
+                                    M,
+                                    N,
+                                    K,
+                                    h_alpha_Tc,
+                                    hA.data(),
+                                    lda,
+                                    hB.data(),
+                                    ldb,
+                                    h_beta_Tc,
+                                    hC_gold.data(),
+                                    ldc);
+
+            if(unit_check)
+            {
+                unit_check_general<Tc>(M, N, ldc, hC_gold, hC_host);
+                unit_check_general<Tc>(M, N, ldc, hC_gold, hC_device);
+            }
+            if(norm_check)
+            {
+                hipblas_error_host
+                    = std::abs(norm_check_general<Tc>('F', M, N, ldc, hC_gold, hC_host));
+                hipblas_error_device
+                    = std::abs(norm_check_general<Tc>('F', M, N, ldc, hC_gold, hC_device));
+            }
         }
     }
 
