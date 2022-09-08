@@ -147,8 +147,17 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
 
         if(argus.unit_check)
         {
-            unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_host);
-            unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_device);
+            if(std::is_same<Tr, hipblasHalf>{})
+            {
+                double tol = pow(2, -14) * N;
+                near_check_general(1, 1, 1, &cpu_result, &hipblas_result_host, tol);
+                near_check_general(1, 1, 1, &cpu_result, &hipblas_result_device);
+            }
+            else
+            {
+                unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_host);
+                unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_device);
+            }
         }
         if(argus.norm_check)
         {
