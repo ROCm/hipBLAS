@@ -81,10 +81,10 @@ void near_check_general(int            M,
 
 // currently only used for half-precision comparisons int dot_ex tests
 template <class T>
-HIPBLAS_CLANG_STATIC double error_tolerance = 0.0;
+HIPBLAS_CLANG_STATIC constexpr double error_tolerance = 0.0;
 
 // 2 ^ -14, smallest positive normal number for IEEE16
 template <>
-HIPBLAS_CLANG_STATIC double error_tolerance<hipblasHalf> = 0.000061035;
+HIPBLAS_CLANG_STATIC constexpr double error_tolerance<hipblasHalf> = 0.000061035;
 
 #endif
