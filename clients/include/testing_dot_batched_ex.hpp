@@ -162,10 +162,22 @@ hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
             if(std::is_same<Tr, hipblasHalf>{})
             {
                 double tol = pow(2, -14) * N;
-                near_check_general(
-                    1, 1, batch_count, 1, 1, h_cpu_result, h_hipblas_result_host, tol);
-                near_check_general(
-                    1, 1, batch_count, 1, 1, h_cpu_result, h_hipblas_result_device, tol);
+                near_check_general(1,
+                                   1,
+                                   batch_count,
+                                   1,
+                                   1,
+                                   h_cpu_result.data(),
+                                   h_hipblas_result_host.data(),
+                                   tol);
+                near_check_general(1,
+                                   1,
+                                   batch_count,
+                                   1,
+                                   1,
+                                   h_cpu_result.data(),
+                                   h_hipblas_result_device.data(),
+                                   tol);
             }
             else
             {

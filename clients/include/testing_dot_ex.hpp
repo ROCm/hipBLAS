@@ -151,7 +151,7 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
             {
                 double tol = pow(2, -14) * N;
                 near_check_general(1, 1, 1, &cpu_result, &hipblas_result_host, tol);
-                near_check_general(1, 1, 1, &cpu_result, &hipblas_result_device);
+                near_check_general(1, 1, 1, &cpu_result, &hipblas_result_device, tol);
             }
             else
             {
