@@ -182,7 +182,7 @@ hipblasStatus_t testing_dot_strided_batched_ex_template(const Arguments& argus)
         {
             if(std::is_same<Tr, hipblasHalf>{})
             {
-                double tol = pow(2, -14) * N;
+                double tol = error_tolerance<Tr> * N;
                 near_check_general(1,
                                    1,
                                    batch_count,

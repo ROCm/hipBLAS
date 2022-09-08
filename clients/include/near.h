@@ -79,4 +79,12 @@ void near_check_general(int            M,
                         host_vector<T> hGPU[],
                         double         abs_error);
 
+// currently only used for half-precision comparisons int dot_ex tests
+template <class T>
+static double error_tolerance = 0.0;
+
+// 2 ^ -14, smallest positive normal number for IEEE16
+template <>
+static double error_tolerance<hipblasHalf> = 0.000061035;
+
 #endif
