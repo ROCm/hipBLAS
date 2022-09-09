@@ -50,6 +50,7 @@ target_include_directories( hipblas-bench
   SYSTEM PRIVATE
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
 )
 
@@ -57,7 +58,7 @@ if (NOT WIN32)
     target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client )
 endif()
 
-target_link_libraries( hipblas-bench PRIVATE roc::hipblas )
+target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas )
 
 target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ROCM_USE_FLOAT16 )
 
