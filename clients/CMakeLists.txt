@@ -69,14 +69,50 @@ if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_SAMPLES )
   include_directories(${CMAKE_BINARY_DIR}/include)
 endif( )
 
-if( BUILD_CLIENTS_TESTS )
-  add_subdirectory( gtest )
-endif( )
-
-if( BUILD_CLIENTS_BENCHMARKS )
-  add_subdirectory( benchmarks )
-endif( )
-
 if( BUILD_CLIENTS_SAMPLES )
   add_subdirectory( samples )
 endif( )
+
+if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
+  if( NOT WIN32 )
+    # Linking lapack library requires fortran flags
+    find_package( cblas REQUIRED CONFIG )
+    if (LINK_BLIS)
+      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+      set( BLIS_CPP ../common/blis_interface.cpp )
+      set( BLAS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+    else()
+      set( BLAS_LIBRARY "blas" )
+    endif()
+  else() # WIN32
+    set( BLAS_INCLUDE_DIR ${OPENBLAS_DIR}/include CACHE PATH "OpenBLAS library include path" )
+    find_library( BLAS_LIBRARY libopenblas
+                  PATHS ${OPENBLAS_DIR}/lib
+                  REQUIRED
+                  NO_DEFAULT_PATH
+                )
+  endif()
+
+  set( hipblas_test_bench_common
+      ../common/utility.cpp
+      ../common/cblas_interface.cpp
+      ../common/hipblas_arguments.cpp
+      ../common/hipblas_parse_data.cpp
+      ../common/hipblas_datatype2string.cpp
+      ../common/norm.cpp
+      ../common/unit.cpp
+      ../common/near.cpp
+      ../common/arg_check.cpp
+      ../common/hipblas_template_specialization.cpp
+      ${BLIS_CPP}
+    )
+
+  if( BUILD_CLIENTS_TESTS )
+    add_subdirectory( gtest )
+  endif( )
+
+  if( BUILD_CLIENTS_BENCHMARKS )
+    add_subdirectory( benchmarks )
+  endif( )
+
+endif()

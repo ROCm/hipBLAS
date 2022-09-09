@@ -23,7 +23,6 @@
 if(NOT WIN32)
     enable_language( Fortran )
 endif()
-find_package( cblas REQUIRED CONFIG PATHS ${LAPACK_DIR} )
 
 if( NOT TARGET hipblas )
   find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
@@ -111,37 +110,7 @@ if( BUILD_WITH_SOLVER )
   )
 endif( )
 
-if(LINK_BLIS)
-  set( BLIS_CPP ../common/blis_interface.cpp )
-endif()
-
-set( hipblas_test_common
-  ../common/utility.cpp
-  ../common/cblas_interface.cpp
-  ../common/norm.cpp
-  ../common/unit.cpp
-  ../common/near.cpp
-  ../common/arg_check.cpp
-  ../common/hipblas_datatype2string.cpp
-  ../common/hipblas_template_specialization.cpp
-  ${BLIS_CPP}
-)
-
-add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
-
-if(LINK_BLIS)
-    if (NOT WIN32)
-      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
-      set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
-    else( )
-      set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
-      find_library( BLIS_LIBRARY libblis
-                      PATHS ${BLIS_DIR}/lib
-                      REQUIRED
-                      NO_DEFAULT_PATH
-                  )
-    endif()
-endif()
+add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_bench_common} )
 
 target_include_directories( hipblas-test
   PRIVATE
@@ -164,16 +133,10 @@ target_include_directories( hipblas-test
 )
 
 if (NOT WIN32)
-    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
+    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client lapack cblas )
 endif()
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack GTest::GTest )
-
-if(LINK_BLIS)
-  target_link_libraries( hipblas-test PRIVATE ${BLIS_LIBRARY} )
-else()
-  target_link_libraries( hipblas-test PRIVATE blas )
-endif()
+target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest )
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-test PRIVATE -mf16c )
@@ -211,6 +174,7 @@ if (WIN32)
     CONFIGURE_DEPENDS
     ${LAPACK_DIR}/bin/*.dll
     ${BLIS_DIR}/lib/*.dll
+    ${OPENBLAS_DIR}/bin/*.dll
     ${HIP_DIR}/bin/*.dll
     ${HIP_DIR}/bin/hipinfo.exe
     ${ROCBLAS_PATH}/bin/rocblas.dll

@@ -59,6 +59,12 @@ else()
   set(CBLAS_DIR "C:/lapack/build")
 endif()
 
+if (DEFINED ENV{OPENBLAS_DIR})
+  file(TO_CMAKE_PATH "$ENV{OPENBLAS_DIR}" OPENBLAS_DIR)
+else()
+  set(OPENBLAS_DIR "C:/OpenBLAS/OpenBLAS-0.3.18-x64")
+endif()
+
 if (DEFINED ENV{VCPKG_PATH})
   file(TO_CMAKE_PATH "$ENV{VCPKG_PATH}" VCPKG_PATH)
 else()
