@@ -87,7 +87,7 @@ hipblasStatus_t testing_set_get_matrix_async(const Arguments& argus)
     CHECK_HIPBLAS_ERROR(
         hipblasGetMatrixAsyncFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb, stream));
 
-    hipStreamSynchronize(stream);
+    CHECK_HIP_ERROR(hipStreamSynchronize(stream));
 
     if(argus.unit_check || argus.norm_check)
     {
