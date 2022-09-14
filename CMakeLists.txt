@@ -158,11 +158,15 @@ if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
     string(TOLOWER "${CLIENTS_OS}" CLIENTS_OS)
     rocm_read_os_release(CLIENTS_OS_VERSION VERSION_ID)
   endif()
-  set(GFORTRAN_PKG "gcc-gfortran")
-  if(CLIENTS_OS STREQUAL "sles")
-    set(GFORTRAN_PKG "gcc-fortran")
-  elseif(CLIENTS_OS STREQUAL "centos" AND CLIENTS_OS_VERSION EQUAL 7)
-    set(GFORTRAN_PKG "devtoolset-7-gcc-gfortran")
+  message(STATUS "OS: ${CLIENTS_OS} ${CLIENTS_OS_VERSION}")
+  set(GFORTRAN_RPM "libgfortran4")
+  set(GFORTRAN_DEB "libgfortran4")
+  if(CLIENTS_OS STREQUAL "centos" OR CLIENTS_OS STREQUAL "rhel")
+    if(CLIENTS_OS_VERSION VERSION_GREATER_EQUAL "8")
+      set(GFORTRAN_RPM "libgfortran")
+    endif()
+  elseif(CLIENTS_OS STREQUAL "ubuntu" AND CLIENTS_OS_VERSION VERSION_GREATER_EQUAL "20.04")
+    set(GFORTRAN_DEB "libgfortran5")
   endif()
   rocm_package_setup_component(clients)
   rocm_package_setup_client_component(clients-common)
@@ -171,16 +175,16 @@ if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
       tests
       DEPENDS
         COMPONENT clients-common
-        DEB "gfortran"
-        RPM "${GFORTRAN_PKG}")
+        DEB "${GFORTRAN_DEB}"
+        RPM "${GFORTRAN_RPM}")
   endif()
   if(BUILD_CLIENTS_BENCHMARKS)
     rocm_package_setup_client_component(
       benchmarks
       DEPENDS
         COMPONENT clients-common
-        DEB "gfortran"
-        RPM "${GFORTRAN_PKG}")
+        DEB "${GFORTRAN_DEB}"
+        RPM "${GFORTRAN_RPM}")
   endif()
   add_subdirectory( clients )
 endif( )
