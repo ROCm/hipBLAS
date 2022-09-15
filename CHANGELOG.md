@@ -1,13 +1,13 @@
 # Change Log for hipBLAS
 
-## (Unreleased) hipBLAS 0.53.0
+## hipBLAS 0.53.0 for ROCm 5.4.0
 ### Added
 - Allow for selection of int8 datatype
 - Added support for hipblasXgels and hipblasXgelsStridedBatched operations (with s,d,c,z precisions),
   only supported with rocBLAS backend
 - Added support for hipblasXgelsBatched operations (with s,d,c,z precisions)
 
-## (Unreleased) hipBLAS 0.52.0
+## hipBLAS 0.52.0 for ROCm 5.3.0
 ### Added
 - Added --cudapath option to install.sh to allow user to specify which cuda build they would like to use.
 - Added --installcuda option to install.sh to install cuda via a package manager. Can be used with new --installcudaversion
