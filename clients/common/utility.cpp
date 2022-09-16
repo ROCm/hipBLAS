@@ -24,21 +24,34 @@
 
 #ifdef WIN32
 #include <windows.h>
+//
+#include <random>
 #endif
 
 #include "hipblas.h"
 #include "utility.h"
 #include <chrono>
+#include <cstdlib>
+#include <cstring>
+#include <new>
+#include <stdexcept>
+#include <stdlib.h>
+
+#ifdef WIN32
+#define strcasecmp(A, B) _stricmp(A, B)
 
 #ifdef __cpp_lib_filesystem
 #include <filesystem>
+namespace fs = std::filesystem;
 #else
 #include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#endif
 
-namespace std
-{
-    namespace filesystem = experimental::filesystem;
-}
+// Not WIN32
+#else
+#include <fcntl.h>
+#include <unistd.h>
 #endif
 
 hipblas_rng_t hipblas_rng(69069);
@@ -132,6 +145,35 @@ std::string hipblas_exepath()
 #endif
 }
 
+/* ============================================================================================ */
+// Temp directory rooted random path
+std::string hipblas_tempname()
+{
+#ifdef WIN32
+    // Generate "/tmp/hipblas-XXXXXX" like file name
+    const std::string alphanum     = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv";
+    int               stringlength = alphanum.length() - 1;
+    std::string       uniquestr    = "hipblas-";
+
+    for(auto n : {0, 1, 2, 3, 4, 5})
+        uniquestr += alphanum.at(rand() % stringlength);
+
+    fs::path tmpname = fs::temp_directory_path() / uniquestr;
+
+    return tmpname.string();
+#else
+    char tmp[] = "/tmp/hipblas-XXXXXX";
+    int  fd    = mkostemp(tmp, O_CLOEXEC);
+    if(fd == -1)
+    {
+        dprintf(STDERR_FILENO, "Cannot open temporary file: %m\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return std::string(tmp);
+#endif
+}
+
 /*****************
  * local handles *
  *****************/
@@ -146,13 +188,16 @@ hipblasLocalHandle::hipblasLocalHandle()
 hipblasLocalHandle::hipblasLocalHandle(const Arguments& arg)
     : hipblasLocalHandle()
 {
-    // for future customization of handle based on arguments, example from rocblas below
+    hipblasAtomicsMode_t mode;
+    auto                 status = hipblasGetAtomicsMode(m_handle, &mode);
+    if(status != HIPBLAS_STATUS_SUCCESS)
+        throw std::runtime_error(hipblasStatusToString(status));
 
-    /*
-    auto status = rocblas_set_atomics_mode(m_handle, arg.atomics_mode);
-
-    if(status == rocblas_status_success)
+    if(mode != hipblasAtomicsMode_t(arg.atomics_mode))
+        status = hipblasSetAtomicsMode(m_handle, hipblasAtomicsMode_t(arg.atomics_mode));
+    if(status == HIPBLAS_STATUS_SUCCESS)
     {
+        /*
         // If the test specifies user allocated workspace, allocate and use it
         if(arg.user_allocated_workspace)
         {
@@ -160,18 +205,25 @@ hipblasLocalHandle::hipblasLocalHandle(const Arguments& arg)
                 throw std::bad_alloc();
             status = rocblas_set_workspace(m_handle, m_memory, arg.user_allocated_workspace);
         }
-    }
-
-    if(status != rocblas_status_success)
-        throw std::runtime_error(rocblas_status_to_string(status));
     */
+    }
+    else
+    {
+        throw std::runtime_error(hipblasStatusToString(status));
+    }
 }
 
 hipblasLocalHandle::~hipblasLocalHandle()
 {
     if(m_memory)
-        (hipFree)(m_memory);
-    hipblasDestroy(m_handle);
+    {
+        CHECK_HIP_ERROR(hipFree(m_memory));
+    }
+    hipblasStatus_t status = hipblasDestroy(m_handle);
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        printf("hipblasDestroy error!\n");
+    }
 }
 
 #ifdef __cplusplus
@@ -184,7 +236,7 @@ extern "C" {
 /*! \brief  CPU Timer(in microsecond): synchronize with the default device and return wall time */
 double get_time_us(void)
 {
-    hipDeviceSynchronize();
+    (void)hipDeviceSynchronize();
 
     auto now = std::chrono::steady_clock::now();
     // now.time_since_epoch() is the dureation since epogh
@@ -197,7 +249,7 @@ double get_time_us(void)
 /*! \brief  CPU Timer(in microsecond): synchronize with given queue/stream and return wall time */
 double get_time_us_sync(hipStream_t stream)
 {
-    hipStreamSynchronize(stream);
+    (void)hipStreamSynchronize(stream);
 
     auto now = std::chrono::steady_clock::now();
     // now.time_since_epoch() is the dureation since epogh
@@ -273,9 +325,9 @@ void set_device(int device_id)
 int getArch()
 {
     int device;
-    hipGetDevice(&device);
+    CHECK_HIP_ERROR(hipGetDevice(&device));
     hipDeviceProp_t deviceProperties;
-    hipGetDeviceProperties(&deviceProperties, device);
+    CHECK_HIP_ERROR(hipGetDeviceProperties(&deviceProperties, device));
     return deviceProperties.gcnArch;
 }
 

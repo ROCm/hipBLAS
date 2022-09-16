@@ -83,7 +83,7 @@
 /*! \brief hipblasHanlde_t is a void pointer, to store the library context (either rocBLAS or cuBLAS)*/
 typedef void* hipblasHandle_t;
 
-/*! \brief To specify the datatype to be signed short */
+/*! \brief To specify the datatype to be unsigned short */
 typedef uint16_t hipblasHalf;
 
 /*! \brief  To specify the datatype to be signed char */
@@ -93,10 +93,97 @@ typedef int8_t hipblasInt8;
 typedef int64_t hipblasStride;
 
 /*! \brief  Struct to represent a 16 bit Brain floating-point number.*/
+
+#if __cplusplus < 201103L || !defined(HIPBLAS_BFLOAT16_CLASS)
+
+// If this is a C or C++ compiler below C++11, or not requesting HIPBLAS_BFLOAT16_CLASS,
+// we only include a minimal definition of rocblas_bfloat16
 typedef struct hipblasBfloat16
 {
     uint16_t data;
 } hipblasBfloat16;
+
+#else
+
+class hipblasBfloat16
+{
+public:
+    uint16_t data;
+
+    // zero extend lower 16 bits of bfloat16 to convert to IEEE float
+    static float bfloat16_to_float(hipblasBfloat16 val)
+    {
+        union
+        {
+            uint32_t int32;
+            float    fp32;
+        } u = {uint32_t(val.data) << 16};
+        return u.fp32;
+    }
+
+    static hipblasBfloat16 float_to_bfloat16(float f)
+    {
+        hipblasBfloat16 rv;
+        union
+        {
+            float    fp32;
+            uint32_t int32;
+        } u = {f};
+        if(~u.int32 & 0x7f800000)
+        {
+            u.int32 += 0x7fff + ((u.int32 >> 16) & 1); // Round to nearest, round to even
+        }
+        else if(u.int32 & 0xffff)
+        {
+            u.int32 |= 0x10000; // Preserve signaling NaN
+        }
+        rv.data = uint16_t(u.int32 >> 16);
+        return rv;
+    }
+
+    hipblasBfloat16() = default;
+
+    // round upper 16 bits of IEEE float to convert to bfloat16
+    explicit hipblasBfloat16(float f)
+        : data(float_to_bfloat16(f))
+    {
+    }
+
+    // zero extend lower 16 bits of bfloat16 to convert to IEEE float
+    operator float() const
+    {
+        union
+        {
+            uint32_t int32;
+            float    fp32;
+        } u = {uint32_t(data) << 16};
+        return u.fp32;
+    }
+
+    explicit operator bool() const
+    {
+        return data & 0x7fff;
+    }
+};
+
+typedef struct
+{
+    uint16_t data;
+} hipblasBfloat16_public;
+
+static_assert(std::is_standard_layout<hipblasBfloat16>{},
+              "hipblasBfloat16 is not a standard layout type, and thus is "
+              "incompatible with C.");
+
+static_assert(std::is_trivial<hipblasBfloat16>{},
+              "hipblasBfloat16 is not a trivial type, and thus is "
+              "incompatible with C.");
+
+static_assert(sizeof(hipblasBfloat16) == sizeof(hipblasBfloat16_public)
+                  && offsetof(hipblasBfloat16, data) == offsetof(hipblasBfloat16_public, data),
+              "internal hipblasBfloat16 does not match public hipblasBfloat16_public");
+
+#endif
 
 #if defined(ROCM_MATHLIBS_API_USE_HIP_COMPLEX)
 // Using hip complex types
