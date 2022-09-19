@@ -91,6 +91,11 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
                   REQUIRED
                   NO_DEFAULT_PATH
                 )
+    if (NOT BLAS_LIBRARY)
+      find_package( OPENBLAS CONFIG REQUIRED )
+      set( BLAS_LIBRARY OpenBLAS::OpenBLAS )
+      set( BLAS_INCLUDE_DIR "" )
+    endif()
   endif()
 
   set( hipblas_test_bench_common
