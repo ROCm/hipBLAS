@@ -123,12 +123,11 @@ struct Arguments
 
     bool fortran = false;
 
-    int norm_check = 0;
-    int unit_check = 1;
-    int timing     = 0;
-    int iters;
-    int cold_iters;
-
+    int      norm_check = 0;
+    int      unit_check = 1;
+    int      timing     = 0;
+    int      iters      = 10;
+    int      cold_iters = 2;
     uint32_t algo;
     int32_t  solution_index;
     uint32_t flags;
@@ -136,7 +135,7 @@ struct Arguments
     char     name[64];
     char     category[64];
 
-    int atomics_mode = HIPBLAS_ATOMICS_ALLOWED;
+    int atomics_mode = HIPBLAS_ATOMICS_NOT_ALLOWED;
 
     hipblas_initialization initialization = hipblas_initialization::rand_int;
 

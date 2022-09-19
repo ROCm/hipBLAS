@@ -402,6 +402,7 @@ Defaults:
   flags: 0
   name: hipblas-bench
   category: nightly
+  # default benchmarking to faster atomics_allowed (test is default not allowed)
   atomics_mode: atomics_allowed
   initialization: rand_int
 #workspace_size: 0
