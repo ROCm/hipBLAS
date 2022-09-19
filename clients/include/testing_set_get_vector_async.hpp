@@ -76,7 +76,7 @@ hipblasStatus_t testing_set_get_vector_async(const Arguments& argus)
     CHECK_HIPBLAS_ERROR(
         hipblasGetVectorAsyncFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy, stream));
 
-    hipStreamSynchronize(stream);
+    CHECK_HIP_ERROR(hipStreamSynchronize(stream));
 
     if(argus.unit_check || argus.norm_check)
     {
