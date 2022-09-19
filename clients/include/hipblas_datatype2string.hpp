@@ -60,13 +60,13 @@ inline std::ostream& operator<<(std::ostream& os, hipblas_initialization init)
 // Complex output
 inline std::ostream& operator<<(std::ostream& os, const hipblasComplex& x)
 {
-    os << "'(" << x.real() << "," << x.imag() << ")'";
+    os << "'(" << x.real() << ":" << x.imag() << ")'";
     return os;
 }
 
 inline std::ostream& operator<<(std::ostream& os, const hipblasDoubleComplex& x)
 {
-    os << "'(" << x.real() << "," << x.imag() << ")'";
+    os << "'(" << x.real() << ":" << x.imag() << ")'";
     return os;
 }
 
