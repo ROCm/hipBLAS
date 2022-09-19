@@ -79,7 +79,7 @@ include( ROCMInstallSymlinks )
 include( ROCMClients )
 include( ROCMHeaderWrapper )
 
-set ( VERSION_STRING "0.53.0" )
+set ( VERSION_STRING "0.54.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
@@ -191,7 +191,7 @@ endif( )
 
 # Package specific CPACK vars
 if( NOT USE_CUDA )
-  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.46.0" "rocsolver >= 3.20.0")
+  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.47.0" "rocsolver >= 3.21.0")
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
