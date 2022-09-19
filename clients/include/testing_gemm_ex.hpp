@@ -44,8 +44,8 @@ hipblasStatus_t testing_gemm_ex_template(const Arguments& argus)
     size_t*           workspace_size = 0;
     void*             workspace      = 0;
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasOperation_t transB = char2hipblas_operation(argus.transB);
 
     int M = argus.M;
     int N = argus.N;

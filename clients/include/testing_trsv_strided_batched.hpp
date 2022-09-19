@@ -40,9 +40,9 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
     int                M            = argus.M;
     int                incx         = argus.incx;
     int                lda          = argus.lda;
-    char               char_uplo    = argus.uplo_option;
-    char               char_diag    = argus.diag_option;
-    char               char_transA  = argus.transA_option;
+    char               char_uplo    = argus.uplo;
+    char               char_diag    = argus.diag;
+    char               char_transA  = argus.transA;
     hipblasFillMode_t  uplo         = char2hipblas_fill(char_uplo);
     hipblasDiagType_t  diag         = char2hipblas_diagonal(char_diag);
     hipblasOperation_t transA       = char2hipblas_operation(char_transA);

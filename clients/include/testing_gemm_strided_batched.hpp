@@ -55,8 +55,8 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasOperation_t transB = char2hipblas_operation(argus.transB);
 
     int A_row, A_col, B_row, B_col;
 

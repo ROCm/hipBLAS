@@ -51,7 +51,7 @@ hipblasStatus_t testing_hemv_strided_batched(const Arguments& argus)
     hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
     hipblasStride stride_y = size_t(N) * abs_incy * stride_scale;
 
-    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo);
 
     size_t A_size = stride_A * batch_count;
     size_t X_size = stride_x * batch_count;

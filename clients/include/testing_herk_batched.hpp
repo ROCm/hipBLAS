@@ -44,8 +44,8 @@ hipblasStatus_t testing_herk_batched(const Arguments& argus)
     int ldc         = argus.ldc;
     int batch_count = argus.batch_count;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     U h_alpha = argus.get_alpha<U>();
     U h_beta  = argus.get_beta<U>();

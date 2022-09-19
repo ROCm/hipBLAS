@@ -50,8 +50,8 @@ hipblasStatus_t testing_gemm_batched(const Arguments& argus)
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasOperation_t transB = char2hipblas_operation(argus.transB);
 
     int batch_count = argus.batch_count;
 

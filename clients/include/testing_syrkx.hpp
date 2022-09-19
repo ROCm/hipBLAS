@@ -42,8 +42,8 @@ hipblasStatus_t testing_syrkx(const Arguments& argus)
     int ldb = argus.ldb;
     int ldc = argus.ldc;
 
-    hipblasFillMode_t  uplo  = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t trans = char2hipblas_operation(argus.transA_option);
+    hipblasFillMode_t  uplo  = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t trans = char2hipblas_operation(argus.transA);
 
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();

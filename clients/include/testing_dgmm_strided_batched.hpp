@@ -37,7 +37,7 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
     auto hipblasDgmmStridedBatchedFn
         = FORTRAN ? hipblasDgmmStridedBatched<T, true> : hipblasDgmmStridedBatched<T, false>;
 
-    hipblasSideMode_t side = char2hipblas_side(argus.side_option);
+    hipblasSideMode_t side = char2hipblas_side(argus.side);
 
     int    M            = argus.M;
     int    N            = argus.N;

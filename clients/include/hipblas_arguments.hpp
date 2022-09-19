@@ -112,11 +112,11 @@ struct Arguments
     double beta   = 0.0;
     double betai  = 0.0;
 
-    char transA_option = 'N';
-    char transB_option = 'N';
-    char side_option   = 'L';
-    char uplo_option   = 'L';
-    char diag_option   = 'N';
+    char transA = 'N';
+    char transB = 'N';
+    char side   = 'L';
+    char uplo   = 'L';
+    char diag   = 'N';
 
     int apiCallCount = 1;
     int batch_count  = 10;
@@ -163,27 +163,22 @@ struct Arguments
     OPER(incy) SEP                   \
     OPER(incd) SEP                   \
     OPER(incb) SEP                   \
-    OPER(stride_scale) SEP           \
+    OPER(alpha) SEP                  \
+    OPER(alphai) SEP                 \
+    OPER(beta) SEP                   \
+    OPER(betai) SEP                  \
+    OPER(transA) SEP          \
+    OPER(transB) SEP          \
+    OPER(side) SEP            \
+    OPER(uplo) SEP            \
+    OPER(diag) SEP            \
+    OPER(batch_count) SEP            \
     OPER(stride_a) SEP               \
     OPER(stride_b) SEP               \
     OPER(stride_c) SEP               \
     OPER(stride_d) SEP               \
     OPER(stride_x) SEP               \
     OPER(stride_y) SEP               \
-    OPER(start) SEP                  \
-    OPER(end) SEP                    \
-    OPER(step) SEP                   \
-    OPER(alpha) SEP                  \
-    OPER(alphai) SEP                 \
-    OPER(beta) SEP                   \
-    OPER(betai) SEP                  \
-    OPER(transA_option) SEP          \
-    OPER(transB_option) SEP          \
-    OPER(side_option) SEP            \
-    OPER(uplo_option) SEP            \
-    OPER(diag_option) SEP            \
-    OPER(apiCallCount) SEP           \
-    OPER(batch_count) SEP            \
     OPER(fortran) SEP                \
     OPER(norm_check) SEP             \
     OPER(unit_check) SEP             \

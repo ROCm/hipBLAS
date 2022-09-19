@@ -62,8 +62,8 @@ hipblasStatus_t testing_trtri_strided_batched(const Arguments& argus)
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(argus);
 
-    char char_uplo = argus.uplo_option;
-    char char_diag = argus.diag_option;
+    char char_uplo = argus.uplo;
+    char char_diag = argus.diag;
 
     hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
     hipblasDiagType_t diag = char2hipblas_diagonal(char_diag);

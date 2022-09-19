@@ -42,8 +42,8 @@ hipblasStatus_t testing_hemm(const Arguments& argus)
     int ldb = argus.ldb;
     int ldc = argus.ldc;
 
-    char char_side = argus.side_option;
-    char char_uplo = argus.uplo_option;
+    char char_side = argus.side;
+    char char_uplo = argus.uplo;
     T    h_alpha   = argus.get_alpha<T>();
     T    h_beta    = argus.get_beta<T>();
 

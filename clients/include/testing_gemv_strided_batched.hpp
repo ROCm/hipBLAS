@@ -53,7 +53,7 @@ hipblasStatus_t testing_gemv_strided_batched(const Arguments& argus)
     size_t X_size, dim_x;
     size_t Y_size, dim_y;
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     if(transA == HIPBLAS_OP_N)
     {

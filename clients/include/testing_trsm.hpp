@@ -41,10 +41,10 @@ hipblasStatus_t testing_trsm(const Arguments& argus)
     int lda = argus.lda;
     int ldb = argus.ldb;
 
-    char char_side   = argus.side_option;
-    char char_uplo   = argus.uplo_option;
-    char char_transA = argus.transA_option;
-    char char_diag   = argus.diag_option;
+    char char_side   = argus.side;
+    char char_uplo   = argus.uplo;
+    char char_transA = argus.transA;
+    char char_diag   = argus.diag;
     T    h_alpha     = argus.get_alpha<T>();
 
     hipblasSideMode_t  side   = char2hipblas_side(char_side);

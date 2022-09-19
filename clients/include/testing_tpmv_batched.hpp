@@ -45,9 +45,9 @@ hipblasStatus_t testing_tpmv_batched(const Arguments& argus)
 
     int batch_count = argus.batch_count;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag);
     hipblasStatus_t    status = HIPBLAS_STATUS_SUCCESS;
 
     hipblasLocalHandle handle(argus);

@@ -45,8 +45,8 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     int ldb = argus.ldb;
     int ldc = argus.ldc;
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasOperation_t transB = char2hipblas_operation(argus.transB);
 
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();

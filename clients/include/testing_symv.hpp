@@ -47,7 +47,7 @@ hipblasStatus_t testing_symv(const Arguments& argus)
     size_t y_size   = size_t(M) * abs_incy;
     size_t A_size   = size_t(lda) * M;
 
-    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo);
     hipblasStatus_t   status = HIPBLAS_STATUS_SUCCESS;
 
     hipblasLocalHandle handle(argus);

@@ -36,7 +36,7 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
     bool FORTRAN       = argus.fortran;
     auto hipblasDgmmFn = FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
 
-    hipblasSideMode_t side = char2hipblas_side(argus.side_option);
+    hipblasSideMode_t side = char2hipblas_side(argus.side);
 
     int M    = argus.M;
     int N    = argus.N;

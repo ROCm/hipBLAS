@@ -41,7 +41,7 @@ hipblasStatus_t testing_gels_batched(const Arguments& argus)
     int  nrhs       = argus.K;
     int  lda        = argus.lda;
     int  ldb        = argus.ldb;
-    char transc     = argus.transA_option;
+    char transc     = argus.transA;
     int  batchCount = argus.batch_count;
 
     if(is_complex<T> && transc == 'T')

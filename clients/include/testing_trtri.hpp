@@ -56,8 +56,8 @@ hipblasStatus_t testing_trtri(const Arguments& argus)
     device_vector<T> dA(A_size);
     device_vector<T> dinvA(A_size);
 
-    char char_uplo = argus.uplo_option;
-    char char_diag = argus.diag_option;
+    char char_uplo = argus.uplo;
+    char char_diag = argus.diag;
 
     hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
     hipblasDiagType_t diag = char2hipblas_diagonal(char_diag);

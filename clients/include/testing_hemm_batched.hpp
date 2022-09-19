@@ -43,8 +43,8 @@ hipblasStatus_t testing_hemm_batched(const Arguments& argus)
     int ldb = argus.ldb;
     int ldc = argus.ldc;
 
-    hipblasSideMode_t side   = char2hipblas_side(argus.side_option);
-    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo_option);
+    hipblasSideMode_t side   = char2hipblas_side(argus.side);
+    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo);
     hipblasStatus_t   status = HIPBLAS_STATUS_SUCCESS;
 
     int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);

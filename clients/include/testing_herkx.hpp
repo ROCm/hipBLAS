@@ -43,8 +43,8 @@ hipblasStatus_t testing_herkx(const Arguments& argus)
     int ldb = argus.ldb;
     int ldc = argus.ldc;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

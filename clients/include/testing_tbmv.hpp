@@ -45,9 +45,9 @@ hipblasStatus_t testing_tbmv(const Arguments& argus)
     size_t A_size   = size_t(lda) * M;
     size_t x_size   = size_t(M) * abs_incx;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag);
 
     hipblasLocalHandle handle(argus);
 

@@ -47,7 +47,7 @@ hipblasStatus_t testing_symv_batched(const Arguments& argus)
 
     int batch_count = argus.batch_count;
 
-    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo);
 
     hipblasLocalHandle handle(argus);
 

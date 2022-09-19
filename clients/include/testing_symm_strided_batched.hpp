@@ -45,8 +45,8 @@ hipblasStatus_t testing_symm_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasSideMode_t side = char2hipblas_side(argus.side_option);
-    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
+    hipblasSideMode_t side = char2hipblas_side(argus.side);
+    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo);
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

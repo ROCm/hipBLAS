@@ -127,10 +127,10 @@ Arguments setup_trsm_ex_arguments(trsm_ex_tuple tup)
     arg.alpha  = alpha_alphai[0];
     arg.alphai = alpha_alphai[1];
 
-    arg.side_option   = side_uplo_transA_diag[0];
-    arg.uplo_option   = side_uplo_transA_diag[1];
-    arg.transA_option = side_uplo_transA_diag[2];
-    arg.diag_option   = side_uplo_transA_diag[3];
+    arg.side   = side_uplo_transA_diag[0];
+    arg.uplo   = side_uplo_transA_diag[1];
+    arg.transA = side_uplo_transA_diag[2];
+    arg.diag   = side_uplo_transA_diag[3];
 
     arg.timing = 0;
 
@@ -173,7 +173,7 @@ TEST_P(trsm_ex_gtest, trsm_ex_gtest_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
+        else if(arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -205,7 +205,7 @@ TEST_P(trsm_ex_gtest, trsm_gtest_ex_double_complex)
     {
 
         if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -233,7 +233,7 @@ TEST_P(trsm_ex_gtest, trsm_batched_ex_gtest_float)
     {
 
         if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -261,7 +261,7 @@ TEST_P(trsm_ex_gtest, trsm_batched_ex_gtest_double_complex)
     {
 
         if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -288,7 +288,7 @@ TEST_P(trsm_ex_gtest, trsm_strided_batched_ex_gtest_float)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -315,7 +315,7 @@ TEST_P(trsm_ex_gtest, trsm_strided_batched_ex_gtest_double_complex)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

@@ -42,8 +42,8 @@ hipblasStatus_t testing_herk(const Arguments& argus)
     int lda = argus.lda;
     int ldc = argus.ldc;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
