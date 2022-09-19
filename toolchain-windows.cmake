@@ -1,14 +1,10 @@
 
-if (DEFINED ENV{HIP_PATH})
-  file(TO_CMAKE_PATH "$ENV{HIP_PATH}" HIP_PATH)
-  set(rocm_bin "${HIP_PATH}/bin")
-else()
-  set(HIP_PATH "C:/hip")
-  set(rocm_bin "C:/hip/bin")
-endif()
-
 if (DEFINED ENV{HIP_DIR})
-    file(TO_CMAKE_PATH "$ENV{HIP_DIR}" HIP_DIR)
+  file(TO_CMAKE_PATH "$ENV{HIP_DIR}" HIP_DIR)
+  set(rocm_bin "${HIP_DIR}/bin")
+else()
+  set(HIP_DIR "C:/hip")
+  set(rocm_bin "C:/hip/bin")
 endif()
 
 set(CMAKE_CXX_COMPILER "${rocm_bin}/clang++.exe")
@@ -32,7 +28,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN32 -D_CRT_SECURE_NO_WARNINGS -D_SIL
 # flags for clang direct use
 # -Wno-ignored-attributes to avoid warning: __declspec attribute 'dllexport' is not supported [-Wignored-attributes] which is used by msvc compiler
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14-fms-extensions -fms-compatibility -Wno-ignored-attributes")
-# # -I${HIP_PATH}/include -I${HIP_PATH}/include/hip  add  -x hip ??
+# # -I${HIP_DIR}/include -I${HIP_DIR}/include/hip  add  -x hip ??
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__HIP_PLATFORM_HCC__ -D__HIP_ROCclr__ -DHIP_CLANG_HCC_COMPAT_MODE=1")
 
 find_program(CCACHE_PROGRAM ccache)
