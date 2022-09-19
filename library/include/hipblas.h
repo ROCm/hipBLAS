@@ -97,7 +97,7 @@ typedef int64_t hipblasStride;
 #if __cplusplus < 201103L || !defined(HIPBLAS_BFLOAT16_CLASS)
 
 // If this is a C or C++ compiler below C++11, or not requesting HIPBLAS_BFLOAT16_CLASS,
-// we only include a minimal definition of rocblas_bfloat16
+// we only include a minimal definition of hipblasBfloat16
 typedef struct hipblasBfloat16
 {
     uint16_t data;

@@ -225,6 +225,7 @@ def setdefaults(test):
     # Do not put constant defaults here -- use hipblas_common.yaml for that.
     # These are only for dynamic defaults
     # TODO: This should be ideally moved to YAML file, with eval'd expressions.
+    # TODO: move to use hipblas names and decide if we want any auto defaults or just yaml
 
     if test['function'] in ('asum_strided_batched', 'nrm2_strided_batched',
                             'scal_strided_batched', 'swap_strided_batched',
