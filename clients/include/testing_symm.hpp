@@ -150,22 +150,14 @@ hipblasStatus_t testing_symm(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side_option,
-                      e_uplo_option,
-                      e_M,
-                      e_N,
-                      e_alpha,
-                      e_lda,
-                      e_ldb,
-                      e_beta,
-                      e_ldc>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         symm_gflop_count<T>(M, N, K),
-                         symm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        ArgumentModel<e_side, e_uplo, e_M, e_N, e_alpha, e_lda, e_ldb, e_beta, e_ldc>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            symm_gflop_count<T>(M, N, K),
+            symm_gbyte_count<T>(M, N, K),
+            hipblas_error_host,
+            hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

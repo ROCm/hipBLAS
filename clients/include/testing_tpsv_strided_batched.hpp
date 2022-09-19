@@ -192,13 +192,7 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_diag_option,
-                      e_N,
-                      e_incx,
-                      e_stride_x,
-                      e_batch_count>{}
+        ArgumentModel<e_uplo, e_transA, e_diag_option, e_N, e_incx, e_stride_x, e_batch_count>{}
             .log_args<T>(std::cout,
                          argus,
                          gpu_time_used,

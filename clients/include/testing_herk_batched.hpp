@@ -184,15 +184,7 @@ hipblasStatus_t testing_herk_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_N,
-                      e_K,
-                      e_alpha,
-                      e_lda,
-                      e_beta,
-                      e_ldc,
-                      e_batch_count>{}
+        ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc, e_batch_count>{}
             .log_args<T>(std::cout,
                          argus,
                          gpu_time_used,

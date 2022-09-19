@@ -221,15 +221,7 @@ hipblasStatus_t testing_gemv_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA_option,
-                      e_M,
-                      e_N,
-                      e_alpha,
-                      e_lda,
-                      e_incx,
-                      e_beta,
-                      e_incy,
-                      e_batch_count>{}
+        ArgumentModel<e_transA, e_M, e_N, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>{}
             .log_args<T>(std::cout,
                          argus,
                          gpu_time_used,

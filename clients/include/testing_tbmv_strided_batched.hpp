@@ -171,8 +171,8 @@ hipblasStatus_t testing_tbmv_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
+        ArgumentModel<e_uplo,
+                      e_transA,
                       e_diag_option,
                       e_M,
                       e_K,

@@ -261,7 +261,7 @@ hipblasStatus_t testing_gemv_strided_batched(const Arguments& argus)
 
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA_option,
+        ArgumentModel<e_transA,
                       e_M,
                       e_N,
                       e_stride_a,

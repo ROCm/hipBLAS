@@ -179,7 +179,7 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side_option, e_M, e_N, e_lda, e_incx, e_ldc, e_batch_count>{}.log_args<T>(
+        ArgumentModel<e_side, e_M, e_N, e_lda, e_incx, e_ldc, e_batch_count>{}.log_args<T>(
             std::cout,
             argus,
             gpu_time_used,

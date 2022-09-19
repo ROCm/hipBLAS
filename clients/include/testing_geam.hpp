@@ -180,15 +180,7 @@ hipblasStatus_t testing_geam(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_transA_option,
-                      e_transB_option,
-                      e_M,
-                      e_N,
-                      e_alpha,
-                      e_lda,
-                      e_beta,
-                      e_ldb,
-                      e_ldc>{}
+        ArgumentModel<e_transA, e_transB, e_M, e_N, e_alpha, e_lda, e_beta, e_ldb, e_ldc>{}
             .log_args<T>(std::cout,
                          argus,
                          gpu_time_used,

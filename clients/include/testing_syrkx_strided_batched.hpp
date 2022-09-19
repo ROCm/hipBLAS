@@ -219,21 +219,14 @@ hipblasStatus_t testing_syrkx_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_N,
-                      e_K,
-                      e_lda,
-                      e_ldb,
-                      e_ldc,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         syrkx_gflop_count<T>(N, K),
-                         syrkx_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        ArgumentModel<e_uplo, e_transA, e_N, e_K, e_lda, e_ldb, e_ldc, e_batch_count>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            syrkx_gflop_count<T>(N, K),
+            syrkx_gbyte_count<T>(N, K),
+            hipblas_error_host,
+            hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

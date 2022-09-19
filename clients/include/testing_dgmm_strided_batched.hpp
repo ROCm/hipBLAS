@@ -210,7 +210,7 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side_option,
+        ArgumentModel<e_side,
                       e_M,
                       e_N,
                       e_lda,

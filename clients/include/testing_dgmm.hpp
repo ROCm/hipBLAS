@@ -154,7 +154,7 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side_option, e_M, e_N, e_lda, e_incx, e_ldc>{}.log_args<T>(
+        ArgumentModel<e_side, e_M, e_N, e_lda, e_incx, e_ldc>{}.log_args<T>(
             std::cout,
             argus,
             gpu_time_used,

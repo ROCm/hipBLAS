@@ -147,7 +147,7 @@ hipblasStatus_t testing_syrkx(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo_option, e_transA_option, e_N, e_K, e_lda, e_ldb, e_ldc>{}.log_args<T>(
+        ArgumentModel<e_uplo, e_transA, e_N, e_K, e_lda, e_ldb, e_ldc>{}.log_args<T>(
             std::cout,
             argus,
             gpu_time_used,

@@ -267,14 +267,14 @@ hipblasStatus_t testing_gemm_ex_template(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA_option, e_transB_option, e_M, e_N, e_K, e_lda, e_ldb, e_ldc>{}
-            .log_args<Tc>(std::cout,
-                          argus,
-                          gpu_time_used,
-                          gemm_gflop_count<Tex>(M, N, K),
-                          gemm_gbyte_count<Tex>(M, N, K),
-                          hipblas_error_host,
-                          hipblas_error_device);
+        ArgumentModel<e_transA, e_transB, e_M, e_N, e_K, e_lda, e_ldb, e_ldc>{}.log_args<Tc>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            gemm_gflop_count<Tex>(M, N, K),
+            gemm_gbyte_count<Tex>(M, N, K),
+            hipblas_error_host,
+            hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
