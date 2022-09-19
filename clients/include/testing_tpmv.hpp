@@ -124,13 +124,12 @@ hipblasStatus_t testing_tpmv(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_diag_option, e_M, e_incx>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            tpmv_gflop_count<T>(M),
-            tpmv_gbyte_count<T>(M),
-            hipblas_error);
+        ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_incx>{}.log_args<T>(std::cout,
+                                                                           argus,
+                                                                           gpu_time_used,
+                                                                           tpmv_gflop_count<T>(M),
+                                                                           tpmv_gbyte_count<T>(M),
+                                                                           hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

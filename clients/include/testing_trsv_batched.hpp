@@ -207,13 +207,13 @@ hipblasStatus_t testing_trsv_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_diag_option, e_M, e_lda, e_incx, e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         trsv_gflop_count<T>(M),
-                         trsv_gbyte_count<T>(M),
-                         cumulative_hipblas_error);
+        ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_lda, e_incx, e_batch_count>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            trsv_gflop_count<T>(M),
+            trsv_gbyte_count<T>(M),
+            cumulative_hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

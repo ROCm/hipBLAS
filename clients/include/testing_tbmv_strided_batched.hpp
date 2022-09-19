@@ -173,7 +173,7 @@ hipblasStatus_t testing_tbmv_strided_batched(const Arguments& argus)
 
         ArgumentModel<e_uplo,
                       e_transA,
-                      e_diag_option,
+                      e_diag,
                       e_M,
                       e_K,
                       e_lda,

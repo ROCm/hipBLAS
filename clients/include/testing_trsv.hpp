@@ -177,7 +177,7 @@ hipblasStatus_t testing_trsv(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_diag_option, e_M, e_lda, e_incx>{}.log_args<T>(
+        ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_lda, e_incx>{}.log_args<T>(
             std::cout,
             argus,
             gpu_time_used,

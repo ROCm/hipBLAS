@@ -151,7 +151,7 @@ hipblasStatus_t testing_trtri_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo, e_diag_option, e_N, e_lda, e_stride_a, e_batch_count>{}.log_args<T>(
+        ArgumentModel<e_uplo, e_diag, e_N, e_lda, e_stride_a, e_batch_count>{}.log_args<T>(
             std::cout,
             argus,
             gpu_time_used,

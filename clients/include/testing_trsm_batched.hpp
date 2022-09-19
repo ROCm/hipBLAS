@@ -242,7 +242,7 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
         ArgumentModel<e_side,
                       e_uplo,
                       e_transA,
-                      e_diag_option,
+                      e_diag,
                       e_M,
                       e_N,
                       e_alpha,
