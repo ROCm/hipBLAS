@@ -26,8 +26,10 @@
 #include "hipblas.hpp"
 
 #include "argument_model.hpp"
+#include "hipblas_data.hpp"
 #include "hipblas_datatype2string.hpp"
 #include "hipblas_parse_data.hpp"
+#include "test_cleanup.hpp"
 #include "type_dispatch.hpp"
 #include "utility.h"
 
@@ -1190,9 +1192,9 @@ int run_bench_test(Arguments& arg)
 int hipblas_bench_datafile()
 {
     int ret = 0;
-    // for(Arguments arg : RocBLAS_TestData())
-    //     ret |= run_bench_test(arg);
-    //test_cleanup::cleanup();
+    for(Arguments arg : HipBLAS_TestData())
+        ret |= run_bench_test(arg);
+    test_cleanup::cleanup();
     return ret;
 }
 
@@ -1227,9 +1229,9 @@ try
     std::string initialization;
     hipblas_int device_id;
 
-    // TODO: currently hipblas_parse_data not implemented
     bool datafile            = hipblas_parse_data(argc, argv);
     bool atomics_not_allowed = false;
+    bool log_function_name   = false;
 
     options_description desc("hipblas-bench command line options");
 
@@ -1420,6 +1422,10 @@ try
         //  bool_switch(&arg.c_noalias_d)->default_value(false),
         //  "C and D are stored in separate memory")
 
+        ("log_function_name",
+         bool_switch(&log_function_name)->default_value(false),
+         "Function name precedes other itmes.")
+
         ("fortran",
          bool_switch(&arg.fortran)->default_value(false),
          "Run using Fortran interface")
@@ -1429,8 +1435,6 @@ try
         //("version", "Prints the version number");
 
     // clang-format on
-
-    arg.atomics_mode = atomics_not_allowed ? HIPBLAS_ATOMICS_NOT_ALLOWED : HIPBLAS_ATOMICS_ALLOWED;
 
     variables_map vm;
     store(parse_command_line(argc, argv, desc), vm);
@@ -1449,6 +1453,12 @@ try
     //     std::cout << "hipBLAS version: " << blas_version << std::endl;
     //     return 0;
     // }
+
+    // transfer local variable state
+
+    arg.atomics_mode = atomics_not_allowed ? HIPBLAS_ATOMICS_NOT_ALLOWED : HIPBLAS_ATOMICS_ALLOWED;
+
+    ArgumentModel_set_log_function_name(log_function_name);
 
     // Device Query
     hipblas_int device_count = query_device_property();

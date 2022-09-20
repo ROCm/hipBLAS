@@ -31,7 +31,24 @@ if( NOT TARGET hipblas )
   find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
 endif( )
 
-add_executable( hipblas-bench ${hipblas_bench_source} ${hipblas_test_bench_common} )
+set( hipblas_benchmark_common
+      ../common/utility.cpp
+      ../common/cblas_interface.cpp
+      ../common/hipblas_arguments.cpp
+      ../common/hipblas_parse_data.cpp
+      ../common/hipblas_datatype2string.cpp
+      ../common/norm.cpp
+      ../common/unit.cpp
+      ../common/near.cpp
+      ../common/arg_check.cpp
+      ../common/argument_model.cpp
+      ../common/hipblas_template_specialization.cpp
+      ${BLIS_CPP}
+    )
+
+    add_executable( hipblas-bench ${hipblas_bench_source} ${hipblas_benchmark_common} )
+
+target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 
 if(LINK_BLIS)
   target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
@@ -68,7 +85,9 @@ if( NOT WIN32 )
 endif()
 
 # need mf16c flag for float->half convertion
-target_compile_options( hipblas-bench PRIVATE -mf16c)
+target_compile_options( hipblas-bench PRIVATE -mf16c ) #-Wno-deprecated-declarations )
+
+target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 )
 
 if( NOT USE_CUDA )
   target_link_libraries( hipblas-bench PRIVATE hip::host )
@@ -101,5 +120,7 @@ set_target_properties( hipblas-bench PROPERTIES
   CXX_EXTENSIONS OFF
   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
 )
+
+add_dependencies( hipblas-bench hipblas-common )
 
 rocm_install(TARGETS hipblas-bench COMPONENT benchmarks)

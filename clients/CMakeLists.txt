@@ -40,7 +40,7 @@ endif()
 project( hipblas-clients LANGUAGES CXX Fortran )
 
 # We use C++14 features, this will add compile option: -std=c++14
-set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_STANDARD 17 )
 
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
@@ -121,3 +121,30 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
   endif( )
 
 endif()
+
+set( HIPBLAS_COMMON "${PROJECT_BINARY_DIR}/staging/hipblas_common.yaml")
+add_custom_command( OUTPUT "${HIPBLAS_COMMON}"
+                    COMMAND ${CMAKE_COMMAND} -E copy include/hipblas_common.yaml "${HIPBLAS_COMMON}"
+                    DEPENDS include/hipblas_common.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+set( HIPBLAS_TEMPLATE "${PROJECT_BINARY_DIR}/staging/hipblas_template.yaml")
+add_custom_command( OUTPUT "${HIPBLAS_TEMPLATE}"
+                    COMMAND ${CMAKE_COMMAND} -E copy include/hipblas_template.yaml "${HIPBLAS_TEMPLATE}"
+                    DEPENDS include/hipblas_template.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+set( HIPBLAS_GENTEST "${PROJECT_BINARY_DIR}/staging/hipblas_gentest.py")
+add_custom_command( OUTPUT "${HIPBLAS_GENTEST}"
+                    COMMAND ${CMAKE_COMMAND} -E copy common/hipblas_gentest.py "${HIPBLAS_GENTEST}"
+                    DEPENDS common/hipblas_gentest.py
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+
+add_custom_target( hipblas-common DEPENDS "${HIPBLAS_COMMON}" "${HIPBLAS_TEMPLATE}" "${HIPBLAS_SMOKE}" "${HIPBLAS_GENTEST}" )
+
+rocm_install(
+  FILES ${HIPBLAS_COMMON} ${HIPBLAS_TEMPLATE} ${HIPBLAS_GENTEST}
+  DESTINATION "${CMAKE_INSTALL_BINDIR}"
+  COMPONENT clients-common
+)

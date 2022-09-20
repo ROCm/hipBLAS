@@ -110,7 +110,38 @@ if( BUILD_WITH_SOLVER )
   )
 endif( )
 
-add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_bench_common} )
+if(LINK_BLIS)
+  set( BLIS_CPP ../common/blis_interface.cpp )
+endif()
+
+set( hipblas_test_common
+  ../common/utility.cpp
+  ../common/cblas_interface.cpp
+  ../common/norm.cpp
+  ../common/unit.cpp
+  ../common/near.cpp
+  ../common/arg_check.cpp
+  ../common/argument_model.cpp
+  ../common/hipblas_datatype2string.cpp
+  ../common/hipblas_template_specialization.cpp
+  ${BLIS_CPP}
+)
+
+add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_bench_common} )
+
+if(LINK_BLIS)
+    if (NOT WIN32)
+      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+      set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+    else( )
+      set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
+      find_library( BLIS_LIBRARY libblis
+                      PATHS ${BLIS_DIR}/lib
+                      REQUIRED
+                      NO_DEFAULT_PATH
+                  )
+    endif()
+endif()
 
 target_include_directories( hipblas-test
   PRIVATE
@@ -140,7 +171,9 @@ endif()
 target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest )
 
 # need mf16c flag for float->half convertion
-target_compile_options( hipblas-test PRIVATE -mf16c )
+target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
+
+target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 )
 
 if( NOT USE_CUDA )
   target_link_libraries( hipblas-test PRIVATE hip::host )
