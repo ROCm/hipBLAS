@@ -131,6 +131,8 @@ inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
         return "bf16_r";
     case HIPBLAS_C_16B:
         return "bf16_c";
+    case HIPBLAS_DATATYPE_INVALID:
+        return "invalid";
     }
     return "invalid";
 }
