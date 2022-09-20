@@ -127,7 +127,7 @@ set( hipblas_test_common
   ${BLIS_CPP}
 )
 
-add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_bench_common} )
+add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
 
 if(LINK_BLIS)
     if (NOT WIN32)
