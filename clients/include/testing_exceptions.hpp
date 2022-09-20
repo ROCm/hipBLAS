@@ -27,7 +27,7 @@ hipblasStatus_t testing_bad_operation()
 {
     Arguments          argus;
     hipblasLocalHandle handle(argus);
-    // invalid peration enum
+    // invalid transpose operation enum
     return hipblasSgemv(
         handle, hipblasOperation_t(0), 0, 0, nullptr, nullptr, 0, nullptr, 0, nullptr, nullptr, 0);
 }
