@@ -98,20 +98,6 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
     endif()
   endif()
 
-  set( hipblas_test_bench_common
-      ../common/utility.cpp
-      ../common/cblas_interface.cpp
-      ../common/hipblas_arguments.cpp
-      ../common/hipblas_parse_data.cpp
-      ../common/hipblas_datatype2string.cpp
-      ../common/norm.cpp
-      ../common/unit.cpp
-      ../common/near.cpp
-      ../common/arg_check.cpp
-      ../common/hipblas_template_specialization.cpp
-      ${BLIS_CPP}
-    )
-
   if( BUILD_CLIENTS_TESTS )
     add_subdirectory( gtest )
   endif( )

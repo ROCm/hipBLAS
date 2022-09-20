@@ -46,7 +46,7 @@ set( hipblas_benchmark_common
       ${BLIS_CPP}
     )
 
-    add_executable( hipblas-bench ${hipblas_bench_source} ${hipblas_benchmark_common} )
+add_executable( hipblas-bench ${hipblas_bench_source} ${hipblas_benchmark_common} )
 
 target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 
