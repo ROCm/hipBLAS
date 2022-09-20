@@ -64,7 +64,7 @@ foreach( exe IN LISTS example-executables)
 
   target_include_directories( ${exe} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> )
 
-  target_compile_options( ${exe} PRIVATE -mf16c )
+  target_compile_options( ${exe} PRIVATE -mf16c -DHIPBLAS_BFLOAT16_CLASS )
 
   target_link_libraries( ${exe} PRIVATE roc::hipblas )
 
@@ -88,7 +88,7 @@ foreach( exe IN LISTS example-executables)
 
   set_target_properties( ${exe} PROPERTIES
     LINKER_LANGUAGE CXX
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS ON
     DEBUG_POSTFIX "-d"

@@ -23,7 +23,7 @@
 cmake_minimum_required( VERSION 3.5 )
 
 # We use C++14 features, this will add compile option: -std=c++14
-set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_STANDARD 17 )
 
 if (NOT python)
     set(python "python3") # default for linux
@@ -162,6 +162,8 @@ if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
   elseif(CLIENTS_OS STREQUAL "ubuntu" AND CLIENTS_OS_VERSION VERSION_GREATER_EQUAL "20.04")
     set(GFORTRAN_DEB "libgfortran5")
   endif()
+
+  set( BUILD_CLIENTS ON )
   rocm_package_setup_component(clients)
   rocm_package_setup_client_component(clients-common)
   if(BUILD_CLIENTS_TESTS)
