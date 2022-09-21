@@ -24,26 +24,8 @@ find_package( Threads REQUIRED )
 
 # Linking lapack library requires fortran flags
 enable_language( Fortran )
-find_package( cblas REQUIRED CONFIG )
 
-if(LINK_BLIS)
-  set( BLIS_CPP ../common/blis_interface.cpp )
-endif()
-
-
-if(LINK_BLIS)
-    if (NOT WIN32)
-      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
-      set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
-    else()
-      set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
-      find_library( BLIS_LIBRARY libblis
-                      PATHS ${BLIS_DIR}/lib
-                      REQUIRED
-                      NO_DEFAULT_PATH
-                  )
-    endif()
-endif()
+set(hipblas_bench_source client.cpp)
 
 if( NOT TARGET hipblas )
   find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
@@ -64,7 +46,7 @@ set( hipblas_benchmark_common
       ${BLIS_CPP}
     )
 
-add_executable( hipblas-bench client.cpp ${hipblas_benchmark_common} )
+add_executable( hipblas-bench ${hipblas_bench_source} ${hipblas_benchmark_common} )
 
 target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 
@@ -85,34 +67,20 @@ target_include_directories( hipblas-bench
   SYSTEM PRIVATE
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
 )
 
-if(LINK_BLIS)
-    if (NOT WIN32)
-      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
-      set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
-    else()
-      set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
-      find_library( BLIS_LIBRARY libblis
-                      PATHS ${BLIS_DIR}/lib
-                      REQUIRED
-                      NO_DEFAULT_PATH
-                  )
-    endif()
-endif()
-
 if (NOT WIN32)
-    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
+    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client )
 endif()
 
-if(LINK_BLIS)
-  target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
-endif()
+target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas )
 
-target_link_libraries( hipblas-bench PRIVATE roc::hipblas cblas lapack )
+target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ROCM_USE_FLOAT16 )
 
 if( NOT WIN32 )
+    target_link_libraries( hipblas-bench PRIVATE lapack cblas )
     target_link_libraries( hipblas-bench PRIVATE stdc++fs)
 endif()
 
