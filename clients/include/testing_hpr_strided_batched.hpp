@@ -49,7 +49,7 @@ hipblasStatus_t testing_hpr_strided_batched(const Arguments& argus)
     hipblasStride     stride_x = size_t(N) * abs_incx * stride_scale;
     size_t            A_size   = stride_A * batch_count;
     size_t            x_size   = stride_x * batch_count;
-    hipblasFillMode_t uplo     = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo     = char2hipblas_fill(argus.uplo);
 
     hipblasLocalHandle handle(argus);
 

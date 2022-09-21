@@ -45,8 +45,8 @@ hipblasStatus_t testing_symm_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasSideMode_t side = char2hipblas_side(argus.side_option);
-    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
+    hipblasSideMode_t side = char2hipblas_side(argus.side);
+    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo);
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -219,8 +219,8 @@ hipblasStatus_t testing_symm_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side_option,
-                      e_uplo_option,
+        ArgumentModel<e_side,
+                      e_uplo,
                       e_M,
                       e_N,
                       e_alpha,

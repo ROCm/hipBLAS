@@ -98,8 +98,8 @@ Arguments setup_trtri_arguments(trtri_tuple tup)
     arg.N   = matrix_size[0];
     arg.lda = matrix_size[1];
 
-    arg.uplo_option = uplo;
-    arg.diag_option = diag;
+    arg.uplo        = uplo;
+    arg.diag        = diag;
     arg.batch_count = batch_count;
 
     arg.fortran = fortran;

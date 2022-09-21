@@ -46,7 +46,7 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
     size_t X_size, dim_x;
     size_t Y_size, dim_y;
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     if(transA == HIPBLAS_OP_N)
     {
@@ -178,14 +178,14 @@ hipblasStatus_t testing_gemv(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA_option, e_M, e_N, e_alpha, e_lda, e_incx, e_beta, e_incy>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         gemv_gflop_count<T>(transA, M, N),
-                         gemv_gbyte_count<T>(transA, M, N),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        ArgumentModel<e_transA, e_M, e_N, e_alpha, e_lda, e_incx, e_beta, e_incy>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            gemv_gflop_count<T>(transA, M, N),
+            gemv_gbyte_count<T>(transA, M, N),
+            hipblas_error_host,
+            hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

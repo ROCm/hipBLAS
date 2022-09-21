@@ -47,7 +47,7 @@ hipblasStatus_t testing_symv(const Arguments& argus)
     size_t y_size   = size_t(M) * abs_incy;
     size_t A_size   = size_t(lda) * M;
 
-    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo);
     hipblasStatus_t   status = HIPBLAS_STATUS_SUCCESS;
 
     hipblasLocalHandle handle(argus);
@@ -157,14 +157,13 @@ hipblasStatus_t testing_symv(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo_option, e_M, e_lda, e_incx, e_incy>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            symv_gflop_count<T>(M),
-            symv_gbyte_count<T>(M),
-            hipblas_error_host,
-            hipblas_error_device);
+        ArgumentModel<e_uplo, e_M, e_lda, e_incx, e_incy>{}.log_args<T>(std::cout,
+                                                                        argus,
+                                                                        gpu_time_used,
+                                                                        symv_gflop_count<T>(M),
+                                                                        symv_gbyte_count<T>(M),
+                                                                        hipblas_error_host,
+                                                                        hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

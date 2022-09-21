@@ -43,7 +43,7 @@ hipblasStatus_t testing_hpr2_batched(const Arguments& argus)
     int batch_count = argus.batch_count;
 
     size_t            A_size = size_t(N) * (N + 1) / 2;
-    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo);
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 

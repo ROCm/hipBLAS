@@ -60,7 +60,7 @@ Arguments setup_gels_arguments(gels_tuple tup)
     arg.lda = matrix_size[3];
     arg.ldb = matrix_size[4];
 
-    arg.transA_option = trans;
+    arg.transA = trans;
 
     arg.fortran = fortran;
 

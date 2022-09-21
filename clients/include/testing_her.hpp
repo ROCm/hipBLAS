@@ -44,7 +44,7 @@ hipblasStatus_t testing_her(const Arguments& argus)
     int               abs_incx = incx >= 0 ? incx : -incx;
     size_t            A_size   = size_t(lda) * N;
     size_t            x_size   = size_t(N) * abs_incx;
-    hipblasFillMode_t uplo     = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo     = char2hipblas_fill(argus.uplo);
 
     hipblasLocalHandle handle(argus);
 

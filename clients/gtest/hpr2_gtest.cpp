@@ -120,7 +120,7 @@ Arguments setup_hpr2_arguments(hpr2_tuple tup)
 
     arg.timing = 0;
 
-    arg.uplo_option = uplo;
+    arg.uplo = uplo;
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;

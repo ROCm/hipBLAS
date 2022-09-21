@@ -53,7 +53,7 @@ hipblasStatus_t testing_gemv_strided_batched(const Arguments& argus)
     size_t X_size, dim_x;
     size_t Y_size, dim_y;
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     if(transA == HIPBLAS_OP_N)
     {
@@ -261,7 +261,7 @@ hipblasStatus_t testing_gemv_strided_batched(const Arguments& argus)
 
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA_option,
+        ArgumentModel<e_transA,
                       e_M,
                       e_N,
                       e_stride_a,

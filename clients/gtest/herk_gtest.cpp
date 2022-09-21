@@ -121,8 +121,8 @@ Arguments setup_herk_arguments(herk_tuple tup)
 
     arg.timing = 0;
 
-    arg.uplo_option   = uplo;
-    arg.transA_option = transA;
+    arg.uplo   = uplo;
+    arg.transA = transA;
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
@@ -156,9 +156,8 @@ TEST_P(blas3_herk_gtest, herk_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && arg.lda < arg.N)
-           || (arg.transA_option != 'N' && arg.lda < arg.K))
+        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N || (arg.transA == 'N' && arg.lda < arg.N)
+           || (arg.transA != 'N' && arg.lda < arg.K))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -183,9 +182,8 @@ TEST_P(blas3_herk_gtest, herk_gtest_double)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && arg.lda < arg.N)
-           || (arg.transA_option != 'N' && arg.lda < arg.K))
+        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N || (arg.transA == 'N' && arg.lda < arg.N)
+           || (arg.transA != 'N' && arg.lda < arg.K))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -213,9 +211,8 @@ TEST_P(blas3_herk_gtest, herk_batched_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && arg.lda < arg.N)
-           || (arg.transA_option != 'N' && arg.lda < arg.K) || arg.batch_count < 0)
+        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N || (arg.transA == 'N' && arg.lda < arg.N)
+           || (arg.transA != 'N' && arg.lda < arg.K) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -240,9 +237,8 @@ TEST_P(blas3_herk_gtest, herk_batched_gtest_double)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && arg.lda < arg.N)
-           || (arg.transA_option != 'N' && arg.lda < arg.K) || arg.batch_count < 0)
+        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N || (arg.transA == 'N' && arg.lda < arg.N)
+           || (arg.transA != 'N' && arg.lda < arg.K) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -268,9 +264,8 @@ TEST_P(blas3_herk_gtest, herk_strided_batched_gtest_float)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && arg.lda < arg.N)
-           || (arg.transA_option != 'N' && arg.lda < arg.K) || arg.batch_count < 0)
+        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N || (arg.transA == 'N' && arg.lda < arg.N)
+           || (arg.transA != 'N' && arg.lda < arg.K) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -295,9 +290,8 @@ TEST_P(blas3_herk_gtest, herk_strided_batched_gtest_double)
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && arg.lda < arg.N)
-           || (arg.transA_option != 'N' && arg.lda < arg.K) || arg.batch_count < 0)
+        if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N || (arg.transA == 'N' && arg.lda < arg.N)
+           || (arg.transA != 'N' && arg.lda < arg.K) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

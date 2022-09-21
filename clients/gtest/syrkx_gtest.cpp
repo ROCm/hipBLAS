@@ -127,8 +127,8 @@ Arguments setup_syrkx_arguments(syrkx_tuple tup)
 
     arg.timing = 0;
 
-    arg.uplo_option   = uplo;
-    arg.transA_option = transA;
+    arg.uplo   = uplo;
+    arg.transA = transA;
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
@@ -163,8 +163,8 @@ TEST_P(blas3_syrkx_gtest, syrkx_gtest_float)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
-           || (arg.transA_option != 'N' && (arg.lda < arg.K || arg.ldb < arg.K)))
+           || (arg.transA == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
+           || (arg.transA != 'N' && (arg.lda < arg.K || arg.ldb < arg.K)))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -190,8 +190,8 @@ TEST_P(blas3_syrkx_gtest, syrkx_gtest_double_complex)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
-           || (arg.transA_option != 'N' && (arg.lda < arg.K || arg.ldb < arg.K)))
+           || (arg.transA == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
+           || (arg.transA != 'N' && (arg.lda < arg.K || arg.ldb < arg.K)))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -220,9 +220,8 @@ TEST_P(blas3_syrkx_gtest, syrkx_batched_gtest_float)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
-           || (arg.transA_option != 'N' && (arg.lda < arg.K || arg.ldb < arg.K))
-           || arg.batch_count < 0)
+           || (arg.transA == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
+           || (arg.transA != 'N' && (arg.lda < arg.K || arg.ldb < arg.K)) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -248,9 +247,8 @@ TEST_P(blas3_syrkx_gtest, syrkx_batched_gtest_double_complex)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
-           || (arg.transA_option != 'N' && (arg.lda < arg.K || arg.ldb < arg.K))
-           || arg.batch_count < 0)
+           || (arg.transA == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
+           || (arg.transA != 'N' && (arg.lda < arg.K || arg.ldb < arg.K)) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -277,9 +275,8 @@ TEST_P(blas3_syrkx_gtest, syrkx_strided_batched_gtest_float)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
-           || (arg.transA_option != 'N' && (arg.lda < arg.K || arg.ldb < arg.K))
-           || arg.batch_count < 0)
+           || (arg.transA == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
+           || (arg.transA != 'N' && (arg.lda < arg.K || arg.ldb < arg.K)) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -305,9 +302,8 @@ TEST_P(blas3_syrkx_gtest, syrkx_strided_batched_gtest_double_complex)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.N < 0 || arg.K < 0 || arg.ldc < arg.N
-           || (arg.transA_option == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
-           || (arg.transA_option != 'N' && (arg.lda < arg.K || arg.ldb < arg.K))
-           || arg.batch_count < 0)
+           || (arg.transA == 'N' && (arg.lda < arg.N || arg.ldb < arg.N))
+           || (arg.transA != 'N' && (arg.lda < arg.K || arg.ldb < arg.K)) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

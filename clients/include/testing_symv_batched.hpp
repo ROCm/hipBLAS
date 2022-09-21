@@ -47,7 +47,7 @@ hipblasStatus_t testing_symv_batched(const Arguments& argus)
 
     int batch_count = argus.batch_count;
 
-    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo);
 
     hipblasLocalHandle handle(argus);
 
@@ -201,7 +201,7 @@ hipblasStatus_t testing_symv_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo_option, e_M, e_lda, e_incx, e_incy, e_batch_count>{}.log_args<T>(
+        ArgumentModel<e_uplo, e_M, e_lda, e_incx, e_incy, e_batch_count>{}.log_args<T>(
             std::cout,
             argus,
             gpu_time_used,

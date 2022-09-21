@@ -55,8 +55,8 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasOperation_t transB = char2hipblas_operation(argus.transB);
 
     int A_row, A_col, B_row, B_col;
 
@@ -253,8 +253,8 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA_option,
-                      e_transB_option,
+        ArgumentModel<e_transA,
+                      e_transB,
                       e_M,
                       e_N,
                       e_K,

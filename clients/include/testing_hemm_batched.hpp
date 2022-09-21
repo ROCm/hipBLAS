@@ -43,8 +43,8 @@ hipblasStatus_t testing_hemm_batched(const Arguments& argus)
     int ldb = argus.ldb;
     int ldc = argus.ldc;
 
-    hipblasSideMode_t side   = char2hipblas_side(argus.side_option);
-    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo_option);
+    hipblasSideMode_t side   = char2hipblas_side(argus.side);
+    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo);
     hipblasStatus_t   status = HIPBLAS_STATUS_SUCCESS;
 
     int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
@@ -199,8 +199,8 @@ hipblasStatus_t testing_hemm_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side_option,
-                      e_uplo_option,
+        ArgumentModel<e_side,
+                      e_uplo,
                       e_M,
                       e_N,
                       e_alpha,
