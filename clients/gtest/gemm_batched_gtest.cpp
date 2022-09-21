@@ -134,8 +134,8 @@ Arguments setup_gemm_batched_arguments(gemm_batched_tuple tup)
     arg.beta   = alpha_beta[2];
     arg.betai  = alpha_beta[3];
 
-    arg.transA_option = transA_transB[0];
-    arg.transB_option = transA_transB[1];
+    arg.transA = transA_transB[0];
+    arg.transB = transA_transB[1];
 
     arg.batch_count = batch_count;
     arg.timing      = 0;
@@ -172,11 +172,11 @@ TEST_P(gemm_batched_gtest, float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        else if(arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        else if(arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -213,11 +213,11 @@ TEST_P(gemm_batched_gtest, double)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        else if(arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        else if(arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -254,11 +254,11 @@ TEST_P(gemm_batched_gtest, hipblasComplex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        else if(arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        else if(arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -295,11 +295,11 @@ TEST_P(gemm_batched_gtest, hipblasDoubleComplex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        else if(arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        else if(arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

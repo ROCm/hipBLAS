@@ -46,8 +46,8 @@ hipblasStatus_t testing_herkx_strided_batched(const Arguments& argus)
     double stride_scale = argus.stride_scale;
     int    batch_count  = argus.batch_count;
 
-    hipblasFillMode_t  uplo     = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA   = char2hipblas_operation(argus.transA_option);
+    hipblasFillMode_t  uplo     = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA   = char2hipblas_operation(argus.transA);
     int                K1       = (transA == HIPBLAS_OP_N ? K : N);
     hipblasStride      stride_A = size_t(lda) * K1 * stride_scale;
     hipblasStride      stride_B = size_t(ldb) * K1 * stride_scale;
@@ -219,8 +219,8 @@ hipblasStatus_t testing_herkx_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
+        ArgumentModel<e_uplo,
+                      e_transA,
                       e_N,
                       e_K,
                       e_alpha,

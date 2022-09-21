@@ -133,7 +133,7 @@ Arguments setup_hemv_arguments(hemv_tuple tup)
     arg.alpha = alpha_beta[0];
     arg.beta  = alpha_beta[1];
 
-    arg.transA_option = transA;
+    arg.transA = transA;
 
     arg.fortran = fortran;
 

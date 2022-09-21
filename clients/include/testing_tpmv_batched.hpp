@@ -45,9 +45,9 @@ hipblasStatus_t testing_tpmv_batched(const Arguments& argus)
 
     int batch_count = argus.batch_count;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag);
     hipblasStatus_t    status = HIPBLAS_STATUS_SUCCESS;
 
     hipblasLocalHandle handle(argus);
@@ -145,13 +145,13 @@ hipblasStatus_t testing_tpmv_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option, e_transA_option, e_diag_option, e_M, e_incx, e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         tpmv_gflop_count<T>(M),
-                         tpmv_gbyte_count<T>(M),
-                         hipblas_error);
+        ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_incx, e_batch_count>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            tpmv_gflop_count<T>(M),
+            tpmv_gbyte_count<T>(M),
+            hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

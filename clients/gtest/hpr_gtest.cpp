@@ -102,7 +102,7 @@ Arguments setup_hpr_arguments(hpr_tuple tup)
     arg.N            = std::get<0>(tup);
     arg.incx         = std::get<1>(tup);
     arg.alpha        = std::get<2>(tup);
-    arg.uplo_option  = std::get<3>(tup);
+    arg.uplo         = std::get<3>(tup);
     arg.stride_scale = std::get<4>(tup);
     arg.batch_count  = std::get<5>(tup);
     arg.fortran      = std::get<6>(tup);

@@ -135,7 +135,7 @@ Arguments setup_hpmv_arguments(hpmv_tuple tup)
     arg.beta   = alpha_beta[2];
     arg.betai  = alpha_beta[3];
 
-    arg.transA_option = transA;
+    arg.transA = transA;
 
     arg.timing = 0;
 

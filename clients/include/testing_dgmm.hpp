@@ -36,7 +36,7 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
     bool FORTRAN       = argus.fortran;
     auto hipblasDgmmFn = FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
 
-    hipblasSideMode_t side = char2hipblas_side(argus.side_option);
+    hipblasSideMode_t side = char2hipblas_side(argus.side);
 
     int M    = argus.M;
     int N    = argus.N;
@@ -154,7 +154,7 @@ hipblasStatus_t testing_dgmm(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side_option, e_M, e_N, e_lda, e_incx, e_ldc>{}.log_args<T>(
+        ArgumentModel<e_side, e_M, e_N, e_lda, e_incx, e_ldc>{}.log_args<T>(
             std::cout,
             argus,
             gpu_time_used,

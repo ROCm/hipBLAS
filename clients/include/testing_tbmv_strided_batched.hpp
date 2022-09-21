@@ -51,9 +51,9 @@ hipblasStatus_t testing_tbmv_strided_batched(const Arguments& argus)
     size_t A_size = stride_A * batch_count;
     size_t x_size = stride_x * batch_count;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag);
 
     hipblasLocalHandle handle(argus);
 
@@ -171,9 +171,9 @@ hipblasStatus_t testing_tbmv_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_diag_option,
+        ArgumentModel<e_uplo,
+                      e_transA,
+                      e_diag,
                       e_M,
                       e_K,
                       e_lda,

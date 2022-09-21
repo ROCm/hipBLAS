@@ -42,7 +42,7 @@ hipblasStatus_t testing_hbmv(const Arguments& argus)
     int incx = argus.incx;
     int incy = argus.incy;
 
-    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo);
 
     hipblasLocalHandle handle(argus);
 

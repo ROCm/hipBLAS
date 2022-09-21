@@ -44,8 +44,8 @@ hipblasStatus_t testing_syrkx_batched(const Arguments& argus)
     int ldc         = argus.ldc;
     int batch_count = argus.batch_count;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();
@@ -196,21 +196,14 @@ hipblasStatus_t testing_syrkx_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_N,
-                      e_K,
-                      e_lda,
-                      e_ldb,
-                      e_ldc,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         syrkx_gflop_count<T>(N, K),
-                         syrkx_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        ArgumentModel<e_uplo, e_transA, e_N, e_K, e_lda, e_ldb, e_ldc, e_batch_count>{}.log_args<T>(
+            std::cout,
+            argus,
+            gpu_time_used,
+            syrkx_gflop_count<T>(N, K),
+            syrkx_gbyte_count<T>(N, K),
+            hipblas_error_host,
+            hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

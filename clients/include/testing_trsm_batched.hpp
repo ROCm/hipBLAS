@@ -42,10 +42,10 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
     int lda = argus.lda;
     int ldb = argus.ldb;
 
-    char char_side   = argus.side_option;
-    char char_uplo   = argus.uplo_option;
-    char char_transA = argus.transA_option;
-    char char_diag   = argus.diag_option;
+    char char_side   = argus.side;
+    char char_uplo   = argus.uplo;
+    char char_transA = argus.transA;
+    char char_diag   = argus.diag;
     T    h_alpha     = argus.get_alpha<T>();
     int  batch_count = argus.batch_count;
 
@@ -239,10 +239,10 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_side_option,
-                      e_uplo_option,
-                      e_transA_option,
-                      e_diag_option,
+        ArgumentModel<e_side,
+                      e_uplo,
+                      e_transA,
+                      e_diag,
                       e_M,
                       e_N,
                       e_alpha,

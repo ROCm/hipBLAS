@@ -109,7 +109,7 @@ Arguments setup_dgmm_arguments(dgmm_tuple tup)
     arg.incx = matrix_size[3];
     arg.ldc  = matrix_size[4];
 
-    arg.side_option = side;
+    arg.side = side;
 
     arg.timing = 0;
 

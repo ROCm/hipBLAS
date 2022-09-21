@@ -51,7 +51,7 @@ hipblasStatus_t testing_gbmv_batched(const Arguments& argus)
 
     int batch_count = argus.batch_count;
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     if(transA == HIPBLAS_OP_N)
     {

@@ -41,9 +41,9 @@ hipblasStatus_t testing_tbsv_batched(const Arguments& argus)
     int                K           = argus.K;
     int                incx        = argus.incx;
     int                lda         = argus.lda;
-    char               char_uplo   = argus.uplo_option;
-    char               char_diag   = argus.diag_option;
-    char               char_transA = argus.transA_option;
+    char               char_uplo   = argus.uplo;
+    char               char_diag   = argus.diag;
+    char               char_transA = argus.transA;
     hipblasFillMode_t  uplo        = char2hipblas_fill(char_uplo);
     hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
     hipblasOperation_t transA      = char2hipblas_operation(char_transA);
@@ -170,14 +170,7 @@ hipblasStatus_t testing_tbsv_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_diag_option,
-                      e_M,
-                      e_K,
-                      e_lda,
-                      e_incx,
-                      e_batch_count>{}
+        ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_K, e_lda, e_incx, e_batch_count>{}
             .log_args<T>(std::cout,
                          argus,
                          gpu_time_used,

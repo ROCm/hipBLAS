@@ -44,8 +44,8 @@ hipblasStatus_t testing_syr2k_batched(const Arguments& argus)
     int ldc         = argus.ldc;
     int batch_count = argus.batch_count;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     T h_alpha = argus.get_alpha<T>();
     T h_beta  = argus.get_beta<T>();
@@ -197,8 +197,8 @@ hipblasStatus_t testing_syr2k_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
+        ArgumentModel<e_uplo,
+                      e_transA,
                       e_N,
                       e_K,
                       e_alpha,

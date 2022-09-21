@@ -122,8 +122,8 @@ Arguments setup_hemm_arguments(hemm_tuple tup)
     arg.beta   = alpha_beta[2];
     arg.betai  = alpha_beta[3];
 
-    arg.side_option = side_uplo[0];
-    arg.uplo_option = side_uplo[1];
+    arg.side = side_uplo[0];
+    arg.uplo = side_uplo[1];
 
     arg.timing = 0;
 
@@ -158,7 +158,7 @@ TEST_P(hemm_gtest, hemm_gtest_double_complex)
     {
 
         if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -187,7 +187,7 @@ TEST_P(hemm_gtest, hemm_batched_gtest_double_complex)
     {
 
         if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -214,7 +214,7 @@ TEST_P(hemm_gtest, hemm_strided_batched_gtest_double_complex)
     {
 
         if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

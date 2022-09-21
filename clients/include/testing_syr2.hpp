@@ -40,7 +40,7 @@ hipblasStatus_t testing_syr2(const Arguments& argus)
     int               incx      = argus.incx;
     int               incy      = argus.incy;
     int               lda       = argus.lda;
-    char              char_uplo = argus.uplo_option;
+    char              char_uplo = argus.uplo;
     hipblasFillMode_t uplo      = char2hipblas_fill(char_uplo);
 
     int    abs_incx = incx < 0 ? -incx : incx;

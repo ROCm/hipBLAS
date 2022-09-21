@@ -47,7 +47,7 @@ hipblasStatus_t testing_hemv(const Arguments& argus)
     size_t X_size   = size_t(abs_incx) * N;
     size_t Y_size   = size_t(abs_incy) * N;
 
-    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo_option);
+    hipblasFillMode_t uplo = char2hipblas_fill(argus.uplo);
 
     hipblasLocalHandle handle(argus);
 

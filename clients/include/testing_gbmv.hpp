@@ -48,7 +48,7 @@ hipblasStatus_t testing_gbmv(const Arguments& argus)
     int    dim_x;
     int    dim_y;
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
 
     if(transA == HIPBLAS_OP_N)
     {

@@ -40,7 +40,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
     int  nrhs   = argus.K;
     int  lda    = argus.lda;
     int  ldb    = argus.ldb;
-    char transc = argus.transA_option;
+    char transc = argus.transA;
     if(is_complex<T> && transc == 'T')
         transc = 'C';
     else if(!is_complex<T> && transc == 'C')

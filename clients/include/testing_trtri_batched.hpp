@@ -64,8 +64,8 @@ hipblasStatus_t testing_trtri_batched(const Arguments& argus)
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(argus);
 
-    char char_uplo = argus.uplo_option;
-    char char_diag = argus.diag_option;
+    char char_uplo = argus.uplo;
+    char char_diag = argus.diag;
 
     hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
     hipblasDiagType_t diag = char2hipblas_diagonal(char_diag);
@@ -162,7 +162,7 @@ hipblasStatus_t testing_trtri_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo_option, e_diag_option, e_N, e_lda, e_batch_count>{}.log_args<T>(
+        ArgumentModel<e_uplo, e_diag, e_N, e_lda, e_batch_count>{}.log_args<T>(
             std::cout,
             argus,
             gpu_time_used,

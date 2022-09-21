@@ -1018,8 +1018,8 @@ int run_bench_test(Arguments& arg)
     if(!strcmp(function, "gemm") || !strcmp(function, "gemm_batched"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA_option == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB_option == 'N' ? arg.K : arg.N;
+        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
+        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
         hipblas_int min_ldc = arg.M;
 
         if(arg.lda < min_lda)
@@ -1041,8 +1041,8 @@ int run_bench_test(Arguments& arg)
     else if(!strcmp(function, "gemm_strided_batched"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA_option == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB_option == 'N' ? arg.K : arg.N;
+        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
+        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
         hipblas_int min_ldc = arg.M;
         if(arg.lda < min_lda)
         {
@@ -1061,13 +1061,13 @@ int run_bench_test(Arguments& arg)
         }
 
         //      hipblas_int min_stride_a =
-        //          arg.transA_option == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
+        //          arg.transA == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
         //      hipblas_int min_stride_b =
-        //          arg.transB_option == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
+        //          arg.transB == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
         //      hipblas_int min_stride_a =
-        //          arg.transA_option == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
+        //          arg.transA == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
         //      hipblas_int min_stride_b =
-        //          arg.transB_option == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
+        //          arg.transB == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
         hipblas_int min_stride_c = arg.ldc * arg.N;
         //      if (arg.stride_a < min_stride_a)
         //      {
@@ -1092,8 +1092,8 @@ int run_bench_test(Arguments& arg)
     if(!strcmp(function, "gemm_ex") || !strcmp(function, "gemm_batched_ex"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA_option == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB_option == 'N' ? arg.K : arg.N;
+        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
+        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
         hipblas_int min_ldc = arg.M;
         hipblas_int min_ldd = arg.M;
 
@@ -1122,8 +1122,8 @@ int run_bench_test(Arguments& arg)
     else if(!strcmp(function, "gemm_strided_batched_ex"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA_option == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB_option == 'N' ? arg.K : arg.N;
+        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
+        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
         hipblas_int min_ldc = arg.M;
         hipblas_int min_ldd = arg.M;
         if(arg.lda < min_lda)
@@ -1363,23 +1363,23 @@ try
          "Options: rand_int, trig_float, hpl")
 
         ("transposeA",
-         value<char>(&arg.transA_option)->default_value('N'),
+         value<char>(&arg.transA)->default_value('N'),
          "N = no transpose, T = transpose, C = conjugate transpose")
 
         ("transposeB",
-         value<char>(&arg.transB_option)->default_value('N'),
+         value<char>(&arg.transB)->default_value('N'),
          "N = no transpose, T = transpose, C = conjugate transpose")
 
         ("side",
-         value<char>(&arg.side_option)->default_value('L'),
+         value<char>(&arg.side)->default_value('L'),
          "L = left, R = right. Only applicable to certain routines")
 
         ("uplo",
-         value<char>(&arg.uplo_option)->default_value('U'),
+         value<char>(&arg.uplo)->default_value('U'),
          "U = upper, L = lower. Only applicable to certain routines") // xsymv xsyrk xsyr2k xtrsm xtrsm_ex
                                                                      // xtrmm xtrsv
         ("diag",
-         value<char>(&arg.diag_option)->default_value('N'),
+         value<char>(&arg.diag)->default_value('N'),
          "U = unit diagonal, N = non unit diagonal. Only applicable to certain routines") // xtrsm xtrsm_ex xtrsv xtrmm
 
         ("batch_count",
