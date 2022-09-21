@@ -23,7 +23,6 @@
 if(NOT WIN32)
     enable_language( Fortran )
 endif()
-find_package( cblas REQUIRED CONFIG PATHS ${LAPACK_DIR} )
 
 if( NOT TARGET hipblas )
   find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
@@ -160,21 +159,16 @@ target_include_directories( hipblas-test
   SYSTEM PRIVATE
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
     ${ROCM_PATH}/hsa/include
 )
 
 if (NOT WIN32)
-    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
+    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client lapack cblas )
 endif()
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack GTest::GTest )
-
-if(LINK_BLIS)
-  target_link_libraries( hipblas-test PRIVATE ${BLIS_LIBRARY} )
-else()
-  target_link_libraries( hipblas-test PRIVATE blas )
-endif()
+target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest )
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
@@ -214,6 +208,7 @@ if (WIN32)
     CONFIGURE_DEPENDS
     ${LAPACK_DIR}/bin/*.dll
     ${BLIS_DIR}/lib/*.dll
+    ${OPENBLAS_DIR}/bin/*.dll
     ${HIP_DIR}/bin/*.dll
     ${HIP_DIR}/bin/hipinfo.exe
     ${ROCBLAS_PATH}/bin/rocblas.dll
