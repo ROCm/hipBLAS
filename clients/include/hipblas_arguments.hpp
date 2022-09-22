@@ -69,7 +69,6 @@ inline hipblasDoubleComplex convert_alpha_beta<hipblasDoubleComplex>(double r, d
 /*! \brief Class used to parse command arguments in both benchmark & gtest   */
 struct Arguments
 {
-
     int M  = 128;
     int N  = 128;
     int K  = 128;
@@ -163,22 +162,27 @@ struct Arguments
     OPER(incy) SEP                   \
     OPER(incd) SEP                   \
     OPER(incb) SEP                   \
-    OPER(alpha) SEP                  \
-    OPER(alphai) SEP                 \
-    OPER(beta) SEP                   \
-    OPER(betai) SEP                  \
-    OPER(transA) SEP          \
-    OPER(transB) SEP          \
-    OPER(side) SEP            \
-    OPER(uplo) SEP            \
-    OPER(diag) SEP            \
-    OPER(batch_count) SEP            \
+    OPER(stride_scale) SEP           \
     OPER(stride_a) SEP               \
     OPER(stride_b) SEP               \
     OPER(stride_c) SEP               \
     OPER(stride_d) SEP               \
     OPER(stride_x) SEP               \
     OPER(stride_y) SEP               \
+    OPER(start) SEP                  \
+    OPER(end) SEP                    \
+    OPER(step) SEP                   \
+    OPER(alpha) SEP                  \
+    OPER(alphai) SEP                 \
+    OPER(beta) SEP                   \
+    OPER(betai) SEP                  \
+    OPER(transA) SEP                 \
+    OPER(transB) SEP                 \
+    OPER(side) SEP                   \
+    OPER(uplo) SEP                   \
+    OPER(diag) SEP                   \
+    OPER(apiCallCount) SEP           \
+    OPER(batch_count) SEP            \
     OPER(fortran) SEP                \
     OPER(norm_check) SEP             \
     OPER(unit_check) SEP             \
