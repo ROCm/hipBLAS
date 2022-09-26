@@ -28,9 +28,11 @@
 
 #include "testing_common.hpp"
 
+using hipblasGetriNpvtBatchedModel = ArgumentModel<e_N, e_lda, e_batch_count>;
+
 inline void testname_getri_npvt_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasGetriNpvtBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -170,7 +172,7 @@ inline hipblasStatus_t testing_getri_npvt_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_batch_count>{}.log_args<T>(std::cout,
+        hipblasGetriNpvtBatchedModel{}.log_args<T>(std::cout,
                                                                arg,
                                                                gpu_time_used,
                                                                getri_gflop_count<T>(N),

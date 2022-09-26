@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasHerModel = ArgumentModel<e_N, e_alpha, e_incx, e_lda>;
+
 inline void testname_her(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasHerModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -150,7 +152,7 @@ inline hipblasStatus_t testing_her(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_alpha, e_incx, e_lda>{}.log_args<U>(std::cout,
+        hipblasHerModel{}.log_args<U>(std::cout,
                                                                  arg,
                                                                  gpu_time_used,
                                                                  her_gflop_count<T>(N),

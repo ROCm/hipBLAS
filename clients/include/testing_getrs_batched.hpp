@@ -28,9 +28,11 @@
 
 #include "testing_common.hpp"
 
+using hipblasGetrsBatchedModel = ArgumentModel<e_N, e_lda, e_ldb, e_batch_count>;
+
 inline void testname_getrs_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasGetrsBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -178,7 +180,7 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_ldb, e_batch_count>{}.log_args<T>(std::cout,
+        hipblasGetrsBatchedModel{}.log_args<T>(std::cout,
                                                                       arg,
                                                                       gpu_time_used,
                                                                       getrs_gflop_count<T>(N, 1),

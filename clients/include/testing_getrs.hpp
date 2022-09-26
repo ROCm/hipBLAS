@@ -28,9 +28,11 @@
 
 #include "testing_common.hpp"
 
+using hipblasGetrsModel = ArgumentModel<e_N, e_lda, e_ldb>;
+
 inline void testname_getrs(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasGetrsModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -146,7 +148,7 @@ inline hipblasStatus_t testing_getrs(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
+        hipblasGetrsModel{}.log_args<T>(std::cout,
                                                        arg,
                                                        gpu_time_used,
                                                        getrs_gflop_count<T>(N, 1),

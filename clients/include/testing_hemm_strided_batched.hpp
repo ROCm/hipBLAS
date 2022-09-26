@@ -30,9 +30,13 @@
 
 /* ============================================================================================ */
 
+// stride scale
+using hipblasHemmStridedBatchedModel
+    = ArgumentModel<e_side, e_uplo, e_M, e_N, e_alpha, e_lda, e_ldb, e_beta, e_ldc, e_batch_count>;
+
 inline void testname_hemm_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasHemmStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -222,19 +226,7 @@ inline hipblasStatus_t testing_hemm_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side,
-                      e_uplo,
-                      e_M,
-                      e_N,
-                      e_alpha,
-                      e_lda,
-                      e_stride_a,
-                      e_ldb,
-                      e_stride_b,
-                      e_beta,
-                      e_ldc,
-                      e_stride_c,
-                      e_batch_count>{}
+        hipblasHemmStridedBatchedModel{}
             .log_args<T>(std::cout,
                          arg,
                          gpu_time_used,

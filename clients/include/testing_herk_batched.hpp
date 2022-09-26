@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasHerkBatchedModel = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc, e_batch_count>;
+
 inline void testname_herk_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasHerkBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -189,7 +191,7 @@ inline hipblasStatus_t testing_herk_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc, e_batch_count>{}
+        hipblasHerkBatchedModel{}
             .log_args<T>(std::cout,
                          arg,
                          gpu_time_used,
