@@ -30,17 +30,22 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_trtri(const Arguments& argus)
+inline void testname_trtri(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN        = argus.fortran;
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_trtri(const Arguments& arg)
+{
+    bool FORTRAN        = arg.fortran;
     auto hipblasTrtriFn = FORTRAN ? hipblasTrtri<T, true> : hipblasTrtri<T, false>;
 
     const double rel_error = get_epsilon<T>() * 1000;
 
-    int N = argus.N;
+    int N = arg.N;
     int lda;
-    int ldinvA = lda = argus.lda;
+    int ldinvA = lda = arg.lda;
 
     size_t A_size = size_t(lda) * N;
 
@@ -56,14 +61,14 @@ hipblasStatus_t testing_trtri(const Arguments& argus)
     device_vector<T> dA(A_size);
     device_vector<T> dinvA(A_size);
 
-    char char_uplo = argus.uplo;
-    char char_diag = argus.diag;
+    char char_uplo = arg.uplo;
+    char char_diag = arg.diag;
 
     hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
     hipblasDiagType_t diag = char2hipblas_diagonal(char_diag);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
     srand(1);
@@ -98,7 +103,7 @@ hipblasStatus_t testing_trtri(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dinvA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -113,25 +118,25 @@ hipblasStatus_t testing_trtri(const Arguments& argus)
         =================================================================== */
         cblas_trtri<T>(char_uplo, char_diag, N, hB, lda);
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             near_check_general<T>(N, N, lda, hB.data(), hA.data(), rel_error);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>('F', N, N, lda, hB, hA);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasTrtriFn(handle, uplo, diag, N, dA, lda, dinvA, ldinvA));
@@ -139,7 +144,7 @@ hipblasStatus_t testing_trtri(const Arguments& argus)
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         ArgumentModel<e_uplo, e_diag, e_N, e_lda>{}.log_args<T>(std::cout,
-                                                                argus,
+                                                                arg,
                                                                 gpu_time_used,
                                                                 trtri_gflop_count<T>(N),
                                                                 trtri_gbyte_count<T>(N),

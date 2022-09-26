@@ -29,19 +29,27 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
+using hipblasAxpyStridedBatchedModel
+    = ArgumentModel<e_N, e_alpha, e_incx, e_stride_x, e_incy, e_stride_y, e_batch_count>;
+
+inline void testname_axpy_strided_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasAxpyStridedBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_axpy_strided_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasAxpyStridedBatchedFn
         = FORTRAN ? hipblasAxpyStridedBatched<T, true> : hipblasAxpyStridedBatched<T, false>;
 
-    int    N            = argus.N;
-    int    incx         = argus.incx;
-    int    incy         = argus.incy;
-    double stride_scale = argus.stride_scale;
-    int    batch_count  = argus.batch_count;
-    T      alpha        = argus.get_alpha<T>();
+    int    N            = arg.N;
+    int    incx         = arg.incx;
+    int    incy         = arg.incy;
+    double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
+    T      alpha        = arg.get_alpha<T>();
 
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
@@ -55,7 +63,7 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
     if(!sizeY)
         sizeY = 1;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -82,9 +90,9 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_vector(
-        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+        hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(
-        hy_host, argus, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
+        hy_host, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
     hy_device = hy_host;
 
     // copy vector is easy in STL; hx_cpu = hx: save a copy in hx_cpu which will be output of CPU BLAS
@@ -97,7 +105,7 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
         hipMemcpy(dy_device, hy_device.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
                     HIPBLAS
@@ -127,14 +135,14 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(
                 1, N, batch_count, abs_incy, stridex, hy_cpu.data(), hy_host.data());
             unit_check_general<T>(
                 1, N, batch_count, abs_incy, stridey, hy_cpu.data(), hy_device.data());
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<T>(
                 'F', 1, N, abs_incy, stridey, hy_cpu.data(), hy_host.data(), batch_count);
@@ -143,16 +151,16 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
         }
     } // end of if unit check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
@@ -160,14 +168,13 @@ hipblasStatus_t testing_axpy_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_y, e_batch_count>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            axpy_gflop_count<T>(N),
-            axpy_gbyte_count<T>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasAxpyStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     axpy_gflop_count<T>(N),
+                                                     axpy_gbyte_count<T>(N),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

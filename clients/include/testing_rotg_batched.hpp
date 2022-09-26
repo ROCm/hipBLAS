@@ -29,8 +29,13 @@
 
 /* ============================================================================================ */
 
+inline void testname_rotg_batched(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_rotg_batched(const Arguments& arg)
+inline hipblasStatus_t testing_rotg_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
     bool FORTRAN = arg.fortran;

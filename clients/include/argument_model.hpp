@@ -25,6 +25,7 @@
 #define _ARGUMENT_MODEL_HPP_
 
 #include "hipblas_arguments.hpp"
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 
@@ -153,6 +154,33 @@ public:
             log_perf(name_list, value_list, arg, gpu_us, gflops, gpu_bytes, norm1, norm2);
 
         str << name_list.str() << "\n" << value_list.str() << std::endl;
+    }
+
+    void test_name(const Arguments& arg, std::string& name)
+    {
+        std::stringstream name_list;
+
+        auto sep = "_";
+        name_list << sep << arg.function;
+        name_list << sep << hipblas_datatype2string(arg.a_type);
+
+        // Output (name, value) pairs to name_list and value_list
+        auto print = [&](const char* name, auto&& value) mutable {
+            name_list << sep << name << sep << value;
+        };
+
+#if __cplusplus >= 201703L
+        // C++17
+        (ArgumentsHelper::apply<Args>(print, arg, float{}), ...);
+#else
+        // C++14. TODO: Remove when C++17 is used
+        (void)(int[]){(ArgumentsHelper::apply<Args>{}()(print, arg, float{}), 0)...};
+#endif
+
+        std::string params = name_list.str();
+        std::replace(params.begin(), params.end(), '-', 'n');
+        std::replace(params.begin(), params.end(), '.', 'p');
+        name += params;
     }
 };
 

@@ -29,18 +29,23 @@
 
 /* ============================================================================================ */
 
-template <typename T, typename U = T>
-hipblasStatus_t testing_scal(const Arguments& argus)
+inline void testname_scal(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN       = argus.fortran;
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
+template <typename T, typename U = T>
+inline hipblasStatus_t testing_scal(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
     auto hipblasScalFn = FORTRAN ? hipblasScal<T, U, true> : hipblasScal<T, U, false>;
 
-    int N          = argus.N;
-    int incx       = argus.incx;
-    int unit_check = argus.unit_check;
-    int timing     = argus.timing;
+    int N          = arg.N;
+    int incx       = arg.incx;
+    int unit_check = arg.unit_check;
+    int timing     = arg.timing;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -51,7 +56,7 @@ hipblasStatus_t testing_scal(const Arguments& argus)
     }
 
     size_t sizeX = size_t(N) * incx;
-    U      alpha = argus.get_alpha<U>();
+    U      alpha = arg.get_alpha<U>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T>   hx(sizeX);
@@ -62,7 +67,7 @@ hipblasStatus_t testing_scal(const Arguments& argus)
     double hipblas_error = 0.0;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
     hz = hx;
@@ -70,7 +75,7 @@ hipblasStatus_t testing_scal(const Arguments& argus)
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -87,11 +92,11 @@ hipblasStatus_t testing_scal(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(1, N, incx, hz.data(), hx.data());
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general('F', 1, N, incx, hz.data(), hx.data());
         }
@@ -105,10 +110,10 @@ hipblasStatus_t testing_scal(const Arguments& argus)
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasScalFn(handle, N, &alpha, dx, incx));
@@ -116,7 +121,7 @@ hipblasStatus_t testing_scal(const Arguments& argus)
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         ArgumentModel<e_N, e_incx>{}.log_args<T>(std::cout,
-                                                 argus,
+                                                 arg,
                                                  gpu_time_used,
                                                  scal_gflop_count<T, U>(N),
                                                  scal_gbyte_count<T>(N),

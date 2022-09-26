@@ -30,25 +30,30 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_trmv(const Arguments& argus)
+inline void testname_trmv(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN       = argus.fortran;
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_trmv(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
     auto hipblasTrmvFn = FORTRAN ? hipblasTrmv<T, true> : hipblasTrmv<T, false>;
 
-    int M    = argus.M;
-    int lda  = argus.lda;
-    int incx = argus.incx;
+    int M    = arg.M;
+    int lda  = arg.lda;
+    int incx = arg.incx;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     size_t x_size   = size_t(M) * abs_incx;
     size_t A_size   = size_t(lda) * M;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -73,8 +78,8 @@ hipblasStatus_t testing_trmv(const Arguments& argus)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, argus, M, M, lda, 0, 1, hipblas_client_never_set_nan, true, false);
-    hipblas_init_vector(hx, argus, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(hA, arg, M, M, lda, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(hx, arg, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hres = hx;
@@ -83,7 +88,7 @@ hipblasStatus_t testing_trmv(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -100,25 +105,25 @@ hipblasStatus_t testing_trmv(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(1, M, abs_incx, hx, hres);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>('F', 1, M, abs_incx, hx.data(), hres.data());
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasTrmvFn(handle, uplo, transA, diag, M, dA, lda, dx, incx));
@@ -127,7 +132,7 @@ hipblasStatus_t testing_trmv(const Arguments& argus)
 
         ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_lda, e_incx>{}.log_args<T>(
             std::cout,
-            argus,
+            arg,
             gpu_time_used,
             trmv_gflop_count<T>(M),
             trmv_gbyte_count<T>(M),

@@ -29,19 +29,24 @@
 
 /* ============================================================================================ */
 
+inline void testname_nrm2_batched(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
+inline hipblasStatus_t testing_nrm2_batched(const Arguments& arg)
 {
     using Tr     = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasNrm2BatchedFn
         = FORTRAN ? hipblasNrm2Batched<T, Tr, true> : hipblasNrm2Batched<T, Tr, false>;
 
-    int N           = argus.N;
-    int incx        = argus.incx;
-    int batch_count = argus.batch_count;
+    int N           = arg.N;
+    int incx        = arg.incx;
+    int batch_count = arg.batch_count;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || batch_count <= 0)
@@ -86,10 +91,10 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         // hipblasNrm2 accept both dev/host pointer for the scalar
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
@@ -113,12 +118,12 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
             cblas_nrm2<T, Tr>(N, hx[b], incx, &(h_cpu_result[b]));
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_hipblas_result_host, N);
             unit_check_nrm2<Tr>(batch_count, h_cpu_result, h_hipblas_result_device, N);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             for(int b = 0; b < batch_count; b++)
             {
@@ -133,16 +138,16 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
 
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedFn(
@@ -151,7 +156,7 @@ hipblasStatus_t testing_nrm2_batched(const Arguments& argus)
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         ArgumentModel<e_N, e_incx, e_batch_count>{}.log_args<T>(std::cout,
-                                                                argus,
+                                                                arg,
                                                                 gpu_time_used,
                                                                 nrm2_gflop_count<T>(N),
                                                                 nrm2_gbyte_count<T>(N),

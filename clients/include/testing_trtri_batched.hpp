@@ -30,19 +30,24 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_trtri_batched(const Arguments& argus)
+inline void testname_trtri_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_trtri_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasTrtriBatchedFn
         = FORTRAN ? hipblasTrtriBatched<T, true> : hipblasTrtriBatched<T, false>;
 
     const double rel_error = get_epsilon<T>() * 1000;
 
-    int N = argus.N;
+    int N = arg.N;
     int lda;
-    int ldinvA = lda = argus.lda;
-    int batch_count  = argus.batch_count;
+    int ldinvA = lda = arg.lda;
+    int batch_count  = arg.batch_count;
 
     size_t A_size = size_t(lda) * N;
 
@@ -62,10 +67,10 @@ hipblasStatus_t testing_trtri_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dinvA.memcheck());
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
-    char char_uplo = argus.uplo;
-    char char_diag = argus.diag;
+    char char_uplo = arg.uplo;
+    char char_diag = arg.diag;
 
     hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
     hipblasDiagType_t diag = char2hipblas_diagonal(char_diag);
@@ -102,7 +107,7 @@ hipblasStatus_t testing_trtri_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dinvA.transfer_from(hA));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -128,26 +133,26 @@ hipblasStatus_t testing_trtri_batched(const Arguments& argus)
             cblas_trtri<T>(char_uplo, char_diag, N, hB[b], lda);
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             for(int b = 0; b < batch_count; b++)
                 near_check_general<T>(N, N, lda, hB[b], hA[b], rel_error);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>('F', N, N, lda, hB, hA, batch_count);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasTrtriBatchedFn(handle,
@@ -164,7 +169,7 @@ hipblasStatus_t testing_trtri_batched(const Arguments& argus)
 
         ArgumentModel<e_uplo, e_diag, e_N, e_lda, e_batch_count>{}.log_args<T>(
             std::cout,
-            argus,
+            arg,
             gpu_time_used,
             trtri_gflop_count<T>(N),
             trtri_gbyte_count<T>(N),

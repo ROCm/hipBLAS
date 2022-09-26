@@ -37,18 +37,19 @@ using hipblas_iamax_iamin_strided_batched_t = hipblasStatus_t (*)(hipblasHandle_
                                                                   int*            result);
 
 template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
-hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&                         argus,
-                                                    hipblas_iamax_iamin_strided_batched_t<T> func)
+inline hipblasStatus_t
+    testing_iamax_iamin_strided_batched(const Arguments&                         arg,
+                                        hipblas_iamax_iamin_strided_batched_t<T> func)
 {
-    int    N            = argus.N;
-    int    incx         = argus.incx;
-    double stride_scale = argus.stride_scale;
-    int    batch_count  = argus.batch_count;
+    int    N            = arg.N;
+    int    incx         = arg.incx;
+    double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
 
     hipblasStride stridex = size_t(N) * incx * stride_scale;
     size_t        sizeX   = stridex * batch_count;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // check to prevent undefined memory allocation error
     if(batch_count <= 0 || N <= 0 || incx <= 0)
@@ -89,7 +90,7 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
 
     // Initial Data on CPU
     hipblas_init_vector(
-        hx, argus, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+        hx, arg, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
@@ -97,7 +98,7 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
     double gpu_time_used;
     int    hipblas_error_host = 0, hipblas_error_device = 0;
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
                     HIPBLAS
@@ -125,14 +126,14 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
             cpu_result[b] += 1;
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<int>(
                 1, 1, batch_count, cpu_result.data(), hipblas_result_host.data());
             unit_check_general<int>(
                 1, 1, batch_count, cpu_result.data(), hipblas_result_device.data());
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             for(int b = 0; b < batch_count; b++)
             {
@@ -144,16 +145,16 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
         }
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
@@ -161,7 +162,7 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         ArgumentModel<e_N, e_incx, e_stride_x, e_batch_count>{}.log_args<T>(std::cout,
-                                                                            argus,
+                                                                            arg,
                                                                             gpu_time_used,
                                                                             iamax_gflop_count<T>(N),
                                                                             iamax_gbyte_count<T>(N),
@@ -172,8 +173,13 @@ hipblasStatus_t testing_iamax_iamin_strided_batched(const Arguments&            
     return HIPBLAS_STATUS_SUCCESS;
 }
 
+inline void testname_amax_strided_batched(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_amax_strided_batched(const Arguments& arg)
+inline hipblasStatus_t testing_amax_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasIamaxStridedBatchedFn
@@ -183,8 +189,13 @@ hipblasStatus_t testing_amax_strided_batched(const Arguments& arg)
                                                                   hipblasIamaxStridedBatchedFn);
 }
 
+inline void testname_amin_strided_batched(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_amin_strided_batched(const Arguments& arg)
+inline hipblasStatus_t testing_amin_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasIaminStridedBatchedFn

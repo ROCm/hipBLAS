@@ -29,8 +29,13 @@
 
 /* ============================================================================================ */
 
+inline void testname_rot_strided_batched_ex_template(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
 template <typename Tex, typename Tx = Tex, typename Tcs = Tx>
-hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
+inline hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
 {
     using Ty     = Tx;
     bool FORTRAN = arg.fortran;
@@ -230,7 +235,7 @@ hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-hipblasStatus_t testing_rot_strided_batched_ex(Arguments arg)
+inline hipblasStatus_t testing_rot_strided_batched_ex(Arguments arg)
 {
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;

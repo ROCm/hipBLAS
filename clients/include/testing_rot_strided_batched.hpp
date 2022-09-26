@@ -30,7 +30,7 @@
 /* ============================================================================================ */
 
 template <typename T, typename U = T, typename V = T>
-hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
+inline hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
 {
     bool FORTRAN                    = arg.fortran;
     auto hipblasRotStridedBatchedFn = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
@@ -192,7 +192,7 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_y>{}.log_args<T>(
+        ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_y, e_batch_count>{}.log_args<T>(
             std::cout,
             arg,
             gpu_time_used,
@@ -203,4 +203,10 @@ hipblasStatus_t testing_rot_strided_batched(const Arguments& arg)
     }
 
     return HIPBLAS_STATUS_SUCCESS;
+}
+
+inline void testname_rot_strided_batched(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_y, e_batch_count>{}.test_name(arg,
+                                                                                          name);
 }

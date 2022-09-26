@@ -31,6 +31,7 @@ endif( )
 find_package( GTest REQUIRED )
 
 set(hipblas_test_source
+  client.cpp
   hipblas_gtest_main.cpp
   auxiliary_gtest.cpp
   set_get_pointer_mode_gtest.cpp
@@ -117,11 +118,14 @@ endif()
 set( hipblas_test_common
   ../common/utility.cpp
   ../common/cblas_interface.cpp
+  ../common/clients_common.cpp
   ../common/norm.cpp
   ../common/unit.cpp
   ../common/near.cpp
   ../common/arg_check.cpp
   ../common/argument_model.cpp
+  ../common/hipblas_arguments.cpp
+  ../common/hipblas_parse_data.cpp
   ../common/hipblas_datatype2string.cpp
   ../common/hipblas_template_specialization.cpp
   ${BLIS_CPP}
@@ -165,13 +169,13 @@ target_include_directories( hipblas-test
 )
 
 if (NOT WIN32)
-    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client lapack cblas )
+    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client roc::hipblas cblas lapack stdc++fs )
 endif()
 
 target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest )
 
 # need mf16c flag for float->half convertion
-target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
+target_compile_options( hipblas-test PRIVATE -mf16c -Wno-deprecated-declarations ) #TODO remove Wno
 
 target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 )
 
@@ -224,7 +228,7 @@ if (WIN32)
 endif()
 
 set_target_properties( hipblas-test PROPERTIES
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARED_REQUIRED ON
     CXX_EXTENSIONS OFF
     IMPORT_PREFIX ""

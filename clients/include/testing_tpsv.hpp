@@ -30,17 +30,22 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_tpsv(const Arguments& argus)
+inline void testname_tpsv(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN       = argus.fortran;
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_tpsv(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
     auto hipblasTpsvFn = FORTRAN ? hipblasTpsv<T, true> : hipblasTpsv<T, false>;
 
-    int                N           = argus.N;
-    int                incx        = argus.incx;
-    char               char_uplo   = argus.uplo;
-    char               char_diag   = argus.diag;
-    char               char_transA = argus.transA;
+    int                N           = arg.N;
+    int                incx        = arg.incx;
+    char               char_uplo   = arg.uplo;
+    char               char_diag   = arg.diag;
+    char               char_transA = arg.transA;
     hipblasFillMode_t  uplo        = char2hipblas_fill(char_uplo);
     hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
     hipblasOperation_t transA      = char2hipblas_operation(char_transA);
@@ -50,7 +55,7 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     size_t size_AP  = size_t(N) * (N + 1) / 2;
     size_t size_x   = abs_incx * size_t(N);
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -83,9 +88,9 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     // srand(1);
     // hipblas_init<T>(hA, N, N, 1);
     // hipblas_init<T>(hx, 1, N, abs_incx);
-    hipblas_init_matrix(hA, argus, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_matrix(hA, arg, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true, false);
     hipblas_init_vector(
-        hx, argus, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, false); //true);
+        hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, false); //true);
     hb = hx;
 
     //  calculate AAT = hA * hA ^ T
@@ -152,7 +157,7 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasTpsvFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx));
 
@@ -163,23 +168,23 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
         // Calculating error
         hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
             unit_check_error(hipblas_error, tolerance);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasTpsvFn(handle, uplo, transA, diag, N, dAP, dx_or_b, incx));
@@ -187,7 +192,7 @@ hipblasStatus_t testing_tpsv(const Arguments& argus)
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
         ArgumentModel<e_uplo, e_transA, e_diag, e_N, e_incx>{}.log_args<T>(std::cout,
-                                                                           argus,
+                                                                           arg,
                                                                            gpu_time_used,
                                                                            tpsv_gflop_count<T>(N),
                                                                            tpsv_gbyte_count<T>(N),

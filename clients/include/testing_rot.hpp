@@ -171,3 +171,8 @@ hipblasStatus_t testing_rot(const Arguments& arg)
 
     return HIPBLAS_STATUS_SUCCESS;
 }
+
+inline void testname_rot(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<e_N, e_incx, e_incy>{}.test_name(arg, name);
+}

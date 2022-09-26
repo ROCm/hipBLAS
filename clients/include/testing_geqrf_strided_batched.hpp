@@ -28,20 +28,28 @@
 
 #include "testing_common.hpp"
 
+// strides not used
+using hipblasGeqrfStridedBatchedModel = ArgumentModel<e_M, e_N, e_lda, e_batch_count>;
+
+inline void testname_geqrf_strided_batched(const Arguments& arg, std::string& name)
+{
+    hipblasGeqrfStridedBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
+inline hipblasStatus_t testing_geqrf_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasGeqrfStridedBatchedFn
         = FORTRAN ? hipblasGeqrfStridedBatched<T, true> : hipblasGeqrfStridedBatched<T, false>;
 
-    int    M            = argus.M;
-    int    N            = argus.N;
+    int    M            = arg.M;
+    int    N            = arg.N;
     int    K            = std::min(M, N);
-    int    lda          = argus.lda;
-    int    batch_count  = argus.batch_count;
-    double stride_scale = argus.stride_scale;
+    int    lda          = arg.lda;
+    int    batch_count  = arg.batch_count;
+    double stride_scale = arg.stride_scale;
 
     hipblasStride strideA   = lda * N * stride_scale;
     hipblasStride strideP   = K * stride_scale;
@@ -69,7 +77,7 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
     device_vector<T> dIpiv(Ipiv_size);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
     srand(1);
@@ -106,7 +114,7 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
            CPU LAPACK
@@ -129,7 +137,7 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
         double e2     = norm_check_general<T>('F', K, 1, K, strideP, hIpiv, hIpiv1, batch_count);
         hipblas_error = e1 + e2;
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = eps * 2000;
@@ -139,15 +147,15 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGeqrfStridedBatchedFn(
@@ -155,13 +163,12 @@ hipblasStatus_t testing_geqrf_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_M, e_N, e_lda, e_stride_a, e_batch_count>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            geqrf_gflop_count<T>(N, M),
-            ArgumentLogging::NA_value,
-            hipblas_error);
+        hipblasGeqrfStridedBatchedModel{}.log_args<T>(std::cout,
+                                                      arg,
+                                                      gpu_time_used,
+                                                      geqrf_gflop_count<T>(N, M),
+                                                      ArgumentLogging::NA_value,
+                                                      hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -28,18 +28,23 @@
 
 #include "testing_common.hpp"
 
+inline void testname_getri_npvt_batched(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_getri_npvt_batched(const Arguments& argus)
+inline hipblasStatus_t testing_getri_npvt_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasGetriBatchedFn
         = FORTRAN ? hipblasGetriBatched<T, true> : hipblasGetriBatched<T, false>;
 
-    int M           = argus.N;
-    int N           = argus.N;
-    int lda         = argus.lda;
-    int batch_count = argus.batch_count;
+    int M           = arg.N;
+    int N           = arg.N;
+    int lda         = arg.lda;
+    int batch_count = arg.batch_count;
 
     hipblasStride strideP   = std::min(M, N);
     size_t        A_size    = size_t(lda) * N;
@@ -69,7 +74,7 @@ hipblasStatus_t testing_getri_npvt_batched(const Arguments& argus)
     device_vector<int>     dInfo(batch_count);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
     hipblas_init(hA, true);
@@ -97,7 +102,7 @@ hipblasStatus_t testing_getri_npvt_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dC.transfer_from(hC));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, batch_count * sizeof(int)));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -133,7 +138,7 @@ hipblasStatus_t testing_getri_npvt_batched(const Arguments& argus)
         }
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1, batch_count);
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = eps * 2000;
@@ -142,15 +147,15 @@ hipblasStatus_t testing_getri_npvt_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGetriBatchedFn(handle,
@@ -166,7 +171,7 @@ hipblasStatus_t testing_getri_npvt_batched(const Arguments& argus)
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         ArgumentModel<e_N, e_lda, e_batch_count>{}.log_args<T>(std::cout,
-                                                               argus,
+                                                               arg,
                                                                gpu_time_used,
                                                                getri_gflop_count<T>(N),
                                                                ArgumentLogging::NA_value,

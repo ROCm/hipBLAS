@@ -42,6 +42,10 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+
+using namespace roc; // For emulated program_options
+
+/*
 // aux
 #include "testing_set_get_matrix.hpp"
 #include "testing_set_get_matrix_async.hpp"
@@ -996,7 +1000,7 @@ struct perf_blas_scal_ex<
     }
 };
 
-int run_bench_test(Arguments& arg)
+int run_bench_test(Arguments& arg, int unit_check, int timing)
 {
     //hipblas_initialize(); // Initialize rocBLAS
 
@@ -1004,10 +1008,10 @@ int run_bench_test(Arguments& arg)
               << std::setprecision(7); // Set precision to 7 digits
 
     // disable unit_check in client benchmark, it is only used in gtest unit test
-    arg.unit_check = 0;
+    arg.unit_check = unit_check;
 
     // enable timing check,otherwise no performance data collected
-    arg.timing = 1;
+    arg.timing = timing;
 
     // Skip past any testing_ prefix in function
     static constexpr char prefix[] = "testing_";
@@ -1161,11 +1165,11 @@ int run_bench_test(Arguments& arg)
         if(!strcmp(function, "scal_ex") || !strcmp(function, "scal_batched_ex")
            || !strcmp(function, "scal_strided_batched_ex"))
             hipblas_blas1_ex_dispatch<perf_blas_scal_ex>(arg);
-        /*
-        if(!strcmp(function, "scal") || !strcmp(function, "scal_batched")
-           || !strcmp(function, "scal_strided_batched"))
-            hipblas_blas1_dispatch<perf_blas_scal>(arg);
-        */
+
+        // if(!strcmp(function, "scal") || !strcmp(function, "scal_batched")
+        //    || !strcmp(function, "scal_strided_batched"))
+        //     hipblas_blas1_dispatch<perf_blas_scal>(arg);
+
         else if(!strcmp(function, "rot") || !strcmp(function, "rot_batched")
                 || !strcmp(function, "rot_strided_batched"))
             hipblas_rot_dispatch<perf_blas_rot>(arg);
@@ -1188,12 +1192,17 @@ int run_bench_test(Arguments& arg)
     }
     return 0;
 }
+*/
+
+typedef int hipblas_int;
+
+int run_bench_test(Arguments& arg, int unit_check, int timing);
 
 int hipblas_bench_datafile()
 {
     int ret = 0;
     for(Arguments arg : HipBLAS_TestData())
-        ret |= run_bench_test(arg);
+        ret |= run_bench_test(arg, 0, 1);
     test_cleanup::cleanup();
     return ret;
 }
@@ -1511,7 +1520,7 @@ try
     if(copied <= 0 || copied >= sizeof(arg.function))
         throw std::invalid_argument("Invalid value for --function");
 
-    return run_bench_test(arg);
+    return run_bench_test(arg, 0, 1);
 }
 catch(const std::invalid_argument& exp)
 {

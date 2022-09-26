@@ -30,22 +30,27 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_spr(const Arguments& argus)
+inline void testname_spr(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN      = argus.fortran;
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_spr(const Arguments& arg)
+{
+    bool FORTRAN      = arg.fortran;
     auto hipblasSprFn = FORTRAN ? hipblasSpr<T, true> : hipblasSpr<T, false>;
 
-    int               N         = argus.N;
-    int               incx      = argus.incx;
-    char              char_uplo = argus.uplo;
+    int               N         = arg.N;
+    int               incx      = arg.incx;
+    char              char_uplo = arg.uplo;
     hipblasFillMode_t uplo      = char2hipblas_fill(char_uplo);
 
     int    abs_incx = incx < 0 ? -incx : incx;
     size_t A_size   = size_t(N) * (N + 1) / 2;
     size_t x_size   = abs_incx * size_t(N);
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -69,13 +74,13 @@ hipblasStatus_t testing_spr(const Arguments& argus)
     device_vector<T> dx(x_size);
     device_vector<T> d_alpha(1);
 
-    T h_alpha = argus.get_alpha<T>();
+    T h_alpha = arg.get_alpha<T>();
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, argus, A_size, 1, 1, 0, 1, hipblas_client_never_set_nan, true, false);
-    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_matrix(hA, arg, A_size, 1, 1, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
 
     hA_cpu = hA;
 
@@ -84,7 +89,7 @@ hipblasStatus_t testing_spr(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check)
+    if(arg.unit_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -107,12 +112,12 @@ hipblasStatus_t testing_spr(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(1, A_size, 1, hA_cpu.data(), hA_host.data());
             unit_check_general<T>(1, A_size, 1, hA_cpu.data(), hA_device.data());
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host
                 = norm_check_general<T>('F', 1, A_size, 1, hA_cpu.data(), hA_host.data());
@@ -121,17 +126,17 @@ hipblasStatus_t testing_spr(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasSprFn(handle, uplo, N, d_alpha, dx, incx, dA));
@@ -139,7 +144,7 @@ hipblasStatus_t testing_spr(const Arguments& argus)
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         ArgumentModel<e_N, e_alpha, e_incx>{}.log_args<T>(std::cout,
-                                                          argus,
+                                                          arg,
                                                           gpu_time_used,
                                                           spr_gflop_count<T>(N),
                                                           spr_gbyte_count<T>(N),

@@ -29,25 +29,37 @@
 
 /* ============================================================================================ */
 
-template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
-hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
+using hipblasDotBatchedExModel = ArgumentModel<e_N, e_incx, e_incy, e_batch_count>;
+
+inline void testname_dot_batched_ex(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasDotBatchedExModel{}.test_name(arg, name);
+}
+
+inline void testname_dotc_batched_ex(const Arguments& arg, std::string& name)
+{
+    hipblasDotBatchedExModel{}.test_name(arg, name);
+}
+
+template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
+inline hipblasStatus_t testing_dot_batched_ex_template(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasDotBatchedExFn
         = FORTRAN ? (CONJ ? hipblasDotcBatchedExFortran : hipblasDotBatchedExFortran)
                   : (CONJ ? hipblasDotcBatchedEx : hipblasDotBatchedEx);
 
-    int N           = argus.N;
-    int incx        = argus.incx;
-    int incy        = argus.incy;
-    int batch_count = argus.batch_count;
+    int N           = arg.N;
+    int incx        = arg.incx;
+    int incy        = arg.incy;
+    int batch_count = arg.batch_count;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
-    hipblasDatatype_t xType         = argus.a_type;
-    hipblasDatatype_t yType         = argus.b_type;
-    hipblasDatatype_t resultType    = argus.c_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || batch_count <= 0)
@@ -110,7 +122,7 @@ hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -157,7 +169,7 @@ hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
                   : cblas_dot<Tx>)(N, hx[b], incx, hy[b], incy, &(h_cpu_result[b]));
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             if(std::is_same<Tr, hipblasHalf>{})
             {
@@ -185,7 +197,7 @@ hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
                 unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_hipblas_result_device);
             }
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<Tr>(
                 'F', 1, batch_count, 1, h_cpu_result, h_hipblas_result_host);
@@ -195,16 +207,16 @@ hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
 
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasDotBatchedExFn(handle,
@@ -222,25 +234,24 @@ hipblasStatus_t testing_dot_batched_ex_template(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.log_args<Tx>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            dot_gflop_count<CONJ, Tx>(N),
-            dot_gbyte_count<Tx>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasDotBatchedExModel{}.log_args<Tx>(std::cout,
+                                                arg,
+                                                gpu_time_used,
+                                                dot_gflop_count<CONJ, Tx>(N),
+                                                dot_gbyte_count<Tx>(N),
+                                                hipblas_error_host,
+                                                hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-hipblasStatus_t testing_dot_batched_ex(Arguments argus)
+inline hipblasStatus_t testing_dot_batched_ex(const Arguments& arg)
 {
-    hipblasDatatype_t xType         = argus.a_type;
-    hipblasDatatype_t yType         = argus.b_type;
-    hipblasDatatype_t resultType    = argus.c_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -251,14 +262,14 @@ hipblasStatus_t testing_dot_batched_ex(Arguments argus)
                                                  hipblasHalf,
                                                  hipblasHalf,
                                                  hipblasHalf,
-                                                 false>(argus);
+                                                 false>(arg);
     }
     else if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
             && executionType == HIPBLAS_R_32F)
     {
         status
             = testing_dot_batched_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, false>(
-                argus);
+                arg);
     }
     else if(xType == HIPBLAS_R_16B && yType == HIPBLAS_R_16B && resultType == HIPBLAS_R_16B
             && executionType == HIPBLAS_R_32F)
@@ -267,17 +278,17 @@ hipblasStatus_t testing_dot_batched_ex(Arguments argus)
                                                  hipblasBfloat16,
                                                  hipblasBfloat16,
                                                  hipblasBfloat16,
-                                                 false>(argus);
+                                                 false>(arg);
     }
     else if(xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)
     {
-        status = testing_dot_batched_ex_template<float, float, float, float, false>(argus);
+        status = testing_dot_batched_ex_template<float, float, float, float, false>(arg);
     }
     else if(xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F
             && executionType == HIPBLAS_R_64F)
     {
-        status = testing_dot_batched_ex_template<double, double, double, double, false>(argus);
+        status = testing_dot_batched_ex_template<double, double, double, double, false>(arg);
     }
     else if(xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F
             && executionType == HIPBLAS_C_32F)
@@ -286,7 +297,7 @@ hipblasStatus_t testing_dot_batched_ex(Arguments argus)
                                                  hipblasComplex,
                                                  hipblasComplex,
                                                  hipblasComplex,
-                                                 false>(argus);
+                                                 false>(arg);
     }
     else if(xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F
             && executionType == HIPBLAS_C_64F)
@@ -295,7 +306,7 @@ hipblasStatus_t testing_dot_batched_ex(Arguments argus)
                                                  hipblasDoubleComplex,
                                                  hipblasDoubleComplex,
                                                  hipblasDoubleComplex,
-                                                 false>(argus);
+                                                 false>(arg);
     }
     else
     {
@@ -305,12 +316,12 @@ hipblasStatus_t testing_dot_batched_ex(Arguments argus)
     return status;
 }
 
-hipblasStatus_t testing_dotc_batched_ex(Arguments argus)
+inline hipblasStatus_t testing_dotc_batched_ex(const Arguments& arg)
 {
-    hipblasDatatype_t xType         = argus.a_type;
-    hipblasDatatype_t yType         = argus.b_type;
-    hipblasDatatype_t resultType    = argus.c_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -321,14 +332,14 @@ hipblasStatus_t testing_dotc_batched_ex(Arguments argus)
                                                  hipblasHalf,
                                                  hipblasHalf,
                                                  hipblasHalf,
-                                                 true>(argus);
+                                                 true>(arg);
     }
     else if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
             && executionType == HIPBLAS_R_32F)
     {
         status
             = testing_dot_batched_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, true>(
-                argus);
+                arg);
     }
     else if(xType == HIPBLAS_R_16B && yType == HIPBLAS_R_16B && resultType == HIPBLAS_R_16B
             && executionType == HIPBLAS_R_32F)
@@ -337,17 +348,17 @@ hipblasStatus_t testing_dotc_batched_ex(Arguments argus)
                                                  hipblasBfloat16,
                                                  hipblasBfloat16,
                                                  hipblasBfloat16,
-                                                 true>(argus);
+                                                 true>(arg);
     }
     else if(xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)
     {
-        status = testing_dot_batched_ex_template<float, float, float, float, true>(argus);
+        status = testing_dot_batched_ex_template<float, float, float, float, true>(arg);
     }
     else if(xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F
             && executionType == HIPBLAS_R_64F)
     {
-        status = testing_dot_batched_ex_template<double, double, double, double, true>(argus);
+        status = testing_dot_batched_ex_template<double, double, double, double, true>(arg);
     }
     else if(xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F
             && executionType == HIPBLAS_C_32F)
@@ -356,7 +367,7 @@ hipblasStatus_t testing_dotc_batched_ex(Arguments argus)
                                                  hipblasComplex,
                                                  hipblasComplex,
                                                  hipblasComplex,
-                                                 true>(argus);
+                                                 true>(arg);
     }
     else if(xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F
             && executionType == HIPBLAS_C_64F)
@@ -365,7 +376,7 @@ hipblasStatus_t testing_dotc_batched_ex(Arguments argus)
                                                  hipblasDoubleComplex,
                                                  hipblasDoubleComplex,
                                                  hipblasDoubleComplex,
-                                                 true>(argus);
+                                                 true>(arg);
     }
     else
     {

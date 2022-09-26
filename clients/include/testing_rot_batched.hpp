@@ -30,7 +30,7 @@
 /* ============================================================================================ */
 
 template <typename T, typename U = T, typename V = T>
-hipblasStatus_t testing_rot_batched(const Arguments& arg)
+inline hipblasStatus_t testing_rot_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasRotBatchedFn
@@ -211,4 +211,9 @@ hipblasStatus_t testing_rot_batched(const Arguments& arg)
     }
 
     return HIPBLAS_STATUS_SUCCESS;
+}
+
+inline void testname_rot_batched(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
 }

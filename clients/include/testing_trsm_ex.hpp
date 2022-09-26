@@ -32,22 +32,27 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_trsm_ex(const Arguments& argus)
+inline void testname_trsm_ex(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN         = argus.fortran;
+    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_trsm_ex(const Arguments& arg)
+{
+    bool FORTRAN         = arg.fortran;
     auto hipblasTrsmExFn = FORTRAN ? hipblasTrsmExFortran : hipblasTrsmEx;
 
-    int M   = argus.M;
-    int N   = argus.N;
-    int lda = argus.lda;
-    int ldb = argus.ldb;
+    int M   = arg.M;
+    int N   = arg.N;
+    int lda = arg.lda;
+    int ldb = arg.ldb;
 
-    char char_side   = argus.side;
-    char char_uplo   = argus.uplo;
-    char char_transA = argus.transA;
-    char char_diag   = argus.diag;
-    T    h_alpha     = argus.get_alpha<T>();
+    char char_side   = arg.side;
+    char char_uplo   = arg.uplo;
+    char char_transA = arg.transA;
+    char char_diag   = arg.diag;
+    T    h_alpha     = arg.get_alpha<T>();
 
     hipblasSideMode_t  side   = char2hipblas_side(char_side);
     hipblasFillMode_t  uplo   = char2hipblas_fill(char_uplo);
@@ -75,11 +80,11 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
     device_vector<T> d_alpha(1);
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
-    hipblas_init_matrix(hA, argus, K, K, lda, 0, 1, hipblas_client_never_set_nan, true);
-    hipblas_init_matrix(hB_host, argus, M, N, ldb, 0, 1, hipblas_client_never_set_nan);
+    hipblas_init_matrix(hA, arg, K, K, lda, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hB_host, arg, M, N, ldb, 0, 1, hipblas_client_never_set_nan);
 
     // pad untouched area into zero
     for(int i = K; i < lda; i++)
@@ -169,7 +174,7 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
                                                           1));
     }
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -189,7 +194,7 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
                                             ldb,
                                             dinvA,
                                             TRSM_BLOCK * K,
-                                            argus.compute_type));
+                                            arg.compute_type));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
@@ -210,7 +215,7 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
                                             ldb,
                                             dinvA,
                                             TRSM_BLOCK * K,
-                                            argus.compute_type));
+                                            arg.compute_type));
 
         CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
 
@@ -227,23 +232,23 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
         hipblas_error_host   = norm_check_general<T>('F', M, N, ldb, hB_cpu, hB_host);
         hipblas_error_device = norm_check_general<T>('F', M, N, ldb, hB_cpu, hB_device);
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_error(hipblas_error_host, tolerance);
             unit_check_error(hipblas_error_device, tolerance);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasTrsmExFn(handle,
@@ -260,13 +265,13 @@ hipblasStatus_t testing_trsm_ex(const Arguments& argus)
                                                 ldb,
                                                 dinvA,
                                                 TRSM_BLOCK * K,
-                                                argus.compute_type));
+                                                arg.compute_type));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         ArgumentModel<e_side, e_uplo, e_transA, e_diag, e_M, e_N, e_alpha, e_lda, e_ldb>{}
             .log_args<T>(std::cout,
-                         argus,
+                         arg,
                          gpu_time_used,
                          trsm_gflop_count<T>(M, N, K),
                          trsm_gbyte_count<T>(M, N, K),

@@ -33,29 +33,37 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_geam(const Arguments& argus)
+using hipblasGeamModel
+    = ArgumentModel<e_transA, e_transB, e_M, e_N, e_alpha, e_lda, e_beta, e_ldb, e_ldc>;
+
+inline void testname_geam(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN       = argus.fortran;
+    hipblasGeamModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_geam(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
     auto hipblasGeamFn = FORTRAN ? hipblasGeam<T, true> : hipblasGeam<T, false>;
 
-    int M = argus.M;
-    int N = argus.N;
+    int M = arg.M;
+    int N = arg.N;
 
-    int lda = argus.lda;
-    int ldb = argus.ldb;
-    int ldc = argus.ldc;
+    int lda = arg.lda;
+    int ldb = arg.ldb;
+    int ldc = arg.ldc;
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB);
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    hipblasOperation_t transB = char2hipblas_operation(arg.transB);
 
-    T h_alpha = argus.get_alpha<T>();
-    T h_beta  = argus.get_beta<T>();
+    T h_alpha = arg.get_alpha<T>();
+    T h_beta  = arg.get_beta<T>();
 
     int A_row, A_col, B_row, B_col;
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     if(transA == HIPBLAS_OP_N)
     {
@@ -103,9 +111,9 @@ hipblasStatus_t testing_geam(const Arguments& argus)
     host_vector<T> hC_copy(C_size);
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, argus, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(hB, argus, B_row, B_col, ldb, 0, 1, hipblas_client_beta_sets_nan);
-    hipblas_init_matrix(hC1, argus, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hA, arg, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(hB, arg, B_row, B_col, ldb, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hC1, arg, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
 
     hC2     = hC1;
     hC_copy = hC1;
@@ -117,7 +125,7 @@ hipblasStatus_t testing_geam(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -149,13 +157,13 @@ hipblasStatus_t testing_geam(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(M, N, ldc, hC_copy.data(), hC1.data());
             unit_check_general<T>(M, N, ldc, hC_copy.data(), hC2.data());
         }
 
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<T>('F', M, N, ldc, hC_copy.data(), hC1.data());
             hipblas_error_device
@@ -163,16 +171,16 @@ hipblasStatus_t testing_geam(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGeamFn(
@@ -180,14 +188,13 @@ hipblasStatus_t testing_geam(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_transA, e_transB, e_M, e_N, e_alpha, e_lda, e_beta, e_ldb, e_ldc>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         geam_gflop_count<T>(M, N),
-                         geam_gbyte_count<T>(M, N),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasGeamModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       geam_gflop_count<T>(M, N),
+                                       geam_gbyte_count<T>(M, N),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
