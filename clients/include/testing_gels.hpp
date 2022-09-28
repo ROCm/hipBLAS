@@ -28,7 +28,7 @@
 
 #include "testing_common.hpp"
 
-using hipblasGelsModel = ArgumentModel<e_trans, e_M, e_N, e_lda, e_ldb>;
+using hipblasGelsModel = ArgumentModel<e_transA, e_M, e_N, e_lda, e_ldb>;
 
 inline void testname_gels(const Arguments& arg, std::string& name)
 {
@@ -42,12 +42,13 @@ inline hipblasStatus_t testing_gels(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasGelsFn = FORTRAN ? hipblasGels<T, true> : hipblasGels<T, false>;
 
+    char transc = arg.transA;
     int  N      = arg.N;
     int  M      = arg.M;
     int  nrhs   = arg.K;
     int  lda    = arg.lda;
     int  ldb    = arg.ldb;
-    char transc = arg.transA;
+
     if(is_complex<T> && transc == 'T')
         transc = 'C';
     else if(!is_complex<T> && transc == 'C')

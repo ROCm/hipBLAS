@@ -28,7 +28,7 @@
 
 #include "testing_common.hpp"
 
-using hipblasGelsBatchedModel = ArgumentModel<e_trans, e_M, e_N, e_lda, e_ldb, e_batch_count>;
+using hipblasGelsBatchedModel = ArgumentModel<e_transA, e_M, e_N, e_lda, e_ldb, e_batch_count>;
 
 inline void testname_gels_batched(const Arguments& arg, std::string& name)
 {
@@ -43,12 +43,12 @@ inline hipblasStatus_t testing_gels_batched(const Arguments& arg)
     auto hipblasGelsBatchedFn
         = FORTRAN ? hipblasGelsBatched<T, true> : hipblasGelsBatched<T, false>;
 
+    char transc     = arg.transA;
     int  N          = arg.N;
     int  M          = arg.M;
     int  nrhs       = arg.K;
     int  lda        = arg.lda;
     int  ldb        = arg.ldb;
-    char transc     = arg.transA;
     int  batchCount = arg.batch_count;
 
     if(is_complex<T> && transc == 'T')

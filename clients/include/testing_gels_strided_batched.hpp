@@ -29,7 +29,7 @@
 #include "testing_common.hpp"
 
 using hipblasGelsStridedBatchedModel
-    = ArgumentModel<e_trans, e_M, e_N, e_lda, e_ldb, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_transA, e_M, e_N, e_lda, e_ldb, e_stride_scale, e_batch_count>;
 
 inline void testname_gels_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -44,13 +44,12 @@ inline hipblasStatus_t testing_gels_strided_batched(const Arguments& arg)
     auto hipblasGelsStridedBatchedFn
         = FORTRAN ? hipblasGelsStridedBatched<T, true> : hipblasGelsStridedBatched<T, false>;
 
+    char   transc      = arg.transA;
     int    N           = arg.N;
     int    M           = arg.M;
     int    nrhs        = arg.K;
     int    lda         = arg.lda;
     int    ldb         = arg.ldb;
-    char   transc      = arg.transA;
-    int    batchCount  = arg.batch_count;
     double strideScale = arg.stride_scale;
     int    batchCount  = arg.batch_count;
 
