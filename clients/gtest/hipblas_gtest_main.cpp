@@ -59,9 +59,6 @@
 #define STRINGIFY(s) STRINGIFY_HELPER(s)
 #define STRINGIFY_HELPER(s) #s
 
-// client.cpp
-//int run_bench_test(Arguments& arg, int unit_check, int timing);
-
 #if !defined(WIN32) && defined(GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST)
 #define HIPBLAS_ALLOW_UNINSTANTIATED_GTEST(testclass) \
     GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(testclass);
@@ -95,21 +92,15 @@ struct data_driven : public testing::TestWithParam<Arguments>
 
             get_test_name(info.param, name);
 
+            // random trailer used as logged Arguments may not be unique
             char buf[256];
             sprintf(buf, "_%d", rand());
             name += buf;
 
-            //name += hipblas_name_suffix(info.param);
             return name;
         }
     };
 };
-
-// template <template <typename...> class TEST>
-// auto hipblas_yaml_dispatch(const Arguments& arg)
-// {
-//    return TEST<void>{}(arg);
-// }
 
 TEST_P(data_driven, yaml)
 {

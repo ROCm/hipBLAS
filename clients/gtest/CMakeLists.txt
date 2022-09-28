@@ -31,7 +31,6 @@ endif( )
 find_package( GTest REQUIRED )
 
 set(hipblas_test_source
-  client.cpp
   hipblas_gtest_main.cpp
   auxiliary_gtest.cpp
   set_get_pointer_mode_gtest.cpp
