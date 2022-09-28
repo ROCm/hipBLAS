@@ -30,9 +30,21 @@
 
 /* ============================================================================================ */
 
+using hipblasTrmmStridedBatchedModel = ArgumentModel<e_side,
+                                                     e_uplo,
+                                                     e_transA,
+                                                     e_diag,
+                                                     e_M,
+                                                     e_N,
+                                                     e_alpha,
+                                                     e_lda,
+                                                     e_ldb,
+                                                     e_stride_scale,
+                                                     e_batch_count>;
+
 inline void testname_trmm_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTrmmStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,17 +54,18 @@ inline hipblasStatus_t testing_trmm_strided_batched(const Arguments& arg)
     auto hipblasTrmmStridedBatchedFn
         = FORTRAN ? hipblasTrmmStridedBatched<T, true> : hipblasTrmmStridedBatched<T, false>;
 
-    int    M            = arg.M;
-    int    N            = arg.N;
-    int    lda          = arg.lda;
-    int    ldb          = arg.ldb;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    hipblasSideMode_t  side         = char2hipblas_side(arg.side);
+    hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
+    int                M            = arg.M;
+    int                N            = arg.N;
+    int                lda          = arg.lda;
+    int                ldb          = arg.ldb;
+    double             stride_scale = arg.stride_scale;
+    int                batch_count  = arg.batch_count;
 
-    hipblasSideMode_t  side   = char2hipblas_side(arg.side);
-    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
+    T h_alpha = arg.get_alpha<T>();
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -80,9 +93,8 @@ inline hipblasStatus_t testing_trmm_strided_batched(const Arguments& arg)
     device_vector<T> dB(B_size);
     device_vector<T> d_alpha(1);
 
-    T h_alpha = arg.get_alpha<T>();
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
@@ -206,23 +218,13 @@ inline hipblasStatus_t testing_trmm_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_side,
-                      e_uplo,
-                      e_transA,
-                      e_diag,
-                      e_M,
-                      e_N,
-                      e_lda,
-                      e_ldb,
-                      e_stride_b,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         trmm_gflop_count<T>(M, N, K),
-                         trmm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasTrmmStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     trmm_gflop_count<T>(M, N, K),
+                                                     trmm_gbyte_count<T>(M, N, K),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

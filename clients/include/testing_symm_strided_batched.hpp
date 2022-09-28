@@ -30,9 +30,21 @@
 
 /* ============================================================================================ */
 
+using hipblasSymmStridedBatchedModel = ArgumentModel<e_side,
+                                                     e_uplo,
+                                                     e_M,
+                                                     e_N,
+                                                     e_alpha,
+                                                     e_lda,
+                                                     e_ldb,
+                                                     e_beta,
+                                                     e_ldc,
+                                                     e_stride_scale,
+                                                     e_batch_count>;
+
 inline void testname_symm_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSymmStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,27 +54,21 @@ inline hipblasStatus_t testing_symm_strided_batched(const Arguments& arg)
     auto hipblasSymmStridedBatchedFn
         = FORTRAN ? hipblasSymmStridedBatched<T, true> : hipblasSymmStridedBatched<T, false>;
 
-    int    M            = arg.M;
-    int    N            = arg.N;
-    int    lda          = arg.lda;
-    int    ldb          = arg.ldb;
-    int    ldc          = arg.ldc;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    hipblasSideMode_t side         = char2hipblas_side(arg.side);
+    hipblasFillMode_t uplo         = char2hipblas_fill(arg.uplo);
+    int               M            = arg.M;
+    int               N            = arg.N;
+    int               lda          = arg.lda;
+    int               ldb          = arg.ldb;
+    int               ldc          = arg.ldc;
+    double            stride_scale = arg.stride_scale;
+    int               batch_count  = arg.batch_count;
 
-    hipblasSideMode_t side = char2hipblas_side(arg.side);
-    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    T h_alpha = arg.get_alpha<T>();
+    T h_beta  = arg.get_beta<T>();
 
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
-
-    int           K        = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    hipblasStride stride_A = size_t(lda) * K * stride_scale;
-    hipblasStride stride_B = size_t(ldb) * N * stride_scale;
-    hipblasStride stride_C = size_t(ldc) * N * stride_scale;
-
-    size_t A_size = stride_A * batch_count;
-    size_t B_size = stride_B * batch_count;
-    size_t C_size = stride_C * batch_count;
+    size_t rows = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    int    K    = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -70,6 +76,14 @@ inline hipblasStatus_t testing_symm_strided_batched(const Arguments& arg)
     {
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
+
+    hipblasStride stride_A = size_t(lda) * K * stride_scale;
+    hipblasStride stride_B = size_t(ldb) * N * stride_scale;
+    hipblasStride stride_C = size_t(ldc) * N * stride_scale;
+
+    size_t A_size = stride_A * batch_count;
+    size_t B_size = stride_B * batch_count;
+    size_t C_size = stride_C * batch_count;
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
@@ -84,15 +98,14 @@ inline hipblasStatus_t testing_symm_strided_batched(const Arguments& arg)
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
 
-    T h_alpha = arg.get_alpha<T>();
-    T h_beta  = arg.get_beta<T>();
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, arg, M, N, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
+        hA, arg, rows, K, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_matrix(
         hB, arg, M, N, ldb, stride_B, batch_count, hipblas_client_alpha_sets_nan, false, true);
     hipblas_init_matrix(
@@ -224,26 +237,13 @@ inline hipblasStatus_t testing_symm_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side,
-                      e_uplo,
-                      e_M,
-                      e_N,
-                      e_alpha,
-                      e_lda,
-                      e_stride_a,
-                      e_ldb,
-                      e_stride_b,
-                      e_beta,
-                      e_ldc,
-                      e_stride_c,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         symm_gflop_count<T>(M, N, K),
-                         symm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasSymmStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     symm_gflop_count<T>(M, N, K),
+                                                     symm_gbyte_count<T>(M, N, K),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

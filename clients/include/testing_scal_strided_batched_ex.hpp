@@ -29,9 +29,12 @@
 
 /* ============================================================================================ */
 
+using hipblasScalStridedBatchedExModel
+    = ArgumentModel<e_N, e_alpha, e_incx, e_stride_scale, e_batch_count>;
+
 inline void testname_scal_strided_batched_ex_template(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasScalStridedBatchedExModel{}.test_name(arg, name);
 }
 
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
@@ -45,9 +48,10 @@ inline hipblasStatus_t testing_scal_strided_batched_ex_template(const Arguments&
     int    incx         = arg.incx;
     double stride_scale = arg.stride_scale;
     int    batch_count  = arg.batch_count;
-    int    unit_check   = arg.unit_check;
-    int    timing       = arg.timing;
-    int    norm_check   = arg.norm_check;
+
+    int unit_check = arg.unit_check;
+    int timing     = arg.timing;
+    int norm_check = arg.norm_check;
 
     hipblasStride stridex = size_t(N) * incx * stride_scale;
     size_t        sizeX   = stridex * batch_count;
@@ -168,14 +172,13 @@ inline hipblasStatus_t testing_scal_strided_batched_ex_template(const Arguments&
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_alpha, e_incx, e_stride_x, e_batch_count>{}.log_args<Tx>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            scal_gflop_count<Tx, Ta>(N),
-            scal_gbyte_count<Tx>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasScalStridedBatchedExModel{}.log_args<Tx>(std::cout,
+                                                        arg,
+                                                        gpu_time_used,
+                                                        scal_gflop_count<Tx, Ta>(N),
+                                                        scal_gbyte_count<Tx>(N),
+                                                        hipblas_error_host,
+                                                        hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -30,9 +30,20 @@
 
 /* ============================================================================================ */
 
+using hipblasTrmmBatchedModel = ArgumentModel<e_side,
+                                              e_uplo,
+                                              e_transA,
+                                              e_diag,
+                                              e_M,
+                                              e_N,
+                                              e_alpha,
+                                              e_lda,
+                                              e_ldb,
+                                              e_batch_count>;
+
 inline void testname_trmm_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTrmmBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,22 +53,23 @@ inline hipblasStatus_t testing_trmm_batched(const Arguments& arg)
     auto hipblasTrmmBatchedFn
         = FORTRAN ? hipblasTrmmBatched<T, true> : hipblasTrmmBatched<T, false>;
 
-    int M   = arg.M;
-    int N   = arg.N;
-    int lda = arg.lda;
-    int ldb = arg.ldb;
+    hipblasSideMode_t  side        = char2hipblas_side(arg.side);
+    hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
+    int                M           = arg.M;
+    int                N           = arg.N;
+    int                lda         = arg.lda;
+    int                ldb         = arg.ldb;
+    int                batch_count = arg.batch_count;
 
-    hipblasSideMode_t  side   = char2hipblas_side(arg.side);
-    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
-    hipblasStatus_t    status = HIPBLAS_STATUS_SUCCESS;
+    T h_alpha = arg.get_alpha<T>();
+
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
     size_t A_size = size_t(lda) * K;
     size_t B_size = size_t(ldb) * N;
-
-    int batch_count = arg.batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -70,10 +82,9 @@ inline hipblasStatus_t testing_trmm_batched(const Arguments& arg)
         return HIPBLAS_STATUS_SUCCESS;
     }
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    T h_alpha = arg.get_alpha<T>();
+    hipblasLocalHandle handle(arg);
 
     // host arrays
     host_batch_vector<T> hA(A_size, 1, batch_count);
@@ -190,14 +201,13 @@ inline hipblasStatus_t testing_trmm_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_side, e_uplo, e_transA, e_diag, e_M, e_N, e_lda, e_ldb, e_batch_count>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         trmm_gflop_count<T>(M, N, K),
-                         trmm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasTrmmBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              trmm_gflop_count<T>(M, N, K),
+                                              trmm_gbyte_count<T>(M, N, K),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

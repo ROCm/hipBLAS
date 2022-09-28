@@ -29,9 +29,11 @@
 
 /* ============================================================================================ */
 
-inline void testname_scal_batched_ex_template(const Arguments& arg, std::string& name)
+using hipblasScalBatchedExModel = ArgumentModel<e_N, e_alpha, e_incx, e_batch_count>;
+
+inline void testname_scal_batched_ex(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasScalBatchedExModel{}.test_name(arg, name);
 }
 
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
@@ -43,9 +45,10 @@ inline hipblasStatus_t testing_scal_batched_ex_template(const Arguments& arg)
     int N           = arg.N;
     int incx        = arg.incx;
     int batch_count = arg.batch_count;
-    int unit_check  = arg.unit_check;
-    int timing      = arg.timing;
-    int norm_check  = arg.norm_check;
+
+    int unit_check = arg.unit_check;
+    int timing     = arg.timing;
+    int norm_check = arg.norm_check;
 
     Ta h_alpha = arg.get_alpha<Ta>();
 
@@ -166,22 +169,16 @@ inline hipblasStatus_t testing_scal_batched_ex_template(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_alpha, e_incx, e_batch_count>{}.log_args<Tx>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            scal_gflop_count<Tx, Ta>(N),
-            scal_gbyte_count<Tx>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasScalBatchedExModel{}.log_args<Tx>(std::cout,
+                                                 arg,
+                                                 gpu_time_used,
+                                                 scal_gflop_count<Tx, Ta>(N),
+                                                 scal_gbyte_count<Tx>(N),
+                                                 hipblas_error_host,
+                                                 hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
-}
-
-inline void testname_scal_batched_ex(const Arguments& arg, std::string& name)
-{
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
 }
 
 inline hipblasStatus_t testing_scal_batched_ex(const Arguments& arg)

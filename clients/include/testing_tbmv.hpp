@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasTbmvModel = ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_K, e_lda, e_incx>;
+
 inline void testname_tbmv(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTbmvModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,18 +43,17 @@ inline hipblasStatus_t testing_tbmv(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasTbmvFn = FORTRAN ? hipblasTbmv<T, true> : hipblasTbmv<T, false>;
 
-    int M    = arg.M;
-    int K    = arg.K;
-    int lda  = arg.lda;
-    int incx = arg.incx;
+    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
+    int                M      = arg.M;
+    int                K      = arg.K;
+    int                lda    = arg.lda;
+    int                incx   = arg.incx;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     size_t A_size   = size_t(lda) * M;
     size_t x_size   = size_t(M) * abs_incx;
-
-    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
 
     hipblasLocalHandle handle(arg);
 
@@ -134,13 +135,12 @@ inline hipblasStatus_t testing_tbmv(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_K, e_lda, e_incx>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            tbmv_gflop_count<T>(M, K),
-            tbmv_gbyte_count<T>(M, K),
-            hipblas_error);
+        hipblasTbmvModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       tbmv_gflop_count<T>(M, K),
+                                       tbmv_gbyte_count<T>(M, K),
+                                       hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

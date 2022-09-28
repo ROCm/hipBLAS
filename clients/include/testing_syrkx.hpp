@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasSyrkxModel = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_lda, e_ldb, e_ldc>;
+
 inline void testname_syrkx(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSyrkxModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,14 +43,13 @@ inline hipblasStatus_t testing_syrkx(const Arguments& arg)
     bool FORTRAN        = arg.fortran;
     auto hipblasSyrkxFn = FORTRAN ? hipblasSyrkx<T, true> : hipblasSyrkx<T, false>;
 
-    int N   = arg.N;
-    int K   = arg.K;
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
-
     hipblasFillMode_t  uplo  = char2hipblas_fill(arg.uplo);
     hipblasOperation_t trans = char2hipblas_operation(arg.transA);
+    int                N     = arg.N;
+    int                K     = arg.K;
+    int                lda   = arg.lda;
+    int                ldb   = arg.ldb;
+    int                ldc   = arg.ldc;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
@@ -152,14 +153,13 @@ inline hipblasStatus_t testing_syrkx(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo, e_transA, e_N, e_K, e_lda, e_ldb, e_ldc>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            syrkx_gflop_count<T>(N, K),
-            syrkx_gbyte_count<T>(N, K),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasSyrkxModel{}.log_args<T>(std::cout,
+                                        arg,
+                                        gpu_time_used,
+                                        syrkx_gflop_count<T>(N, K),
+                                        syrkx_gbyte_count<T>(N, K),
+                                        hipblas_error_host,
+                                        hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

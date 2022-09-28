@@ -30,9 +30,12 @@
 
 /* ============================================================================================ */
 
+using hipblasTpmvStridedBatchedModel
+    = ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_incx, e_stride_scale, e_batch_count>;
+
 inline void testname_tpmv_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTpmvStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,10 +45,13 @@ inline hipblasStatus_t testing_tpmv_strided_batched(const Arguments& arg)
     auto hipblasTpmvStridedBatchedFn
         = FORTRAN ? hipblasTpmvStridedBatched<T, true> : hipblasTpmvStridedBatched<T, false>;
 
-    int    M            = arg.M;
-    int    incx         = arg.incx;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
+    int                M            = arg.M;
+    int                incx         = arg.incx;
+    double             stride_scale = arg.stride_scale;
+    int                batch_count  = arg.batch_count;
 
     int           abs_incx = incx >= 0 ? incx : -incx;
     size_t        dim_A    = size_t(M) * (M + 1) / 2;
@@ -54,10 +60,6 @@ inline hipblasStatus_t testing_tpmv_strided_batched(const Arguments& arg)
 
     size_t A_size = stride_A * batch_count;
     size_t X_size = stride_x * batch_count;
-
-    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
 
     hipblasLocalHandle handle(arg);
 
@@ -143,13 +145,12 @@ inline hipblasStatus_t testing_tpmv_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_stride_a, e_incx, e_batch_count>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         tpmv_gflop_count<T>(M),
-                         tpmv_gbyte_count<T>(M),
-                         hipblas_error);
+        hipblasTpmvStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     tpmv_gflop_count<T>(M),
+                                                     tpmv_gbyte_count<T>(M),
+                                                     hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

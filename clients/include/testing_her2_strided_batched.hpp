@@ -30,8 +30,8 @@
 
 /* ============================================================================================ */
 
-// stride scale
-using hipblasHer2StridedBatchedModel = ArgumentModel<e_N, e_alpha, e_incx, e_incy, e_lda, e_batch_count>;
+using hipblasHer2StridedBatchedModel
+    = ArgumentModel<e_N, e_alpha, e_incx, e_incy, e_lda, e_stride_scale, e_batch_count>;
 
 inline void testname_her2_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -227,14 +227,13 @@ inline hipblasStatus_t testing_her2_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasHer2StridedBatchedModel{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         her2_gflop_count<T>(N),
-                         her2_gbyte_count<T>(N),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHer2StridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     her2_gflop_count<T>(N),
+                                                     her2_gbyte_count<T>(N),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -30,9 +30,19 @@
 
 /* ============================================================================================ */
 
+using hipblasSymvStridedBatchedModel = ArgumentModel<e_uplo,
+                                                     e_M,
+                                                     e_alpha,
+                                                     e_lda,
+                                                     e_incx,
+                                                     e_beta,
+                                                     e_incy,
+                                                     e_stride_scale,
+                                                     e_batch_count>;
+
 inline void testname_symv_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSymvStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,12 +52,13 @@ inline hipblasStatus_t testing_symv_strided_batched(const Arguments& arg)
     auto hipblasSymvStridedBatchedFn
         = FORTRAN ? hipblasSymvStridedBatched<T, true> : hipblasSymvStridedBatched<T, false>;
 
-    int    M            = arg.M;
-    int    lda          = arg.lda;
-    int    incx         = arg.incx;
-    int    incy         = arg.incy;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    hipblasFillMode_t uplo         = char2hipblas_fill(arg.uplo);
+    int               M            = arg.M;
+    int               lda          = arg.lda;
+    int               incx         = arg.incx;
+    int               incy         = arg.incy;
+    double            stride_scale = arg.stride_scale;
+    int               batch_count  = arg.batch_count;
 
     int           abs_incx = incx >= 0 ? incx : -incx;
     int           abs_incy = incy >= 0 ? incy : -incy;
@@ -58,8 +69,6 @@ inline hipblasStatus_t testing_symv_strided_batched(const Arguments& arg)
     size_t A_size = stride_A * batch_count;
     size_t X_size = stride_x * batch_count;
     size_t Y_size = stride_y * batch_count;
-
-    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
 
     hipblasLocalHandle handle(arg);
 
@@ -230,22 +239,13 @@ inline hipblasStatus_t testing_symv_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo,
-                      e_M,
-                      e_lda,
-                      e_stride_a,
-                      e_incx,
-                      e_stride_x,
-                      e_incy,
-                      e_stride_y,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         symv_gflop_count<T>(M),
-                         symv_gbyte_count<T>(M),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasSymvStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     symv_gflop_count<T>(M),
+                                                     symv_gbyte_count<T>(M),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -30,9 +30,20 @@
 
 /* ============================================================================================ */
 
+using hipblasSyrkStridedBatchedModel = ArgumentModel<e_uplo,
+                                                     e_transA,
+                                                     e_N,
+                                                     e_K,
+                                                     e_alpha,
+                                                     e_lda,
+                                                     e_beta,
+                                                     e_ldc,
+                                                     e_stride_scale,
+                                                     e_batch_count>;
+
 inline void testname_syrk_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSyrkStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,20 +53,20 @@ inline hipblasStatus_t testing_syrk_strided_batched(const Arguments& arg)
     auto hipblasSyrkStridedBatchedFn
         = FORTRAN ? hipblasSyrkStridedBatched<T, true> : hipblasSyrkStridedBatched<T, false>;
 
-    int    N            = arg.N;
-    int    K            = arg.K;
-    int    lda          = arg.lda;
-    int    ldc          = arg.ldc;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
+    int                N            = arg.N;
+    int                K            = arg.K;
+    int                lda          = arg.lda;
+    int                ldc          = arg.ldc;
+    double             stride_scale = arg.stride_scale;
+    int                batch_count  = arg.batch_count;
 
-    hipblasFillMode_t  uplo     = char2hipblas_fill(arg.uplo);
-    hipblasOperation_t transA   = char2hipblas_operation(arg.transA);
-    int                K1       = (transA == HIPBLAS_OP_N ? K : N);
-    hipblasStride      stride_A = size_t(lda) * K1 * stride_scale;
-    hipblasStride      stride_C = size_t(ldc) * N * stride_scale;
-    size_t             A_size   = stride_A * batch_count;
-    size_t             C_size   = stride_C * batch_count;
+    int           K1       = (transA == HIPBLAS_OP_N ? K : N);
+    hipblasStride stride_A = size_t(lda) * K1 * stride_scale;
+    hipblasStride stride_C = size_t(ldc) * N * stride_scale;
+    size_t        A_size   = stride_A * batch_count;
+    size_t        C_size   = stride_C * batch_count;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -207,24 +218,13 @@ inline hipblasStatus_t testing_syrk_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo,
-                      e_transA,
-                      e_N,
-                      e_K,
-                      e_alpha,
-                      e_lda,
-                      e_stride_a,
-                      e_beta,
-                      e_ldc,
-                      e_stride_c,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         syrk_gflop_count<T>(N, K),
-                         syrk_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasSyrkStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     syrk_gflop_count<T>(N, K),
+                                                     syrk_gbyte_count<T>(N, K),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

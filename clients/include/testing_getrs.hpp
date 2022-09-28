@@ -149,11 +149,11 @@ inline hipblasStatus_t testing_getrs(const Arguments& arg)
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         hipblasGetrsModel{}.log_args<T>(std::cout,
-                                                       arg,
-                                                       gpu_time_used,
-                                                       getrs_gflop_count<T>(N, 1),
-                                                       ArgumentLogging::NA_value,
-                                                       hipblas_error);
+                                        arg,
+                                        gpu_time_used,
+                                        getrs_gflop_count<T>(N, 1),
+                                        ArgumentLogging::NA_value,
+                                        hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

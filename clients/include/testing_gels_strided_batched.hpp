@@ -29,7 +29,7 @@
 #include "testing_common.hpp"
 
 using hipblasGelsStridedBatchedModel
-    = ArgumentModel<e_trans, e_M, e_N, e_lda, e_ldb, e_batch_count>; // stride scale used
+    = ArgumentModel<e_trans, e_M, e_N, e_lda, e_ldb, e_stride_scale, e_batch_count>;
 
 inline void testname_gels_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -52,11 +52,14 @@ inline hipblasStatus_t testing_gels_strided_batched(const Arguments& arg)
     char   transc      = arg.transA;
     int    batchCount  = arg.batch_count;
     double strideScale = arg.stride_scale;
+    int    batchCount  = arg.batch_count;
+
     if(is_complex<T> && transc == 'T')
         transc = 'C';
     else if(!is_complex<T> && transc == 'C')
         transc = 'T';
 
+    // this makes logging incorrect as overriding arg
     hipblasOperation_t trans = char2hipblas_operation(transc);
 
     hipblasStride strideA = size_t(lda) * N * strideScale;

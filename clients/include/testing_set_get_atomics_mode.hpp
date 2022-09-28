@@ -32,7 +32,7 @@
 
 inline void testname_set_get_atomics_mode(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    ArgumentModel<>{}.test_name(arg, name);
 }
 
 inline hipblasStatus_t testing_set_get_atomics_mode(const Arguments& arg)

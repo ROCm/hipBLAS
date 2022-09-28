@@ -30,7 +30,8 @@
 
 /* ============================================================================================ */
 
-using hipblasHerkBatchedModel = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc, e_batch_count>;
+using hipblasHerkBatchedModel
+    = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc, e_batch_count>;
 
 inline void testname_herk_batched(const Arguments& arg, std::string& name)
 {
@@ -191,14 +192,13 @@ inline hipblasStatus_t testing_herk_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        hipblasHerkBatchedModel{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         herk_gflop_count<T>(N, K),
-                         herk_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHerkBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              herk_gflop_count<T>(N, K),
+                                              herk_gbyte_count<T>(N, K),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

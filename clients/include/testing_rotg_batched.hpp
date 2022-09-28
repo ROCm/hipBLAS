@@ -29,9 +29,11 @@
 
 /* ============================================================================================ */
 
+using hipblasRotgBatchedModel = ArgumentModel<e_batch_count>;
+
 inline void testname_rotg_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasRotgBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -181,13 +183,13 @@ inline hipblasStatus_t testing_rotg_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_batch_count>{}.log_args<T>(std::cout,
-                                                   arg,
-                                                   gpu_time_used,
-                                                   ArgumentLogging::NA_value,
-                                                   ArgumentLogging::NA_value,
-                                                   hipblas_error_host,
-                                                   hipblas_error_device);
+        hipblasRotgBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              ArgumentLogging::NA_value,
+                                              ArgumentLogging::NA_value,
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

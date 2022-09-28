@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasTpsvModel = ArgumentModel<e_uplo, e_transA, e_diag, e_N, e_incx>;
+
 inline void testname_tpsv(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTpsvModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,14 +43,11 @@ inline hipblasStatus_t testing_tpsv(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasTpsvFn = FORTRAN ? hipblasTpsv<T, true> : hipblasTpsv<T, false>;
 
-    int                N           = arg.N;
-    int                incx        = arg.incx;
-    char               char_uplo   = arg.uplo;
-    char               char_diag   = arg.diag;
-    char               char_transA = arg.transA;
-    hipblasFillMode_t  uplo        = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
-    hipblasOperation_t transA      = char2hipblas_operation(char_transA);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    int                N      = arg.N;
+    int                incx   = arg.incx;
 
     int    abs_incx = incx < 0 ? -incx : incx;
     size_t size_A   = size_t(N) * N;
@@ -120,12 +119,12 @@ inline hipblasStatus_t testing_tpsv(const Arguments& arg)
         hA[i + i * N] = t;
     }
     //  calculate Cholesky factorization of SPD matrix hA
-    cblas_potrf<T>(char_uplo, N, hA.data(), N);
+    cblas_potrf<T>(arg.uplo, N, hA.data(), N);
 
     //  make hA unit diagonal if diag == rocblas_diagonal_unit
-    if(char_diag == 'U' || char_diag == 'u')
+    if(arg.diag == 'U' || arg.diag == 'u')
     {
-        if('L' == char_uplo || 'l' == char_uplo)
+        if('L' == arg.uplo || 'l' == arg.uplo)
             for(int i = 0; i < N; i++)
             {
                 T diag = hA[i + i * N];
@@ -191,12 +190,12 @@ inline hipblasStatus_t testing_tpsv(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_diag, e_N, e_incx>{}.log_args<T>(std::cout,
-                                                                           arg,
-                                                                           gpu_time_used,
-                                                                           tpsv_gflop_count<T>(N),
-                                                                           tpsv_gbyte_count<T>(N),
-                                                                           hipblas_error);
+        hipblasTpsvModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       tpsv_gflop_count<T>(N),
+                                       tpsv_gbyte_count<T>(N),
+                                       hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

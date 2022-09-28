@@ -32,7 +32,6 @@
 
 /* ============================================================================================ */
 
-// stride scale used
 using hipblasGemmStridedBatchedModel = ArgumentModel<e_transA,
                                                      e_transB,
                                                      e_M,
@@ -43,6 +42,7 @@ using hipblasGemmStridedBatchedModel = ArgumentModel<e_transA,
                                                      e_ldb,
                                                      e_beta,
                                                      e_ldc,
+                                                     e_stride_scale,
                                                      e_batch_count>;
 
 inline void testname_gemm_strided_batched(const Arguments& arg, std::string& name)
@@ -57,15 +57,19 @@ inline hipblasStatus_t testing_gemm_strided_batched(const Arguments& arg)
     auto hipblasGemmStridedBatchedFn
         = FORTRAN ? hipblasGemmStridedBatched<T, true> : hipblasGemmStridedBatched<T, false>;
 
-    int M = arg.M;
-    int N = arg.N;
-    int K = arg.K;
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
+    hipblasOperation_t transB       = char2hipblas_operation(arg.transB);
+    int                M            = arg.M;
+    int                N            = arg.N;
+    int                K            = arg.K;
+    int                lda          = arg.lda;
+    int                ldb          = arg.ldb;
+    int                ldc          = arg.ldc;
+    double             stride_scale = arg.stride_scale;
+    int                batch_count  = arg.batch_count;
 
-    int    lda          = arg.lda;
-    int    ldb          = arg.ldb;
-    int    ldc          = arg.ldc;
-    int    batch_count  = arg.batch_count;
-    double stride_scale = arg.stride_scale;
+    T h_alpha = arg.get_alpha<T>();
+    T h_beta  = arg.get_beta<T>();
 
     // check here to prevent undefined memory allocation error
     if(M < 0 || N < 0 || K < 0 || lda < 0 || ldb < 0 || ldc < 0 || batch_count < 0)
@@ -73,13 +77,7 @@ inline hipblasStatus_t testing_gemm_strided_batched(const Arguments& arg)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    hipblasOperation_t transB = char2hipblas_operation(arg.transB);
-
     int A_row, A_col, B_row, B_col;
-
-    T h_alpha = arg.get_alpha<T>();
-    T h_beta  = arg.get_beta<T>();
 
     if(transA == HIPBLAS_OP_N)
     {

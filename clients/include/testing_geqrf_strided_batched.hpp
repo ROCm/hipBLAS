@@ -28,8 +28,8 @@
 
 #include "testing_common.hpp"
 
-// strides not used
-using hipblasGeqrfStridedBatchedModel = ArgumentModel<e_M, e_N, e_lda, e_batch_count>;
+using hipblasGeqrfStridedBatchedModel
+    = ArgumentModel<e_M, e_N, e_lda, e_stride_scale, e_batch_count>;
 
 inline void testname_geqrf_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -48,8 +48,8 @@ inline hipblasStatus_t testing_geqrf_strided_batched(const Arguments& arg)
     int    N            = arg.N;
     int    K            = std::min(M, N);
     int    lda          = arg.lda;
-    int    batch_count  = arg.batch_count;
     double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
 
     hipblasStride strideA   = lda * N * stride_scale;
     hipblasStride strideP   = K * stride_scale;

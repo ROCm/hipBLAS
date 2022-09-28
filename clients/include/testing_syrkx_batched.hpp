@@ -30,9 +30,12 @@
 
 /* ============================================================================================ */
 
+using hipblasSyrkxBatchedModel
+    = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_lda, e_ldb, e_ldc, e_batch_count>;
+
 inline void testname_syrkx_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSyrkxBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,15 +45,14 @@ inline hipblasStatus_t testing_syrkx_batched(const Arguments& arg)
     auto hipblasSyrkxBatchedFn
         = FORTRAN ? hipblasSyrkxBatched<T, true> : hipblasSyrkxBatched<T, false>;
 
-    int N           = arg.N;
-    int K           = arg.K;
-    int lda         = arg.lda;
-    int ldb         = arg.ldb;
-    int ldc         = arg.ldc;
-    int batch_count = arg.batch_count;
-
-    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    int                N           = arg.N;
+    int                K           = arg.K;
+    int                lda         = arg.lda;
+    int                ldb         = arg.ldb;
+    int                ldc         = arg.ldc;
+    int                batch_count = arg.batch_count;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
@@ -201,14 +203,13 @@ inline hipblasStatus_t testing_syrkx_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo, e_transA, e_N, e_K, e_lda, e_ldb, e_ldc, e_batch_count>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            syrkx_gflop_count<T>(N, K),
-            syrkx_gbyte_count<T>(N, K),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasSyrkxBatchedModel{}.log_args<T>(std::cout,
+                                               arg,
+                                               gpu_time_used,
+                                               syrkx_gflop_count<T>(N, K),
+                                               syrkx_gbyte_count<T>(N, K),
+                                               hipblas_error_host,
+                                               hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

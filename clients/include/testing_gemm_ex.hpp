@@ -54,14 +54,12 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
 
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
     hipblasOperation_t transB = char2hipblas_operation(arg.transB);
-
-    int M = arg.M;
-    int N = arg.N;
-    int K = arg.K;
-
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
+    int                M      = arg.M;
+    int                N      = arg.N;
+    int                K      = arg.K;
+    int                lda    = arg.lda;
+    int                ldb    = arg.ldb;
+    int                ldc    = arg.ldc;
 
     hipblasDatatype_t a_type       = arg.a_type;
     hipblasDatatype_t b_type       = arg.b_type;

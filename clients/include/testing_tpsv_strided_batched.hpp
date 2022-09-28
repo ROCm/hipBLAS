@@ -30,9 +30,12 @@
 
 /* ============================================================================================ */
 
+using hipblasTpsvStridedBatchedModel
+    = ArgumentModel<e_uplo, e_transA, e_diag, e_N, e_incx, e_stride_scale, e_batch_count>;
+
 inline void testname_tpsv_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTpsvStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,14 +45,11 @@ inline hipblasStatus_t testing_tpsv_strided_batched(const Arguments& arg)
     auto hipblasTpsvStridedBatchedFn
         = FORTRAN ? hipblasTpsvStridedBatched<T, true> : hipblasTpsvStridedBatched<T, false>;
 
+    hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
     int                N            = arg.N;
     int                incx         = arg.incx;
-    char               char_uplo    = arg.uplo;
-    char               char_diag    = arg.diag;
-    char               char_transA  = arg.transA;
-    hipblasFillMode_t  uplo         = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t  diag         = char2hipblas_diagonal(char_diag);
-    hipblasOperation_t transA       = char2hipblas_operation(char_transA);
     double             stride_scale = arg.stride_scale;
     int                batch_count  = arg.batch_count;
 
@@ -117,12 +117,12 @@ inline hipblasStatus_t testing_tpsv_strided_batched(const Arguments& arg)
             hAb[i + i * N] = t;
         }
         //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(char_uplo, N, hAb, N);
+        cblas_potrf<T>(arg.uplo, N, hAb, N);
 
         //  make hA unit diagonal if diag == rocblas_diagonal_unit
-        if(char_diag == 'U' || char_diag == 'u')
+        if(arg.diag == 'U' || arg.diag == 'u')
         {
-            if('L' == char_uplo || 'l' == char_uplo)
+            if('L' == arg.uplo || 'l' == arg.uplo)
                 for(int i = 0; i < N; i++)
                 {
                     T diag = hAb[i + i * N];
@@ -196,13 +196,12 @@ inline hipblasStatus_t testing_tpsv_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_diag, e_N, e_incx, e_stride_x, e_batch_count>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         tpsv_gflop_count<T>(N),
-                         tpsv_gbyte_count<T>(N),
-                         cumulative_hipblas_error);
+        hipblasTpsvStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     tpsv_gflop_count<T>(N),
+                                                     tpsv_gbyte_count<T>(N),
+                                                     cumulative_hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

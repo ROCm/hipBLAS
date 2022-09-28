@@ -29,9 +29,11 @@
 
 /* ============================================================================================ */
 
+using hipblasScalBatchedModel = ArgumentModel<e_N, e_alpha, e_incx, e_batch_count>;
+
 inline void testname_scal_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasScalBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T, typename U = T>
@@ -44,9 +46,10 @@ inline hipblasStatus_t testing_scal_batched(const Arguments& arg)
     int N           = arg.N;
     int incx        = arg.incx;
     int batch_count = arg.batch_count;
-    int unit_check  = arg.unit_check;
-    int norm_check  = arg.norm_check;
-    int timing      = arg.timing;
+
+    int unit_check = arg.unit_check;
+    int norm_check = arg.norm_check;
+    int timing     = arg.timing;
 
     hipblasLocalHandle handle(arg);
 
@@ -126,12 +129,12 @@ inline hipblasStatus_t testing_scal_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_batch_count>{}.log_args<T>(std::cout,
-                                                                arg,
-                                                                gpu_time_used,
-                                                                scal_gflop_count<T, U>(N),
-                                                                scal_gbyte_count<T>(N),
-                                                                hipblas_error);
+        hipblasScalBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              scal_gflop_count<T, U>(N),
+                                              scal_gbyte_count<T>(N),
+                                              hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

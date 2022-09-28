@@ -56,17 +56,14 @@ inline hipblasStatus_t testing_geam_batched(const Arguments& arg)
     auto hipblasGeamBatchedFn
         = FORTRAN ? hipblasGeamBatched<T, true> : hipblasGeamBatched<T, false>;
 
-    int M = arg.M;
-    int N = arg.N;
-
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
-
-    int batch_count = arg.batch_count;
-
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    hipblasOperation_t transB = char2hipblas_operation(arg.transB);
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    hipblasOperation_t transB      = char2hipblas_operation(arg.transB);
+    int                M           = arg.M;
+    int                N           = arg.N;
+    int                lda         = arg.lda;
+    int                ldb         = arg.ldb;
+    int                ldc         = arg.ldc;
+    int                batch_count = arg.batch_count;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();

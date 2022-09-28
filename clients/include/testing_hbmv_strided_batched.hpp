@@ -30,8 +30,16 @@
 
 /* ============================================================================================ */
 
-// stride scale
-using hipblasHbmvStridedBatchedModel = ArgumentModel<e_N, e_K, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>;
+using hipblasHbmvStridedBatchedModel = ArgumentModel<e_uplo,
+                                                     e_N,
+                                                     e_K,
+                                                     e_alpha,
+                                                     e_lda,
+                                                     e_incx,
+                                                     e_beta,
+                                                     e_incy,
+                                                     e_stride_scale,
+                                                     e_batch_count>;
 
 inline void testname_hbmv_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -45,13 +53,14 @@ inline hipblasStatus_t testing_hbmv_strided_batched(const Arguments& arg)
     auto hipblasHbmvStridedBatchedFn
         = FORTRAN ? hipblasHbmvStridedBatched<T, true> : hipblasHbmvStridedBatched<T, false>;
 
-    int    N            = arg.N;
-    int    K            = arg.K;
-    int    lda          = arg.lda;
-    int    incx         = arg.incx;
-    int    incy         = arg.incy;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    hipblasFillMode_t uplo         = char2hipblas_fill(arg.uplo);
+    int               N            = arg.N;
+    int               K            = arg.K;
+    int               lda          = arg.lda;
+    int               incx         = arg.incx;
+    int               incy         = arg.incy;
+    double            stride_scale = arg.stride_scale;
+    int               batch_count  = arg.batch_count;
 
     int abs_incx = incx >= 0 ? incx : -incx;
     int abs_incy = incy >= 0 ? incy : -incy;
@@ -60,10 +69,9 @@ inline hipblasStatus_t testing_hbmv_strided_batched(const Arguments& arg)
     hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
     hipblasStride stride_y = size_t(N) * abs_incy * stride_scale;
 
-    size_t            A_size = stride_A * batch_count;
-    size_t            X_size = stride_x * batch_count;
-    size_t            Y_size = stride_y * batch_count;
-    hipblasFillMode_t uplo   = char2hipblas_fill(arg.uplo);
+    size_t A_size = stride_A * batch_count;
+    size_t X_size = stride_x * batch_count;
+    size_t Y_size = stride_y * batch_count;
 
     hipblasLocalHandle handle(arg);
 
@@ -242,14 +250,13 @@ inline hipblasStatus_t testing_hbmv_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasHbmvStridedBatchedModel{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         hbmv_gflop_count<T>(N, K),
-                         hbmv_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHbmvStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     hbmv_gflop_count<T>(N, K),
+                                                     hbmv_gbyte_count<T>(N, K),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

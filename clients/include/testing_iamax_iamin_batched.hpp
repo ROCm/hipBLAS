@@ -27,6 +27,8 @@
 
 #include "testing_common.hpp"
 
+using hipblasIamaxIaminBatchedModel = ArgumentModel<e_N, e_incx, e_batch_count>;
+
 template <typename T>
 using hipblas_iamax_iamin_batched_t = hipblasStatus_t (*)(
     hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
@@ -148,13 +150,13 @@ inline hipblasStatus_t testing_iamax_iamin_batched(const Arguments&             
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_batch_count>{}.log_args<T>(std::cout,
-                                                                arg,
-                                                                gpu_time_used,
-                                                                iamax_gflop_count<T>(N),
-                                                                iamax_gbyte_count<T>(N),
-                                                                hipblas_error_host,
-                                                                hipblas_error_device);
+        hipblasIamaxIaminBatchedModel{}.log_args<T>(std::cout,
+                                                    arg,
+                                                    gpu_time_used,
+                                                    iamax_gflop_count<T>(N),
+                                                    iamax_gbyte_count<T>(N),
+                                                    hipblas_error_host,
+                                                    hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
@@ -162,7 +164,7 @@ inline hipblasStatus_t testing_iamax_iamin_batched(const Arguments&             
 
 inline void testname_amax_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasIamaxIaminBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -177,7 +179,7 @@ inline hipblasStatus_t testing_amax_batched(const Arguments& arg)
 
 inline void testname_amin_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasIamaxIaminBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>

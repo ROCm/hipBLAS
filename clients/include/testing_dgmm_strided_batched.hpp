@@ -30,16 +30,8 @@
 
 /* ============================================================================================ */
 
-using hipblasDgmmStridedBatchedModel = ArgumentModel<e_side,
-                                                     e_M,
-                                                     e_N,
-                                                     e_lda,
-                                                     e_stride_a,
-                                                     e_incx,
-                                                     e_stride_x,
-                                                     e_ldc,
-                                                     e_stride_c,
-                                                     e_batch_count>;
+using hipblasDgmmStridedBatchedModel
+    = ArgumentModel<e_side, e_M, e_N, e_lda, e_incx, e_ldc, e_stride_scale, e_batch_count>;
 
 inline void testname_dgmm_strided_batched(const Arguments& arg, std::string& name)
 {

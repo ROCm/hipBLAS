@@ -29,9 +29,11 @@
 
 /* ============================================================================================ */
 
-inline void testname_nrm2_batched_ex_template(const Arguments& arg, std::string& name)
+using hipblasNrm2BatchedExModel = ArgumentModel<e_N, e_incx, e_batch_count>;
+
+inline void testname_nrm2_batched_ex(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasNrm2BatchedExModel{}.test_name(arg, name);
 }
 
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
@@ -184,13 +186,13 @@ inline hipblasStatus_t testing_nrm2_batched_ex_template(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_batch_count>{}.log_args<Tx>(std::cout,
-                                                                 arg,
-                                                                 gpu_time_used,
-                                                                 nrm2_gflop_count<Tx>(N),
-                                                                 nrm2_gbyte_count<Tx>(N),
-                                                                 hipblas_error_host,
-                                                                 hipblas_error_device);
+        hipblasNrm2BatchedExModel{}.log_args<Tx>(std::cout,
+                                                 arg,
+                                                 gpu_time_used,
+                                                 nrm2_gflop_count<Tx>(N),
+                                                 nrm2_gbyte_count<Tx>(N),
+                                                 hipblas_error_host,
+                                                 hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

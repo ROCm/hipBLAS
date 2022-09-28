@@ -30,9 +30,8 @@
 
 /* ============================================================================================ */
 
-// stride scale used
 using hipblasGerStridedBatchedModel
-    = ArgumentModel<e_M, e_N, e_alpha, e_incx, e_incy, e_lda, e_batch_count>;
+    = ArgumentModel<e_M, e_N, e_alpha, e_incx, e_incy, e_lda, e_stride_scale, e_batch_count>;
 
 inline void testname_ger_strided_batched(const Arguments& arg, std::string& name)
 {

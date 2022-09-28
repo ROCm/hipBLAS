@@ -27,6 +27,9 @@
 
 #include "testing_common.hpp"
 
+using hipblasIamaxIaminStridedBatchedModel
+    = ArgumentModel<e_N, e_incx, e_stride_scale, e_batch_count>;
+
 template <typename T>
 using hipblas_iamax_iamin_strided_batched_t = hipblasStatus_t (*)(hipblasHandle_t handle,
                                                                   int             n,
@@ -161,13 +164,13 @@ inline hipblasStatus_t
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_stride_x, e_batch_count>{}.log_args<T>(std::cout,
-                                                                            arg,
-                                                                            gpu_time_used,
-                                                                            iamax_gflop_count<T>(N),
-                                                                            iamax_gbyte_count<T>(N),
-                                                                            hipblas_error_host,
-                                                                            hipblas_error_device);
+        hipblasIamaxIaminStridedBatchedModel{}.log_args<T>(std::cout,
+                                                           arg,
+                                                           gpu_time_used,
+                                                           iamax_gflop_count<T>(N),
+                                                           iamax_gbyte_count<T>(N),
+                                                           hipblas_error_host,
+                                                           hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
@@ -175,7 +178,7 @@ inline hipblasStatus_t
 
 inline void testname_amax_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasIamaxIaminStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -191,7 +194,7 @@ inline hipblasStatus_t testing_amax_strided_batched(const Arguments& arg)
 
 inline void testname_amin_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasIamaxIaminStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>

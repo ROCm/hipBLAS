@@ -45,22 +45,17 @@ inline hipblasStatus_t testing_hemm_batched(const Arguments& arg)
     auto hipblasHemmBatchedFn
         = FORTRAN ? hipblasHemmBatched<T, true> : hipblasHemmBatched<T, false>;
 
-    int M   = arg.M;
-    int N   = arg.N;
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
+    hipblasSideMode_t side        = char2hipblas_side(arg.side);
+    hipblasFillMode_t uplo        = char2hipblas_fill(arg.uplo);
+    int               M           = arg.M;
+    int               N           = arg.N;
+    int               lda         = arg.lda;
+    int               ldb         = arg.ldb;
+    int               ldc         = arg.ldc;
+    int               batch_count = arg.batch_count;
 
-    hipblasSideMode_t side   = char2hipblas_side(arg.side);
-    hipblasFillMode_t uplo   = char2hipblas_fill(arg.uplo);
-    hipblasStatus_t   status = HIPBLAS_STATUS_SUCCESS;
-
-    int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    size_t A_size = size_t(lda) * K;
-    size_t B_size = size_t(ldb) * N;
-    size_t C_size = size_t(ldc) * N;
-
-    int batch_count = arg.batch_count;
+    size_t rows = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    int    K    = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -72,6 +67,12 @@ inline hipblasStatus_t testing_hemm_batched(const Arguments& arg)
     {
         return HIPBLAS_STATUS_SUCCESS;
     }
+
+    size_t A_size = size_t(lda) * K;
+    size_t B_size = size_t(ldb) * N;
+    size_t C_size = size_t(ldc) * N;
+
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
@@ -207,14 +208,13 @@ inline hipblasStatus_t testing_hemm_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        hipblasHemmBatchedModel{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         hemm_gflop_count<T>(M, N, K),
-                         hemm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHemmBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              hemm_gflop_count<T>(M, N, K),
+                                              hemm_gbyte_count<T>(M, N, K),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

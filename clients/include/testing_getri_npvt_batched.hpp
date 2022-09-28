@@ -173,11 +173,11 @@ inline hipblasStatus_t testing_getri_npvt_batched(const Arguments& arg)
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         hipblasGetriNpvtBatchedModel{}.log_args<T>(std::cout,
-                                                               arg,
-                                                               gpu_time_used,
-                                                               getri_gflop_count<T>(N),
-                                                               ArgumentLogging::NA_value,
-                                                               hipblas_error);
+                                                   arg,
+                                                   gpu_time_used,
+                                                   getri_gflop_count<T>(N),
+                                                   ArgumentLogging::NA_value,
+                                                   hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

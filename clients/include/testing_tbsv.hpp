@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasTbsvModel = ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_K, e_lda, e_incx>;
+
 inline void testname_tbsv(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTbsvModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,16 +43,13 @@ inline hipblasStatus_t testing_tbsv(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasTbsvFn = FORTRAN ? hipblasTbsv<T, true> : hipblasTbsv<T, false>;
 
-    int                M           = arg.M;
-    int                K           = arg.K;
-    int                incx        = arg.incx;
-    int                lda         = arg.lda;
-    char               char_uplo   = arg.uplo;
-    char               char_diag   = arg.diag;
-    char               char_transA = arg.transA;
-    hipblasFillMode_t  uplo        = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
-    hipblasOperation_t transA      = char2hipblas_operation(char_transA);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    int                M      = arg.M;
+    int                K      = arg.K;
+    int                incx   = arg.incx;
+    int                lda    = arg.lda;
 
     hipblasLocalHandle handle(arg);
 
@@ -91,7 +90,7 @@ inline hipblasStatus_t testing_tbsv(const Arguments& arg)
 
     banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, M, M, K);
 
-    prepare_triangular_solve((T*)hA, M, (T*)AAT, M, char_uplo);
+    prepare_triangular_solve((T*)hA, M, (T*)AAT, M, arg.uplo);
     if(diag == HIPBLAS_DIAG_UNIT)
     {
         make_unit_diagonal(uplo, (T*)hA, M, M);
@@ -145,13 +144,12 @@ inline hipblasStatus_t testing_tbsv(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_K, e_lda, e_incx>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            tbsv_gflop_count<T>(M, K),
-            tbsv_gbyte_count<T>(M, K),
-            hipblas_error);
+        hipblasTbsvModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       tbsv_gflop_count<T>(M, K),
+                                       tbsv_gbyte_count<T>(M, K),
+                                       hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

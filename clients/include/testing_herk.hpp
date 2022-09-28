@@ -150,14 +150,13 @@ inline hipblasStatus_t testing_herk(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        hipblasHerkModel{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            herk_gflop_count<T>(N, K),
-            herk_gbyte_count<T>(N, K),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasHerkModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       herk_gflop_count<T>(N, K),
+                                       herk_gbyte_count<T>(N, K),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

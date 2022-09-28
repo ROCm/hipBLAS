@@ -30,9 +30,12 @@
 
 /* ============================================================================================ */
 
+using hipblasSymvBatchedModel
+    = ArgumentModel<e_uplo, e_M, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>;
+
 inline void testname_symv_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSymvBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,17 +45,15 @@ inline hipblasStatus_t testing_symv_batched(const Arguments& arg)
     auto hipblasSymvBatchedFn
         = FORTRAN ? hipblasSymvBatched<T, true> : hipblasSymvBatched<T, false>;
 
-    int M    = arg.M;
-    int lda  = arg.lda;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    hipblasFillMode_t uplo        = char2hipblas_fill(arg.uplo);
+    int               M           = arg.M;
+    int               lda         = arg.lda;
+    int               incx        = arg.incx;
+    int               incy        = arg.incy;
+    int               batch_count = arg.batch_count;
 
     int    abs_incy = incy >= 0 ? incy : -incy;
     size_t A_size   = size_t(lda) * M;
-
-    int batch_count = arg.batch_count;
-
-    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
 
     hipblasLocalHandle handle(arg);
 
@@ -206,14 +207,13 @@ inline hipblasStatus_t testing_symv_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo, e_M, e_lda, e_incx, e_incy, e_batch_count>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            symv_gflop_count<T>(M),
-            symv_gbyte_count<T>(M),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasSymvBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              symv_gflop_count<T>(M),
+                                              symv_gbyte_count<T>(M),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

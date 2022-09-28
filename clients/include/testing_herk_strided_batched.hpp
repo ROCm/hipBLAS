@@ -30,8 +30,16 @@
 
 /* ============================================================================================ */
 
-// stride scale
-using hipblasHerkStridedBatchedModel = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc, e_batch_count>;
+using hipblasHerkStridedBatchedModel = ArgumentModel<e_uplo,
+                                                     e_transA,
+                                                     e_N,
+                                                     e_K,
+                                                     e_alpha,
+                                                     e_lda,
+                                                     e_beta,
+                                                     e_ldc,
+                                                     e_stride_scale,
+                                                     e_batch_count>;
 
 inline void testname_herk_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -210,14 +218,13 @@ inline hipblasStatus_t testing_herk_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        hipblasHerkStridedBatchedModel{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         herk_gflop_count<T>(N, K),
-                         herk_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHerkStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     herk_gflop_count<T>(N, K),
+                                                     herk_gbyte_count<T>(N, K),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

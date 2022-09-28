@@ -30,7 +30,8 @@
 
 /* ============================================================================================ */
 
-using hipblasHbmvBatchedModel = ArgumentModel<e_N, e_K, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>;
+using hipblasHbmvBatchedModel
+    = ArgumentModel<e_uplo, e_N, e_K, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>;
 
 inline void testname_hbmv_batched(const Arguments& arg, std::string& name)
 {
@@ -44,18 +45,16 @@ inline hipblasStatus_t testing_hbmv_batched(const Arguments& arg)
     auto hipblasHbmvBatchedFn
         = FORTRAN ? hipblasHbmvBatched<T, true> : hipblasHbmvBatched<T, false>;
 
-    int N    = arg.N;
-    int K    = arg.K;
-    int lda  = arg.lda;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    hipblasFillMode_t uplo        = char2hipblas_fill(arg.uplo);
+    int               N           = arg.N;
+    int               K           = arg.K;
+    int               lda         = arg.lda;
+    int               incx        = arg.incx;
+    int               incy        = arg.incy;
+    int               batch_count = arg.batch_count;
 
     size_t A_size   = size_t(lda) * N;
     int    abs_incy = incy >= 0 ? incy : -incy;
-
-    int batch_count = arg.batch_count;
-
-    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
 
     hipblasLocalHandle handle(arg);
 
@@ -213,14 +212,13 @@ inline hipblasStatus_t testing_hbmv_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasHbmvBatchedModel{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         hbmv_gflop_count<T>(N, K),
-                         hbmv_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHbmvBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              hbmv_gflop_count<T>(N, K),
+                                              hbmv_gbyte_count<T>(N, K),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -28,7 +28,6 @@
 
 #include "testing_common.hpp"
 
-// stride scale
 using hipblasGetrfNpvtBatchedModel = ArgumentModel<e_N, e_lda, e_batch_count>;
 
 inline void testname_getrf_npvt_batched(const Arguments& arg, std::string& name)

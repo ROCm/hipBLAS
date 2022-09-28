@@ -33,7 +33,6 @@
 
 /* ============================================================================================ */
 
-// strides not used
 using hipblasGemmStridedBatchedExModel = ArgumentModel<e_transA,
                                                        e_transB,
                                                        e_M,
@@ -45,6 +44,7 @@ using hipblasGemmStridedBatchedExModel = ArgumentModel<e_transA,
                                                        e_beta,
                                                        e_ldc,
                                                        e_batch_count>;
+// strides not logged
 
 inline void testname_gemm_strided_batched_ex(const Arguments& arg, std::string& name)
 {
@@ -64,14 +64,12 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
 
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
     hipblasOperation_t transB = char2hipblas_operation(arg.transB);
-
-    int M = arg.M;
-    int N = arg.N;
-    int K = arg.K;
-
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
+    int                M      = arg.M;
+    int                N      = arg.N;
+    int                K      = arg.K;
+    int                lda    = arg.lda;
+    int                ldb    = arg.ldb;
+    int                ldc    = arg.ldc;
 
     hipblasDatatype_t a_type       = arg.a_type;
     hipblasDatatype_t b_type       = arg.b_type;

@@ -30,7 +30,7 @@
 
 /* ============================================================================================ */
 
-using hipblasHbmvModel = ArgumentModel<e_N, e_K, e_alpha, e_lda, e_incx, e_beta, e_incy>;
+using hipblasHbmvModel = ArgumentModel<e_uplo, e_N, e_K, e_alpha, e_lda, e_incx, e_beta, e_incy>;
 
 inline void testname_hbmv(const Arguments& arg, std::string& name)
 {
@@ -43,13 +43,12 @@ inline hipblasStatus_t testing_hbmv(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasHbmvFn = FORTRAN ? hipblasHbmv<T, true> : hipblasHbmv<T, false>;
 
-    int N    = arg.N;
-    int K    = arg.K;
-    int lda  = arg.lda;
-    int incx = arg.incx;
-    int incy = arg.incy;
-
     hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    int               N    = arg.N;
+    int               K    = arg.K;
+    int               lda  = arg.lda;
+    int               incx = arg.incx;
+    int               incy = arg.incy;
 
     hipblasLocalHandle handle(arg);
 
@@ -163,14 +162,13 @@ inline hipblasStatus_t testing_hbmv(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasHbmvModel{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            hbmv_gflop_count<T>(N, K),
-            hbmv_gbyte_count<T>(N, K),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasHbmvModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       hbmv_gflop_count<T>(N, K),
+                                       hbmv_gbyte_count<T>(N, K),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
     return HIPBLAS_STATUS_SUCCESS;
 }

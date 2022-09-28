@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasSpr2Model = ArgumentModel<e_uplo, e_N, e_alpha, e_incx, e_incy>;
+
 inline void testname_spr2(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSpr2Model{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,11 +43,10 @@ inline hipblasStatus_t testing_spr2(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasSpr2Fn = FORTRAN ? hipblasSpr2<T, true> : hipblasSpr2<T, false>;
 
-    int               N         = arg.N;
-    int               incx      = arg.incx;
-    int               incy      = arg.incy;
-    char              char_uplo = arg.uplo;
-    hipblasFillMode_t uplo      = char2hipblas_fill(char_uplo);
+    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    int               N    = arg.N;
+    int               incx = arg.incx;
+    int               incy = arg.incy;
 
     int    abs_incx = incx < 0 ? -incx : incx;
     int    abs_incy = incy < 0 ? -incy : incy;
@@ -150,13 +151,13 @@ inline hipblasStatus_t testing_spr2(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_alpha, e_incx, e_incy>{}.log_args<T>(std::cout,
-                                                                  arg,
-                                                                  gpu_time_used,
-                                                                  spr2_gflop_count<T>(N),
-                                                                  spr2_gbyte_count<T>(N),
-                                                                  hipblas_error_host,
-                                                                  hipblas_error_device);
+        hipblasSpr2Model{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       spr2_gflop_count<T>(N),
+                                       spr2_gbyte_count<T>(N),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

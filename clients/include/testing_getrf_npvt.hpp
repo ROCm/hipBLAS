@@ -28,7 +28,6 @@
 
 #include "testing_common.hpp"
 
-// stride scale
 using hipblasGetrfNpvtModel = ArgumentModel<e_N, e_lda>;
 
 inline void testname_getrf_npvt(const Arguments& arg, std::string& name)

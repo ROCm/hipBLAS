@@ -182,14 +182,13 @@ inline hipblasStatus_t testing_hpr2_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasHpr2BatchedModel{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            hpr2_gflop_count<T>(N),
-            hpr2_gbyte_count<T>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasHpr2BatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              hpr2_gflop_count<T>(N),
+                                              hpr2_gbyte_count<T>(N),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

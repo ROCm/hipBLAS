@@ -30,7 +30,7 @@
 /* ============================================================================================ */
 
 using hipblasAxpyStridedBatchedExModel
-    = ArgumentModel<e_N, e_alpha, e_incx, e_stride_x, e_incy, e_stride_y, e_batch_count>;
+    = ArgumentModel<e_N, e_alpha, e_incx, e_incy, e_stride_scale, e_batch_count>;
 
 inline void testname_axpy_strided_batched_ex(const Arguments& arg, std::string& name)
 {

@@ -30,7 +30,8 @@
 
 /* ============================================================================================ */
 
-using hipblasHpmvBatchedModel = ArgumentModel<e_N, e_alpha, e_incx, e_beta, e_incy, e_batch_count>;
+using hipblasHpmvBatchedModel
+    = ArgumentModel<e_uplo, e_N, e_alpha, e_incx, e_beta, e_incy, e_batch_count>;
 
 inline void testname_hpmv_batched(const Arguments& arg, std::string& name)
 {
@@ -44,16 +45,14 @@ inline hipblasStatus_t testing_hpmv_batched(const Arguments& arg)
     auto hipblasHpmvBatchedFn
         = FORTRAN ? hipblasHpmvBatched<T, true> : hipblasHpmvBatched<T, false>;
 
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    hipblasFillMode_t uplo        = char2hipblas_fill(arg.uplo);
+    int               N           = arg.N;
+    int               incx        = arg.incx;
+    int               incy        = arg.incy;
+    int               batch_count = arg.batch_count;
 
     int    abs_incy = incy >= 0 ? incy : -incy;
     size_t A_size   = size_t(N) * (N + 1) / 2;
-
-    int batch_count = arg.batch_count;
-
-    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
 
     hipblasLocalHandle handle(arg);
 
@@ -194,14 +193,13 @@ inline hipblasStatus_t testing_hpmv_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasHpmvBatchedModel{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            hpmv_gflop_count<T>(N),
-            hpmv_gbyte_count<T>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasHpmvBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              hpmv_gflop_count<T>(N),
+                                              hpmv_gbyte_count<T>(N),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -30,9 +30,12 @@
 
 /* ============================================================================================ */
 
+using hipblasSyr2kModel
+    = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_ldb, e_beta, e_ldc>;
+
 inline void testname_syr2k(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSyr2kModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,14 +44,13 @@ inline hipblasStatus_t testing_syr2k(const Arguments& arg)
     bool FORTRAN        = arg.fortran;
     auto hipblasSyr2kFn = FORTRAN ? hipblasSyr2k<T, true> : hipblasSyr2k<T, false>;
 
-    int N   = arg.N;
-    int K   = arg.K;
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
-
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    int                N      = arg.N;
+    int                K      = arg.K;
+    int                lda    = arg.lda;
+    int                ldb    = arg.ldb;
+    int                ldc    = arg.ldc;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -155,14 +157,13 @@ inline hipblasStatus_t testing_syr2k(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_ldb, e_beta, e_ldc>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         syr2k_gflop_count<T>(N, K),
-                         syr2k_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasSyr2kModel{}.log_args<T>(std::cout,
+                                        arg,
+                                        gpu_time_used,
+                                        syr2k_gflop_count<T>(N, K),
+                                        syr2k_gbyte_count<T>(N, K),
+                                        hipblas_error_host,
+                                        hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

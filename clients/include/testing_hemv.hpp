@@ -160,14 +160,13 @@ inline hipblasStatus_t testing_hemv(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasHemvModel{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            hemv_gflop_count<T>(N),
-            hemv_gbyte_count<T>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasHemvModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       hemv_gflop_count<T>(N),
+                                       hemv_gbyte_count<T>(N),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

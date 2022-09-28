@@ -29,9 +29,11 @@
 
 /* ============================================================================================ */
 
+using hipblasRotmModel = ArgumentModel<e_N, e_incx, e_incy>;
+
 inline void testname_rotm(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasRotmModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -160,13 +162,13 @@ inline hipblasStatus_t testing_rotm(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy>{}.log_args<T>(std::cout,
-                                                         arg,
-                                                         gpu_time_used,
-                                                         rotm_gflop_count<T>(N, hparam[0]),
-                                                         rotm_gbyte_count<T>(N, hparam[0]),
-                                                         hipblas_error_host,
-                                                         hipblas_error_device);
+        hipblasRotmModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       rotm_gflop_count<T>(N, hparam[0]),
+                                       rotm_gbyte_count<T>(N, hparam[0]),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

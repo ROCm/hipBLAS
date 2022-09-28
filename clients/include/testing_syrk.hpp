@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasSyrkModel = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc>;
+
 inline void testname_syrk(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSyrkModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,13 +43,12 @@ inline hipblasStatus_t testing_syrk(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasSyrkFn = FORTRAN ? hipblasSyrk<T, true> : hipblasSyrk<T, false>;
 
-    int N   = arg.N;
-    int K   = arg.K;
-    int lda = arg.lda;
-    int ldc = arg.ldc;
-
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    int                N      = arg.N;
+    int                K      = arg.K;
+    int                lda    = arg.lda;
+    int                ldc    = arg.ldc;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -150,14 +151,13 @@ inline hipblasStatus_t testing_syrk(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            syrk_gflop_count<T>(N, K),
-            syrk_gbyte_count<T>(N, K),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasSyrkModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       syrk_gflop_count<T>(N, K),
+                                       syrk_gbyte_count<T>(N, K),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

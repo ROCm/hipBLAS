@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasSyrBatchedModel = ArgumentModel<e_uplo, e_N, e_alpha, e_incx, e_lda, e_batch_count>;
+
 inline void testname_syr_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSyrBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,11 +43,10 @@ inline hipblasStatus_t testing_syr_batched(const Arguments& arg)
     bool FORTRAN             = arg.fortran;
     auto hipblasSyrBatchedFn = FORTRAN ? hipblasSyrBatched<T, true> : hipblasSyrBatched<T, false>;
 
+    hipblasFillMode_t uplo        = char2hipblas_fill(arg.uplo);
     int               N           = arg.N;
     int               incx        = arg.incx;
     int               lda         = arg.lda;
-    char              char_uplo   = arg.uplo;
-    hipblasFillMode_t uplo        = char2hipblas_fill(char_uplo);
     int               batch_count = arg.batch_count;
 
     int    abs_incx = incx < 0 ? -incx : incx;
@@ -173,14 +174,13 @@ inline hipblasStatus_t testing_syr_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_alpha, e_incx, e_lda, e_batch_count>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            syr_gflop_count<T>(N),
-            syr_gbyte_count<T>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasSyrBatchedModel{}.log_args<T>(std::cout,
+                                             arg,
+                                             gpu_time_used,
+                                             syr_gflop_count<T>(N),
+                                             syr_gbyte_count<T>(N),
+                                             hipblas_error_host,
+                                             hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

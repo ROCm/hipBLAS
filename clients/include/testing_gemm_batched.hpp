@@ -56,21 +56,18 @@ inline hipblasStatus_t testing_gemm_batched(const Arguments& arg)
     auto hipblasGemmBatchedFn
         = FORTRAN ? hipblasGemmBatched<T, true> : hipblasGemmBatched<T, false>;
 
-    int M = arg.M;
-    int N = arg.N;
-    int K = arg.K;
-
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    hipblasOperation_t transB      = char2hipblas_operation(arg.transB);
+    int                M           = arg.M;
+    int                N           = arg.N;
+    int                K           = arg.K;
+    int                lda         = arg.lda;
+    int                ldb         = arg.ldb;
+    int                ldc         = arg.ldc;
+    int                batch_count = arg.batch_count;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
-
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    hipblasOperation_t transB = char2hipblas_operation(arg.transB);
-
-    int batch_count = arg.batch_count;
 
     // bad arg checks
     if(batch_count < 0 || M < 0 || N < 0 || K < 0 || lda < 0 || ldb < 0 || ldc < 0)

@@ -44,21 +44,19 @@ inline hipblasStatus_t testing_hemm(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasHemmFn = FORTRAN ? hipblasHemm<T, true> : hipblasHemm<T, false>;
 
-    int M   = arg.M;
-    int N   = arg.N;
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
+    hipblasSideMode_t side = char2hipblas_side(arg.side);
+    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    int               M    = arg.M;
+    int               N    = arg.N;
+    int               lda  = arg.lda;
+    int               ldb  = arg.ldb;
+    int               ldc  = arg.ldc;
 
-    char char_side = arg.side;
-    char char_uplo = arg.uplo;
-    T    h_alpha   = arg.get_alpha<T>();
-    T    h_beta    = arg.get_beta<T>();
+    T h_alpha = arg.get_alpha<T>();
+    T h_beta  = arg.get_beta<T>();
 
-    hipblasSideMode_t side = char2hipblas_side(char_side);
-    hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
-
-    int K = (side == HIPBLAS_SIDE_LEFT ? M : N);
+    size_t rows = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    int    K    = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     // check here to prevent undefined memory allocation error
     if(M < 0 || N < 0 || ldc < M || ldb < M || lda < K)
@@ -87,7 +85,7 @@ inline hipblasStatus_t testing_hemm(const Arguments& arg)
     hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, M, N, lda, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hA, arg, rows, K, lda, 0, 1, hipblas_client_never_set_nan, true);
     hipblas_init_matrix(hB, arg, M, N, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
     hipblas_init_matrix(hC_host, arg, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
     hC_gold   = hC_host;
@@ -157,14 +155,13 @@ inline hipblasStatus_t testing_hemm(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        hipblasHemmModel{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            hemm_gflop_count<T>(M, N, K),
-            hemm_gbyte_count<T>(M, N, K),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasHemmModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       hemm_gflop_count<T>(M, N, K),
+                                       hemm_gbyte_count<T>(M, N, K),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

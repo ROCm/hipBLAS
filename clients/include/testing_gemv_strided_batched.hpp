@@ -30,9 +30,16 @@
 
 /* ============================================================================================ */
 
-// stride scale used
-using hipblasGemvStridedBatchedModel
-    = ArgumentModel<e_transA, e_M, e_N, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>;
+using hipblasGemvStridedBatchedModel = ArgumentModel<e_transA,
+                                                     e_M,
+                                                     e_N,
+                                                     e_alpha,
+                                                     e_lda,
+                                                     e_incx,
+                                                     e_beta,
+                                                     e_incy,
+                                                     e_stride_scale,
+                                                     e_batch_count>;
 
 inline void testname_gemv_strided_batched(const Arguments& arg, std::string& name)
 {

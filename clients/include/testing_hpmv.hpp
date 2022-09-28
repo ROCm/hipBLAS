@@ -30,7 +30,7 @@
 
 /* ============================================================================================ */
 
-using hipblasHpmvModel = ArgumentModel<e_N, e_alpha, e_incx, e_beta, e_incy>;
+using hipblasHpmvModel = ArgumentModel<e_uplo, e_N, e_alpha, e_incx, e_beta, e_incy>;
 
 inline void testname_hpmv(const Arguments& arg, std::string& name)
 {
@@ -43,17 +43,16 @@ inline hipblasStatus_t testing_hpmv(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasHpmvFn = FORTRAN ? hipblasHpmv<T, true> : hipblasHpmv<T, false>;
 
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    int               N    = arg.N;
+    int               incx = arg.incx;
+    int               incy = arg.incy;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     int    abs_incy = incy >= 0 ? incy : -incy;
     size_t A_size   = size_t(N) * (N + 1) / 2;
     size_t x_size   = size_t(N) * abs_incx;
     size_t y_size   = size_t(N) * abs_incy;
-
-    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
 
     hipblasLocalHandle handle(arg);
 
@@ -160,12 +159,12 @@ inline hipblasStatus_t testing_hpmv(const Arguments& arg)
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         hipblasHpmvModel{}.log_args<T>(std::cout,
-                                                                          arg,
-                                                                          gpu_time_used,
-                                                                          hpmv_gflop_count<T>(N),
-                                                                          hpmv_gbyte_count<T>(N),
-                                                                          hipblas_error_host,
-                                                                          hipblas_error_device);
+                                       arg,
+                                       gpu_time_used,
+                                       hpmv_gflop_count<T>(N),
+                                       hpmv_gbyte_count<T>(N),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

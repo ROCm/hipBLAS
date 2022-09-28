@@ -27,14 +27,11 @@
 
 #include "testing_common.hpp"
 
+using hipblasIamaxIaminModel = ArgumentModel<e_N, e_incx>;
+
 template <typename T>
 using hipblas_iamax_iamin_t
     = hipblasStatus_t (*)(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
-
-inline void testname_iamax_iamin(const Arguments& arg, std::string& name)
-{
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
-}
 
 template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
 inline hipblasStatus_t testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
@@ -136,13 +133,13 @@ inline hipblasStatus_t testing_iamax_iamin(const Arguments& arg, hipblas_iamax_i
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx>{}.log_args<T>(std::cout,
-                                                 arg,
-                                                 gpu_time_used,
-                                                 iamax_gflop_count<T>(N),
-                                                 iamax_gbyte_count<T>(N),
-                                                 hipblas_error_host,
-                                                 hipblas_error_device);
+        hipblasIamaxIaminModel{}.log_args<T>(std::cout,
+                                             arg,
+                                             gpu_time_used,
+                                             iamax_gflop_count<T>(N),
+                                             iamax_gbyte_count<T>(N),
+                                             hipblas_error_host,
+                                             hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
@@ -150,7 +147,7 @@ inline hipblasStatus_t testing_iamax_iamin(const Arguments& arg, hipblas_iamax_i
 
 inline void testname_amax(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasIamaxIaminModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -164,7 +161,7 @@ inline hipblasStatus_t testing_amax(const Arguments& arg)
 
 inline void testname_amin(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasIamaxIaminModel{}.test_name(arg, name);
 }
 
 template <typename T>

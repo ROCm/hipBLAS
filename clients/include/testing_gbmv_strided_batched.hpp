@@ -36,12 +36,10 @@ using hipblasGbmvStridedBatchedModel = ArgumentModel<e_M,
                                                      e_KU,
                                                      e_alpha,
                                                      e_lda,
-                                                     e_stride_a,
                                                      e_incx,
-                                                     e_stride_x,
                                                      e_beta,
                                                      e_incy,
-                                                     e_stride_y,
+                                                     e_stride_scale,
                                                      e_batch_count>;
 
 inline void testname_gbmv_strided_batched(const Arguments& arg, std::string& name)

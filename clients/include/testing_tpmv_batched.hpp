@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasTpmvBatchedModel = ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_incx, e_batch_count>;
+
 inline void testname_tpmv_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTpmvBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,18 +44,17 @@ inline hipblasStatus_t testing_tpmv_batched(const Arguments& arg)
     auto hipblasTpmvBatchedFn
         = FORTRAN ? hipblasTpmvBatched<T, true> : hipblasTpmvBatched<T, false>;
 
-    int M    = arg.M;
-    int incx = arg.incx;
+    hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
+    int                M           = arg.M;
+    int                incx        = arg.incx;
+    int                batch_count = arg.batch_count;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     size_t A_size   = size_t(M) * (M + 1) / 2;
 
-    int batch_count = arg.batch_count;
-
-    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
-    hipblasStatus_t    status = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     hipblasLocalHandle handle(arg);
 
@@ -150,13 +151,12 @@ inline hipblasStatus_t testing_tpmv_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_incx, e_batch_count>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            tpmv_gflop_count<T>(M),
-            tpmv_gbyte_count<T>(M),
-            hipblas_error);
+        hipblasTpmvBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              tpmv_gflop_count<T>(M),
+                                              tpmv_gbyte_count<T>(M),
+                                              hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

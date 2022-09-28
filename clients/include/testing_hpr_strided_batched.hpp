@@ -30,8 +30,8 @@
 
 /* ============================================================================================ */
 
-// stride scale
-using hipblasHprStridedBatchedModel = ArgumentModel<e_N, e_alpha, e_incx, e_batch_count>;
+using hipblasHprStridedBatchedModel
+    = ArgumentModel<e_uplo, e_N, e_alpha, e_incx, e_stride_scale, e_batch_count>;
 
 inline void testname_hpr_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -46,18 +46,18 @@ inline hipblasStatus_t testing_hpr_strided_batched(const Arguments& arg)
     auto hipblasHprStridedBatchedFn
         = FORTRAN ? hipblasHprStridedBatched<T, U, true> : hipblasHprStridedBatched<T, U, false>;
 
-    int    N            = arg.N;
-    int    incx         = arg.incx;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    hipblasFillMode_t uplo         = char2hipblas_fill(arg.uplo);
+    int               N            = arg.N;
+    int               incx         = arg.incx;
+    double            stride_scale = arg.stride_scale;
+    int               batch_count  = arg.batch_count;
 
-    int               abs_incx = incx >= 0 ? incx : -incx;
-    size_t            dim_A    = size_t(N) * (N + 1) / 2;
-    hipblasStride     stride_A = dim_A * stride_scale;
-    hipblasStride     stride_x = size_t(N) * abs_incx * stride_scale;
-    size_t            A_size   = stride_A * batch_count;
-    size_t            x_size   = stride_x * batch_count;
-    hipblasFillMode_t uplo     = char2hipblas_fill(arg.uplo);
+    int           abs_incx = incx >= 0 ? incx : -incx;
+    size_t        dim_A    = size_t(N) * (N + 1) / 2;
+    hipblasStride stride_A = dim_A * stride_scale;
+    hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
+    size_t        A_size   = stride_A * batch_count;
+    size_t        x_size   = stride_x * batch_count;
 
     hipblasLocalHandle handle(arg);
 
@@ -165,14 +165,13 @@ inline hipblasStatus_t testing_hpr_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasHprStridedBatchedModel{}.log_args<U>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            hpr_gflop_count<T>(N),
-            hpr_gbyte_count<T>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasHprStridedBatchedModel{}.log_args<U>(std::cout,
+                                                    arg,
+                                                    gpu_time_used,
+                                                    hpr_gflop_count<T>(N),
+                                                    hpr_gbyte_count<T>(N),
+                                                    hipblas_error_host,
+                                                    hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

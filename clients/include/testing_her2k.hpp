@@ -30,7 +30,8 @@
 
 /* ============================================================================================ */
 
-using hipblasHer2kModel = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_ldb, e_beta, e_lda>;
+using hipblasHer2kModel
+    = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_ldb, e_beta, e_lda>;
 
 inline void testname_her2k(const Arguments& arg, std::string& name)
 {
@@ -159,14 +160,13 @@ inline hipblasStatus_t testing_her2k(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        hipblasHer2kModel{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         her2k_gflop_count<T>(N, K),
-                         her2k_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHer2kModel{}.log_args<T>(std::cout,
+                                        arg,
+                                        gpu_time_used,
+                                        her2k_gflop_count<T>(N, K),
+                                        her2k_gbyte_count<T>(N, K),
+                                        hipblas_error_host,
+                                        hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

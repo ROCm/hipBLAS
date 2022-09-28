@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasTrtriBatchedModel = ArgumentModel<e_uplo, e_diag, e_N, e_lda, e_batch_count>;
+
 inline void testname_trtri_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTrtriBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -44,11 +46,13 @@ inline hipblasStatus_t testing_trtri_batched(const Arguments& arg)
 
     const double rel_error = get_epsilon<T>() * 1000;
 
-    int N = arg.N;
-    int lda;
-    int ldinvA = lda = arg.lda;
-    int batch_count  = arg.batch_count;
+    hipblasFillMode_t uplo        = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t diag        = char2hipblas_diagonal(arg.diag);
+    int               N           = arg.N;
+    int               lda         = arg.lda;
+    int               batch_count = arg.batch_count;
 
+    int    ldinvA = lda;
     size_t A_size = size_t(lda) * N;
 
     // check here to prevent undefined memory allocation error
@@ -68,12 +72,6 @@ inline hipblasStatus_t testing_trtri_batched(const Arguments& arg)
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
-
-    char char_uplo = arg.uplo;
-    char char_diag = arg.diag;
-
-    hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t diag = char2hipblas_diagonal(char_diag);
 
     hipblas_init(hA, true);
 
@@ -130,7 +128,7 @@ inline hipblasStatus_t testing_trtri_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trtri<T>(char_uplo, char_diag, N, hB[b], lda);
+            cblas_trtri<T>(arg.uplo, arg.diag, N, hB[b], lda);
         }
 
         if(arg.unit_check)
@@ -167,13 +165,12 @@ inline hipblasStatus_t testing_trtri_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo, e_diag, e_N, e_lda, e_batch_count>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            trtri_gflop_count<T>(N),
-            trtri_gbyte_count<T>(N),
-            hipblas_error);
+        hipblasTrtriBatchedModel{}.log_args<T>(std::cout,
+                                               arg,
+                                               gpu_time_used,
+                                               trtri_gflop_count<T>(N),
+                                               trtri_gbyte_count<T>(N),
+                                               hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

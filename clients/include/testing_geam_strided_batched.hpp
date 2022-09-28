@@ -39,12 +39,10 @@ using hipblasGeamStridedBatchedModel = ArgumentModel<e_transA,
                                                      e_N,
                                                      e_alpha,
                                                      e_lda,
-                                                     e_stride_a,
                                                      e_beta,
                                                      e_ldb,
-                                                     e_stride_b,
                                                      e_ldc,
-                                                     e_stride_c,
+                                                     e_stride_scale,
                                                      e_batch_count>;
 
 inline void testname_geam_strided_batched(const Arguments& arg, std::string& name)
@@ -59,21 +57,18 @@ inline hipblasStatus_t testing_geam_strided_batched(const Arguments& arg)
     auto hipblasGeamStridedBatchedFn
         = FORTRAN ? hipblasGeamStridedBatched<T, true> : hipblasGeamStridedBatched<T, false>;
 
-    int M = arg.M;
-    int N = arg.N;
-
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
-
-    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    hipblasOperation_t transB = char2hipblas_operation(arg.transB);
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
+    hipblasOperation_t transB       = char2hipblas_operation(arg.transB);
+    int                M            = arg.M;
+    int                N            = arg.N;
+    int                lda          = arg.lda;
+    int                ldb          = arg.ldb;
+    int                ldc          = arg.ldc;
+    double             stride_scale = arg.stride_scale;
+    int                batch_count  = arg.batch_count;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
-
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
 
     int           A_row, A_col, B_row, B_col;
     hipblasStride stride_A, stride_B, stride_C;

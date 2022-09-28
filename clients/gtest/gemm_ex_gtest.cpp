@@ -340,16 +340,16 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
     return arg;
 }
 
-class parameterized_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
+class gemm_ex_gtest : public ::TestWithParam<gemm_ex_tuple>
 {
 protected:
-    parameterized_gemm_ex() {}
-    virtual ~parameterized_gemm_ex() {}
+    gemm_ex_gtest() {}
+    virtual ~gemm_ex_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
-TEST_P(parameterized_gemm_ex, standard)
+TEST_P(gemm_ex_gtest, standard)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -385,16 +385,16 @@ TEST_P(parameterized_gemm_ex, standard)
     }
 }
 
-class parameterized_gemm_batched_ex : public ::TestWithParam<gemm_ex_tuple>
+class gemm_batch_ex_gtest : public ::TestWithParam<gemm_ex_tuple>
 {
 protected:
-    parameterized_gemm_batched_ex() {}
-    virtual ~parameterized_gemm_batched_ex() {}
+    gemm_batch_ex_gtest() {}
+    virtual ~gemm_batch_ex_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
-TEST_P(parameterized_gemm_batched_ex, standard_batched)
+TEST_P(gemm_batch_ex_gtest, gemm_batched_ex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -441,7 +441,7 @@ TEST_P(parameterized_gemm_batched_ex, standard_batched)
     }
 }
 
-TEST_P(parameterized_gemm_batched_ex, standard_strided_batched)
+TEST_P(gemm_batch_ex_gtest, gemm_strided_batched_ex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -544,7 +544,7 @@ TEST_P(parameterized_gemm_batched_ex, standard_strided_batched)
 // };
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(int8_matrix_size_range),
                                  ValuesIn(alpha_beta_range_int8),
                                  ValuesIn(transA_transB_range),
@@ -556,7 +556,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
 
 //----small
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_hpa_half,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -565,7 +565,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_hpa_half,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_half,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -574,7 +574,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_half,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -583,7 +583,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -592,7 +592,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single_complex,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -601,7 +601,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single_complex,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -611,7 +611,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
 
 //----medium
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(medium_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -620,7 +620,7 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,
                                  ValuesIn(is_fortran_false)));
 
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_half,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(medium_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -629,7 +629,7 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_half,
                                  ValuesIn(is_fortran_false)));
 
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_float,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(medium_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -638,7 +638,7 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_float,
                                  ValuesIn(is_fortran_false)));
 
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_double,
-                         parameterized_gemm_ex,
+                         gemm_ex_gtest,
                          Combine(ValuesIn(medium_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -648,7 +648,7 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_double,
 
 //----small-batched
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half,
-                         parameterized_gemm_batched_ex,
+                         gemm_batch_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -657,7 +657,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_half,
-                         parameterized_gemm_batched_ex,
+                         gemm_batch_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -666,7 +666,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_half,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single,
-                         parameterized_gemm_batched_ex,
+                         gemm_batch_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -675,7 +675,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double,
-                         parameterized_gemm_batched_ex,
+                         gemm_batch_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -684,7 +684,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single_complex,
-                         parameterized_gemm_batched_ex,
+                         gemm_batch_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -693,7 +693,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single_complex,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
-                         parameterized_gemm_batched_ex,
+                         gemm_batch_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
@@ -702,7 +702,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
                                  ValuesIn(is_fortran)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
-                         parameterized_gemm_batched_ex,
+                         gemm_batch_ex_gtest,
                          Combine(ValuesIn(int8_matrix_size_range),
                                  ValuesIn(alpha_beta_range_int8),
                                  ValuesIn(transA_transB_range),

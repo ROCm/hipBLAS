@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasSymvModel = ArgumentModel<e_uplo, e_M, e_alpha, e_lda, e_incx, e_beta, e_incy>;
+
 inline void testname_symv(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSymvModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,10 +43,11 @@ inline hipblasStatus_t testing_symv(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasSymvFn = FORTRAN ? hipblasSymv<T, true> : hipblasSymv<T, false>;
 
-    int M    = arg.M;
-    int lda  = arg.lda;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    int               M    = arg.M;
+    int               lda  = arg.lda;
+    int               incx = arg.incx;
+    int               incy = arg.incy;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     int    abs_incy = incy >= 0 ? incy : -incy;
@@ -52,8 +55,7 @@ inline hipblasStatus_t testing_symv(const Arguments& arg)
     size_t y_size   = size_t(M) * abs_incy;
     size_t A_size   = size_t(lda) * M;
 
-    hipblasFillMode_t uplo   = char2hipblas_fill(arg.uplo);
-    hipblasStatus_t   status = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     hipblasLocalHandle handle(arg);
 
@@ -162,13 +164,13 @@ inline hipblasStatus_t testing_symv(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo, e_M, e_lda, e_incx, e_incy>{}.log_args<T>(std::cout,
-                                                                        arg,
-                                                                        gpu_time_used,
-                                                                        symv_gflop_count<T>(M),
-                                                                        symv_gbyte_count<T>(M),
-                                                                        hipblas_error_host,
-                                                                        hipblas_error_device);
+        hipblasSymvModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       symv_gflop_count<T>(M),
+                                       symv_gbyte_count<T>(M),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasSyr2Model = ArgumentModel<e_uplo, e_N, e_alpha, e_incx, e_incy, e_lda>;
+
 inline void testname_syr2(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSyr2Model{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -41,12 +43,11 @@ inline hipblasStatus_t testing_syr2(const Arguments& arg)
     bool FORTRAN       = arg.fortran;
     auto hipblasSyr2Fn = FORTRAN ? hipblasSyr2<T, true> : hipblasSyr2<T, false>;
 
-    int               N         = arg.N;
-    int               incx      = arg.incx;
-    int               incy      = arg.incy;
-    int               lda       = arg.lda;
-    char              char_uplo = arg.uplo;
-    hipblasFillMode_t uplo      = char2hipblas_fill(char_uplo);
+    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    int               N    = arg.N;
+    int               incx = arg.incx;
+    int               incy = arg.incy;
+    int               lda  = arg.lda;
 
     int    abs_incx = incx < 0 ? -incx : incx;
     int    abs_incy = incy < 0 ? -incy : incy;
@@ -152,13 +153,13 @@ inline hipblasStatus_t testing_syr2(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_alpha, e_incx, e_incy, e_lda>{}.log_args<T>(std::cout,
-                                                                         arg,
-                                                                         gpu_time_used,
-                                                                         syr2_gflop_count<T>(N),
-                                                                         syr2_gbyte_count<T>(N),
-                                                                         hipblas_error_host,
-                                                                         hipblas_error_device);
+        hipblasSyr2Model{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       syr2_gflop_count<T>(N),
+                                       syr2_gbyte_count<T>(N),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

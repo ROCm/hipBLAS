@@ -30,9 +30,20 @@
 
 /* ============================================================================================ */
 
+using hipblasTrsmBatchedModel = ArgumentModel<e_side,
+                                              e_uplo,
+                                              e_transA,
+                                              e_diag,
+                                              e_M,
+                                              e_N,
+                                              e_alpha,
+                                              e_lda,
+                                              e_ldb,
+                                              e_batch_count>;
+
 inline void testname_trsm_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTrsmBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -42,22 +53,17 @@ inline hipblasStatus_t testing_trsm_batched(const Arguments& arg)
     auto hipblasTrsmBatchedFn
         = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
 
-    int M   = arg.M;
-    int N   = arg.N;
-    int lda = arg.lda;
-    int ldb = arg.ldb;
+    hipblasSideMode_t  side        = char2hipblas_side(arg.side);
+    hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
+    int                M           = arg.M;
+    int                N           = arg.N;
+    int                lda         = arg.lda;
+    int                ldb         = arg.ldb;
+    int                batch_count = arg.batch_count;
 
-    char char_side   = arg.side;
-    char char_uplo   = arg.uplo;
-    char char_transA = arg.transA;
-    char char_diag   = arg.diag;
-    T    h_alpha     = arg.get_alpha<T>();
-    int  batch_count = arg.batch_count;
-
-    hipblasSideMode_t  side   = char2hipblas_side(char_side);
-    hipblasFillMode_t  uplo   = char2hipblas_fill(char_uplo);
-    hipblasOperation_t transA = char2hipblas_operation(char_transA);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(char_diag);
+    T h_alpha = arg.get_alpha<T>();
 
     int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
     size_t A_size = size_t(lda) * K;
@@ -244,23 +250,13 @@ inline hipblasStatus_t testing_trsm_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_side,
-                      e_uplo,
-                      e_transA,
-                      e_diag,
-                      e_M,
-                      e_N,
-                      e_alpha,
-                      e_lda,
-                      e_ldb,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         trsm_gflop_count<T>(M, N, K),
-                         trsm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasTrsmBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              trsm_gflop_count<T>(M, N, K),
+                                              trsm_gbyte_count<T>(M, N, K),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

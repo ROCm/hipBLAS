@@ -28,8 +28,8 @@
 
 #include "testing_common.hpp"
 
-// stride scale
-using hipblasGetrsStridedBatchedModel = ArgumentModel<e_N, e_lda, e_ldb, e_batch_count>;
+using hipblasGetrsStridedBatchedModel
+    = ArgumentModel<e_N, e_lda, e_ldb, e_stride_scale, e_batch_count>;
 
 inline void testname_getrs_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -47,8 +47,8 @@ inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
     int    N            = arg.N;
     int    lda          = arg.lda;
     int    ldb          = arg.ldb;
-    int    batch_count  = arg.batch_count;
     double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
 
     hipblasStride strideA   = size_t(lda) * N * stride_scale;
     hipblasStride strideB   = size_t(ldb) * 1 * stride_scale;
@@ -204,13 +204,12 @@ inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasGetrsStridedBatchedModel{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            getrs_gflop_count<T>(N, 1),
-            ArgumentLogging::NA_value,
-            hipblas_error);
+        hipblasGetrsStridedBatchedModel{}.log_args<T>(std::cout,
+                                                      arg,
+                                                      gpu_time_used,
+                                                      getrs_gflop_count<T>(N, 1),
+                                                      ArgumentLogging::NA_value,
+                                                      hipblas_error);
     }
     return HIPBLAS_STATUS_SUCCESS;
 }

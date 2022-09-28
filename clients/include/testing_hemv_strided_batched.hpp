@@ -29,9 +29,8 @@
 #include "testing_common.hpp"
 
 /* ============================================================================================ */
-
-// stride scale
-using hipblasHemvStridedBatchedModel = ArgumentModel<e_N, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>;
+using hipblasHemvStridedBatchedModel
+    = ArgumentModel<e_N, e_alpha, e_lda, e_incx, e_beta, e_incy, e_stride_scale, e_batch_count>;
 
 inline void testname_hemv_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -237,14 +236,13 @@ inline hipblasStatus_t testing_hemv_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasHemvStridedBatchedModel{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         hemv_gflop_count<T>(N),
-                         hemv_gbyte_count<T>(N),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHemvStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     hemv_gflop_count<T>(N),
+                                                     hemv_gbyte_count<T>(N),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

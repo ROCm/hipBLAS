@@ -28,8 +28,8 @@
 
 #include "testing_common.hpp"
 
-// stride scale
-using hipblasGetrfNpvtStridedBatchedModel = ArgumentModel<e_N, e_lda, e_batch_count>;
+using hipblasGetrfNpvtStridedBatchedModel
+    = ArgumentModel<e_N, e_lda, e_stride_scale, e_batch_count>;
 
 inline void testname_getrf_npvt_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -47,8 +47,8 @@ inline hipblasStatus_t testing_getrf_npvt_strided_batched(const Arguments& arg)
     int    M            = arg.N;
     int    N            = arg.N;
     int    lda          = arg.lda;
-    int    batch_count  = arg.batch_count;
     double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
 
     hipblasStride strideA   = size_t(lda) * N * stride_scale;
     hipblasStride strideP   = size_t(std::min(M, N)) * stride_scale;

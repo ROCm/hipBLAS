@@ -151,18 +151,18 @@ Arguments setup_gbmv_arguments(gbmv_tuple tup)
     return arg;
 }
 
-class gbmv_gtest_strided_batched : public ::TestWithParam<gbmv_tuple>
+class gbmv_strided_batched_gtest : public ::TestWithParam<gbmv_tuple>
 {
 protected:
-    gbmv_gtest_strided_batched() {}
-    virtual ~gbmv_gtest_strided_batched() {}
+    gbmv_strided_batched_gtest() {}
+    virtual ~gbmv_strided_batched_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
 #ifndef __HIP_PLATFORM_NVCC__
 
-TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float)
+TEST_P(gbmv_strided_batched_gtest, gbmv_gtest_float)
 {
     Arguments arg = setup_gbmv_arguments(GetParam());
 
@@ -184,7 +184,7 @@ TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float)
     }
 }
 
-TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float_complex)
+TEST_P(gbmv_strided_batched_gtest, gbmv_gtest_float_complex)
 {
     Arguments arg = setup_gbmv_arguments(GetParam());
 
@@ -211,7 +211,7 @@ TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float_complex)
 // The combinations are  { {M, N, lda}, {incx,incy} {stride_scale}, {alpha, beta}, {transA}, {batch_count} }
 
 INSTANTIATE_TEST_SUITE_P(hipblasGbmvStridedBatched,
-                         gbmv_gtest_strided_batched,
+                         gbmv_strided_batched_gtest,
                          Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(incx_incy_range),
                                  ValuesIn(stride_scale_range),

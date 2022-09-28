@@ -32,9 +32,21 @@
 
 /* ============================================================================================ */
 
+using hipblasTrsmStridedBatchedExModel = ArgumentModel<e_side,
+                                                       e_uplo,
+                                                       e_transA,
+                                                       e_diag,
+                                                       e_M,
+                                                       e_N,
+                                                       e_alpha,
+                                                       e_lda,
+                                                       e_ldb,
+                                                       e_stride_scale,
+                                                       e_batch_count>;
+
 inline void testname_trsm_strided_batched_ex(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTrsmStridedBatchedExModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -44,23 +56,18 @@ inline hipblasStatus_t testing_trsm_strided_batched_ex(const Arguments& arg)
     auto hipblasTrsmStridedBatchedExFn
         = FORTRAN ? hipblasTrsmStridedBatchedEx : hipblasTrsmStridedBatchedEx;
 
-    int M   = arg.M;
-    int N   = arg.N;
-    int lda = arg.lda;
-    int ldb = arg.ldb;
+    hipblasSideMode_t  side         = char2hipblas_side(arg.side);
+    hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
+    int                M            = arg.M;
+    int                N            = arg.N;
+    int                lda          = arg.lda;
+    int                ldb          = arg.ldb;
+    double             stride_scale = arg.stride_scale;
+    int                batch_count  = arg.batch_count;
 
-    char   char_side    = arg.side;
-    char   char_uplo    = arg.uplo;
-    char   char_transA  = arg.transA;
-    char   char_diag    = arg.diag;
-    T      h_alpha      = arg.get_alpha<T>();
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
-
-    hipblasSideMode_t  side   = char2hipblas_side(char_side);
-    hipblasFillMode_t  uplo   = char2hipblas_fill(char_uplo);
-    hipblasOperation_t transA = char2hipblas_operation(char_transA);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(char_diag);
+    T h_alpha = arg.get_alpha<T>();
 
     int K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
@@ -313,25 +320,13 @@ inline hipblasStatus_t testing_trsm_strided_batched_ex(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_side,
-                      e_uplo,
-                      e_transA,
-                      e_diag,
-                      e_M,
-                      e_N,
-                      e_alpha,
-                      e_lda,
-                      e_stride_a,
-                      e_ldb,
-                      e_stride_b,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         arg,
-                         gpu_time_used,
-                         trsm_gflop_count<T>(M, N, K),
-                         trsm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasTrsmStridedBatchedExModel{}.log_args<T>(std::cout,
+                                                       arg,
+                                                       gpu_time_used,
+                                                       trsm_gflop_count<T>(M, N, K),
+                                                       trsm_gbyte_count<T>(M, N, K),
+                                                       hipblas_error_host,
+                                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

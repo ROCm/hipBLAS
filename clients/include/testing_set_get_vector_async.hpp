@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasSetGetVectorAsyncModel = ArgumentModel<e_M, e_incx, e_incy, e_incd>;
+
 inline void testname_set_get_vector_async(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSetGetVectorAsyncModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -125,12 +127,12 @@ inline hipblasStatus_t testing_set_get_vector_async(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_M, e_incx, e_incy, e_incb>{}.log_args<T>(std::cout,
-                                                                 arg,
-                                                                 gpu_time_used,
-                                                                 ArgumentLogging::NA_value,
-                                                                 set_get_vector_gbyte_count<T>(M),
-                                                                 hipblas_error);
+        hipblasSetGetVectorAsyncModel{}.log_args<T>(std::cout,
+                                                    arg,
+                                                    gpu_time_used,
+                                                    ArgumentLogging::NA_value,
+                                                    set_get_vector_gbyte_count<T>(M),
+                                                    hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

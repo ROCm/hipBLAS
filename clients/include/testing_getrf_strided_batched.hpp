@@ -28,8 +28,7 @@
 
 #include "testing_common.hpp"
 
-// stride scale
-using hipblasGetrfStridedBatchedModel = ArgumentModel<e_N, e_lda, e_batch_count>;
+using hipblasGetrfStridedBatchedModel = ArgumentModel<e_N, e_lda, e_stride_scale, e_batch_count>;
 
 inline void testname_getrf_strided_batched(const Arguments& arg, std::string& name)
 {

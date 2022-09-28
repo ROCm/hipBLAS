@@ -30,9 +30,12 @@
 
 /* ============================================================================================ */
 
+using hipblasTrtriStridedBatchedModel
+    = ArgumentModel<e_uplo, e_diag, e_N, e_lda, e_stride_scale, e_batch_count>;
+
 inline void testname_trtri_strided_batched(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTrtriStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -44,12 +47,15 @@ inline hipblasStatus_t testing_trtri_strided_batched(const Arguments& arg)
 
     const double rel_error = get_epsilon<T>() * 1000;
 
-    int N           = arg.N;
-    int lda         = arg.lda;
-    int ldinvA      = lda;
-    int batch_count = arg.batch_count;
+    hipblasFillMode_t uplo         = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t diag         = char2hipblas_diagonal(arg.diag);
+    int               N            = arg.N;
+    int               lda          = arg.lda;
+    double            stride_scale = arg.stride_scale;
+    int               batch_count  = arg.batch_count;
 
-    hipblasStride strideA = size_t(lda) * N;
+    int           ldinvA  = lda;
+    hipblasStride strideA = size_t(lda) * N * stride_scale;
     size_t        A_size  = strideA * batch_count;
 
     // check here to prevent undefined memory allocation error
@@ -66,12 +72,6 @@ inline hipblasStatus_t testing_trtri_strided_batched(const Arguments& arg)
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
-
-    char char_uplo = arg.uplo;
-    char char_diag = arg.diag;
-
-    hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t diag = char2hipblas_diagonal(char_diag);
 
     srand(1);
     hipblas_init_symmetric<T>(hA, N, lda, strideA, batch_count);
@@ -125,7 +125,7 @@ inline hipblasStatus_t testing_trtri_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trtri<T>(char_uplo, char_diag, N, hB.data() + b * strideA, lda);
+            cblas_trtri<T>(arg.uplo, arg.diag, N, hB.data() + b * strideA, lda);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -156,13 +156,12 @@ inline hipblasStatus_t testing_trtri_strided_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo, e_diag, e_N, e_lda, e_stride_a, e_batch_count>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            trtri_gflop_count<T>(N),
-            trtri_gbyte_count<T>(N),
-            hipblas_error);
+        hipblasTrtriStridedBatchedModel{}.log_args<T>(std::cout,
+                                                      arg,
+                                                      gpu_time_used,
+                                                      trtri_gflop_count<T>(N),
+                                                      trtri_gbyte_count<T>(N),
+                                                      hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

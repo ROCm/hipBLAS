@@ -143,18 +143,18 @@ Arguments setup_gemv_arguments(gemv_tuple tup)
     return arg;
 }
 
-class gemv_gtest_batched : public ::TestWithParam<gemv_tuple>
+class gemv_batched_gtest : public ::TestWithParam<gemv_tuple>
 {
 protected:
-    gemv_gtest_batched() {}
-    virtual ~gemv_gtest_batched() {}
+    gemv_batched_gtest() {}
+    virtual ~gemv_batched_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
 #ifndef __HIP_PLATFORM_NVCC__
 
-TEST_P(gemv_gtest_batched, gemv_gtest_float)
+TEST_P(gemv_batched_gtest, gemv_gtest_float)
 {
     Arguments arg = setup_gemv_arguments(GetParam());
 
@@ -186,7 +186,7 @@ TEST_P(gemv_gtest_batched, gemv_gtest_float)
     }
 }
 
-TEST_P(gemv_gtest_batched, gemv_gtest_float_complex)
+TEST_P(gemv_batched_gtest, gemv_gtest_float_complex)
 {
     Arguments arg = setup_gemv_arguments(GetParam());
 
@@ -228,7 +228,7 @@ TEST_P(gemv_gtest_batched, gemv_gtest_float_complex)
 // The combinations are  { {M, N, lda}, {incx,incy} {alpha, beta}, {transA}, {batch_count} }
 
 INSTANTIATE_TEST_SUITE_P(hipblasGemvBatched,
-                         gemv_gtest_batched,
+                         gemv_batched_gtest,
                          Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(incx_incy_range),
                                  ValuesIn(alpha_beta_range),

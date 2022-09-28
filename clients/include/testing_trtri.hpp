@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasTrtriModel = ArgumentModel<e_uplo, e_diag, e_N, e_lda>;
+
 inline void testname_trtri(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasTrtriModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -43,9 +45,12 @@ inline hipblasStatus_t testing_trtri(const Arguments& arg)
 
     const double rel_error = get_epsilon<T>() * 1000;
 
-    int N = arg.N;
-    int lda;
-    int ldinvA = lda = arg.lda;
+    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t diag = char2hipblas_diagonal(arg.diag);
+    int               N    = arg.N;
+    int               lda  = arg.lda;
+
+    int ldinvA = lda;
 
     size_t A_size = size_t(lda) * N;
 
@@ -60,12 +65,6 @@ inline hipblasStatus_t testing_trtri(const Arguments& arg)
 
     device_vector<T> dA(A_size);
     device_vector<T> dinvA(A_size);
-
-    char char_uplo = arg.uplo;
-    char char_diag = arg.diag;
-
-    hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t diag = char2hipblas_diagonal(char_diag);
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
@@ -116,7 +115,7 @@ inline hipblasStatus_t testing_trtri(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_trtri<T>(char_uplo, char_diag, N, hB, lda);
+        cblas_trtri<T>(arg.uplo, arg.diag, N, hB, lda);
 
         if(arg.unit_check)
         {
@@ -143,12 +142,12 @@ inline hipblasStatus_t testing_trtri(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo, e_diag, e_N, e_lda>{}.log_args<T>(std::cout,
-                                                                arg,
-                                                                gpu_time_used,
-                                                                trtri_gflop_count<T>(N),
-                                                                trtri_gbyte_count<T>(N),
-                                                                hipblas_error);
+        hipblasTrtriModel{}.log_args<T>(std::cout,
+                                        arg,
+                                        gpu_time_used,
+                                        trtri_gflop_count<T>(N),
+                                        trtri_gbyte_count<T>(N),
+                                        hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

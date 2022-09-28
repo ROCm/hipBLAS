@@ -30,9 +30,11 @@
 
 /* ============================================================================================ */
 
+using hipblasSetGetMatrixAsyncModel = ArgumentModel<e_M, e_N, e_lda, e_ldb, e_ldc>;
+
 inline void testname_set_get_matrix_async(const Arguments& arg, std::string& name)
 {
-    ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.test_name(arg, name);
+    hipblasSetGetMatrixAsyncModel{}.test_name(arg, name);
 }
 
 template <typename T>
@@ -139,13 +141,12 @@ inline hipblasStatus_t testing_set_get_matrix_async(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_M, e_N, e_lda, e_ldb, e_ldc>{}.log_args<T>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            ArgumentLogging::NA_value,
-            set_get_matrix_gbyte_count<T>(rows, cols),
-            hipblas_error);
+        hipblasSetGetMatrixAsyncModel{}.log_args<T>(std::cout,
+                                                    arg,
+                                                    gpu_time_used,
+                                                    ArgumentLogging::NA_value,
+                                                    set_get_matrix_gbyte_count<T>(rows, cols),
+                                                    hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
