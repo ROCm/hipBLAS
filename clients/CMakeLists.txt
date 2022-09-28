@@ -120,6 +120,12 @@ add_custom_command( OUTPUT "${HIPBLAS_TEMPLATE}"
                     DEPENDS include/hipblas_template.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
+set( HIPBLAS_SMOKE "${PROJECT_BINARY_DIR}/staging/hipblas_smoke.yaml")
+add_custom_command( OUTPUT "${HIPBLAS_SMOKE}"
+                    COMMAND ${CMAKE_COMMAND} -E copy include/hipblas_smoke.yaml "${HIPBLAS_SMOKE}"
+                    DEPENDS include/hipblas_smoke.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
 set( HIPBLAS_GENTEST "${PROJECT_BINARY_DIR}/staging/hipblas_gentest.py")
 add_custom_command( OUTPUT "${HIPBLAS_GENTEST}"
                     COMMAND ${CMAKE_COMMAND} -E copy common/hipblas_gentest.py "${HIPBLAS_GENTEST}"
@@ -130,7 +136,7 @@ add_custom_command( OUTPUT "${HIPBLAS_GENTEST}"
 add_custom_target( hipblas-common DEPENDS "${HIPBLAS_COMMON}" "${HIPBLAS_TEMPLATE}" "${HIPBLAS_SMOKE}" "${HIPBLAS_GENTEST}" )
 
 rocm_install(
-  FILES ${HIPBLAS_COMMON} ${HIPBLAS_TEMPLATE} ${HIPBLAS_GENTEST}
+  FILES ${HIPBLAS_COMMON} ${HIPBLAS_TEMPLATE} ${HIPBLAS_SMOKE} ${HIPBLAS_GENTEST}
   DESTINATION "${CMAKE_INSTALL_BINDIR}"
   COMPONENT clients-common
 )
