@@ -27,6 +27,7 @@
 #include "hipblas_data.hpp"
 #include "hipblas_datatype2string.hpp"
 #include "hipblas_parse_data.hpp"
+#include "hipblas_test.hpp"
 #include "test_cleanup.hpp"
 #include "type_dispatch.hpp"
 #include "utility.h"
@@ -254,52 +255,6 @@ struct str_less
     {
         return strcmp(a, b) < 0;
     }
-};
-
-// ----------------------------------------------------------------------------
-// Normal tests which return true when converted to bool
-// ----------------------------------------------------------------------------
-struct hipblas_test_valid
-{
-    // Return true to indicate the type combination is valid, for filtering
-    virtual explicit operator bool() final
-    {
-        return true;
-    }
-
-    // Require derived class to define functor which takes (const Arguments &)
-    virtual void operator()(const Arguments&) = 0;
-
-    virtual ~hipblas_test_valid() = default;
-};
-
-// ----------------------------------------------------------------------------
-// Error case which returns false when converted to bool. A void specialization
-// of the FILTER class template above, should be derived from this class, in
-// order to indicate that the type combination is invalid.
-// ----------------------------------------------------------------------------
-struct hipblas_test_invalid
-{
-    // Return false to indicate the type combination is invalid, for filtering
-    virtual explicit operator bool() final
-    {
-        return false;
-    }
-
-    // If this specialization is actually called, print fatal error message
-    virtual void operator()(const Arguments&) final
-    {
-        static constexpr char msg[] = "Internal error: Test called with invalid types";
-
-#ifdef GOOGLE_TEST
-        FAIL() << msg;
-#else
-        std::cerr << msg << std::endl;
-        abort();
-#endif
-    }
-
-    virtual ~hipblas_test_invalid() = default;
 };
 
 // Map from const char* to function taking const Arguments& using comparison above
