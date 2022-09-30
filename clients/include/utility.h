@@ -31,6 +31,7 @@
 #include "complex.hpp"
 #include "hipblas_datatype2string.hpp"
 #include <cmath>
+#include <cstdio>
 #include <immintrin.h>
 #include <iostream>
 #include <random>
@@ -87,16 +88,16 @@
 #define BLAS_1_RESULT_PRINT                                \
     do                                                     \
     {                                                      \
-        if(argus.timing)                                   \
+        if(arg.timing)                                     \
         {                                                  \
             std::cout << "N, hipblas (us), ";              \
-            if(argus.norm_check)                           \
+            if(arg.norm_check)                             \
             {                                              \
                 std::cout << "CPU (us), error";            \
             }                                              \
             std::cout << std::endl;                        \
             std::cout << N << ',' << gpu_time_used << ','; \
-            if(argus.norm_check)                           \
+            if(arg.norm_check)                             \
             {                                              \
                 std::cout << cpu_time_used << ',';         \
                 std::cout << hipblas_error;                \
@@ -140,6 +141,11 @@ inline hipblasHalf float_to_half(float val)
     return a;
 }
 
+inline hipblasHalf float_to_half(hipblasBfloat16 val)
+{
+    return float_to_half(float(val));
+}
+
 // Helper routine to convert halfs into their floats equivalent; uses F16C instructions
 inline float half_to_float(hipblasHalf val)
 {
@@ -147,35 +153,19 @@ inline float half_to_float(hipblasHalf val)
     return _cvtsh_ss(val);
 }
 
-// zero extend lower 16 bits of bfloat16 to convert to IEEE float
-inline float bfloat16_to_float(hipblasBfloat16 val)
+inline std::ostream& operator<<(std::ostream& os, const hipblasBfloat16& bf)
 {
-    union
-    {
-        uint32_t int32;
-        float    fp32;
-    } u = {uint32_t(val.data) << 16};
-    return u.fp32;
+    return os << float(bf);
+}
+
+inline float bfloat16_to_float(hipblasBfloat16 bf)
+{
+    return hipblasBfloat16::bfloat16_to_float(bf);
 }
 
 inline hipblasBfloat16 float_to_bfloat16(float f)
 {
-    hipblasBfloat16 rv;
-    union
-    {
-        float    fp32;
-        uint32_t int32;
-    } u = {f};
-    if(~u.int32 & 0x7f800000)
-    {
-        u.int32 += 0x7fff + ((u.int32 >> 16) & 1); // Round to nearest, round to even
-    }
-    else if(u.int32 & 0xffff)
-    {
-        u.int32 |= 0x10000; // Preserve signaling NaN
-    }
-    rv.data = uint16_t(u.int32 >> 16);
-    return rv;
+    return hipblasBfloat16::float_to_bfloat16(f);
 }
 
 /* =============================================================================================== */
@@ -904,6 +894,10 @@ void print_matrix(
 // Return path of this executable
 std::string hipblas_exepath();
 
+/* ============================================================================================ */
+// Temp directory rooted random path
+std::string hipblas_tempname();
+
 #endif // __cplusplus
 
 #ifdef __cplusplus
@@ -923,7 +917,7 @@ int getArch();
 /* query what rocBLAS recommends for int8 layout. We are /always/ passing in the flag which
  * rocBLAS recommends, thus we need to know what layout to format our data in our tests.
  * returns true if should be packed. */
-bool layout_pack_int8();
+bool layout_pack_int8(hipblasHandle_t handle);
 
 /* ============================================================================================ */
 /*  timing: HIP only provides very limited timers function clock() and not general;

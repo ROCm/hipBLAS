@@ -40,9 +40,36 @@
 // Predeclare enumerator
 enum hipblas_argument : int;
 
-/*! \brief Class used to parse command arguments in both client & gtest   */
+// conversion helpers
+
+template <typename T>
+inline T convert_alpha_beta(double r, double i)
+{
+    return T(r);
+}
+
+template <>
+inline hipblasHalf convert_alpha_beta<hipblasHalf>(double r, double i)
+{
+    return float_to_half(r);
+}
+
+template <>
+inline hipblasComplex convert_alpha_beta<hipblasComplex>(double r, double i)
+{
+    return hipblasComplex(r, i);
+}
+
+template <>
+inline hipblasDoubleComplex convert_alpha_beta<hipblasDoubleComplex>(double r, double i)
+{
+    return hipblasDoubleComplex(r, i);
+}
+
+/*! \brief Class used to parse command arguments in both benchmark & gtest   */
 struct Arguments
 {
+    // if you add or reorder members you must update FOR_EACH_ARGUMENT macro
 
     int M  = 128;
     int N  = 128;
@@ -86,23 +113,22 @@ struct Arguments
     double beta   = 0.0;
     double betai  = 0.0;
 
-    char transA_option = 'N';
-    char transB_option = 'N';
-    char side_option   = 'L';
-    char uplo_option   = 'L';
-    char diag_option   = 'N';
+    char transA = 'N';
+    char transB = 'N';
+    char side   = 'L';
+    char uplo   = 'L';
+    char diag   = 'N';
 
     int apiCallCount = 1;
     int batch_count  = 10;
 
     bool fortran = false;
 
-    int norm_check = 0;
-    int unit_check = 1;
-    int timing     = 0;
-    int iters;
-    int cold_iters;
-
+    int      norm_check = 0;
+    int      unit_check = 1;
+    int      timing     = 0;
+    int      iters      = 10;
+    int      cold_iters = 2;
     uint32_t algo;
     int32_t  solution_index;
     uint32_t flags;
@@ -110,7 +136,7 @@ struct Arguments
     char     name[64];
     char     category[64];
 
-    int atomics_mode;
+    int atomics_mode = HIPBLAS_ATOMICS_NOT_ALLOWED;
 
     hipblas_initialization initialization = hipblas_initialization::rand_int;
 
@@ -123,6 +149,8 @@ struct Arguments
     OPER(K) SEP                      \
     OPER(KL) SEP                     \
     OPER(KU) SEP                     \
+    OPER(rows) SEP                   \
+    OPER(cols) SEP                   \
     OPER(lda) SEP                    \
     OPER(ldb) SEP                    \
     OPER(ldc) SEP                    \
@@ -136,22 +164,27 @@ struct Arguments
     OPER(incy) SEP                   \
     OPER(incd) SEP                   \
     OPER(incb) SEP                   \
-    OPER(alpha) SEP                  \
-    OPER(alphai) SEP                 \
-    OPER(beta) SEP                   \
-    OPER(betai) SEP                  \
-    OPER(transA_option) SEP          \
-    OPER(transB_option) SEP          \
-    OPER(side_option) SEP            \
-    OPER(uplo_option) SEP            \
-    OPER(diag_option) SEP            \
-    OPER(batch_count) SEP            \
+    OPER(stride_scale) SEP           \
     OPER(stride_a) SEP               \
     OPER(stride_b) SEP               \
     OPER(stride_c) SEP               \
     OPER(stride_d) SEP               \
     OPER(stride_x) SEP               \
     OPER(stride_y) SEP               \
+    OPER(start) SEP                  \
+    OPER(end) SEP                    \
+    OPER(step) SEP                   \
+    OPER(alpha) SEP                  \
+    OPER(alphai) SEP                 \
+    OPER(beta) SEP                   \
+    OPER(betai) SEP                  \
+    OPER(transA) SEP                 \
+    OPER(transB) SEP                 \
+    OPER(side) SEP                   \
+    OPER(uplo) SEP                   \
+    OPER(diag) SEP                   \
+    OPER(apiCallCount) SEP           \
+    OPER(batch_count) SEP            \
     OPER(fortran) SEP                \
     OPER(norm_check) SEP             \
     OPER(unit_check) SEP             \
@@ -164,7 +197,8 @@ struct Arguments
     OPER(function) SEP               \
     OPER(name) SEP                   \
     OPER(category) SEP               \
-    OPER(atomics_mode)
+    OPER(atomics_mode) SEP           \
+    OPER(initialization)
 
     // clang-format on
 
@@ -199,20 +233,6 @@ struct Arguments
     }
 
 private:
-    template <typename T, typename U, std::enable_if_t<!is_complex<T>, int> = 0>
-    static T convert_alpha_beta(U r, U i)
-    {
-        if(std::is_same<T, hipblasHalf>::value)
-            return float_to_half(r);
-
-        return T(r);
-    }
-
-    template <typename T, typename U, std::enable_if_t<+is_complex<T>, int> = 0>
-    static T convert_alpha_beta(U r, U i)
-    {
-        return T(r, i);
-    }
 };
 
 // We make sure that the Arguments struct is C-compatible
@@ -265,7 +285,7 @@ namespace ArgumentsHelper
     // clang-format off
 #define APPLY(NAME)                                                                         \
     template <>                                                                             \
-    ROCBLAS_CLANG_STATIC constexpr auto                                                     \
+    HIPBLAS_CLANG_STATIC constexpr auto                                                     \
         apply<e_##NAME == e_alpha ? hipblas_argument(-1)                                    \
                                   : e_##NAME == e_beta ? hipblas_argument(-2) : e_##NAME> = \
             [](auto&& func, const Arguments& arg, auto) { func(#NAME, arg.NAME); }
@@ -275,14 +295,14 @@ namespace ArgumentsHelper
 
     // Specialization for e_alpha
     template <>
-    ROCBLAS_CLANG_STATIC constexpr auto apply<e_alpha> =
+    HIPBLAS_CLANG_STATIC constexpr auto apply<e_alpha> =
         [](auto&& func, const Arguments& arg, auto T) {
             func("alpha", arg.get_alpha<decltype(T)>());
         };
 
     // Specialization for e_beta
     template <>
-    ROCBLAS_CLANG_STATIC constexpr auto apply<e_beta> =
+    HIPBLAS_CLANG_STATIC constexpr auto apply<e_beta> =
         [](auto&& func, const Arguments& arg, auto T) {
             func("beta", arg.get_beta<decltype(T)>());
         };

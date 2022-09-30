@@ -77,7 +77,7 @@ const bool is_fortran[] = {false, true};
 /* ============================Setup Arguments======================================= */
 
 // Please use "class Arguments" (see utility.hpp) to pass parameters to templated testers;
-// Some routines may not touch/use certain "members" of objects "argus".
+// Some routines may not touch/use certain "members" of objects "arg".
 // like BLAS-1 Scal does not have lda, BLAS-2 GEMV does not have ldb, ldc;
 // That is fine. These testers & routines will leave untouched members alone.
 // Do not use std::tuple to directly pass parameters to testers
@@ -98,8 +98,8 @@ Arguments setup_trtri_arguments(trtri_tuple tup)
     arg.N   = matrix_size[0];
     arg.lda = matrix_size[1];
 
-    arg.uplo_option = uplo;
-    arg.diag_option = diag;
+    arg.uplo        = uplo;
+    arg.diag        = diag;
     arg.batch_count = batch_count;
 
     arg.fortran = fortran;

@@ -29,8 +29,15 @@
 
 /* ============================================================================================ */
 
+using hipblasRotgModel = ArgumentModel<>;
+
+inline void testname_rotg(const Arguments& arg, std::string& name)
+{
+    hipblasRotgModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_rotg(const Arguments& arg)
+inline hipblasStatus_t testing_rotg(const Arguments& arg)
 {
     using U            = real_t<T>;
     bool FORTRAN       = arg.fortran;
@@ -133,13 +140,13 @@ hipblasStatus_t testing_rotg(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<>{}.log_args<T>(std::cout,
-                                      arg,
-                                      gpu_time_used,
-                                      ArgumentLogging::NA_value,
-                                      ArgumentLogging::NA_value,
-                                      hipblas_error_host,
-                                      hipblas_error_device);
+        hipblasRotgModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       ArgumentLogging::NA_value,
+                                       ArgumentLogging::NA_value,
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

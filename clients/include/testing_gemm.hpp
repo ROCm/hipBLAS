@@ -31,25 +31,31 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_gemm(const Arguments& argus)
+using hipblasGemmModel
+    = ArgumentModel<e_transA, e_transB, e_M, e_N, e_K, e_alpha, e_lda, e_ldb, e_beta, e_ldc>;
+
+inline void testname_gemm(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN       = argus.fortran;
+    hipblasGemmModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_gemm(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
     auto hipblasGemmFn = FORTRAN ? hipblasGemm<T, true> : hipblasGemm<T, false>;
 
-    int M = argus.M;
-    int N = argus.N;
-    int K = argus.K;
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    hipblasOperation_t transB = char2hipblas_operation(arg.transB);
+    int                M      = arg.M;
+    int                N      = arg.N;
+    int                K      = arg.K;
+    int                lda    = arg.lda;
+    int                ldb    = arg.ldb;
+    int                ldc    = arg.ldc;
 
-    int lda = argus.lda;
-    int ldb = argus.ldb;
-    int ldc = argus.ldc;
-
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB_option);
-
-    T h_alpha = argus.get_alpha<T>();
-    T h_beta  = argus.get_beta<T>();
+    T h_alpha = arg.get_alpha<T>();
+    T h_beta  = arg.get_beta<T>();
 
     int A_row, A_col, B_row, B_col;
 
@@ -86,7 +92,7 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     }
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hA(A_size);
@@ -102,10 +108,10 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     device_vector<T> d_beta(1);
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, argus, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(hA, arg, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
     hipblas_init_matrix(
-        hB, argus, B_row, B_col, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
-    hipblas_init_matrix(hC_host, argus, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
+        hB, arg, B_row, B_col, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_matrix(hC_host, arg, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hz = hx: save a copy in hC_copy which will be output of CPU BLAS
     hC_copy   = hC_host;
@@ -118,7 +124,7 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -157,12 +163,12 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(M, N, ldc, hC_copy, hC_host);
             unit_check_general<T>(M, N, ldc, hC_copy, hC_device);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host = std::abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_host));
             hipblas_error_device
@@ -171,7 +177,7 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
 
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
@@ -180,10 +186,10 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
         // we need to copy alpha and beta to the host.
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGemmFn(
@@ -191,23 +197,13 @@ hipblasStatus_t testing_gemm(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA_option,
-                      e_transB_option,
-                      e_M,
-                      e_N,
-                      e_K,
-                      e_alpha,
-                      e_lda,
-                      e_ldb,
-                      e_beta,
-                      e_ldc>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         gemm_gflop_count<T>(M, N, K),
-                         gemm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasGemmModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       gemm_gflop_count<T>(M, N, K),
+                                       gemm_gbyte_count<T>(M, N, K),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

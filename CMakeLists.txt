@@ -23,7 +23,7 @@
 cmake_minimum_required( VERSION 3.5 )
 
 # We use C++14 features, this will add compile option: -std=c++14
-set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_STANDARD 17 )
 
 if (NOT python)
     set(python "python3") # default for linux
@@ -79,18 +79,12 @@ include( ROCMInstallSymlinks )
 include( ROCMClients )
 include( ROCMHeaderWrapper )
 
-set ( VERSION_STRING "0.52.0" )
+set ( VERSION_STRING "0.54.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
-
-if( NOT DEFINED ENV{HIP_PATH})
-    set( HIP_PATH "/opt/rocm/hip" )
-else( )
-    set (HIP_PATH $ENV{HIP_PATH} )
-endif( )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${ROCM_PATH}/lib/cmake/hip /opt/rocm/lib/cmake/hip ${HIP_PATH}/cmake )
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${ROCM_PATH}/lib/cmake/hip /opt/rocm/lib/cmake/hip ${HIP_DIR}/cmake )
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
 list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
@@ -116,7 +110,7 @@ endif()
 if( USE_CUDA)
     find_package( HIP MODULE REQUIRED )
 else( )
-    find_package( hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH} /opt/rocm)
+    find_package( hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm)
 endif( )
 
 if( USE_CUDA )
@@ -158,12 +152,18 @@ if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
     string(TOLOWER "${CLIENTS_OS}" CLIENTS_OS)
     rocm_read_os_release(CLIENTS_OS_VERSION VERSION_ID)
   endif()
-  set(GFORTRAN_PKG "gcc-gfortran")
-  if(CLIENTS_OS STREQUAL "sles")
-    set(GFORTRAN_PKG "gcc-fortran")
-  elseif(CLIENTS_OS STREQUAL "centos" AND CLIENTS_OS_VERSION EQUAL 7)
-    set(GFORTRAN_PKG "devtoolset-7-gcc-gfortran")
+  message(STATUS "OS: ${CLIENTS_OS} ${CLIENTS_OS_VERSION}")
+  set(GFORTRAN_RPM "libgfortran4")
+  set(GFORTRAN_DEB "libgfortran4")
+  if(CLIENTS_OS STREQUAL "centos" OR CLIENTS_OS STREQUAL "rhel")
+    if(CLIENTS_OS_VERSION VERSION_GREATER_EQUAL "8")
+      set(GFORTRAN_RPM "libgfortran")
+    endif()
+  elseif(CLIENTS_OS STREQUAL "ubuntu" AND CLIENTS_OS_VERSION VERSION_GREATER_EQUAL "20.04")
+    set(GFORTRAN_DEB "libgfortran5")
   endif()
+
+  set( BUILD_CLIENTS ON )
   rocm_package_setup_component(clients)
   rocm_package_setup_client_component(clients-common)
   if(BUILD_CLIENTS_TESTS)
@@ -171,16 +171,16 @@ if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
       tests
       DEPENDS
         COMPONENT clients-common
-        DEB "gfortran"
-        RPM "${GFORTRAN_PKG}")
+        DEB "${GFORTRAN_DEB}"
+        RPM "${GFORTRAN_RPM}")
   endif()
   if(BUILD_CLIENTS_BENCHMARKS)
     rocm_package_setup_client_component(
       benchmarks
       DEPENDS
         COMPONENT clients-common
-        DEB "gfortran"
-        RPM "${GFORTRAN_PKG}")
+        DEB "${GFORTRAN_DEB}"
+        RPM "${GFORTRAN_RPM}")
   endif()
   add_subdirectory( clients )
 endif( )
@@ -193,7 +193,7 @@ endif( )
 
 # Package specific CPACK vars
 if( NOT USE_CUDA )
-  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.45.0" "rocsolver >= 3.19.0")
+  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.47.0" "rocsolver >= 3.21.0")
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
