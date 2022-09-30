@@ -29,8 +29,15 @@
 
 /* ============================================================================================ */
 
+using hipblasRotBatchedExModel = ArgumentModel<e_N, e_incx, e_incy, e_batch_count>;
+
+inline void testname_rot_batched_ex(const Arguments& arg, std::string& name)
+{
+    hipblasRotBatchedExModel{}.test_name(arg, name);
+}
+
 template <typename Tex, typename Tx = Tex, typename Tcs = Tx>
-hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
+inline hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
 {
     using Ty                   = Tx;
     bool FORTRAN               = arg.fortran;
@@ -198,20 +205,19 @@ hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.log_args<Tx>(
-            std::cout,
-            arg,
-            gpu_time_used,
-            rot_gflop_count<Tx, Ty, Tcs, Tcs>(N),
-            rot_gbyte_count<Tx>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasRotBatchedExModel{}.log_args<Tx>(std::cout,
+                                                arg,
+                                                gpu_time_used,
+                                                rot_gflop_count<Tx, Ty, Tcs, Tcs>(N),
+                                                rot_gbyte_count<Tx>(N),
+                                                hipblas_error_host,
+                                                hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-hipblasStatus_t testing_rot_batched_ex(Arguments arg)
+inline hipblasStatus_t testing_rot_batched_ex(Arguments arg)
 {
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;

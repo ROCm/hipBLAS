@@ -51,8 +51,7 @@ class HipBLAS_TestData
     // data filename
     static auto& filename()
     {
-        static std::string filename
-            = "(Uninitialized data. HipBLAS_TestData::set_filename needs to be called first.)";
+        static std::string filename;
         return filename;
     }
 
@@ -118,6 +117,9 @@ public:
         if(!ifs)
         {
             std::string fileToOpen = filename();
+            if(fileToOpen.empty())
+                return end();
+
             // Allocate a std::ifstream and register it to be deleted during cleanup
             ifs = test_cleanup::allocate(
                 &ifs, fileToOpen, std::ifstream::in | std::ifstream::binary);

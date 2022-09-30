@@ -29,8 +29,15 @@
 
 /* ============================================================================================ */
 
+using hipblasRotmgBatchedModel = ArgumentModel<e_batch_count>;
+
+inline void testname_rotmg_batched(const Arguments& arg, std::string& name)
+{
+    hipblasRotmgBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_rotmg_batched(const Arguments& arg)
+inline hipblasStatus_t testing_rotmg_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasRotmgBatchedFn
@@ -191,13 +198,13 @@ hipblasStatus_t testing_rotmg_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_batch_count>{}.log_args<T>(std::cout,
-                                                   arg,
-                                                   gpu_time_used,
-                                                   ArgumentLogging::NA_value,
-                                                   ArgumentLogging::NA_value,
-                                                   hipblas_error_host,
-                                                   hipblas_error_device);
+        hipblasRotmgBatchedModel{}.log_args<T>(std::cout,
+                                               arg,
+                                               gpu_time_used,
+                                               ArgumentLogging::NA_value,
+                                               ArgumentLogging::NA_value,
+                                               hipblas_error_host,
+                                               hipblas_error_device);
     }
     return HIPBLAS_STATUS_SUCCESS;
 }

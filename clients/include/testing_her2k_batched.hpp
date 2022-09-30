@@ -30,26 +30,42 @@
 
 /* ============================================================================================ */
 
+using hipblasHer2kBatchedModel = ArgumentModel<e_uplo,
+                                               e_transA,
+                                               e_N,
+                                               e_K,
+                                               e_alpha,
+                                               e_lda,
+                                               e_ldb,
+                                               e_beta,
+                                               e_ldc,
+                                               e_batch_count>;
+
+inline void testname_her2k_batched(const Arguments& arg, std::string& name)
+{
+    hipblasHer2kBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_her2k_batched(const Arguments& argus)
+inline hipblasStatus_t testing_her2k_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasHer2kBatchedFn
         = FORTRAN ? hipblasHer2kBatched<T, U, true> : hipblasHer2kBatched<T, U, false>;
 
-    int N           = argus.N;
-    int K           = argus.K;
-    int lda         = argus.lda;
-    int ldb         = argus.ldb;
-    int ldc         = argus.ldc;
-    int batch_count = argus.batch_count;
+    int N           = arg.N;
+    int K           = arg.K;
+    int lda         = arg.lda;
+    int ldb         = arg.ldb;
+    int ldc         = arg.ldc;
+    int batch_count = arg.batch_count;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
 
-    T h_alpha = argus.get_alpha<T>();
-    U h_beta  = argus.get_beta<U>();
+    T h_alpha = arg.get_alpha<T>();
+    U h_beta  = arg.get_beta<U>();
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -64,7 +80,7 @@ hipblasStatus_t testing_her2k_batched(const Arguments& argus)
     }
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     int    K1     = (transA == HIPBLAS_OP_N ? K : N);
     size_t A_size = size_t(lda) * K1;
@@ -88,9 +104,9 @@ hipblasStatus_t testing_her2k_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dB.memcheck());
     CHECK_HIP_ERROR(dC.memcheck());
 
-    hipblas_init_vector(hA, argus, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hB, argus, hipblas_client_never_set_nan, false, true);
-    hipblas_init_vector(hC_host, argus, hipblas_client_never_set_nan);
+    hipblas_init_vector(hA, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hB, arg, hipblas_client_never_set_nan, false, true);
+    hipblas_init_vector(hC_host, arg, hipblas_client_never_set_nan);
 
     hC_device.copy_from(hC_host);
     hC_gold.copy_from(hC_host);
@@ -101,7 +117,7 @@ hipblasStatus_t testing_her2k_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(U), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -154,13 +170,13 @@ hipblasStatus_t testing_her2k_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(N, N, batch_count, ldc, hC_gold, hC_host);
             unit_check_general<T>(N, N, batch_count, ldc, hC_gold, hC_device);
         }
 
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host
                 = norm_check_general<T>('F', N, N, ldc, hC_gold, hC_host, batch_count);
@@ -169,16 +185,16 @@ hipblasStatus_t testing_her2k_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasHer2kBatchedFn(handle,
@@ -198,23 +214,13 @@ hipblasStatus_t testing_her2k_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo,
-                      e_transA,
-                      e_N,
-                      e_K,
-                      e_alpha,
-                      e_lda,
-                      e_ldb,
-                      e_beta,
-                      e_ldc,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         her2k_gflop_count<T>(N, K),
-                         her2k_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHer2kBatchedModel{}.log_args<T>(std::cout,
+                                               arg,
+                                               gpu_time_used,
+                                               her2k_gflop_count<T>(N, K),
+                                               her2k_gbyte_count<T>(N, K),
+                                               hipblas_error_host,
+                                               hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

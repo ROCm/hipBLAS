@@ -88,16 +88,16 @@
 #define BLAS_1_RESULT_PRINT                                \
     do                                                     \
     {                                                      \
-        if(argus.timing)                                   \
+        if(arg.timing)                                     \
         {                                                  \
             std::cout << "N, hipblas (us), ";              \
-            if(argus.norm_check)                           \
+            if(arg.norm_check)                             \
             {                                              \
                 std::cout << "CPU (us), error";            \
             }                                              \
             std::cout << std::endl;                        \
             std::cout << N << ',' << gpu_time_used << ','; \
-            if(argus.norm_check)                           \
+            if(arg.norm_check)                             \
             {                                              \
                 std::cout << cpu_time_used << ',';         \
                 std::cout << hipblas_error;                \

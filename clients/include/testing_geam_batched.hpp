@@ -33,27 +33,40 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_geam_batched(const Arguments& argus)
+using hipblasGeamBatchedModel = ArgumentModel<e_transA,
+                                              e_transB,
+                                              e_M,
+                                              e_N,
+                                              e_alpha,
+                                              e_lda,
+                                              e_beta,
+                                              e_ldb,
+                                              e_ldc,
+                                              e_batch_count>;
+
+inline void testname_geam_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasGeamBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_geam_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasGeamBatchedFn
         = FORTRAN ? hipblasGeamBatched<T, true> : hipblasGeamBatched<T, false>;
 
-    int M = argus.M;
-    int N = argus.N;
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    hipblasOperation_t transB      = char2hipblas_operation(arg.transB);
+    int                M           = arg.M;
+    int                N           = arg.N;
+    int                lda         = arg.lda;
+    int                ldb         = arg.ldb;
+    int                ldc         = arg.ldc;
+    int                batch_count = arg.batch_count;
 
-    int lda = argus.lda;
-    int ldb = argus.ldb;
-    int ldc = argus.ldc;
-
-    int batch_count = argus.batch_count;
-
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB);
-
-    T h_alpha = argus.get_alpha<T>();
-    T h_beta  = argus.get_beta<T>();
+    T h_alpha = arg.get_alpha<T>();
+    T h_beta  = arg.get_beta<T>();
 
     int A_row, A_col, B_row, B_col;
 
@@ -93,7 +106,7 @@ hipblasStatus_t testing_geam_batched(const Arguments& argus)
     }
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // allocate memory on device
     device_batch_vector<T> dA(A_size, 1, batch_count);
@@ -113,9 +126,9 @@ hipblasStatus_t testing_geam_batched(const Arguments& argus)
     host_batch_vector<T> hC2(C_size, 1, batch_count);
     host_batch_vector<T> hC_copy(C_size, 1, batch_count);
 
-    hipblas_init_vector(hA, argus, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hB, argus, hipblas_client_beta_sets_nan);
-    hipblas_init_vector(hC1, argus, hipblas_client_beta_sets_nan);
+    hipblas_init_vector(hA, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hB, arg, hipblas_client_beta_sets_nan);
+    hipblas_init_vector(hC1, arg, hipblas_client_beta_sets_nan);
     hC2.copy_from(hC1);
     hC_copy.copy_from(hC1);
 
@@ -125,7 +138,7 @@ hipblasStatus_t testing_geam_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.norm_check || argus.unit_check)
+    if(arg.norm_check || arg.unit_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -195,29 +208,29 @@ hipblasStatus_t testing_geam_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(M, N, batch_count, ldc, hC_copy, hC1);
             unit_check_general<T>(M, N, batch_count, ldc, hC_copy, hC2);
         }
 
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host   = norm_check_general<T>('F', M, N, ldc, hC_copy, hC1, batch_count);
             hipblas_error_device = norm_check_general<T>('F', M, N, ldc, hC_copy, hC2, batch_count);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGeamBatchedFn(handle,
@@ -237,23 +250,13 @@ hipblasStatus_t testing_geam_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_transA,
-                      e_transB,
-                      e_M,
-                      e_N,
-                      e_alpha,
-                      e_lda,
-                      e_beta,
-                      e_ldb,
-                      e_ldc,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         geam_gflop_count<T>(M, N),
-                         geam_gbyte_count<T>(M, N),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasGeamBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              geam_gflop_count<T>(M, N),
+                                              geam_gbyte_count<T>(M, N),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

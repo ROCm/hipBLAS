@@ -34,6 +34,7 @@ endif( )
 set( hipblas_benchmark_common
       ../common/utility.cpp
       ../common/cblas_interface.cpp
+      ../common/clients_common.cpp
       ../common/hipblas_arguments.cpp
       ../common/hipblas_parse_data.cpp
       ../common/hipblas_datatype2string.cpp
@@ -72,20 +73,13 @@ target_include_directories( hipblas-bench
 )
 
 if (NOT WIN32)
-    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client )
+    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
 endif()
 
 target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas )
 
-target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ROCM_USE_FLOAT16 )
-
-if( NOT WIN32 )
-    target_link_libraries( hipblas-bench PRIVATE lapack cblas )
-    target_link_libraries( hipblas-bench PRIVATE stdc++fs)
-endif()
-
 # need mf16c flag for float->half convertion
-target_compile_options( hipblas-bench PRIVATE -mf16c ) #-Wno-deprecated-declarations )
+target_compile_options( hipblas-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
 target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 )
 

@@ -69,6 +69,8 @@ inline hipblasDoubleComplex convert_alpha_beta<hipblasDoubleComplex>(double r, d
 /*! \brief Class used to parse command arguments in both benchmark & gtest   */
 struct Arguments
 {
+    // if you add or reorder members you must update FOR_EACH_ARGUMENT macro
+
     int M  = 128;
     int N  = 128;
     int K  = 128;

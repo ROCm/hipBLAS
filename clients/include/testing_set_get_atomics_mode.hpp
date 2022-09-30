@@ -30,14 +30,19 @@
 
 /* ============================================================================================ */
 
-hipblasStatus_t testing_set_get_atomics_mode(const Arguments& argus)
+inline void testname_set_get_atomics_mode(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN                 = argus.fortran;
+    ArgumentModel<>{}.test_name(arg, name);
+}
+
+inline hipblasStatus_t testing_set_get_atomics_mode(const Arguments& arg)
+{
+    bool FORTRAN                 = arg.fortran;
     auto hipblasSetAtomicsModeFn = FORTRAN ? hipblasSetAtomicsModeFortran : hipblasSetAtomicsMode;
     auto hipblasGetAtomicsModeFn = FORTRAN ? hipblasGetAtomicsModeFortran : hipblasGetAtomicsMode;
 
     hipblasAtomicsMode_t mode;
-    hipblasLocalHandle   handle(argus);
+    hipblasLocalHandle   handle(arg);
 
     // Not checking default as rocBLAS defaults to allowed
     // and cuBLAS defaults to not allowed.

@@ -28,27 +28,37 @@
 
 #include "testing_common.hpp"
 
+using hipblasGelsStridedBatchedModel
+    = ArgumentModel<e_transA, e_M, e_N, e_lda, e_ldb, e_stride_scale, e_batch_count>;
+
+inline void testname_gels_strided_batched(const Arguments& arg, std::string& name)
+{
+    hipblasGelsStridedBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
+inline hipblasStatus_t testing_gels_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasGelsStridedBatchedFn
         = FORTRAN ? hipblasGelsStridedBatched<T, true> : hipblasGelsStridedBatched<T, false>;
 
-    int    N           = argus.N;
-    int    M           = argus.M;
-    int    nrhs        = argus.K;
-    int    lda         = argus.lda;
-    int    ldb         = argus.ldb;
-    char   transc      = argus.transA;
-    int    batchCount  = argus.batch_count;
-    double strideScale = argus.stride_scale;
+    char   transc      = arg.transA;
+    int    N           = arg.N;
+    int    M           = arg.M;
+    int    nrhs        = arg.K;
+    int    lda         = arg.lda;
+    int    ldb         = arg.ldb;
+    double strideScale = arg.stride_scale;
+    int    batchCount  = arg.batch_count;
+
     if(is_complex<T> && transc == 'T')
         transc = 'C';
     else if(!is_complex<T> && transc == 'C')
         transc = 'T';
 
+    // this makes logging incorrect as overriding arg
     hipblasOperation_t trans = char2hipblas_operation(transc);
 
     hipblasStride strideA = size_t(lda) * N * strideScale;
@@ -79,7 +89,7 @@ hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
     device_vector<int> dInfo(batchCount);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA, hB, hX on CPU
     srand(1);
@@ -108,7 +118,7 @@ hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -164,7 +174,7 @@ hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
                 hipblas_error += 1.0;
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             double eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
@@ -173,15 +183,15 @@ hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGelsStridedBatchedFn(handle,
@@ -201,12 +211,12 @@ hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
-                                                       argus,
-                                                       gpu_time_used,
-                                                       ArgumentLogging::NA_value,
-                                                       ArgumentLogging::NA_value,
-                                                       hipblas_error);
+        hipblasGelsStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     ArgumentLogging::NA_value,
+                                                     ArgumentLogging::NA_value,
+                                                     hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
