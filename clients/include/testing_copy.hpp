@@ -29,17 +29,24 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_copy(const Arguments& argus)
+using hipblasCopyModel = ArgumentModel<e_N, e_incx, e_incy>;
+
+inline void testname_copy(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN       = argus.fortran;
+    hipblasCopyModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_copy(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
     auto hipblasCopyFn = FORTRAN ? hipblasCopy<T, true> : hipblasCopy<T, false>;
 
-    int N    = argus.N;
-    int incx = argus.incx;
-    int incy = argus.incy;
+    int N    = arg.N;
+    int incx = arg.incx;
+    int incy = arg.incy;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -72,8 +79,8 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     double gpu_time_used = 0.0;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hy, argus, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
 
     hx_cpu = hx;
     hy_cpu = hy;
@@ -81,7 +88,7 @@ hipblasStatus_t testing_copy(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
                     HIPBLAS
@@ -99,38 +106,38 @@ hipblasStatus_t testing_copy(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(1, N, abs_incy, hy_cpu.data(), hy.data());
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy);
         }
 
     } // end of if unit check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, dx, incx, dy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy>{}.log_args<T>(std::cout,
-                                                         argus,
-                                                         gpu_time_used,
-                                                         copy_gflop_count<T>(N),
-                                                         copy_gbyte_count<T>(N),
-                                                         hipblas_error);
+        hipblasCopyModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       copy_gflop_count<T>(N),
+                                       copy_gbyte_count<T>(N),
+                                       hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

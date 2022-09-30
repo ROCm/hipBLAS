@@ -29,22 +29,29 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_swap_batched(const Arguments& argus)
+using hipblasSwapBatchedModel = ArgumentModel<e_N, e_incx, e_incy, e_batch_count>;
+
+inline void testname_swap_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasSwapBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_swap_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasSwapBatchedFn
         = FORTRAN ? hipblasSwapBatched<T, true> : hipblasSwapBatched<T, false>;
 
-    int N           = argus.N;
-    int incx        = argus.incx;
-    int incy        = argus.incy;
-    int batch_count = argus.batch_count;
-    int unit_check  = argus.unit_check;
-    int norm_check  = argus.norm_check;
-    int timing      = argus.timing;
+    int N           = arg.N;
+    int incx        = arg.incx;
+    int incy        = arg.incy;
+    int batch_count = arg.batch_count;
+    int unit_check  = arg.unit_check;
+    int norm_check  = arg.norm_check;
+    int timing      = arg.timing;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -74,8 +81,8 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dy.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hy, argus, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
     hx_cpu.copy_from(hx);
     hy_cpu.copy_from(hy);
     CHECK_HIP_ERROR(dx.transfer_from(hx));
@@ -119,10 +126,10 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasSwapBatchedFn(
@@ -130,12 +137,12 @@ hipblasStatus_t testing_swap_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.log_args<T>(std::cout,
-                                                                        argus,
-                                                                        gpu_time_used,
-                                                                        swap_gflop_count<T>(N),
-                                                                        swap_gbyte_count<T>(N),
-                                                                        hipblas_error);
+        hipblasSwapBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              swap_gflop_count<T>(N),
+                                              swap_gbyte_count<T>(N),
+                                              hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -22,6 +22,7 @@
  * ************************************************************************ */
 
 #include "hipblas_parse_data.hpp"
+#include "hipblas_data.hpp"
 #include "utility.h"
 #include <cstdio>
 #include <cstdlib>
@@ -31,38 +32,26 @@
 #include <string>
 #include <sys/types.h>
 
-#ifdef __cpp_lib_filesystem
-#include <filesystem>
-#else
-#include <experimental/filesystem>
-
-namespace std
-{
-    namespace filesystem = experimental::filesystem;
-}
-#endif
-
 // Parse YAML data
 static std::string hipblas_parse_yaml(const std::string& yaml)
 {
-    // Generate "/tmp/hipblas-XXXXXX" like file name
-    const std::string alphanum     = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv";
-    int               stringlength = alphanum.length() - 1;
-    std::string       uniquestr    = "hipblas-";
+    std::string tmp     = hipblas_tempname();
+    auto        exepath = hipblas_exepath();
+    auto cmd = exepath + "hipblas_gentest.py --template " + exepath + "hipblas_template.yaml -o "
+               + tmp + " " + yaml;
+    std::cerr << cmd << std::endl;
 
-    for(auto n : {0, 1, 2, 3, 4, 5})
-        uniquestr += alphanum.at(rand() % stringlength);
+#ifdef WIN32
+    int status = std::system(cmd.c_str());
+    if(status == -1)
+        exit(EXIT_FAILURE);
+#else
+    int status = system(cmd.c_str());
+    if(status == -1 || !WIFEXITED(status) || WEXITSTATUS(status))
+        exit(EXIT_FAILURE);
+#endif
 
-    std::filesystem::path tmpname = std::filesystem::temp_directory_path() / uniquestr;
-
-    auto exepath = hipblas_exepath();
-    // TODO:
-    //auto cmd = exepath + "hipblas_gentest.py --template " + exepath + "hipblas_template.yaml -o "
-    //           + tmpname.string() + " " + yaml;
-    //std::cerr << cmd << std::endl;
-    //int status = std::system(cmd.c_str());
-
-    return tmpname.string(); // results to be read and removed later
+    return tmp;
 }
 
 // Parse --data and --yaml command-line arguments
@@ -123,8 +112,7 @@ bool hipblas_parse_data(int& argc, char** argv, const std::string& default_file)
 
     if(filename != "")
     {
-        // TODO
-        //RocBLAS_TestData::set_filename(filename, yaml);
+        HipBLAS_TestData::set_filename(filename, yaml);
         return true;
     }
 

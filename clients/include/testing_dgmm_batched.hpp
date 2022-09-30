@@ -30,27 +30,35 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
+using hipblasDgmmBatchedModel
+    = ArgumentModel<e_side, e_M, e_N, e_lda, e_incx, e_ldc, e_batch_count>;
+
+inline void testname_dgmm_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasDgmmBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_dgmm_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasDgmmBatchedFn
         = FORTRAN ? hipblasDgmmBatched<T, true> : hipblasDgmmBatched<T, false>;
 
-    hipblasSideMode_t side = char2hipblas_side(argus.side_option);
+    hipblasSideMode_t side = char2hipblas_side(arg.side);
 
-    int M           = argus.M;
-    int N           = argus.N;
-    int lda         = argus.lda;
-    int incx        = argus.incx;
-    int ldc         = argus.ldc;
-    int batch_count = argus.batch_count;
+    int M           = arg.M;
+    int N           = arg.N;
+    int lda         = arg.lda;
+    int incx        = arg.incx;
+    int ldc         = arg.ldc;
+    int batch_count = arg.batch_count;
 
     size_t A_size = size_t(lda) * N;
     size_t C_size = size_t(ldc) * N;
     int    k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -84,9 +92,9 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, argus, hipblas_client_never_set_nan, false, true);
-    hipblas_init_vector(hC, argus, hipblas_client_never_set_nan);
+    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
+    hipblas_init_vector(hC, arg, hipblas_client_never_set_nan);
 
     hA_copy.copy_from(hA);
     hx_copy.copy_from(hx);
@@ -97,7 +105,7 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dC.transfer_from(hC));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -143,26 +151,26 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(M, N, batch_count, ldc, hC_gold, hC_1);
         }
 
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>('F', M, N, ldc, hC_gold, hC_1, batch_count);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasDgmmBatchedFn(handle,
@@ -179,13 +187,12 @@ hipblasStatus_t testing_dgmm_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side_option, e_M, e_N, e_lda, e_incx, e_ldc, e_batch_count>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            dgmm_gflop_count<T>(M, N),
-            dgmm_gbyte_count<T>(M, N, k),
-            hipblas_error);
+        hipblasDgmmBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              dgmm_gflop_count<T>(M, N),
+                                              dgmm_gbyte_count<T>(M, N, k),
+                                              hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
