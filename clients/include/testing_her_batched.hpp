@@ -30,27 +30,34 @@
 
 /* ============================================================================================ */
 
+using hipblasHerBatchedModel = ArgumentModel<e_uplo, e_N, e_alpha, e_incx, e_lda, e_batch_count>;
+
+inline void testname_her_batched(const Arguments& arg, std::string& name)
+{
+    hipblasHerBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_her_batched(const Arguments& argus)
+inline hipblasStatus_t testing_her_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasHerBatchedFn
         = FORTRAN ? hipblasHerBatched<T, U, true> : hipblasHerBatched<T, U, false>;
 
-    int N           = argus.N;
-    int incx        = argus.incx;
-    int lda         = argus.lda;
-    int batch_count = argus.batch_count;
+    hipblasFillMode_t uplo        = char2hipblas_fill(arg.uplo);
+    int               N           = arg.N;
+    int               incx        = arg.incx;
+    int               lda         = arg.lda;
+    int               batch_count = arg.batch_count;
 
-    size_t            A_size = size_t(lda) * N;
-    hipblasFillMode_t uplo   = char2hipblas_fill(argus.uplo);
+    size_t A_size = size_t(lda) * N;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    U h_alpha = argus.get_alpha<U>();
+    U h_alpha = arg.get_alpha<U>();
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -79,15 +86,15 @@ hipblasStatus_t testing_her_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
 
     hA_cpu.copy_from(hA);
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(U), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -129,12 +136,12 @@ hipblasStatus_t testing_her_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(N, N, batch_count, lda, hA_cpu, hA_host);
             unit_check_general<T>(N, N, batch_count, lda, hA_cpu, hA_host);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host
                 = norm_check_general<T>('F', N, N, lda, hA_cpu, hA_host, batch_count);
@@ -143,17 +150,17 @@ hipblasStatus_t testing_her_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         CHECK_HIP_ERROR(dA.transfer_from(hA));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasHerBatchedFn(handle,
@@ -168,14 +175,13 @@ hipblasStatus_t testing_her_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_alpha, e_incx, e_lda, e_batch_count>{}.log_args<U>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            her_gflop_count<T>(N),
-            her_gbyte_count<T>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasHerBatchedModel{}.log_args<U>(std::cout,
+                                             arg,
+                                             gpu_time_used,
+                                             her_gflop_count<T>(N),
+                                             her_gbyte_count<T>(N),
+                                             hipblas_error_host,
+                                             hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

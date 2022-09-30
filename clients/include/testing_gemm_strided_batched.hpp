@@ -32,22 +32,44 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
+using hipblasGemmStridedBatchedModel = ArgumentModel<e_transA,
+                                                     e_transB,
+                                                     e_M,
+                                                     e_N,
+                                                     e_K,
+                                                     e_alpha,
+                                                     e_lda,
+                                                     e_ldb,
+                                                     e_beta,
+                                                     e_ldc,
+                                                     e_stride_scale,
+                                                     e_batch_count>;
+
+inline void testname_gemm_strided_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasGemmStridedBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_gemm_strided_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasGemmStridedBatchedFn
         = FORTRAN ? hipblasGemmStridedBatched<T, true> : hipblasGemmStridedBatched<T, false>;
 
-    int M = argus.M;
-    int N = argus.N;
-    int K = argus.K;
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
+    hipblasOperation_t transB       = char2hipblas_operation(arg.transB);
+    int                M            = arg.M;
+    int                N            = arg.N;
+    int                K            = arg.K;
+    int                lda          = arg.lda;
+    int                ldb          = arg.ldb;
+    int                ldc          = arg.ldc;
+    double             stride_scale = arg.stride_scale;
+    int                batch_count  = arg.batch_count;
 
-    int    lda          = argus.lda;
-    int    ldb          = argus.ldb;
-    int    ldc          = argus.ldc;
-    int    batch_count  = argus.batch_count;
-    double stride_scale = argus.stride_scale;
+    T h_alpha = arg.get_alpha<T>();
+    T h_beta  = arg.get_beta<T>();
 
     // check here to prevent undefined memory allocation error
     if(M < 0 || N < 0 || K < 0 || lda < 0 || ldb < 0 || ldc < 0 || batch_count < 0)
@@ -55,13 +77,7 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
         return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA);
-    hipblasOperation_t transB = char2hipblas_operation(argus.transB);
-
     int A_row, A_col, B_row, B_col;
-
-    T h_alpha = argus.get_alpha<T>();
-    T h_beta  = argus.get_beta<T>();
 
     if(transA == HIPBLAS_OP_N)
     {
@@ -107,11 +123,11 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, argus, A_row, A_col, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+        hA, arg, A_row, A_col, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
     hipblas_init_matrix(
-        hB, argus, B_row, B_col, ldb, stride_B, batch_count, hipblas_client_alpha_sets_nan);
+        hB, arg, B_row, B_col, ldb, stride_B, batch_count, hipblas_client_alpha_sets_nan);
     hipblas_init_matrix(
-        hC_host, argus, M, N, ldc, stride_C, batch_count, hipblas_client_beta_sets_nan);
+        hC_host, arg, M, N, ldc, stride_C, batch_count, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hz = hx: save a copy in hC_copy which will be output of CPU BLAS
     hC_copy   = hC_host;
@@ -125,12 +141,12 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     /* =====================================================================
          HIPBLAS
     =================================================================== */
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         // host mode
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
@@ -203,12 +219,12 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC_host);
             unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC_device);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host
                 = norm_check_general<T>('F', M, N, ldc, stride_C, hC_copy, hC_host, batch_count);
@@ -217,7 +233,7 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
@@ -226,10 +242,10 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
         // we need to copy alpha and beta to the host.
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedFn(handle,
@@ -253,27 +269,13 @@ hipblasStatus_t testing_gemm_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_transA,
-                      e_transB,
-                      e_M,
-                      e_N,
-                      e_K,
-                      e_alpha,
-                      e_lda,
-                      e_stride_a,
-                      e_ldb,
-                      e_stride_b,
-                      e_beta,
-                      e_ldc,
-                      e_stride_c,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         gemm_gflop_count<T>(M, N, K),
-                         gemm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasGemmStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     gemm_gflop_count<T>(M, N, K),
+                                                     gemm_gbyte_count<T>(M, N, K),
+                                                     hipblas_error_host,
+                                                     hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

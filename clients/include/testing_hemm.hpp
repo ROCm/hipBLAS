@@ -30,27 +30,33 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_hemm(const Arguments& argus)
+using hipblasHemmModel
+    = ArgumentModel<e_side, e_uplo, e_M, e_N, e_alpha, e_lda, e_ldb, e_beta, e_ldc>;
+
+inline void testname_hemm(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN       = argus.fortran;
+    hipblasHemmModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_hemm(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
     auto hipblasHemmFn = FORTRAN ? hipblasHemm<T, true> : hipblasHemm<T, false>;
 
-    int M   = argus.M;
-    int N   = argus.N;
-    int lda = argus.lda;
-    int ldb = argus.ldb;
-    int ldc = argus.ldc;
+    hipblasSideMode_t side = char2hipblas_side(arg.side);
+    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    int               M    = arg.M;
+    int               N    = arg.N;
+    int               lda  = arg.lda;
+    int               ldb  = arg.ldb;
+    int               ldc  = arg.ldc;
 
-    char char_side = argus.side;
-    char char_uplo = argus.uplo;
-    T    h_alpha   = argus.get_alpha<T>();
-    T    h_beta    = argus.get_beta<T>();
+    T h_alpha = arg.get_alpha<T>();
+    T h_beta  = arg.get_beta<T>();
 
-    hipblasSideMode_t side = char2hipblas_side(char_side);
-    hipblasFillMode_t uplo = char2hipblas_fill(char_uplo);
-
-    int K = (side == HIPBLAS_SIDE_LEFT ? M : N);
+    size_t rows = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    int    K    = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     // check here to prevent undefined memory allocation error
     if(M < 0 || N < 0 || ldc < M || ldb < M || lda < K)
@@ -76,12 +82,12 @@ hipblasStatus_t testing_hemm(const Arguments& argus)
     device_vector<T> d_beta(1);
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, argus, M, N, lda, 0, 1, hipblas_client_never_set_nan, true);
-    hipblas_init_matrix(hB, argus, M, N, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
-    hipblas_init_matrix(hC_host, argus, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hA, arg, rows, K, lda, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hB, arg, M, N, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_matrix(hC_host, arg, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
     hC_gold   = hC_host;
     hC_device = hC_host;
 
@@ -92,7 +98,7 @@ hipblasStatus_t testing_hemm(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -119,29 +125,29 @@ hipblasStatus_t testing_hemm(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(M, N, ldc, hC_gold, hC_host);
             unit_check_general<T>(M, N, ldc, hC_gold, hC_device);
         }
 
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host   = norm_check_general<T>('F', M, N, ldc, hC_gold, hC_host);
             hipblas_error_device = norm_check_general<T>('F', M, N, ldc, hC_gold, hC_device);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasHemmFn(
@@ -149,14 +155,13 @@ hipblasStatus_t testing_hemm(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side, e_uplo, e_M, e_N, e_alpha, e_lda, e_ldb, e_beta, e_ldc>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            hemm_gflop_count<T>(M, N, K),
-            hemm_gbyte_count<T>(M, N, K),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasHemmModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       hemm_gflop_count<T>(M, N, K),
+                                       hemm_gbyte_count<T>(M, N, K),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

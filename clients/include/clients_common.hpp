@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2021-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,22 +21,12 @@
  *
  * ************************************************************************ */
 
-#include "testing_common.hpp"
+#pragma once
 
-inline hipblasStatus_t testing_bad_operation()
-{
-    Arguments          arg;
-    hipblasLocalHandle handle(arg);
-    // invalid transpose operation enum
-    return hipblasSgemv(
-        handle, hipblasOperation_t(0), 0, 0, nullptr, nullptr, 0, nullptr, 0, nullptr, nullptr, 0);
-}
+#include <string>
 
-inline hipblasStatus_t testing_handle()
-{
-    // Test out hipblasCreate() and hipblasDestroy()
-    hipblasHandle_t handle;
-    CHECK_HIPBLAS_ERROR(hipblasCreate(&handle));
-    CHECK_HIPBLAS_ERROR(hipblasDestroy(handle));
-    return HIPBLAS_STATUS_SUCCESS;
-}
+struct Arguments;
+
+void get_test_name(const Arguments& arg, std::string& name);
+
+int run_bench_test(Arguments& arg, int unit_check, int timing);
