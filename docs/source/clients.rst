@@ -59,14 +59,48 @@ Logging affects performance, so only use it to log the command to copy and chang
 
 Note that hipblas-bench also has the flag ``-v 1`` for correctness checks.
 
+If multiple arguments or even multiple functions need to be benchmarked there is support for data driven benchmarks via a yaml format specification file.
+
+.. code-block:: bash
+
+   ./hipblas-bench --yaml <file>.yaml
+
+An example yaml file that is used for a smoke test is hipblas_smoke.yaml but other examples can be found in the rocBLAS repository.
+
+
 hipblas-test
 ============
 
 hipblas-test is used in performing hipBLAS unit tests and it uses Googletest framework.
 
-
-To run the hipblas  tests:
+To run the hipblas tests:
 
 .. code-block:: bash
 
    ./hipblas-test
+
+To run a subset of tests a filter may be provided. For example to only run axpy function tests via command line use:
+
+.. code-block:: bash
+
+   ./hibblas-test --gtest_filter=*axpy*
+
+The pattern for ``--gtest_filter`` is:
+
+.. code-block:: bash
+
+   --gtest_filter=POSTIVE_PATTERNS[-NEGATIVE_PATTERNS]
+
+If specific function arguments or even multiple functions need to be tested there is support for data driven testing via a yaml format test specification file.
+
+.. code-block:: bash
+
+   ./hipblas-test --yaml <file>.yaml
+
+An example yaml file that is used to define a smoke test is hipblas_smoke.yaml but other examples can be found in the rocBLAS repository.  Yaml based
+tests list function parameter values in the test name which can be also used for test filtering via the gtest_filter argument.
+To run the provided smoke test use:
+
+.. code-block:: bash
+
+   ./hipblas-test --yaml hipblas_smoke.yaml
