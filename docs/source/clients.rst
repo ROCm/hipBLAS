@@ -65,7 +65,7 @@ If multiple arguments or even multiple functions need to be benchmarked there is
 
    ./hipblas-bench --yaml <file>.yaml
 
-An example yaml file that is used for a smoke test is hipblas_smoke.yaml but other examples can be found in the rocBLAS repositiory.
+An example yaml file that is used for a smoke test is hipblas_smoke.yaml but other examples can be found in the rocBLAS repository.
 
 
 hipblas-test
@@ -97,7 +97,7 @@ If specific function arguments or even multiple functions need to be tested ther
 
    ./hipblas-test --yaml <file>.yaml
 
-An example yaml file that is used to define a smoke test is hipblas_smoke.yaml but other examples can be found in the rocBLAS repositiory.  Yaml based
+An example yaml file that is used to define a smoke test is hipblas_smoke.yaml but other examples can be found in the rocBLAS repository.  Yaml based
 tests list function parameter values in the test name which can be also used for test filtering via the gtest_filter argument.
 To run the provided smoke test use:
 
