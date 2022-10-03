@@ -1,5 +1,11 @@
 # Change Log for hipBLAS
 
+
+## (Unreleased) hipBLAS 0.54.0
+### Added
+- data driven hipblas-bench and hipblas-test execution via external yaml format data files
+- client smoke test added for quick validation using command hipblas-test --yaml hipblas_smoke.yaml
+
 ## (Unreleased) hipBLAS 0.53.0
 ### Added
 - Allow for selection of int8 datatype

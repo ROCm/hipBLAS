@@ -157,8 +157,10 @@ int main(int argc, char** argv)
         status = RUN_ALL_TESTS();
     else
     {
-        // remove standard non-yaml based gtests defined with explicit code
-        // this depends on Gtest code name which might change
+        // remove standard non-yaml based gtests defined with explicit code. This depends
+        // on the GTEST name convention, so for now internal tests must follow the
+        // pattern INSTANTIATE_TEST_SUITE_P(*, *_gtest, *) to be filtered from yaml set
+        // via this GTEST_FLAG line:
         ::testing::GTEST_FLAG(filter) = ::testing::GTEST_FLAG(filter) + "-*_gtest.*";
 
         status = RUN_ALL_TESTS();
