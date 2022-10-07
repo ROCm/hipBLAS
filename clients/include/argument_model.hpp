@@ -100,6 +100,9 @@ public:
                   double           norm1     = 0,
                   double           norm2     = 0)
     {
+        if(arg.iters < 1)
+            return; // warmup test only
+
         std::stringstream name_list;
         std::stringstream value_list;
 
