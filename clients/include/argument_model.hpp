@@ -34,6 +34,7 @@ namespace ArgumentLogging
     const double NA_value = -1.0; // invalid for time, GFlop, GB
 }
 
+// these aren't static as ArgumentModel is instantiated for many Arg lists
 void ArgumentModel_set_log_function_name(bool f);
 bool ArgumentModel_get_log_function_name();
 
