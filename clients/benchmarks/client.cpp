@@ -100,8 +100,6 @@ int run_bench_multi_gpu_test(int parallel_devices, Arguments& arg)
     for(int id = 0; id < parallel_devices; ++id)
         thread_init[id].join();
 
-    ArgumentModel_reset_perf();
-
     // synchronzied launch of cold & hot calls
     auto thread = std::make_unique<std::thread[]>(parallel_devices);
 
@@ -110,8 +108,6 @@ int run_bench_multi_gpu_test(int parallel_devices, Arguments& arg)
 
     for(int id = 0; id < parallel_devices; ++id)
         thread[id].join();
-
-    ArgumentModel_log_cumulative_perf(std::cout);
 
     return 0;
 }
