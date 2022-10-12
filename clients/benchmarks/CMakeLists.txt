@@ -76,7 +76,7 @@ if (NOT WIN32)
     target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
 endif()
 
-target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas )
+target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas Threads::Threads )
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
@@ -106,7 +106,7 @@ else( )
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
   )
 
-  target_link_libraries( hipblas-bench PRIVATE ${CUDA_LIBRARIES} Threads::Threads )
+  target_link_libraries( hipblas-bench PRIVATE ${CUDA_LIBRARIES} )
 endif( )
 
 set_target_properties( hipblas-bench PROPERTIES

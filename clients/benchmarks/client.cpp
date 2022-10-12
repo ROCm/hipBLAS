@@ -42,6 +42,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <type_traits>
 
 using namespace roc; // For emulated program_options
@@ -54,6 +55,61 @@ int hipblas_bench_datafile()
         ret |= run_bench_test(arg, 0, 1);
     test_cleanup::cleanup();
     return ret;
+}
+
+void thread_init_device(int id, const Arguments& arg)
+{
+    int count;
+    CHECK_HIP_ERROR(hipGetDeviceCount(&count));
+
+    if(id < count)
+        CHECK_HIP_ERROR(hipSetDevice(id));
+
+    Arguments a(arg);
+    a.cold_iters = 1;
+    a.iters      = 0;
+    run_bench_test(a, 0, 1);
+}
+
+void thread_run_bench(int id, const Arguments& arg)
+{
+    int count;
+    CHECK_HIP_ERROR(hipGetDeviceCount(&count));
+
+    if(id < count)
+        CHECK_HIP_ERROR(hipSetDevice(id));
+
+    Arguments a(arg);
+    run_bench_test(a, 0, 1);
+}
+
+int run_bench_multi_gpu_test(int parallel_devices, Arguments& arg)
+{
+    int count;
+    CHECK_HIP_ERROR(hipGetDeviceCount(&count));
+
+    if(parallel_devices > count || parallel_devices < 1)
+        return 1;
+
+    // initialization
+    auto thread_init = std::make_unique<std::thread[]>(parallel_devices);
+
+    for(int id = 0; id < parallel_devices; ++id)
+        thread_init[id] = std::thread(::thread_init_device, id, arg);
+
+    for(int id = 0; id < parallel_devices; ++id)
+        thread_init[id].join();
+
+    // synchronzied launch of cold & hot calls
+    auto thread = std::make_unique<std::thread[]>(parallel_devices);
+
+    for(int id = 0; id < parallel_devices; ++id)
+        thread[id] = std::thread(::thread_run_bench, id, arg);
+
+    for(int id = 0; id < parallel_devices; ++id)
+        thread[id].join();
+
+    return 0;
 }
 
 // Replace --batch with --batch_count for backward compatibility
@@ -86,6 +142,7 @@ try
     std::string compute_type;
     std::string initialization;
     hipblas_int device_id;
+    hipblas_int parallel_devices;
 
     bool datafile            = hipblas_parse_data(argc, argv);
     bool atomics_not_allowed = false;
@@ -276,6 +333,10 @@ try
          value<hipblas_int>(&device_id)->default_value(0),
          "Set default device to be used for subsequent program runs")
 
+        ("parallel_devices",
+         value<hipblas_int>(&parallel_devices)->default_value(0),
+         "Set number of devices used for parallel runs (device 0 to parallel_devices-1)")
+
         // ("c_noalias_d",
         //  bool_switch(&arg.c_noalias_d)->default_value(false),
         //  "C and D are stored in separate memory")
@@ -369,7 +430,10 @@ try
     if(copied <= 0 || copied >= sizeof(arg.function))
         throw std::invalid_argument("Invalid value for --function");
 
-    return run_bench_test(arg, 0, 1);
+    if(!parallel_devices)
+        return run_bench_test(arg, 0, 1);
+    else
+        return run_bench_multi_gpu_test(parallel_devices, arg);
 }
 catch(const std::invalid_argument& exp)
 {

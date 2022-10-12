@@ -34,6 +34,7 @@ namespace ArgumentLogging
     const double NA_value = -1.0; // invalid for time, GFlop, GB
 }
 
+// these aren't static as ArgumentModel is instantiated for many Arg lists
 void ArgumentModel_set_log_function_name(bool f);
 bool ArgumentModel_get_log_function_name();
 
@@ -100,6 +101,9 @@ public:
                   double           norm1     = 0,
                   double           norm2     = 0)
     {
+        if(arg.iters < 1)
+            return; // warmup test only
+
         std::stringstream name_list;
         std::stringstream value_list;
 
