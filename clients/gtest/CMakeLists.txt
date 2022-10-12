@@ -19,6 +19,9 @@
 # CTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # ########################################################################
 
+set( THREADS_PREFER_PTHREAD_FLAG ON )
+find_package( Threads REQUIRED )
+
 # Linking lapack library requires fortran flags
 if(NOT WIN32)
     enable_language( Fortran )
@@ -151,9 +154,8 @@ target_include_directories( hipblas-test
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
 )
 
-set( THREADS_PREFER_PTHREAD_FLAG ON )
-find_package( Threads REQUIRED )
-target_link_libraries( hipblas-test PRIVATE Threads::Threads )
+
+
 
 target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 
@@ -171,7 +173,7 @@ if (NOT WIN32)
     target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
 endif()
 
-target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest )
+target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
@@ -201,7 +203,7 @@ else( )
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
   )
 
-  target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} Threads::Threads )
+  target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} )
 endif( )
 
 if (WIN32)
