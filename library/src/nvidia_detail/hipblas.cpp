@@ -216,9 +216,6 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
     case HIPBLAS_C_32I:
         return CUDA_C_32I;
 
-    case HIPBLAS_C_32U:
-        return TODO;
-
     case HIPBLAS_R_16B:
         return CUDA_R_16BF;
 
