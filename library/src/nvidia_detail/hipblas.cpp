@@ -207,9 +207,6 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
     case HIPBLAS_R_32I:
         return CUDA_R_32I;
 
-    // case HIPBLAS_R_32U:
-    //     return HIPBLAS_STATUS_INVALID_ENUM;
-
     case HIPBLAS_C_8I:
         return CUDA_C_8I;
 
