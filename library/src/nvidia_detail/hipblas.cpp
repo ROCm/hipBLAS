@@ -220,7 +220,7 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
         return CUDA_R_16BF;
 
     case HIPBLAS_C_16B:
-        CUDA_C_16BF;
+        return CUDA_C_16BF;
 
     default:
         throw HIPBLAS_STATUS_INVALID_ENUM;
