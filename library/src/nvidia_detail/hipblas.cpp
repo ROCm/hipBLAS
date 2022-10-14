@@ -225,7 +225,7 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipblasDatatype_t type)
     case HIPBLAS_R_16B:
         return CUDA_R_16BF;
 
-    case HIPBBLAS_C_16B:
+    case HIPBLAS_C_16B:
         CUDA_C_16BF;
 
     default:
