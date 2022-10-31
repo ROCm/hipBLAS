@@ -120,9 +120,11 @@ inline bool hipblas_isnan(float arg)
 {
     return std::isnan(arg);
 }
+
 inline bool hipblas_isnan(hipblasHalf arg)
 {
-    return (~arg & 0x7c00) == 0 && (arg & 0x3ff) != 0;
+    auto half_data = static_cast<__half_raw>(arg).x;
+    return (~(half_data)&0x7c00) == 0 && (half_data & 0x3ff) != 0;
 }
 inline bool hipblas_isnan(hipblasComplex arg)
 {
@@ -133,12 +135,9 @@ inline bool hipblas_isnan(hipblasDoubleComplex arg)
     return std::isnan(arg.real()) || std::isnan(arg.imag());
 }
 
-// Helper routine to convert floats into their half equivalent; uses F16C instructions
 inline hipblasHalf float_to_half(float val)
 {
-    // return static_cast<hipblasHalf>( _mm_cvtsi128_si32( _mm_cvtps_ph( _mm_set_ss( val ), 0 ) )
-    uint16_t a = _cvtss_sh(val, 0);
-    return a;
+    return __float2half(val);
 }
 
 inline hipblasHalf float_to_half(hipblasBfloat16 val)
@@ -146,11 +145,9 @@ inline hipblasHalf float_to_half(hipblasBfloat16 val)
     return float_to_half(float(val));
 }
 
-// Helper routine to convert halfs into their floats equivalent; uses F16C instructions
 inline float half_to_float(hipblasHalf val)
 {
-    // return static_cast<hipblasHalf>(_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(val), 0)));
-    return _cvtsh_ss(val);
+    return __half2float(val);
 }
 
 inline std::ostream& operator<<(std::ostream& os, const hipblasBfloat16& bf)
@@ -781,9 +778,9 @@ inline void banded_matrix_setup(bool upper, T* A, int lda, int n, int k)
         for(int j = 0; j < n; j++)
         {
             if(upper && (j > k + i || i > j))
-                A[j * n + i] = T(0);
+                A[j * n + i] = T(0.0);
             else if(!upper && (i > k + j || j > i))
-                A[j * n + i] = T(0);
+                A[j * n + i] = T(0.0);
         }
     }
 }

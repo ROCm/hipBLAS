@@ -175,10 +175,9 @@ endif()
 
 target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )
 
-# need mf16c flag for float->half convertion
-target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
+target_compile_options( hipblas-test PRIVATE ) # -Wno-deprecated-declarations )
 
-target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 )
+target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS HIPBLAS_USE_HIP_HALF )
 
 if( NOT USE_CUDA )
   target_link_libraries( hipblas-test PRIVATE hip::host )

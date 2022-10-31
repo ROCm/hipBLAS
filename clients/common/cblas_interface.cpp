@@ -2834,7 +2834,7 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
                        int                ldc)
 {
 
-    if(n <= 0 || (beta == 1 && (k == 0 || alpha == T(0))))
+    if(n <= 0 || (beta == 1 && (k == 0 || alpha == T(0.0))))
         return;
 
     if(transA == HIPBLAS_OP_N)

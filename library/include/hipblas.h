@@ -34,6 +34,7 @@
 
 #include "hipblas-export.h"
 #include "hipblas-version.h"
+#include <hip/hip_fp16.h>
 #include <hip/hip_runtime_api.h>
 #include <stdint.h>
 
@@ -84,7 +85,19 @@
 typedef void* hipblasHandle_t;
 
 /*! \brief To specify the datatype to be unsigned short */
-typedef uint16_t hipblasHalf;
+
+#if __cplusplus < 201103L || !defined(HIPBLAS_USE_HIP_HALF)
+
+typedef struct hipblasHalf
+{
+    uint16_t data;
+} hipblasHalf;
+
+#else
+
+typedef __half hipblasHalf;
+
+#endif
 
 /*! \brief  To specify the datatype to be signed char */
 typedef int8_t hipblasInt8;
