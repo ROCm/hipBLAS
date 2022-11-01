@@ -123,7 +123,7 @@ inline bool hipblas_isnan(float arg)
 
 inline bool hipblas_isnan(hipblasHalf arg)
 {
-    auto half_data = static_cast<__half_raw>(arg).x;
+    auto half_data = static_cast<unsigned short>(arg);
     return (~(half_data)&0x7c00) == 0 && (half_data & 0x3ff) != 0;
 }
 inline bool hipblas_isnan(hipblasComplex arg)
