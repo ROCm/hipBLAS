@@ -64,7 +64,7 @@ foreach( exe IN LISTS example-executables)
 
   target_include_directories( ${exe} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> )
 
-  target_compile_options( ${exe} PRIVATE -DHIPBLAS_BFLOAT16_CLASS -DHIPBLAS_USE_HIP_HALF )
+  target_compile_options( ${exe} PRIVATE -DHIPBLAS_BFLOAT16_CLASS -DROCM_MATHLIBS_API_USE_HIP_HALF )
 
   target_link_libraries( ${exe} PRIVATE roc::hipblas )
 

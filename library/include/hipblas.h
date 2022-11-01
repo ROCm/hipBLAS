@@ -86,12 +86,9 @@ typedef void* hipblasHandle_t;
 
 /*! \brief To specify the datatype to be unsigned short */
 
-#if __cplusplus < 201103L || !defined(HIPBLAS_USE_HIP_HALF)
+#if __cplusplus < 201103L || !defined(ROCM_MATHLIBS_API_USE_HIP_HALF)
 
-typedef struct hipblasHalf
-{
-    uint16_t data;
-} hipblasHalf;
+typedef uint16_t hipblasHalf;
 
 #else
 
