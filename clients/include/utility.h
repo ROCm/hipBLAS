@@ -137,7 +137,12 @@ inline bool hipblas_isnan(hipblasDoubleComplex arg)
 
 inline hipblasHalf float_to_half(float val)
 {
+#ifdef HIPBLAS_USE_HIP_HALF
     return __float2half(val);
+#else
+    uint16_t a = _cvtss_sh(val, 0);
+    return a;
+#endif
 }
 
 inline hipblasHalf float_to_half(hipblasBfloat16 val)
@@ -147,7 +152,11 @@ inline hipblasHalf float_to_half(hipblasBfloat16 val)
 
 inline float half_to_float(hipblasHalf val)
 {
+#ifdef HIPBLAS_USE_HIP_HALF
     return __half2float(val);
+#else
+    return _cvtsh_ss(val);
+#endif
 }
 
 inline std::ostream& operator<<(std::ostream& os, const hipblasBfloat16& bf)

@@ -34,7 +34,6 @@
 
 #include "hipblas-export.h"
 #include "hipblas-version.h"
-#include <hip/hip_fp16.h>
 #include <hip/hip_runtime_api.h>
 #include <stdint.h>
 
@@ -86,12 +85,13 @@ typedef void* hipblasHandle_t;
 
 /*! \brief To specify the datatype to be unsigned short */
 
-#if __cplusplus < 201103L || !defined(ROCM_MATHLIBS_API_USE_HIP_HALF)
+#if __cplusplus < 201103L || !defined(HIPBLAS_USE_HIP_HALF)
 
 typedef uint16_t hipblasHalf;
 
 #else
 
+#include <hip/hip_fp16.h>
 typedef __half hipblasHalf;
 
 #endif

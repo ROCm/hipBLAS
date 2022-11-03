@@ -26,6 +26,7 @@ add_executable( example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
 add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
 add_executable( example-c example-c.c ${hipblas_samples_common} )
 add_executable( example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
+add_executable( example-hgemm-half example_hgemm_hip_half.cpp ${hipblas_samples_common})
 
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   add_executable( example-hgemm example_hgemm.cpp ${hipblas_samples_common} )
@@ -49,10 +50,17 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-list (APPEND example-executables example-sscal example-sgemm example-sgemm-strided-batched example-c example-hip-complex-her2)
+list (APPEND example-executables example-sscal example-sgemm example-sgemm-strided-batched example-c example-hip-complex-her2 example-hgemm-half)
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND example-executables example-hgemm)
 endif( )
+
+target_compile_options( example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
+
+# HIP on Windows: xhip is required with clang++ to get __half defined
+if ( WIN32 )
+target_compile_options( example-hgemm-half PRIVATE -xhip )
+endif()
 
 foreach( exe IN LISTS example-executables)
 
@@ -64,7 +72,7 @@ foreach( exe IN LISTS example-executables)
 
   target_include_directories( ${exe} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> )
 
-  target_compile_options( ${exe} PRIVATE -DHIPBLAS_BFLOAT16_CLASS -DROCM_MATHLIBS_API_USE_HIP_HALF )
+  target_compile_options( ${exe} PRIVATE -mf16c -DHIPBLAS_BFLOAT16_CLASS )
 
   target_link_libraries( ${exe} PRIVATE roc::hipblas )
 

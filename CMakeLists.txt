@@ -117,11 +117,6 @@ if( USE_CUDA )
     list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
 endif( )
 
-# HIP on Windows: xhip is required with clang++ to get __half defined
-if ( WIN32 )
-  add_compile_options(-xhip)
-endif()
-
 option(BUILD_CODE_COVERAGE "Build with code coverage enabled" OFF)
 if(BUILD_CODE_COVERAGE)
   add_compile_options(-fprofile-arcs -ftest-coverage)
