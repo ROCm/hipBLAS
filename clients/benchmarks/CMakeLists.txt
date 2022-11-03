@@ -78,6 +78,7 @@ endif()
 
 target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas Threads::Threads )
 
+# need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
 target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 )
