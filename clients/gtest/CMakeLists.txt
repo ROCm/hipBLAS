@@ -166,7 +166,7 @@ target_include_directories( hipblas-test
     $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
-    ${ROCM_PATH}/hsa/include
+    ${ROCM_PATH}/include
 )
 
 if (NOT WIN32)
