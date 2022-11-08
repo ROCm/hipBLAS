@@ -49,11 +49,30 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
 
     size_t A_size    = size_t(lda) * N;
     int    Ipiv_size = K;
+    int    info;
+
+    hipblasLocalHandle handle(arg);
 
     // Check to prevent memory allocation error
-    if(M < 0 || N < 0 || lda < M)
+    bool invalid_size = M < 0 || N < 0 || lda < std::max(1, M);
+    if(invalid_size || !M || !N)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        // including dA so can test lda info param
+        device_vector<T> dA(1);
+        hipblasStatus_t  status = hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info);
+        EXPECT_HIPBLAS_STATUS(
+            status, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+
+        int expected_info = 0;
+        if(M < 0)
+            expected_info = -1;
+        else if(N < 0)
+            expected_info = -2;
+        else if(lda < std::max(1, M))
+            expected_info = -4;
+        unit_check_general(1, 1, 1, &expected_info, &info);
+
+        return status;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -61,13 +80,11 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
     host_vector<T> hA1(A_size);
     host_vector<T> hIpiv(Ipiv_size);
     host_vector<T> hIpiv1(Ipiv_size);
-    int            info;
 
     device_vector<T> dA(A_size);
     device_vector<T> dIpiv(Ipiv_size);
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error;
 
     // Initial hA on CPU
     srand(1);
@@ -124,6 +141,8 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
 
             unit_check_error(e1, tolerance);
             unit_check_error(e2, tolerance);
+            int zero = 0;
+            unit_check_general(1, 1, 1, &zero, &info);
         }
     }
 
