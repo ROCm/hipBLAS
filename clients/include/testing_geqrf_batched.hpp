@@ -51,15 +51,34 @@ inline hipblasStatus_t testing_geqrf_batched(const Arguments& arg)
 
     size_t A_size    = size_t(lda) * N;
     int    Ipiv_size = K;
+    int    info;
+
+    hipblasLocalHandle handle(arg);
 
     // Check to prevent memory allocation error
-    if(M < 0 || N < 0 || lda < M || batch_count < 0)
+    bool invalid_size = M < 0 || N < 0 || lda < std::max(1, M) || batch_count < 0;
+    if(invalid_size || !M || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        // including pointers so can test other params
+        device_batch_vector<T> dA(1, 1, 1);
+        device_batch_vector<T> dIpiv(1, 1, 1);
+        hipblasStatus_t        status = hipblasGeqrfBatched(
+            handle, M, N, dA.ptr_on_device(), lda, dIpiv.ptr_on_device(), &info, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            status, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+
+        int expected_info = 0;
+        if(M < 0)
+            expected_info = -1;
+        else if(N < 0)
+            expected_info = -2;
+        else if(lda < std::max(1, M))
+            expected_info = -4;
+        else if(batch_count < 0)
+            expected_info = -7;
+        unit_check_general(1, 1, 1, &expected_info, &info);
+
+        return status;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -67,13 +86,11 @@ inline hipblasStatus_t testing_geqrf_batched(const Arguments& arg)
     host_batch_vector<T> hA1(A_size, 1, batch_count);
     host_batch_vector<T> hIpiv(Ipiv_size, 1, batch_count);
     host_batch_vector<T> hIpiv1(Ipiv_size, 1, batch_count);
-    int                  info;
 
     device_batch_vector<T> dA(A_size, 1, batch_count);
     device_batch_vector<T> dIpiv(Ipiv_size, 1, batch_count);
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error;
 
     // Initial hA on CPU
     hipblas_init(hA, true);
@@ -135,6 +152,8 @@ inline hipblasStatus_t testing_geqrf_batched(const Arguments& arg)
 
             unit_check_error(e1, tolerance);
             unit_check_error(e2, tolerance);
+            int zero = 0;
+            unit_check_general(1, 1, 1, &zero, &info);
         }
     }
 

@@ -35,12 +35,18 @@ using ::testing::ValuesIn;
 
 typedef std::tuple<vector<int>, double, int, bool> geqrf_batched_tuple;
 
-const vector<vector<int>> matrix_size_range
-    = {{-1, -1, 1, 1}, {10, 10, 10, 10}, {10, 10, 20, 100}, {600, 500, 600, 600}};
+const vector<vector<int>> matrix_size_range = {{-1, 1, 1}, // invalid M
+                                               {1, -1, 1}, // invalid N
+                                               {5, 5, 4}, // invalid lda
+                                               {0, 32, 32}, // M == 0
+                                               {32, 0, 32}, // N == 0
+                                               {10, 10, 10},
+                                               {10, 10, 20},
+                                               {600, 500, 600}};
 
 const vector<double> stride_scale_range = {2.5};
 
-const vector<int> batch_count_range = {-1, 0, 1, 2};
+const vector<int> batch_count_range = {-1, 0, 2};
 
 const vector<bool> is_fortran = {false, true};
 
@@ -56,7 +62,6 @@ Arguments setup_geqrf_batched_arguments(geqrf_batched_tuple tup)
     arg.M   = matrix_size[0];
     arg.N   = matrix_size[1];
     arg.lda = matrix_size[2];
-    //arg.ldb = matrix_size[3];
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;

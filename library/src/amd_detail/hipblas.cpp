@@ -16261,11 +16261,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else
         *info = 0;
@@ -16293,11 +16293,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else
         *info = 0;
@@ -16325,11 +16325,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else
         *info = 0;
@@ -16362,11 +16362,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else
         *info = 0;
@@ -16401,11 +16401,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else if(batch_count < 0)
         *info = -7;
@@ -16436,11 +16436,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else if(batch_count < 0)
         *info = -7;
@@ -16471,11 +16471,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else if(batch_count < 0)
         *info = -7;
@@ -16512,11 +16512,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else if(batch_count < 0)
         *info = -7;
@@ -16556,11 +16556,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -6;
     else if(batch_count < 0)
         *info = -9;
@@ -16593,11 +16593,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -6;
     else if(batch_count < 0)
         *info = -9;
@@ -16630,11 +16630,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -6;
     else if(batch_count < 0)
         *info = -9;
@@ -16675,11 +16675,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -6;
     else if(batch_count < 0)
         *info = -9;
