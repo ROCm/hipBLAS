@@ -55,15 +55,34 @@ inline hipblasStatus_t testing_geqrf_strided_batched(const Arguments& arg)
     hipblasStride strideP   = K * stride_scale;
     int           A_size    = strideA * batch_count;
     int           Ipiv_size = strideP * batch_count;
+    int           info;
+
+    hipblasLocalHandle handle(arg);
 
     // Check to prevent memory allocation error
-    if(M < 0 || N < 0 || lda < M || batch_count < 0)
+    bool invalid_size = M < 0 || N < 0 || lda < std::max(1, M) || batch_count < 0;
+    if(invalid_size || !M || !N || !batch_count)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
+        // including pointers so can test other params
+        device_vector<T> dA(1);
+        device_vector<T> dIpiv(1);
+        hipblasStatus_t  status = hipblasGeqrfStridedBatchedFn(
+            handle, M, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count);
+        EXPECT_HIPBLAS_STATUS(
+            status, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+
+        int expected_info = 0;
+        if(M < 0)
+            expected_info = -1;
+        else if(N < 0)
+            expected_info = -2;
+        else if(lda < std::max(1, M))
+            expected_info = -4;
+        else if(batch_count < 0)
+            expected_info = -9;
+        unit_check_general(1, 1, 1, &expected_info, &info);
+
+        return status;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -71,13 +90,11 @@ inline hipblasStatus_t testing_geqrf_strided_batched(const Arguments& arg)
     host_vector<T> hA1(A_size);
     host_vector<T> hIpiv(Ipiv_size);
     host_vector<T> hIpiv1(Ipiv_size);
-    int            info;
 
     device_vector<T> dA(A_size);
     device_vector<T> dIpiv(Ipiv_size);
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error;
 
     // Initial hA on CPU
     srand(1);
@@ -144,6 +161,8 @@ inline hipblasStatus_t testing_geqrf_strided_batched(const Arguments& arg)
 
             unit_check_error(e1, tolerance);
             unit_check_error(e2, tolerance);
+            int zero = 0;
+            unit_check_general(1, 1, 1, &zero, &info);
         }
     }
 

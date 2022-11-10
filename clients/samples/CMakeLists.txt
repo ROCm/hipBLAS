@@ -21,23 +21,24 @@
 
 set( hipblas_samples_common ../common/utility.cpp )
 
-add_executable( example-sscal example_sscal.cpp ${hipblas_samples_common} )
-add_executable( example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
-add_executable( example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
-add_executable( example-c example-c.c ${hipblas_samples_common} )
-add_executable( example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
+add_executable( hipblas-example-sscal example_sscal.cpp ${hipblas_samples_common} )
+add_executable( hipblas-example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
+add_executable( hipblas-example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
+add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
+add_executable( hipblas-example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
+add_executable( hipblas-example-hgemm-half example_hgemm_hip_half.cpp ${hipblas_samples_common})
 
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
-  add_executable( example-hgemm example_hgemm.cpp ${hipblas_samples_common} )
+  add_executable( hipblas-example-hgemm example_hgemm.cpp ${hipblas_samples_common} )
 endif( )
 
 if(NOT WIN32)
-    #add_executable( example-sscal-fortran example_sscal_fortran.f90 )
+    #add_executable( hipblas-example-sscal-fortran example_sscal_fortran.f90 )
 endif()
 
-# We test for C99 compatibility in the example-c.c test
-set_source_files_properties(example-c.c PROPERTIES LANGUAGE CXX)
-set_source_files_properties(example-c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
+# We test for C99 compatibility in the example_c.c test
+set_source_files_properties(example_c.c PROPERTIES LANGUAGE CXX)
+set_source_files_properties(example_c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
 
 # We test for C++11 compatibility in one of the samples
 #set_source_files_properties(example_sgemm_strided_batched.cpp PROPERTIES COMPILE_FLAGS "-std=c++11")
@@ -49,12 +50,19 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-list (APPEND example-executables example-sscal example-sgemm example-sgemm-strided-batched example-c example-hip-complex-her2)
+list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
-  list (APPEND example-executables example-hgemm)
+  list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
 
-foreach( exe IN LISTS example-executables)
+target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
+
+# HIP on Windows: xhip is required with clang++ to get __half defined
+if ( WIN32 )
+target_compile_options( hipblas-example-hgemm-half PRIVATE -xhip )
+endif()
+
+foreach( exe IN LISTS hipblas-example-executables)
 
   # External header includes included as SYSTEM files
   target_include_directories( ${exe}

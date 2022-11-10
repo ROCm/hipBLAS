@@ -220,7 +220,7 @@ struct Arguments
     T get_alpha() const
     {
         return hipblas_isnan(alpha) || (is_complex<T> && hipblas_isnan(alphai))
-                   ? T(0)
+                   ? T(0.0)
                    : convert_alpha_beta<T>(alpha, alphai);
     }
 
@@ -228,7 +228,7 @@ struct Arguments
     T get_beta() const
     {
         return hipblas_isnan(beta) || (is_complex<T> && hipblas_isnan(betai))
-                   ? T(0)
+                   ? T(0.0)
                    : convert_alpha_beta<T>(beta, betai);
     }
 
