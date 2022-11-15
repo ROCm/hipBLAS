@@ -48,9 +48,9 @@ inline hipblasStatus_t setup_getrs_testing(host_vector<T>&     hA,
                                            int                 lda,
                                            int                 ldb)
 {
-    const int A_size    = N * lda;
-    const int B_size    = ldb;
-    const int Ipiv_size = N;
+    const size_t A_size    = size_t(N) * lda;
+    const size_t B_size    = ldb;
+    const size_t Ipiv_size = N;
 
     // Initial hA, hB, hX on CPU
     srand(1);

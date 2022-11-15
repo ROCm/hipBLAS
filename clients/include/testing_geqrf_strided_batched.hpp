@@ -37,6 +37,129 @@ inline void testname_geqrf_strided_batched(const Arguments& arg, std::string& na
 }
 
 template <typename T>
+inline hipblasStatus_t setup_geqrf_strided_batched_testing(host_vector<T>&   hA,
+                                                           device_vector<T>& dA,
+                                                           device_vector<T>& dIpiv,
+                                                           int               M,
+                                                           int               N,
+                                                           int               lda,
+                                                           hipblasStride     strideA,
+                                                           hipblasStride     strideP,
+                                                           int               batch_count)
+{
+    size_t A_size    = strideA * batch_count;
+    size_t Ipiv_size = strideP * batch_count;
+
+    // Initial hA on CPU
+    srand(1);
+    for(int b = 0; b < batch_count; b++)
+    {
+        T* hAb = hA.data() + b * strideA;
+
+        hipblas_init<T>(hAb, M, N, lda);
+
+        // scale A to avoid singularities
+        for(int i = 0; i < M; i++)
+        {
+            for(int j = 0; j < N; j++)
+            {
+                if(i == j)
+                    hAb[i + j * lda] += 400;
+                else
+                    hAb[i + j * lda] -= 4;
+            }
+        }
+    }
+
+    // Copy data from CPU to device
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(T)));
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_geqrf_strided_batched_bad_arg(const Arguments& arg)
+{
+    auto hipblasGeqrfStridedBatchedFn
+        = arg.fortran ? hipblasGeqrfStridedBatched<T, true> : hipblasGeqrfStridedBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    const int          M           = 100;
+    const int          N           = 101;
+    const int          K           = std::min(M, N);
+    const int          lda         = 102;
+    const int          batch_count = 2;
+
+    hipblasStride strideA   = lda * N;
+    hipblasStride strideP   = K;
+    size_t        A_size    = strideA * batch_count;
+    size_t        Ipiv_size = strideP * batch_count;
+
+    host_vector<T> hA(A_size);
+
+    device_vector<T> dA(A_size);
+    device_vector<T> dIpiv(Ipiv_size);
+    int              info = 0;
+
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_strided_batched_testing(
+                              hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count),
+                          HIPBLAS_STATUS_SUCCESS);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
+                              handle, M, N, dA, lda, strideA, dIpiv, strideP, nullptr, batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
+                              handle, -1, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-1, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
+                              handle, M, -1, dA, lda, strideA, dIpiv, strideP, &info, batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfStridedBatchedFn(
+            handle, M, N, nullptr, lda, strideA, dIpiv, strideP, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
+                              handle, M, N, dA, M - 1, strideA, dIpiv, strideP, &info, batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
+                              handle, M, N, dA, lda, strideA, nullptr, strideP, &info, batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-6, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfStridedBatchedFn(handle, M, N, dA, lda, strideA, dIpiv, strideP, &info, -1),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-9, info);
+
+    // If M == 0 || N == 0, A and ipiv can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfStridedBatchedFn(
+            handle, 0, N, nullptr, lda, strideA, nullptr, strideP, &info, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfStridedBatchedFn(
+            handle, M, 0, nullptr, lda, strideA, nullptr, strideP, &info, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // can't make any assumptions about ptrs when batch_count < 0, this is handled by rocSOLVER
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
 inline hipblasStatus_t testing_geqrf_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
@@ -96,30 +219,9 @@ inline hipblasStatus_t testing_geqrf_strided_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error;
 
-    // Initial hA on CPU
-    srand(1);
-    for(int b = 0; b < batch_count; b++)
-    {
-        T* hAb = hA.data() + b * strideA;
-
-        hipblas_init<T>(hAb, M, N, lda);
-
-        // scale A to avoid singularities
-        for(int i = 0; i < M; i++)
-        {
-            for(int j = 0; j < N; j++)
-            {
-                if(i == j)
-                    hAb[i + j * lda] += 400;
-                else
-                    hAb[i + j * lda] -= 4;
-            }
-        }
-    }
-
-    // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(T)));
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_strided_batched_testing(
+                              hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count),
+                          HIPBLAS_STATUS_SUCCESS);
 
     /* =====================================================================
            HIPBLAS

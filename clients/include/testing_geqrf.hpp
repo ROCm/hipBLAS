@@ -21,6 +21,7 @@
  *
  * ************************************************************************ */
 
+#include "gtest/gtest.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -33,6 +34,91 @@ using hipblasGeqrfModel = ArgumentModel<e_M, e_N, e_lda>;
 inline void testname_geqrf(const Arguments& arg, std::string& name)
 {
     hipblasGeqrfModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t setup_geqrf_testing(
+    host_vector<T>& hA, device_vector<T>& dA, device_vector<T>& dIpiv, int M, int N, int lda)
+{
+    size_t A_size = size_t(lda) * N;
+    int    K      = std::min(M, N);
+
+    // Initial hA on CPU
+    srand(1);
+    hipblas_init<T>(hA, M, N, lda);
+
+    // scale A to avoid singularities
+    for(int i = 0; i < M; i++)
+    {
+        for(int j = 0; j < N; j++)
+        {
+            if(i == j)
+                hA[i + j * lda] += 400;
+            else
+                hA[i + j * lda] -= 4;
+        }
+    }
+
+    // Copy data from CPU to device
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, K * sizeof(T)));
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_geqrf_bad_arg(const Arguments& arg)
+{
+    auto hipblasGeqrfFn = arg.fortran ? hipblasGeqrf<T, true> : hipblasGeqrf<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    const int          M      = 100;
+    const int          N      = 101;
+    const int          lda    = 102;
+    const int          A_size = N * lda;
+    const int          K      = std::min(M, N);
+
+    host_vector<T> hA(A_size);
+
+    device_vector<T> dA(A_size);
+    device_vector<T> dIpiv(K);
+    int              info = 0;
+
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, nullptr),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, -1, N, dA, lda, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-1, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, -1, dA, lda, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, nullptr, lda, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, M - 1, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+
+    // If M == 0 || N == 0, A and ipiv can be nullptr
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, 0, N, nullptr, lda, nullptr, &info),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, 0, nullptr, lda, nullptr, &info),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
@@ -57,22 +143,7 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || lda < std::max(1, M);
     if(invalid_size || !M || !N)
     {
-        // including dA so can test lda info param
-        device_vector<T> dA(1);
-        hipblasStatus_t  status = hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info);
-        EXPECT_HIPBLAS_STATUS(
-            status, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
-
-        int expected_info = 0;
-        if(M < 0)
-            expected_info = -1;
-        else if(N < 0)
-            expected_info = -2;
-        else if(lda < std::max(1, M))
-            expected_info = -4;
-        unit_check_general(1, 1, 1, &expected_info, &info);
-
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -86,25 +157,7 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
 
     double gpu_time_used, hipblas_error;
 
-    // Initial hA on CPU
-    srand(1);
-    hipblas_init<T>(hA, M, N, lda);
-
-    // scale A to avoid singularities
-    for(int i = 0; i < M; i++)
-    {
-        for(int j = 0; j < N; j++)
-        {
-            if(i == j)
-                hA[i + j * lda] += 400;
-            else
-                hA[i + j * lda] -= 4;
-        }
-    }
-
-    // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(T)));
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
 
     /* =====================================================================
            HIPBLAS

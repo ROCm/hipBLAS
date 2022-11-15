@@ -193,6 +193,6 @@ INSTANTIATE_TEST_SUITE_P(hipblasGetrsBatched,
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
 
-INSTANTIATE_TEST_SUITE_P(hipblasGetrsBadArg,
+INSTANTIATE_TEST_SUITE_P(hipblasGetrsBatchedBadArg,
                          getrs_batched_gtest_bad_arg,
                          Combine(ValuesIn(is_fortran)));
