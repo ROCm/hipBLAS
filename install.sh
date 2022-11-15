@@ -721,7 +721,7 @@ pushd .
     CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
     -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hip;$(pwd)/../deps/deps-install;${cuda_path};${cmake_prefix_path}" \
     -DROCM_DISABLE_LDCONFIG=ON \
-    -DCMAKE_SKIP_RPATH=TRUE \
+    -DCMAKE_SKIP_INSTALL_RPATH=TRUE \
     -DROCM_PATH="${rocm_path}" ../..
   else
     CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
