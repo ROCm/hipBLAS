@@ -40,7 +40,7 @@ const vector<vector<int>> matrix_size_range = {{10, 10, 10}, {10, 10, 20}, {600,
 
 const vector<double> stride_scale_range = {2.5};
 
-const vector<int> batch_count_range = {-1, 0, 2};
+const vector<int> batch_count_range = {2};
 
 const vector<bool> is_fortran = {false, true};
 
