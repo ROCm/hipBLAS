@@ -81,7 +81,7 @@ inline hipblasStatus_t testing_geqrf_batched_bad_arg(const Arguments& arg)
     const int          N           = 101;
     const int          lda         = 102;
     const int          batch_count = 2;
-    const int          A_size      = N * lda;
+    const size_t       A_size      = size_t(N) * lda;
     const int          K           = std::min(M, N);
 
     host_batch_vector<T> hA(A_size, 1, batch_count);

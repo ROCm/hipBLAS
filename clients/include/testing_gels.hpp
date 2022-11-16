@@ -50,8 +50,8 @@ inline hipblasStatus_t testing_gels_bad_arg(const Arguments& arg)
     const hipblasOperation_t opN   = HIPBLAS_OP_N;
     const hipblasOperation_t opBad = is_complex<T> ? HIPBLAS_OP_T : HIPBLAS_OP_C;
 
-    const int A_size = lda * N;
-    const int B_size = ldb * nrhs;
+    const size_t A_size = size_t(lda) * N;
+    const size_t B_size = size_t(ldb) * nrhs;
 
     device_vector<T>   dA(A_size);
     device_vector<T>   dB(B_size);
@@ -152,7 +152,7 @@ inline hipblasStatus_t testing_gels(const Arguments& arg)
     hipblasOperation_t trans = char2hipblas_operation(transc);
 
     size_t A_size = size_t(lda) * N;
-    size_t B_size = ldb * nrhs;
+    size_t B_size = size_t(ldb) * nrhs;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || nrhs < 0 || lda < M || ldb < M || ldb < N)

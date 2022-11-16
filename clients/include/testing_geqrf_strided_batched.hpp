@@ -91,7 +91,7 @@ inline hipblasStatus_t testing_geqrf_strided_batched_bad_arg(const Arguments& ar
     const int          lda         = 102;
     const int          batch_count = 2;
 
-    hipblasStride strideA   = lda * N;
+    hipblasStride strideA   = size_t(lda) * N;
     hipblasStride strideP   = K;
     size_t        A_size    = strideA * batch_count;
     size_t        Ipiv_size = strideP * batch_count;

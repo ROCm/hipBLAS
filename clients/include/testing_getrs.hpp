@@ -99,8 +99,8 @@ inline hipblasStatus_t testing_getrs_bad_arg(const Arguments& arg)
     const int          nrhs      = 1;
     const int          lda       = 101;
     const int          ldb       = 102;
-    const int          A_size    = N * lda;
-    const int          B_size    = ldb;
+    const size_t       A_size    = size_t(N) * lda;
+    const size_t       B_size    = ldb;
     const int          Ipiv_size = N;
 
     const hipblasOperation_t op = HIPBLAS_OP_N;

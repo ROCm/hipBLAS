@@ -55,8 +55,8 @@ inline hipblasStatus_t testing_gels_strided_batched_bad_arg(const Arguments& arg
 
     const hipblasStride strideA = size_t(lda) * N;
     const hipblasStride strideB = size_t(ldb) * nrhs;
-    const int           A_size  = strideA * batchCount;
-    const int           B_size  = strideB * batchCount;
+    const size_t        A_size  = strideA * batchCount;
+    const size_t        B_size  = strideB * batchCount;
 
     device_vector<T>   dA(A_size);
     device_vector<T>   dB(B_size);

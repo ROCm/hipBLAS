@@ -104,9 +104,9 @@ inline hipblasStatus_t testing_getrs_batched_bad_arg(const Arguments& arg)
     const int          ldb         = 102;
     const int          batch_count = 2;
 
-    const int A_size    = N * lda;
-    const int B_size    = ldb;
-    const int Ipiv_size = batch_count * N;
+    const size_t A_size    = size_t(N) * lda;
+    const size_t B_size    = ldb;
+    const size_t Ipiv_size = size_t(N) * batch_count;
 
     const hipblasOperation_t op = HIPBLAS_OP_N;
 
