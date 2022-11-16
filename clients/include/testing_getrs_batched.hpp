@@ -130,10 +130,6 @@ inline hipblasStatus_t testing_getrs_batched_bad_arg(const Arguments& arg)
         HIPBLAS_STATUS_SUCCESS);
 
     EXPECT_HIPBLAS_STATUS(
-        hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, ldb, nullptr, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-
-    EXPECT_HIPBLAS_STATUS(
         hipblasGetrsBatchedFn(handle, op, -1, nrhs, dAp, lda, dIpiv, dBp, ldb, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
@@ -144,36 +140,22 @@ inline hipblasStatus_t testing_getrs_batched_bad_arg(const Arguments& arg)
     EXPECT_EQ(-3, info);
 
     EXPECT_HIPBLAS_STATUS(
-        hipblasGetrsBatchedFn(
-            handle, op, N, nrhs, nullptr, lda, dIpiv, dBp, ldb, &info, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-4, info);
-
-    EXPECT_HIPBLAS_STATUS(
         hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, N - 1, dIpiv, dBp, ldb, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-5, info);
-
-    EXPECT_HIPBLAS_STATUS(
-        hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, nullptr, dBp, ldb, &info, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-6, info);
-
-    EXPECT_HIPBLAS_STATUS(
-        hipblasGetrsBatchedFn(
-            handle, op, N, nrhs, dAp, lda, dIpiv, nullptr, ldb, &info, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-7, info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, N - 1, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-8, info);
 
+    // cuBLAS returns HIPBLAS_STATUS_EXECUTION_FAILED and gives info == 0
+#ifndef __HIP_PLATFORM_NVCC__
     EXPECT_HIPBLAS_STATUS(
         hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, ldb, &info, -1),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-10, info);
+#endif
 
     // If N == 0, A, B, and ipiv can be nullptr
     EXPECT_HIPBLAS_STATUS(
@@ -190,6 +172,30 @@ inline hipblasStatus_t testing_getrs_batched_bad_arg(const Arguments& arg)
     EXPECT_EQ(0, info);
 
     // can't make any assumptions about ptrs when batch_count < 0, this is handled by rocSOLVER
+
+    // cuBLAS beckend doesn't check for nullptrs, including info, hipBLAS/rocSOLVER does
+#ifndef __HIP_PLATFORM_NVCC__
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, ldb, nullptr, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(
+            handle, op, N, nrhs, nullptr, lda, dIpiv, dBp, ldb, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, nullptr, dBp, ldb, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-6, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(
+            handle, op, N, nrhs, dAp, lda, dIpiv, nullptr, ldb, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-7, info);
+#endif
 
     return HIPBLAS_STATUS_SUCCESS;
 }

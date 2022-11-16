@@ -112,19 +112,9 @@ inline hipblasStatus_t testing_geqrf_batched_bad_arg(const Arguments& arg)
     EXPECT_EQ(-2, info);
 
     EXPECT_HIPBLAS_STATUS(
-        hipblasGeqrfBatchedFn(handle, M, N, nullptr, lda, dIpivp, &info, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-3, info);
-
-    EXPECT_HIPBLAS_STATUS(
         hipblasGeqrfBatchedFn(handle, M, N, dAp, M - 1, dIpivp, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
-
-    EXPECT_HIPBLAS_STATUS(
-        hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, nullptr, &info, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-5, info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, dIpivp, &info, -1),
                           HIPBLAS_STATUS_INVALID_VALUE);
@@ -142,6 +132,19 @@ inline hipblasStatus_t testing_geqrf_batched_bad_arg(const Arguments& arg)
     EXPECT_EQ(0, info);
 
     // can't make any assumptions about ptrs when batch_count < 0, this is handled by rocSOLVER
+
+    // cuBLAS beckend doesn't check for nullptrs for A and ipiv
+#ifndef __HIP_PLATFORM_NVCC__
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, nullptr, lda, dIpivp, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, nullptr, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+#endif
 
     return HIPBLAS_STATUS_SUCCESS;
 }

@@ -90,6 +90,9 @@ protected:
     virtual void TearDown() {}
 };
 
+// Not doing bad_arg testing with cuBLAS backend for now
+// Error codes given by cuBLAS seem inaccurate.
+#ifndef __HIP_PLATFORM_NVCC__
 TEST_P(gels_batched_gtest_bad_arg, gels_batched_gtest_bad_arg_test)
 {
     Arguments arg;
@@ -99,6 +102,7 @@ TEST_P(gels_batched_gtest_bad_arg, gels_batched_gtest_bad_arg_test)
     EXPECT_EQ(testing_gels_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(testing_gels_batched_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
 }
+#endif
 
 TEST_P(gels_batched_gtest, gels_batched_gtest_float)
 {
@@ -203,7 +207,8 @@ INSTANTIATE_TEST_SUITE_P(hipblasGelsBatched,
                                  ValuesIn(trans_range),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
-
+#ifndef __HIP_PLATFORM_NVCC__
 INSTANTIATE_TEST_SUITE_P(hipblasGelsBatchedBadArg,
                          gels_batched_gtest_bad_arg,
                          Combine(ValuesIn(is_fortran)));
+#endif
