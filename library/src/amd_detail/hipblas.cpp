@@ -210,9 +210,6 @@ rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
 {
     switch(type)
     {
-    case HIPBLAS_R_16B:
-        return rocblas_datatype_bf16_r;
-
     case HIPBLAS_R_16F:
         return rocblas_datatype_f16_r;
 
@@ -222,12 +219,6 @@ rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
     case HIPBLAS_R_64F:
         return rocblas_datatype_f64_r;
 
-    case HIPBLAS_R_8I:
-        return rocblas_datatype_i8_r;
-
-    case HIPBLAS_R_32I:
-        return rocblas_datatype_i32_r;
-
     case HIPBLAS_C_16F:
         return rocblas_datatype_f16_c;
 
@@ -236,6 +227,36 @@ rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
 
     case HIPBLAS_C_64F:
         return rocblas_datatype_f64_c;
+
+    case HIPBLAS_R_8I:
+        return rocblas_datatype_i8_r;
+
+    case HIPBLAS_R_8U:
+        return rocblas_datatype_u8_r;
+
+    case HIPBLAS_R_32I:
+        return rocblas_datatype_i32_r;
+
+    case HIPBLAS_R_32U:
+        return rocblas_datatype_u32_r;
+
+    case HIPBLAS_C_8I:
+        return rocblas_datatype_i8_c;
+
+    case HIPBLAS_C_8U:
+        return rocblas_datatype_u8_c;
+
+    case HIPBLAS_C_32I:
+        return rocblas_datatype_i32_c;
+
+    case HIPBLAS_C_32U:
+        return rocblas_datatype_u32_c;
+
+    case HIPBLAS_R_16B:
+        return rocblas_datatype_bf16_r;
+
+    case HIPBLAS_C_16B:
+        return rocblas_datatype_bf16_c;
     }
     throw HIPBLAS_STATUS_INVALID_ENUM;
 }
@@ -16240,11 +16261,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else
         *info = 0;
@@ -16272,11 +16293,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else
         *info = 0;
@@ -16304,11 +16325,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else
         *info = 0;
@@ -16341,11 +16362,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else
         *info = 0;
@@ -16380,11 +16401,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else if(batch_count < 0)
         *info = -7;
@@ -16415,11 +16436,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else if(batch_count < 0)
         *info = -7;
@@ -16450,11 +16471,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else if(batch_count < 0)
         *info = -7;
@@ -16491,11 +16512,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -5;
     else if(batch_count < 0)
         *info = -7;
@@ -16535,11 +16556,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -6;
     else if(batch_count < 0)
         *info = -9;
@@ -16572,11 +16593,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -6;
     else if(batch_count < 0)
         *info = -9;
@@ -16609,11 +16630,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -6;
     else if(batch_count < 0)
         *info = -9;
@@ -16654,11 +16675,11 @@ try
         *info = -1;
     else if(n < 0)
         *info = -2;
-    else if(A == NULL)
+    else if(A == NULL && m * n)
         *info = -3;
     else if(lda < std::max(1, m))
         *info = -4;
-    else if(tau == NULL)
+    else if(tau == NULL && m * n)
         *info = -6;
     else if(batch_count < 0)
         *info = -9;

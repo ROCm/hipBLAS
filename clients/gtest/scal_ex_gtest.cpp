@@ -214,12 +214,12 @@ TEST_P(scal_ex_gtest, scal_strided_batched_ex)
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
-INSTANTIATE_TEST_CASE_P(hipblasScalEx,
-                        scal_ex_gtest,
-                        Combine(ValuesIn(N_range),
-                                ValuesIn(alpha_range),
-                                ValuesIn(incx_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(precisions),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasScalEx,
+                         scal_ex_gtest,
+                         Combine(ValuesIn(N_range),
+                                 ValuesIn(alpha_range),
+                                 ValuesIn(incx_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(precisions),
+                                 ValuesIn(is_fortran)));

@@ -108,7 +108,7 @@ const bool is_fortran[] = {false, true};
 /* ============================Setup Arguments======================================= */
 
 // Please use "class Arguments" (see utility.hpp) to pass parameters to templated testers;
-// Some routines may not touch/use certain "members" of objects "argus".
+// Some routines may not touch/use certain "members" of objects "arg".
 // like BLAS-1 Scal does not have lda, BLAS-2 HEMV does not have ldb, ldc;
 // That is fine. These testers & routines will leave untouched members alone.
 // Do not use std::tuple to directly pass parameters to testers
@@ -144,7 +144,7 @@ Arguments setup_hemv_arguments(hemv_tuple tup)
     arg.alpha = alpha_beta[0];
     arg.beta  = alpha_beta[1];
 
-    arg.transA_option = transA;
+    arg.transA = transA;
 
     arg.fortran = fortran;
 
@@ -153,18 +153,18 @@ Arguments setup_hemv_arguments(hemv_tuple tup)
     return arg;
 }
 
-class hemv_gtest_strided_batched : public ::TestWithParam<hemv_tuple>
+class hemv_strided_batched_gtest : public ::TestWithParam<hemv_tuple>
 {
 protected:
-    hemv_gtest_strided_batched() {}
-    virtual ~hemv_gtest_strided_batched() {}
+    hemv_strided_batched_gtest() {}
+    virtual ~hemv_strided_batched_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
 #ifndef __HIP_PLATFORM_NVCC__
 
-TEST_P(hemv_gtest_strided_batched, hemv_gtest_float_complex)
+TEST_P(hemv_strided_batched_gtest, hemv_gtest_float_complex)
 {
     Arguments arg = setup_hemv_arguments(GetParam());
 
@@ -191,7 +191,7 @@ TEST_P(hemv_gtest_strided_batched, hemv_gtest_float_complex)
 // The combinations are  { {M, N, lda}, {incx,incy} {stride_scale}, {alpha, beta}, {transA}, {batch_count} }
 
 INSTANTIATE_TEST_SUITE_P(hipblasHemvStridedBatched,
-                         hemv_gtest_strided_batched,
+                         hemv_strided_batched_gtest,
                          Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(incx_incy_range),
                                  ValuesIn(stride_scale_range),

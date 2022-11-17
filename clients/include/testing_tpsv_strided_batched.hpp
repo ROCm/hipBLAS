@@ -30,23 +30,28 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
+using hipblasTpsvStridedBatchedModel
+    = ArgumentModel<e_uplo, e_transA, e_diag, e_N, e_incx, e_stride_scale, e_batch_count>;
+
+inline void testname_tpsv_strided_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasTpsvStridedBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_tpsv_strided_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasTpsvStridedBatchedFn
         = FORTRAN ? hipblasTpsvStridedBatched<T, true> : hipblasTpsvStridedBatched<T, false>;
 
-    int                N            = argus.N;
-    int                incx         = argus.incx;
-    char               char_uplo    = argus.uplo_option;
-    char               char_diag    = argus.diag_option;
-    char               char_transA  = argus.transA_option;
-    hipblasFillMode_t  uplo         = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t  diag         = char2hipblas_diagonal(char_diag);
-    hipblasOperation_t transA       = char2hipblas_operation(char_transA);
-    double             stride_scale = argus.stride_scale;
-    int                batch_count  = argus.batch_count;
+    hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
+    int                N            = arg.N;
+    int                incx         = arg.incx;
+    double             stride_scale = arg.stride_scale;
+    int                batch_count  = arg.batch_count;
 
     int           dim_AP   = N * (N + 1) / 2;
     int           abs_incx = incx < 0 ? -incx : incx;
@@ -57,7 +62,7 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
     size_t        size_AP  = strideAP * batch_count;
     size_t        size_x   = stridex * batch_count;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -86,10 +91,9 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
 
     double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
     // Initial Data on CPU
-    hipblas_init_matrix(
-        hA, argus, N, N, N, strideA, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hA, arg, N, N, N, strideA, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
-        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
+        hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
     for(int b = 0; b < batch_count; b++)
@@ -113,12 +117,12 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
             hAb[i + i * N] = t;
         }
         //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(char_uplo, N, hAb, N);
+        cblas_potrf<T>(arg.uplo, N, hAb, N);
 
         //  make hA unit diagonal if diag == rocblas_diagonal_unit
-        if(char_diag == 'U' || char_diag == 'u')
+        if(arg.diag == 'U' || arg.diag == 'u')
         {
-            if('L' == char_uplo || 'l' == char_uplo)
+            if('L' == arg.uplo || 'l' == arg.uplo)
                 for(int i = 0; i < N; i++)
                 {
                     T diag = hAb[i + i * N];
@@ -152,7 +156,7 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasTpsvStridedBatchedFn(
             handle, uplo, transA, diag, N, dAP, strideAP, dx_or_b, incx, stridex, batch_count));
@@ -167,7 +171,7 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
         {
             hipblas_error = std::abs(vector_norm_1<T>(
                 N, abs_incx, hx.data() + b * stridex, hx_or_b_1.data() + b * stridex));
-            if(argus.unit_check)
+            if(arg.unit_check)
             {
                 double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
                 unit_check_error(hipblas_error, tolerance);
@@ -176,15 +180,15 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
             cumulative_hipblas_error += hipblas_error;
         }
     }
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasTpsvStridedBatchedFn(
@@ -192,19 +196,12 @@ hipblasStatus_t testing_tpsv_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_diag_option,
-                      e_N,
-                      e_incx,
-                      e_stride_x,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         tpsv_gflop_count<T>(N),
-                         tpsv_gbyte_count<T>(N),
-                         cumulative_hipblas_error);
+        hipblasTpsvStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     tpsv_gflop_count<T>(N),
+                                                     tpsv_gbyte_count<T>(N),
+                                                     cumulative_hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

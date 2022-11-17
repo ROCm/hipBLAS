@@ -29,20 +29,33 @@
 
 /* ============================================================================================ */
 
-template <typename T, bool CONJ = false>
-hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
+using hipblasDotStridedBatchedModel
+    = ArgumentModel<e_N, e_incx, e_incy, e_stride_scale, e_batch_count>;
+
+inline void testname_dot_strided_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasDotStridedBatchedModel{}.test_name(arg, name);
+}
+
+inline void testname_dotc_strided_batched(const Arguments& arg, std::string& name)
+{
+    hipblasDotStridedBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T, bool CONJ = false>
+inline hipblasStatus_t testing_dot_strided_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasDotStridedBatchedFn
         = FORTRAN
               ? (CONJ ? hipblasDotcStridedBatched<T, true> : hipblasDotStridedBatched<T, true>)
               : (CONJ ? hipblasDotcStridedBatched<T, false> : hipblasDotStridedBatched<T, false>);
 
-    int    N            = argus.N;
-    int    incx         = argus.incx;
-    int    incy         = argus.incy;
-    double stride_scale = argus.stride_scale;
-    int    batch_count  = argus.batch_count;
+    int    N            = arg.N;
+    int    incx         = arg.incx;
+    int    incy         = arg.incy;
+    double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
 
     int           abs_incx = incx >= 0 ? incx : -incx;
     int           abs_incy = incy >= 0 ? incy : -incy;
@@ -55,7 +68,7 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
     if(!sizeY)
         sizeY = 1;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -108,15 +121,15 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_vector(
-        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true, true);
+        hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true, true);
     hipblas_init_vector(
-        hy, argus, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
+        hy, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -162,12 +175,12 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
                                                   &h_cpu_result[b]);
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result1);
             unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result2);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host
                 = norm_check_general<T>('F', 1, batch_count, 1, h_cpu_result, h_hipblas_result1);
@@ -177,16 +190,16 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
 
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
@@ -202,21 +215,20 @@ hipblasStatus_t testing_dot_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_y, e_batch_count>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            dot_gflop_count<CONJ, T>(N),
-            dot_gbyte_count<T>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasDotStridedBatchedModel{}.log_args<T>(std::cout,
+                                                    arg,
+                                                    gpu_time_used,
+                                                    dot_gflop_count<CONJ, T>(N),
+                                                    dot_gbyte_count<T>(N),
+                                                    hipblas_error_host,
+                                                    hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
-hipblasStatus_t testing_dotc_strided_batched(const Arguments& argus)
+inline hipblasStatus_t testing_dotc_strided_batched(const Arguments& arg)
 {
-    return testing_dot_strided_batched<T, true>(argus);
+    return testing_dot_strided_batched<T, true>(arg);
 }
