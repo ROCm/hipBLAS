@@ -30,22 +30,30 @@
 
 /* ============================================================================================ */
 
-template <typename T, bool CONJ>
-hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
+using hipblasGerStridedBatchedModel
+    = ArgumentModel<e_M, e_N, e_alpha, e_incx, e_incy, e_lda, e_stride_scale, e_batch_count>;
+
+inline void testname_ger_strided_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN                    = argus.fortran;
+    hipblasGerStridedBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T, bool CONJ>
+inline hipblasStatus_t testing_ger_strided_batched(const Arguments& arg)
+{
+    bool FORTRAN                    = arg.fortran;
     auto hipblasGerStridedBatchedFn = FORTRAN ? (CONJ ? hipblasGerStridedBatched<T, true, true>
                                                       : hipblasGerStridedBatched<T, false, true>)
                                               : (CONJ ? hipblasGerStridedBatched<T, true, false>
                                                       : hipblasGerStridedBatched<T, false, false>);
 
-    int    M            = argus.M;
-    int    N            = argus.N;
-    int    incx         = argus.incx;
-    int    incy         = argus.incy;
-    int    lda          = argus.lda;
-    double stride_scale = argus.stride_scale;
-    int    batch_count  = argus.batch_count;
+    int    M            = arg.M;
+    int    N            = arg.N;
+    int    incx         = arg.incx;
+    int    incy         = arg.incy;
+    int    lda          = arg.lda;
+    double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
 
     int           abs_incx = incx >= 0 ? incx : -incx;
     int           abs_incy = incy >= 0 ? incy : -incy;
@@ -56,7 +64,7 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
     size_t        x_size   = stride_x * batch_count;
     size_t        y_size   = stride_y * batch_count;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -97,15 +105,14 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    T h_alpha = argus.get_alpha<T>();
+    T h_alpha = arg.get_alpha<T>();
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, argus, M, N, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
+        hA, arg, M, N, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
-        hx, argus, M, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan, false, true);
-    hipblas_init_vector(
-        hy, argus, N, abs_incy, stride_y, batch_count, hipblas_client_alpha_sets_nan);
+        hx, arg, M, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(hy, arg, N, abs_incy, stride_y, batch_count, hipblas_client_alpha_sets_nan);
 
     // copy matrix is easy in STL; hB = hA: save a copy in hB which will be output of CPU BLAS
     hA_cpu = hA;
@@ -116,7 +123,7 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * y_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -176,13 +183,13 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(M, N, batch_count, lda, stride_A, hA_cpu.data(), hA_host.data());
             unit_check_general<T>(
                 M, N, batch_count, lda, stride_A, hA_cpu.data(), hA_device.data());
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<T>(
                 'F', M, N, lda, stride_A, hA_cpu.data(), hA_host.data(), batch_count);
@@ -191,17 +198,17 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * lda * N, hipMemcpyHostToDevice));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGerStridedBatchedFn(handle,
@@ -221,23 +228,13 @@ hipblasStatus_t testing_ger_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_M,
-                      e_N,
-                      e_alpha,
-                      e_incx,
-                      e_stride_x,
-                      e_incy,
-                      e_stride_y,
-                      e_lda,
-                      e_stride_a,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         ger_gflop_count<T>(M, N),
-                         ger_gbyte_count<T>(M, N),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasGerStridedBatchedModel{}.log_args<T>(std::cout,
+                                                    arg,
+                                                    gpu_time_used,
+                                                    ger_gflop_count<T>(M, N),
+                                                    ger_gbyte_count<T>(M, N),
+                                                    hipblas_error_host,
+                                                    hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

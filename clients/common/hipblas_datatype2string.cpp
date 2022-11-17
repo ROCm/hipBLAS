@@ -32,7 +32,7 @@ hipblas_initialization string2hipblas_initialization(const std::string& value)
         value == "rand_int"   ? hipblas_initialization::rand_int   :
         value == "trig_float" ? hipblas_initialization::trig_float :
         value == "hpl"        ? hipblas_initialization::hpl        :
-        static_cast<hipblas_initialization>(-1);
+        static_cast<hipblas_initialization>(0); // invalid enum
 }
 // clang-format on
 
@@ -184,6 +184,6 @@ hipblasDatatype_t string2hipblas_datatype(const std::string& value)
         value == "u32_r"                 ? HIPBLAS_R_32U  :
         value == "u8_c"                  ? HIPBLAS_C_8U   :
         value == "u32_c"                 ? HIPBLAS_C_32U  :
-        static_cast<hipblasDatatype_t>(-1);
+        HIPBLAS_DATATYPE_INVALID;
 }
 // clang-format on

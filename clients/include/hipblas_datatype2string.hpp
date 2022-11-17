@@ -60,13 +60,13 @@ inline std::ostream& operator<<(std::ostream& os, hipblas_initialization init)
 // Complex output
 inline std::ostream& operator<<(std::ostream& os, const hipblasComplex& x)
 {
-    os << "'(" << x.real() << "," << x.imag() << ")'";
+    os << "'(" << x.real() << ":" << x.imag() << ")'";
     return os;
 }
 
 inline std::ostream& operator<<(std::ostream& os, const hipblasDoubleComplex& x)
 {
-    os << "'(" << x.real() << "," << x.imag() << ")'";
+    os << "'(" << x.real() << ":" << x.imag() << ")'";
     return os;
 }
 
@@ -131,6 +131,8 @@ inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
         return "bf16_r";
     case HIPBLAS_C_16B:
         return "bf16_c";
+    case HIPBLAS_DATATYPE_INVALID:
+        return "invalid";
     }
     return "invalid";
 }

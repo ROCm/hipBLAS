@@ -28,19 +28,27 @@
 
 #include "testing_common.hpp"
 
+using hipblasGelsModel = ArgumentModel<e_transA, e_M, e_N, e_lda, e_ldb>;
+
+inline void testname_gels(const Arguments& arg, std::string& name)
+{
+    hipblasGelsModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_gels(const Arguments& argus)
+inline hipblasStatus_t testing_gels(const Arguments& arg)
 {
     using U            = real_t<T>;
-    bool FORTRAN       = argus.fortran;
+    bool FORTRAN       = arg.fortran;
     auto hipblasGelsFn = FORTRAN ? hipblasGels<T, true> : hipblasGels<T, false>;
 
-    int  N      = argus.N;
-    int  M      = argus.M;
-    int  nrhs   = argus.K;
-    int  lda    = argus.lda;
-    int  ldb    = argus.ldb;
-    char transc = argus.transA_option;
+    char transc = arg.transA;
+    int  N      = arg.N;
+    int  M      = arg.M;
+    int  nrhs   = arg.K;
+    int  lda    = arg.lda;
+    int  ldb    = arg.ldb;
+
     if(is_complex<T> && transc == 'T')
         transc = 'C';
     else if(!is_complex<T> && transc == 'C')
@@ -69,7 +77,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
     device_vector<int> dInfo(1);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA, hB, hX on CPU
     srand(1);
@@ -93,7 +101,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -121,7 +129,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
         if(info_input != 0)
             hipblas_error += 1.0;
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             double eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
@@ -130,15 +138,15 @@ hipblasStatus_t testing_gels(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(
@@ -146,12 +154,12 @@ hipblasStatus_t testing_gels(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
-                                                       argus,
-                                                       gpu_time_used,
-                                                       ArgumentLogging::NA_value,
-                                                       ArgumentLogging::NA_value,
-                                                       hipblas_error);
+        hipblasGelsModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       ArgumentLogging::NA_value,
+                                       ArgumentLogging::NA_value,
+                                       hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

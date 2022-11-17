@@ -66,9 +66,9 @@ Arguments setup_gels_strided_batched_arguments(gels_strided_batched_tuple tup)
     arg.lda = matrix_size[3];
     arg.ldb = matrix_size[4];
 
-    arg.transA_option = trans;
-    arg.stride_scale  = strideScale;
-    arg.batch_count   = batchCount;
+    arg.transA       = trans;
+    arg.stride_scale = strideScale;
+    arg.batch_count  = batchCount;
 
     arg.fortran = fortran;
 

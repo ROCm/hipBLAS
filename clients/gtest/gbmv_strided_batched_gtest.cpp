@@ -103,7 +103,7 @@ const bool is_fortran[] = {false, true};
 /* ============================Setup Arguments======================================= */
 
 // Please use "class Arguments" (see utility.hpp) to pass parameters to templated testers;
-// Some routines may not touch/use certain "members" of objects "argus".
+// Some routines may not touch/use certain "members" of objects "arg".
 // like BLAS-1 Scal does not have lda, BLAS-2 GBMV does not have ldb, ldc;
 // That is fine. These testers & routines will leave untouched members alone.
 // Do not use std::tuple to directly pass parameters to testers
@@ -142,7 +142,7 @@ Arguments setup_gbmv_arguments(gbmv_tuple tup)
     arg.alpha = alpha_beta[0];
     arg.beta  = alpha_beta[1];
 
-    arg.transA_option = transA;
+    arg.transA = transA;
 
     arg.fortran = fortran;
 
@@ -151,18 +151,18 @@ Arguments setup_gbmv_arguments(gbmv_tuple tup)
     return arg;
 }
 
-class gbmv_gtest_strided_batched : public ::TestWithParam<gbmv_tuple>
+class gbmv_strided_batched_gtest : public ::TestWithParam<gbmv_tuple>
 {
 protected:
-    gbmv_gtest_strided_batched() {}
-    virtual ~gbmv_gtest_strided_batched() {}
+    gbmv_strided_batched_gtest() {}
+    virtual ~gbmv_strided_batched_gtest() {}
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
 
 #ifndef __HIP_PLATFORM_NVCC__
 
-TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float)
+TEST_P(gbmv_strided_batched_gtest, gbmv_gtest_float)
 {
     Arguments arg = setup_gbmv_arguments(GetParam());
 
@@ -184,7 +184,7 @@ TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float)
     }
 }
 
-TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float_complex)
+TEST_P(gbmv_strided_batched_gtest, gbmv_gtest_float_complex)
 {
     Arguments arg = setup_gbmv_arguments(GetParam());
 
@@ -211,7 +211,7 @@ TEST_P(gbmv_gtest_strided_batched, gbmv_gtest_float_complex)
 // The combinations are  { {M, N, lda}, {incx,incy} {stride_scale}, {alpha, beta}, {transA}, {batch_count} }
 
 INSTANTIATE_TEST_SUITE_P(hipblasGbmvStridedBatched,
-                         gbmv_gtest_strided_batched,
+                         gbmv_strided_batched_gtest,
                          Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(incx_incy_range),
                                  ValuesIn(stride_scale_range),
