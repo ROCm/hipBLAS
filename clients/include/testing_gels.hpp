@@ -91,6 +91,7 @@ inline hipblasStatus_t testing_gels_bad_arg(const Arguments& arg)
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-7, info);
 
+    // Explicit values to check for ldb < M and ldb < N
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsFn(handle, opN, 100, 200, nrhs, dA, lda, dB, 199, &info, dInfo),
         HIPBLAS_STATUS_INVALID_VALUE);

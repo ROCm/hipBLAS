@@ -109,6 +109,7 @@ inline hipblasStatus_t testing_gels_batched_bad_arg(const Arguments& arg)
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-7, info);
 
+    // Explicit values to check for ldb < M and ldb < N
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, 100, 200, nrhs, dAp, lda, dBp, 199, &info, dInfo, batchCount),

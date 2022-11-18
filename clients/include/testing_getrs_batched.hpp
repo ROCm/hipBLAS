@@ -166,8 +166,7 @@ inline hipblasStatus_t testing_getrs_batched_bad_arg(const Arguments& arg)
 
     // if nrhs == 0, B can be nullptr
     EXPECT_HIPBLAS_STATUS(
-        hipblasGetrsBatchedFn(
-            handle, op, 0, nrhs, dAp, lda, dIpiv, nullptr, ldb, &info, batch_count),
+        hipblasGetrsBatchedFn(handle, op, N, 0, dAp, lda, dIpiv, nullptr, ldb, &info, batch_count),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 

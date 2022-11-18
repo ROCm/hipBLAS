@@ -301,8 +301,8 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
     // if nrhs == 0, B can be nullptr
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
+                                                       N,
                                                        0,
-                                                       nrhs,
                                                        dA,
                                                        lda,
                                                        strideA,

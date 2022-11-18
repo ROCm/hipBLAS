@@ -158,7 +158,7 @@ inline hipblasStatus_t testing_getrs_bad_arg(const Arguments& arg)
     EXPECT_EQ(0, info);
 
     // if nrhs == 0, B can be nullptr
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, 0, nrhs, dA, lda, dIpiv, nullptr, ldb, &info),
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, 0, dA, lda, dIpiv, nullptr, ldb, &info),
                           HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
