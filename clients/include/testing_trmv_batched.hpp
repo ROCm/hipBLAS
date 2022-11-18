@@ -30,27 +30,33 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_trmv_batched(const Arguments& argus)
+using hipblasTrmvBatchedModel
+    = ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_lda, e_incx, e_batch_count>;
+
+inline void testname_trmv_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasTrmvBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_trmv_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasTrmvBatchedFn
         = FORTRAN ? hipblasTrmvBatched<T, true> : hipblasTrmvBatched<T, false>;
 
-    int M    = argus.M;
-    int lda  = argus.lda;
-    int incx = argus.incx;
+    hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
+    int                M           = arg.M;
+    int                lda         = arg.lda;
+    int                incx        = arg.incx;
+    int                batch_count = arg.batch_count;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     size_t A_size   = size_t(lda) * M;
 
-    int batch_count = argus.batch_count;
-
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(argus.diag_option);
-
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -77,14 +83,14 @@ hipblasStatus_t testing_trmv_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.memcheck());
     CHECK_HIP_ERROR(dx.memcheck());
 
-    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, argus, hipblas_client_never_set_nan, false, true);
+    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
     hres.copy_from(hx);
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -112,25 +118,25 @@ hipblasStatus_t testing_trmv_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(1, M, batch_count, abs_incx, hx, hres);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>('F', 1, M, abs_incx, hx, hres, batch_count);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasTrmvBatchedFn(handle,
@@ -146,19 +152,12 @@ hipblasStatus_t testing_trmv_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_diag_option,
-                      e_M,
-                      e_lda,
-                      e_incx,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         trmv_gflop_count<T>(M),
-                         trmv_gbyte_count<T>(M),
-                         hipblas_error);
+        hipblasTrmvBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              trmv_gflop_count<T>(M),
+                                              trmv_gbyte_count<T>(M),
+                                              hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

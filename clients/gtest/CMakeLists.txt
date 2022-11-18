@@ -19,11 +19,13 @@
 # CTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # ########################################################################
 
+set( THREADS_PREFER_PTHREAD_FLAG ON )
+find_package( Threads REQUIRED )
+
 # Linking lapack library requires fortran flags
 if(NOT WIN32)
     enable_language( Fortran )
 endif()
-find_package( cblas REQUIRED CONFIG PATHS ${LAPACK_DIR} )
 
 if( NOT TARGET hipblas )
   find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
@@ -118,10 +120,14 @@ endif()
 set( hipblas_test_common
   ../common/utility.cpp
   ../common/cblas_interface.cpp
+  ../common/clients_common.cpp
   ../common/norm.cpp
   ../common/unit.cpp
   ../common/near.cpp
   ../common/arg_check.cpp
+  ../common/argument_model.cpp
+  ../common/hipblas_arguments.cpp
+  ../common/hipblas_parse_data.cpp
   ../common/hipblas_datatype2string.cpp
   ../common/hipblas_template_specialization.cpp
   ${BLIS_CPP}
@@ -148,9 +154,8 @@ target_include_directories( hipblas-test
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
 )
 
-set( THREADS_PREFER_PTHREAD_FLAG ON )
-find_package( Threads REQUIRED )
-target_link_libraries( hipblas-test PRIVATE Threads::Threads )
+
+
 
 target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 
@@ -159,24 +164,21 @@ target_include_directories( hipblas-test
   SYSTEM PRIVATE
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
     ${ROCM_PATH}/hsa/include
 )
 
 if (NOT WIN32)
-    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client roc::hipblas cblas lapack)
+    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
 endif()
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas cblas lapack GTest::GTest )
-
-if(LINK_BLIS)
-  target_link_libraries( hipblas-test PRIVATE ${BLIS_LIBRARY} )
-else()
-  target_link_libraries( hipblas-test PRIVATE blas )
-endif()
+target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )
 
 # need mf16c flag for float->half convertion
-target_compile_options( hipblas-test PRIVATE -mf16c )
+target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
+
+target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 )
 
 if( NOT USE_CUDA )
   target_link_libraries( hipblas-test PRIVATE hip::host )
@@ -201,7 +203,7 @@ else( )
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
   )
 
-  target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} Threads::Threads )
+  target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} )
 endif( )
 
 if (WIN32)
@@ -211,6 +213,7 @@ if (WIN32)
     CONFIGURE_DEPENDS
     ${LAPACK_DIR}/bin/*.dll
     ${BLIS_DIR}/lib/*.dll
+    ${OPENBLAS_DIR}/bin/*.dll
     ${HIP_DIR}/bin/*.dll
     ${HIP_DIR}/bin/hipinfo.exe
     ${ROCBLAS_PATH}/bin/rocblas.dll
@@ -226,7 +229,7 @@ if (WIN32)
 endif()
 
 set_target_properties( hipblas-test PROPERTIES
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARED_REQUIRED ON
     CXX_EXTENSIONS OFF
     IMPORT_PREFIX ""

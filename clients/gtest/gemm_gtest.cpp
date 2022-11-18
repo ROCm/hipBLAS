@@ -77,7 +77,7 @@ const bool is_fortran[] = {false, true};
 /* ============================Setup Arguments======================================= */
 
 // Please use "class Arguments" (see utility.hpp) to pass parameters to templated testers;
-// Some routines may not touch/use certain "members" of objects "argus".
+// Some routines may not touch/use certain "members" of objects "arg".
 // like BLAS-1 Scal does not have lda, BLAS-2 GEMV does not have ldb, ldc;
 // That is fine. These testers & routines will leave untouched members alone.
 // Do not use std::tuple to directly pass parameters to testers
@@ -108,8 +108,8 @@ Arguments setup_gemm_arguments(gemm_tuple tup)
     arg.beta   = alpha_beta[2];
     arg.betai  = alpha_beta[3];
 
-    arg.transA_option = transA_transB[0];
-    arg.transB_option = transA_transB[1];
+    arg.transA = transA_transB[0];
+    arg.transB = transA_transB[1];
 
     arg.fortran = fortran;
 
@@ -146,11 +146,11 @@ TEST_P(gemm_gtest, gemm_gtest_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        else if(arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        else if(arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -184,11 +184,11 @@ TEST_P(gemm_gtest, gemm_gtest_double)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        else if(arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        else if(arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -222,11 +222,11 @@ TEST_P(gemm_gtest, gemm_gtest_float_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        else if(arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        else if(arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -260,11 +260,11 @@ TEST_P(gemm_gtest, gemm_gtest_double_complex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transA_option == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+        else if(arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.transB_option == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
+        else if(arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

@@ -88,7 +88,7 @@ const bool is_fortran[] = {false, true};
 /* ============================Setup Arguments======================================= */
 
 // Please use "class Arguments" (see utility.hpp) to pass parameters to templated testers;
-// Some routines may not touch/use certain "members" of objects "argus".
+// Some routines may not touch/use certain "members" of objects "arg".
 // like BLAS-1 Scal does not have lda, BLAS-2 GEMV does not have ldb, ldc;
 // That is fine. These testers & routines will leave untouched members alone.
 // Do not use std::tuple to directly pass parameters to testers
@@ -102,7 +102,7 @@ Arguments setup_hpr_arguments(hpr_tuple tup)
     arg.N            = std::get<0>(tup);
     arg.incx         = std::get<1>(tup);
     arg.alpha        = std::get<2>(tup);
-    arg.uplo_option  = std::get<3>(tup);
+    arg.uplo         = std::get<3>(tup);
     arg.stride_scale = std::get<4>(tup);
     arg.batch_count  = std::get<5>(tup);
     arg.fortran      = std::get<6>(tup);
