@@ -34,6 +34,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 
 typedef std::tuple<vector<int>, char, bool> gels_tuple;
+typedef std::tuple<bool>                    gels_bad_arg_tuple;
 
 // {m, n, nrhs, lda, ldb}
 const vector<vector<int>> matrix_size_range
@@ -67,6 +68,15 @@ Arguments setup_gels_arguments(gels_tuple tup)
     return arg;
 }
 
+class gels_gtest_bad_arg : public ::TestWithParam<gels_bad_arg_tuple>
+{
+protected:
+    gels_gtest_bad_arg() {}
+    virtual ~gels_gtest_bad_arg() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
 class gels_gtest : public ::TestWithParam<gels_tuple>
 {
 protected:
@@ -77,6 +87,16 @@ protected:
 };
 
 #ifndef __HIP_PLATFORM_NVCC__
+
+TEST_P(gels_gtest_bad_arg, gels_gtest_bad_arg_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_gels_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_gels_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_gels_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_gels_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+}
 
 TEST_P(gels_gtest, gels_gtest_float)
 {
@@ -180,5 +200,7 @@ INSTANTIATE_TEST_SUITE_P(hipblasGels,
                          Combine(ValuesIn(matrix_size_range),
                                  ValuesIn(trans_range),
                                  ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(hipblasGelsBadArg, gels_gtest_bad_arg, Combine(ValuesIn(is_fortran)));
 
 #endif

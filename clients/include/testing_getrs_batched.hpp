@@ -36,6 +36,170 @@ inline void testname_getrs_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+inline hipblasStatus_t setup_getrs_batched_testing(host_batch_vector<T>&   hA,
+                                                   host_batch_vector<T>&   hB,
+                                                   host_batch_vector<T>&   hX,
+                                                   host_vector<int>&       hIpiv,
+                                                   device_batch_vector<T>& dA,
+                                                   device_batch_vector<T>& dB,
+                                                   device_vector<int>&     dIpiv,
+                                                   int                     N,
+                                                   int                     lda,
+                                                   int                     ldb,
+                                                   int                     batch_count)
+{
+    hipblasStride strideP   = N;
+    size_t        A_size    = size_t(lda) * N;
+    size_t        B_size    = size_t(ldb) * 1;
+    size_t        Ipiv_size = strideP * batch_count;
+
+    // Initial hA, hB, hX on CPU
+    hipblas_init(hA, true);
+    hipblas_init(hX);
+    srand(1);
+    hipblasOperation_t op = HIPBLAS_OP_N;
+    for(int b = 0; b < batch_count; b++)
+    {
+        // scale A to avoid singularities
+        for(int i = 0; i < N; i++)
+        {
+            for(int j = 0; j < N; j++)
+            {
+                if(i == j)
+                    hA[b][i + j * lda] += 400;
+                else
+                    hA[b][i + j * lda] -= 4;
+            }
+        }
+
+        // Calculate hB = hA*hX;
+        cblas_gemm<T>(op, op, N, 1, N, (T)1, hA[b], lda, hX[b], ldb, (T)0, hB[b], ldb);
+
+        // LU factorize hA on the CPU
+        int info = cblas_getrf<T>(N, N, hA[b], lda, hIpiv.data() + b * strideP);
+        if(info != 0)
+        {
+            std::cerr << "LU decomposition failed" << std::endl;
+            return HIPBLAS_STATUS_INTERNAL_ERROR;
+        }
+    }
+
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_getrs_batched_bad_arg(const Arguments& arg)
+{
+    auto hipblasGetrsBatchedFn
+        = arg.fortran ? hipblasGetrsBatched<T, true> : hipblasGetrsBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    const int          N           = 100;
+    const int          nrhs        = 1;
+    const int          lda         = 101;
+    const int          ldb         = 102;
+    const int          batch_count = 2;
+
+    const size_t A_size    = size_t(N) * lda;
+    const size_t B_size    = ldb;
+    const size_t Ipiv_size = size_t(N) * batch_count;
+
+    const hipblasOperation_t op = HIPBLAS_OP_N;
+
+    host_batch_vector<T> hA(A_size, 1, batch_count);
+    host_batch_vector<T> hB(B_size, 1, batch_count);
+    host_batch_vector<T> hX(B_size, 1, batch_count);
+    host_vector<int>     hIpiv(Ipiv_size);
+
+    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_batch_vector<T> dB(B_size, 1, batch_count);
+    device_vector<int>     dIpiv(Ipiv_size);
+    int                    info = 0;
+
+    T* const* dAp = dA.ptr_on_device();
+    T* const* dBp = dB.ptr_on_device();
+
+    // Need initialization code because even with bad params we call roc/cu-solver
+    // so want to give reasonable data
+    EXPECT_HIPBLAS_STATUS(
+        setup_getrs_batched_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, -1, nrhs, dAp, lda, dIpiv, dBp, ldb, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, N, -1, dAp, lda, dIpiv, dBp, ldb, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, N - 1, dIpiv, dBp, ldb, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, N - 1, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-8, info);
+
+    // cuBLAS returns HIPBLAS_STATUS_EXECUTION_FAILED and gives info == 0
+#ifndef __HIP_PLATFORM_NVCC__
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, ldb, &info, -1),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-10, info);
+#endif
+
+    // If N == 0, A, B, and ipiv can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(
+            handle, op, 0, nrhs, nullptr, lda, nullptr, nullptr, ldb, &info, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // if nrhs == 0, B can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, N, 0, dAp, lda, dIpiv, nullptr, ldb, &info, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // can't make any assumptions about ptrs when batch_count < 0, this is handled by rocSOLVER
+
+    // cuBLAS beckend doesn't check for nullptrs, including info, hipBLAS/rocSOLVER does
+#ifndef __HIP_PLATFORM_NVCC__
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, ldb, nullptr, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(
+            handle, op, N, nrhs, nullptr, lda, dIpiv, dBp, ldb, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, nullptr, dBp, ldb, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-6, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsBatchedFn(
+            handle, op, N, nrhs, dAp, lda, dIpiv, nullptr, ldb, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-7, info);
+#endif
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
 inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
@@ -78,41 +242,11 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
-
-    // Initial hA, hB, hX on CPU
-    hipblas_init(hA, true);
-    hipblas_init(hX);
-    srand(1);
     hipblasOperation_t op = HIPBLAS_OP_N;
-    for(int b = 0; b < batch_count; b++)
-    {
-        // scale A to avoid singularities
-        for(int i = 0; i < N; i++)
-        {
-            for(int j = 0; j < N; j++)
-            {
-                if(i == j)
-                    hA[b][i + j * lda] += 400;
-                else
-                    hA[b][i + j * lda] -= 4;
-            }
-        }
 
-        // Calculate hB = hA*hX;
-        cblas_gemm<T>(op, op, N, 1, N, (T)1, hA[b], lda, hX[b], ldb, (T)0, hB[b], ldb);
-
-        // LU factorize hA on the CPU
-        info = cblas_getrf<T>(N, N, hA[b], lda, hIpiv.data() + b * strideP);
-        if(info != 0)
-        {
-            std::cerr << "LU decomposition failed" << std::endl;
-            return HIPBLAS_STATUS_INTERNAL_ERROR;
-        }
-    }
-
-    CHECK_HIP_ERROR(dA.transfer_from(hA));
-    CHECK_HIP_ERROR(dB.transfer_from(hB));
-    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
+    EXPECT_HIPBLAS_STATUS(
+        setup_getrs_batched_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -150,8 +284,10 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
+            int    zero      = 0;
 
             unit_check_error(hipblas_error, tolerance);
+            unit_check_general(1, 1, 1, &zero, &info);
         }
     }
 

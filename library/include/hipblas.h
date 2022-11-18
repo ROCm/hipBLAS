@@ -16379,7 +16379,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t      
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = j < 0, the j-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
    ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrs(hipblasHandle_t          handle,
@@ -16479,7 +16479,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = j < 0, the j-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of instances (systems) in the batch.
@@ -16600,7 +16600,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = j < 0, the j-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of instances (systems) in the batch.
@@ -16818,7 +16818,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             
     @param[out]
     info        pointer to an int on the host.\n
                 If info = 0, successful exit.
-                If info = j < 0, the j-th argument is invalid.
+                If info = j < 0, the argument at position -j is invalid.
     @param[out]
     deviceInfo  pointer to int on the GPU.\n
                 If info = 0, successful exit.
@@ -16938,7 +16938,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
     @param[out]
     info        pointer to an int on the host.\n
                 If info = 0, successful exit.
-                If info = j < 0, the j-th argument is invalid.
+                If info = j < 0, the argument at position -j is invalid.
     @param[out]
     deviceInfo  pointer to int. Array of batchCount integers on the GPU.\n
                 If deviceInfo[j] = 0, successful exit for solution of A_j.
@@ -17073,7 +17073,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgelsBatched(hipblasHandle_t             h
     @param[out]
     info        pointer to an int on the host.\n
                 If info = 0, successful exit.
-                If info = j < 0, the j-th argument is invalid.
+                If info = j < 0, the argument at position -j is invalid.
     @param[out]
     deviceInfo  pointer to int. Array of batchCount integers on the GPU.\n
                 If deviceInfo[j] = 0, successful exit for solution of A_j.
@@ -17201,7 +17201,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgelsStridedBatched(hipblasHandle_t       
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = j < 0, the j-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
 
     ********************************************************************/
 
@@ -17296,7 +17296,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = k < 0, the k-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
     @param[in]
     batchCount  int. batchCount >= 0.\n
                  Number of matrices in the batch.
@@ -17405,7 +17405,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = k < 0, the k-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
     @param[in]
     batchCount  int. batchCount >= 0.\n
                  Number of matrices in the batch.
