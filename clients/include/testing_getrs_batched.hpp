@@ -28,18 +28,25 @@
 
 #include "testing_common.hpp"
 
+using hipblasGetrsBatchedModel = ArgumentModel<e_N, e_lda, e_ldb, e_batch_count>;
+
+inline void testname_getrs_batched(const Arguments& arg, std::string& name)
+{
+    hipblasGetrsBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_getrs_batched(const Arguments& argus)
+inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasGetrsBatchedFn
         = FORTRAN ? hipblasGetrsBatched<T, true> : hipblasGetrsBatched<T, false>;
 
-    int N           = argus.N;
-    int lda         = argus.lda;
-    int ldb         = argus.ldb;
-    int batch_count = argus.batch_count;
+    int N           = arg.N;
+    int lda         = arg.lda;
+    int ldb         = arg.ldb;
+    int batch_count = arg.batch_count;
 
     hipblasStride strideP   = N;
     size_t        A_size    = size_t(lda) * N;
@@ -70,7 +77,7 @@ hipblasStatus_t testing_getrs_batched(const Arguments& argus)
     device_vector<int>     dIpiv(Ipiv_size);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA, hB, hX on CPU
     hipblas_init(hA, true);
@@ -107,7 +114,7 @@ hipblasStatus_t testing_getrs_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dB.transfer_from(hB));
     CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -139,7 +146,7 @@ hipblasStatus_t testing_getrs_batched(const Arguments& argus)
         }
 
         hipblas_error = norm_check_general<T>('F', N, 1, ldb, hB, hB1, batch_count);
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
@@ -148,15 +155,15 @@ hipblasStatus_t testing_getrs_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGetrsBatchedFn(handle,
@@ -173,12 +180,12 @@ hipblasStatus_t testing_getrs_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_ldb, e_batch_count>{}.log_args<T>(std::cout,
-                                                                      argus,
-                                                                      gpu_time_used,
-                                                                      getrs_gflop_count<T>(N, 1),
-                                                                      ArgumentLogging::NA_value,
-                                                                      hipblas_error);
+        hipblasGetrsBatchedModel{}.log_args<T>(std::cout,
+                                               arg,
+                                               gpu_time_used,
+                                               getrs_gflop_count<T>(N, 1),
+                                               ArgumentLogging::NA_value,
+                                               hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

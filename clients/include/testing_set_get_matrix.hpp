@@ -30,18 +30,25 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_set_get_matrix(const Arguments& argus)
+using hipblasSetGetMatrixModel = ArgumentModel<e_M, e_N, e_lda, e_ldb, e_ldc>;
+
+inline void testname_set_get_matrix(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN            = argus.fortran;
+    hipblasSetGetMatrixModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_set_get_matrix(const Arguments& arg)
+{
+    bool FORTRAN            = arg.fortran;
     auto hipblasSetMatrixFn = FORTRAN ? hipblasSetMatrixFortran : hipblasSetMatrix;
     auto hipblasGetMatrixFn = FORTRAN ? hipblasGetMatrixFortran : hipblasGetMatrix;
 
-    int rows = argus.rows;
-    int cols = argus.cols;
-    int lda  = argus.lda;
-    int ldb  = argus.ldb;
-    int ldc  = argus.ldc;
+    int rows = arg.rows;
+    int cols = arg.cols;
+    int lda  = arg.lda;
+    int ldb  = arg.ldb;
+    int ldc  = arg.ldc;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -59,7 +66,7 @@ hipblasStatus_t testing_set_get_matrix(const Arguments& argus)
     device_vector<T> dc(cols * ldc);
 
     double             hipblas_error = 0.0, gpu_time_used = 0.0;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
     srand(1);
@@ -82,7 +89,7 @@ hipblasStatus_t testing_set_get_matrix(const Arguments& argus)
     CHECK_HIPBLAS_ERROR(hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
     CHECK_HIPBLAS_ERROR(hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
            CPU BLAS
@@ -99,25 +106,25 @@ hipblasStatus_t testing_set_get_matrix(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(rows, cols, ldb, hb, hb_ref);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>('F', rows, cols, ldb, hb, hb_ref);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(
@@ -127,13 +134,12 @@ hipblasStatus_t testing_set_get_matrix(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_M, e_N, e_lda, e_ldb, e_ldc>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            ArgumentLogging::NA_value,
-            set_get_matrix_gbyte_count<T>(rows, cols),
-            hipblas_error);
+        hipblasSetGetMatrixModel{}.log_args<T>(std::cout,
+                                               arg,
+                                               gpu_time_used,
+                                               ArgumentLogging::NA_value,
+                                               set_get_matrix_gbyte_count<T>(rows, cols),
+                                               hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

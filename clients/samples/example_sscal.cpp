@@ -39,7 +39,6 @@ int main()
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     std::vector<float> hx(N);
-    std::vector<float> hz(N);
     float*             dx;
 
     double gpu_time_used;
@@ -48,16 +47,16 @@ int main()
     hipblasCreate(&handle);
 
     // allocate memory on device
-    hipMalloc(&dx, N * sizeof(float));
+    CHECK_HIP_ERROR(hipMalloc(&dx, N * sizeof(float)));
 
     // Initial Data on CPU
     srand(1);
     hipblas_init<float>(hx, 1, N, 1);
 
-    // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
-    hz = hx;
+    // copy vector is easy in STL; hz(hx): save a copy in hz which will be output of CPU BLAS
+    std::vector<float> hz(hx);
 
-    hipMemcpy(dx, hx.data(), sizeof(float) * N, hipMemcpyHostToDevice);
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(float) * N, hipMemcpyHostToDevice));
 
     printf("N        hipblas(us)     \n");
 
@@ -70,7 +69,7 @@ int main()
     status = hipblasSscal(handle, N, &alpha, dx, 1);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        hipFree(dx);
+        CHECK_HIP_ERROR(hipFree(dx));
         hipblasDestroy(handle);
         return status;
     }
@@ -78,7 +77,7 @@ int main()
     gpu_time_used = get_time_us() - gpu_time_used;
 
     // copy output from device to CPU
-    hipMemcpy(hx.data(), dx, sizeof(float) * N, hipMemcpyDeviceToHost);
+    CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(float) * N, hipMemcpyDeviceToHost));
 
     // verify hipblas_scal result
     bool error_in_element = false;
@@ -103,7 +102,7 @@ int main()
         printf("SSCAL TEST PASSES\n");
     }
 
-    hipFree(dx);
+    CHECK_HIP_ERROR(hipFree(dx));
     hipblasDestroy(handle);
     return EXIT_SUCCESS;
 }

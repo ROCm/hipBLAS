@@ -76,13 +76,13 @@ protected:
             if(PAD > 0)
             {
                 // Copy guard to device memory before allocated memory
-                hipMemcpy(d, guard, sizeof(guard), hipMemcpyHostToDevice);
+                CHECK_HIP_ERROR(hipMemcpy(d, guard, sizeof(guard), hipMemcpyHostToDevice));
 
                 // Point to allocated block
                 d += PAD;
 
                 // Copy guard to device memory after allocated memory
-                hipMemcpy(d + size, guard, sizeof(guard), hipMemcpyHostToDevice);
+                CHECK_HIP_ERROR(hipMemcpy(d + size, guard, sizeof(guard), hipMemcpyHostToDevice));
             }
         }
 #endif
@@ -99,7 +99,7 @@ protected:
                 U host[PAD];
 
                 // Copy device memory after allocated memory to host
-                hipMemcpy(host, d + size, sizeof(guard), hipMemcpyDeviceToHost);
+                CHECK_HIP_ERROR(hipMemcpy(host, d + size, sizeof(guard), hipMemcpyDeviceToHost));
 
                 // Make sure no corruption has occurred
                 EXPECT_EQ(memcmp(host, guard, sizeof(guard)), 0);
@@ -108,7 +108,7 @@ protected:
                 d -= PAD;
 
                 // Copy device memory after allocated memory to host
-                hipMemcpy(host, d, sizeof(guard), hipMemcpyDeviceToHost);
+                CHECK_HIP_ERROR(hipMemcpy(host, d, sizeof(guard), hipMemcpyDeviceToHost));
 
                 // Make sure no corruption has occurred
                 EXPECT_EQ(memcmp(host, guard, sizeof(guard)), 0);
