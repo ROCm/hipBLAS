@@ -21,6 +21,7 @@
  *
  * ************************************************************************ */
 
+#include "utility.h"
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -223,10 +224,24 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
                                     hC_gold.data(),
                                     ldc);
 
+            int archMajor = getArchMajor();
             if(unit_check)
             {
-                unit_check_general<Tc>(M, N, ldc, hC_gold, hC_host);
-                unit_check_general<Tc>(M, N, ldc, hC_gold, hC_device);
+                // check for mixed precision with 16 bit input and 32 bit computation
+                if((archMajor == 11)
+                   && ((std::is_same<Tc, float>{} && std::is_same<Ta, hipblasBfloat16>{})
+                       || (std::is_same<Tc, float>{} && std::is_same<Ta, hipblasHalf>{})))
+                {
+                    std::cout << "---------- archMajor == 11 -----------" << std::endl;
+                    const double tol = K * sum_error_tolerance_for_gfx11<Tex, Ta, Tc>;
+                    near_check_general<Tc>(M, N, ldc, hC_gold.data(), hC_host.data(), tol);
+                    near_check_general<Tc>(M, N, ldc, hC_gold.data(), hC_device.data(), tol);
+                }
+                else
+                {
+                    unit_check_general<Tc>(M, N, ldc, hC_gold, hC_host);
+                    unit_check_general<Tc>(M, N, ldc, hC_gold, hC_device);
+                }
             }
             if(norm_check)
             {
