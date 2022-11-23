@@ -226,7 +226,7 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
 
             if(unit_check)
             {
-                // check for mixed precision with 16 bit input and 32 bit computation
+                // check for float16/bfloat16 input
                 if((getArchMajor() == 11)
                    && ((std::is_same<Tex, float>{} && std::is_same<Ta, hipblasBfloat16>{})
                        || (std::is_same<Tex, float>{} && std::is_same<Ta, hipblasHalf>{})
