@@ -87,4 +87,37 @@ HIPBLAS_CLANG_STATIC constexpr double error_tolerance = 0.0;
 template <>
 HIPBLAS_CLANG_STATIC constexpr double error_tolerance<hipblasHalf> = 0.000061035;
 
+template <class Tc, class Ti, class To>
+static constexpr double sum_error_tolerance_for_gfx11 = 0.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double
+    sum_error_tolerance_for_gfx11<float, hipblasBfloat16, float> = 1 / 10000.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double
+    sum_error_tolerance_for_gfx11<float, hipblasBfloat16, hipblasBfloat16> = 1 / 10000.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double
+    sum_error_tolerance_for_gfx11<float, hipblasHalf, float> = 1 / 10000.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double
+    sum_error_tolerance_for_gfx11<float, hipblasHalf, hipblasHalf> = 1 / 10000.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double
+    sum_error_tolerance_for_gfx11<hipblasHalf, hipblasHalf, hipblasHalf> = 1 / 10000.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double
+    sum_error_tolerance_for_gfx11<hipblasComplex, hipblasComplex, hipblasComplex> = 1 / 10000.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double
+    sum_error_tolerance_for_gfx11<hipblasDoubleComplex,
+                                  hipblasDoubleComplex,
+                                  hipblasDoubleComplex> = 1 / 1000000.0;
+
 #endif
