@@ -960,10 +960,10 @@ public:
 
     ~hipblasLocalHandle();
 
-    hipblasLocalHandle(const hipblasLocalHandle&)            = delete;
-    hipblasLocalHandle(hipblasLocalHandle&&)                 = delete;
+    hipblasLocalHandle(const hipblasLocalHandle&) = delete;
+    hipblasLocalHandle(hipblasLocalHandle&&)      = delete;
     hipblasLocalHandle& operator=(const hipblasLocalHandle&) = delete;
-    hipblasLocalHandle& operator=(hipblasLocalHandle&&)      = delete;
+    hipblasLocalHandle& operator=(hipblasLocalHandle&&) = delete;
 
     // Allow hipblasLocalHandle to be used anywhere hipblas_handle is expected
     operator hipblasHandle_t&()
