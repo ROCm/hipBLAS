@@ -238,8 +238,21 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
 
         if(unit_check)
         {
-            unit_check_general<Tc>(M, N, batch_count, ldc, hC_gold, hC_host);
-            unit_check_general<Tc>(M, N, batch_count, ldc, hC_gold, hC_device);
+            // check for float16/bfloat16 input
+            if((getArchMajor() == 11)
+               && ((std::is_same<Tex, float>{} && std::is_same<Ta, hipblasBfloat16>{})
+                   || (std::is_same<Tex, float>{} && std::is_same<Ta, hipblasHalf>{})
+                   || (std::is_same<Tex, hipblasHalf>{} && std::is_same<Ta, hipblasHalf>{})))
+            {
+                const double tol = K * sum_error_tolerance_for_gfx11<Tex, Ta, Tc>;
+                near_check_general<Tc>(M, N, batch_count, ldc, hC_gold, hC_host, tol);
+                near_check_general<Tc>(M, N, batch_count, ldc, hC_gold, hC_device, tol);
+            }
+            else
+            {
+                unit_check_general<Tc>(M, N, batch_count, ldc, hC_gold, hC_host);
+                unit_check_general<Tc>(M, N, batch_count, ldc, hC_gold, hC_device);
+            }
         }
 
         if(norm_check)
