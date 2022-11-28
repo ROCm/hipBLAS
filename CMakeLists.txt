@@ -31,11 +31,12 @@ endif()
 
 # Consider removing this in the future
 # This should appear before the project command, because it does not use FORCE
-if( WIN32 )
-  set( CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/package" CACHE PATH "Install path prefix, prepended onto install directories" )
-else( )
-  set( CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE PATH "Install path prefix, prepended onto install directories" )
-endif( )
+#if( WIN32 )
+#  set( CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/package" CACHE PATH "Install path prefix, prepended onto install directories" )
+#else( )
+#  set( CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE PATH "Install path prefix, prepended onto install directories" )
+#endif( )
+
 
 # This has to be initialized before the project() command appears
 # Set the default of CMAKE_BUILD_TYPE to be release, unless user specifies with -D.  MSVC_IDE does not use CMAKE_BUILD_TYPE
@@ -43,55 +44,55 @@ if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
 endif()
 
-if (NOT WIN32)
-    if ( NOT DEFINED CMAKE_Fortran_COMPILER AND NOT DEFINED ENV{FC} )
-      set( CMAKE_Fortran_COMPILER  "gfortran" )
-    endif()
-    set( fortran_language "Fortran" )
-endif( )
+#if (NOT WIN32)
+#    if ( NOT DEFINED CMAKE_Fortran_COMPILER AND NOT DEFINED ENV{FC} )
+#      set( CMAKE_Fortran_COMPILER  "gfortran" )
+#    endif()
+#    set( fortran_language "Fortran" )
+#endif( )
 
 project( hipblas LANGUAGES CXX ${fortran_language} )
 
 # This finds the rocm-cmake project, and installs it if not found
 # rocm-cmake contains common cmake code for rocm projects to help setup and install
 set( PROJECT_EXTERN_DIR ${CMAKE_CURRENT_BINARY_DIR}/extern )
-find_package( ROCM 0.7.3 CONFIG QUIET PATHS /opt/rocm )
-if( NOT ROCM_FOUND )
-  set( rocm_cmake_tag "master" CACHE STRING "rocm-cmake tag to download" )
-  file( DOWNLOAD https://github.com/RadeonOpenCompute/rocm-cmake/archive/${rocm_cmake_tag}.zip
-    ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag}.zip )
+#find_package( ROCM 0.7.3 CONFIG QUIET PATHS /opt/rocm )
+#if( NOT ROCM_FOUND )
+#  set( rocm_cmake_tag "master" CACHE STRING "rocm-cmake tag to download" )
+#  file( DOWNLOAD https://github.com/RadeonOpenCompute/rocm-cmake/archive/${rocm_cmake_tag}.zip
+#    ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag}.zip )
 
-  execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag}.zip
-    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR} )
-  execute_process( COMMAND ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=${PROJECT_EXTERN_DIR}/rocm-cmake .
-    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag} )
-  execute_process( COMMAND ${CMAKE_COMMAND} --build rocm-cmake-${rocm_cmake_tag} --target install
-    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR})
+#  execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag}.zip
+#    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR} )
+#  execute_process( COMMAND ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=${PROJECT_EXTERN_DIR}/rocm-cmake .
+#    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag} )
+#  execute_process( COMMAND ${CMAKE_COMMAND} --build rocm-cmake-${rocm_cmake_tag} --target install
+#    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR})
 
-  find_package( ROCM 0.7.3 REQUIRED CONFIG PATHS ${PROJECT_EXTERN_DIR}/rocm-cmake )
-endif( )
+#  find_package( ROCM 0.7.3 REQUIRED CONFIG PATHS ${PROJECT_EXTERN_DIR}/rocm-cmake )
+#endif( )
 
-include( ROCMSetupVersion )
-include( ROCMCreatePackage )
-include( ROCMInstallTargets )
-include( ROCMPackageConfigHelpers )
-include( ROCMInstallSymlinks )
-include( ROCMClients )
-include( ROCMHeaderWrapper )
+#include( ROCMSetupVersion )
+#include( ROCMCreatePackage )
+#include( ROCMInstallTargets )
+#include( ROCMPackageConfigHelpers )
+#include( ROCMInstallSymlinks )
+#include( ROCMClients )
+#include( ROCMHeaderWrapper )
 
 set ( VERSION_STRING "0.54.0" )
-rocm_setup_version( VERSION ${VERSION_STRING} )
+#rocm_setup_version( VERSION ${VERSION_STRING} )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${ROCM_PATH}/lib/cmake/hip /opt/rocm/lib/cmake/hip ${HIP_DIR}/cmake )
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
-list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
+#list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
 
-option( BUILD_VERBOSE "Output additional build information" OFF )
+option( BUILD_VERBOSE "Output additional build information" ON )
 
-option( BUILD_WITH_SOLVER "Add additional functions from rocSOLVER" ON )
+option( BUILD_WITH_SOLVER "Add additional functions from rocSOLVER" OFF )
 
 if( BUILD_WITH_SOLVER )
     add_definitions( -D__HIP_PLATFORM_SOLVER__ )
@@ -132,14 +133,14 @@ endif()
 
 # FOR HANDLING ENABLE/DISABLE OPTIONAL BACKWARD COMPATIBILITY for FILE/FOLDER REORG
 option(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY "Build with file/folder reorg with backward compatibility enabled" ON)
-if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY AND NOT WIN32)
-  rocm_wrap_header_dir(
-    ${CMAKE_SOURCE_DIR}/library/include
-    PATTERNS "*.h"
-    GUARDS SYMLINK WRAPPER
-    WRAPPER_LOCATIONS ${CMAKE_INSTALL_INCLUDEDIR}
-  )
-endif()
+#if(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY AND NOT WIN32)
+#  rocm_wrap_header_dir(
+#    ${CMAKE_SOURCE_DIR}/library/include
+#    PATTERNS "*.h"
+#    GUARDS SYMLINK WRAPPER
+#    WRAPPER_LOCATIONS ${CMAKE_INSTALL_INCLUDEDIR}
+#  )
+#endif()
 
 add_subdirectory( library )
 
@@ -192,9 +193,9 @@ if( WIN32 )
 endif( )
 
 # Package specific CPACK vars
-if( NOT USE_CUDA )
-  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.47.0" "rocsolver >= 3.21.0")
-endif( )
+#if( NOT USE_CUDA )
+#  rocm_package_add_dependencies(DEPENDS "rocblas >= 2.47.0" "rocsolver >= 3.21.0")
+#endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
 set( CPACK_RPM_PACKAGE_LICENSE "MIT")
@@ -223,13 +224,13 @@ endif( )
 
 set( HIPBLAS_CONFIG_DIR "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" CACHE PATH "Path placed into ldconfig file" )
 
-rocm_create_package(
-    NAME ${package_name}
-    DESCRIPTION "Radeon Open Compute BLAS marshalling library"
-    MAINTAINER "hipBLAS Maintainer <hipblas-maintainer@amd.com>"
-    LDCONFIG
-    LDCONFIG_DIR ${HIPBLAS_CONFIG_DIR}
-)
+#rocm_create_package(
+#    NAME ${package_name}
+#    DESCRIPTION "Radeon Open Compute BLAS marshalling library"
+#    MAINTAINER "hipBLAS Maintainer <hipblas-maintainer@amd.com>"
+#    LDCONFIG
+#    LDCONFIG_DIR ${HIPBLAS_CONFIG_DIR}
+#)
 
 
 #
