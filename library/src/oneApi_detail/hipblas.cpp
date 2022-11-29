@@ -20,14 +20,13 @@
  * SOFTWARE.
  *
  * ************************************************************************ */
-#define __HIP_PLATFORM_SPIRV__
-#define __HIP_PLATFORM_SPIRV__
+
 //#include <hip/hip_runtime.h>
 #include <hipblas.h>
 #include <exceptions.hpp>
 #include <algorithm>
 #include <functional>
-//#include <CL/sycl.hpp>
+#include "sycl_w.h"
 //#include <math.h>
 
 
@@ -35,6 +34,7 @@ hipblasStatus_t
     hipblasScopy(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy)
 try
 {
+    print_me(); // coming from sycl_wrapper 
     // oneAPI call
     return HIPBLAS_STATUS_NOT_SUPPORTED;
     //return rocBLASStatusToHIPStatus(rocblas_scopy((rocblas_handle)handle, n, x, incx, y, incy));

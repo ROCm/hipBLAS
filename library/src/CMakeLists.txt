@@ -33,12 +33,41 @@ function( prepend_path prefix source_list_of_files return_list_of_files )
   set( ${return_list_of_files} ${new_list} PARENT_SCOPE )
 endfunction( )
 
+
+if (USE_ONEAPI)
+find_program(DPCPP_EXECUTABLE NAMES dpcpp
+	HINTS $ENV{CMPLR_ROOT}/linux/bin $ENV{ONEAPI_ROOT}/compiler/latest/linux/bin
+	PATHS /opt/intel/oneapi/compiler/latest/linux/bin)
+
+if(DPCPP_EXECUTABLE)
+	get_filename_component(DPCPP_CORE_BINDIR ${DPCPP_EXECUTABLE} DIRECTORY)
+	get_filename_component(DPCPP_CORE_LIBDIR "${DPCPP_CORE_BINDIR}/../../linux/compiler/lib/intel64_lin" ABSOLUTE)
+	get_filename_component(DPCPP_SYCL_LIBDIR "${DPCPP_CORE_BINDIR}/../../linux/lib" ABSOLUTE)
+endif()
+
+# the ENABLE_OMP_OFFLOAD is only required to unhide MKL::sycl in intel's MKLConfig.cmake file
+set(ENABLE_OMP_OFFLOAD ON)
+set(MKL_THREADING sequential)
+
+find_package(MKL CONFIG
+	HINTS $ENV{MKLROOT}/lib/cmake/mkl  $ENV{ONEAPI_ROOT}/mkl/latest/lib/cmake/mkl
+	PATHS /opt/intel/oneapi/mkl/latest/lib/cmake/mkl)
+
+# message(STATUS "DPCPP : ${DPCPP_EXECUTABLE} MKL: ${MKL_FOUND} ")
+
+if(DPCPP_EXECUTABLE AND MKL_FOUND)
+  message(STATUS "Found both MLK and DPCPP")
+  #include(mkl_and_icpx)
+endif()
+endif()
+
+
 # ########################################################################
 # Main
 # ########################################################################
 prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
 if( USE_ONEAPI)
-  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/oneApi_detail/hipblas.cpp" )
+  add_subdirectory(oneApi_detail)
 elseif( NOT USE_CUDA )
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/hipblas.cpp" )
 else( )
@@ -118,6 +147,17 @@ else( )
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
   )
 endif( )
+
+if (USE_ONEAPI)
+  target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_SPIRV__ )
+  target_link_libraries(hipblas
+  mkl_sycl
+  mkl_intel_ilp64
+  mkl_sequential
+  mkl_core
+  sycl
+  OpenCL)
+endif()
 
 # Internal header includes
 target_include_directories( hipblas
