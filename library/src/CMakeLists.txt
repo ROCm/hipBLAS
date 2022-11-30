@@ -41,9 +41,13 @@ find_program(DPCPP_EXECUTABLE NAMES dpcpp
 
 if(DPCPP_EXECUTABLE)
 	get_filename_component(DPCPP_CORE_BINDIR ${DPCPP_EXECUTABLE} DIRECTORY)
-	get_filename_component(DPCPP_CORE_LIBDIR "${DPCPP_CORE_BINDIR}/../../linux/compiler/lib/intel64_lin" ABSOLUTE)
-	get_filename_component(DPCPP_SYCL_LIBDIR "${DPCPP_CORE_BINDIR}/../../linux/lib" ABSOLUTE)
+	get_filename_component(DPCPP_CORE_LIBDIR "${DPCPP_CORE_BINDIR}/../lib" ABSOLUTE)
+  get_filename_component(DPCPP_INCLUDE_DIR "${DPCPP_CORE_BINDIR}/../include" ABSOLUTE)
 endif()
+
+message(STATUS "DPCPP_CORE_BINDIR: ${DPCPP_CORE_BINDIR}")
+message(STATUS "DPCPP_CORE_LIBDIR: ${DPCPP_CORE_LIBDIR}")
+message(STATUS "DPCPP_INCLUDE_DIR: ${DPCPP_INCLUDE_DIR}")
 
 # the ENABLE_OMP_OFFLOAD is only required to unhide MKL::sycl in intel's MKLConfig.cmake file
 set(ENABLE_OMP_OFFLOAD ON)
@@ -53,7 +57,7 @@ find_package(MKL CONFIG
 	HINTS $ENV{MKLROOT}/lib/cmake/mkl  $ENV{ONEAPI_ROOT}/mkl/latest/lib/cmake/mkl
 	PATHS /opt/intel/oneapi/mkl/latest/lib/cmake/mkl)
 
-# message(STATUS "DPCPP : ${DPCPP_EXECUTABLE} MKL: ${MKL_FOUND} ")
+message(STATUS "DPCPP : ${DPCPP_EXECUTABLE} MKL: ${MKL_FOUND} ")
 
 if(DPCPP_EXECUTABLE AND MKL_FOUND)
   message(STATUS "Found both MLK and DPCPP")
