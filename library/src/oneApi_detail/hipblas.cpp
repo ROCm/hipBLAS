@@ -27,17 +27,57 @@
 #include <algorithm>
 #include <functional>
 #include "sycl_w.h"
+#include "deps/onemkl.h"
 //#include <math.h>
 
+using namepace oneapi;
+
+hipblasStatus_t
+hipblasCreate(hipblasHandle_t* handle)
+try
+{
+    return syclblasCreate((syclblasHandle_t*)handle));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t
+hipblasDestroy(hipblasHandle_t handle)
+try
+{
+    return syclblasDestroy((syclblasHandle_t)handle));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t
+hipblasSetStream(hipblasHandle_t handle, hipStream_t stream)
+try
+{
+    // Obtain the handles to the LZ handlers.
+    unsigned long lzHandles[4];
+    int           nHandles = 0;
+    hiplzStreamNativeInfo(stream, lzHandles, &nHandles);
+
+    return syclblasSetStream((syclblasHandle_t)handle, nHandles, lzHandles, stream);
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
 
 hipblasStatus_t
     hipblasScopy(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy)
 try
 {
-    print_me(); // coming from sycl_wrapper 
-    // oneAPI call
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    //return rocBLASStatusToHIPStatus(rocblas_scopy((rocblas_handle)handle, n, x, incx, y, incy));
+    print_me(); // coming from sycl_wrapper
+
+    onemklScopy(syclblasGetSyclQueue((syclblasHandle_t) handle, n, x, incx, y, incy);  
+    return HIPBLAS_STATUS_SUCCESS;
 }
 catch(...)
 {
