@@ -147,6 +147,7 @@ try
     bool datafile            = hipblas_parse_data(argc, argv);
     bool atomics_not_allowed = false;
     bool log_function_name   = false;
+    bool log_datatype        = false;
 
     options_description desc("hipblas-bench command line options");
 
@@ -345,6 +346,10 @@ try
          bool_switch(&log_function_name)->default_value(false),
          "Function name precedes other itmes.")
 
+        ("log_datatype",
+         bool_switch(&log_datatype)->default_value(false),
+         "Include datatypes used in output.")
+
         ("fortran",
          bool_switch(&arg.fortran)->default_value(false),
          "Run using Fortran interface")
@@ -378,6 +383,8 @@ try
     arg.atomics_mode = atomics_not_allowed ? HIPBLAS_ATOMICS_NOT_ALLOWED : HIPBLAS_ATOMICS_ALLOWED;
 
     ArgumentModel_set_log_function_name(log_function_name);
+
+    ArgumentModel_set_log_datatype(log_datatype);
 
     // Device Query
     hipblas_int device_count = query_device_property();

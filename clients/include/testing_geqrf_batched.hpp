@@ -21,6 +21,7 @@
  *
  * ************************************************************************ */
 
+#include "gtest/gtest.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -33,6 +34,119 @@ using hipblasGeqrfBatchedModel = ArgumentModel<e_M, e_N, e_lda, e_batch_count>;
 inline void testname_geqrf_batched(const Arguments& arg, std::string& name)
 {
     hipblasGeqrfBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t setup_geqrf_batched_testing(host_batch_vector<T>&   hA,
+                                                   host_batch_vector<T>&   hIpiv,
+                                                   device_batch_vector<T>& dA,
+                                                   device_batch_vector<T>& dIpiv,
+                                                   int                     M,
+                                                   int                     N,
+                                                   int                     lda,
+                                                   int                     batch_count)
+{
+    // Initial hA on CPU
+    hipblas_init(hA, true);
+    srand(1);
+    for(int b = 0; b < batch_count; b++)
+    {
+        // scale A to avoid singularities
+        for(int i = 0; i < M; i++)
+        {
+            for(int j = 0; j < N; j++)
+            {
+                if(i == j)
+                    hA[b][i + j * lda] += 400;
+                else
+                    hA[b][i + j * lda] -= 4;
+            }
+        }
+    }
+
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dIpiv.transfer_from(hIpiv));
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_geqrf_batched_bad_arg(const Arguments& arg)
+{
+    auto hipblasGeqrfBatchedFn
+        = arg.fortran ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    const int          M           = 100;
+    const int          N           = 101;
+    const int          lda         = 102;
+    const int          batch_count = 2;
+    const size_t       A_size      = size_t(N) * lda;
+    const int          K           = std::min(M, N);
+
+    host_batch_vector<T> hA(A_size, 1, batch_count);
+    host_batch_vector<T> hIpiv(K, 1, batch_count);
+
+    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_batch_vector<T> dIpiv(K, 1, batch_count);
+    int                    info = 0;
+
+    T* const* dAp    = dA.ptr_on_device();
+    T* const* dIpivp = dIpiv.ptr_on_device();
+
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count),
+                          HIPBLAS_STATUS_SUCCESS);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, dIpivp, nullptr, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, -1, N, dAp, lda, dIpivp, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-1, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, -1, dAp, lda, dIpivp, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, dAp, M - 1, dIpivp, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, dIpivp, &info, -1),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-7, info);
+
+    // If M == 0 || N == 0, A and ipiv can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, 0, N, nullptr, lda, nullptr, &info, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, 0, nullptr, lda, nullptr, &info, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // can't make any assumptions about ptrs when batch_count < 0, this is handled by rocSOLVER
+
+    // cuBLAS beckend doesn't check for nullptrs for A and ipiv
+#ifndef __HIP_PLATFORM_NVCC__
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, nullptr, lda, dIpivp, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, nullptr, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+#endif
+
+    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
@@ -59,26 +173,7 @@ inline hipblasStatus_t testing_geqrf_batched(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || lda < std::max(1, M) || batch_count < 0;
     if(invalid_size || !M || !N || !batch_count)
     {
-        // including pointers so can test other params
-        device_batch_vector<T> dA(1, 1, 1);
-        device_batch_vector<T> dIpiv(1, 1, 1);
-        hipblasStatus_t        status = hipblasGeqrfBatched(
-            handle, M, N, dA.ptr_on_device(), lda, dIpiv.ptr_on_device(), &info, batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            status, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
-
-        int expected_info = 0;
-        if(M < 0)
-            expected_info = -1;
-        else if(N < 0)
-            expected_info = -2;
-        else if(lda < std::max(1, M))
-            expected_info = -4;
-        else if(batch_count < 0)
-            expected_info = -7;
-        unit_check_general(1, 1, 1, &expected_info, &info);
-
-        return status;
+        return HIPBLAS_STATUS_INVALID_VALUE;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -92,26 +187,8 @@ inline hipblasStatus_t testing_geqrf_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error;
 
-    // Initial hA on CPU
-    hipblas_init(hA, true);
-    srand(1);
-    for(int b = 0; b < batch_count; b++)
-    {
-        // scale A to avoid singularities
-        for(int i = 0; i < M; i++)
-        {
-            for(int j = 0; j < N; j++)
-            {
-                if(i == j)
-                    hA[b][i + j * lda] += 400;
-                else
-                    hA[b][i + j * lda] -= 4;
-            }
-        }
-    }
-
-    CHECK_HIP_ERROR(dA.transfer_from(hA));
-    CHECK_HIP_ERROR(dIpiv.transfer_from(hIpiv));
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count),
+                          HIPBLAS_STATUS_SUCCESS);
 
     /* =====================================================================
            HIPBLAS
