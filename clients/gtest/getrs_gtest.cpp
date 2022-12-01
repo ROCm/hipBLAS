@@ -34,6 +34,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 
 typedef std::tuple<vector<int>, double, int, bool> getrs_tuple;
+typedef std::tuple<bool>                           getrs_bad_arg_tuple;
 
 const vector<vector<int>> matrix_size_range
     = {{-1, 1, 1}, {10, 20, 100}, {500, 600, 600}, {1024, 1024, 1024}};
@@ -65,6 +66,15 @@ Arguments setup_getrs_arguments(getrs_tuple tup)
     return arg;
 }
 
+class getrs_gtest_bad_arg : public ::TestWithParam<getrs_bad_arg_tuple>
+{
+protected:
+    getrs_gtest_bad_arg() {}
+    virtual ~getrs_gtest_bad_arg() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
 class getrs_gtest : public ::TestWithParam<getrs_tuple>
 {
 protected:
@@ -75,6 +85,16 @@ protected:
 };
 
 #ifndef __HIP_PLATFORM_NVCC__
+
+TEST_P(getrs_gtest_bad_arg, getrs_gtest_bad_arg_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_getrs_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_getrs_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_getrs_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_getrs_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+}
 
 TEST_P(getrs_gtest, getrs_gtest_float)
 {
@@ -175,5 +195,7 @@ INSTANTIATE_TEST_SUITE_P(hipblasGetrs,
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(hipblasGetrsBadArg, getrs_gtest_bad_arg, Combine(ValuesIn(is_fortran)));
 
 #endif
