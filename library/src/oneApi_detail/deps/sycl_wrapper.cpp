@@ -1,11 +1,10 @@
 #include <iostream>
 
-#include <include/ze_api.h>
-#include <sycl.hpp>
-#include <ext/oneapi/backend/level_zero.hpp>
-#include <oneapi/mkl.hpp>
 #include "sycl.h"
 #include "sycl.hpp"
+#include <ext/oneapi/backend/level_zero.hpp>
+#include <include/ze_api.h>
+#include <oneapi/mkl.hpp>
 
 #define __HIP_PLATFORM_SPIRV__
 #include "hipblas.h"
@@ -20,32 +19,40 @@ struct syclblasHandle
     syclQueue_t    queue;
     hipStream_t    hip_stream;
 
-    syclblasHandle(void) :
-      platform(), device(), context(), queue(), hip_stream() {}
-    
-    ~syclblasHandle() {
-      syclQueueDestroy(queue);
-      syclContextDestroy(context);
-      syclDeviceDestroy(device);
-      syclPlatformDestroy(platform);
-    } 
+    syclblasHandle(void)
+        : platform()
+        , device()
+        , context()
+        , queue()
+        , hip_stream()
+    {
+    }
+
+    ~syclblasHandle()
+    {
+        syclQueueDestroy(queue);
+        syclContextDestroy(context);
+        syclDeviceDestroy(device);
+        syclPlatformDestroy(platform);
+    }
 };
 
 hipblasStatus_t syclblasCreate(syclblasHandle_t* handle)
 {
-  if (handle != nullptr) {
-    *handle = new syclblasHandle();
-  }
-  return (handle != nullptr) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
+    if(handle != nullptr)
+    {
+        *handle = new syclblasHandle();
+    }
+    return (handle != nullptr) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
 }
 
 hipblasStatus_t syclblasDestroy(syclblasHandle_t handle)
 {
-  if(handle != nullptr)
-  {
-    delete handle;
-  }
-  return (handle != nullptr) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
+    if(handle != nullptr)
+    {
+        delete handle;
+    }
+    return (handle != nullptr) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
 }
 
 hipblasStatus_t syclblasSetStream(syclblasHandle_t     handle,
@@ -98,10 +105,5 @@ hipblasStatus_t syclblasSetStream(syclblasHandle_t     handle,
 
 syclQueue_t syclblasGetSyclQueue(syclblasHandle_t handle)
 {
-  return handle->queue;
-}
-
-void print_me()
-{
-    std::cout << "From sycl_wrapper library" << std::endl;
+    return handle->queue;
 }

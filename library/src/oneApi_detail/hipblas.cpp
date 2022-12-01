@@ -22,30 +22,44 @@
  * ************************************************************************ */
 
 //#include <hip/hip_runtime.h>
-#include <hipblas.h>
-#include <exceptions.hpp>
-#include <algorithm>
-#include <functional>
-#include "sycl_w.h"
 #include "deps/onemkl.h"
+#include "sycl_w.h"
+#include <algorithm>
+#include <exceptions.hpp>
+#include <functional>
+#include <hip/hip_interop.h>
+#include <hipblas.h>
 //#include <math.h>
 
-hipblasStatus_t
-hipblasCreate(hipblasHandle_t* handle)
+// local functions
+static hipblasStatus_t updateSyclHandlesToCrrStream(hipStream_t stream, syclblasHandle_t handle)
+{
+    // Obtain the handles to the LZ handlers.
+    unsigned long lzHandles[4];
+    int           nHandles = 0;
+    hipGetBackendNativeHandles((uintptr_t)stream, lzHandles, &nHandles);
+    //Fix-Me : Should Sycl know hipStream_t??
+    syclblasSetStream(handle, lzHandles, nHandles, stream);
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+hipblasStatus_t hipblasCreate(hipblasHandle_t* handle)
 try
 {
+    // create syclBlas
     syclblasCreate((syclblasHandle_t*)handle);
 
+    hipStream_t nullStream = NULL; // default or null stream
     // set stream to default NULL stream
-    return hipblasSetStream(*handle, nullptr);
+    auto status = updateSyclHandlesToCrrStream(nullStream, (syclblasHandle_t)*handle);
+    return status;
 }
 catch(...)
 {
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t
-hipblasDestroy(hipblasHandle_t handle)
+hipblasStatus_t hipblasDestroy(hipblasHandle_t handle)
 try
 {
     return syclblasDestroy((syclblasHandle_t)handle);
@@ -55,16 +69,11 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t
-hipblasSetStream(hipblasHandle_t handle, hipStream_t stream)
+hipblasStatus_t hipblasSetStream(hipblasHandle_t handle, hipStream_t stream)
 try
 {
-    // Obtain the handles to the LZ handlers.
-    unsigned long lzHandles[4];
-    int           nHandles = 0;
-    hiplzStreamNativeInfo(stream, lzHandles, &nHandles);
-
-    return syclblasSetStream((syclblasHandle_t)handle, lzHandles, nHandles, stream);
+    return updateSyclHandlesToCrrStream(stream, (syclblasHandle_t)handle);
+    //return syclblasSetStream((syclblasHandle_t)handle, lzHandles, nHandles, stream);
 }
 catch(...)
 {
@@ -75,9 +84,7 @@ hipblasStatus_t
     hipblasScopy(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy)
 try
 {
-    print_me(); // coming from sycl_wrapper
-
-    onemklScopy(syclblasGetSyclQueue((syclblasHandle_t) handle), n, x, incx, y, incy);  
+    onemklScopy(syclblasGetSyclQueue((syclblasHandle_t)handle), n, x, incx, y, incy);
     return HIPBLAS_STATUS_SUCCESS;
 }
 catch(...)
