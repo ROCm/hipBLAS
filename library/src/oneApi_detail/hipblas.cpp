@@ -30,8 +30,6 @@
 #include "deps/onemkl.h"
 //#include <math.h>
 
-using namepace oneapi;
-
 hipblasStatus_t
 hipblasCreate(hipblasHandle_t* handle)
 try
@@ -39,7 +37,7 @@ try
     syclblasCreate((syclblasHandle_t*)handle);
 
     // set stream to default NULL stream
-    hipblasSetStream(handle, nullptr);
+    hipblasSetStream(*handle, nullptr);
 }
 catch(...)
 {
