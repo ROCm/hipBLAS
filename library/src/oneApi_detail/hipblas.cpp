@@ -37,7 +37,7 @@ try
     syclblasCreate((syclblasHandle_t*)handle);
 
     // set stream to default NULL stream
-    hipblasSetStream(*handle, nullptr);
+    return hipblasSetStream(*handle, nullptr);
 }
 catch(...)
 {
@@ -48,7 +48,7 @@ hipblasStatus_t
 hipblasDestroy(hipblasHandle_t handle)
 try
 {
-    return syclblasDestroy((syclblasHandle_t)handle));
+    return syclblasDestroy((syclblasHandle_t)handle);
 }
 catch(...)
 {
@@ -64,7 +64,7 @@ try
     int           nHandles = 0;
     hiplzStreamNativeInfo(stream, lzHandles, &nHandles);
 
-    return syclblasSetStream((syclblasHandle_t)handle, nHandles, lzHandles, stream);
+    return syclblasSetStream((syclblasHandle_t)handle, lzHandles, nHandles, stream);
 }
 catch(...)
 {
@@ -77,7 +77,7 @@ try
 {
     print_me(); // coming from sycl_wrapper
 
-    onemklScopy(syclblasGetSyclQueue((syclblasHandle_t) handle, n, x, incx, y, incy);  
+    onemklScopy(syclblasGetSyclQueue((syclblasHandle_t) handle), n, x, incx, y, incy);  
     return HIPBLAS_STATUS_SUCCESS;
 }
 catch(...)
