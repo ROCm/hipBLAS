@@ -30,13 +30,14 @@
 #include "deps/onemkl.h"
 //#include <math.h>
 
-using namepace oneapi;
-
 hipblasStatus_t
 hipblasCreate(hipblasHandle_t* handle)
 try
 {
-    return syclblasCreate((syclblasHandle_t*)handle));
+    syclblasCreate((syclblasHandle_t*)handle);
+
+    // set stream to default NULL stream
+    return hipblasSetStream(*handle, nullptr);
 }
 catch(...)
 {
@@ -47,7 +48,7 @@ hipblasStatus_t
 hipblasDestroy(hipblasHandle_t handle)
 try
 {
-    return syclblasDestroy((syclblasHandle_t)handle));
+    return syclblasDestroy((syclblasHandle_t)handle);
 }
 catch(...)
 {
@@ -63,7 +64,7 @@ try
     int           nHandles = 0;
     hiplzStreamNativeInfo(stream, lzHandles, &nHandles);
 
-    return syclblasSetStream((syclblasHandle_t)handle, nHandles, lzHandles, stream);
+    return syclblasSetStream((syclblasHandle_t)handle, lzHandles, nHandles, stream);
 }
 catch(...)
 {
@@ -76,7 +77,7 @@ try
 {
     print_me(); // coming from sycl_wrapper
 
-    onemklScopy(syclblasGetSyclQueue((syclblasHandle_t) handle, n, x, incx, y, incy);  
+    onemklScopy(syclblasGetSyclQueue((syclblasHandle_t) handle), n, x, incx, y, incy);  
     return HIPBLAS_STATUS_SUCCESS;
 }
 catch(...)
