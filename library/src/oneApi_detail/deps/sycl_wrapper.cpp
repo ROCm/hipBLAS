@@ -34,8 +34,7 @@ struct syclblasHandle
 hipblasStatus_t syclblasCreate(syclblasHandle_t* handle)
 {
   if (handle != nullptr) {
-    auto res = new syclblasHandle();
-    // FIX Me:  needs to get the default NULL stream from HIP runtime to set  
+    *handle = new syclblasHandle();
   }
   return (handle != nullptr) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
 }
