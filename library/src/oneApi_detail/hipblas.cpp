@@ -23,13 +23,14 @@
 
 //#include <hip/hip_runtime.h>
 #include "deps/onemkl.h"
-#include "sycl_w.h"
 #include <algorithm>
-#include <exceptions.hpp>
 #include <functional>
 #include <hip/hip_interop.h>
 #include <hipblas.h>
+#include <exceptions.hpp>
 //#include <math.h>
+
+#include "sycl_w.h"
 
 // local functions
 static hipblasStatus_t updateSyclHandlesToCrrStream(hipStream_t stream, syclblasHandle_t handle)
