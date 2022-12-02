@@ -2,6 +2,7 @@
 
 #include "deps/onemkl.h"
 #include "deps/sycl.h"
+#include <hipblas.h>
 #include <level_zero/ze_api.h>
 #include <stddef.h>
 
