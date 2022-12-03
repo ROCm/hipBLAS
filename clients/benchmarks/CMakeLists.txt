@@ -51,7 +51,9 @@ add_executable( hipblas-bench ${hipblas_bench_source} ${hipblas_benchmark_common
 
 target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 
-target_link_libraries( hipblas-bench PRIVATE blas )
+if (NOT WIN32)
+  target_link_libraries( hipblas-bench PRIVATE blas )
+endif()
 # if(LINK_BLIS)
 #   target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
 # else()
