@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Copyright (C) 2020-2021 Advanced Micro Devices, Inc. All rights reserved.
+"""Copyright (C) 2020-2022 Advanced Micro Devices, Inc. All rights reserved.
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -41,26 +41,38 @@ def parse_args():
     parser.add_argument('-b', '--rocblas', dest='rocblas_version', type=str, required=False, default="",
                         help='Specify rocblas version (e.g. 2.42.0). (optional).')
 
+    parser.add_argument(       '--address-sanitizer', dest='address_sanitizer', required=False, default=False,
+                        help='uild with address sanitizer enabled. (optional, default: False)')
+
     parser.add_argument(      '--build_dir', type=str, required=False, default = "build",
                         help='Configure & build process output directory.(optional, default: ./build)')
 
     parser.add_argument('-c', '--clients', required=False, default = False, dest='build_clients', action='store_true',
                         help='Build the library clients benchmark and gtest (optional, default: False. Generated binaries will be located at builddir/clients/staging)')
 
+    parser.add_argument(      '--cmake-arg', dest='cmake_args', type=str, required=False, default="",
+                        help='Forward the given arguments to CMake when configuring the build.')
+
     parser.add_argument(      '--cmake-darg', required=False, dest='cmake_dargs', action='append', default=[],
                         help='List of additional cmake defines for builds (optional, e.g. CMAKE)')
 
-    parser.add_argument(      '--cpu_ref_lib', type=str, required=False, default = "blis",
-                        help='Specify library to use for CPU reference code in testing (blis or lapack)')
+    parser.add_argument(      '--codecoverage', required=False, default=False, action='store_true',
+                        help='Code coverage build. Requires Debug (-g|--debug) or RelWithDebInfo mode (-k|--relwithdebinfo), (optional, default: False)')
 
-    parser.add_argument('-g', '--debug', required=False, default = False,  action='store_true',
+    parser.add_argument('-g', '--debug', required=False, default = False, action='store_true',
                         help='Build in Debug mode.(optional, default: False)')
 
     parser.add_argument('-i', '--install', required=False, default = False, dest='install', action='store_true',
                         help='Generate and install library package after build. (optional, default: False)')
 
+    parser.add_argument('-k', '--relwithdebinfo', required=False, default = False, action='store_true',
+                        help='Build in Release with Debug Info (optional, default: False)')
+
     parser.add_argument('-n', '--no-solver', dest='build_solver', required=False, default=True, action='store_false',
                         help='Build hipLBAS library without rocSOLVER dependency')
+
+    parser.add_argument( '-r', '--relocatable', required=False, default=False, action='store_true',
+                        help='Linux only: Add RUNPATH (based on ROCM_RPATH) and remove ldconf entry.')
 
     parser.add_argument('--rocblas-path', dest='rocblas_path', type=str, required=False, default="C:/hipSDK",
                         help='Specify path to an existing rocBLAS install directory(optional, e.g. /src/rocBLAS/build/release/rocblas-install).')
@@ -71,7 +83,7 @@ def parse_args():
     parser.add_argument(      '--rocm_dev', type=str, required=False, default = "",
                         help='Specify specific rocm-dev version.(e.g. 4.5.0)')
 
-    parser.add_argument(      '--skip_ld_conf_entry', required=False, default = False)
+    parser.add_argument(      '--skip_ld_conf_entry', required=False, default = False, help='Linux only: Skip ld.so.conf entry.')
 
     parser.add_argument(      '--static', required=False, default = False, dest='static_lib', action='store_true',
                         help='Build hipblas as a static library.(optional, default: False). hipblas must be built statically when the used companion rocblas is also static')
@@ -117,25 +129,25 @@ def cmake_path(os_path):
     if os.name == "nt":
         return os_path.replace("\\", "/")
     else:
-        return os_path
+        return os.path.realpath(os_path)
 
 def config_cmd():
     global args
     global OS_info
     cwd_path = os.getcwd()
-    cmake_executable = ""
+    cmake_executable = "cmake"
     cmake_options = []
     src_path = cmake_path(cwd_path)
     cmake_platform_opts = []
     if os.name == "nt":
+        generator = f"-G Ninja"
+        cmake_options.append( generator )
         # not really rocm path as none exist, HIP_DIR set in toolchain is more important
         rocm_path = os.getenv( 'ROCM_CMAKE_PATH', "C:/github/rocm-cmake-master/share/rocm")
         cmake_executable = "cmake"
         #set CPACK_PACKAGING_INSTALL_PREFIX= defined as blank as it is appended to end of path for archive creation
         cmake_platform_opts.append( f"-DCPACK_PACKAGING_INSTALL_PREFIX=" )
         cmake_platform_opts.append( f"-DCMAKE_INSTALL_PREFIX=\"C:/hipSDK\"" )
-        generator = f"-G Ninja"
-        cmake_options.append( generator )
         toolchain = os.path.join( src_path, "toolchain-windows.cmake" )
     else:
         rocm_path = os.getenv( 'ROCM_PATH', "/opt/rocm")
@@ -144,7 +156,7 @@ def config_cmd():
         else:
           cmake_executable = "cmake"
         cmake_platform_opts.append( f"-DROCM_DIR:PATH={rocm_path} -DCPACK_PACKAGING_INSTALL_PREFIX={rocm_path}" )
-        cmake_platform_opts.append( f"-DCMAKE_INSTALL_PREFIX=\"hipblas-install\"" )
+        cmake_platform_opts.append( f'-DCMAKE_INSTALL_PREFIX="hipblas-install"' )
         toolchain = "toolchain-linux.cmake"
 
     print( f"Build source path: {src_path}")
@@ -154,6 +166,9 @@ def config_cmd():
 
     cmake_options.extend( cmake_platform_opts )
 
+    if args.cmake_args:
+        cmake_options.append( args.cmake_args )
+
     cmake_base_options = f"-DROCM_PATH={rocm_path} -DCMAKE_PREFIX_PATH:PATH={rocm_path}"
     cmake_options.append( cmake_base_options )
 
@@ -162,23 +177,31 @@ def config_cmd():
     cmake_options.append( cmake_pack_options )
 
     if os.getenv('CMAKE_CXX_COMPILER_LAUNCHER'):
-        cmake_options.append( f"-DCMAKE_CXX_COMPILER_LAUNCHER={os.getenv('CMAKE_CXX_COMPILER_LAUNCHER')}" )
-
-    cmake_options.append("-DBUILD_TESTING=OFF")
-
-    print( cmake_options )
+        cmake_options.append( f'-DCMAKE_CXX_COMPILER_LAUNCHER={os.getenv("CMAKE_CXX_COMPILER_LAUNCHER")}' )
 
     # build type
     cmake_config = ""
-    build_dir = os.path.abspath(args.build_dir)
-    if not args.debug:
-        build_path = os.path.join(build_dir, "release")
-        cmake_config="Release"
-    else:
+    build_dir = os.path.realpath(args.build_dir)
+    if args.debug:
         build_path = os.path.join(build_dir, "debug")
         cmake_config="Debug"
+    elif args.relwithdebinfo:
+        build_path = os.path.join(build_dir, "release-debug")
+        cmake_config ="RelWithDebInfo"
+    else:
+        build_path = os.path.join(build_dir, "release")
+        cmake_config="Release"
 
     cmake_options.append( f"-DCMAKE_BUILD_TYPE={cmake_config}" )
+
+    if args.codecoverage:
+        if args.debug or args.relwithdebinfo:
+            cmake_options.append( f"-DBUILD_CODE_COVERAGE=ON" )
+        else:
+            os.exit( "*** Code coverage is not supported for Release build! Aborting. ***" )
+
+    if args.address_sanitizer:
+        cmake_options.append( f"-DBUILD_ADDRESS_SANITIZER=ON" )
 
     # clean
     delete_dir( build_path )
@@ -189,21 +212,23 @@ def config_cmd():
     if args.static_lib:
         cmake_options.append( f"-DBUILD_SHARED_LIBS=OFF" )
 
-    if args.skip_ld_conf_entry:
+    if args.relocatable:
+        rocm_rpath = os.getenv( 'ROCM_RPATH', "/opt/rocm/lib:/opt/rocm/lib64")
+        cmake_options.append( f'-DCMAKE_SHARED_LINKER_FLAGS=" -Wl,--enable-new-dtags -Wl,--rpath,{rocm_rpath}"' )
+
+    if args.skip_ld_conf_entry or args.relocatable:
         cmake_options.append( f"-DROCM_DISABLE_LDCONFIG=ON" )
 
     if args.build_clients:
         cmake_build_dir = cmake_path(build_dir)
         cmake_options.append( f"-DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_DIR={cmake_build_dir} " )
+        # if os.name != "nt":
+        #     cmake_options.append( f"-DLINK_BLIS=ON")
 
     if args.build_solver:
         cmake_options.append (f"-DBUILD_WITH_SOLVER=ON")
     else:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=OFF")
-
-    # currently windows build only works with blis
-    if args.cpu_ref_lib == 'blis':
-        cmake_options.append( f"-DLINK_BLIS=ON" )
 
     cmake_options.append( f"-DROCBLAS_PATH={args.rocblas_path}")
     cmake_options.append( f"-DROCSOLVER_PATH={args.rocsolver_path}")

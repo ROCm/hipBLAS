@@ -113,9 +113,9 @@ if( BUILD_WITH_SOLVER )
   )
 endif( )
 
-if(LINK_BLIS)
-  set( BLIS_CPP ../common/blis_interface.cpp )
-endif()
+# if(LINK_BLIS)
+#   set( BLIS_CPP ../common/blis_interface.cpp )
+# endif()
 
 set( hipblas_test_common
   ../common/utility.cpp
@@ -135,19 +135,12 @@ set( hipblas_test_common
 
 add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
 
-if(LINK_BLIS)
-    if (NOT WIN32)
-      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
-      set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
-    else( )
-      set( BLIS_INCLUDE_DIR ${BLIS_DIR}/include/blis CACHE PATH "Blis library include path" )
-      find_library( BLIS_LIBRARY libblis
-                      PATHS ${BLIS_DIR}/lib
-                      REQUIRED
-                      NO_DEFAULT_PATH
-                  )
-    endif()
-endif()
+# if(LINK_BLIS)
+#     if (NOT WIN32)
+#       set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+#       set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+#     endif()
+# endif()
 
 target_include_directories( hipblas-test
   PRIVATE
