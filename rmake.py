@@ -142,8 +142,9 @@ def config_cmd():
     if os.name == "nt":
         generator = f"-G Ninja"
         cmake_options.append( generator )
-        # not really rocm path as none exist, HIP_DIR set in toolchain is more important
-        rocm_path = os.getenv( 'ROCM_CMAKE_PATH', "C:/github/rocm-cmake-master/share/rocm")
+        # CMAKE_PREFIX_PATH set to rocm_path and HIP_PATH set BY SDK Installer
+        raw_rocm_path = cmake_path(os.getenv('HIP_PATH', "C:/hip"))
+        rocm_path = f'"{raw_rocm_path}"' # guard against spaces in path
         cmake_executable = "cmake"
         #set CPACK_PACKAGING_INSTALL_PREFIX= defined as blank as it is appended to end of path for archive creation
         cmake_platform_opts.append( f"-DCPACK_PACKAGING_INSTALL_PREFIX=" )
@@ -230,8 +231,13 @@ def config_cmd():
     else:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=OFF")
 
-    cmake_options.append( f"-DROCBLAS_PATH={args.rocblas_path}")
-    cmake_options.append( f"-DROCSOLVER_PATH={args.rocsolver_path}")
+    raw_rocblas_path = cmake_path(args.rocblas_path)
+    raw_rocsolver_path = cmake_path(args.rocsolver_path)
+    rocblas_path_cmake =  f'"{raw_rocblas_path}"'
+    rocsolver_path_cmake =  f'"{raw_rocsolver_path}"'
+
+    cmake_options.append( f"-DROCBLAS_PATH={rocblas_path_cmake}")
+    cmake_options.append( f"-DROCSOLVER_PATH={rocsolver_path_cmake}")
 
     if args.cmake_dargs:
         for i in args.cmake_dargs:
