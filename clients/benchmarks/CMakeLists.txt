@@ -53,7 +53,7 @@ target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx
 
 if(LINK_BLIS)
   target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
-else()
+elseif(NOT WIN32)
   target_link_libraries( hipblas-bench PRIVATE blas )
 endif()
 
