@@ -37,7 +37,7 @@ static hipblasStatus_t updateSyclHandlesToCrrStream(hipStream_t stream, syclblas
 {
     // Obtain the handles to the LZ handlers.
     unsigned long lzHandles[4];
-    int           nHandles = 0;
+    int           nHandles = 4;
     hipGetBackendNativeHandles((uintptr_t)stream, lzHandles, &nHandles);
     //Fix-Me : Should Sycl know hipStream_t??
     syclblasSetStream(handle, lzHandles, nHandles, stream);
@@ -74,7 +74,6 @@ hipblasStatus_t hipblasSetStream(hipblasHandle_t handle, hipStream_t stream)
 try
 {
     return updateSyclHandlesToCrrStream(stream, (syclblasHandle_t)handle);
-    //return syclblasSetStream((syclblasHandle_t)handle, lzHandles, nHandles, stream);
 }
 catch(...)
 {
