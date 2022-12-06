@@ -30,10 +30,11 @@ struct syclblasHandle
 
     ~syclblasHandle()
     {
-        syclQueueDestroy(queue);
-        syclContextDestroy(context);
-        syclDeviceDestroy(device);
-        syclPlatformDestroy(platform);
+        // Fix_Me: CHIP owns LZ resources hecen need to find better way to release sycl resources here
+        //syclQueueDestroy(queue);
+        //syclContextDestroy(context);
+        //syclDeviceDestroy(device);
+        //syclPlatformDestroy(platform);
     }
 };
 
