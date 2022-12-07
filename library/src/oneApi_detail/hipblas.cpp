@@ -74,7 +74,6 @@ hipblasStatus_t hipblasSetStream(hipblasHandle_t handle, hipStream_t stream)
 try
 {
     return updateSyclHandlesToCrrStream(stream, (syclblasHandle_t)handle);
-    //return syclblasSetStream((syclblasHandle_t)handle, lzHandles, nHandles, stream);
 }
 catch(...)
 {
