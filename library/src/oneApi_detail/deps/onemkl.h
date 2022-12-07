@@ -1,13 +1,17 @@
 #pragma once
 
-#include "sycl.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct syclDevice_st *syclDevice_t;
+typedef struct syclPlatform_st *syclPlatform_t;
+typedef struct syclContext_st *syclContext_t;
+typedef struct syclQueue_st *syclQueue_t;
+typedef struct syclEvent_st *syclEvent_t;
 
 typedef enum {
     ONEMKL_TRANSPOSE_NONTRANS,
@@ -58,26 +62,26 @@ void onemklZaxpy(syclQueue_t device_queue, int64_t n, double _Complex alpha,
                 const double _Complex *x, int64_t incx, double _Complex *y, int64_t incy);
 
 // Level-1: scal oneMKL
-void onemklDscal(syclQueue_t device_queue, int64_t n, double alpha, 
+void onemklDscal(syclQueue_t device_queue, int64_t n, double alpha,
                 double *x, int64_t incx);
-void onemklSscal(syclQueue_t device_queue, int64_t n, float alpha, 
+void onemklSscal(syclQueue_t device_queue, int64_t n, float alpha,
                 float *x, int64_t incx);
-void onemklCscal(syclQueue_t device_queue, int64_t n, float _Complex alpha, 
+void onemklCscal(syclQueue_t device_queue, int64_t n, float _Complex alpha,
                 float _Complex *x, int64_t incx);
-void onemklCsscal(syclQueue_t device_queue, int64_t n, float alpha, 
+void onemklCsscal(syclQueue_t device_queue, int64_t n, float alpha,
                 float _Complex *x, int64_t incx);
-void onemklZscal(syclQueue_t device_queue, int64_t n, double _Complex alpha, 
+void onemklZscal(syclQueue_t device_queue, int64_t n, double _Complex alpha,
                 double _Complex *x, int64_t incx);
-void onemklZdscal(syclQueue_t device_queue, int64_t n, double alpha, 
+void onemklZdscal(syclQueue_t device_queue, int64_t n, double alpha,
                 double _Complex *x, int64_t incx);
 // Supported Level-1: Nrm2
-void onemklDnrm2(syclQueue_t device_queue, int64_t n, const double *x, 
+void onemklDnrm2(syclQueue_t device_queue, int64_t n, const double *x,
                  int64_t incx, double *result);
-void onemklSnrm2(syclQueue_t device_queue, int64_t n, const float *x, 
+void onemklSnrm2(syclQueue_t device_queue, int64_t n, const float *x,
                  int64_t incx, float *result);
-void onemklCnrm2(syclQueue_t device_queue, int64_t n, const float _Complex *x, 
+void onemklCnrm2(syclQueue_t device_queue, int64_t n, const float _Complex *x,
                  int64_t incx, float *result);
-void onemklZnrm2(syclQueue_t device_queue, int64_t n, const double _Complex *x, 
+void onemklZnrm2(syclQueue_t device_queue, int64_t n, const double _Complex *x,
                  int64_t incx, double *result);
 
 void onemklDcopy(syclQueue_t device_queue, int64_t n, const double *x,

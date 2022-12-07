@@ -2,7 +2,7 @@ set(CMAKE_CXX_COMPILER icpx)
 set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations")
 set(POSITION_INDEPENDENT_CODE ON)
 
-add_library(sycl_wrapper SHARED ./sycl_wrapper.cpp ./onemkl.cpp ./sycl.cpp)
+add_library(sycl_wrapper SHARED ./sycl_wrapper.cpp ./onemkl.cpp)
 
 #message(STATUS "DPCPP_SYCL_INCUDE_DIR: ${DPCPP_INCLUDE_DIR}")
 target_link_libraries(sycl_wrapper PUBLIC MKL::MKL mkl_sycl MKL::mkl_intel_ilp64 MKL::mkl_sequential MKL::mkl_core)
