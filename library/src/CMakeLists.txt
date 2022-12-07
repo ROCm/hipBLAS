@@ -50,7 +50,7 @@ message(STATUS "DPCPP_CORE_LIBDIR: ${DPCPP_CORE_LIBDIR}")
 message(STATUS "DPCPP_INCLUDE_DIR: ${DPCPP_INCLUDE_DIR}")
 
 # the ENABLE_OMP_OFFLOAD is only required to unhide MKL::sycl in intel's MKLConfig.cmake file
-set(ENABLE_OMP_OFFLOAD ON)
+# set(ENABLE_OMP_OFFLOAD ON)
 set(MKL_THREADING sequential)
 
 find_package(MKL CONFIG
@@ -156,12 +156,14 @@ endif( )
 if (USE_ONEAPI)
   target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_SPIRV__ )
   target_link_libraries(hipblas
-  mkl_sycl
-  mkl_intel_ilp64
-  mkl_sequential
-  mkl_core
-  sycl
-  OpenCL)
+  sycl_wrapper
+#  mkl_sycl
+#  mkl_intel_ilp64
+#  mkl_sequential
+#  mkl_core
+#  sycl
+#  OpenCL
+)
 endif()
 
 # Internal header includes

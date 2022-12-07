@@ -5,7 +5,7 @@ set(POSITION_INDEPENDENT_CODE ON)
 add_library(sycl_wrapper SHARED ./sycl_wrapper.cpp ./onemkl.cpp ./sycl.cpp)
 
 #message(STATUS "DPCPP_SYCL_INCUDE_DIR: ${DPCPP_INCLUDE_DIR}")
-target_link_libraries(sycl_wrapper PUBLIC MKL::MKL mkl_sycl MKL::mkl_intel_ilp64 MKL::mkl_sequential MKL::mkl_core)
+target_link_libraries(sycl_wrapper PUBLIC sycl MKL::MKL mkl_sycl MKL::mkl_intel_ilp64 MKL::mkl_sequential MKL::mkl_core)
 target_include_directories(sycl_wrapper
                             PUBLIC  $<BUILD_INTERFACE:${DPCPP_INCLUDE_DIR}/sycl>
                             PUBLIC  $<BUILD_INTERFACE:${DPCPP_INCLUDE_DIR}>

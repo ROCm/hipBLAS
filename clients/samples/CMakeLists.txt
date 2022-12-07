@@ -22,14 +22,14 @@
 set( hipblas_samples_common ../common/utility.cpp )
 
 add_executable( hipblas-example-sscal example_sscal.cpp ${hipblas_samples_common} )
-add_executable( hipblas-example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
-add_executable( hipblas-example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
-add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
-add_executable( hipblas-example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
-add_executable( hipblas-example-hgemm-half example_hgemm_hip_half.cpp ${hipblas_samples_common})
+#add_executable( hipblas-example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
+#add_executable( hipblas-example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
+#add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
+#add_executable( hipblas-example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
+#add_executable( hipblas-example-hgemm-half example_hgemm_hip_half.cpp ${hipblas_samples_common})
 
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
-  add_executable( hipblas-example-hgemm example_hgemm.cpp ${hipblas_samples_common} )
+#  add_executable( hipblas-example-hgemm example_hgemm.cpp ${hipblas_samples_common} )
 endif( )
 
 if(NOT WIN32)
@@ -50,17 +50,18 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
-if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
-  list (APPEND hipblas-example-executables hipblas-example-hgemm)
-endif( )
+list (APPEND hipblas-example-executables hipblas-example-sscal)
+#list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
+#if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
+#  list (APPEND hipblas-example-executables hipblas-example-hgemm)
+#endif( )
 
-target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
+#target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
 
 # HIP on Windows: xhip is required with clang++ to get __half defined
-if ( WIN32 )
-target_compile_options( hipblas-example-hgemm-half PRIVATE -xhip )
-endif()
+#if ( WIN32 )
+#target_compile_options( hipblas-example-hgemm-half PRIVATE -xhip )
+#endif()
 
 foreach( exe IN LISTS hipblas-example-executables)
 
@@ -98,7 +99,7 @@ foreach( exe IN LISTS hipblas-example-executables)
     LINKER_LANGUAGE CXX
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS ON
+    CXX_EXTENSIONS OFF
     DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 

@@ -37,7 +37,7 @@ static hipblasStatus_t updateSyclHandlesToCrrStream(hipStream_t stream, syclblas
 {
     // Obtain the handles to the LZ handlers.
     unsigned long lzHandles[4];
-    int           nHandles = 0;
+    int           nHandles = 4;
     hipGetBackendNativeHandles((uintptr_t)stream, lzHandles, &nHandles);
     //Fix-Me : Should Sycl know hipStream_t??
     syclblasSetStream(handle, lzHandles, nHandles, stream);
@@ -81,11 +81,68 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+// atomics mode - cannot find corresponding atomics mode in oneMKL, default to ALLOWED
+hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t handle, hipblasAtomicsMode_t* atomics_mode)
+try
+{
+    *atomics_mode = HIPBLAS_ATOMICS_ALLOWED;
+    return HIPBLAS_STATUS_SUCCESS;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasSetAtomicsMode(hipblasHandle_t handle, hipblasAtomicsMode_t atomics_mode)
+try
+{
+    // No op
+    return HIPBLAS_STATUS_SUCCESS;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t * int8Type)
+try
+{
+    *int8Type = HIPBLAS_INT8_DATATYPE_INT8;
+    return HIPBLAS_STATUS_SUCCESS;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasSetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t int8Type)
+try
+{
+    // No op
+    return HIPBLAS_STATUS_SUCCESS;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 hipblasStatus_t
     hipblasScopy(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy)
 try
 {
     onemklScopy(syclblasGetSyclQueue((syclblasHandle_t)handle), n, x, incx, y, incy);
+    return HIPBLAS_STATUS_SUCCESS;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t
+    hipblasSscal(hipblasHandle_t handle, int n, const float *alpha, float *x, int incx)
+try
+{
+    onemklSscal(syclblasGetSyclQueue((syclblasHandle_t)handle), n, *alpha, x, incx);
     return HIPBLAS_STATUS_SUCCESS;
 }
 catch(...)
