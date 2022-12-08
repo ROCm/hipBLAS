@@ -58,7 +58,22 @@ if read_the_docs_build:
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.mathjax', 'breathe']
+extensions = ['sphinx.ext.mathjax',
+               'breathe',
+               "sphinx.ext.duration",
+               "sphinx.ext.doctest",
+               "sphinx.ext.autodoc",
+               "sphinx.ext.autosummary",
+               "sphinx.ext.intersphinx",
+               #"sphinx_external_toc",
+               "sphinx_design",
+               "sphinx_copybutton",
+               "myst_nb"]
+                
+# MyST Configuration
+myst_enable_extensions = ["colon_fence", "linkify"]
+myst_heading_anchors = 3
+                
 breathe_projects = { "hipBLAS": "../docBin/xml" }
 breathe_default_project = "hipBLAS"
 
@@ -68,8 +83,7 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
@@ -118,9 +132,20 @@ todo_include_todos = False
 #    html_theme = 'default'
 #else:
 import sphinx_rtd_theme
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_logo = "rocm_logo.png"
+#html_theme = "sphinx_rtd_theme"
+#html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+#html_logo = "rocm_logo.png"
+
+html_theme = "sphinx_book_theme"
+html_title = project
+html_theme_options = {
+    "home_page_in_toc": True,
+    "use_edit_page_button": True,
+    "repository_url": "https://github.com/ROCmSoftwarePlatform/hipBLAS/",
+#TODO: import branch based on current git checkout
+    "repository_branch": "develop",
+    "path_to_docs": "docs",
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -203,3 +228,4 @@ texinfo_documents = [
      author, 'hipBLAS', 'BLAS for AMD ROCm',
      'Miscellaneous'),
 ]
+
