@@ -24,6 +24,7 @@
 //#include <hip/hip_runtime.h>
 #include "deps/onemkl.h"
 #include <algorithm>
+
 #include <functional>
 #include <hip/hip_interop.h>
 #include <hipblas.h>
@@ -40,7 +41,7 @@ static hipblasStatus_t updateSyclHandlesToCrrStream(hipStream_t stream, syclblas
     int           nHandles = 4;
     hipGetBackendNativeHandles((uintptr_t)stream, lzHandles, &nHandles);
     //Fix-Me : Should Sycl know hipStream_t??
-    syclblasSetStream(handle, lzHandles, nHandles, stream);
+    syclblas_set_stream(handle, lzHandles, nHandles, stream);
     return HIPBLAS_STATUS_SUCCESS;
 }
 
@@ -48,7 +49,7 @@ hipblasStatus_t hipblasCreate(hipblasHandle_t* handle)
 try
 {
     // create syclBlas
-    syclblasCreate((syclblasHandle_t*)handle);
+    syclblas_create((syclblasHandle_t*)handle);
 
     hipStream_t nullStream = NULL; // default or null stream
     // set stream to default NULL stream
@@ -63,7 +64,7 @@ catch(...)
 hipblasStatus_t hipblasDestroy(hipblasHandle_t handle)
 try
 {
-    return syclblasDestroy((syclblasHandle_t)handle);
+    return syclblas_destroy((syclblasHandle_t)handle);
 }
 catch(...)
 {
@@ -80,13 +81,27 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasGetStream(hipblasHandle_t handle, hipStream_t* pStream)
+try
+{
+    if(handle == nullptr)
+    {
+        return HIPBLAS_STATUS_NOT_INITIALIZED;
+    }
+    return syclblas_get_hipstream((syclblasHandle_t)handle, pStream);
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // atomics mode - cannot find corresponding atomics mode in oneMKL, default to ALLOWED
 hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t handle, hipblasAtomicsMode_t* atomics_mode)
 try
 {
     *atomics_mode = HIPBLAS_ATOMICS_ALLOWED;
     return HIPBLAS_STATUS_SUCCESS;
-}
+ }
 catch(...)
 {
     return exception_to_hipblas_status();
@@ -125,11 +140,81 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t
-    hipblasScopy(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy)
+// Level-1
+//amax
+hipblasStatus_t hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int* result)
 try
 {
-    onemklScopy(syclblasGetSyclQueue((syclblasHandle_t)handle), n, x, incx, y, incy);
+    int64_t *dev_result = nullptr;
+    hipError_t hip_status = hipMalloc(&dev_result, sizeof(int64_t));
+
+    auto sycl_queue = syclblas_get_sycl_queue((syclblasHandle_t)handle);
+    onemklSamax(sycl_queue, n, x, incx, dev_result);
+    syclblas_queue_wait(sycl_queue); // wait until task is completed
+
+    //Fix_Me : Chance of data corruption
+    hip_status = hipMemcpy(result, dev_result, sizeof(int), hipMemcpyDefault);
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasIdamax(hipblasHandle_t handle, int n, const double* x, int incx, int* result)
+try
+{
+    int64_t *dev_result = nullptr;
+    hipError_t hip_status = hipMalloc(&dev_result, sizeof(int64_t));
+
+    auto sycl_queue = syclblas_get_sycl_queue((syclblasHandle_t)handle);
+    onemklDamax(sycl_queue, n, x, incx, dev_result);
+    syclblas_queue_wait(sycl_queue); // wait until task is completed
+
+    //Fix_Me : Chance of data corruption
+    hip_status = hipMemcpy(result, dev_result, sizeof(int), hipMemcpyDefault);
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t
+    hipblasIcamax(hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result)
+try
+{
+    int64_t *dev_result = nullptr;
+    hipError_t hip_status = hipMalloc(&dev_result, sizeof(int64_t));
+
+    auto sycl_queue = syclblas_get_sycl_queue((syclblasHandle_t)handle);
+    onemklCamax(sycl_queue, n, (const float _Complex*)x, incx, dev_result);
+    syclblas_queue_wait(sycl_queue); // wait until task is completed
+
+    //Fix_Me : Chance of data corruption
+    hip_status = hipMemcpy(result, dev_result, sizeof(int), hipMemcpyDefault);
+    return HIPBLAS_STATUS_SUCCESS;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasIzamax(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result)
+try
+{
+    int64_t *dev_result = nullptr;
+    hipError_t hip_status = hipMalloc(&dev_result, sizeof(int64_t));
+
+    auto sycl_queue = syclblas_get_sycl_queue((syclblasHandle_t)handle);
+    onemklZamax(sycl_queue, n, (const double _Complex*)x, incx, dev_result);
+    syclblas_queue_wait(sycl_queue); // wait until task is completed
+
+    //Fix_Me : Chance of data corruption
+    hip_status = hipMemcpy(result, dev_result, sizeof(int), hipMemcpyDefault);
     return HIPBLAS_STATUS_SUCCESS;
 }
 catch(...)
@@ -143,19 +228,6 @@ try
 {
     onemklSscal(syclblasGetSyclQueue((syclblasHandle_t)handle), n, *alpha, x, incx);
     return HIPBLAS_STATUS_SUCCESS;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
-}
-
-hipblasStatus_t
-    hipblasDcopy(hipblasHandle_t handle, int n, const double* x, int incx, double* y, int incy)
-try
-{
-    // oneAPI call
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    //return rocBLASStatusToHIPStatus(rocblas_dcopy((rocblas_handle)handle, n, x, incx, y, incy));
 }
 catch(...)
 {
