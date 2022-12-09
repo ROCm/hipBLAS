@@ -1,26 +1,3 @@
-/* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * ************************************************************************ */
-
 //#include <hip/hip_runtime.h>
 #include "deps/onemkl.h"
 #include <algorithm>
@@ -141,10 +118,36 @@ catch(...)
 }
 
 // Level-1
+// Generic amax which can handle batched/stride/non-batched
+hipblasStatus_t ihipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int batchCount, int* results) {
+    int64_t *dev_results = nullptr;
+    hipError_t hip_status = hipMalloc(&dev_result, sizeof(int64_t)*batchCount);
+
+    auto sycl_queue = syclblas_get_sycl_queue((syclblasHandle_t)handle);
+    for (int i=0; i<batchCount; ++i) {
+        onemklSamax(sycl_queue, n, (x+n*i), incx, (dev_results+i));
+    }
+    syclblas_queue_wait(sycl_queue); // wait until task is completed
+
+    int64_t* results_host_memory = (int64_t*)malloc(sizeof(int64_t)*batchCount);
+    hip_status = hipMemcpy(results_host_memory, dev_result, sizeof(int)*batchCount, hipMemcpyDefault);
+
+    //Fix_Me : Chance of data corruption
+    for (auto i=0; i<batchCount; ++i) {
+        results[i] = (int)results_host_memory[i];
+    }
+    hip_status = hipFree(&dev_results);
+    free(results_host_memory);
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
 //amax
 hipblasStatus_t hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int* result)
 try
 {
+    ihipblasIsmax(handle, n, x, incx, 1, result);
+/*
     int64_t *dev_result = nullptr;
     hipError_t hip_status = hipMalloc(&dev_result, sizeof(int64_t));
 
@@ -154,7 +157,7 @@ try
 
     //Fix_Me : Chance of data corruption
     hip_status = hipMemcpy(result, dev_result, sizeof(int), hipMemcpyDefault);
-
+*/
     return HIPBLAS_STATUS_SUCCESS;
 }
 catch(...)
