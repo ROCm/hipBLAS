@@ -3,8 +3,8 @@
 
 ## (Unreleased) hipBLAS 0.54.0
 ### Added
-- added option to opt-in to use __half type for fp16 for c++ users who define HIPBLAS_USE_HIP_HALF
-- added scritps to plot performance for multiple functions
+- added option to opt-in to use __half for hipblasHalf type in the API for c++ users who define HIPBLAS_USE_HIP_HALF
+- added scripts to plot performance for multiple functions
 - data driven hipblas-bench and hipblas-test execution via external yaml format data files
 - client smoke test added for quick validation using command hipblas-test --yaml hipblas_smoke.yaml
 
