@@ -121,7 +121,7 @@ catch(...)
 // Generic amax which can handle batched/stride/non-batched
 hipblasStatus_t ihipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int batchCount, int* results) {
     int64_t *dev_results = nullptr;
-    hipError_t hip_status = hipMalloc(&dev_result, sizeof(int64_t)*batchCount);
+    hipError_t hip_status = hipMalloc(&dev_results, sizeof(int64_t)*batchCount);
 
     auto sycl_queue = syclblas_get_sycl_queue((syclblasHandle_t)handle);
     for (int i=0; i<batchCount; ++i) {
@@ -130,7 +130,7 @@ hipblasStatus_t ihipblasIsamax(hipblasHandle_t handle, int n, const float* x, in
     syclblas_queue_wait(sycl_queue); // wait until task is completed
 
     int64_t* results_host_memory = (int64_t*)malloc(sizeof(int64_t)*batchCount);
-    hip_status = hipMemcpy(results_host_memory, dev_result, sizeof(int)*batchCount, hipMemcpyDefault);
+    hip_status = hipMemcpy(results_host_memory, dev_results, sizeof(int)*batchCount, hipMemcpyDefault);
 
     //Fix_Me : Chance of data corruption
     for (auto i=0; i<batchCount; ++i) {
@@ -232,9 +232,9 @@ try
 {
     // As per spec alpha can be device/host memory. In case of device memory *alpha will crash
     float host_alpha = 0;
-    hipMemcpy(&host_alpha, alpha, sizeof(float), hipMemcpyDefault);
+    auto staus = hipMemcpy(&host_alpha, alpha, sizeof(float), hipMemcpyDefault);
 
-    onemklSscal(syclblasGetSyclQueue((syclblasHandle_t)handle), n, host_alpha, x, incx);
+    onemklSscal(syclblas_get_sycl_queue((syclblasHandle_t)handle), n, host_alpha, x, incx);
     return HIPBLAS_STATUS_SUCCESS;
 }
 catch(...)
@@ -248,9 +248,9 @@ try
 {
     // As per spec alpha can be device/host memory. In case of device memory *alpha will crash
     double host_alpha = 0;
-    hipMemcpy(&host_alpha, alpha, sizeof(double), hipMemcpyDefault);
+    auto status = hipMemcpy(&host_alpha, alpha, sizeof(double), hipMemcpyDefault);
     
-    onemklSscal(syclblasGetSyclQueue((syclblasHandle_t)handle), n, host_alpha, x, incx);
+    onemklDscal(syclblas_get_sycl_queue((syclblasHandle_t)handle), n, host_alpha, x, incx);
     return HIPBLAS_STATUS_SUCCESS;
 }
 catch(...)
@@ -262,9 +262,9 @@ hipblasStatus_t
     hipblasSasum(hipblasHandle_t handle, int n, const float* x, int incx, float* result)
 try
 {
-    auto sycl_queue = syclblasGetSyclQueue((syclblasHandle_t)handle);
+    auto sycl_queue = syclblas_get_sycl_queue((syclblasHandle_t)handle);
     float* dev_result = nullptr;
-    hipError_t status = hipMalloc(dev_result, sizeof(float));
+    hipError_t status = hipMalloc(&dev_result, sizeof(float));
     onemklSasum(sycl_queue, n, x, incx, dev_result);
     syclblas_queue_wait(sycl_queue); // wait until task is completed
     status = hipMemcpy(result, dev_result, sizeof(float), hipMemcpyDefault);
@@ -281,9 +281,9 @@ hipblasStatus_t
     hipblasDasum(hipblasHandle_t handle, int n, const double* x, int incx, double* result)
 try
 {
-    auto sycl_queue = syclblasGetSyclQueue((syclblasHandle_t)handle);
+    auto sycl_queue = syclblas_get_sycl_queue((syclblasHandle_t)handle);
     double* dev_result = nullptr;
-    hipError_t status = hipMalloc(dev_result, sizeof(double));
+    hipError_t status = hipMalloc(&dev_result, sizeof(double));
     onemklDasum(sycl_queue, n, x, incx, dev_result);
     syclblas_queue_wait(sycl_queue); // wait until task is completed
 

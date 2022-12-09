@@ -19,6 +19,16 @@ typedef enum {
     ONEMLK_TRANSPOSE_CONJTRANS
 } onemklTranspose;
 
+typedef enum {
+    ONEMKL_UPLO_UPPER,
+    ONEMKL_UPLO_LOWER
+} onemklUplo;
+
+typedef enum {
+    ONEMKL_DIAG_NONUNIT,
+    ONEMKL_DIAG_UNIT
+ } onemklDiag;
+
 // XXX: how to expose half in C?
 // int onemklHgemm(syclQueue_t device_queue, onemklTranspose transA,
 //                onemklTranspose transB, int64_t m, int64_t n, int64_t k,

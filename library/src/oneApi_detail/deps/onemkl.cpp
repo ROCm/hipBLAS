@@ -24,6 +24,24 @@ oneapi::mkl::transpose convert(onemklTranspose val) {
     }
 }
 
+oneapi::mkl::uplo convert(onemklUplo val) {
+    switch(val) {
+        case ONEMKL_UPLO_UPPER:
+            return oneapi::mkl::uplo::upper;
+        case ONEMKL_UPLO_LOWER:
+            return oneapi::mkl::uplo::lower;
+    }
+}
+
+oneapi::mkl::diag convert(onemklDiag val) {
+    switch(val) {
+        case ONEMKL_DIAG_NONUNIT:
+            return oneapi::mkl::diag::nonunit;
+        case ONEMKL_DIAG_UNIT:
+            return oneapi::mkl::diag::unit;
+    }
+}
+
 extern "C" int onemklHgemm(syclQueue_t device_queue, onemklTranspose transA,
                            onemklTranspose transB, int64_t m, int64_t n,
                            int64_t k, sycl::half alpha, const sycl::half *A, int64_t lda,
