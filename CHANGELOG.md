@@ -1,7 +1,7 @@
 # Change Log for hipBLAS
 
 
-## (Unreleased) hipBLAS 0.54.0
+## hipBLAS 0.54.0 for ROCm 5.5.0
 ### Added
 - added option to opt-in to use __half for hipblasHalf type in the API for c++ users who define HIPBLAS_USE_HIP_HALF
 - added scripts to plot performance for multiple functions
