@@ -9,10 +9,7 @@
   </os>
   <os names="all">
     <pip>
-      <pkg name="PyYAML">pyyaml</pkg>
-      <pkg name="six">six</pkg>
-      <pkg name="wheel">wheel</pkg>
-      <pkg name="virtualenv">virtualenv</pkg>
+      <req name="Python for Clients">deps/requirements.txt</req>
     </pip>
   </os>
 </dependencies>
