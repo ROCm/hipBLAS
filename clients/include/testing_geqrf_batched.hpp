@@ -21,6 +21,7 @@
  *
  * ************************************************************************ */
 
+#include "gtest/gtest.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -28,46 +29,23 @@
 
 #include "testing_common.hpp"
 
-template <typename T>
-hipblasStatus_t testing_geqrf_batched(const Arguments& argus)
+using hipblasGeqrfBatchedModel = ArgumentModel<e_M, e_N, e_lda, e_batch_count>;
+
+inline void testname_geqrf_batched(const Arguments& arg, std::string& name)
 {
-    using U      = real_t<T>;
-    bool FORTRAN = argus.fortran;
-    auto hipblasGeqrfBatchedFn
-        = FORTRAN ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
+    hipblasGeqrfBatchedModel{}.test_name(arg, name);
+}
 
-    int M           = argus.M;
-    int N           = argus.N;
-    int K           = std::min(M, N);
-    int lda         = argus.lda;
-    int batch_count = argus.batch_count;
-
-    size_t A_size    = size_t(lda) * N;
-    int    Ipiv_size = K;
-
-    // Check to prevent memory allocation error
-    if(M < 0 || N < 0 || lda < M || batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-    if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hA1(A_size, 1, batch_count);
-    host_batch_vector<T> hIpiv(Ipiv_size, 1, batch_count);
-    host_batch_vector<T> hIpiv1(Ipiv_size, 1, batch_count);
-    int                  info;
-
-    device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dIpiv(Ipiv_size, 1, batch_count);
-
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
-
+template <typename T>
+inline hipblasStatus_t setup_geqrf_batched_testing(host_batch_vector<T>&   hA,
+                                                   host_batch_vector<T>&   hIpiv,
+                                                   device_batch_vector<T>& dA,
+                                                   device_batch_vector<T>& dIpiv,
+                                                   int                     M,
+                                                   int                     N,
+                                                   int                     lda,
+                                                   int                     batch_count)
+{
     // Initial hA on CPU
     hipblas_init(hA, true);
     srand(1);
@@ -89,6 +67,129 @@ hipblasStatus_t testing_geqrf_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dIpiv.transfer_from(hIpiv));
 
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_geqrf_batched_bad_arg(const Arguments& arg)
+{
+    auto hipblasGeqrfBatchedFn
+        = arg.fortran ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    const int          M           = 100;
+    const int          N           = 101;
+    const int          lda         = 102;
+    const int          batch_count = 2;
+    const size_t       A_size      = size_t(N) * lda;
+    const int          K           = std::min(M, N);
+
+    host_batch_vector<T> hA(A_size, 1, batch_count);
+    host_batch_vector<T> hIpiv(K, 1, batch_count);
+
+    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_batch_vector<T> dIpiv(K, 1, batch_count);
+    int                    info = 0;
+
+    T* const* dAp    = dA.ptr_on_device();
+    T* const* dIpivp = dIpiv.ptr_on_device();
+
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count),
+                          HIPBLAS_STATUS_SUCCESS);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, dIpivp, nullptr, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, -1, N, dAp, lda, dIpivp, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-1, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, -1, dAp, lda, dIpivp, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, dAp, M - 1, dIpivp, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, dIpivp, &info, -1),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-7, info);
+
+    // If M == 0 || N == 0, A and ipiv can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, 0, N, nullptr, lda, nullptr, &info, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, 0, nullptr, lda, nullptr, &info, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // can't make any assumptions about ptrs when batch_count < 0, this is handled by rocSOLVER
+
+    // cuBLAS beckend doesn't check for nullptrs for A and ipiv
+#ifndef __HIP_PLATFORM_NVCC__
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, nullptr, lda, dIpivp, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, nullptr, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+#endif
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_geqrf_batched(const Arguments& arg)
+{
+    using U      = real_t<T>;
+    bool FORTRAN = arg.fortran;
+    auto hipblasGeqrfBatchedFn
+        = FORTRAN ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
+
+    int M           = arg.M;
+    int N           = arg.N;
+    int K           = std::min(M, N);
+    int lda         = arg.lda;
+    int batch_count = arg.batch_count;
+
+    size_t A_size    = size_t(lda) * N;
+    int    Ipiv_size = K;
+    int    info;
+
+    hipblasLocalHandle handle(arg);
+
+    // Check to prevent memory allocation error
+    bool invalid_size = M < 0 || N < 0 || lda < std::max(1, M) || batch_count < 0;
+    if(invalid_size || !M || !N || !batch_count)
+    {
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    }
+
+    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
+    host_batch_vector<T> hA(A_size, 1, batch_count);
+    host_batch_vector<T> hA1(A_size, 1, batch_count);
+    host_batch_vector<T> hIpiv(Ipiv_size, 1, batch_count);
+    host_batch_vector<T> hIpiv1(Ipiv_size, 1, batch_count);
+
+    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_batch_vector<T> dIpiv(Ipiv_size, 1, batch_count);
+
+    double gpu_time_used, hipblas_error;
+
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count),
+                          HIPBLAS_STATUS_SUCCESS);
+
     /* =====================================================================
            HIPBLAS
     =================================================================== */
@@ -99,7 +200,7 @@ hipblasStatus_t testing_geqrf_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hIpiv1.transfer_from(dIpiv));
     CHECK_HIP_ERROR(hA1.transfer_from(dA));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
            CPU LAPACK
@@ -121,25 +222,27 @@ hipblasStatus_t testing_geqrf_batched(const Arguments& argus)
         double e2 = norm_check_general<T>('F', Ipiv_size, 1, Ipiv_size, hIpiv, hIpiv1, batch_count);
         hipblas_error = e1 + e2;
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = eps * 2000;
 
             unit_check_error(e1, tolerance);
             unit_check_error(e2, tolerance);
+            int zero = 0;
+            unit_check_general(1, 1, 1, &zero, &info);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGeqrfBatchedFn(
@@ -147,12 +250,12 @@ hipblasStatus_t testing_geqrf_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_M, e_N, e_lda, e_batch_count>{}.log_args<T>(std::cout,
-                                                                    argus,
-                                                                    gpu_time_used,
-                                                                    geqrf_gflop_count<T>(N, M),
-                                                                    ArgumentLogging::NA_value,
-                                                                    hipblas_error);
+        hipblasGeqrfBatchedModel{}.log_args<T>(std::cout,
+                                               arg,
+                                               gpu_time_used,
+                                               geqrf_gflop_count<T>(N, M),
+                                               ArgumentLogging::NA_value,
+                                               hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

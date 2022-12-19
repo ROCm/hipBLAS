@@ -21,6 +21,7 @@
  *
  * ************************************************************************ */
 
+#include "gtest/gtest.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -28,21 +29,161 @@
 
 #include "testing_common.hpp"
 
+using hipblasGelsBatchedModel = ArgumentModel<e_transA, e_M, e_N, e_lda, e_ldb, e_batch_count>;
+
+inline void testname_gels_batched(const Arguments& arg, std::string& name)
+{
+    hipblasGelsBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_gels_batched(const Arguments& argus)
+inline hipblasStatus_t testing_gels_batched_bad_arg(const Arguments& arg)
+{
+    auto hipblasGelsBatchedFn
+        = arg.fortran ? hipblasGelsBatched<T, true> : hipblasGelsBatched<T, false>;
+
+    hipblasLocalHandle       handle(arg);
+    const int                M          = 100;
+    const int                N          = 101;
+    const int                nrhs       = 10;
+    const int                lda        = 102;
+    const int                ldb        = 103;
+    const int                batchCount = 2;
+    const hipblasOperation_t opN        = HIPBLAS_OP_N;
+    const hipblasOperation_t opBad      = is_complex<T> ? HIPBLAS_OP_T : HIPBLAS_OP_C;
+
+    const size_t A_size = size_t(lda) * N;
+    const size_t B_size = size_t(ldb) * nrhs;
+
+    device_batch_vector<T> dA(A_size, 1, batchCount);
+    device_batch_vector<T> dB(B_size, 1, batchCount);
+    device_vector<int>     dInfo(batchCount);
+    int                    info = 0;
+
+    T* const* dAp = dA.ptr_on_device();
+    T* const* dBp = dB.ptr_on_device();
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, nullptr, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opBad, M, N, nrhs, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-1, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, -1, N, nrhs, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, M, -1, nrhs, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(handle, opN, M, N, -1, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, M, N, nrhs, nullptr, lda, dBp, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, M, N, nrhs, dAp, M - 1, dBp, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-6, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, M, N, nrhs, dAp, lda, nullptr, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-7, info);
+
+    // Explicit values to check for ldb < M and ldb < N
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, 100, 200, nrhs, dAp, lda, dBp, 199, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-8, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, 200, 100, nrhs, dAp, 201, dBp, 199, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-8, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, &info, nullptr, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-10, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, &info, dInfo, -1),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-11, info);
+
+    // If M == 0 || N == 0, A can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, 0, N, nrhs, nullptr, lda, dBp, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, M, 0, nrhs, nullptr, lda, dBp, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // If nrhs == 0, B can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, M, N, 0, dAp, lda, nullptr, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // If M == 0 && N == 0, B can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(
+            handle, opN, 0, 0, nrhs, nullptr, lda, nullptr, ldb, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // If batchCount == 0, dInfo can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsBatchedFn(handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, &info, nullptr, 0),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_gels_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasGelsBatchedFn
         = FORTRAN ? hipblasGelsBatched<T, true> : hipblasGelsBatched<T, false>;
 
-    int  N          = argus.N;
-    int  M          = argus.M;
-    int  nrhs       = argus.K;
-    int  lda        = argus.lda;
-    int  ldb        = argus.ldb;
-    char transc     = argus.transA_option;
-    int  batchCount = argus.batch_count;
+    char transc     = arg.transA;
+    int  N          = arg.N;
+    int  M          = arg.M;
+    int  nrhs       = arg.K;
+    int  lda        = arg.lda;
+    int  ldb        = arg.ldb;
+    int  batchCount = arg.batch_count;
 
     if(is_complex<T> && transc == 'T')
         transc = 'C';
@@ -52,7 +193,7 @@ hipblasStatus_t testing_gels_batched(const Arguments& argus)
     hipblasOperation_t trans = char2hipblas_operation(transc);
 
     size_t A_size = size_t(lda) * N;
-    size_t B_size = ldb * nrhs;
+    size_t B_size = size_t(ldb) * nrhs;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || nrhs < 0 || lda < M || ldb < M || ldb < N || batchCount < 0)
@@ -77,7 +218,7 @@ hipblasStatus_t testing_gels_batched(const Arguments& argus)
     device_vector<int>     dInfo(batchCount);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA, hB, hX on CPU
     hipblas_init<T>(hA, true);
@@ -103,7 +244,7 @@ hipblasStatus_t testing_gels_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dB.transfer_from(hB));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -148,24 +289,26 @@ hipblasStatus_t testing_gels_batched(const Arguments& argus)
                 hipblas_error += 1.0;
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             double eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
+            int    zero      = 0;
 
             unit_check_error(hipblas_error, tolerance);
+            unit_check_general(1, 1, 1, &zero, &info_input);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGelsBatchedFn(handle,
@@ -183,12 +326,12 @@ hipblasStatus_t testing_gels_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
-                                                       argus,
-                                                       gpu_time_used,
-                                                       ArgumentLogging::NA_value,
-                                                       ArgumentLogging::NA_value,
-                                                       hipblas_error);
+        hipblasGelsBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              ArgumentLogging::NA_value,
+                                              ArgumentLogging::NA_value,
+                                              hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

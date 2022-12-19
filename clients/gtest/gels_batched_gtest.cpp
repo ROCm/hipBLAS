@@ -34,6 +34,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 
 typedef std::tuple<vector<int>, char, int, bool> gels_batched_tuple;
+typedef std::tuple<bool>                         gels_batched_bad_arg_tuple;
 
 // {m, n, nrhs, lda, ldb}
 const vector<vector<int>> matrix_size_range
@@ -63,13 +64,22 @@ Arguments setup_gels_batched_arguments(gels_batched_tuple tup)
     arg.lda = matrix_size[3];
     arg.ldb = matrix_size[4];
 
-    arg.transA_option = trans;
-    arg.batch_count   = batchCount;
+    arg.transA      = trans;
+    arg.batch_count = batchCount;
 
     arg.fortran = fortran;
 
     return arg;
 }
+
+class gels_batched_gtest_bad_arg : public ::TestWithParam<gels_batched_bad_arg_tuple>
+{
+protected:
+    gels_batched_gtest_bad_arg() {}
+    virtual ~gels_batched_gtest_bad_arg() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
 
 class gels_batched_gtest : public ::TestWithParam<gels_batched_tuple>
 {
@@ -79,6 +89,20 @@ protected:
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
+
+// Not doing bad_arg testing with cuBLAS backend for now
+// Error codes given by cuBLAS seem inaccurate.
+#ifndef __HIP_PLATFORM_NVCC__
+TEST_P(gels_batched_gtest_bad_arg, gels_batched_gtest_bad_arg_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_gels_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_gels_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_gels_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_gels_batched_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+}
+#endif
 
 TEST_P(gels_batched_gtest, gels_batched_gtest_float)
 {
@@ -183,3 +207,8 @@ INSTANTIATE_TEST_SUITE_P(hipblasGelsBatched,
                                  ValuesIn(trans_range),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
+#ifndef __HIP_PLATFORM_NVCC__
+INSTANTIATE_TEST_SUITE_P(hipblasGelsBatchedBadArg,
+                         gels_batched_gtest_bad_arg,
+                         Combine(ValuesIn(is_fortran)));
+#endif

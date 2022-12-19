@@ -29,17 +29,24 @@
 
 /* ============================================================================================ */
 
+using hipblasAsumModel = ArgumentModel<e_N, e_incx>;
+
+inline void testname_asum(const Arguments& arg, std::string& name)
+{
+    hipblasAsumModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_asum(const Arguments& argus)
+inline hipblasStatus_t testing_asum(const Arguments& arg)
 {
     using Tr           = real_t<T>;
-    bool FORTRAN       = argus.fortran;
+    bool FORTRAN       = arg.fortran;
     auto hipblasAsumFn = FORTRAN ? hipblasAsum<T, Tr, true> : hipblasAsum<T, Tr, false>;
 
-    int N    = argus.N;
-    int incx = argus.incx;
+    int N    = arg.N;
+    int incx = arg.incx;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0)
@@ -73,12 +80,12 @@ hipblasStatus_t testing_asum(const Arguments& argus)
     double gpu_time_used, hipblas_error_host = 0, hipblas_error_device = 0;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
                     HIPBLAS
@@ -99,12 +106,12 @@ hipblasStatus_t testing_asum(const Arguments& argus)
 
         cblas_asum<T, Tr>(N, hx.data(), incx, &cpu_result);
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_host);
             unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_device);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host
                 = norm_check_general<Tr>('M', 1, 1, 1, &cpu_result, &hipblas_result_host);
@@ -114,29 +121,29 @@ hipblasStatus_t testing_asum(const Arguments& argus)
 
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, dx, incx, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx>{}.log_args<T>(std::cout,
-                                                 argus,
-                                                 gpu_time_used,
-                                                 asum_gflop_count<T>(N),
-                                                 asum_gbyte_count<T>(N),
-                                                 hipblas_error_host,
-                                                 hipblas_error_device);
+        hipblasAsumModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       asum_gflop_count<T>(N),
+                                       asum_gbyte_count<T>(N),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

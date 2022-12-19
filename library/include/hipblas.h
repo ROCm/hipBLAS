@@ -57,7 +57,11 @@
 #endif
 
 #ifndef HIPBLAS_DEPRECATED_MSG
+#ifndef _MSC_VER
 #define HIPBLAS_DEPRECATED_MSG(MSG) __attribute__((deprecated(#MSG)))
+#else
+#define HIPBLAS_DEPRECATED_MSG(MSG) __declspec(deprecated(#MSG))
+#endif
 #endif
 
 /*
@@ -83,8 +87,18 @@
 /*! \brief hipblasHanlde_t is a void pointer, to store the library context (either rocBLAS or cuBLAS)*/
 typedef void* hipblasHandle_t;
 
-/*! \brief To specify the datatype to be signed short */
+/*! \brief To specify the datatype to be unsigned short */
+
+#if __cplusplus < 201103L || !defined(HIPBLAS_USE_HIP_HALF)
+
 typedef uint16_t hipblasHalf;
+
+#else
+
+#include <hip/hip_fp16.h>
+typedef __half hipblasHalf;
+
+#endif
 
 /*! \brief  To specify the datatype to be signed char */
 typedef int8_t hipblasInt8;
@@ -93,10 +107,97 @@ typedef int8_t hipblasInt8;
 typedef int64_t hipblasStride;
 
 /*! \brief  Struct to represent a 16 bit Brain floating-point number.*/
+
+#if __cplusplus < 201103L || !defined(HIPBLAS_BFLOAT16_CLASS)
+
+// If this is a C or C++ compiler below C++11, or not requesting HIPBLAS_BFLOAT16_CLASS,
+// we only include a minimal definition of hipblasBfloat16
 typedef struct hipblasBfloat16
 {
     uint16_t data;
 } hipblasBfloat16;
+
+#else
+
+class hipblasBfloat16
+{
+public:
+    uint16_t data;
+
+    // zero extend lower 16 bits of bfloat16 to convert to IEEE float
+    static float bfloat16_to_float(hipblasBfloat16 val)
+    {
+        union
+        {
+            uint32_t int32;
+            float    fp32;
+        } u = {uint32_t(val.data) << 16};
+        return u.fp32;
+    }
+
+    static hipblasBfloat16 float_to_bfloat16(float f)
+    {
+        hipblasBfloat16 rv;
+        union
+        {
+            float    fp32;
+            uint32_t int32;
+        } u = {f};
+        if(~u.int32 & 0x7f800000)
+        {
+            u.int32 += 0x7fff + ((u.int32 >> 16) & 1); // Round to nearest, round to even
+        }
+        else if(u.int32 & 0xffff)
+        {
+            u.int32 |= 0x10000; // Preserve signaling NaN
+        }
+        rv.data = uint16_t(u.int32 >> 16);
+        return rv;
+    }
+
+    hipblasBfloat16() = default;
+
+    // round upper 16 bits of IEEE float to convert to bfloat16
+    explicit hipblasBfloat16(float f)
+        : data(float_to_bfloat16(f))
+    {
+    }
+
+    // zero extend lower 16 bits of bfloat16 to convert to IEEE float
+    operator float() const
+    {
+        union
+        {
+            uint32_t int32;
+            float    fp32;
+        } u = {uint32_t(data) << 16};
+        return u.fp32;
+    }
+
+    explicit operator bool() const
+    {
+        return data & 0x7fff;
+    }
+};
+
+typedef struct
+{
+    uint16_t data;
+} hipblasBfloat16_public;
+
+static_assert(std::is_standard_layout<hipblasBfloat16>{},
+              "hipblasBfloat16 is not a standard layout type, and thus is "
+              "incompatible with C.");
+
+static_assert(std::is_trivial<hipblasBfloat16>{},
+              "hipblasBfloat16 is not a trivial type, and thus is "
+              "incompatible with C.");
+
+static_assert(sizeof(hipblasBfloat16) == sizeof(hipblasBfloat16_public)
+                  && offsetof(hipblasBfloat16, data) == offsetof(hipblasBfloat16_public, data),
+              "internal hipblasBfloat16 does not match public hipblasBfloat16_public");
+
+#endif
 
 #if defined(ROCM_MATHLIBS_API_USE_HIP_COMPLEX)
 // Using hip complex types
@@ -330,22 +431,23 @@ typedef enum
 /*! \brief Indicates the precision width of data stored in a blas type. */
 typedef enum
 {
-    HIPBLAS_R_16F = 150, /**< 16 bit floating point, real */
-    HIPBLAS_R_32F = 151, /**< 32 bit floating point, real */
-    HIPBLAS_R_64F = 152, /**< 64 bit floating point, real */
-    HIPBLAS_C_16F = 153, /**< 16 bit floating point, complex */
-    HIPBLAS_C_32F = 154, /**< 32 bit floating point, complex */
-    HIPBLAS_C_64F = 155, /**< 64 bit floating point, complex */
-    HIPBLAS_R_8I  = 160, /**<  8 bit signed integer, real */
-    HIPBLAS_R_8U  = 161, /**<  8 bit unsigned integer, real */
-    HIPBLAS_R_32I = 162, /**< 32 bit signed integer, real */
-    HIPBLAS_R_32U = 163, /**< 32 bit unsigned integer, real */
-    HIPBLAS_C_8I  = 164, /**<  8 bit signed integer, complex */
-    HIPBLAS_C_8U  = 165, /**<  8 bit unsigned integer, complex */
-    HIPBLAS_C_32I = 166, /**< 32 bit signed integer, complex */
-    HIPBLAS_C_32U = 167, /**< 32 bit unsigned integer, complex */
-    HIPBLAS_R_16B = 168, /**< 16 bit bfloat, real */
-    HIPBLAS_C_16B = 169, /**< 16 bit bfloat, complex */
+    HIPBLAS_R_16F            = 150, /**< 16 bit floating point, real */
+    HIPBLAS_R_32F            = 151, /**< 32 bit floating point, real */
+    HIPBLAS_R_64F            = 152, /**< 64 bit floating point, real */
+    HIPBLAS_C_16F            = 153, /**< 16 bit floating point, complex */
+    HIPBLAS_C_32F            = 154, /**< 32 bit floating point, complex */
+    HIPBLAS_C_64F            = 155, /**< 64 bit floating point, complex */
+    HIPBLAS_R_8I             = 160, /**<  8 bit signed integer, real */
+    HIPBLAS_R_8U             = 161, /**<  8 bit unsigned integer, real */
+    HIPBLAS_R_32I            = 162, /**< 32 bit signed integer, real */
+    HIPBLAS_R_32U            = 163, /**< 32 bit unsigned integer, real */
+    HIPBLAS_C_8I             = 164, /**<  8 bit signed integer, complex */
+    HIPBLAS_C_8U             = 165, /**<  8 bit unsigned integer, complex */
+    HIPBLAS_C_32I            = 166, /**< 32 bit signed integer, complex */
+    HIPBLAS_C_32U            = 167, /**< 32 bit unsigned integer, complex */
+    HIPBLAS_R_16B            = 168, /**< 16 bit bfloat, real */
+    HIPBLAS_C_16B            = 169, /**< 16 bit bfloat, complex */
+    HIPBLAS_DATATYPE_INVALID = 255, /**< Invalid datatype value, do not use */
 } hipblasDatatype_t;
 
 /*! \brief Indicates if layer is active with bitmask. */
@@ -16281,7 +16383,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t      
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = j < 0, the j-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
    ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSgetrs(hipblasHandle_t          handle,
@@ -16381,7 +16483,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = j < 0, the j-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of instances (systems) in the batch.
@@ -16502,7 +16604,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = j < 0, the j-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
     @param[in]
     batchCount int. batchCount >= 0.\n
                 Number of instances (systems) in the batch.
@@ -16720,7 +16822,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             
     @param[out]
     info        pointer to an int on the host.\n
                 If info = 0, successful exit.
-                If info = j < 0, the j-th argument is invalid.
+                If info = j < 0, the argument at position -j is invalid.
     @param[out]
     deviceInfo  pointer to int on the GPU.\n
                 If info = 0, successful exit.
@@ -16840,7 +16942,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
     @param[out]
     info        pointer to an int on the host.\n
                 If info = 0, successful exit.
-                If info = j < 0, the j-th argument is invalid.
+                If info = j < 0, the argument at position -j is invalid.
     @param[out]
     deviceInfo  pointer to int. Array of batchCount integers on the GPU.\n
                 If deviceInfo[j] = 0, successful exit for solution of A_j.
@@ -16975,7 +17077,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgelsBatched(hipblasHandle_t             h
     @param[out]
     info        pointer to an int on the host.\n
                 If info = 0, successful exit.
-                If info = j < 0, the j-th argument is invalid.
+                If info = j < 0, the argument at position -j is invalid.
     @param[out]
     deviceInfo  pointer to int. Array of batchCount integers on the GPU.\n
                 If deviceInfo[j] = 0, successful exit for solution of A_j.
@@ -17103,7 +17205,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgelsStridedBatched(hipblasHandle_t       
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = j < 0, the j-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
 
     ********************************************************************/
 
@@ -17198,7 +17300,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = k < 0, the k-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
     @param[in]
     batchCount  int. batchCount >= 0.\n
                  Number of matrices in the batch.
@@ -17307,7 +17409,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             
     @param[out]
     info      pointer to a int on the host.\n
               If info = 0, successful exit.
-              If info = k < 0, the k-th argument is invalid.
+              If info = j < 0, the argument at position -j is invalid.
     @param[in]
     batchCount  int. batchCount >= 0.\n
                  Number of matrices in the batch.

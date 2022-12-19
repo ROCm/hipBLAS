@@ -30,24 +30,28 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_tbsv(const Arguments& argus)
+using hipblasTbsvModel = ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_K, e_lda, e_incx>;
+
+inline void testname_tbsv(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN       = argus.fortran;
+    hipblasTbsvModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_tbsv(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
     auto hipblasTbsvFn = FORTRAN ? hipblasTbsv<T, true> : hipblasTbsv<T, false>;
 
-    int                M           = argus.M;
-    int                K           = argus.K;
-    int                incx        = argus.incx;
-    int                lda         = argus.lda;
-    char               char_uplo   = argus.uplo_option;
-    char               char_diag   = argus.diag_option;
-    char               char_transA = argus.transA_option;
-    hipblasFillMode_t  uplo        = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
-    hipblasOperation_t transA      = char2hipblas_operation(char_transA);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    int                M      = arg.M;
+    int                K      = arg.K;
+    int                incx   = arg.incx;
+    int                lda    = arg.lda;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -80,13 +84,13 @@ hipblasStatus_t testing_tbsv(const Arguments& argus)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, argus, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, argus, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(hA, arg, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, arg, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
     banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, M, M, K);
 
-    prepare_triangular_solve((T*)hA, M, (T*)AAT, M, char_uplo);
+    prepare_triangular_solve((T*)hA, M, (T*)AAT, M, arg.uplo);
     if(diag == HIPBLAS_DIAG_UNIT)
     {
         make_unit_diagonal(uplo, (T*)hA, M, M);
@@ -105,7 +109,7 @@ hipblasStatus_t testing_tbsv(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(
             hipblasTbsvFn(handle, uplo, transA, diag, M, K, dAB, lda, dx_or_b, incx));
@@ -117,22 +121,22 @@ hipblasStatus_t testing_tbsv(const Arguments& argus)
         // Calculating error
         hipblas_error = std::abs(vector_norm_1<T>(M, abs_incx, hx.data(), hx_or_b_1.data()));
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * M;
             unit_check_error(hipblas_error, tolerance);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(
@@ -140,13 +144,12 @@ hipblasStatus_t testing_tbsv(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option, e_transA_option, e_diag_option, e_M, e_K, e_lda, e_incx>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         tbsv_gflop_count<T>(M, K),
-                         tbsv_gbyte_count<T>(M, K),
-                         hipblas_error);
+        hipblasTbsvModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       tbsv_gflop_count<T>(M, K),
+                                       tbsv_gbyte_count<T>(M, K),
+                                       hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

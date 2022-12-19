@@ -30,31 +30,36 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_tbsv_batched(const Arguments& argus)
+using hipblasTbsvBatchedModel
+    = ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_K, e_lda, e_incx, e_batch_count>;
+
+inline void testname_tbsv_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasTbsvBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_tbsv_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasTbsvBatchedFn
         = FORTRAN ? hipblasTbsvBatched<T, true> : hipblasTbsvBatched<T, false>;
 
-    int                M           = argus.M;
-    int                K           = argus.K;
-    int                incx        = argus.incx;
-    int                lda         = argus.lda;
-    char               char_uplo   = argus.uplo_option;
-    char               char_diag   = argus.diag_option;
-    char               char_transA = argus.transA_option;
-    hipblasFillMode_t  uplo        = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t  diag        = char2hipblas_diagonal(char_diag);
-    hipblasOperation_t transA      = char2hipblas_operation(char_transA);
-    int                batch_count = argus.batch_count;
+    hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    int                M           = arg.M;
+    int                K           = arg.K;
+    int                incx        = arg.incx;
+    int                lda         = arg.lda;
+    int                batch_count = arg.batch_count;
 
     int    abs_incx = incx < 0 ? -incx : incx;
     size_t size_A   = size_t(M) * M;
     size_t size_AB  = size_t(lda) * M;
     size_t size_x   = abs_incx * size_t(M);
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -85,15 +90,15 @@ hipblasStatus_t testing_tbsv_batched(const Arguments& argus)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
     hb.copy_from(hx);
 
     for(int b = 0; b < batch_count; b++)
     {
         banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], M, M, K);
 
-        prepare_triangular_solve((T*)hA[b], M, (T*)AAT[b], M, char_uplo);
+        prepare_triangular_solve((T*)hA[b], M, (T*)AAT[b], M, arg.uplo);
         if(diag == HIPBLAS_DIAG_UNIT)
         {
             make_unit_diagonal(uplo, (T*)hA[b], M, M);
@@ -113,7 +118,7 @@ hipblasStatus_t testing_tbsv_batched(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasTbsvBatchedFn(handle,
                                                  uplo,
@@ -135,7 +140,7 @@ hipblasStatus_t testing_tbsv_batched(const Arguments& argus)
         for(int b = 0; b < batch_count; b++)
         {
             hipblas_error = std::abs(vector_norm_1<T>(M, abs_incx, hx[b], hx_or_b[b]));
-            if(argus.unit_check)
+            if(arg.unit_check)
             {
                 double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * M;
                 unit_check_error(hipblas_error, tolerance);
@@ -145,15 +150,15 @@ hipblasStatus_t testing_tbsv_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasTbsvBatchedFn(handle,
@@ -170,20 +175,12 @@ hipblasStatus_t testing_tbsv_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_diag_option,
-                      e_M,
-                      e_K,
-                      e_lda,
-                      e_incx,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         tbsv_gflop_count<T>(M, K),
-                         tbsv_gbyte_count<T>(M, K),
-                         cumulative_hipblas_error);
+        hipblasTbsvBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              tbsv_gflop_count<T>(M, K),
+                                              tbsv_gbyte_count<T>(M, K),
+                                              cumulative_hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

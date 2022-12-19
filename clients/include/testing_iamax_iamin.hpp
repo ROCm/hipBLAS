@@ -27,17 +27,19 @@
 
 #include "testing_common.hpp"
 
+using hipblasIamaxIaminModel = ArgumentModel<e_N, e_incx>;
+
 template <typename T>
 using hipblas_iamax_iamin_t
     = hipblasStatus_t (*)(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
 
 template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
-hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_t<T> func)
+inline hipblasStatus_t testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
 {
-    int N    = argus.N;
-    int incx = argus.incx;
+    int N    = arg.N;
+    int incx = arg.incx;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     int zero = 0;
 
@@ -72,7 +74,7 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
     device_vector<int> d_hipblas_result(1);
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
@@ -80,7 +82,7 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
     double gpu_time_used;
     int    hipblas_error_host, hipblas_error_device;
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
                     HIPBLAS
@@ -103,48 +105,53 @@ hipblasStatus_t testing_iamax_iamin(const Arguments& argus, hipblas_iamax_iamin_
         // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
         cpu_result += 1;
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<int>(1, 1, 1, &cpu_result, &hipblas_result_host);
             unit_check_general<int>(1, 1, 1, &cpu_result, &hipblas_result_device);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host   = std::abs(hipblas_result_host - cpu_result);
             hipblas_error_device = std::abs(hipblas_result_device - cpu_result);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx>{}.log_args<T>(std::cout,
-                                                 argus,
-                                                 gpu_time_used,
-                                                 iamax_gflop_count<T>(N),
-                                                 iamax_gbyte_count<T>(N),
-                                                 hipblas_error_host,
-                                                 hipblas_error_device);
+        hipblasIamaxIaminModel{}.log_args<T>(std::cout,
+                                             arg,
+                                             gpu_time_used,
+                                             iamax_gflop_count<T>(N),
+                                             iamax_gbyte_count<T>(N),
+                                             hipblas_error_host,
+                                             hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
+inline void testname_amax(const Arguments& arg, std::string& name)
+{
+    hipblasIamaxIaminModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_amax(const Arguments& arg)
+inline hipblasStatus_t testing_amax(const Arguments& arg)
 {
     bool FORTRAN        = arg.fortran;
     auto hipblasIamaxFn = FORTRAN ? hipblasIamax<T, true> : hipblasIamax<T, false>;
@@ -152,8 +159,13 @@ hipblasStatus_t testing_amax(const Arguments& arg)
     return testing_iamax_iamin<T, cblas_iamax<T>>(arg, hipblasIamaxFn);
 }
 
+inline void testname_amin(const Arguments& arg, std::string& name)
+{
+    hipblasIamaxIaminModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_amin(const Arguments& arg)
+inline hipblasStatus_t testing_amin(const Arguments& arg)
 {
     bool FORTRAN        = arg.fortran;
     auto hipblasIaminFn = FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;

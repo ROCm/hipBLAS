@@ -21,6 +21,7 @@
  *
  * ************************************************************************ */
 
+#include "gtest/gtest.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -28,27 +29,304 @@
 
 #include "testing_common.hpp"
 
+using hipblasGelsStridedBatchedModel
+    = ArgumentModel<e_transA, e_M, e_N, e_lda, e_ldb, e_stride_scale, e_batch_count>;
+
+inline void testname_gels_strided_batched(const Arguments& arg, std::string& name)
+{
+    hipblasGelsStridedBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
+inline hipblasStatus_t testing_gels_strided_batched_bad_arg(const Arguments& arg)
+{
+    auto hipblasGelsStridedBatchedFn
+        = arg.fortran ? hipblasGelsStridedBatched<T, true> : hipblasGelsStridedBatched<T, false>;
+
+    hipblasLocalHandle       handle(arg);
+    const int                M          = 100;
+    const int                N          = 101;
+    const int                nrhs       = 10;
+    const int                lda        = 102;
+    const int                ldb        = 103;
+    const int                batchCount = 2;
+    const hipblasOperation_t opN        = HIPBLAS_OP_N;
+    const hipblasOperation_t opBad      = is_complex<T> ? HIPBLAS_OP_T : HIPBLAS_OP_C;
+
+    const hipblasStride strideA = size_t(lda) * N;
+    const hipblasStride strideB = size_t(ldb) * nrhs;
+    const size_t        A_size  = strideA * batchCount;
+    const size_t        B_size  = strideB * batchCount;
+
+    device_vector<T>   dA(A_size);
+    device_vector<T>   dB(B_size);
+    device_vector<int> dInfo(batchCount);
+    int                info = 0;
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      M,
+                                                      N,
+                                                      nrhs,
+                                                      dA,
+                                                      lda,
+                                                      strideA,
+                                                      dB,
+                                                      ldb,
+                                                      strideB,
+                                                      nullptr,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opBad,
+                                                      M,
+                                                      N,
+                                                      nrhs,
+                                                      dA,
+                                                      lda,
+                                                      strideA,
+                                                      dB,
+                                                      ldb,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-1, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsStridedBatchedFn(
+            handle, opN, -1, N, nrhs, dA, lda, strideA, dB, ldb, strideB, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsStridedBatchedFn(
+            handle, opN, M, -1, nrhs, dA, lda, strideA, dB, ldb, strideB, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsStridedBatchedFn(
+            handle, opN, M, N, -1, dA, lda, strideA, dB, ldb, strideB, &info, dInfo, batchCount),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      M,
+                                                      N,
+                                                      nrhs,
+                                                      nullptr,
+                                                      lda,
+                                                      strideA,
+                                                      dB,
+                                                      ldb,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      M,
+                                                      N,
+                                                      nrhs,
+                                                      dA,
+                                                      M - 1,
+                                                      strideA,
+                                                      dB,
+                                                      ldb,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-6, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      M,
+                                                      N,
+                                                      nrhs,
+                                                      dA,
+                                                      lda,
+                                                      strideA,
+                                                      nullptr,
+                                                      ldb,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-8, info);
+
+    // Explicit values to check for ldb < M and ldb < N
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      100,
+                                                      200,
+                                                      nrhs,
+                                                      dA,
+                                                      lda,
+                                                      strideA,
+                                                      dB,
+                                                      199,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-9, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      200,
+                                                      100,
+                                                      nrhs,
+                                                      dA,
+                                                      201,
+                                                      strideA,
+                                                      dB,
+                                                      199,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-9, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      M,
+                                                      N,
+                                                      nrhs,
+                                                      dA,
+                                                      lda,
+                                                      strideA,
+                                                      dB,
+                                                      ldb,
+                                                      strideB,
+                                                      &info,
+                                                      nullptr,
+                                                      batchCount),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-12, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsStridedBatchedFn(
+            handle, opN, M, N, nrhs, dA, lda, strideA, dB, ldb, strideB, &info, dInfo, -1),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-13, info);
+
+    // If M == 0 || N == 0, A can be nullptr
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      0,
+                                                      N,
+                                                      nrhs,
+                                                      nullptr,
+                                                      lda,
+                                                      strideA,
+                                                      dB,
+                                                      ldb,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      M,
+                                                      0,
+                                                      nrhs,
+                                                      nullptr,
+                                                      lda,
+                                                      strideA,
+                                                      dB,
+                                                      ldb,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // if nrhs == 0, B can be nullptr
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      M,
+                                                      N,
+                                                      0,
+                                                      dA,
+                                                      lda,
+                                                      strideA,
+                                                      nullptr,
+                                                      ldb,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // if M == 0 && N == 0, B can be nullptr
+    EXPECT_HIPBLAS_STATUS(hipblasGelsStridedBatchedFn(handle,
+                                                      opN,
+                                                      0,
+                                                      0,
+                                                      nrhs,
+                                                      dA,
+                                                      lda,
+                                                      strideA,
+                                                      nullptr,
+                                                      ldb,
+                                                      strideB,
+                                                      &info,
+                                                      dInfo,
+                                                      batchCount),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // if batchCount == 0, dInfo can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsStridedBatchedFn(
+            handle, opN, M, N, nrhs, dA, lda, strideA, dB, ldb, strideB, &info, nullptr, 0),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_gels_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasGelsStridedBatchedFn
         = FORTRAN ? hipblasGelsStridedBatched<T, true> : hipblasGelsStridedBatched<T, false>;
 
-    int    N           = argus.N;
-    int    M           = argus.M;
-    int    nrhs        = argus.K;
-    int    lda         = argus.lda;
-    int    ldb         = argus.ldb;
-    char   transc      = argus.transA_option;
-    int    batchCount  = argus.batch_count;
-    double strideScale = argus.stride_scale;
+    char   transc      = arg.transA;
+    int    N           = arg.N;
+    int    M           = arg.M;
+    int    nrhs        = arg.K;
+    int    lda         = arg.lda;
+    int    ldb         = arg.ldb;
+    double strideScale = arg.stride_scale;
+    int    batchCount  = arg.batch_count;
+
     if(is_complex<T> && transc == 'T')
         transc = 'C';
     else if(!is_complex<T> && transc == 'C')
         transc = 'T';
 
+    // this makes logging incorrect as overriding arg
     hipblasOperation_t trans = char2hipblas_operation(transc);
 
     hipblasStride strideA = size_t(lda) * N * strideScale;
@@ -79,7 +357,7 @@ hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
     device_vector<int> dInfo(batchCount);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA, hB, hX on CPU
     srand(1);
@@ -108,7 +386,7 @@ hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -164,24 +442,26 @@ hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
                 hipblas_error += 1.0;
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             double eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
+            int    zero      = 0;
 
             unit_check_error(hipblas_error, tolerance);
+            unit_check_general(1, 1, 1, &zero, &info_input);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGelsStridedBatchedFn(handle,
@@ -201,12 +481,12 @@ hipblasStatus_t testing_gels_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
-                                                       argus,
-                                                       gpu_time_used,
-                                                       ArgumentLogging::NA_value,
-                                                       ArgumentLogging::NA_value,
-                                                       hipblas_error);
+        hipblasGelsStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     ArgumentLogging::NA_value,
+                                                     ArgumentLogging::NA_value,
+                                                     hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

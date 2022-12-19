@@ -40,7 +40,7 @@ endif()
 project( hipblas-clients LANGUAGES CXX Fortran )
 
 # We use C++14 features, this will add compile option: -std=c++14
-set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_STANDARD 17 )
 
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
@@ -69,14 +69,79 @@ if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_SAMPLES )
   include_directories(${CMAKE_BINARY_DIR}/include)
 endif( )
 
-if( BUILD_CLIENTS_TESTS )
-  add_subdirectory( gtest )
-endif( )
-
-if( BUILD_CLIENTS_BENCHMARKS )
-  add_subdirectory( benchmarks )
-endif( )
-
 if( BUILD_CLIENTS_SAMPLES )
   add_subdirectory( samples )
 endif( )
+
+if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
+  if( NOT WIN32 )
+    # Linking lapack library requires fortran flags
+    find_package( cblas REQUIRED CONFIG )
+    if (LINK_BLIS)
+      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+      set( BLIS_CPP ../common/blis_interface.cpp )
+      set( BLAS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+    else()
+      set( BLAS_LIBRARY "blas" )
+    endif()
+  else() # WIN32
+    set( BLAS_INCLUDE_DIR ${OPENBLAS_DIR}/include CACHE PATH "OpenBLAS library include path" )
+    find_library( BLAS_LIBRARY libopenblas
+                  PATHS ${OPENBLAS_DIR}/lib
+                  REQUIRED
+                  NO_DEFAULT_PATH
+                )
+    if (NOT BLAS_LIBRARY)
+      find_package( OPENBLAS CONFIG REQUIRED )
+      set( BLAS_LIBRARY OpenBLAS::OpenBLAS )
+      set( BLAS_INCLUDE_DIR "" )
+    endif()
+  endif()
+
+  if( BUILD_CLIENTS_TESTS )
+    add_subdirectory( gtest )
+  endif( )
+
+  if( BUILD_CLIENTS_BENCHMARKS )
+    add_subdirectory( benchmarks )
+  endif( )
+
+endif()
+
+set( HIPBLAS_COMMON "${PROJECT_BINARY_DIR}/staging/hipblas_common.yaml")
+add_custom_command( OUTPUT "${HIPBLAS_COMMON}"
+                    COMMAND ${CMAKE_COMMAND} -E copy include/hipblas_common.yaml "${HIPBLAS_COMMON}"
+                    DEPENDS include/hipblas_common.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+set( HIPBLAS_TEMPLATE "${PROJECT_BINARY_DIR}/staging/hipblas_template.yaml")
+add_custom_command( OUTPUT "${HIPBLAS_TEMPLATE}"
+                    COMMAND ${CMAKE_COMMAND} -E copy include/hipblas_template.yaml "${HIPBLAS_TEMPLATE}"
+                    DEPENDS include/hipblas_template.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+set( HIPBLAS_SMOKE "${PROJECT_BINARY_DIR}/staging/hipblas_smoke.yaml")
+add_custom_command( OUTPUT "${HIPBLAS_SMOKE}"
+                    COMMAND ${CMAKE_COMMAND} -E copy include/hipblas_smoke.yaml "${HIPBLAS_SMOKE}"
+                    DEPENDS include/hipblas_smoke.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+set( HIPBLAS_GENTEST "${PROJECT_BINARY_DIR}/staging/hipblas_gentest.py")
+add_custom_command( OUTPUT "${HIPBLAS_GENTEST}"
+                    COMMAND ${CMAKE_COMMAND} -E copy common/hipblas_gentest.py "${HIPBLAS_GENTEST}"
+                    DEPENDS common/hipblas_gentest.py
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+
+add_custom_target( hipblas-common DEPENDS "${HIPBLAS_COMMON}" "${HIPBLAS_TEMPLATE}" "${HIPBLAS_SMOKE}" "${HIPBLAS_GENTEST}" )
+
+rocm_install(
+  FILES ${HIPBLAS_COMMON} ${HIPBLAS_TEMPLATE} ${HIPBLAS_SMOKE}
+  DESTINATION "${CMAKE_INSTALL_BINDIR}"
+  COMPONENT clients-common
+)
+rocm_install(
+  PROGRAMS ${HIPBLAS_GENTEST}
+  DESTINATION "${CMAKE_INSTALL_BINDIR}"
+  COMPONENT clients-common
+)

@@ -31,6 +31,7 @@
 #include "complex.hpp"
 #include "hipblas_datatype2string.hpp"
 #include <cmath>
+#include <cstdio>
 #include <immintrin.h>
 #include <iostream>
 #include <random>
@@ -87,16 +88,16 @@
 #define BLAS_1_RESULT_PRINT                                \
     do                                                     \
     {                                                      \
-        if(argus.timing)                                   \
+        if(arg.timing)                                     \
         {                                                  \
             std::cout << "N, hipblas (us), ";              \
-            if(argus.norm_check)                           \
+            if(arg.norm_check)                             \
             {                                              \
                 std::cout << "CPU (us), error";            \
             }                                              \
             std::cout << std::endl;                        \
             std::cout << N << ',' << gpu_time_used << ','; \
-            if(argus.norm_check)                           \
+            if(arg.norm_check)                             \
             {                                              \
                 std::cout << cpu_time_used << ',';         \
                 std::cout << hipblas_error;                \
@@ -119,9 +120,11 @@ inline bool hipblas_isnan(float arg)
 {
     return std::isnan(arg);
 }
+
 inline bool hipblas_isnan(hipblasHalf arg)
 {
-    return (~arg & 0x7c00) == 0 && (arg & 0x3ff) != 0;
+    auto half_data = static_cast<unsigned short>(arg);
+    return (~(half_data)&0x7c00) == 0 && (half_data & 0x3ff) != 0;
 }
 inline bool hipblas_isnan(hipblasComplex arg)
 {
@@ -132,50 +135,43 @@ inline bool hipblas_isnan(hipblasDoubleComplex arg)
     return std::isnan(arg.real()) || std::isnan(arg.imag());
 }
 
-// Helper routine to convert floats into their half equivalent; uses F16C instructions
 inline hipblasHalf float_to_half(float val)
 {
-    // return static_cast<hipblasHalf>( _mm_cvtsi128_si32( _mm_cvtps_ph( _mm_set_ss( val ), 0 ) )
+#ifdef HIPBLAS_USE_HIP_HALF
+    return __float2half(val);
+#else
     uint16_t a = _cvtss_sh(val, 0);
     return a;
+#endif
 }
 
-// Helper routine to convert halfs into their floats equivalent; uses F16C instructions
+inline hipblasHalf float_to_half(hipblasBfloat16 val)
+{
+    return float_to_half(float(val));
+}
+
 inline float half_to_float(hipblasHalf val)
 {
-    // return static_cast<hipblasHalf>(_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(val), 0)));
+#ifdef HIPBLAS_USE_HIP_HALF
+    return __half2float(val);
+#else
     return _cvtsh_ss(val);
+#endif
 }
 
-// zero extend lower 16 bits of bfloat16 to convert to IEEE float
-inline float bfloat16_to_float(hipblasBfloat16 val)
+inline std::ostream& operator<<(std::ostream& os, const hipblasBfloat16& bf)
 {
-    union
-    {
-        uint32_t int32;
-        float    fp32;
-    } u = {uint32_t(val.data) << 16};
-    return u.fp32;
+    return os << float(bf);
+}
+
+inline float bfloat16_to_float(hipblasBfloat16 bf)
+{
+    return hipblasBfloat16::bfloat16_to_float(bf);
 }
 
 inline hipblasBfloat16 float_to_bfloat16(float f)
 {
-    hipblasBfloat16 rv;
-    union
-    {
-        float    fp32;
-        uint32_t int32;
-    } u = {f};
-    if(~u.int32 & 0x7f800000)
-    {
-        u.int32 += 0x7fff + ((u.int32 >> 16) & 1); // Round to nearest, round to even
-    }
-    else if(u.int32 & 0xffff)
-    {
-        u.int32 |= 0x10000; // Preserve signaling NaN
-    }
-    rv.data = uint16_t(u.int32 >> 16);
-    return rv;
+    return hipblasBfloat16::float_to_bfloat16(f);
 }
 
 /* =============================================================================================== */
@@ -791,9 +787,9 @@ inline void banded_matrix_setup(bool upper, T* A, int lda, int n, int k)
         for(int j = 0; j < n; j++)
         {
             if(upper && (j > k + i || i > j))
-                A[j * n + i] = T(0);
+                A[j * n + i] = T(0.0);
             else if(!upper && (i > k + j || j > i))
-                A[j * n + i] = T(0);
+                A[j * n + i] = T(0.0);
         }
     }
 }
@@ -904,6 +900,10 @@ void print_matrix(
 // Return path of this executable
 std::string hipblas_exepath();
 
+/* ============================================================================================ */
+// Temp directory rooted random path
+std::string hipblas_tempname();
+
 #endif // __cplusplus
 
 #ifdef __cplusplus
@@ -919,6 +919,7 @@ void set_device(int device_id);
 
 /* get architecture number */
 int getArch();
+int getArchMajor();
 
 /* query what rocBLAS recommends for int8 layout. We are /always/ passing in the flag which
  * rocBLAS recommends, thus we need to know what layout to format our data in our tests.

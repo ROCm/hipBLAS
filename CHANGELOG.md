@@ -1,5 +1,25 @@
 # Change Log for hipBLAS
 
+
+## (Unreleased) hipBLAS 0.54.0
+### Added
+- added option to opt-in to use __half for hipblasHalf type in the API for c++ users who define HIPBLAS_USE_HIP_HALF
+- added scripts to plot performance for multiple functions
+- data driven hipblas-bench and hipblas-test execution via external yaml format data files
+- client smoke test added for quick validation using command hipblas-test --yaml hipblas_smoke.yaml
+
+### Fixed
+- fixed datatype conversion functions to support more rocBLAS/cuBLAS datatypes
+- fixed geqrf to return successfully when nullptrs are passed in with n == 0 || m == 0
+- fixed getrs to return successfully when given nullptrs with corresponding size = 0
+- fixed getrs to give info = -1 when transpose is not an expected type
+- fixed gels to return successfully when given nullptrs with corresponding size = 0
+- fixed gels to give info = -1 when transpose is not in ('N', 'T') for real cases or not in ('N', 'C') for complex cases
+
+### Changed
+- changed reference code for Windows to OpenBLAS
+- hipblas client executables all now begin with hipblas- prefix
+
 ## hipBLAS 0.53.0 for ROCm 5.4.0
 ### Added
 - Allow for selection of int8 datatype

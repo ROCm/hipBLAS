@@ -21,6 +21,7 @@
  *
  * ************************************************************************ */
 
+#include "gtest/gtest.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -28,19 +29,122 @@
 
 #include "testing_common.hpp"
 
+using hipblasGelsModel = ArgumentModel<e_transA, e_M, e_N, e_lda, e_ldb>;
+
+inline void testname_gels(const Arguments& arg, std::string& name)
+{
+    hipblasGelsModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_gels(const Arguments& argus)
+inline hipblasStatus_t testing_gels_bad_arg(const Arguments& arg)
+{
+    auto hipblasGelsFn = arg.fortran ? hipblasGels<T, true> : hipblasGels<T, false>;
+
+    hipblasLocalHandle       handle(arg);
+    const int                M     = 100;
+    const int                N     = 101;
+    const int                nrhs  = 10;
+    const int                lda   = 102;
+    const int                ldb   = 103;
+    const hipblasOperation_t opN   = HIPBLAS_OP_N;
+    const hipblasOperation_t opBad = is_complex<T> ? HIPBLAS_OP_T : HIPBLAS_OP_C;
+
+    const size_t A_size = size_t(lda) * N;
+    const size_t B_size = size_t(ldb) * nrhs;
+
+    device_vector<T>   dA(A_size);
+    device_vector<T>   dB(B_size);
+    device_vector<int> dInfo(1);
+    int                info = 0;
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, dB, ldb, nullptr, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opBad, M, N, nrhs, dA, lda, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-1, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, -1, N, nrhs, dA, lda, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, -1, nrhs, dA, lda, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, -1, dA, lda, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsFn(handle, opN, M, N, nrhs, nullptr, lda, dB, ldb, &info, dInfo),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, nrhs, dA, M - 1, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-6, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, nullptr, ldb, &info, dInfo),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-7, info);
+
+    // Explicit values to check for ldb < M and ldb < N
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsFn(handle, opN, 100, 200, nrhs, dA, lda, dB, 199, &info, dInfo),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-8, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsFn(handle, opN, 200, 100, nrhs, dA, 201, dB, 199, &info, dInfo),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-8, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, dB, ldb, &info, nullptr),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-10, info);
+
+    // If M == 0 || N == 0, A can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsFn(handle, opN, 0, N, nrhs, nullptr, lda, dB, ldb, &info, dInfo),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsFn(handle, opN, M, 0, nrhs, nullptr, lda, dB, ldb, &info, dInfo),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // If nrhs == 0, B can be nullptr
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, 0, dA, lda, nullptr, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // If M == 0 && N == 0, B can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGelsFn(handle, opN, 0, 0, nrhs, nullptr, lda, nullptr, ldb, &info, dInfo),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_gels(const Arguments& arg)
 {
     using U            = real_t<T>;
-    bool FORTRAN       = argus.fortran;
+    bool FORTRAN       = arg.fortran;
     auto hipblasGelsFn = FORTRAN ? hipblasGels<T, true> : hipblasGels<T, false>;
 
-    int  N      = argus.N;
-    int  M      = argus.M;
-    int  nrhs   = argus.K;
-    int  lda    = argus.lda;
-    int  ldb    = argus.ldb;
-    char transc = argus.transA_option;
+    char transc = arg.transA;
+    int  N      = arg.N;
+    int  M      = arg.M;
+    int  nrhs   = arg.K;
+    int  lda    = arg.lda;
+    int  ldb    = arg.ldb;
+
     if(is_complex<T> && transc == 'T')
         transc = 'C';
     else if(!is_complex<T> && transc == 'C')
@@ -49,7 +153,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
     hipblasOperation_t trans = char2hipblas_operation(transc);
 
     size_t A_size = size_t(lda) * N;
-    size_t B_size = ldb * nrhs;
+    size_t B_size = size_t(ldb) * nrhs;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || nrhs < 0 || lda < M || ldb < M || ldb < N)
@@ -69,7 +173,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
     device_vector<int> dInfo(1);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA, hB, hX on CPU
     srand(1);
@@ -93,7 +197,7 @@ hipblasStatus_t testing_gels(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -121,24 +225,26 @@ hipblasStatus_t testing_gels(const Arguments& argus)
         if(info_input != 0)
             hipblas_error += 1.0;
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             double eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
+            int    zero      = 0;
 
             unit_check_error(hipblas_error, tolerance);
+            unit_check_general(1, 1, 1, &zero, &info_input);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(
@@ -146,12 +252,12 @@ hipblasStatus_t testing_gels(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
-                                                       argus,
-                                                       gpu_time_used,
-                                                       ArgumentLogging::NA_value,
-                                                       ArgumentLogging::NA_value,
-                                                       hipblas_error);
+        hipblasGelsModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       ArgumentLogging::NA_value,
+                                       ArgumentLogging::NA_value,
+                                       hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
