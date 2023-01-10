@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -39,9 +39,9 @@ endfunction( )
 prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
 
 if( NOT USE_CUDA )
-  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/hcc_detail/hipblas.cpp" )
+  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/hipblas.cpp" )
 else( )
-  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvcc_detail/hipblas.cpp" )
+  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvidia_detail/hipblas.cpp" )
 endif( )
 
 set (hipblas_f90_source

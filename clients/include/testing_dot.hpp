@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,18 +29,30 @@
 
 /* ============================================================================================ */
 
-template <typename T, bool CONJ = false>
-hipblasStatus_t testing_dot(const Arguments& argus)
+using hipblasDotModel = ArgumentModel<e_N, e_incx, e_incy>;
+
+inline void testname_dot(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN      = argus.fortran;
+    hipblasDotModel{}.test_name(arg, name);
+}
+
+inline void testname_dotc(const Arguments& arg, std::string& name)
+{
+    hipblasDotModel{}.test_name(arg, name);
+}
+
+template <typename T, bool CONJ = false>
+inline hipblasStatus_t testing_dot(const Arguments& arg)
+{
+    bool FORTRAN      = arg.fortran;
     auto hipblasDotFn = FORTRAN ? (CONJ ? hipblasDotc<T, true> : hipblasDot<T, true>)
                                 : (CONJ ? hipblasDotc<T, false> : hipblasDot<T, false>);
 
-    int N    = argus.N;
-    int incx = argus.incx;
-    int incy = argus.incy;
+    int N    = arg.N;
+    int incx = arg.incx;
+    int incy = arg.incy;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -86,14 +98,14 @@ hipblasStatus_t testing_dot(const Arguments& argus)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true, true);
-    hipblas_init_vector(hy, argus, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true, true);
+    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -113,12 +125,12 @@ hipblasStatus_t testing_dot(const Arguments& argus)
         =================================================================== */
         (CONJ ? cblas_dotc<T> : cblas_dot<T>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_1);
             unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_2);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host
                 = norm_check_general<T>('F', 1, 1, 1, &cpu_result, &h_hipblas_result_1);
@@ -128,36 +140,36 @@ hipblasStatus_t testing_dot(const Arguments& argus)
 
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR((hipblasDotFn)(handle, N, dx, incx, dy, incy, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy>{}.log_args<T>(std::cout,
-                                                         argus,
-                                                         gpu_time_used,
-                                                         dot_gflop_count<CONJ, T>(N),
-                                                         dot_gbyte_count<T>(N),
-                                                         hipblas_error_host,
-                                                         hipblas_error_device);
+        hipblasDotModel{}.log_args<T>(std::cout,
+                                      arg,
+                                      gpu_time_used,
+                                      dot_gflop_count<CONJ, T>(N),
+                                      dot_gbyte_count<T>(N),
+                                      hipblas_error_host,
+                                      hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
-hipblasStatus_t testing_dotc(const Arguments& argus)
+inline hipblasStatus_t testing_dotc(const Arguments& arg)
 {
-    return testing_dot<T, true>(argus);
+    return testing_dot<T, true>(arg);
 }

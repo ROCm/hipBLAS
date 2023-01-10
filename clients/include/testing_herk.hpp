@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,20 +30,27 @@
 
 /* ============================================================================================ */
 
+using hipblasHerkModel = ArgumentModel<e_uplo, e_transA, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc>;
+
+inline void testname_herk(const Arguments& arg, std::string& name)
+{
+    hipblasHerkModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_herk(const Arguments& argus)
+inline hipblasStatus_t testing_herk(const Arguments& arg)
 {
     using U            = real_t<T>;
-    bool FORTRAN       = argus.fortran;
+    bool FORTRAN       = arg.fortran;
     auto hipblasHerkFn = FORTRAN ? hipblasHerk<T, U, true> : hipblasHerk<T, U, false>;
 
-    int N   = argus.N;
-    int K   = argus.K;
-    int lda = argus.lda;
-    int ldc = argus.ldc;
+    int N   = arg.N;
+    int K   = arg.K;
+    int lda = arg.lda;
+    int ldc = arg.ldc;
 
-    hipblasFillMode_t  uplo   = char2hipblas_fill(argus.uplo_option);
-    hipblasOperation_t transA = char2hipblas_operation(argus.transA_option);
+    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -68,15 +75,15 @@ hipblasStatus_t testing_herk(const Arguments& argus)
     device_vector<U> d_alpha(1);
     device_vector<U> d_beta(1);
 
-    U h_alpha = argus.get_alpha<U>();
-    U h_beta  = argus.get_beta<U>();
+    U h_alpha = arg.get_alpha<U>();
+    U h_beta  = arg.get_beta<U>();
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, argus, N, K1, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(hC_host, argus, N, N, ldc, 0, 1, hipblas_client_beta_sets_nan, false, true);
+    hipblas_init_matrix(hA, arg, N, K1, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(hC_host, arg, N, N, ldc, 0, 1, hipblas_client_beta_sets_nan, false, true);
     hC_device = hC_host;
     hC_gold   = hC_host;
 
@@ -86,7 +93,7 @@ hipblasStatus_t testing_herk(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(U), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(U), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -113,29 +120,29 @@ hipblasStatus_t testing_herk(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(N, N, ldc, hC_gold, hC_host);
             unit_check_general<T>(N, N, ldc, hC_gold, hC_device);
         }
 
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host   = norm_check_general<T>('F', N, N, ldc, hC_gold, hC_host);
             hipblas_error_device = norm_check_general<T>('F', N, N, ldc, hC_gold, hC_device);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(
@@ -143,14 +150,13 @@ hipblasStatus_t testing_herk(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option, e_transA_option, e_N, e_K, e_alpha, e_lda, e_beta, e_ldc>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         herk_gflop_count<T>(N, K),
-                         herk_gbyte_count<T>(N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasHerkModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       herk_gflop_count<T>(N, K),
+                                       herk_gbyte_count<T>(N, K),
+                                       hipblas_error_host,
+                                       hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

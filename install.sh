@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -724,7 +724,7 @@ pushd .
   # Build library
   if [[ "${build_relocatable}" == true ]]; then
     CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
-    -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hcc;${rocm_path}/hip;$(pwd)/../deps/deps-install;${cuda_path};${cmake_prefix_path}" \
+    -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hip;$(pwd)/../deps/deps-install;${cuda_path};${cmake_prefix_path}" \
     -DCMAKE_SHARED_LINKER_FLAGS="${rocm_rpath}" \
     -DCMAKE_EXE_LINKER_FLAGS=" -Wl,--enable-new-dtags -Wl,--rpath,${rocm_path}/lib:${rocm_path}/lib64" \
     -DROCM_DISABLE_LDCONFIG=ON \

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
  *
  * ************************************************************************ */
 
+#include "gtest/gtest.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -28,39 +29,19 @@
 
 #include "testing_common.hpp"
 
-template <typename T>
-hipblasStatus_t testing_geqrf(const Arguments& argus)
+using hipblasGeqrfModel = ArgumentModel<e_M, e_N, e_lda>;
+
+inline void testname_geqrf(const Arguments& arg, std::string& name)
 {
-    using U             = real_t<T>;
-    bool FORTRAN        = argus.fortran;
-    auto hipblasGeqrfFn = FORTRAN ? hipblasGeqrf<T, true> : hipblasGeqrf<T, false>;
+    hipblasGeqrfModel{}.test_name(arg, name);
+}
 
-    int M   = argus.M;
-    int N   = argus.N;
-    int K   = std::min(M, N);
-    int lda = argus.lda;
-
-    size_t A_size    = size_t(lda) * N;
-    int    Ipiv_size = K;
-
-    // Check to prevent memory allocation error
-    if(M < 0 || N < 0 || lda < M)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
-
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hA1(A_size);
-    host_vector<T> hIpiv(Ipiv_size);
-    host_vector<T> hIpiv1(Ipiv_size);
-    int            info;
-
-    device_vector<T> dA(A_size);
-    device_vector<T> dIpiv(Ipiv_size);
-
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
+template <typename T>
+inline hipblasStatus_t setup_geqrf_testing(
+    host_vector<T>& hA, device_vector<T>& dA, device_vector<T>& dIpiv, int M, int N, int lda)
+{
+    size_t A_size = size_t(lda) * N;
+    int    K      = std::min(M, N);
 
     // Initial hA on CPU
     srand(1);
@@ -80,7 +61,103 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
 
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(T)));
+    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, K * sizeof(T)));
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_geqrf_bad_arg(const Arguments& arg)
+{
+    auto hipblasGeqrfFn = arg.fortran ? hipblasGeqrf<T, true> : hipblasGeqrf<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    const int          M      = 100;
+    const int          N      = 101;
+    const int          lda    = 102;
+    const size_t       A_size = size_t(N) * lda;
+    const int          K      = std::min(M, N);
+
+    host_vector<T> hA(A_size);
+
+    device_vector<T> dA(A_size);
+    device_vector<T> dIpiv(K);
+    int              info = 0;
+
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, nullptr),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, -1, N, dA, lda, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-1, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, -1, dA, lda, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, nullptr, lda, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, M - 1, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+
+    // If M == 0 || N == 0, A and ipiv can be nullptr
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, 0, N, nullptr, lda, nullptr, &info),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, 0, nullptr, lda, nullptr, &info),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_geqrf(const Arguments& arg)
+{
+    using U             = real_t<T>;
+    bool FORTRAN        = arg.fortran;
+    auto hipblasGeqrfFn = FORTRAN ? hipblasGeqrf<T, true> : hipblasGeqrf<T, false>;
+
+    int M   = arg.M;
+    int N   = arg.N;
+    int K   = std::min(M, N);
+    int lda = arg.lda;
+
+    size_t A_size    = size_t(lda) * N;
+    int    Ipiv_size = K;
+    int    info;
+
+    hipblasLocalHandle handle(arg);
+
+    // Check to prevent memory allocation error
+    bool invalid_size = M < 0 || N < 0 || lda < std::max(1, M);
+    if(invalid_size || !M || !N)
+    {
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    }
+
+    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
+    host_vector<T> hA(A_size);
+    host_vector<T> hA1(A_size);
+    host_vector<T> hIpiv(Ipiv_size);
+    host_vector<T> hIpiv1(Ipiv_size);
+
+    device_vector<T> dA(A_size);
+    device_vector<T> dIpiv(Ipiv_size);
+
+    double gpu_time_used, hipblas_error;
+
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
 
     /* =====================================================================
            HIPBLAS
@@ -91,7 +168,7 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(hA1, dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
            CPU LAPACK
@@ -110,37 +187,39 @@ hipblasStatus_t testing_geqrf(const Arguments& argus)
         double e2     = norm_check_general<T>('F', K, 1, K, hIpiv, hIpiv1);
         hipblas_error = e1 + e2;
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = eps * 2000;
 
             unit_check_error(e1, tolerance);
             unit_check_error(e2, tolerance);
+            int zero = 0;
+            unit_check_general(1, 1, 1, &zero, &info);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_M, e_N, e_lda>{}.log_args<T>(std::cout,
-                                                     argus,
-                                                     gpu_time_used,
-                                                     geqrf_gflop_count<T>(N, M),
-                                                     ArgumentLogging::NA_value,
-                                                     hipblas_error);
+        hipblasGeqrfModel{}.log_args<T>(std::cout,
+                                        arg,
+                                        gpu_time_used,
+                                        geqrf_gflop_count<T>(N, M),
+                                        ArgumentLogging::NA_value,
+                                        hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

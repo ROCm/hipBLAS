@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -77,15 +77,15 @@ static void validation_error [[noreturn]] (const char* name)
     std::cerr << "Arguments field \"" << name
               << "\" does not match format.\n\n"
                  "Fatal error: Binary test data does match input format.\n"
-                 "Ensure that rocblas_arguments.hpp and rocblas_common.yaml\n"
-                 "define exactly the same Arguments, that rocblas_gentest.py\n"
+                 "Ensure that hipblas_arguments.hpp and hipblas_common.yaml\n"
+                 "define exactly the same Arguments, that hipblas_gentest.py\n"
                  "generates the data correctly, and that endianness is the same."
               << std::endl;
     abort();
 }
 
-// rocblas_gentest.py is expected to conform to this format.
-// rocblas_gentest.py uses rocblas_common.yaml to generate this format.
+// hipblas_gentest.py is expected to conform to this format.
+// hipblas_gentest.py uses hipblas_common.yaml to generate this format.
 void Arguments::validate(std::istream& ifs)
 {
     char      header[8]{}, trailer[8]{};
@@ -95,10 +95,10 @@ void Arguments::validate(std::istream& ifs)
     ifs >> arg;
     ifs.read(trailer, sizeof(trailer));
 
-    if(strcmp(header, "rocBLAS"))
+    if(strcmp(header, "hipBLAS"))
         validation_error("header");
 
-    if(strcmp(trailer, "ROCblas"))
+    if(strcmp(trailer, "HIPblas"))
         validation_error("trailer");
 
     auto check_func = [sig = 0u](const char* name, const auto& value) mutable {

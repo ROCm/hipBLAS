@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,26 +29,33 @@
 
 /* ============================================================================================ */
 
-template <typename Tx, typename Tr = Tx, typename Tex = Tr>
-hipblasStatus_t testing_nrm2_strided_batched_ex_template(const Arguments& argus)
+using hipblasNrm2StridedBatchedExModel = ArgumentModel<e_N, e_incx, e_stride_scale, e_batch_count>;
+
+inline void testname_nrm2_strided_batched_ex(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasNrm2StridedBatchedExModel{}.test_name(arg, name);
+}
+
+template <typename Tx, typename Tr = Tx, typename Tex = Tr>
+inline hipblasStatus_t testing_nrm2_strided_batched_ex_template(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasNrm2StridedBatchedExFn
         = FORTRAN ? hipblasNrm2StridedBatchedExFortran : hipblasNrm2StridedBatchedEx;
 
-    int    N            = argus.N;
-    int    incx         = argus.incx;
-    double stride_scale = argus.stride_scale;
-    int    batch_count  = argus.batch_count;
+    int    N            = arg.N;
+    int    incx         = arg.incx;
+    double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
 
     hipblasStride stridex = size_t(N) * incx * stride_scale;
     size_t        sizeX   = stridex * batch_count;
 
-    hipblasDatatype_t xType         = argus.a_type;
-    hipblasDatatype_t resultType    = argus.b_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t resultType    = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || batch_count <= 0)
@@ -98,12 +105,12 @@ hipblasStatus_t testing_nrm2_strided_batched_ex_template(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_vector(
-        hx, argus, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+        hx, arg, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         // hipblasNrm2 accept both dev/host pointer for the scalar
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
@@ -144,12 +151,12 @@ hipblasStatus_t testing_nrm2_strided_batched_ex_template(const Arguments& argus)
             cblas_nrm2<Tx, Tr>(N, hx.data() + b * stridex, incx, &(h_cpu_result[b]));
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_nrm2<Tr, Tex>(batch_count, h_cpu_result, h_hipblas_result_host, N);
             unit_check_nrm2<Tr, Tex>(batch_count, h_cpu_result, h_hipblas_result_device, N);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             for(int b = 0; b < batch_count; b++)
             {
@@ -164,16 +171,16 @@ hipblasStatus_t testing_nrm2_strided_batched_ex_template(const Arguments& argus)
 
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedExFn(handle,
@@ -189,46 +196,45 @@ hipblasStatus_t testing_nrm2_strided_batched_ex_template(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_stride_x, e_batch_count>{}.log_args<Tx>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            nrm2_gflop_count<Tx>(N),
-            nrm2_gbyte_count<Tx>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasNrm2StridedBatchedExModel{}.log_args<Tx>(std::cout,
+                                                        arg,
+                                                        gpu_time_used,
+                                                        nrm2_gflop_count<Tx>(N),
+                                                        nrm2_gbyte_count<Tx>(N),
+                                                        hipblas_error_host,
+                                                        hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-hipblasStatus_t testing_nrm2_strided_batched_ex(Arguments argus)
+inline hipblasStatus_t testing_nrm2_strided_batched_ex(Arguments arg)
 {
-    hipblasDatatype_t xType         = argus.a_type;
-    hipblasDatatype_t resultType    = argus.b_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t resultType    = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     if(xType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_nrm2_strided_batched_ex_template<hipblasHalf, hipblasHalf, float>(argus);
+        status = testing_nrm2_strided_batched_ex_template<hipblasHalf, hipblasHalf, float>(arg);
     }
     else if(xType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_nrm2_strided_batched_ex_template<float>(argus);
+        status = testing_nrm2_strided_batched_ex_template<float>(arg);
     }
     else if(xType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
     {
-        status = testing_nrm2_strided_batched_ex_template<double>(argus);
+        status = testing_nrm2_strided_batched_ex_template<double>(arg);
     }
     else if(xType == HIPBLAS_C_32F && resultType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_nrm2_strided_batched_ex_template<hipblasComplex, float>(argus);
+        status = testing_nrm2_strided_batched_ex_template<hipblasComplex, float>(arg);
     }
     else if(xType == HIPBLAS_C_64F && resultType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
     {
-        status = testing_nrm2_strided_batched_ex_template<hipblasDoubleComplex, double>(argus);
+        status = testing_nrm2_strided_batched_ex_template<hipblasDoubleComplex, double>(arg);
     }
     else
     {

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -210,12 +210,12 @@ TEST_P(axpy_ex_gtest, axpy_strided_batched_ex)
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
-INSTANTIATE_TEST_CASE_P(hipblasAxpyEx,
-                        axpy_ex_gtest,
-                        Combine(ValuesIn(N_range),
-                                ValuesIn(alpha_range),
-                                ValuesIn(incx_incy_range),
-                                ValuesIn(stride_scale_range),
-                                ValuesIn(batch_count_range),
-                                ValuesIn(precisions),
-                                ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasAxpyEx,
+                         axpy_ex_gtest,
+                         Combine(ValuesIn(N_range),
+                                 ValuesIn(alpha_range),
+                                 ValuesIn(incx_incy_range),
+                                 ValuesIn(stride_scale_range),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(precisions),
+                                 ValuesIn(is_fortran)));

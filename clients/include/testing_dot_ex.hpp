@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,23 +29,35 @@
 
 /* ============================================================================================ */
 
-template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
-hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
+using hipblasDotExModel = ArgumentModel<e_N, e_incx, e_incy>;
+
+inline void testname_dot_ex(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN        = argus.fortran;
+    hipblasDotExModel{}.test_name(arg, name);
+}
+
+inline void testname_dotc_ex(const Arguments& arg, std::string& name)
+{
+    hipblasDotExModel{}.test_name(arg, name);
+}
+
+template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
+inline hipblasStatus_t testing_dot_ex_template(const Arguments& arg)
+{
+    bool FORTRAN        = arg.fortran;
     auto hipblasDotExFn = FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
                                   : (CONJ ? hipblasDotcEx : hipblasDotEx);
 
-    int N    = argus.N;
-    int incx = argus.incx;
-    int incy = argus.incy;
+    int N    = arg.N;
+    int incx = arg.incx;
+    int incy = arg.incy;
 
-    hipblasDatatype_t xType         = argus.a_type;
-    hipblasDatatype_t yType         = argus.b_type;
-    hipblasDatatype_t resultType    = argus.c_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -99,14 +111,14 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true, true);
-    hipblas_init_vector(hy, argus, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true, true);
+    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
 
     // copy data from CPU to device, does not work for incx != 1
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -145,12 +157,21 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
         =================================================================== */
         (CONJ ? cblas_dotc<Tx> : cblas_dot<Tx>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
-            unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_host);
-            unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_device);
+            if(std::is_same<Tr, hipblasHalf>{})
+            {
+                double tol = error_tolerance<Tr> * N;
+                near_check_general(1, 1, 1, &cpu_result, &hipblas_result_host, tol);
+                near_check_general(1, 1, 1, &cpu_result, &hipblas_result_device, tol);
+            }
+            else
+            {
+                unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_host);
+                unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_device);
+            }
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host
                 = norm_check_general<Tr>('F', 1, 1, 1, &cpu_result, &hipblas_result_host);
@@ -160,16 +181,16 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
 
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
@@ -186,24 +207,24 @@ hipblasStatus_t testing_dot_ex_template(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy>{}.log_args<Tx>(std::cout,
-                                                          argus,
-                                                          gpu_time_used,
-                                                          dot_gflop_count<CONJ, Tx>(N),
-                                                          dot_gbyte_count<Tx>(N),
-                                                          hipblas_error_host,
-                                                          hipblas_error_device);
+        hipblasDotExModel{}.log_args<Tx>(std::cout,
+                                         arg,
+                                         gpu_time_used,
+                                         dot_gflop_count<CONJ, Tx>(N),
+                                         dot_gbyte_count<Tx>(N),
+                                         hipblas_error_host,
+                                         hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-hipblasStatus_t testing_dot_ex(Arguments argus)
+inline hipblasStatus_t testing_dot_ex(const Arguments& arg)
 {
-    hipblasDatatype_t xType         = argus.a_type;
-    hipblasDatatype_t yType         = argus.b_type;
-    hipblasDatatype_t resultType    = argus.c_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -211,13 +232,12 @@ hipblasStatus_t testing_dot_ex(Arguments argus)
        && executionType == HIPBLAS_R_16F)
     {
         status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, hipblasHalf, false>(
-            argus);
+            arg);
     }
     else if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
             && executionType == HIPBLAS_R_32F)
     {
-        status
-            = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, false>(argus);
+        status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, false>(arg);
     }
     else if(xType == HIPBLAS_R_16B && yType == HIPBLAS_R_16B && resultType == HIPBLAS_R_16B
             && executionType == HIPBLAS_R_32F)
@@ -226,17 +246,17 @@ hipblasStatus_t testing_dot_ex(Arguments argus)
                                          hipblasBfloat16,
                                          hipblasBfloat16,
                                          hipblasBfloat16,
-                                         false>(argus);
+                                         false>(arg);
     }
     else if(xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)
     {
-        status = testing_dot_ex_template<float, float, float, float, false>(argus);
+        status = testing_dot_ex_template<float, float, float, float, false>(arg);
     }
     else if(xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F
             && executionType == HIPBLAS_R_64F)
     {
-        status = testing_dot_ex_template<double, double, double, double, false>(argus);
+        status = testing_dot_ex_template<double, double, double, double, false>(arg);
     }
     else if(xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F
             && executionType == HIPBLAS_C_32F)
@@ -245,7 +265,7 @@ hipblasStatus_t testing_dot_ex(Arguments argus)
                                          hipblasComplex,
                                          hipblasComplex,
                                          hipblasComplex,
-                                         false>(argus);
+                                         false>(arg);
     }
     else if(xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F
             && executionType == HIPBLAS_C_64F)
@@ -254,7 +274,7 @@ hipblasStatus_t testing_dot_ex(Arguments argus)
                                          hipblasDoubleComplex,
                                          hipblasDoubleComplex,
                                          hipblasDoubleComplex,
-                                         false>(argus);
+                                         false>(arg);
     }
     else
     {
@@ -264,12 +284,12 @@ hipblasStatus_t testing_dot_ex(Arguments argus)
     return status;
 }
 
-hipblasStatus_t testing_dotc_ex(Arguments argus)
+inline hipblasStatus_t testing_dotc_ex(const Arguments& arg)
 {
-    hipblasDatatype_t xType         = argus.a_type;
-    hipblasDatatype_t yType         = argus.b_type;
-    hipblasDatatype_t resultType    = argus.c_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -277,12 +297,12 @@ hipblasStatus_t testing_dotc_ex(Arguments argus)
        && executionType == HIPBLAS_R_16F)
     {
         status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, hipblasHalf, true>(
-            argus);
+            arg);
     }
     else if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
             && executionType == HIPBLAS_R_32F)
     {
-        status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, true>(argus);
+        status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, true>(arg);
     }
     else if(xType == HIPBLAS_R_16B && yType == HIPBLAS_R_16B && resultType == HIPBLAS_R_16B
             && executionType == HIPBLAS_R_32F)
@@ -291,17 +311,17 @@ hipblasStatus_t testing_dotc_ex(Arguments argus)
                                          hipblasBfloat16,
                                          hipblasBfloat16,
                                          hipblasBfloat16,
-                                         true>(argus);
+                                         true>(arg);
     }
     else if(xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)
     {
-        status = testing_dot_ex_template<float, float, float, float, true>(argus);
+        status = testing_dot_ex_template<float, float, float, float, true>(arg);
     }
     else if(xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F
             && executionType == HIPBLAS_R_64F)
     {
-        status = testing_dot_ex_template<double, double, double, double, true>(argus);
+        status = testing_dot_ex_template<double, double, double, double, true>(arg);
     }
     else if(xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F
             && executionType == HIPBLAS_C_32F)
@@ -310,7 +330,7 @@ hipblasStatus_t testing_dotc_ex(Arguments argus)
                                          hipblasComplex,
                                          hipblasComplex,
                                          hipblasComplex,
-                                         true>(argus);
+                                         true>(arg);
     }
     else if(xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F
             && executionType == HIPBLAS_C_64F)
@@ -319,7 +339,7 @@ hipblasStatus_t testing_dotc_ex(Arguments argus)
                                          hipblasDoubleComplex,
                                          hipblasDoubleComplex,
                                          hipblasDoubleComplex,
-                                         true>(argus);
+                                         true>(arg);
     }
     else
     {

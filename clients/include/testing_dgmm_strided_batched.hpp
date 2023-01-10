@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,22 +30,30 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
+using hipblasDgmmStridedBatchedModel
+    = ArgumentModel<e_side, e_M, e_N, e_lda, e_incx, e_ldc, e_stride_scale, e_batch_count>;
+
+inline void testname_dgmm_strided_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasDgmmStridedBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_dgmm_strided_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasDgmmStridedBatchedFn
         = FORTRAN ? hipblasDgmmStridedBatched<T, true> : hipblasDgmmStridedBatched<T, false>;
 
-    hipblasSideMode_t side = char2hipblas_side(argus.side_option);
+    hipblasSideMode_t side = char2hipblas_side(arg.side);
 
-    int    M            = argus.M;
-    int    N            = argus.N;
-    int    lda          = argus.lda;
-    int    incx         = argus.incx;
-    int    ldc          = argus.ldc;
-    int    batch_count  = argus.batch_count;
-    double stride_scale = argus.stride_scale;
+    int    M            = arg.M;
+    int    N            = arg.N;
+    int    lda          = arg.lda;
+    int    incx         = arg.incx;
+    int    ldc          = arg.ldc;
+    int    batch_count  = arg.batch_count;
+    double stride_scale = arg.stride_scale;
     int    k            = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
     int           abs_incx = incx >= 0 ? incx : -incx;
@@ -59,7 +67,7 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
     size_t C_size = size_t(stride_C) * batch_count;
     size_t X_size = size_t(stride_x) * batch_count;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -102,10 +110,10 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, argus, M, N, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
+        hA, arg, M, N, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
-        hx, argus, k, abs_incx, stride_x, batch_count, hipblas_client_never_set_nan, false, true);
-    hipblas_init_matrix(hC, argus, M, N, ldc, stride_C, batch_count, hipblas_client_never_set_nan);
+        hx, arg, k, abs_incx, stride_x, batch_count, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(hC, arg, M, N, ldc, stride_C, batch_count, hipblas_client_never_set_nan);
     hA_copy = hA;
     hx_copy = hx;
     hC_1    = hC;
@@ -116,7 +124,7 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -170,27 +178,27 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_gold, hC_1);
         }
 
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error
                 = norm_check_general<T>('F', M, N, ldc, stride_C, hC_gold, hC_1, batch_count);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasDgmmStridedBatchedFn(handle,
@@ -210,22 +218,12 @@ hipblasStatus_t testing_dgmm_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_side_option,
-                      e_M,
-                      e_N,
-                      e_lda,
-                      e_stride_a,
-                      e_incx,
-                      e_stride_x,
-                      e_ldc,
-                      e_stride_c,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         dgmm_gflop_count<T>(M, N),
-                         dgmm_gbyte_count<T>(M, N, k),
-                         hipblas_error);
+        hipblasDgmmStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     dgmm_gflop_count<T>(M, N),
+                                                     dgmm_gbyte_count<T>(M, N, k),
+                                                     hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

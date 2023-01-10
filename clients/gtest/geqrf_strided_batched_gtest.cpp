@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,13 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 
 typedef std::tuple<vector<int>, double, int, bool> geqrf_strided_batched_tuple;
+typedef std::tuple<bool>                           geqrf_strided_batched_bad_arg_tuple;
 
-const vector<vector<int>> matrix_size_range
-    = {{-1, -1, 1, 1}, {10, 10, 10, 10}, {10, 10, 20, 100}, {600, 500, 600, 600}};
+const vector<vector<int>> matrix_size_range = {{10, 10, 10}, {10, 10, 20}, {600, 500, 600}};
 
 const vector<double> stride_scale_range = {2.5};
 
-const vector<int> batch_count_range = {-1, 0, 1, 2};
+const vector<int> batch_count_range = {-1, 0, 2};
 
 const vector<bool> is_fortran = {false, true};
 
@@ -56,7 +56,6 @@ Arguments setup_geqrf_strided_batched_arguments(geqrf_strided_batched_tuple tup)
     arg.M   = matrix_size[0];
     arg.N   = matrix_size[1];
     arg.lda = matrix_size[2];
-    //arg.ldb = matrix_size[3];
 
     arg.stride_scale = stride_scale;
     arg.batch_count  = batch_count;
@@ -65,6 +64,16 @@ Arguments setup_geqrf_strided_batched_arguments(geqrf_strided_batched_tuple tup)
 
     return arg;
 }
+
+class geqrf_strided_batched_gtest_bad_arg
+    : public ::TestWithParam<geqrf_strided_batched_bad_arg_tuple>
+{
+protected:
+    geqrf_strided_batched_gtest_bad_arg() {}
+    virtual ~geqrf_strided_batched_gtest_bad_arg() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
 
 class geqrf_strided_batched_gtest : public ::TestWithParam<geqrf_strided_batched_tuple>
 {
@@ -76,6 +85,17 @@ protected:
 };
 
 #ifndef __HIP_PLATFORM_NVCC__
+
+TEST_P(geqrf_strided_batched_gtest_bad_arg, geqrf_strided_batched_gtest_bad_arg_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_geqrf_strided_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_geqrf_strided_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_geqrf_strided_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_geqrf_strided_batched_bad_arg<hipblasDoubleComplex>(arg),
+              HIPBLAS_STATUS_SUCCESS);
+}
 
 TEST_P(geqrf_strided_batched_gtest, geqrf_strided_batched_gtest_float)
 {
@@ -176,5 +196,9 @@ INSTANTIATE_TEST_SUITE_P(hipblasGeqrfStridedBatched,
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(hipblasGeqrfStridedBatchedBadArg,
+                         geqrf_strided_batched_gtest_bad_arg,
+                         Combine(ValuesIn(is_fortran)));
 
 #endif

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2020-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 #define _ARGUMENT_MODEL_HPP_
 
 #include "hipblas_arguments.hpp"
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 
@@ -32,6 +33,13 @@ namespace ArgumentLogging
 {
     const double NA_value = -1.0; // invalid for time, GFlop, GB
 }
+
+// these aren't static as ArgumentModel is instantiated for many Arg lists
+void ArgumentModel_set_log_function_name(bool f);
+bool ArgumentModel_get_log_function_name();
+
+void ArgumentModel_set_log_datatype(bool d);
+bool ArgumentModel_get_log_datatype();
 
 // ArgumentModel template has a variadic list of argument enums
 template <hipblas_argument... Args>
@@ -96,8 +104,33 @@ public:
                   double           norm1     = 0,
                   double           norm2     = 0)
     {
+        if(arg.iters < 1)
+            return; // warmup test only
+
         std::stringstream name_list;
         std::stringstream value_list;
+
+        if(ArgumentModel_get_log_function_name())
+        {
+            auto delim = ",";
+            name_list << "function" << delim;
+            value_list << arg.function << delim;
+        }
+
+        if(ArgumentModel_get_log_datatype())
+        {
+            auto delim = ",";
+            name_list << "a_type" << delim;
+            value_list << hipblas_datatype2string(arg.a_type) << delim;
+            name_list << "b_type" << delim;
+            value_list << hipblas_datatype2string(arg.b_type) << delim;
+            name_list << "c_type" << delim;
+            value_list << hipblas_datatype2string(arg.c_type) << delim;
+            name_list << "d_type" << delim;
+            value_list << hipblas_datatype2string(arg.d_type) << delim;
+            name_list << "compute_type" << delim;
+            value_list << hipblas_datatype2string(arg.compute_type) << delim;
+        }
 
         // Output (name, value) pairs to name_list and value_list
         auto print = [&, delim = ""](const char* name, auto&& value) mutable {
@@ -143,6 +176,33 @@ public:
             log_perf(name_list, value_list, arg, gpu_us, gflops, gpu_bytes, norm1, norm2);
 
         str << name_list.str() << "\n" << value_list.str() << std::endl;
+    }
+
+    void test_name(const Arguments& arg, std::string& name)
+    {
+        std::stringstream name_list;
+
+        auto sep = "_";
+        name_list << sep << arg.function;
+        name_list << sep << hipblas_datatype2string(arg.a_type);
+
+        // Output (name, value) pairs to name_list and value_list
+        auto print = [&](const char* name, auto&& value) mutable {
+            name_list << sep << name << sep << value;
+        };
+
+#if __cplusplus >= 201703L
+        // C++17
+        (ArgumentsHelper::apply<Args>(print, arg, float{}), ...);
+#else
+        // C++14. TODO: Remove when C++17 is used
+        (void)(int[]){(ArgumentsHelper::apply<Args>{}()(print, arg, float{}), 0)...};
+#endif
+
+        std::string params = name_list.str();
+        std::replace(params.begin(), params.end(), '-', 'n');
+        std::replace(params.begin(), params.end(), '.', 'p');
+        name += params;
     }
 };
 

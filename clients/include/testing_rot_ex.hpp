@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,15 @@
 
 /* ============================================================================================ */
 
+using hipblasRotExModel = ArgumentModel<e_N, e_incx, e_incy>;
+
+inline void testname_rot_ex(const Arguments& arg, std::string& name)
+{
+    hipblasRotExModel{}.test_name(arg, name);
+}
+
 template <typename Tex, typename Tx = Tex, typename Tcs = Tx>
-hipblasStatus_t testing_rot_ex_template(const Arguments& arg)
+inline hipblasStatus_t testing_rot_ex_template(const Arguments& arg)
 {
     using Ty            = Tx;
     bool FORTRAN        = arg.fortran;
@@ -168,19 +175,19 @@ hipblasStatus_t testing_rot_ex_template(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy>{}.log_args<Tx>(std::cout,
-                                                          arg,
-                                                          gpu_time_used,
-                                                          rot_gflop_count<Tx, Ty, Tcs, Tcs>(N),
-                                                          rot_gbyte_count<Tx>(N),
-                                                          hipblas_error_host,
-                                                          hipblas_error_device);
+        hipblasRotExModel{}.log_args<Tx>(std::cout,
+                                         arg,
+                                         gpu_time_used,
+                                         rot_gflop_count<Tx, Ty, Tcs, Tcs>(N),
+                                         rot_gbyte_count<Tx>(N),
+                                         hipblas_error_host,
+                                         hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-hipblasStatus_t testing_rot_ex(Arguments arg)
+inline hipblasStatus_t testing_rot_ex(Arguments arg)
 {
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
  *
  * ************************************************************************ */
 
+#include "gtest/gtest.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -28,16 +29,152 @@
 
 #include "testing_common.hpp"
 
+using hipblasGetrsModel = ArgumentModel<e_N, e_lda, e_ldb>;
+
+inline void testname_getrs(const Arguments& arg, std::string& name)
+{
+    hipblasGetrsModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_getrs(const Arguments& argus)
+inline hipblasStatus_t setup_getrs_testing(host_vector<T>&     hA,
+                                           host_vector<T>&     hB,
+                                           host_vector<T>&     hX,
+                                           host_vector<int>&   hIpiv,
+                                           device_vector<T>&   dA,
+                                           device_vector<T>&   dB,
+                                           device_vector<int>& dIpiv,
+                                           int                 N,
+                                           int                 lda,
+                                           int                 ldb)
+{
+    const size_t A_size    = size_t(N) * lda;
+    const size_t B_size    = ldb;
+    const size_t Ipiv_size = N;
+
+    // Initial hA, hB, hX on CPU
+    srand(1);
+    hipblas_init<T>(hA, N, N, lda);
+    hipblas_init<T>(hX, N, 1, ldb);
+
+    // scale A to avoid singularities
+    for(int i = 0; i < N; i++)
+    {
+        for(int j = 0; j < N; j++)
+        {
+            if(i == j)
+                hA[i + j * lda] += 400;
+            else
+                hA[i + j * lda] -= 4;
+        }
+    }
+
+    // Calculate hB = hA*hX;
+    hipblasOperation_t opN = HIPBLAS_OP_N;
+    cblas_gemm<T>(opN, opN, N, 1, N, (T)1, hA.data(), lda, hX.data(), ldb, (T)0, hB.data(), ldb);
+
+    // LU factorize hA on the CPU
+    int info = cblas_getrf<T>(N, N, hA.data(), lda, hIpiv.data());
+    if(info != 0)
+    {
+        std::cerr << "LU decomposition failed" << std::endl;
+        return HIPBLAS_STATUS_INTERNAL_ERROR;
+    }
+
+    // Copy data from CPU to device
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_getrs_bad_arg(const Arguments& arg)
+{
+    auto hipblasGetrsFn = arg.fortran ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    const int          N         = 100;
+    const int          nrhs      = 1;
+    const int          lda       = 101;
+    const int          ldb       = 102;
+    const size_t       A_size    = size_t(N) * lda;
+    const size_t       B_size    = ldb;
+    const int          Ipiv_size = N;
+
+    const hipblasOperation_t op = HIPBLAS_OP_N;
+
+    host_vector<T>   hA(A_size);
+    host_vector<T>   hB(B_size);
+    host_vector<T>   hX(B_size);
+    host_vector<int> hIpiv(Ipiv_size);
+
+    device_vector<T>   dA(A_size);
+    device_vector<T>   dB(B_size);
+    device_vector<int> dIpiv(Ipiv_size);
+    int                info = 0;
+
+    // Need initialization code because even with bad params we call roc/cu-solver
+    // so want to give reasonable data
+    EXPECT_HIPBLAS_STATUS(setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb),
+                          HIPBLAS_STATUS_SUCCESS);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, ldb, nullptr),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, -1, nrhs, dA, lda, dIpiv, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-2, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, -1, dA, lda, dIpiv, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-3, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, nullptr, lda, dIpiv, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-4, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, N - 1, dIpiv, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-5, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, nullptr, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-6, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, nullptr, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-7, info);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, N - 1, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_EQ(-8, info);
+
+    // If N == 0, A, B, and ipiv can be nullptr
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrsFn(handle, op, 0, nrhs, nullptr, lda, nullptr, nullptr, ldb, &info),
+        HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    // if nrhs == 0, B can be nullptr
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, 0, dA, lda, dIpiv, nullptr, ldb, &info),
+                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(0, info);
+
+    return HIPBLAS_STATUS_SUCCESS;
+}
+
+template <typename T>
+inline hipblasStatus_t testing_getrs(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = argus.fortran;
+    bool FORTRAN        = arg.fortran;
     auto hipblasGetrsFn = FORTRAN ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
 
-    int N   = argus.N;
-    int lda = argus.lda;
-    int ldb = argus.ldb;
+    int N   = arg.N;
+    int lda = arg.lda;
+    int ldb = arg.ldb;
 
     size_t A_size    = size_t(lda) * N;
     size_t B_size    = ldb * 1;
@@ -63,43 +200,13 @@ hipblasStatus_t testing_getrs(const Arguments& argus)
     device_vector<int> dIpiv(Ipiv_size);
 
     double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(argus);
-
-    // Initial hA, hB, hX on CPU
-    srand(1);
-    hipblas_init<T>(hA, N, N, lda);
-    hipblas_init<T>(hX, N, 1, ldb);
-
-    // scale A to avoid singularities
-    for(int i = 0; i < N; i++)
-    {
-        for(int j = 0; j < N; j++)
-        {
-            if(i == j)
-                hA[i + j * lda] += 400;
-            else
-                hA[i + j * lda] -= 4;
-        }
-    }
-
-    // Calculate hB = hA*hX;
+    hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
-    cblas_gemm<T>(op, op, N, 1, N, (T)1, hA.data(), lda, hX.data(), ldb, (T)0, hB.data(), ldb);
 
-    // LU factorize hA on the CPU
-    info = cblas_getrf<T>(N, N, hA.data(), lda, hIpiv.data());
-    if(info != 0)
-    {
-        std::cerr << "LU decomposition failed" << std::endl;
-        return HIPBLAS_STATUS_INTERNAL_ERROR;
-    }
+    EXPECT_HIPBLAS_STATUS(setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb),
+                          HIPBLAS_STATUS_SUCCESS);
 
-    // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
-
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -117,36 +224,38 @@ hipblasStatus_t testing_getrs(const Arguments& argus)
 
         hipblas_error = norm_check_general<T>('F', N, 1, ldb, hB.data(), hB1.data());
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
             double tolerance = N * eps * 100;
+            int    zero      = 0;
 
             unit_check_error(hipblas_error, tolerance);
+            unit_check_general(1, 1, 1, &zero, &info);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_lda, e_ldb>{}.log_args<T>(std::cout,
-                                                       argus,
-                                                       gpu_time_used,
-                                                       getrs_gflop_count<T>(N, 1),
-                                                       ArgumentLogging::NA_value,
-                                                       hipblas_error);
+        hipblasGetrsModel{}.log_args<T>(std::cout,
+                                        arg,
+                                        gpu_time_used,
+                                        getrs_gflop_count<T>(N, 1),
+                                        ArgumentLogging::NA_value,
+                                        hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,19 +29,26 @@
 
 /* ============================================================================================ */
 
+using hipblasAsumBatchedModel = ArgumentModel<e_N, e_incx, e_batch_count>;
+
+inline void testname_asum_batched(const Arguments& arg, std::string& name)
+{
+    hipblasAsumBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_asum_batched(const Arguments& argus)
+inline hipblasStatus_t testing_asum_batched(const Arguments& arg)
 {
     using Tr     = real_t<T>;
-    bool FORTRAN = argus.fortran;
+    bool FORTRAN = arg.fortran;
     auto hipblasAsumBatchedFn
         = FORTRAN ? hipblasAsumBatched<T, Tr, true> : hipblasAsumBatched<T, Tr, false>;
 
-    int N           = argus.N;
-    int incx        = argus.incx;
-    int batch_count = argus.batch_count;
+    int N           = arg.N;
+    int incx        = arg.incx;
+    int batch_count = arg.batch_count;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || batch_count <= 0)
@@ -83,14 +90,14 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     /* =====================================================================
          HIPBLAS
     =================================================================== */
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         // hipblasAsum accept both dev/host pointer for the scalar
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
@@ -114,12 +121,12 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
             cblas_asum<T, Tr>(N, hx[b], incx, &(h_cpu_result[b]));
         }
 
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_hipblas_result_host);
             unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_hipblas_result_device);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<Tr>(
                 'F', 1, batch_count, 1, h_cpu_result, h_hipblas_result_host);
@@ -129,16 +136,16 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
 
     } // end of if unit/norm check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasAsumBatchedFn(
@@ -146,13 +153,13 @@ hipblasStatus_t testing_asum_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_batch_count>{}.log_args<T>(std::cout,
-                                                                argus,
-                                                                gpu_time_used,
-                                                                asum_gflop_count<T>(N),
-                                                                asum_gbyte_count<T>(N),
-                                                                hipblas_error_host,
-                                                                hipblas_error_device);
+        hipblasAsumBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              asum_gflop_count<T>(N),
+                                              asum_gbyte_count<T>(N),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

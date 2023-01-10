@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -125,7 +125,7 @@ const bool is_fortran_false[] = {false};
 /* ============================Setup Arguments======================================= */
 
 // Please use "class Arguments" (see utility.hpp) to pass parameters to templated testers;
-// Some routines may not touch/use certain "members" of objects "argus".
+// Some routines may not touch/use certain "members" of objects "arg".
 // like BLAS-1 Scal does not have lda, BLAS-2 GEMV does not have ldb, ldc;
 // That is fine. These testers & routines will leave untouched members alone.
 // Do not use std::tuple to directly pass parameters to testers
@@ -153,10 +153,10 @@ Arguments setup_trsm_arguments(trsm_tuple tup)
     arg.alpha  = alpha_alphai[0];
     arg.alphai = alpha_alphai[1];
 
-    arg.side_option   = side_uplo_transA_diag[0];
-    arg.uplo_option   = side_uplo_transA_diag[1];
-    arg.transA_option = side_uplo_transA_diag[2];
-    arg.diag_option   = side_uplo_transA_diag[3];
+    arg.side   = side_uplo_transA_diag[0];
+    arg.uplo   = side_uplo_transA_diag[1];
+    arg.transA = side_uplo_transA_diag[2];
+    arg.diag   = side_uplo_transA_diag[3];
 
     arg.timing = 0;
 
@@ -196,7 +196,7 @@ TEST_P(trsm_gtest, trsm_gtest_float)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
+        else if(arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -227,7 +227,7 @@ TEST_P(trsm_gtest, trsm_gtest_double_complex)
     {
 
         if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -254,7 +254,7 @@ TEST_P(trsm_gtest, trsm_batched_gtest_float)
     {
 
         if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -281,7 +281,7 @@ TEST_P(trsm_gtest, trsm_batched_gtest_double_complex)
     {
 
         if(arg.M < 0 || arg.N < 0 || arg.lda < arg.K || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -309,7 +309,7 @@ TEST_P(trsm_gtest, trsm_strided_batched_gtest_float)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
@@ -335,7 +335,7 @@ TEST_P(trsm_gtest, trsm_strided_batched_gtest_double_complex)
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         if(arg.M < 0 || arg.N < 0 || arg.ldb < arg.M
-           || (arg.side_option == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }

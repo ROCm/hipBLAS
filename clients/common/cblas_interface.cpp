@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -102,6 +102,51 @@ void zgeqrf_(int*                  m,
              hipblasDoubleComplex* work,
              int*                  lwork,
              int*                  info);
+
+void sgels_(char*  trans,
+            int*   m,
+            int*   n,
+            int*   nrhs,
+            float* A,
+            int*   lda,
+            float* B,
+            int*   ldb,
+            float* work,
+            int*   lwork,
+            int*   info);
+void dgels_(char*   trans,
+            int*    m,
+            int*    n,
+            int*    nrhs,
+            double* A,
+            int*    lda,
+            double* B,
+            int*    ldb,
+            double* work,
+            int*    lwork,
+            int*    info);
+void cgels_(char*           trans,
+            int*            m,
+            int*            n,
+            int*            nrhs,
+            hipblasComplex* A,
+            int*            lda,
+            hipblasComplex* B,
+            int*            ldb,
+            hipblasComplex* work,
+            int*            lwork,
+            int*            info);
+void zgels_(char*                 trans,
+            int*                  m,
+            int*                  n,
+            int*                  nrhs,
+            hipblasDoubleComplex* A,
+            int*                  lda,
+            hipblasDoubleComplex* B,
+            int*                  ldb,
+            hipblasDoubleComplex* work,
+            int*                  lwork,
+            int*                  info);
 
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
@@ -2789,7 +2834,7 @@ void cblas_herkx_local(hipblasFillMode_t  uplo,
                        int                ldc)
 {
 
-    if(n <= 0 || (beta == 1 && (k == 0 || alpha == T(0))))
+    if(n <= 0 || (beta == 1 && (k == 0 || alpha == T(0.0))))
         return;
 
     if(transA == HIPBLAS_OP_N)
@@ -3697,5 +3742,74 @@ int cblas_geqrf<hipblasDoubleComplex>(int                   m,
 {
     int info;
     zgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    return info;
+}
+
+// gels
+template <>
+int cblas_gels<float>(char   trans,
+                      int    m,
+                      int    n,
+                      int    nrhs,
+                      float* A,
+                      int    lda,
+                      float* B,
+                      int    ldb,
+                      float* work,
+                      int    lwork)
+{
+    int info;
+    sgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_gels<double>(char    trans,
+                       int     m,
+                       int     n,
+                       int     nrhs,
+                       double* A,
+                       int     lda,
+                       double* B,
+                       int     ldb,
+                       double* work,
+                       int     lwork)
+{
+    int info;
+    dgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_gels<hipblasComplex>(char            trans,
+                               int             m,
+                               int             n,
+                               int             nrhs,
+                               hipblasComplex* A,
+                               int             lda,
+                               hipblasComplex* B,
+                               int             ldb,
+                               hipblasComplex* work,
+                               int             lwork)
+{
+    int info;
+    cgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
+    return info;
+}
+
+template <>
+int cblas_gels<hipblasDoubleComplex>(char                  trans,
+                                     int                   m,
+                                     int                   n,
+                                     int                   nrhs,
+                                     hipblasDoubleComplex* A,
+                                     int                   lda,
+                                     hipblasDoubleComplex* B,
+                                     int                   ldb,
+                                     hipblasDoubleComplex* work,
+                                     int                   lwork)
+{
+    int info;
+    zgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
     return info;
 }

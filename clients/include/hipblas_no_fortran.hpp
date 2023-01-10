@@ -1,6 +1,6 @@
 
 /* ************************************************************************
- * Copyright (C) 2020-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -672,6 +672,18 @@
 #define hipblasDgeqrfFortran hipblasDgeqrf
 #define hipblasCgeqrfFortran hipblasCgeqrf
 #define hipblasZgeqrfFortran hipblasZgeqrf
+#define hipblasSgelsFortran hipblasSgels
+#define hipblasDgelsFortran hipblasDgels
+#define hipblasCgelsFortran hipblasCgels
+#define hipblasZgelsFortran hipblasZgels
+#define hipblasSgelsBatchedFortran hipblasSgelsBatched
+#define hipblasDgelsBatchedFortran hipblasDgelsBatched
+#define hipblasCgelsBatchedFortran hipblasCgelsBatched
+#define hipblasZgelsBatchedFortran hipblasZgelsBatched
+#define hipblasSgelsStridedBatchedFortran hipblasSgelsStridedBatched
+#define hipblasDgelsStridedBatchedFortran hipblasDgelsStridedBatched
+#define hipblasCgelsStridedBatchedFortran hipblasCgelsStridedBatched
+#define hipblasZgelsStridedBatchedFortran hipblasZgelsStridedBatched
 #define hipblasSgeqrfBatchedFortran hipblasSgeqrfBatched
 #define hipblasDgeqrfBatchedFortran hipblasDgeqrfBatched
 #define hipblasCgeqrfBatchedFortran hipblasCgeqrfBatched

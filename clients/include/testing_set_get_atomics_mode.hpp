@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,14 +30,19 @@
 
 /* ============================================================================================ */
 
-hipblasStatus_t testing_set_get_atomics_mode(const Arguments& argus)
+inline void testname_set_get_atomics_mode(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN                 = argus.fortran;
+    ArgumentModel<>{}.test_name(arg, name);
+}
+
+inline hipblasStatus_t testing_set_get_atomics_mode(const Arguments& arg)
+{
+    bool FORTRAN                 = arg.fortran;
     auto hipblasSetAtomicsModeFn = FORTRAN ? hipblasSetAtomicsModeFortran : hipblasSetAtomicsMode;
     auto hipblasGetAtomicsModeFn = FORTRAN ? hipblasGetAtomicsModeFortran : hipblasGetAtomicsMode;
 
     hipblasAtomicsMode_t mode;
-    hipblasLocalHandle   handle(argus);
+    hipblasLocalHandle   handle(arg);
 
     // Not checking default as rocBLAS defaults to allowed
     // and cuBLAS defaults to not allowed.

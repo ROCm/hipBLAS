@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,26 +29,34 @@
 
 /* ============================================================================================ */
 
-template <typename Ta, typename Tx = Ta, typename Tex = Tx>
-hipblasStatus_t testing_scal_batched_ex_template(const Arguments& argus)
+using hipblasScalBatchedExModel = ArgumentModel<e_N, e_alpha, e_incx, e_batch_count>;
+
+inline void testname_scal_batched_ex(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN                = argus.fortran;
+    hipblasScalBatchedExModel{}.test_name(arg, name);
+}
+
+template <typename Ta, typename Tx = Ta, typename Tex = Tx>
+inline hipblasStatus_t testing_scal_batched_ex_template(const Arguments& arg)
+{
+    bool FORTRAN                = arg.fortran;
     auto hipblasScalBatchedExFn = FORTRAN ? hipblasScalBatchedExFortran : hipblasScalBatchedEx;
 
-    int N           = argus.N;
-    int incx        = argus.incx;
-    int batch_count = argus.batch_count;
-    int unit_check  = argus.unit_check;
-    int timing      = argus.timing;
-    int norm_check  = argus.norm_check;
+    int N           = arg.N;
+    int incx        = arg.incx;
+    int batch_count = arg.batch_count;
 
-    Ta h_alpha = argus.get_alpha<Ta>();
+    int unit_check = arg.unit_check;
+    int timing     = arg.timing;
+    int norm_check = arg.norm_check;
 
-    hipblasLocalHandle handle(argus);
+    Ta h_alpha = arg.get_alpha<Ta>();
 
-    hipblasDatatype_t alphaType     = argus.a_type;
-    hipblasDatatype_t xType         = argus.b_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasLocalHandle handle(arg);
+
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -72,7 +80,7 @@ hipblasStatus_t testing_scal_batched_ex_template(const Arguments& argus)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx_host, argus, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx_host, arg, hipblas_client_alpha_sets_nan, true);
 
     hx_device.copy_from(hx_host);
     hx_cpu.copy_from(hx_host);
@@ -143,10 +151,10 @@ hipblasStatus_t testing_scal_batched_ex_template(const Arguments& argus)
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
@@ -161,64 +169,63 @@ hipblasStatus_t testing_scal_batched_ex_template(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_alpha, e_incx, e_batch_count>{}.log_args<Tx>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            scal_gflop_count<Tx, Ta>(N),
-            scal_gbyte_count<Tx>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasScalBatchedExModel{}.log_args<Tx>(std::cout,
+                                                 arg,
+                                                 gpu_time_used,
+                                                 scal_gflop_count<Tx, Ta>(N),
+                                                 scal_gbyte_count<Tx>(N),
+                                                 hipblas_error_host,
+                                                 hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-hipblasStatus_t testing_scal_batched_ex(const Arguments& argus)
+inline hipblasStatus_t testing_scal_batched_ex(const Arguments& arg)
 {
-    hipblasDatatype_t alphaType     = argus.a_type;
-    hipblasDatatype_t xType         = argus.b_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && executionType == HIPBLAS_R_16F)
     {
-        status = testing_scal_batched_ex_template<hipblasHalf>(argus);
+        status = testing_scal_batched_ex_template<hipblasHalf>(arg);
     }
     else if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_scal_batched_ex_template<hipblasHalf, hipblasHalf, float>(argus);
+        status = testing_scal_batched_ex_template<hipblasHalf, hipblasHalf, float>(arg);
     }
     else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_scal_batched_ex_template<float, hipblasHalf, float>(argus);
+        status = testing_scal_batched_ex_template<float, hipblasHalf, float>(arg);
     }
     else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {
-        status = testing_scal_batched_ex_template<float>(argus);
+        status = testing_scal_batched_ex_template<float>(arg);
     }
     else if(alphaType == HIPBLAS_R_64F && xType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
     {
-        status = testing_scal_batched_ex_template<double>(argus);
+        status = testing_scal_batched_ex_template<double>(arg);
     }
     else if(alphaType == HIPBLAS_C_32F && xType == HIPBLAS_C_32F && executionType == HIPBLAS_C_32F)
     {
-        status = testing_scal_batched_ex_template<hipblasComplex>(argus);
+        status = testing_scal_batched_ex_template<hipblasComplex>(arg);
     }
     else if(alphaType == HIPBLAS_C_64F && xType == HIPBLAS_C_64F && executionType == HIPBLAS_C_64F)
     {
-        status = testing_scal_batched_ex_template<hipblasDoubleComplex>(argus);
+        status = testing_scal_batched_ex_template<hipblasDoubleComplex>(arg);
     }
     else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_C_32F && executionType == HIPBLAS_C_32F)
     {
-        status = testing_scal_batched_ex_template<float, hipblasComplex, hipblasComplex>(argus);
+        status = testing_scal_batched_ex_template<float, hipblasComplex, hipblasComplex>(arg);
     }
     else if(alphaType == HIPBLAS_R_64F && xType == HIPBLAS_C_64F && executionType == HIPBLAS_C_64F)
     {
         status
             = testing_scal_batched_ex_template<double, hipblasDoubleComplex, hipblasDoubleComplex>(
-                argus);
+                arg);
     }
     else
     {

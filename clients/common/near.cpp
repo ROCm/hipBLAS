@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +76,8 @@
 
 #endif
 
-#define NEAR_ASSERT_HALF(a, b, err) ASSERT_NEAR(float(a), float(b), err)
+#define NEAR_ASSERT_HALF(a, b, err) ASSERT_NEAR(half_to_float(a), half_to_float(b), err)
+#define NEAR_ASSERT_BF16(a, b, err) ASSERT_NEAR(bfloat16_to_float(a), bfloat16_to_float(b), err)
 
 #define NEAR_ASSERT_COMPLEX(a, b, err)          \
     do                                          \
@@ -103,6 +104,13 @@ void near_check_general(
     int M, int N, int lda, hipblasHalf* hCPU, hipblasHalf* hGPU, double abs_error)
 {
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_HALF);
+}
+
+template <>
+void near_check_general(
+    int M, int N, int lda, hipblasBfloat16* hCPU, hipblasBfloat16* hGPU, double abs_error)
+{
+    NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_BF16);
 }
 
 template <>
@@ -161,6 +169,19 @@ void near_check_general(int           M,
 }
 
 template <>
+void near_check_general(int              M,
+                        int              N,
+                        int              batch_count,
+                        int              lda,
+                        hipblasStride    strideA,
+                        hipblasBfloat16* hCPU,
+                        hipblasBfloat16* hGPU,
+                        double           abs_error)
+{
+    NEAR_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, abs_error, NEAR_ASSERT_BF16);
+}
+
+template <>
 void near_check_general(int             M,
                         int             N,
                         int             batch_count,
@@ -198,6 +219,18 @@ void near_check_general(int                      M,
                         double                   abs_error)
 {
     NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, NEAR_ASSERT_HALF);
+}
+
+template <>
+void near_check_general(int                          M,
+                        int                          N,
+                        int                          batch_count,
+                        int                          lda,
+                        host_vector<hipblasBfloat16> hCPU[],
+                        host_vector<hipblasBfloat16> hGPU[],
+                        double                       abs_error)
+{
+    NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, NEAR_ASSERT_BF16);
 }
 
 template <>
@@ -260,6 +293,18 @@ void near_check_general(int          M,
                         double       abs_error)
 {
     NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, NEAR_ASSERT_HALF);
+}
+
+template <>
+void near_check_general(int              M,
+                        int              N,
+                        int              batch_count,
+                        int              lda,
+                        hipblasBfloat16* hCPU[],
+                        hipblasBfloat16* hGPU[],
+                        double           abs_error)
+{
+    NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, NEAR_ASSERT_BF16);
 }
 
 template <>

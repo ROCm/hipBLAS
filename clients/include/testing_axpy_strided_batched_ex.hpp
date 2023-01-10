@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,19 +29,27 @@
 
 /* ============================================================================================ */
 
-template <typename Ta, typename Tx = Ta, typename Ty = Tx>
-hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
+using hipblasAxpyStridedBatchedExModel
+    = ArgumentModel<e_N, e_alpha, e_incx, e_incy, e_stride_scale, e_batch_count>;
+
+inline void testname_axpy_strided_batched_ex(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasAxpyStridedBatchedExModel{}.test_name(arg, name);
+}
+
+template <typename Ta, typename Tx = Ta, typename Ty = Tx>
+inline hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasAxpyStridedBatchedExFn
         = FORTRAN ? hipblasAxpyStridedBatchedExFortran : hipblasAxpyStridedBatchedEx;
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    int    N            = argus.N;
-    int    incx         = argus.incx;
-    int    incy         = argus.incy;
-    double stride_scale = argus.stride_scale;
-    int    batch_count  = argus.batch_count;
+    int    N            = arg.N;
+    int    incx         = arg.incx;
+    int    incy         = arg.incy;
+    double stride_scale = arg.stride_scale;
+    int    batch_count  = arg.batch_count;
 
     int abs_incx = incx < 0 ? -incx : incx;
     int abs_incy = incy < 0 ? -incy : incy;
@@ -49,12 +57,12 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
     hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
     hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
 
-    hipblasDatatype_t alphaType     = argus.a_type;
-    hipblasDatatype_t xType         = argus.b_type;
-    hipblasDatatype_t yType         = argus.c_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t yType         = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -84,7 +92,7 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
     if(!sizeY)
         sizeY = 1;
 
-    Ta h_alpha = argus.get_alpha<Ta>();
+    Ta h_alpha = arg.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<Tx> hx(sizeX);
@@ -100,9 +108,9 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_vector(
-        hx, argus, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+        hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(
-        hy_host, argus, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
+        hy_host, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
 
     hy_device = hy_host;
     hy_cpu    = hy_host;
@@ -151,7 +159,7 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
 
     CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
                     CPU BLAS
@@ -163,12 +171,12 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<Ty>(1, N, batch_count, abs_incy, stridey, hy_cpu, hy_host);
             unit_check_general<Ty>(1, N, batch_count, abs_incy, stridey, hy_cpu, hy_device);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<Ty>(
                 'F', 1, N, abs_incy, stridey, hy_cpu, hy_host, batch_count);
@@ -178,16 +186,16 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
 
     } // end of if unit check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
@@ -207,64 +215,63 @@ hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_stride_x, e_incy, e_stride_y, e_batch_count>{}.log_args<Ta>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            axpy_gflop_count<Ta>(N),
-            axpy_gbyte_count<Ta>(N),
-            hipblas_error_host,
-            hipblas_error_device);
+        hipblasAxpyStridedBatchedExModel{}.log_args<Ta>(std::cout,
+                                                        arg,
+                                                        gpu_time_used,
+                                                        axpy_gflop_count<Ta>(N),
+                                                        axpy_gbyte_count<Ta>(N),
+                                                        hipblas_error_host,
+                                                        hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-hipblasStatus_t testing_axpy_strided_batched_ex(Arguments argus)
+inline hipblasStatus_t testing_axpy_strided_batched_ex(Arguments arg)
 {
-    hipblasDatatype_t alphaType     = argus.a_type;
-    hipblasDatatype_t xType         = argus.b_type;
-    hipblasDatatype_t yType         = argus.c_type;
-    hipblasDatatype_t executionType = argus.compute_type;
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t yType         = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F
        && executionType == HIPBLAS_R_16F)
     {
-        status = testing_axpy_strided_batched_ex_template<hipblasHalf>(argus);
+        status = testing_axpy_strided_batched_ex_template<hipblasHalf>(arg);
     }
     else if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F
             && executionType == HIPBLAS_R_32F)
     {
         // Not testing accumulation here
-        status = testing_axpy_strided_batched_ex_template<hipblasHalf>(argus);
+        status = testing_axpy_strided_batched_ex_template<hipblasHalf>(arg);
     }
     else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F
             && executionType == HIPBLAS_R_32F)
     {
         // Not testing accumulation here
-        status = testing_axpy_strided_batched_ex_template<float, hipblasHalf>(argus);
+        status = testing_axpy_strided_batched_ex_template<float, hipblasHalf>(arg);
     }
     else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F
             && executionType == HIPBLAS_R_32F)
     {
-        status = testing_axpy_strided_batched_ex_template<float>(argus);
+        status = testing_axpy_strided_batched_ex_template<float>(arg);
     }
     else if(alphaType == HIPBLAS_R_64F && xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F
             && executionType == HIPBLAS_R_64F)
     {
-        status = testing_axpy_strided_batched_ex_template<double>(argus);
+        status = testing_axpy_strided_batched_ex_template<double>(arg);
     }
     else if(alphaType == HIPBLAS_C_32F && xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F
             && executionType == HIPBLAS_C_32F)
     {
-        status = testing_axpy_strided_batched_ex_template<hipblasComplex>(argus);
+        status = testing_axpy_strided_batched_ex_template<hipblasComplex>(arg);
     }
     else if(alphaType == HIPBLAS_C_64F && xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F
             && executionType == HIPBLAS_C_64F)
     {
-        status = testing_axpy_strided_batched_ex_template<hipblasDoubleComplex>(argus);
+        status = testing_axpy_strided_batched_ex_template<hipblasDoubleComplex>(arg);
     }
     else
     {

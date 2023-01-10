@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -85,7 +85,7 @@ const bool is_fortran[] = {false, true};
 /* ============================Setup Arguments======================================= */
 
 // Please use "class Arguments" (see utility.hpp) to pass parameters to templated testers;
-// Some routines may not touch/use certain "members" of objects "argus".
+// Some routines may not touch/use certain "members" of objects "arg".
 // like BLAS-1 Scal does not have lda, BLAS-2 GEMV does not have ldb, ldc;
 // That is fine. These testers & routines will leave untouched members alone.
 // Do not use std::tuple to directly pass parameters to testers

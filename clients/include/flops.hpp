@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -878,6 +878,27 @@ template <>
 constexpr double getrs_gflop_count<hipblasDoubleComplex>(int n, int nrhs)
 {
     return 4.0 * getrs_gflop_count<float>(n, nrhs);
+}
+
+/* \brief floating point counts of GELS */
+template <typename T>
+constexpr double gels_gflop_count(int m, int n)
+{
+    // Not using this for now as better to just use exe. time
+    int k = m >= n ? n : m;
+    return ((2 * m * n * n) - ((2.0 / 3.0) * k * k * k)) / 1e9;
+}
+
+template <>
+constexpr double gels_gflop_count<hipblasComplex>(int m, int n)
+{
+    return 4 * gels_gflop_count<float>(m, n);
+}
+
+template <>
+constexpr double gels_gflop_count<hipblasDoubleComplex>(int m, int n)
+{
+    return 4 * gels_gflop_count<float>(m, n);
 }
 
 #endif /* _HIPBLAS_FLOPS_H_ */

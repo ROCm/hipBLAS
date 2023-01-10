@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,23 +30,30 @@
 
 /* ============================================================================================ */
 
+using hipblasHerModel = ArgumentModel<e_uplo, e_N, e_alpha, e_incx, e_lda>;
+
+inline void testname_her(const Arguments& arg, std::string& name)
+{
+    hipblasHerModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_her(const Arguments& argus)
+inline hipblasStatus_t testing_her(const Arguments& arg)
 {
     using U           = real_t<T>;
-    bool FORTRAN      = argus.fortran;
+    bool FORTRAN      = arg.fortran;
     auto hipblasHerFn = FORTRAN ? hipblasHer<T, U, true> : hipblasHer<T, U, false>;
 
-    int N    = argus.N;
-    int incx = argus.incx;
-    int lda  = argus.lda;
+    hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
+    int               N    = arg.N;
+    int               incx = arg.incx;
+    int               lda  = arg.lda;
 
-    int               abs_incx = incx >= 0 ? incx : -incx;
-    size_t            A_size   = size_t(lda) * N;
-    size_t            x_size   = size_t(N) * abs_incx;
-    hipblasFillMode_t uplo     = char2hipblas_fill(argus.uplo_option);
+    int    abs_incx = incx >= 0 ? incx : -incx;
+    size_t A_size   = size_t(lda) * N;
+    size_t x_size   = size_t(N) * abs_incx;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -73,11 +80,11 @@ hipblasStatus_t testing_her(const Arguments& argus)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    U h_alpha = argus.get_alpha<U>();
+    U h_alpha = arg.get_alpha<U>();
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, argus, N, N, lda, 0, 1, hipblas_client_never_set_nan, true, false);
-    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_matrix(hA, arg, N, N, lda, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
 
     // copy matrix is easy in STL; hA_cpu = hA: save a copy in hA_cpu which will be output of CPU BLAS
     hA_cpu = hA;
@@ -87,7 +94,7 @@ hipblasStatus_t testing_her(const Arguments& argus)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(U), hipMemcpyHostToDevice));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
@@ -111,7 +118,7 @@ hipblasStatus_t testing_her(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(N, N, lda, hA_cpu.data(), hA_host.data());
 
@@ -121,37 +128,37 @@ hipblasStatus_t testing_her(const Arguments& argus)
             if(h_alpha)
                 unit_check_general<T>(N, N, lda, hA_cpu.data(), hA_device.data());
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error_host   = norm_check_general<T>('F', N, N, lda, hA_cpu, hA_host);
             hipblas_error_device = norm_check_general<T>('F', N, N, lda, hA_cpu, hA_device);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * lda * N, hipMemcpyHostToDevice));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasHerFn(handle, uplo, N, d_alpha, dx, incx, dA, lda));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_alpha, e_incx, e_lda>{}.log_args<U>(std::cout,
-                                                                 argus,
-                                                                 gpu_time_used,
-                                                                 her_gflop_count<T>(N),
-                                                                 her_gbyte_count<T>(N),
-                                                                 hipblas_error_host,
-                                                                 hipblas_error_device);
+        hipblasHerModel{}.log_args<U>(std::cout,
+                                      arg,
+                                      gpu_time_used,
+                                      her_gflop_count<T>(N),
+                                      her_gbyte_count<T>(N),
+                                      hipblas_error_host,
+                                      hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

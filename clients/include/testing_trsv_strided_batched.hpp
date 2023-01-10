@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,24 +30,29 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
+using hipblasTrsvStridedBatchedModel
+    = ArgumentModel<e_uplo, e_transA, e_diag, e_M, e_lda, e_incx, e_stride_scale, e_batch_count>;
+
+inline void testname_trsv_strided_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasTrsvStridedBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_trsv_strided_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasTrsvStridedBatchedFn
         = FORTRAN ? hipblasTrsvStridedBatched<T, true> : hipblasTrsvStridedBatched<T, false>;
 
-    int                M            = argus.M;
-    int                incx         = argus.incx;
-    int                lda          = argus.lda;
-    char               char_uplo    = argus.uplo_option;
-    char               char_diag    = argus.diag_option;
-    char               char_transA  = argus.transA_option;
-    hipblasFillMode_t  uplo         = char2hipblas_fill(char_uplo);
-    hipblasDiagType_t  diag         = char2hipblas_diagonal(char_diag);
-    hipblasOperation_t transA       = char2hipblas_operation(char_transA);
-    double             stride_scale = argus.stride_scale;
-    int                batch_count  = argus.batch_count;
+    hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
+    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
+    int                M            = arg.M;
+    int                incx         = arg.incx;
+    int                lda          = arg.lda;
+    double             stride_scale = arg.stride_scale;
+    int                batch_count  = arg.batch_count;
 
     int           abs_incx = incx < 0 ? -incx : incx;
     hipblasStride strideA  = lda * M * stride_scale;
@@ -55,7 +60,7 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
     size_t        size_A   = size_t(strideA) * batch_count;
     size_t        size_x   = size_t(stridex) * batch_count;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -93,9 +98,9 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, argus, M, M, lda, strideA, batch_count, hipblas_client_never_set_nan, true);
+        hA, arg, M, M, lda, strideA, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
-        hx, argus, M, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
+        hx, arg, M, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
     for(int b = 0; b < batch_count; b++)
@@ -119,12 +124,12 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
             hAb[i + i * lda] = t;
         }
         //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(char_uplo, M, hAb, lda);
+        cblas_potrf<T>(arg.uplo, M, hAb, lda);
 
         //  make hA unit diagonal if diag == rocblas_diagonal_unit
-        if(char_diag == 'U' || char_diag == 'u')
+        if(arg.diag == 'U' || arg.diag == 'u')
         {
-            if('L' == char_uplo || 'l' == char_uplo)
+            if('L' == arg.uplo || 'l' == arg.uplo)
                 for(int i = 0; i < M; i++)
                 {
                     T diag = hAb[i + i * lda];
@@ -154,7 +159,7 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         CHECK_HIPBLAS_ERROR(hipblasTrsvStridedBatchedFn(
@@ -170,7 +175,7 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
         {
             hipblas_error = std::abs(vector_norm_1<T>(
                 M, abs_incx, hx.data() + b * stridex, hx_or_b_1.data() + b * stridex));
-            if(argus.unit_check)
+            if(arg.unit_check)
             {
                 double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * M;
                 unit_check_error(hipblas_error, tolerance);
@@ -180,16 +185,16 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasTrsvStridedBatchedFn(handle,
@@ -207,20 +212,12 @@ hipblasStatus_t testing_trsv_strided_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
-        ArgumentModel<e_uplo_option,
-                      e_transA_option,
-                      e_diag_option,
-                      e_M,
-                      e_lda,
-                      e_incx,
-                      e_stride_x,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         trsv_gflop_count<T>(M),
-                         trsv_gbyte_count<T>(M),
-                         cumulative_hipblas_error);
+        hipblasTrsvStridedBatchedModel{}.log_args<T>(std::cout,
+                                                     arg,
+                                                     gpu_time_used,
+                                                     trsv_gflop_count<T>(M),
+                                                     trsv_gbyte_count<T>(M),
+                                                     cumulative_hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

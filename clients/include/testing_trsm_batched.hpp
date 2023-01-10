@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,29 +30,40 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_trsm_batched(const Arguments& argus)
+using hipblasTrsmBatchedModel = ArgumentModel<e_side,
+                                              e_uplo,
+                                              e_transA,
+                                              e_diag,
+                                              e_M,
+                                              e_N,
+                                              e_alpha,
+                                              e_lda,
+                                              e_ldb,
+                                              e_batch_count>;
+
+inline void testname_trsm_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasTrsmBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_trsm_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasTrsmBatchedFn
         = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
 
-    int M   = argus.M;
-    int N   = argus.N;
-    int lda = argus.lda;
-    int ldb = argus.ldb;
+    hipblasSideMode_t  side        = char2hipblas_side(arg.side);
+    hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
+    int                M           = arg.M;
+    int                N           = arg.N;
+    int                lda         = arg.lda;
+    int                ldb         = arg.ldb;
+    int                batch_count = arg.batch_count;
 
-    char char_side   = argus.side_option;
-    char char_uplo   = argus.uplo_option;
-    char char_transA = argus.transA_option;
-    char char_diag   = argus.diag_option;
-    T    h_alpha     = argus.get_alpha<T>();
-    int  batch_count = argus.batch_count;
-
-    hipblasSideMode_t  side   = char2hipblas_side(char_side);
-    hipblasFillMode_t  uplo   = char2hipblas_fill(char_uplo);
-    hipblasOperation_t transA = char2hipblas_operation(char_transA);
-    hipblasDiagType_t  diag   = char2hipblas_diagonal(char_diag);
+    T h_alpha = arg.get_alpha<T>();
 
     int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
     size_t A_size = size_t(lda) * K;
@@ -82,11 +93,11 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dB.memcheck());
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
-    hipblas_init_vector(hA, argus, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hB_host, argus, hipblas_client_never_set_nan);
+    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hB_host, arg, hipblas_client_never_set_nan);
 
     for(int b = 0; b < batch_count; b++)
     {
@@ -148,7 +159,7 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         CHECK_HIPBLAS_ERROR(hipblasTrsmBatchedFn(handle,
@@ -201,24 +212,24 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
         hipblas_error_host = norm_check_general<T>('F', M, N, ldb, hB_gold, hB_host, batch_count);
         hipblas_error_device
             = norm_check_general<T>('F', M, N, ldb, hB_gold, hB_device, batch_count);
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_error(hipblas_error_host, tolerance);
             unit_check_error(hipblas_error_device, tolerance);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
             {
                 gpu_time_used = get_time_us_sync(stream);
             }
@@ -239,23 +250,13 @@ hipblasStatus_t testing_trsm_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_side_option,
-                      e_uplo_option,
-                      e_transA_option,
-                      e_diag_option,
-                      e_M,
-                      e_N,
-                      e_alpha,
-                      e_lda,
-                      e_ldb,
-                      e_batch_count>{}
-            .log_args<T>(std::cout,
-                         argus,
-                         gpu_time_used,
-                         trsm_gflop_count<T>(M, N, K),
-                         trsm_gbyte_count<T>(M, N, K),
-                         hipblas_error_host,
-                         hipblas_error_device);
+        hipblasTrsmBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              trsm_gflop_count<T>(M, N, K),
+                                              trsm_gbyte_count<T>(M, N, K),
+                                              hipblas_error_host,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

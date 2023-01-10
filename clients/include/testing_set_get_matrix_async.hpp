@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,18 +30,25 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_set_get_matrix_async(const Arguments& argus)
+using hipblasSetGetMatrixAsyncModel = ArgumentModel<e_M, e_N, e_lda, e_ldb, e_ldc>;
+
+inline void testname_set_get_matrix_async(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN                 = argus.fortran;
+    hipblasSetGetMatrixAsyncModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_set_get_matrix_async(const Arguments& arg)
+{
+    bool FORTRAN                 = arg.fortran;
     auto hipblasSetMatrixAsyncFn = FORTRAN ? hipblasSetMatrixAsyncFortran : hipblasSetMatrixAsync;
     auto hipblasGetMatrixAsyncFn = FORTRAN ? hipblasGetMatrixAsyncFortran : hipblasGetMatrixAsync;
 
-    int rows = argus.rows;
-    int cols = argus.cols;
-    int lda  = argus.lda;
-    int ldb  = argus.ldb;
-    int ldc  = argus.ldc;
+    int rows = arg.rows;
+    int cols = arg.cols;
+    int lda  = arg.lda;
+    int ldb  = arg.ldb;
+    int ldc  = arg.ldc;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -59,7 +66,7 @@ hipblasStatus_t testing_set_get_matrix_async(const Arguments& argus)
     device_vector<T> dc(cols * ldc);
 
     double             hipblas_error = 0.0, gpu_time_used = 0.0;
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     hipStream_t stream;
     hipblasGetStream(handle, &stream);
@@ -87,9 +94,9 @@ hipblasStatus_t testing_set_get_matrix_async(const Arguments& argus)
     CHECK_HIPBLAS_ERROR(
         hipblasGetMatrixAsyncFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb, stream));
 
-    hipStreamSynchronize(stream);
+    CHECK_HIP_ERROR(hipStreamSynchronize(stream));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
            CPU BLAS
@@ -106,25 +113,25 @@ hipblasStatus_t testing_set_get_matrix_async(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(rows, cols, ldb, hb, hb_ref);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>('F', rows, cols, ldb, hb, hb_ref);
         }
     }
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasSetMatrixAsyncFn(
@@ -134,13 +141,12 @@ hipblasStatus_t testing_set_get_matrix_async(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_M, e_N, e_lda, e_ldb, e_ldc>{}.log_args<T>(
-            std::cout,
-            argus,
-            gpu_time_used,
-            ArgumentLogging::NA_value,
-            set_get_matrix_gbyte_count<T>(rows, cols),
-            hipblas_error);
+        hipblasSetGetMatrixAsyncModel{}.log_args<T>(std::cout,
+                                                    arg,
+                                                    gpu_time_used,
+                                                    ArgumentLogging::NA_value,
+                                                    set_get_matrix_gbyte_count<T>(rows, cols),
+                                                    hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

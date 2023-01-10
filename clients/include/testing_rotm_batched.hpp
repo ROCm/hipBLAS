@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,15 @@
 
 /* ============================================================================================ */
 
+using hipblasRotmBatchedModel = ArgumentModel<e_N, e_incx, e_incy, e_batch_count>;
+
+inline void testname_rotm_batched(const Arguments& arg, std::string& name)
+{
+    hipblasRotmBatchedModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_rotm_batched(const Arguments& arg)
+inline hipblasStatus_t testing_rotm_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasRotmBatchedFn
@@ -163,13 +170,13 @@ hipblasStatus_t testing_rotm_batched(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.log_args<T>(std::cout,
-                                                                        arg,
-                                                                        gpu_time_used,
-                                                                        rotm_gflop_count<T>(N, 0),
-                                                                        rotm_gbyte_count<T>(N, 0),
-                                                                        0,
-                                                                        hipblas_error_device);
+        hipblasRotmBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              rotm_gflop_count<T>(N, 0),
+                                              rotm_gbyte_count<T>(N, 0),
+                                              0,
+                                              hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

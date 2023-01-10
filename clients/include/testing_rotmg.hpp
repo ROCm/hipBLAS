@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,15 @@
 
 /* ============================================================================================ */
 
+using hipblasRotmgModel = ArgumentModel<>;
+
+inline void testname_rotmg(const Arguments& arg, std::string& name)
+{
+    hipblasRotmgModel{}.test_name(arg, name);
+}
+
 template <typename T>
-hipblasStatus_t testing_rotmg(const Arguments& arg)
+inline hipblasStatus_t testing_rotmg(const Arguments& arg)
 {
     bool FORTRAN        = arg.fortran;
     auto hipblasRotmgFn = FORTRAN ? hipblasRotmg<T, true> : hipblasRotmg<T, false>;
@@ -96,13 +103,13 @@ hipblasStatus_t testing_rotmg(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<>{}.log_args<T>(std::cout,
-                                      arg,
-                                      gpu_time_used,
-                                      ArgumentLogging::NA_value,
-                                      ArgumentLogging::NA_value,
-                                      hipblas_error_host,
-                                      hipblas_error_device);
+        hipblasRotmgModel{}.log_args<T>(std::cout,
+                                        arg,
+                                        gpu_time_used,
+                                        ArgumentLogging::NA_value,
+                                        ArgumentLogging::NA_value,
+                                        hipblas_error_host,
+                                        hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -461,6 +461,10 @@ int cblas_getri(int n, T* A, int lda, int* ipiv, T* work, int lwork);
 
 template <typename T>
 int cblas_geqrf(int m, int n, T* A, int lda, T* tau, T* work, int lwork);
+
+template <typename T>
+int cblas_gels(
+    char trans, int m, int n, int nrhs, T* A, int lda, T* B, int ldb, T* work, int lwork);
 /* ============================================================================================ */
 
 #endif /* _CBLAS_INTERFACE_ */

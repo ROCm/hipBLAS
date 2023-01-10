@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,13 @@
 #include "testing_common.hpp"
 
 /* ============================================================================================ */
+
+using hipblasRotModel = ArgumentModel<e_N, e_incx, e_incy>;
+
+inline void testname_rot(const Arguments& arg, std::string& name)
+{
+    hipblasRotModel{}.test_name(arg, name);
+}
 
 template <typename T, typename U = T, typename V = T>
 hipblasStatus_t testing_rot(const Arguments& arg)
@@ -160,13 +167,13 @@ hipblasStatus_t testing_rot(const Arguments& arg)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy>{}.log_args<T>(std::cout,
-                                                         arg,
-                                                         gpu_time_used,
-                                                         rot_gflop_count<T, T, U, V>(N),
-                                                         rot_gbyte_count<T>(N),
-                                                         hipblas_error_host,
-                                                         hipblas_error_device);
+        hipblasRotModel{}.log_args<T>(std::cout,
+                                      arg,
+                                      gpu_time_used,
+                                      rot_gflop_count<T, T, U, V>(N),
+                                      rot_gbyte_count<T>(N),
+                                      hipblas_error_host,
+                                      hipblas_error_device);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

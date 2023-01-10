@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,19 +29,26 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_copy_batched(const Arguments& argus)
+using hipblasCopyBatchedModel = ArgumentModel<e_N, e_incx, e_incy, e_batch_count>;
+
+inline void testname_copy_batched(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN = argus.fortran;
+    hipblasCopyBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_copy_batched(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
     auto hipblasCopyBatchedFn
         = FORTRAN ? hipblasCopyBatched<T, true> : hipblasCopyBatched<T, false>;
 
-    int N           = argus.N;
-    int incx        = argus.incx;
-    int incy        = argus.incy;
-    int batch_count = argus.batch_count;
+    int N           = arg.N;
+    int incx        = arg.incx;
+    int incy        = arg.incy;
+    int batch_count = arg.batch_count;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -68,15 +75,15 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
     CHECK_HIP_ERROR(dx.memcheck());
     CHECK_HIP_ERROR(dy.memcheck());
 
-    hipblas_init_vector(hx, argus, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hy, argus, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
 
     hx_cpu.copy_from(hx);
     hy_cpu.copy_from(hy);
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));
 
-    if(argus.unit_check || argus.norm_check)
+    if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
                     HIPBLAS
@@ -98,26 +105,26 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
-        if(argus.unit_check)
+        if(arg.unit_check)
         {
             unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy);
         }
-        if(argus.norm_check)
+        if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy, batch_count);
         }
 
     } // end of if unit check
 
-    if(argus.timing)
+    if(arg.timing)
     {
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasCopyBatchedFn(
@@ -125,12 +132,12 @@ hipblasStatus_t testing_copy_batched(const Arguments& argus)
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy, e_batch_count>{}.log_args<T>(std::cout,
-                                                                        argus,
-                                                                        gpu_time_used,
-                                                                        copy_gflop_count<T>(N),
-                                                                        copy_gbyte_count<T>(N),
-                                                                        hipblas_error);
+        hipblasCopyBatchedModel{}.log_args<T>(std::cout,
+                                              arg,
+                                              gpu_time_used,
+                                              copy_gflop_count<T>(N),
+                                              copy_gbyte_count<T>(N),
+                                              hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;

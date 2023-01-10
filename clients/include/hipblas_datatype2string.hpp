@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -60,13 +60,13 @@ inline std::ostream& operator<<(std::ostream& os, hipblas_initialization init)
 // Complex output
 inline std::ostream& operator<<(std::ostream& os, const hipblasComplex& x)
 {
-    os << "'(" << x.real() << "," << x.imag() << ")'";
+    os << "'(" << x.real() << ":" << x.imag() << ")'";
     return os;
 }
 
 inline std::ostream& operator<<(std::ostream& os, const hipblasDoubleComplex& x)
 {
-    os << "'(" << x.real() << "," << x.imag() << ")'";
+    os << "'(" << x.real() << ":" << x.imag() << ")'";
     return os;
 }
 
@@ -131,6 +131,8 @@ inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
         return "bf16_r";
     case HIPBLAS_C_16B:
         return "bf16_c";
+    case HIPBLAS_DATATYPE_INVALID:
+        return "invalid";
     }
     return "invalid";
 }

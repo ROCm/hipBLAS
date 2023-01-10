@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,20 +29,27 @@
 
 /* ============================================================================================ */
 
-template <typename T>
-hipblasStatus_t testing_swap(const Arguments& argus)
+using hipblasSwapModel = ArgumentModel<e_N, e_incx, e_incy>;
+
+inline void testname_swap(const Arguments& arg, std::string& name)
 {
-    bool FORTRAN       = argus.fortran;
+    hipblasSwapModel{}.test_name(arg, name);
+}
+
+template <typename T>
+inline hipblasStatus_t testing_swap(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
     auto hipblasSwapFn = FORTRAN ? hipblasSwap<T, true> : hipblasSwap<T, false>;
 
-    int N          = argus.N;
-    int incx       = argus.incx;
-    int incy       = argus.incy;
-    int unit_check = argus.unit_check;
-    int norm_check = argus.norm_check;
-    int timing     = argus.timing;
+    int N          = arg.N;
+    int incx       = arg.incx;
+    int incy       = arg.incy;
+    int unit_check = arg.unit_check;
+    int norm_check = arg.norm_check;
+    int timing     = arg.timing;
 
-    hipblasLocalHandle handle(argus);
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -76,8 +83,8 @@ hipblasStatus_t testing_swap(const Arguments& argus)
     double hipblas_error = 0.0;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, argus, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hy, argus, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
     hx_cpu = hx;
     hy_cpu = hy;
 
@@ -120,22 +127,22 @@ hipblasStatus_t testing_swap(const Arguments& argus)
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
-        int runs = argus.cold_iters + argus.iters;
+        int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
         {
-            if(iter == argus.cold_iters)
+            if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
             CHECK_HIPBLAS_ERROR(hipblasSwapFn(handle, N, dx, incx, dy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        ArgumentModel<e_N, e_incx, e_incy>{}.log_args<T>(std::cout,
-                                                         argus,
-                                                         gpu_time_used,
-                                                         swap_gflop_count<T>(N),
-                                                         swap_gbyte_count<T>(N),
-                                                         hipblas_error);
+        hipblasSwapModel{}.log_args<T>(std::cout,
+                                       arg,
+                                       gpu_time_used,
+                                       swap_gflop_count<T>(N),
+                                       swap_gbyte_count<T>(N),
+                                       hipblas_error);
     }
 
     return HIPBLAS_STATUS_SUCCESS;
