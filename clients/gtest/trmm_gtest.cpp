@@ -38,6 +38,7 @@ using ::testing::ValuesIn;
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
 typedef std::tuple<vector<int>, double, vector<char>, double, int, bool, bool> trmm_tuple;
+typedef std::tuple<bool>                                                       trmm_bad_arg_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -174,6 +175,15 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     return arg;
 }
 
+class trmm_bad_arg_gtest : public ::TestWithParam<trmm_bad_arg_tuple>
+{
+protected:
+    trmm_bad_arg_gtest() {}
+    virtual ~trmm_bad_arg_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
 class trmm_gtest : public ::TestWithParam<trmm_tuple>
 {
 protected:
@@ -182,6 +192,37 @@ protected:
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
+
+TEST_P(trmm_bad_arg_gtest, trmm_bad_arg_gtest_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_trmm_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+}
+
+TEST_P(trmm_bad_arg_gtest, trmm_batched_bad_arg_gtest_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_trmm_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_batched_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+}
+
+TEST_P(trmm_bad_arg_gtest, trmm_strided_batched_bad_arg_gtest_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<hipblasDoubleComplex>(arg),
+              HIPBLAS_STATUS_SUCCESS);
+}
 
 TEST_P(trmm_gtest, trmm_gtest_float)
 {
@@ -379,3 +420,5 @@ INSTANTIATE_TEST_SUITE_P(hipblastrmm_scalar_transpose,
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran_false),
                                  ValuesIn(is_inplace)));
+
+INSTANTIATE_TEST_SUITE_P(hipblasTrmmBadArg, trmm_bad_arg_gtest, Combine(ValuesIn(is_fortran)));
