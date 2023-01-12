@@ -509,6 +509,31 @@ inline hipblasStatus_t testing_trmm_strided_batched_bad_arg(const Arguments& arg
                                                           strideOut,
                                                           0),
                               HIPBLAS_STATUS_SUCCESS);
+
+        // in-place only checks
+        if(inplace)
+        {
+            // if inplace, must have ldb == ldc
+            EXPECT_HIPBLAS_STATUS(hipblasTrmmStridedBatchedFn(handle,
+                                                              side,
+                                                              uplo,
+                                                              transA,
+                                                              diag,
+                                                              M,
+                                                              N,
+                                                              alpha,
+                                                              dA,
+                                                              lda,
+                                                              strideA,
+                                                              dB,
+                                                              ldb,
+                                                              strideB,
+                                                              *dOut,
+                                                              ldb + 1,
+                                                              strideOut,
+                                                              batch_count),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+        }
     }
 
     return HIPBLAS_STATUS_SUCCESS;

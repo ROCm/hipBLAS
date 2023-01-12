@@ -38,7 +38,7 @@ using ::testing::ValuesIn;
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
 typedef std::tuple<vector<int>, double, vector<char>, double, int, bool, bool> trmm_tuple;
-typedef std::tuple<bool>                                                       trmm_bad_arg_tuple;
+typedef std::tuple<bool, bool>                                                 trmm_bad_arg_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -421,4 +421,6 @@ INSTANTIATE_TEST_SUITE_P(hipblastrmm_scalar_transpose,
                                  ValuesIn(is_fortran_false),
                                  ValuesIn(is_inplace)));
 
-INSTANTIATE_TEST_SUITE_P(hipblasTrmmBadArg, trmm_bad_arg_gtest, Combine(ValuesIn(is_fortran)));
+INSTANTIATE_TEST_SUITE_P(hipblasTrmmBadArg,
+                         trmm_bad_arg_gtest,
+                         Combine(ValuesIn(is_fortran), ValuesIn(is_inplace)));

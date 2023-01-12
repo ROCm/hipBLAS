@@ -271,6 +271,27 @@ inline hipblasStatus_t testing_trmm_bad_arg(const Arguments& arg)
                                             nullptr,
                                             ldOut),
                               HIPBLAS_STATUS_SUCCESS);
+
+        // in-place only checks
+        if(inplace)
+        {
+            // if inplace, must have ldb == ldc
+            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
+                                                side,
+                                                uplo,
+                                                transA,
+                                                diag,
+                                                M,
+                                                N,
+                                                alpha,
+                                                dA,
+                                                lda,
+                                                dB,
+                                                ldb,
+                                                *dOut,
+                                                ldb + 1),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+        }
     }
 
     return HIPBLAS_STATUS_SUCCESS;
