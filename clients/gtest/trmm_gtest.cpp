@@ -203,27 +203,6 @@ TEST_P(trmm_bad_arg_gtest, trmm_bad_arg_gtest_test)
     EXPECT_EQ(testing_trmm_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
 }
 
-TEST_P(trmm_bad_arg_gtest, trmm_batched_bad_arg_gtest_test)
-{
-    Arguments arg;
-
-    EXPECT_EQ(testing_trmm_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(testing_trmm_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(testing_trmm_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(testing_trmm_batched_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
-}
-
-TEST_P(trmm_bad_arg_gtest, trmm_strided_batched_bad_arg_gtest_test)
-{
-    Arguments arg;
-
-    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<hipblasDoubleComplex>(arg),
-              HIPBLAS_STATUS_SUCCESS);
-}
-
 TEST_P(trmm_gtest, trmm_gtest_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -279,6 +258,27 @@ TEST_P(trmm_gtest, trmm_gtest_double_complex)
 }
 
 #ifndef __HIP_PLATFORM_NVCC__
+
+TEST_P(trmm_bad_arg_gtest, trmm_batched_bad_arg_gtest_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_trmm_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_batched_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+}
+
+TEST_P(trmm_bad_arg_gtest, trmm_strided_batched_bad_arg_gtest_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<hipblasDoubleComplex>(arg),
+              HIPBLAS_STATUS_SUCCESS);
+}
 
 TEST_P(trmm_gtest, trmm_batched_gtest_float)
 {
