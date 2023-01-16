@@ -87,6 +87,9 @@ inline hipblasStatus_t testing_trmm_bad_arg(const Arguments& arg)
 
         device_vector<T>* dOut = inplace ? &dB : &dC;
 
+#ifndef __HIP_PLATFORM_NVCC__
+        // cuBLAS doesn't have CUBLAS_SIDE_BOTH so will return invalid_enum,
+        // while rocBLAS has rocblas_side_both, but just invalid for this func.
         // invalid enums
         EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
                                             HIPBLAS_SIDE_BOTH,
@@ -103,6 +106,23 @@ inline hipblasStatus_t testing_trmm_bad_arg(const Arguments& arg)
                                             *dOut,
                                             ldOut),
                               HIPBLAS_STATUS_INVALID_VALUE);
+#else
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
+                                            HIPBLAS_SIDE_BOTH,
+                                            uplo,
+                                            transA,
+                                            diag,
+                                            M,
+                                            N,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            dB,
+                                            ldb,
+                                            *dOut,
+                                            ldOut),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+#endif
 
         EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
                                             side,
@@ -203,6 +223,13 @@ inline hipblasStatus_t testing_trmm_bad_arg(const Arguments& arg)
 
         EXPECT_HIPBLAS_STATUS(
             hipblasTrmmFn(
+                handle, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, nullptr, ldOut),
+            HIPBLAS_STATUS_INVALID_VALUE);
+
+#ifndef __HIP_PLATFORM_NVCC__
+        // cuBLAS doesn't check for nullptrs for alpha, A, B
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrmmFn(
                 handle, side, uplo, transA, diag, M, N, nullptr, dA, lda, dB, ldb, *dOut, ldOut),
             HIPBLAS_STATUS_INVALID_VALUE);
 
@@ -214,11 +241,6 @@ inline hipblasStatus_t testing_trmm_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(
             hipblasTrmmFn(
                 handle, side, uplo, transA, diag, M, N, alpha, dA, lda, nullptr, ldb, *dOut, ldOut),
-            HIPBLAS_STATUS_INVALID_VALUE);
-
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, nullptr, ldOut),
             HIPBLAS_STATUS_INVALID_VALUE);
 
         // quick return: if alpha == 0, both A & B can be nullptr
@@ -237,7 +259,7 @@ inline hipblasStatus_t testing_trmm_bad_arg(const Arguments& arg)
                                             *dOut,
                                             ldOut),
                               HIPBLAS_STATUS_SUCCESS);
-
+#endif
         // quick return: if M == 0, then all other ptrs can be nullptr
         EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
                                             side,
