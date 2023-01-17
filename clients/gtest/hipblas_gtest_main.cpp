@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -273,7 +273,7 @@ static void hipblas_set_listener()
     {
         listener->showTestNames      = false;
         listener->showSuccesses      = false;
-        listener->showInlineFailures = false;
+        listener->showInlineFailures = true; // easier reading
         listener->showInlineSkips    = false;
     }
 
