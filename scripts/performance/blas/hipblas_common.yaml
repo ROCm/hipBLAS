@@ -5,22 +5,34 @@ Datatypes:
   - hipDataType:
       bases: [ c_int ]
       attr:
-        f16_r: 150
-        f32_r: 151
-        f64_r: 152
-        f16_c: 153
-        f32_c: 154
-        f64_c: 155
-        i8_r:  160
-        u8_r:  161
-        i32_r: 162
-        u32_r: 163
-        i8_c:  164
-        u8_c:  165
-        i32_c: 166
-        u32_c: 167
-        bf16_r: 168
-        bf16_c: 169
+        f32_r:   0
+        f64_r:   1
+        f16_r:   2
+        i8_r:    3
+        f32_c:   4
+        f64_c:   5
+        f16_c:   6
+        i8_c:    7
+        u8_r:    8
+        u8_c:    9
+        i32_r:  10
+        i32_c:  11
+        u32_r:  12
+        u32_c:  13
+        bf16_r: 14
+        bf16_c: 15
+        i4_r:   16
+        i4_c:   17
+        u4_r:   18
+        u4_c:   19
+        i16_r:  20
+        i16_c:  21
+        u16_r:  22
+        u16_c:  23
+        i64_r:  24
+        i64_c:  25
+        u64_r:  26
+        u64_c:  27
   - { half: f16_r, single: f32_r, double: f64_r }
   - { half complex: f16_c, single complex: f32_c, double complex: f64_c }
   - hipblas_initialization:

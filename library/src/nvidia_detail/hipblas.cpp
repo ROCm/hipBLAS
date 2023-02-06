@@ -183,17 +183,23 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipDataType type)
     case HIP_R_16F:
         return CUDA_R_16F;
 
-    case HIP_R_32F:
-        return CUDA_R_32F;
-
-    case HIP_R_64F:
-        return CUDA_R_64F;
-
     case HIP_C_16F:
         return CUDA_C_16F;
 
+    case HIP_R_16BF:
+        return CUDA_R_16BF;
+
+    case HIP_C_16BF:
+        return CUDA_C_16BF;
+
+    case HIP_R_32F:
+        return CUDA_R_32F;
+
     case HIP_C_32F:
         return CUDA_C_32F;
+
+    case HIP_R_64F:
+        return CUDA_R_64F;
 
     case HIP_C_64F:
         return CUDA_C_64F;
@@ -201,26 +207,20 @@ cudaDataType_t HIPDatatypeToCudaDatatype(hipDataType type)
     case HIP_R_8I:
         return CUDA_R_8I;
 
-    case HIP_R_8U:
-        return CUDA_R_8U;
-
-    case HIP_R_32I:
-        return CUDA_R_32I;
-
     case HIP_C_8I:
         return CUDA_C_8I;
+
+    case HIP_R_8U:
+        return CUDA_R_8U;
 
     case HIP_C_8U:
         return CUDA_C_8U;
 
+    case HIP_R_32I:
+        return CUDA_R_32I;
+
     case HIP_C_32I:
         return CUDA_C_32I;
-
-    case HIP_R_16BF:
-        return CUDA_R_16BF;
-
-    case HIP_C_16BF:
-        return CUDA_C_16BF;
 
     default:
         throw HIPBLAS_STATUS_INVALID_ENUM;

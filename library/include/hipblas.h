@@ -429,28 +429,6 @@ typedef enum
     HIPBLAS_SIDE_BOTH = 143
 } hipblasSideMode_t;
 
-/*! \brief Indicates the precision width of data stored in a blas type. */
-// typedef enum
-// {
-//     HIP_R_16F            = 150, /**< 16 bit floating point, real */
-//     HIP_R_32F            = 151, /**< 32 bit floating point, real */
-//     HIP_R_64F            = 152, /**< 64 bit floating point, real */
-//     HIP_C_16F            = 153, /**< 16 bit floating point, complex */
-//     HIP_C_32F            = 154, /**< 32 bit floating point, complex */
-//     HIP_C_64F            = 155, /**< 64 bit floating point, complex */
-//     HIP_R_8I             = 160, /**<  8 bit signed integer, real */
-//     HIP_R_8U             = 161, /**<  8 bit unsigned integer, real */
-//     HIP_R_32I            = 162, /**< 32 bit signed integer, real */
-//     HIP_R_32U            = 163, /**< 32 bit unsigned integer, real */
-//     HIP_C_8I             = 164, /**<  8 bit signed integer, complex */
-//     HIP_C_8U             = 165, /**<  8 bit unsigned integer, complex */
-//     HIP_C_32I            = 166, /**< 32 bit signed integer, complex */
-//     HIP_C_32U            = 167, /**< 32 bit unsigned integer, complex */
-//     HIP_R_16BF            = 168, /**< 16 bit bfloat, real */
-//     HIP_C_16BF            = 169, /**< 16 bit bfloat, complex */
-//     HIPBLAS_DATATYPE_INVALID = 255, /**< Invalid datatype value, do not use */
-// } hipDataType;
-
 /*! \brief Indicates if layer is active with bitmask. */
 typedef enum
 {

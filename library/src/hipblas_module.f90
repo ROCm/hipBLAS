@@ -66,22 +66,34 @@ module hipblas_enums
     end enum
 
     enum, bind(c)
-        enumerator :: HIP_R_16F = 2
         enumerator :: HIP_R_32F = 0
         enumerator :: HIP_R_64F = 1
-        enumerator :: HIP_C_16F = 6
+        enumerator :: HIP_R_16F = 2
+        enumerator :: HIP_R_8I = 3
         enumerator :: HIP_C_32F = 4
         enumerator :: HIP_C_64F = 5
-        enumerator :: HIP_R_8I = 3
+        enumerator :: HIP_C_16F = 6
+        enumerator :: HIP_C_8I = 7
         enumerator :: HIP_R_8U = 8
-        enumerator :: HIP_R_32I = 10
-        enumerator :: HIP_R_32U = 12
-        enumerator :: HIP_C_8I = 17
         enumerator :: HIP_C_8U = 9
+        enumerator :: HIP_R_32I = 10
         enumerator :: HIP_C_32I = 11
+        enumerator :: HIP_R_32U = 12
         enumerator :: HIP_C_32U = 13
         enumerator :: HIP_R_16BF = 14
         enumerator :: HIP_C_16BF = 15
+        enumerator :: HIP_R_4I = 16
+        enumerator :: HIP_C_4I = 17
+        enumerator :: HIP_R_4U = 18
+        enumerator :: HIP_C_4U = 19
+        enumerator :: HIP_R_16I = 20
+        enumerator :: HIP_C_16I = 21
+        enumerator :: HIP_R_16U = 22
+        enumerator :: HIP_C_16U = 23
+        enumerator :: HIP_R_64I = 24
+        enumerator :: HIP_C_64I = 25
+        enumerator :: HIP_R_64U = 26
+        enumerator :: HIP_C_64U = 27
     end enum
 
     enum, bind(c)

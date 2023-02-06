@@ -274,12 +274,6 @@ hipDataType RocblasDatatypeToHIPDatatype(rocblas_datatype type)
     case rocblas_datatype_f64_r:
         return HIP_R_64F;
 
-    case rocblas_datatype_i8_r:
-        return HIP_R_8I;
-
-    case rocblas_datatype_i32_r:
-        return HIP_R_32I;
-
     case rocblas_datatype_f16_c:
         return HIP_C_16F;
 
@@ -288,6 +282,36 @@ hipDataType RocblasDatatypeToHIPDatatype(rocblas_datatype type)
 
     case rocblas_datatype_f64_c:
         return HIP_C_64F;
+
+    case rocblas_datatype_i8_r:
+        return HIP_R_8I;
+
+    case rocblas_datatype_u8_r:
+        return HIP_R_8U;
+
+    case rocblas_datatype_i32_r:
+        return HIP_R_32I;
+
+    case rocblas_datatype_u32_r:
+        return HIP_R_32U;
+
+    case rocblas_datatype_i8_c:
+        return HIP_C_8I;
+
+    case rocblas_datatype_u8_c:
+        return HIP_C_8U;
+
+    case rocblas_datatype_i32_c:
+        return HIP_C_32I;
+
+    case rocblas_datatype_u32_c:
+        return HIP_C_32U;
+
+    case rocblas_datatype_bf16_r:
+        return HIP_R_16BF;
+
+    case rocblas_datatype_bf16_c:
+        return HIP_C_16BF;
     }
     throw HIPBLAS_STATUS_INVALID_ENUM;
 }
