@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -85,11 +85,11 @@ struct Arguments
     int ldc = 128;
     int ldd = 128;
 
-    hipblasDatatype_t a_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t b_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t c_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t d_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t compute_type = HIPBLAS_R_32F;
+    hipDataType a_type       = HIP_R_32F;
+    hipDataType b_type       = HIP_R_32F;
+    hipDataType c_type       = HIP_R_32F;
+    hipDataType d_type       = HIP_R_32F;
+    hipDataType compute_type = HIP_R_32F;
 
     int incx = 1;
     int incy = 1;
@@ -307,7 +307,7 @@ namespace ArgumentsHelper
             func("beta", arg.get_beta<decltype(T)>());
         };
 };
-    // clang-format on
+// clang-format on
 
 #else
 

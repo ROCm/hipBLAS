@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
-typedef std::tuple<int, vector<int>, double, int, vector<hipblasDatatype_t>, bool> dot_ex_tuple;
+typedef std::tuple<int, vector<int>, double, int, vector<hipDataType>, bool> dot_ex_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -85,19 +85,19 @@ const double stride_scale_range[] = {1.0, 2.5};
 
 const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
-const vector<vector<hipblasDatatype_t>> precisions{
+const vector<vector<hipDataType>> precisions{
 // Not supported in cuBLAS
 #ifndef __HIP_PLATFORM_NVCC__
-    {HIPBLAS_R_16B, HIPBLAS_R_16B, HIPBLAS_R_16B, HIPBLAS_R_32F},
-    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
+    {HIP_R_16BF, HIP_R_16BF, HIP_R_16BF, HIP_R_32F},
+    {HIP_R_16F, HIP_R_16F, HIP_R_16F, HIP_R_16F},
 #endif
 
     // Supported in both rocBLAS and cuBLAS
-    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
-    {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
-    {HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
-    {HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
-    {HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F}};
+    {HIP_R_16F, HIP_R_16F, HIP_R_16F, HIP_R_32F},
+    {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F},
+    {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F},
+    {HIP_C_32F, HIP_C_32F, HIP_C_32F, HIP_C_32F},
+    {HIP_C_64F, HIP_C_64F, HIP_C_64F, HIP_C_64F}};
 
 const bool is_fortran[] = {false, true};
 
@@ -115,11 +115,11 @@ protected:
 Arguments setup_dot_ex_arguments(dot_ex_tuple tup)
 {
     Arguments   arg;
-    vector<int> incx_incy                     = std::get<1>(tup);
-    arg.stride_scale                          = std::get<2>(tup);
-    arg.batch_count                           = std::get<3>(tup);
-    vector<hipblasDatatype_t> precision_types = std::get<4>(tup);
-    arg.fortran                               = std::get<5>(tup);
+    vector<int> incx_incy               = std::get<1>(tup);
+    arg.stride_scale                    = std::get<2>(tup);
+    arg.batch_count                     = std::get<3>(tup);
+    vector<hipDataType> precision_types = std::get<4>(tup);
+    arg.fortran                         = std::get<5>(tup);
 
     arg.incx = incx_incy[0];
     arg.incy = incx_incy[1];

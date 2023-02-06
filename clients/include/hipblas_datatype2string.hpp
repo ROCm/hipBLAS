@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -92,47 +92,47 @@ hipblasDiagType_t char2hipblas_diagonal(char value);
 
 hipblasSideMode_t char2hipblas_side(char value);
 
-hipblasDatatype_t string2hipblas_datatype(const std::string& value);
+hipDataType string2hipblas_datatype(const std::string& value);
 
 // return precision string for hipblas_datatype
-inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
+inline constexpr auto hipblas_datatype2string(hipDataType type)
 {
     switch(type)
     {
-    case HIPBLAS_R_16F:
+    case HIP_R_16F:
         return "f16_r";
-    case HIPBLAS_R_32F:
+    case HIP_R_32F:
         return "f32_r";
-    case HIPBLAS_R_64F:
+    case HIP_R_64F:
         return "f64_r";
-    case HIPBLAS_C_16F:
+    case HIP_C_16F:
         return "f16_k";
-    case HIPBLAS_C_32F:
+    case HIP_C_32F:
         return "f32_c";
-    case HIPBLAS_C_64F:
+    case HIP_C_64F:
         return "f64_c";
-    case HIPBLAS_R_8I:
+    case HIP_R_8I:
         return "i8_r";
-    case HIPBLAS_R_8U:
+    case HIP_R_8U:
         return "u8_r";
-    case HIPBLAS_R_32I:
+    case HIP_R_32I:
         return "i32_r";
-    case HIPBLAS_R_32U:
+    case HIP_R_32U:
         return "u32_r";
-    case HIPBLAS_C_8I:
+    case HIP_C_8I:
         return "i8_c";
-    case HIPBLAS_C_8U:
+    case HIP_C_8U:
         return "u8_c";
-    case HIPBLAS_C_32I:
+    case HIP_C_32I:
         return "i32_c";
-    case HIPBLAS_C_32U:
+    case HIP_C_32U:
         return "u32_c";
-    case HIPBLAS_R_16B:
+    case HIP_R_16BF:
         return "bf16_r";
-    case HIPBLAS_C_16B:
+    case HIP_C_16BF:
         return "bf16_c";
-    case HIPBLAS_DATATYPE_INVALID:
-        return "invalid";
+        // case HIPBLAS_DATATYPE_INVALID:
+        //     return "invalid";
     }
     return "invalid";
 }

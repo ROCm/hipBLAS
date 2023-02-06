@@ -2,7 +2,7 @@
 # or enums defined with c_int base clases and attributes.
 Datatypes:
   - int: c_int
-  - hipblasDatatype_t:
+  - hipDataType:
       bases: [ c_int ]
       attr:
         f16_r: 150
@@ -279,11 +279,11 @@ Arguments:
   - ldb: int
   - ldc: int
   - ldd: int
-  - a_type: hipblasDatatype_t
-  - b_type: hipblasDatatype_t
-  - c_type: hipblasDatatype_t
-  - d_type: hipblasDatatype_t
-  - compute_type: hipblasDatatype_t
+  - a_type: hipDataType
+  - b_type: hipDataType
+  - c_type: hipDataType
+  - d_type: hipDataType
+  - compute_type: hipDataType
   - incx: int
   - incy: int
   - incd: int

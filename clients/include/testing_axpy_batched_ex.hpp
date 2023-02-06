@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,10 +47,10 @@ inline hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& arg)
     int incy        = arg.incy;
     int batch_count = arg.batch_count;
 
-    hipblasDatatype_t alphaType     = arg.a_type;
-    hipblasDatatype_t xType         = arg.b_type;
-    hipblasDatatype_t yType         = arg.c_type;
-    hipblasDatatype_t executionType = arg.compute_type;
+    hipDataType alphaType     = arg.a_type;
+    hipDataType xType         = arg.b_type;
+    hipDataType yType         = arg.c_type;
+    hipDataType executionType = arg.compute_type;
 
     hipblasLocalHandle handle(arg);
 
@@ -207,47 +207,47 @@ inline hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& arg)
 
 inline hipblasStatus_t testing_axpy_batched_ex(Arguments arg)
 {
-    hipblasDatatype_t alphaType     = arg.a_type;
-    hipblasDatatype_t xType         = arg.b_type;
-    hipblasDatatype_t yType         = arg.c_type;
-    hipblasDatatype_t executionType = arg.compute_type;
+    hipDataType alphaType     = arg.a_type;
+    hipDataType xType         = arg.b_type;
+    hipDataType yType         = arg.c_type;
+    hipDataType executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F
-       && executionType == HIPBLAS_R_16F)
+    if(alphaType == HIP_R_16F && xType == HIP_R_16F && yType == HIP_R_16F
+       && executionType == HIP_R_16F)
     {
         status = testing_axpy_batched_ex_template<hipblasHalf>(arg);
     }
-    else if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F
-            && executionType == HIPBLAS_R_32F)
+    else if(alphaType == HIP_R_16F && xType == HIP_R_16F && yType == HIP_R_16F
+            && executionType == HIP_R_32F)
     {
         // Not testing accumulation here
         status = testing_axpy_batched_ex_template<hipblasHalf>(arg);
     }
-    else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F
-            && executionType == HIPBLAS_R_32F)
+    else if(alphaType == HIP_R_32F && xType == HIP_R_16F && yType == HIP_R_16F
+            && executionType == HIP_R_32F)
     {
         // Not testing accumulation here
         status = testing_axpy_batched_ex_template<float, hipblasHalf>(arg);
     }
-    else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F
-            && executionType == HIPBLAS_R_32F)
+    else if(alphaType == HIP_R_32F && xType == HIP_R_32F && yType == HIP_R_32F
+            && executionType == HIP_R_32F)
     {
         status = testing_axpy_batched_ex_template<float>(arg);
     }
-    else if(alphaType == HIPBLAS_R_64F && xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F
-            && executionType == HIPBLAS_R_64F)
+    else if(alphaType == HIP_R_64F && xType == HIP_R_64F && yType == HIP_R_64F
+            && executionType == HIP_R_64F)
     {
         status = testing_axpy_batched_ex_template<double>(arg);
     }
-    else if(alphaType == HIPBLAS_C_32F && xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F
-            && executionType == HIPBLAS_C_32F)
+    else if(alphaType == HIP_C_32F && xType == HIP_C_32F && yType == HIP_C_32F
+            && executionType == HIP_C_32F)
     {
         status = testing_axpy_batched_ex_template<hipblasComplex>(arg);
     }
-    else if(alphaType == HIPBLAS_C_64F && xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F
-            && executionType == HIPBLAS_C_64F)
+    else if(alphaType == HIP_C_64F && xType == HIP_C_64F && yType == HIP_C_64F
+            && executionType == HIP_C_64F)
     {
         status = testing_axpy_batched_ex_template<hipblasDoubleComplex>(arg);
     }

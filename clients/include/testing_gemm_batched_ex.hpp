@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -73,10 +73,10 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
 
     int batch_count = arg.batch_count;
 
-    hipblasDatatype_t a_type       = arg.a_type;
-    hipblasDatatype_t b_type       = arg.b_type;
-    hipblasDatatype_t c_type       = arg.c_type;
-    hipblasDatatype_t compute_type = arg.compute_type;
+    hipDataType a_type       = arg.a_type;
+    hipDataType b_type       = arg.b_type;
+    hipDataType c_type       = arg.c_type;
+    hipDataType compute_type = arg.compute_type;
 
     Tex h_alpha_Tc = arg.get_alpha<Tex>();
     Tex h_beta_Tc  = arg.get_beta<Tex>();
@@ -313,54 +313,54 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
 
 inline hipblasStatus_t testing_gemm_batched_ex(const Arguments& arg)
 {
-    hipblasDatatype_t a_type       = arg.a_type;
-    hipblasDatatype_t b_type       = arg.b_type;
-    hipblasDatatype_t c_type       = arg.c_type;
-    hipblasDatatype_t compute_type = arg.compute_type;
+    hipDataType a_type       = arg.a_type;
+    hipDataType b_type       = arg.b_type;
+    hipDataType c_type       = arg.c_type;
+    hipDataType compute_type = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
-       && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_16F)
+    if(a_type == HIP_R_16F && b_type == HIP_R_16F && c_type == HIP_R_16F && c_type == HIP_R_16F
+       && compute_type == HIP_R_16F)
     {
         status = testing_gemm_batched_ex_template<hipblasHalf>(arg);
     }
-    else if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
-            && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_32F)
+    else if(a_type == HIP_R_16F && b_type == HIP_R_16F && c_type == HIP_R_16F && c_type == HIP_R_16F
+            && compute_type == HIP_R_32F)
     {
         status
             = testing_gemm_batched_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float>(arg);
     }
-    else if(a_type == HIPBLAS_R_16B && b_type == HIPBLAS_R_16B && c_type == HIPBLAS_R_16B
-            && c_type == HIPBLAS_R_16B && compute_type == HIPBLAS_R_32F)
+    else if(a_type == HIP_R_16BF && b_type == HIP_R_16BF && c_type == HIP_R_16BF
+            && c_type == HIP_R_16BF && compute_type == HIP_R_32F)
     {
         status = testing_gemm_batched_ex_template<hipblasBfloat16,
                                                   hipblasBfloat16,
                                                   hipblasBfloat16,
                                                   float>(arg);
     }
-    else if(a_type == HIPBLAS_R_32F && b_type == HIPBLAS_R_32F && c_type == HIPBLAS_R_32F
-            && c_type == HIPBLAS_R_32F && compute_type == HIPBLAS_R_32F)
+    else if(a_type == HIP_R_32F && b_type == HIP_R_32F && c_type == HIP_R_32F && c_type == HIP_R_32F
+            && compute_type == HIP_R_32F)
     {
         status = testing_gemm_batched_ex_template<float>(arg);
     }
-    else if(a_type == HIPBLAS_R_64F && b_type == HIPBLAS_R_64F && c_type == HIPBLAS_R_64F
-            && c_type == HIPBLAS_R_64F && compute_type == HIPBLAS_R_64F)
+    else if(a_type == HIP_R_64F && b_type == HIP_R_64F && c_type == HIP_R_64F && c_type == HIP_R_64F
+            && compute_type == HIP_R_64F)
     {
         status = testing_gemm_batched_ex_template<double>(arg);
     }
-    else if(a_type == HIPBLAS_C_32F && b_type == HIPBLAS_C_32F && c_type == HIPBLAS_C_32F
-            && c_type == HIPBLAS_C_32F && compute_type == HIPBLAS_C_32F)
+    else if(a_type == HIP_C_32F && b_type == HIP_C_32F && c_type == HIP_C_32F && c_type == HIP_C_32F
+            && compute_type == HIP_C_32F)
     {
         status = testing_gemm_batched_ex_template<hipblasComplex>(arg);
     }
-    else if(a_type == HIPBLAS_C_64F && b_type == HIPBLAS_C_64F && c_type == HIPBLAS_C_64F
-            && c_type == HIPBLAS_C_64F && compute_type == HIPBLAS_C_64F)
+    else if(a_type == HIP_C_64F && b_type == HIP_C_64F && c_type == HIP_C_64F && c_type == HIP_C_64F
+            && compute_type == HIP_C_64F)
     {
         status = testing_gemm_batched_ex_template<hipblasDoubleComplex>(arg);
     }
-    else if(a_type == HIPBLAS_R_8I && b_type == HIPBLAS_R_8I && c_type == HIPBLAS_R_32I
-            && c_type == HIPBLAS_R_32I && compute_type == HIPBLAS_R_32I)
+    else if(a_type == HIP_R_8I && b_type == HIP_R_8I && c_type == HIP_R_32I && c_type == HIP_R_32I
+            && compute_type == HIP_R_32I)
     {
         status = testing_gemm_batched_ex_template<int8_t, int8_t, int32_t, int32_t>(arg);
     }

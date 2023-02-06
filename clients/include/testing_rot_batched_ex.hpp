@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,10 +48,10 @@ inline hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
     int incy        = arg.incy;
     int batch_count = arg.batch_count;
 
-    hipblasDatatype_t xType         = arg.a_type;
-    hipblasDatatype_t yType         = arg.b_type;
-    hipblasDatatype_t csType        = arg.c_type;
-    hipblasDatatype_t executionType = arg.compute_type;
+    hipDataType xType         = arg.a_type;
+    hipDataType yType         = arg.b_type;
+    hipDataType csType        = arg.c_type;
+    hipDataType executionType = arg.compute_type;
 
     hipblasLocalHandle handle(arg);
 
@@ -219,52 +219,51 @@ inline hipblasStatus_t testing_rot_batched_ex_template(const Arguments& arg)
 
 inline hipblasStatus_t testing_rot_batched_ex(Arguments arg)
 {
-    hipblasDatatype_t xType         = arg.a_type;
-    hipblasDatatype_t yType         = arg.b_type;
-    hipblasDatatype_t csType        = arg.c_type;
-    hipblasDatatype_t executionType = arg.compute_type;
+    hipDataType xType         = arg.a_type;
+    hipDataType yType         = arg.b_type;
+    hipDataType csType        = arg.c_type;
+    hipDataType executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    if(executionType == HIPBLAS_R_32F && xType == yType && xType == HIPBLAS_R_16B
-       && csType == HIPBLAS_R_16B)
+    if(executionType == HIP_R_32F && xType == yType && xType == HIP_R_16BF && csType == HIP_R_16BF)
     {
         status = testing_rot_batched_ex_template<float, hipblasBfloat16, hipblasBfloat16>(arg);
     }
-    else if(executionType == HIPBLAS_R_32F && xType == yType && xType == HIPBLAS_R_16F
-            && csType == HIPBLAS_R_16F)
+    else if(executionType == HIP_R_32F && xType == yType && xType == HIP_R_16F
+            && csType == HIP_R_16F)
     {
         status = testing_rot_batched_ex_template<float, hipblasHalf, hipblasHalf>(arg);
     }
-    else if(executionType == HIPBLAS_R_32F && xType == yType && xType == HIPBLAS_R_32F
-            && csType == HIPBLAS_R_32F)
+    else if(executionType == HIP_R_32F && xType == yType && xType == HIP_R_32F
+            && csType == HIP_R_32F)
     {
         status = testing_rot_batched_ex_template<float>(arg);
     }
-    else if(executionType == HIPBLAS_R_64F && xType == yType && xType == HIPBLAS_R_64F
-            && csType == HIPBLAS_R_64F)
+    else if(executionType == HIP_R_64F && xType == yType && xType == HIP_R_64F
+            && csType == HIP_R_64F)
     {
         status = testing_rot_batched_ex_template<double>(arg);
     }
-    else if(executionType == HIPBLAS_C_32F && xType == yType && xType == HIPBLAS_C_32F
-            && csType == HIPBLAS_R_32F)
+    else if(executionType == HIP_C_32F && xType == yType && xType == HIP_C_32F
+            && csType == HIP_R_32F)
     {
         status = testing_rot_batched_ex_template<hipblasComplex, hipblasComplex, float>(arg);
     }
-    else if(executionType == HIPBLAS_C_32F && xType == yType && xType == HIPBLAS_C_32F
-            && csType == HIPBLAS_C_32F)
+    else if(executionType == HIP_C_32F && xType == yType && xType == HIP_C_32F
+            && csType == HIP_C_32F)
     {
         status = testing_rot_batched_ex_template<hipblasComplex>(arg);
     }
-    else if(executionType == HIPBLAS_C_64F && xType == yType && xType == HIPBLAS_C_64F
-            && csType == HIPBLAS_R_64F)
+    else if(executionType == HIP_C_64F && xType == yType && xType == HIP_C_64F
+            && csType == HIP_R_64F)
     {
         status
             = testing_rot_batched_ex_template<hipblasDoubleComplex, hipblasDoubleComplex, double>(
                 arg);
     }
-    else if(executionType == HIPBLAS_C_64F && xType == yType && xType == HIPBLAS_C_64F
-            && csType == HIPBLAS_C_64F)
+    else if(executionType == HIP_C_64F && xType == yType && xType == HIP_C_64F
+            && csType == HIP_C_64F)
     {
         status = testing_rot_batched_ex_template<hipblasDoubleComplex>(arg);
     }

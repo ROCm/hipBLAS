@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,9 +45,9 @@ inline hipblasStatus_t testing_nrm2_ex_template(const Arguments& arg)
     int N    = arg.N;
     int incx = arg.incx;
 
-    hipblasDatatype_t xType         = arg.a_type;
-    hipblasDatatype_t resultType    = arg.b_type;
-    hipblasDatatype_t executionType = arg.compute_type;
+    hipDataType xType         = arg.a_type;
+    hipDataType resultType    = arg.b_type;
+    hipDataType executionType = arg.compute_type;
 
     hipblasLocalHandle handle(arg);
 
@@ -152,29 +152,29 @@ inline hipblasStatus_t testing_nrm2_ex_template(const Arguments& arg)
 
 inline hipblasStatus_t testing_nrm2_ex(Arguments arg)
 {
-    hipblasDatatype_t xType         = arg.a_type;
-    hipblasDatatype_t resultType    = arg.b_type;
-    hipblasDatatype_t executionType = arg.compute_type;
+    hipDataType xType         = arg.a_type;
+    hipDataType resultType    = arg.b_type;
+    hipDataType executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    if(xType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
+    if(xType == HIP_R_16F && resultType == HIP_R_16F && executionType == HIP_R_32F)
     {
         status = testing_nrm2_ex_template<hipblasHalf, hipblasHalf, float>(arg);
     }
-    else if(xType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
+    else if(xType == HIP_R_32F && resultType == HIP_R_32F && executionType == HIP_R_32F)
     {
         status = testing_nrm2_ex_template<float>(arg);
     }
-    else if(xType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
+    else if(xType == HIP_R_64F && resultType == HIP_R_64F && executionType == HIP_R_64F)
     {
         status = testing_nrm2_ex_template<double>(arg);
     }
-    else if(xType == HIPBLAS_C_32F && resultType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
+    else if(xType == HIP_C_32F && resultType == HIP_R_32F && executionType == HIP_R_32F)
     {
         status = testing_nrm2_ex_template<hipblasComplex, float>(arg);
     }
-    else if(xType == HIPBLAS_C_64F && resultType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
+    else if(xType == HIP_C_64F && resultType == HIP_R_64F && executionType == HIP_R_64F)
     {
         status = testing_nrm2_ex_template<hipblasDoubleComplex, double>(arg);
     }

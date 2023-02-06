@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,8 +36,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
-typedef std::tuple<int, vector<double>, int, double, int, vector<hipblasDatatype_t>, bool>
-    scal_ex_tuple;
+typedef std::tuple<int, vector<double>, int, double, int, vector<hipDataType>, bool> scal_ex_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -81,20 +80,20 @@ const double stride_scale_range[] = {1.0, 2.5};
 const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 // Supported rocBLAS configs
-const vector<vector<hipblasDatatype_t>> precisions{// Not supported in cuBLAS
+const vector<vector<hipDataType>> precisions{// Not supported in cuBLAS
 #ifndef __HIP_PLATFORM_NVCC__
-                                                   {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
-                                                   {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
-                                                   {HIPBLAS_R_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
-                                                   {HIPBLAS_R_64F, HIPBLAS_C_64F, HIPBLAS_C_64F},
+                                             {HIP_R_16F, HIP_R_16F, HIP_R_16F},
+                                             {HIP_R_16F, HIP_R_16F, HIP_R_32F},
+                                             {HIP_R_32F, HIP_C_32F, HIP_C_32F},
+                                             {HIP_R_64F, HIP_C_64F, HIP_C_64F},
 #endif
 
-                                                   // Supported in both rocBLAS and cuBLAS
-                                                   {HIPBLAS_R_32F, HIPBLAS_R_16F, HIPBLAS_R_32F},
-                                                   {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
-                                                   {HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
-                                                   {HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
-                                                   {HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F}
+                                             // Supported in both rocBLAS and cuBLAS
+                                             {HIP_R_32F, HIP_R_16F, HIP_R_32F},
+                                             {HIP_R_32F, HIP_R_32F, HIP_R_32F},
+                                             {HIP_R_64F, HIP_R_64F, HIP_R_64F},
+                                             {HIP_C_32F, HIP_C_32F, HIP_C_32F},
+                                             {HIP_C_64F, HIP_C_64F, HIP_C_64F}
 
 };
 
@@ -114,14 +113,14 @@ protected:
 Arguments setup_scal_ex_arguments(scal_ex_tuple tup)
 {
     Arguments arg;
-    arg.N                                     = std::get<0>(tup);
-    arg.alpha                                 = std::get<1>(tup)[0];
-    arg.alphai                                = std::get<1>(tup)[1];
-    arg.incx                                  = std::get<2>(tup);
-    arg.stride_scale                          = std::get<3>(tup);
-    arg.batch_count                           = std::get<4>(tup);
-    vector<hipblasDatatype_t> precision_types = std::get<5>(tup);
-    arg.fortran                               = std::get<6>(tup);
+    arg.N                               = std::get<0>(tup);
+    arg.alpha                           = std::get<1>(tup)[0];
+    arg.alphai                          = std::get<1>(tup)[1];
+    arg.incx                            = std::get<2>(tup);
+    arg.stride_scale                    = std::get<3>(tup);
+    arg.batch_count                     = std::get<4>(tup);
+    vector<hipDataType> precision_types = std::get<5>(tup);
+    arg.fortran                         = std::get<6>(tup);
 
     arg.a_type       = precision_types[0];
     arg.b_type       = precision_types[1];
@@ -149,9 +148,8 @@ TEST_P(scal_ex_gtest, scal_ex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.a_type == HIPBLAS_R_16F
-                || (arg.a_type == HIPBLAS_R_32F && arg.b_type == HIPBLAS_C_32F)
-                || (arg.a_type == HIPBLAS_R_64F && arg.b_type == HIPBLAS_C_64F))
+        else if(arg.a_type == HIP_R_16F || (arg.a_type == HIP_R_32F && arg.b_type == HIP_C_32F)
+                || (arg.a_type == HIP_R_64F && arg.b_type == HIP_C_64F))
         {
             EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // unsupported CUDA configs
         }

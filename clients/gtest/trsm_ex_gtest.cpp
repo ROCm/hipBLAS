@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -161,7 +161,7 @@ TEST_P(trsm_ex_gtest, trsm_ex_gtest_float)
     // while the tuple is non-intuitive.
 
     Arguments arg    = setup_trsm_ex_arguments(GetParam());
-    arg.compute_type = HIPBLAS_R_32F;
+    arg.compute_type = HIP_R_32F;
 
     hipblasStatus_t status = testing_trsm_ex<float>(arg);
 
@@ -196,7 +196,7 @@ TEST_P(trsm_ex_gtest, trsm_gtest_ex_double_complex)
     // while the tuple is non-intuitive.
 
     Arguments arg    = setup_trsm_ex_arguments(GetParam());
-    arg.compute_type = HIPBLAS_C_64F;
+    arg.compute_type = HIP_C_64F;
 
     hipblasStatus_t status = testing_trsm_ex<hipblasDoubleComplex>(arg);
 
@@ -224,7 +224,7 @@ TEST_P(trsm_ex_gtest, trsm_batched_ex_gtest_float)
     // while the tuple is non-intuitive.
 
     Arguments arg    = setup_trsm_ex_arguments(GetParam());
-    arg.compute_type = HIPBLAS_R_32F;
+    arg.compute_type = HIP_R_32F;
 
     hipblasStatus_t status = testing_trsm_batched_ex<float>(arg);
 
@@ -252,7 +252,7 @@ TEST_P(trsm_ex_gtest, trsm_batched_ex_gtest_double_complex)
     // while the tuple is non-intuitive.
 
     Arguments arg    = setup_trsm_ex_arguments(GetParam());
-    arg.compute_type = HIPBLAS_C_64F;
+    arg.compute_type = HIP_C_64F;
 
     hipblasStatus_t status = testing_trsm_batched_ex<hipblasDoubleComplex>(arg);
 
@@ -280,7 +280,7 @@ TEST_P(trsm_ex_gtest, trsm_strided_batched_ex_gtest_float)
     // while the tuple is non-intuitive.
 
     Arguments arg    = setup_trsm_ex_arguments(GetParam());
-    arg.compute_type = HIPBLAS_R_32F;
+    arg.compute_type = HIP_R_32F;
 
     hipblasStatus_t status = testing_trsm_strided_batched_ex<float>(arg);
 
@@ -307,7 +307,7 @@ TEST_P(trsm_ex_gtest, trsm_strided_batched_ex_gtest_double_complex)
     // while the tuple is non-intuitive.
 
     Arguments arg    = setup_trsm_ex_arguments(GetParam());
-    arg.compute_type = HIPBLAS_C_64F;
+    arg.compute_type = HIP_C_64F;
 
     hipblasStatus_t status = testing_trsm_strided_batched_ex<hipblasDoubleComplex>(arg);
 

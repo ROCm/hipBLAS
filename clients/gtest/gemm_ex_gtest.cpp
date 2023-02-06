@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ README: This file contains testers to verify the correctness of
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipblasDatatype_t>, int, bool>
+typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipDataType>, int, bool>
     gemm_ex_tuple;
 
 // clang-format off
@@ -197,84 +197,84 @@ const vector<vector<char>> small_transA_transB_range = {{'N', 'N'}};
 const vector<vector<char>> transA_transB_range = {{'N', 'N'}, {'N', 'T'}, {'C', 'N'}, {'T', 'C'}};
 
 // a_type, b_type, c_type, d_type, compute_type
-const vector<vector<hipblasDatatype_t>> precision_half = {{ HIPBLAS_R_16F,
-                                                            HIPBLAS_R_16F,
-                                                            HIPBLAS_R_16F,
-                                                            HIPBLAS_R_16F,
-                                                            HIPBLAS_R_16F  }};
+const vector<vector<hipDataType>> precision_half = {{ HIP_R_16F,
+                                                            HIP_R_16F,
+                                                            HIP_R_16F,
+                                                            HIP_R_16F,
+                                                            HIP_R_16F  }};
 
-const vector<vector<hipblasDatatype_t>> precision_hpa_half = {{ HIPBLAS_R_16F,
-                                                                HIPBLAS_R_16F,
-                                                                HIPBLAS_R_16F,
-                                                                HIPBLAS_R_16F,
-                                                                HIPBLAS_R_32F  }};
+const vector<vector<hipDataType>> precision_hpa_half = {{ HIP_R_16F,
+                                                                HIP_R_16F,
+                                                                HIP_R_16F,
+                                                                HIP_R_16F,
+                                                                HIP_R_32F  }};
 
-const vector<vector<hipblasDatatype_t>> precision_single = {{ HIPBLAS_R_32F,
-                                                              HIPBLAS_R_32F,
-                                                              HIPBLAS_R_32F,
-                                                              HIPBLAS_R_32F,
-                                                              HIPBLAS_R_32F  }};
+const vector<vector<hipDataType>> precision_single = {{ HIP_R_32F,
+                                                              HIP_R_32F,
+                                                              HIP_R_32F,
+                                                              HIP_R_32F,
+                                                              HIP_R_32F  }};
 
-const vector<vector<hipblasDatatype_t>> precision_double = {{ HIPBLAS_R_64F,
-                                                              HIPBLAS_R_64F,
-                                                              HIPBLAS_R_64F,
-                                                              HIPBLAS_R_64F,
-                                                              HIPBLAS_R_64F  }};
+const vector<vector<hipDataType>> precision_double = {{ HIP_R_64F,
+                                                              HIP_R_64F,
+                                                              HIP_R_64F,
+                                                              HIP_R_64F,
+                                                              HIP_R_64F  }};
 
-const vector<vector<hipblasDatatype_t>> precision_single_complex = {{ HIPBLAS_C_32F,
-                                                              HIPBLAS_C_32F,
-                                                              HIPBLAS_C_32F,
-                                                              HIPBLAS_C_32F,
-                                                              HIPBLAS_C_32F  }};
+const vector<vector<hipDataType>> precision_single_complex = {{ HIP_C_32F,
+                                                              HIP_C_32F,
+                                                              HIP_C_32F,
+                                                              HIP_C_32F,
+                                                              HIP_C_32F  }};
 
-const vector<vector<hipblasDatatype_t>> precision_double_complex = {{ HIPBLAS_C_64F,
-                                                              HIPBLAS_C_64F,
-                                                              HIPBLAS_C_64F,
-                                                              HIPBLAS_C_64F,
-                                                              HIPBLAS_C_64F  }};
+const vector<vector<hipDataType>> precision_double_complex = {{ HIP_C_64F,
+                                                              HIP_C_64F,
+                                                              HIP_C_64F,
+                                                              HIP_C_64F,
+                                                              HIP_C_64F  }};
 
-const vector<vector<hipblasDatatype_t>> precision_int8 = {{ HIPBLAS_R_8I,
-                                                              HIPBLAS_R_8I,
-                                                              HIPBLAS_R_32I,
-                                                              HIPBLAS_R_32I,
-                                                              HIPBLAS_R_32I  }};
+const vector<vector<hipDataType>> precision_int8 = {{ HIP_R_8I,
+                                                              HIP_R_8I,
+                                                              HIP_R_32I,
+                                                              HIP_R_32I,
+                                                              HIP_R_32I  }};
 
 
-const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F},
-                                                                {HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_32F},
-                                                                {HIPBLAS_R_32F,
-                                                                 HIPBLAS_R_32F,
-                                                                 HIPBLAS_R_32F,
-                                                                 HIPBLAS_R_32F,
-                                                                 HIPBLAS_R_32F},
-                                                                {HIPBLAS_R_64F,
-                                                                 HIPBLAS_R_64F,
-                                                                 HIPBLAS_R_64F,
-                                                                 HIPBLAS_R_64F,
-                                                                 HIPBLAS_R_64F},
-                                                                {HIPBLAS_C_32F,
-                                                                 HIPBLAS_C_32F,
-                                                                 HIPBLAS_C_32F,
-                                                                 HIPBLAS_C_32F,
-                                                                 HIPBLAS_C_32F},
-                                                                {HIPBLAS_C_64F,
-                                                                 HIPBLAS_C_64F,
-                                                                 HIPBLAS_C_64F,
-                                                                 HIPBLAS_C_64F,
-                                                                 HIPBLAS_C_64F},
-                                                                {HIPBLAS_R_8I,
-                                                                 HIPBLAS_R_8I,
-                                                                 HIPBLAS_R_32I,
-                                                                 HIPBLAS_R_32I,
-                                                                 HIPBLAS_R_32I}};
+const vector<vector<hipDataType>> precision_type_range = {{HIP_R_16F,
+                                                                 HIP_R_16F,
+                                                                 HIP_R_16F,
+                                                                 HIP_R_16F,
+                                                                 HIP_R_16F},
+                                                                {HIP_R_16F,
+                                                                 HIP_R_16F,
+                                                                 HIP_R_16F,
+                                                                 HIP_R_16F,
+                                                                 HIP_R_32F},
+                                                                {HIP_R_32F,
+                                                                 HIP_R_32F,
+                                                                 HIP_R_32F,
+                                                                 HIP_R_32F,
+                                                                 HIP_R_32F},
+                                                                {HIP_R_64F,
+                                                                 HIP_R_64F,
+                                                                 HIP_R_64F,
+                                                                 HIP_R_64F,
+                                                                 HIP_R_64F},
+                                                                {HIP_C_32F,
+                                                                 HIP_C_32F,
+                                                                 HIP_C_32F,
+                                                                 HIP_C_32F,
+                                                                 HIP_C_32F},
+                                                                {HIP_C_64F,
+                                                                 HIP_C_64F,
+                                                                 HIP_C_64F,
+                                                                 HIP_C_64F,
+                                                                 HIP_C_64F},
+                                                                {HIP_R_8I,
+                                                                 HIP_R_8I,
+                                                                 HIP_R_32I,
+                                                                 HIP_R_32I,
+                                                                 HIP_R_32I}};
 
 const int batch_count_range[] = { -1, 1, 5 };
 const int batch_count_range_small[] = { 1 };
@@ -300,12 +300,12 @@ const bool is_fortran_false[] = {false};
 
 Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
 {
-    vector<int>               matrix_size     = std::get<0>(tup);
-    vector<double>            alpha_beta      = std::get<1>(tup);
-    vector<char>              transA_transB   = std::get<2>(tup);
-    vector<hipblasDatatype_t> precision_types = std::get<3>(tup);
-    int                       batch_count     = std::get<4>(tup);
-    bool                      fortran         = std::get<5>(tup);
+    vector<int>         matrix_size     = std::get<0>(tup);
+    vector<double>      alpha_beta      = std::get<1>(tup);
+    vector<char>        transA_transB   = std::get<2>(tup);
+    vector<hipDataType> precision_types = std::get<3>(tup);
+    int                 batch_count     = std::get<4>(tup);
+    bool                fortran         = std::get<5>(tup);
 
     Arguments arg;
 
