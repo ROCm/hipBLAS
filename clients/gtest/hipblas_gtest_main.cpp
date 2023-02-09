@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -130,6 +130,156 @@ int hipblas_test_datafile()
     return ret;
 }
 
+using namespace testing;
+
+class ConfigurableEventListener : public TestEventListener
+{
+    TestEventListener* const eventListener;
+    std::atomic_size_t       skipped_tests{0}; // Number of skipped tests.
+
+public:
+    bool showTestCases      = true; // Show the names of each test case.
+    bool showTestNames      = true; // Show the names of each test.
+    bool showSuccesses      = true; // Show each success.
+    bool showInlineFailures = true; // Show each failure as it occurs.
+    bool showEnvironment    = true; // Show the setup of the global environment.
+    bool showInlineSkips    = true; // Show when we skip a test.
+
+    explicit ConfigurableEventListener(TestEventListener* theEventListener)
+        : eventListener(theEventListener)
+    {
+    }
+
+    ~ConfigurableEventListener() override
+    {
+        delete eventListener;
+    }
+
+    void OnTestProgramStart(const UnitTest& unit_test) override
+    {
+        eventListener->OnTestProgramStart(unit_test);
+    }
+
+    void OnTestIterationStart(const UnitTest& unit_test, int iteration) override
+    {
+        eventListener->OnTestIterationStart(unit_test, iteration);
+    }
+
+    void OnEnvironmentsSetUpStart(const UnitTest& unit_test) override
+    {
+        if(showEnvironment)
+            eventListener->OnEnvironmentsSetUpStart(unit_test);
+    }
+
+    void OnEnvironmentsSetUpEnd(const UnitTest& unit_test) override
+    {
+        if(showEnvironment)
+            eventListener->OnEnvironmentsSetUpEnd(unit_test);
+    }
+
+    void OnTestCaseStart(const TestCase& test_case) override
+    {
+        if(showTestCases)
+            eventListener->OnTestCaseStart(test_case);
+    }
+
+    void OnTestStart(const TestInfo& test_info) override
+    {
+        if(showTestNames)
+            eventListener->OnTestStart(test_info);
+    }
+
+    void OnTestPartResult(const TestPartResult& result) override
+    {
+        // Additional skip controls used by rocBLAS. Might consider adding here
+
+        // if(!strcmp(result.message(), LIMITED_RAM_STRING_GTEST))
+        // {
+        //     if(showInlineSkips)
+        //         std::cout << "Skipped test due to limited RAM environment." << std::endl;
+        //     ++skipped_tests;
+        // }
+        // else if(!strcmp(result.message(), LIMITED_MEMORY_STRING_GTEST))
+        // {
+        //     if(showInlineSkips)
+        //         std::cout << "Skipped test due to limited GPU memory environment." << std::endl;
+        //     ++skipped_tests;
+        // }
+        // else if(!strcmp(result.message(), TOO_MANY_DEVICES_STRING_GTEST))
+        // {
+        //     if(showInlineSkips)
+        //         std::cout << "Skipped test due to too few GPUs." << std::endl;
+        //     ++skipped_tests;
+        // }
+        eventListener->OnTestPartResult(result);
+    }
+
+    void OnTestEnd(const TestInfo& test_info) override
+    {
+        if(test_info.result()->Failed() ? showInlineFailures : showSuccesses)
+            eventListener->OnTestEnd(test_info);
+    }
+
+    void OnTestCaseEnd(const TestCase& test_case) override
+    {
+        if(showTestCases)
+            eventListener->OnTestCaseEnd(test_case);
+    }
+
+    void OnEnvironmentsTearDownStart(const UnitTest& unit_test) override
+    {
+        if(showEnvironment)
+            eventListener->OnEnvironmentsTearDownStart(unit_test);
+    }
+
+    void OnEnvironmentsTearDownEnd(const UnitTest& unit_test) override
+    {
+        if(showEnvironment)
+            eventListener->OnEnvironmentsTearDownEnd(unit_test);
+    }
+
+    void OnTestIterationEnd(const UnitTest& unit_test, int iteration) override
+    {
+        eventListener->OnTestIterationEnd(unit_test, iteration);
+    }
+
+    void OnTestProgramEnd(const UnitTest& unit_test) override
+    {
+        if(skipped_tests)
+            std::cout << "[ SKIPPED  ] " << skipped_tests << " tests." << std::endl;
+        eventListener->OnTestProgramEnd(unit_test);
+    }
+};
+
+// Set the listener for Google Tests
+static void hipblas_set_listener()
+{
+    // remove the default listener
+    auto& listeners       = testing::UnitTest::GetInstance()->listeners();
+    auto  default_printer = listeners.Release(listeners.default_result_printer());
+
+    // add our listener, by default everything is on (the same as using the default listener)
+    // here I am turning everything off so I only see the 3 lines for the result
+    // (plus any failures at the end), like:
+
+    // [==========] Running 149 tests from 53 test cases.
+    // [==========] 149 tests from 53 test cases ran. (1 ms total)
+    // [  PASSED  ] 149 tests.
+    //
+    auto* listener       = new ConfigurableEventListener(default_printer);
+    auto* gtest_listener = getenv("GTEST_LISTENER");
+
+    if(gtest_listener && !strcmp(gtest_listener, "NO_PASS_LINE_IN_LOG"))
+    {
+        listener->showTestNames      = false;
+        listener->showSuccesses      = false;
+        listener->showInlineFailures = true; // easier reading
+        listener->showInlineSkips    = false;
+    }
+
+    listeners.Append(listener);
+}
+
 /* =====================================================================
       Main function:
 =================================================================== */
@@ -150,6 +300,9 @@ int main(int argc, char** argv)
     bool datafile = hipblas_parse_data(argc, argv);
 
     ::testing::InitGoogleTest(&argc, argv);
+
+    // Set Google Test listener
+    hipblas_set_listener();
 
     int status = 0;
 
