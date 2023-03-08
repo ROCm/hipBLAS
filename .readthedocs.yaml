@@ -4,7 +4,7 @@
 version: 2
 
 sphinx:
-   configuration: sphinx_conf.py
+   configuration: conf.py
 
 formats: all
 
