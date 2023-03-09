@@ -1,14 +1,14 @@
 # Anywhere {branch} is used, the branch name will be substituted.
 # These comments will also be removed.
-root: docs/index
+root: index
 subtrees:
   - numbered: False
     entries:
-    - file: docs/designdoc
-    - file: docs/clients
-    - file: docs/install
-    - file: docs/orga
-    - file: docs/api
-    - file: docs/functions
-    - file: docs/deprecation
-    - file: docs/contributing
+    - file: designdoc
+    - file: clients
+    - file: install
+    - file: orga
+    - file: api
+    - file: functions
+    - file: deprecation
+    - file: contributing
