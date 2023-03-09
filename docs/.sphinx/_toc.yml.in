@@ -5,7 +5,6 @@ subtrees:
   - numbered: False
     entries:
     - file: designdoc
-    - file: clients
     - file: install
     - file: orga
     - file: api
