@@ -14189,7 +14189,7 @@ hipblasStatus_t hipblasStrsmBatched(hipblasHandle_t    handle,
                                     const float*       alpha,
                                     const float* const A[],
                                     int                lda,
-                                    float*             B[],
+                                    float* const       B[],
                                     int                ldb,
                                     int                batch_count)
 try
@@ -14224,7 +14224,7 @@ hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t     handle,
                                     const double*       alpha,
                                     const double* const A[],
                                     int                 lda,
-                                    double*             B[],
+                                    double* const       B[],
                                     int                 ldb,
                                     int                 batch_count)
 try
@@ -14259,7 +14259,7 @@ hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t             handle,
                                     const hipblasComplex*       alpha,
                                     const hipblasComplex* const A[],
                                     int                         lda,
-                                    hipblasComplex*             B[],
+                                    hipblasComplex* const       B[],
                                     int                         ldb,
                                     int                         batch_count)
 try
@@ -14294,7 +14294,7 @@ hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t                   handle,
                                     const hipblasDoubleComplex*       alpha,
                                     const hipblasDoubleComplex* const A[],
                                     int                               lda,
-                                    hipblasDoubleComplex*             B[],
+                                    hipblasDoubleComplex* const       B[],
                                     int                               ldb,
                                     int                               batch_count)
 try

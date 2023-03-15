@@ -15293,7 +15293,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmBatched(hipblasHandle_t    handle,
                                                    const float*       alpha,
                                                    const float* const AP[],
                                                    int                lda,
-                                                   float*             BP[],
+                                                   float* const       BP[],
                                                    int                ldb,
                                                    int                batchCount);
 
@@ -15307,7 +15307,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t     handle,
                                                    const double*       alpha,
                                                    const double* const AP[],
                                                    int                 lda,
-                                                   double*             BP[],
+                                                   double* const       BP[],
                                                    int                 ldb,
                                                    int                 batchCount);
 
@@ -15321,7 +15321,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t             h
                                                    const hipblasComplex*       alpha,
                                                    const hipblasComplex* const AP[],
                                                    int                         lda,
-                                                   hipblasComplex*             BP[],
+                                                   hipblasComplex* const       BP[],
                                                    int                         ldb,
                                                    int                         batchCount);
 
@@ -15335,7 +15335,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t              
                                                    const hipblasDoubleComplex*       alpha,
                                                    const hipblasDoubleComplex* const AP[],
                                                    int                               lda,
-                                                   hipblasDoubleComplex*             BP[],
+                                                   hipblasDoubleComplex* const       BP[],
                                                    int                               ldb,
                                                    int                               batchCount);
 //! @}
