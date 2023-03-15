@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -353,26 +353,6 @@ try
     cublasStatus        status = cublasGetPointerMode((cublasHandle_t)handle, &cublasMode);
     *mode                      = CudaPointerModeToHIPPointerMode(cublasMode);
     return hipCUBLASStatusToHIPStatus(status);
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
-}
-
-hipblasStatus_t hipblasSetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t int8Datatype)
-try
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
-}
-
-hipblasStatus_t hipblasGetInt8Datatype(hipblasHandle_t handle, hipblasInt8Datatype_t* int8Datatype)
-try
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 catch(...)
 {

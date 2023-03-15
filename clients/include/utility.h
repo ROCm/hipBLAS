@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -921,11 +921,6 @@ void set_device(int device_id);
 int getArch();
 int getArchMajor();
 
-/* query what rocBLAS recommends for int8 layout. We are /always/ passing in the flag which
- * rocBLAS recommends, thus we need to know what layout to format our data in our tests.
- * returns true if should be packed. */
-bool layout_pack_int8(hipblasHandle_t handle);
-
 /* ============================================================================================ */
 /*  timing: HIP only provides very limited timers function clock() and not general;
             hipblas sync CPU and device and use more accurate CPU timer*/
@@ -960,10 +955,10 @@ public:
 
     ~hipblasLocalHandle();
 
-    hipblasLocalHandle(const hipblasLocalHandle&) = delete;
-    hipblasLocalHandle(hipblasLocalHandle&&)      = delete;
+    hipblasLocalHandle(const hipblasLocalHandle&)            = delete;
+    hipblasLocalHandle(hipblasLocalHandle&&)                 = delete;
     hipblasLocalHandle& operator=(const hipblasLocalHandle&) = delete;
-    hipblasLocalHandle& operator=(hipblasLocalHandle&&) = delete;
+    hipblasLocalHandle& operator=(hipblasLocalHandle&&)      = delete;
 
     // Allow hipblasLocalHandle to be used anywhere hipblas_handle is expected
     operator hipblasHandle_t&()

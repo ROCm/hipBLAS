@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -463,13 +463,6 @@ typedef enum
     HIPBLAS_ATOMICS_ALLOWED = 1 /**< Algorithms will take advantage of atomics where applicable. */
 } hipblasAtomicsMode_t;
 
-typedef enum
-{
-    HIPBLAS_INT8_DATATYPE_DEFAULT     = 0x0,
-    HIPBLAS_INT8_DATATYPE_INT8        = 0x1,
-    HIPBLAS_INT8_DATATYPE_PACK_INT8x4 = 0x2
-} hipblasInt8Datatype_t;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -492,25 +485,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSetPointerMode(hipblasHandle_t      handle
 /*! \brief Get hipblas pointer mode */
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetPointerMode(hipblasHandle_t       handle,
                                                      hipblasPointerMode_t* mode);
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("The hipblasSetInt8Datatype function will be removed in a future \
-release and only int8_t datatype will be supported. packed_int8x4 datatype support \
-will be removed.")
-// clang-format on
 
-/*! \brief Set hipblas int8 Datatype */
-HIPBLAS_EXPORT hipblasStatus_t hipblasSetInt8Datatype(hipblasHandle_t       handle,
-                                                      hipblasInt8Datatype_t int8Type);
-
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("The hipblasGetInt8Datatype function will be removed in a future \
-release and only int8_t datatype will be supported. packed_int8x4 datatype support \
-will be removed.")
-// clang-format on
-
-/*! \brief Get hipblas int8 Datatype*/
-HIPBLAS_EXPORT hipblasStatus_t hipblasGetInt8Datatype(hipblasHandle_t        handle,
-                                                      hipblasInt8Datatype_t* int8Type);
 /*! \brief copy vector from host to device
     @param[in]
     n           [int]
@@ -17484,10 +17459,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
-    Note for int8 users - For rocBLAS backend, please read rocblas_gemm_ex documentation on int8
-    data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
-    format for a given device as documented in rocBLAS.
-
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -17584,10 +17555,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
     The number of pointers to matrices is batchCount.
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
-
-    Note for int8 users - For rocBLAS backend, please read rocblas_gemm_batched_ex documentation on int8
-    data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
-    format for a given device as documented in rocBLAS.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17696,10 +17663,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
     The number of matrices is batchCount.
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
-
-    Note for int8 users - For rocBLAS backend, please read rocblas_gemm_strided_batched_ex documentation on int8
-    data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
-    format for a given device as documented in rocBLAS.
 
     @param[in]
     handle    [hipblasHandle_t]
