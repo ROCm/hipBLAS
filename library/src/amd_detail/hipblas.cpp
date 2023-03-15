@@ -18061,9 +18061,6 @@ catch(...)
 }
 
 // gemm_ex
-// Note for int8 users - For rocBLAS backend, please read rocblas_gemm_ex documentation on int8
-// data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
-// format for a given device as documented in rocBLAS.
 hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                               hipblasOperation_t transa,
                               hipblasOperation_t transb,
