@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -334,37 +334,6 @@ int getArch()
 int getArchMajor()
 {
     return getArch() / 100;
-}
-
-/*******************************************************************************
- * gemm_ex int8 layout
- ******************************************************************************/
-bool layout_pack_int8(hipblasHandle_t handle)
-{
-    // This function should match the rocBLAS function: rocblas_query_int8_layout_flag
-    //
-    // Default behavior is from when int8 was supported on gfx908 and other architectures
-    // used packed_int8x4. All architectures support int8 since the following two PRs
-    // for ROCm 4.2:
-    // - Tensile PR 680
-    // - rocBLAS-internal PR 1328
-
-    hipblasInt8Datatype_t int8Type;
-    hipblasGetInt8Datatype(handle, &int8Type);
-    if(HIPBLAS_INT8_DATATYPE_DEFAULT == int8Type)
-    {
-        int arch = getArch();
-        return arch != 908;
-    }
-    else if(HIPBLAS_INT8_DATATYPE_INT8 == int8Type)
-    {
-        return false;
-    }
-    else if(HIPBLAS_INT8_DATATYPE_PACK_INT8x4 == int8Type)
-    {
-        return true;
-    }
-    return false;
 }
 
 #ifdef __cplusplus

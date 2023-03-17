@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -428,38 +428,6 @@ inline hipblasBfloat16 random_hpl_generator()
 {
     return hipblasBfloat16(
         float_to_bfloat16(std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng)));
-}
-
-/* ============================================================================================ */
-
-/* ============================================================================================ */
-/*! \brief Packs strided_batched matricies into groups of 4 in N */
-template <typename T>
-void hipblas_packInt8(
-    std::vector<T>& A, size_t M, size_t N, size_t lda, size_t batch_count = 1, size_t stride_a = 0)
-{
-    if(N % 4 != 0)
-        std::cerr << "ERROR: dimension must be a multiple of 4 in order to pack" << std::endl;
-
-    std::vector<T> temp(A);
-    for(size_t b = 0; b < batch_count; b++)
-        for(size_t colBase = 0; colBase < N; colBase += 4)
-            for(size_t row = 0; row < lda; row++)
-                for(size_t colOffset = 0; colOffset < 4; colOffset++)
-                    A[(colBase * lda + 4 * row) + colOffset + (stride_a * b)]
-                        = temp[(colBase + colOffset) * lda + row + (stride_a * b)];
-}
-
-template <typename T>
-void hipblas_packInt8(T* A, const T* temp, size_t M, size_t N, size_t lda)
-{
-    if(N % 4 != 0)
-        std::cerr << "ERROR: dimension must be a multiple of 4 in order to pack" << std::endl;
-
-    for(size_t colBase = 0; colBase < N; colBase += 4)
-        for(size_t row = 0; row < lda; row++)
-            for(size_t colOffset = 0; colOffset < 4; colOffset++)
-                A[(colBase * lda + 4 * row) + colOffset] = temp[(colBase + colOffset) * lda + row];
 }
 
 /* ============================================================================================ */
@@ -920,11 +888,6 @@ void set_device(int device_id);
 /* get architecture number */
 int getArch();
 int getArchMajor();
-
-/* query what rocBLAS recommends for int8 layout. We are /always/ passing in the flag which
- * rocBLAS recommends, thus we need to know what layout to format our data in our tests.
- * returns true if should be packed. */
-bool layout_pack_int8(hipblasHandle_t handle);
 
 /* ============================================================================================ */
 /*  timing: HIP only provides very limited timers function clock() and not general;

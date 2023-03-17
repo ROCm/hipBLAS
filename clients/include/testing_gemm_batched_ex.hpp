@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -130,36 +130,8 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
     srand(1);
     for(int b = 0; b < batch_count; b++)
     {
-#ifdef __HIP_PLATFORM_NVCC__
         CHECK_HIP_ERROR(dA.transfer_from(hA));
         CHECK_HIP_ERROR(dB.transfer_from(hB));
-#else
-        if(std::is_same<Ta, int8_t>{} && transA == HIPBLAS_OP_N && layout_pack_int8(handle))
-        {
-            host_batch_vector<Ta> hA_packed(size_A, 1, batch_count);
-            hA_packed.copy_from(hA);
-            for(int b = 0; b < batch_count; b++)
-                hipblas_packInt8(hA_packed[b], hA[b], M, K, lda);
-            CHECK_HIP_ERROR(dA.transfer_from(hA_packed));
-        }
-        else
-        {
-            CHECK_HIP_ERROR(dA.transfer_from(hA));
-        }
-
-        if(std::is_same<Tb, int8_t>{} && transB != HIPBLAS_OP_N && layout_pack_int8(handle))
-        {
-            host_batch_vector<Tb> hB_packed(size_B, 1, batch_count);
-            hB_packed.copy_from(hB);
-            for(int b = 0; b < batch_count; b++)
-                hipblas_packInt8(hB_packed[b], hB[b], N, K, ldb);
-            CHECK_HIP_ERROR(dB.transfer_from(hB_packed));
-        }
-        else
-        {
-            CHECK_HIP_ERROR(dB.transfer_from(hB));
-        }
-#endif
     }
 
     CHECK_HIP_ERROR(dC.transfer_from(hC_host));
