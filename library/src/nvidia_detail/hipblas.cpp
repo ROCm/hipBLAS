@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2576,36 +2576,46 @@ catch(...)
 }
 
 // swap_batched
-hipblasStatus_t hipblasSswapBatched(
-    hipblasHandle_t handle, int n, float* x[], int incx, float* y[], int incy, int batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasDswapBatched(
-    hipblasHandle_t handle, int n, double* x[], int incx, double* y[], int incy, int batchCount)
-{
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-}
-
-hipblasStatus_t hipblasCswapBatched(hipblasHandle_t handle,
+hipblasStatus_t hipblasSswapBatched(hipblasHandle_t handle,
                                     int             n,
-                                    hipblasComplex* x[],
+                                    float* const    x[],
                                     int             incx,
-                                    hipblasComplex* y[],
+                                    float* const    y[],
                                     int             incy,
                                     int             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasZswapBatched(hipblasHandle_t       handle,
+hipblasStatus_t hipblasDswapBatched(hipblasHandle_t handle,
+                                    int             n,
+                                    double* const   x[],
+                                    int             incx,
+                                    double* const   y[],
+                                    int             incy,
+                                    int             batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCswapBatched(hipblasHandle_t       handle,
                                     int                   n,
-                                    hipblasDoubleComplex* x[],
+                                    hipblasComplex* const x[],
                                     int                   incx,
-                                    hipblasDoubleComplex* y[],
+                                    hipblasComplex* const y[],
                                     int                   incy,
                                     int                   batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZswapBatched(hipblasHandle_t             handle,
+                                    int                         n,
+                                    hipblasDoubleComplex* const x[],
+                                    int                         incx,
+                                    hipblasDoubleComplex* const y[],
+                                    int                         incy,
+                                    int                         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -4601,7 +4611,7 @@ hipblasStatus_t hipblasSsbmvBatched(hipblasHandle_t    handle,
                                     const float* const x[],
                                     int                incx,
                                     const float*       beta,
-                                    float*             y[],
+                                    float* const       y[],
                                     int                incy,
                                     int                batchCount)
 {
@@ -4618,7 +4628,7 @@ hipblasStatus_t hipblasDsbmvBatched(hipblasHandle_t     handle,
                                     const double* const x[],
                                     int                 incx,
                                     const double*       beta,
-                                    double*             y[],
+                                    double* const       y[],
                                     int                 incy,
                                     int                 batchCount)
 {
@@ -4716,7 +4726,7 @@ hipblasStatus_t hipblasSspmvBatched(hipblasHandle_t    handle,
                                     const float* const x[],
                                     int                incx,
                                     const float*       beta,
-                                    float*             y[],
+                                    float* const       y[],
                                     int                incy,
                                     int                batchCount)
 {
@@ -4731,7 +4741,7 @@ hipblasStatus_t hipblasDspmvBatched(hipblasHandle_t     handle,
                                     const double* const x[],
                                     int                 incx,
                                     const double*       beta,
-                                    double*             y[],
+                                    double* const       y[],
                                     int                 incy,
                                     int                 batchCount)
 {
@@ -5154,7 +5164,7 @@ hipblasStatus_t hipblasSsymvBatched(hipblasHandle_t    handle,
                                     const float* const x[],
                                     int                incx,
                                     const float*       beta,
-                                    float*             y[],
+                                    float* const       y[],
                                     int                incy,
                                     int                batchCount)
 {
@@ -5170,7 +5180,7 @@ hipblasStatus_t hipblasDsymvBatched(hipblasHandle_t     handle,
                                     const double* const x[],
                                     int                 incx,
                                     const double*       beta,
-                                    double*             y[],
+                                    double* const       y[],
                                     int                 incy,
                                     int                 batchCount)
 {
@@ -5186,7 +5196,7 @@ hipblasStatus_t hipblasCsymvBatched(hipblasHandle_t             handle,
                                     const hipblasComplex* const x[],
                                     int                         incx,
                                     const hipblasComplex*       beta,
-                                    hipblasComplex*             y[],
+                                    hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batchCount)
 {
@@ -5202,7 +5212,7 @@ hipblasStatus_t hipblasZsymvBatched(hipblasHandle_t                   handle,
                                     const hipblasDoubleComplex* const x[],
                                     int                               incx,
                                     const hipblasDoubleComplex*       beta,
-                                    hipblasDoubleComplex*             y[],
+                                    hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
 {
@@ -9392,7 +9402,7 @@ hipblasStatus_t hipblasStrsm(hipblasHandle_t    handle,
                              int                m,
                              int                n,
                              const float*       alpha,
-                             float*             A,
+                             const float*       A,
                              int                lda,
                              float*             B,
                              int                ldb)
@@ -9424,7 +9434,7 @@ hipblasStatus_t hipblasDtrsm(hipblasHandle_t    handle,
                              int                m,
                              int                n,
                              const double*      alpha,
-                             double*            A,
+                             const double*      A,
                              int                lda,
                              double*            B,
                              int                ldb)
@@ -9456,7 +9466,7 @@ hipblasStatus_t hipblasCtrsm(hipblasHandle_t       handle,
                              int                   m,
                              int                   n,
                              const hipblasComplex* alpha,
-                             hipblasComplex*       A,
+                             const hipblasComplex* A,
                              int                   lda,
                              hipblasComplex*       B,
                              int                   ldb)
@@ -9488,7 +9498,7 @@ hipblasStatus_t hipblasZtrsm(hipblasHandle_t             handle,
                              int                         m,
                              int                         n,
                              const hipblasDoubleComplex* alpha,
-                             hipblasDoubleComplex*       A,
+                             const hipblasDoubleComplex* A,
                              int                         lda,
                              hipblasDoubleComplex*       B,
                              int                         ldb)
@@ -9521,9 +9531,9 @@ hipblasStatus_t hipblasStrsmBatched(hipblasHandle_t    handle,
                                     int                m,
                                     int                n,
                                     const float*       alpha,
-                                    float* const       A[],
+                                    const float* const A[],
                                     int                lda,
-                                    float*             B[],
+                                    float* const       B[],
                                     int                ldb,
                                     int                batch_count)
 try
@@ -9547,19 +9557,19 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t    handle,
-                                    hipblasSideMode_t  side,
-                                    hipblasFillMode_t  uplo,
-                                    hipblasOperation_t transA,
-                                    hipblasDiagType_t  diag,
-                                    int                m,
-                                    int                n,
-                                    const double*      alpha,
-                                    double* const      A[],
-                                    int                lda,
-                                    double*            B[],
-                                    int                ldb,
-                                    int                batch_count)
+hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t     handle,
+                                    hipblasSideMode_t   side,
+                                    hipblasFillMode_t   uplo,
+                                    hipblasOperation_t  transA,
+                                    hipblasDiagType_t   diag,
+                                    int                 m,
+                                    int                 n,
+                                    const double*       alpha,
+                                    const double* const A[],
+                                    int                 lda,
+                                    double* const       B[],
+                                    int                 ldb,
+                                    int                 batch_count)
 try
 {
     return hipCUBLASStatusToHIPStatus(cublasDtrsmBatched((cublasHandle_t)handle,
@@ -9581,19 +9591,19 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t       handle,
-                                    hipblasSideMode_t     side,
-                                    hipblasFillMode_t     uplo,
-                                    hipblasOperation_t    transA,
-                                    hipblasDiagType_t     diag,
-                                    int                   m,
-                                    int                   n,
-                                    const hipblasComplex* alpha,
-                                    hipblasComplex* const A[],
-                                    int                   lda,
-                                    hipblasComplex*       B[],
-                                    int                   ldb,
-                                    int                   batch_count)
+hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t             handle,
+                                    hipblasSideMode_t           side,
+                                    hipblasFillMode_t           uplo,
+                                    hipblasOperation_t          transA,
+                                    hipblasDiagType_t           diag,
+                                    int                         m,
+                                    int                         n,
+                                    const hipblasComplex*       alpha,
+                                    const hipblasComplex* const A[],
+                                    int                         lda,
+                                    hipblasComplex* const       B[],
+                                    int                         ldb,
+                                    int                         batch_count)
 try
 {
     return hipCUBLASStatusToHIPStatus(cublasCtrsmBatched((cublasHandle_t)handle,
@@ -9615,19 +9625,19 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t             handle,
-                                    hipblasSideMode_t           side,
-                                    hipblasFillMode_t           uplo,
-                                    hipblasOperation_t          transA,
-                                    hipblasDiagType_t           diag,
-                                    int                         m,
-                                    int                         n,
-                                    const hipblasDoubleComplex* alpha,
-                                    hipblasDoubleComplex* const A[],
-                                    int                         lda,
-                                    hipblasDoubleComplex*       B[],
-                                    int                         ldb,
-                                    int                         batch_count)
+hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t                   handle,
+                                    hipblasSideMode_t                 side,
+                                    hipblasFillMode_t                 uplo,
+                                    hipblasOperation_t                transA,
+                                    hipblasDiagType_t                 diag,
+                                    int                               m,
+                                    int                               n,
+                                    const hipblasDoubleComplex*       alpha,
+                                    const hipblasDoubleComplex* const A[],
+                                    int                               lda,
+                                    hipblasDoubleComplex* const       B[],
+                                    int                               ldb,
+                                    int                               batch_count)
 try
 {
     return hipCUBLASStatusToHIPStatus(cublasZtrsmBatched((cublasHandle_t)handle,
@@ -9658,7 +9668,7 @@ hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    handle,
                                            int                m,
                                            int                n,
                                            const float*       alpha,
-                                           float*             A,
+                                           const float*       A,
                                            int                lda,
                                            hipblasStride      strideA,
                                            float*             B,
@@ -9677,7 +9687,7 @@ hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    handle,
                                            int                m,
                                            int                n,
                                            const double*      alpha,
-                                           double*            A,
+                                           const double*      A,
                                            int                lda,
                                            hipblasStride      strideA,
                                            double*            B,
@@ -9696,7 +9706,7 @@ hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       handle,
                                            int                   m,
                                            int                   n,
                                            const hipblasComplex* alpha,
-                                           hipblasComplex*       A,
+                                           const hipblasComplex* A,
                                            int                   lda,
                                            hipblasStride         strideA,
                                            hipblasComplex*       B,
@@ -9715,7 +9725,7 @@ hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t             handle,
                                            int                         m,
                                            int                         n,
                                            const hipblasDoubleComplex* alpha,
-                                           hipblasDoubleComplex*       A,
+                                           const hipblasDoubleComplex* A,
                                            int                         lda,
                                            hipblasStride               strideA,
                                            hipblasDoubleComplex*       B,
