@@ -20,7 +20,7 @@ Notations
 hipBLAS function uses the following notations to denote precisions,
 
 - h  = half
-- bf = 16 bit brian floating point
+- bf = 16 bit floating point
 - s  = single
 - d  = double
 - c  = single complex
