@@ -56,11 +56,17 @@
 #define HIPBLAS_CLANG_STATIC
 #endif
 
+#ifndef HIPBLAS_NO_DEPRECATED_WARNINGS
 #ifndef HIPBLAS_DEPRECATED_MSG
 #ifndef _MSC_VER
 #define HIPBLAS_DEPRECATED_MSG(MSG) __attribute__((deprecated(#MSG)))
 #else
 #define HIPBLAS_DEPRECATED_MSG(MSG) __declspec(deprecated(#MSG))
+#endif
+#endif
+#else
+#ifndef HIPBLAS_DEPRECATED_MSG
+#define HIPBLAS_DEPRECATED_MSG(MSG)
 #endif
 #endif
 
@@ -14654,21 +14660,6 @@ cublasXtrmm API.")
 
     ********************************************************************/
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
-                                                      hipblasSideMode_t  side,
-                                                      hipblasFillMode_t  uplo,
-                                                      hipblasOperation_t transA,
-                                                      hipblasDiagType_t  diag,
-                                                      int                m,
-                                                      int                n,
-                                                      const float*       alpha,
-                                                      const float*       AP,
-                                                      int                lda,
-                                                      const float*       BP,
-                                                      int                ldb,
-                                                      float*             CP,
-                                                      int                ldc);
-
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                                             hipblasSideMode_t  side,
                                             hipblasFillMode_t  uplo,
@@ -14721,6 +14712,66 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
                                             hipblasDoubleComplex*       BP,
                                             int                         ldb);
 //! @}
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
+                                                      hipblasSideMode_t  side,
+                                                      hipblasFillMode_t  uplo,
+                                                      hipblasOperation_t transA,
+                                                      hipblasDiagType_t  diag,
+                                                      int                m,
+                                                      int                n,
+                                                      const float*       alpha,
+                                                      const float*       AP,
+                                                      int                lda,
+                                                      const float*       BP,
+                                                      int                ldb,
+                                                      float*             CP,
+                                                      int                ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmOutofplace(hipblasHandle_t    handle,
+                                                      hipblasSideMode_t  side,
+                                                      hipblasFillMode_t  uplo,
+                                                      hipblasOperation_t transA,
+                                                      hipblasDiagType_t  diag,
+                                                      int                m,
+                                                      int                n,
+                                                      const double*      alpha,
+                                                      const double*      AP,
+                                                      int                lda,
+                                                      const double*      BP,
+                                                      int                ldb,
+                                                      double*            CP,
+                                                      int                ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmOutofplace(hipblasHandle_t       handle,
+                                                      hipblasSideMode_t     side,
+                                                      hipblasFillMode_t     uplo,
+                                                      hipblasOperation_t    transA,
+                                                      hipblasDiagType_t     diag,
+                                                      int                   m,
+                                                      int                   n,
+                                                      const hipblasComplex* alpha,
+                                                      const hipblasComplex* AP,
+                                                      int                   lda,
+                                                      const hipblasComplex* BP,
+                                                      int                   ldb,
+                                                      hipblasComplex*       CP,
+                                                      int                   ldc);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmOutofplace(hipblasHandle_t             handle,
+                                                      hipblasSideMode_t           side,
+                                                      hipblasFillMode_t           uplo,
+                                                      hipblasOperation_t          transA,
+                                                      hipblasDiagType_t           diag,
+                                                      int                         m,
+                                                      int                         n,
+                                                      const hipblasDoubleComplex* alpha,
+                                                      const hipblasDoubleComplex* AP,
+                                                      int                         lda,
+                                                      const hipblasDoubleComplex* BP,
+                                                      int                         ldb,
+                                                      hipblasDoubleComplex*       CP,
+                                                      int                         ldc);
 
 /*! @{
     \brief BLAS Level 3 API
@@ -14878,6 +14929,70 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
                                                    int                               ldb,
                                                    int                               batchCount);
 //! @}
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmBatchedOutofplace(hipblasHandle_t    handle,
+                                                             hipblasSideMode_t  side,
+                                                             hipblasFillMode_t  uplo,
+                                                             hipblasOperation_t transA,
+                                                             hipblasDiagType_t  diag,
+                                                             int                m,
+                                                             int                n,
+                                                             const float*       alpha,
+                                                             const float* const AP[],
+                                                             int                lda,
+                                                             const float* const BP[],
+                                                             int                ldb,
+                                                             float* const       CP[],
+                                                             int                ldc,
+                                                             int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmBatchedOutofplace(hipblasHandle_t     handle,
+                                                             hipblasSideMode_t   side,
+                                                             hipblasFillMode_t   uplo,
+                                                             hipblasOperation_t  transA,
+                                                             hipblasDiagType_t   diag,
+                                                             int                 m,
+                                                             int                 n,
+                                                             const double*       alpha,
+                                                             const double* const AP[],
+                                                             int                 lda,
+                                                             const double* const BP[],
+                                                             int                 ldb,
+                                                             double* const       CP[],
+                                                             int                 ldc,
+                                                             int                 batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatchedOutofplace(hipblasHandle_t             handle,
+                                                             hipblasSideMode_t           side,
+                                                             hipblasFillMode_t           uplo,
+                                                             hipblasOperation_t          transA,
+                                                             hipblasDiagType_t           diag,
+                                                             int                         m,
+                                                             int                         n,
+                                                             const hipblasComplex*       alpha,
+                                                             const hipblasComplex* const AP[],
+                                                             int                         lda,
+                                                             const hipblasComplex* const BP[],
+                                                             int                         ldb,
+                                                             hipblasComplex* const       CP[],
+                                                             int                         ldc,
+                                                             int batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatchedOutofplace(hipblasHandle_t             handle,
+                                                             hipblasSideMode_t           side,
+                                                             hipblasFillMode_t           uplo,
+                                                             hipblasOperation_t          transA,
+                                                             hipblasDiagType_t           diag,
+                                                             int                         m,
+                                                             int                         n,
+                                                             const hipblasDoubleComplex* alpha,
+                                                             const hipblasDoubleComplex* const AP[],
+                                                             int                               lda,
+                                                             const hipblasDoubleComplex* const BP[],
+                                                             int                               ldb,
+                                                             hipblasDoubleComplex* const       CP[],
+                                                             int                               ldc,
+                                                             int batchCount);
 
 /*! @{
     \brief BLAS Level 3 API
@@ -15051,22 +15166,99 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t       
                                                           int                         batchCount);
 //! @}
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmStridedBatchedOutofplace(hipblasHandle_t    handle,
+                                                                    hipblasSideMode_t  side,
+                                                                    hipblasFillMode_t  uplo,
+                                                                    hipblasOperation_t transA,
+                                                                    hipblasDiagType_t  diag,
+                                                                    int                m,
+                                                                    int                n,
+                                                                    const float*       alpha,
+                                                                    const float*       AP,
+                                                                    int                lda,
+                                                                    hipblasStride      strideA,
+                                                                    const float*       BP,
+                                                                    int                ldb,
+                                                                    hipblasStride      strideB,
+                                                                    float*             CP,
+                                                                    int                ldc,
+                                                                    hipblasStride      strideC,
+                                                                    int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmStridedBatchedOutofplace(hipblasHandle_t    handle,
+                                                                    hipblasSideMode_t  side,
+                                                                    hipblasFillMode_t  uplo,
+                                                                    hipblasOperation_t transA,
+                                                                    hipblasDiagType_t  diag,
+                                                                    int                m,
+                                                                    int                n,
+                                                                    const double*      alpha,
+                                                                    const double*      AP,
+                                                                    int                lda,
+                                                                    hipblasStride      strideA,
+                                                                    const double*      BP,
+                                                                    int                ldb,
+                                                                    hipblasStride      strideB,
+                                                                    double*            CP,
+                                                                    int                ldc,
+                                                                    hipblasStride      strideC,
+                                                                    int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatchedOutofplace(hipblasHandle_t       handle,
+                                                                    hipblasSideMode_t     side,
+                                                                    hipblasFillMode_t     uplo,
+                                                                    hipblasOperation_t    transA,
+                                                                    hipblasDiagType_t     diag,
+                                                                    int                   m,
+                                                                    int                   n,
+                                                                    const hipblasComplex* alpha,
+                                                                    const hipblasComplex* AP,
+                                                                    int                   lda,
+                                                                    hipblasStride         strideA,
+                                                                    const hipblasComplex* BP,
+                                                                    int                   ldb,
+                                                                    hipblasStride         strideB,
+                                                                    hipblasComplex*       CP,
+                                                                    int                   ldc,
+                                                                    hipblasStride         strideC,
+                                                                    int batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasZtrmmStridedBatchedOutofplace(hipblasHandle_t             handle,
+                                         hipblasSideMode_t           side,
+                                         hipblasFillMode_t           uplo,
+                                         hipblasOperation_t          transA,
+                                         hipblasDiagType_t           diag,
+                                         int                         m,
+                                         int                         n,
+                                         const hipblasDoubleComplex* alpha,
+                                         const hipblasDoubleComplex* AP,
+                                         int                         lda,
+                                         hipblasStride               strideA,
+                                         const hipblasDoubleComplex* BP,
+                                         int                         ldb,
+                                         hipblasStride               strideB,
+                                         hipblasDoubleComplex*       BC,
+                                         int                         ldc,
+                                         hipblasStride               strideC,
+                                         int                         batchCount);
+
 #ifdef HIPBLAS_V1
 #ifndef HIPBLAS_TRMM_V1
 #define HIPBLAS_TRMM_V1
 
 #define hipblasStrmm hipblasStrmmOutofplace
-#define hipblasCtrmm hipblasDtrmmOutofplace
+#define hipblasDtrmm hipblasDtrmmOutofplace
 #define hipblasCtrmm hipblasCtrmmOutofplace
 #define hipblasZtrmm hipblasZtrmmOutofplace
 
 #define hipblasStrmmBatched hipblasStrmmBatchedOutofplace
-#define hipblasCtrmmBatched hipblasDtrmmBatchedOutofplace
+#define hipblasDtrmmBatched hipblasDtrmmBatchedOutofplace
 #define hipblasCtrmmBatched hipblasCtrmmBatchedOutofplace
 #define hipblasZtrmmBatched hipblasZtrmmBatchedOutofplace
 
 #define hipblasStrmmStridedBatched hipblasStrmmStridedBatchedOutofplace
-#define hipblasCtrmmStridedBatched hipblasDtrmmStridedBatchedOutofplace
+#define hipblasDtrmmStridedBatched hipblasDtrmmStridedBatchedOutofplace
 #define hipblasCtrmmStridedBatched hipblasCtrmmStridedBatchedOutofplace
 #define hipblasZtrmmStridedBatched hipblasZtrmmStridedBatchedOutofplace
 
