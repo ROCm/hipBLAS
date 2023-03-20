@@ -13569,6 +13569,42 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
+                                       hipblasSideMode_t  side,
+                                       hipblasFillMode_t  uplo,
+                                       hipblasOperation_t transA,
+                                       hipblasDiagType_t  diag,
+                                       int                m,
+                                       int                n,
+                                       const float*       alpha,
+                                       const float*       A,
+                                       int                lda,
+                                       const float*       B,
+                                       int                ldb,
+                                       float*             C,
+                                       int                ldc)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_strmm_outofplace((rocblas_handle)handle,
+                                                             hipSideToHCCSide(side),
+                                                             hipFillToHCCFill(uplo),
+                                                             hipOperationToHCCOperation(transA),
+                                                             hipDiagonalToHCCDiagonal(diag),
+                                                             m,
+                                                             n,
+                                                             alpha,
+                                                             A,
+                                                             lda,
+                                                             B,
+                                                             ldb,
+                                                             C,
+                                                             ldc));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // trmm
 hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                              hipblasSideMode_t  side,

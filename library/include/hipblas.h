@@ -14654,6 +14654,21 @@ cublasXtrmm API.")
 
     ********************************************************************/
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
+                                                      hipblasSideMode_t  side,
+                                                      hipblasFillMode_t  uplo,
+                                                      hipblasOperation_t transA,
+                                                      hipblasDiagType_t  diag,
+                                                      int                m,
+                                                      int                n,
+                                                      const float*       alpha,
+                                                      const float*       AP,
+                                                      int                lda,
+                                                      const float*       BP,
+                                                      int                ldb,
+                                                      float*             CP,
+                                                      int                ldc);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                                             hipblasSideMode_t  side,
                                             hipblasFillMode_t  uplo,
@@ -15035,6 +15050,28 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideB,
                                                           int                         batchCount);
 //! @}
+
+#ifdef HIPBLAS_V1
+#ifndef HIPBLAS_TRMM_V1
+#define HIPBLAS_TRMM_V1
+
+#define hipblasStrmm hipblasStrmmOutofplace
+#define hipblasCtrmm hipblasDtrmmOutofplace
+#define hipblasCtrmm hipblasCtrmmOutofplace
+#define hipblasZtrmm hipblasZtrmmOutofplace
+
+#define hipblasStrmmBatched hipblasStrmmBatchedOutofplace
+#define hipblasCtrmmBatched hipblasDtrmmBatchedOutofplace
+#define hipblasCtrmmBatched hipblasCtrmmBatchedOutofplace
+#define hipblasZtrmmBatched hipblasZtrmmBatchedOutofplace
+
+#define hipblasStrmmStridedBatched hipblasStrmmStridedBatchedOutofplace
+#define hipblasCtrmmStridedBatched hipblasDtrmmStridedBatchedOutofplace
+#define hipblasCtrmmStridedBatched hipblasCtrmmStridedBatchedOutofplace
+#define hipblasZtrmmStridedBatched hipblasZtrmmStridedBatchedOutofplace
+
+#endif /* HIPBLAS_TRMM_V1 */
+#endif /* HIPBLAS_V1 */
 
 /*! @{
     \brief BLAS Level 3 API

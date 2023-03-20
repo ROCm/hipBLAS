@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,13 @@ set( hipblas_samples_common ../common/utility.cpp )
 
 add_executable( hipblas-example-sscal example_sscal.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
+add_executable( hipblas-example-strmm_v3 example_strmm.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
 add_executable( hipblas-example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-hgemm-half example_hgemm_hip_half.cpp ${hipblas_samples_common})
+
+target_compile_definitions( hipblas-example-strmm_v3 PRIVATE HIPBLAS_V1)
 
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   add_executable( hipblas-example-hgemm example_hgemm.cpp ${hipblas_samples_common} )
@@ -50,7 +53,7 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
+list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-strmm_v3 hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
