@@ -2,12 +2,15 @@
 
 ## (Unreleased) hipBLAS 1.0.0
 ### Changed
-- added const qualifier to pointers for the batched version of hipBLAS functions where missing
-- added const qualifier to A pointer in hipblasXtrsm functions
+- added const qualifier to hipBLAS functions (swap, sbmv, spmv, symv, trsm) where missing
 
 ### Removed
 - removed support for deprecated hipblasInt8Datatype_t enum
 - removed support for deprecated hipblasSetInt8Datatype and hipblasGetInt8Datatype functions
+
+### Deprecated
+- in-place trmm is deprecated. It will be replaced by trmm which includes both in-place and
+  out-of-place functionality
 
 ## (Unreleased) hipBLAS 0.54.0
 ### Added
