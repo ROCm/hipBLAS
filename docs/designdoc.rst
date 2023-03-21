@@ -8,5 +8,4 @@ Design Documentation
    :maxdepth: 3
    :caption: Contents:
 
-   disclaimer
    clients

@@ -8,7 +8,6 @@ User Guide
    :maxdepth: 3
    :caption: Contents:
 
-   disclaimer
    intro
    install
    deprecation
