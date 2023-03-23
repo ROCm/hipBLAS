@@ -47,7 +47,7 @@
 #define CHECK_HIPBLAS_ERROR(error)                              \
     if(error != HIPBLAS_STATUS_SUCCESS)                         \
     {                                                           \
-        fprintf(stderr, "rocBLAS error: ");                     \
+        fprintf(stderr, "hipBLAS error: ");                     \
         if(error == HIPBLAS_STATUS_NOT_INITIALIZED)             \
             fprintf(stderr, "HIPBLAS_STATUS_NOT_INITIALIZED");  \
         if(error == HIPBLAS_STATUS_ALLOC_FAILED)                \
