@@ -26,3 +26,55 @@ The packed_int8x4 datatype will be removed in hipBLAS 1.0. There are two int8 da
 int8_t is the C99 unsigned 8 bit integer. packed_int8x4 has 4 consecutive int8_t numbers
 in the k dimension packed into 32 bits. packed_int8x4 is only used in hipblasGemmEx.
 int8_t will continue to be available in hipblasGemmEx.
+
+Announced in hipBLAS 1.0
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Replace Legacy BLAS in-place trmm functions with trmm functions that support both in-place and out-of-place functionality
+=========================================================================================================================
+Use of the deprecated Legacy BLAS in-place trmm functions will give deprecation warnings telling
+you to compile with -DHIPBLAS_V1 and use the new in-place and out-of-place trmm functions.
+
+Note that there are no deprecation warnings for the hipBLAS Fortran API.
+
+The Legacy BLAS in-place trmm calculates B <- alpha * op(A) * B. Matrix B is replaced in-place by
+triangular matrix A multiplied by matrix B. The prototype in the include file rocblas-functions.h is:
+
+::
+
+    hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
+                                 hipblasSideMode_t  side,
+                                 hipblasFillMode_t  uplo,
+                                 hipblasOperation_t transA,
+                                 hipblasDiagType_t  diag,
+                                 int                m,
+                                 int                n,
+                                 const float*       alpha,
+                                 const float*       AP,
+                                 int                lda,
+                                 float*             BP,
+                                 int                ldb);
+
+hipBLAS 1.0 deprecates the legacy BLAS trmm functionality and replaces it with C <- alpha * op(A) * B. The prototype is:
+
+::
+
+    hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
+                                           hipblasSideMode_t  side,
+                                           hipblasFillMode_t  uplo,
+                                           hipblasOperation_t transA,
+                                           hipblasDiagType_t  diag,
+                                           int                m,
+                                           int                n,
+                                           const float*       alpha,
+                                           const float*       AP,
+                                           int                lda,
+                                           const float*       BP,
+                                           int                ldb,
+                                           float*             CP,
+                                           int                ldc);
+
+The new API provides the legacy BLAS in-place functionality if you set pointer C equal to pointer B and
+ldc equal to ldb.
+
+There are similar deprecations for the _batched and _strided_batched versions of trmm.
