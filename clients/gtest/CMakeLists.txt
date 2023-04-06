@@ -205,7 +205,8 @@ if (WIN32)
     ${LAPACK_DIR}/bin/*.dll
     ${BLIS_DIR}/lib/*.dll
     ${OPENBLAS_DIR}/bin/*.dll
-    ${HIP_DIR}/bin/*.dll
+    ${HIP_DIR}/bin/amd*.dll
+    ${HIP_DIR}/bin/hiprt*.dll
     ${HIP_DIR}/bin/hipinfo.exe
     ${ROCBLAS_PATH}/bin/rocblas.dll
     ${ROCSOLVER_PATH}/bin/rocsolver.dll
