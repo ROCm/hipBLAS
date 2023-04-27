@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,11 +56,17 @@
 #define HIPBLAS_CLANG_STATIC
 #endif
 
+#ifndef HIPBLAS_NO_DEPRECATED_WARNINGS
 #ifndef HIPBLAS_DEPRECATED_MSG
 #ifndef _MSC_VER
 #define HIPBLAS_DEPRECATED_MSG(MSG) __attribute__((deprecated(#MSG)))
 #else
 #define HIPBLAS_DEPRECATED_MSG(MSG) __declspec(deprecated(#MSG))
+#endif
+#endif
+#else
+#ifndef HIPBLAS_DEPRECATED_MSG
+#define HIPBLAS_DEPRECATED_MSG(MSG)
 #endif
 #endif
 
@@ -463,13 +469,6 @@ typedef enum
     HIPBLAS_ATOMICS_ALLOWED = 1 /**< Algorithms will take advantage of atomics where applicable. */
 } hipblasAtomicsMode_t;
 
-typedef enum
-{
-    HIPBLAS_INT8_DATATYPE_DEFAULT     = 0x0,
-    HIPBLAS_INT8_DATATYPE_INT8        = 0x1,
-    HIPBLAS_INT8_DATATYPE_PACK_INT8x4 = 0x2
-} hipblasInt8Datatype_t;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -492,25 +491,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSetPointerMode(hipblasHandle_t      handle
 /*! \brief Get hipblas pointer mode */
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetPointerMode(hipblasHandle_t       handle,
                                                      hipblasPointerMode_t* mode);
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("The hipblasSetInt8Datatype function will be removed in a future \
-release and only int8_t datatype will be supported. packed_int8x4 datatype support \
-will be removed.")
-// clang-format on
 
-/*! \brief Set hipblas int8 Datatype */
-HIPBLAS_EXPORT hipblasStatus_t hipblasSetInt8Datatype(hipblasHandle_t       handle,
-                                                      hipblasInt8Datatype_t int8Type);
-
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("The hipblasGetInt8Datatype function will be removed in a future \
-release and only int8_t datatype will be supported. packed_int8x4 datatype support \
-will be removed.")
-// clang-format on
-
-/*! \brief Get hipblas int8 Datatype*/
-HIPBLAS_EXPORT hipblasStatus_t hipblasGetInt8Datatype(hipblasHandle_t        handle,
-                                                      hipblasInt8Datatype_t* int8Type);
 /*! \brief copy vector from host to device
     @param[in]
     n           [int]
@@ -3338,27 +3319,37 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZswap(hipblasHandle_t       handle,
 
     ********************************************************************/
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasSswapBatched(
-    hipblasHandle_t handle, int n, float* x[], int incx, float* y[], int incy, int batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasDswapBatched(
-    hipblasHandle_t handle, int n, double* x[], int incx, double* y[], int incy, int batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasCswapBatched(hipblasHandle_t handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasSswapBatched(hipblasHandle_t handle,
                                                    int             n,
-                                                   hipblasComplex* x[],
+                                                   float* const    x[],
                                                    int             incx,
-                                                   hipblasComplex* y[],
+                                                   float* const    y[],
                                                    int             incy,
                                                    int             batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZswapBatched(hipblasHandle_t       handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasDswapBatched(hipblasHandle_t handle,
+                                                   int             n,
+                                                   double* const   x[],
+                                                   int             incx,
+                                                   double* const   y[],
+                                                   int             incy,
+                                                   int             batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCswapBatched(hipblasHandle_t       handle,
                                                    int                   n,
-                                                   hipblasDoubleComplex* x[],
+                                                   hipblasComplex* const x[],
                                                    int                   incx,
-                                                   hipblasDoubleComplex* y[],
+                                                   hipblasComplex* const y[],
                                                    int                   incy,
                                                    int                   batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZswapBatched(hipblasHandle_t             handle,
+                                                   int                         n,
+                                                   hipblasDoubleComplex* const x[],
+                                                   int                         incx,
+                                                   hipblasDoubleComplex* const y[],
+                                                   int                         incy,
+                                                   int                         batchCount);
 //! @}
 
 /*! @{
@@ -6705,7 +6696,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSsbmvBatched(hipblasHandle_t    handle,
                                                    const float* const x[],
                                                    int                incx,
                                                    const float*       beta,
-                                                   float*             y[],
+                                                   float* const       y[],
                                                    int                incy,
                                                    int                batchCount);
 
@@ -6719,7 +6710,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDsbmvBatched(hipblasHandle_t     handle,
                                                    const double* const x[],
                                                    int                 incx,
                                                    const double*       beta,
-                                                   double*             y[],
+                                                   double* const       y[],
                                                    int                 incy,
                                                    int                 batchCount);
 //! @}
@@ -6956,7 +6947,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSspmvBatched(hipblasHandle_t    handle,
                                                    const float* const x[],
                                                    int                incx,
                                                    const float*       beta,
-                                                   float*             y[],
+                                                   float* const       y[],
                                                    int                incy,
                                                    int                batchCount);
 
@@ -6968,7 +6959,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDspmvBatched(hipblasHandle_t     handle,
                                                    const double* const x[],
                                                    int                 incx,
                                                    const double*       beta,
-                                                   double*             y[],
+                                                   double* const       y[],
                                                    int                 incy,
                                                    int                 batchCount);
 //! @}
@@ -7830,7 +7821,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSsymvBatched(hipblasHandle_t    handle,
                                                    const float* const x[],
                                                    int                incx,
                                                    const float*       beta,
-                                                   float*             y[],
+                                                   float* const       y[],
                                                    int                incy,
                                                    int                batchCount);
 
@@ -7843,7 +7834,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDsymvBatched(hipblasHandle_t     handle,
                                                    const double* const x[],
                                                    int                 incx,
                                                    const double*       beta,
-                                                   double*             y[],
+                                                   double* const       y[],
                                                    int                 incy,
                                                    int                 batchCount);
 
@@ -7856,7 +7847,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCsymvBatched(hipblasHandle_t             h
                                                    const hipblasComplex* const x[],
                                                    int                         incx,
                                                    const hipblasComplex*       beta,
-                                                   hipblasComplex*             y[],
+                                                   hipblasComplex* const       y[],
                                                    int                         incy,
                                                    int                         batchCount);
 
@@ -7869,7 +7860,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsymvBatched(hipblasHandle_t              
                                                    const hipblasDoubleComplex* const x[],
                                                    int                               incx,
                                                    const hipblasDoubleComplex*       beta,
-                                                   hipblasDoubleComplex*             y[],
+                                                   hipblasDoubleComplex* const       y[],
                                                    int                               incy,
                                                    int                               batchCount);
 //! @}
@@ -14565,28 +14556,183 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
                                                           int                         batchCount);
 //! @}
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("The hipblasXtrmm API, along with batched versions, will \
-be changing in a future release to allow in-place and out-of-place behavior. This change \
-will introduce an output matrix 'C', matching the rocblas_xtrmm_outofplace API and the \
-cublasXtrmm API.")
-// clang-format on
 /*! @{
     \brief BLAS Level 3 API
 
     \details
 
-    trmm performs one of the matrix-matrix operations
+       #ifndef HIPBLAS_V1  //  deprecated
 
-    B := alpha*op( A )*B,   or   B := alpha*B*op( A )
+               hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
+                                            hipblasSideMode_t  side,
+                                            hipblasFillMode_t  uplo,
+                                            hipblasOperation_t transA,
+                                            hipblasDiagType_t  diag,
+                                            int                m,
+                                            int                n,
+                                            const float*       alpha,
+                                            const float*       AP,
+                                            int                lda,
+                                            float*             BP,
+                                            int                ldb);
 
-    where  alpha  is a scalar,  B  is an m by n matrix,  A  is a unit, or
-    non-unit,  upper or lower triangular matrix  and  op( A )  is one  of
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
 
-        op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
+               hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
+                                                      hipblasSideMode_t  side,
+                                                      hipblasFillMode_t  uplo,
+                                                      hipblasOperation_t transA,
+                                                      hipblasDiagType_t  diag,
+                                                      int                m,
+                                                      int                n,
+                                                      const float*       alpha,
+                                                      const float*       AP,
+                                                      int                lda,
+                                                      const float*       BP,
+                                                      int                ldb,
+                                                      float*             CP,
+                                                      int                ldc);
 
+        #endif
 
-    - Supported precisions in rocBLAS : s,d,c,z
+        #ifndef HIPBLAS_V1  //  deprecated
+
+               hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
+                                            hipblasSideMode_t  side,
+                                            hipblasFillMode_t  uplo,
+                                            hipblasOperation_t transA,
+                                            hipblasDiagType_t  diag,
+                                            int                m,
+                                            int                n,
+                                            const double*      alpha,
+                                            const double*      AP,
+                                            int                lda,
+                                            double*            BP,
+                                            int                ldb);
+
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+               hipblasStatus_t hipblasDtrmmOutofplace(hipblasHandle_t    handle,
+                                                      hipblasSideMode_t  side,
+                                                      hipblasFillMode_t  uplo,
+                                                      hipblasOperation_t transA,
+                                                      hipblasDiagType_t  diag,
+                                                      int                m,
+                                                      int                n,
+                                                      const double*      alpha,
+                                                      const double*      AP,
+                                                      int                lda,
+                                                      const double*      BP,
+                                                      int                ldb,
+                                                      double*            CP,
+                                                      int                ldc);
+
+        #endif
+
+        #ifndef HIPBLAS_V1  //  deprecated
+
+               hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
+                                            hipblasSideMode_t     side,
+                                            hipblasFillMode_t     uplo,
+                                            hipblasOperation_t    transA,
+                                            hipblasDiagType_t     diag,
+                                            int                   m,
+                                            int                   n,
+                                            const hipblasComplex* alpha,
+                                            const hipblasComplex* AP,
+                                            int                   lda,
+                                            hipblasComplex*       BP,
+                                            int                   ldb);
+
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+               hipblasStatus_t hipblasCtrmmOutofplace(hipblasHandle_t       handle,
+                                                      hipblasSideMode_t     side,
+                                                      hipblasFillMode_t     uplo,
+                                                      hipblasOperation_t    transA,
+                                                      hipblasDiagType_t     diag,
+                                                      int                   m,
+                                                      int                   n,
+                                                      const hipblasComplex* alpha,
+                                                      const hipblasComplex* AP,
+                                                      int                   lda,
+                                                      const hipblasComplex* BP,
+                                                      int                   ldb,
+                                                      hipblasComplex*       CP,
+                                                      int                   ldc);
+
+        #endif
+
+        #ifndef HIPBLAS_V1  //  deprecated
+
+               hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
+                                            hipblasSideMode_t           side,
+                                            hipblasFillMode_t           uplo,
+                                            hipblasOperation_t          transA,
+                                            hipblasDiagType_t           diag,
+                                            int                         m,
+                                            int                         n,
+                                            const hipblasDoubleComplex* alpha,
+                                            const hipblasDoubleComplex* AP,
+                                            int                         lda,
+                                            hipblasDoubleComplex*       BP,
+                                            int                         ldb);
+
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+               hipblasStatus_t hipblasZtrmmOutofplace(hipblasHandle_t             handle,
+                                                      hipblasSideMode_t           side,
+                                                      hipblasFillMode_t           uplo,
+                                                      hipblasOperation_t          transA,
+                                                      hipblasDiagType_t           diag,
+                                                      int                         m,
+                                                      int                         n,
+                                                      const hipblasDoubleComplex* alpha,
+                                                      const hipblasDoubleComplex* AP,
+                                                      int                         lda,
+                                                      const hipblasDoubleComplex* BP,
+                                                      int                         ldb,
+                                                      hipblasDoubleComplex*       CP,
+                                                      int                         ldc);
+
+        #endif
+
+    The deprecated Legacy BLAS in-place trmm performs one of the matrix-matrix operations:
+
+        B := alpha*op( A )*B,   or
+        B := alpha*B*op( A ),
+
+    The new trmm performs one of the matrix-matrix operations:
+
+        C := alpha*op( A )*B,   or
+        C := alpha*B*op( A ),
+
+    The in-place functionality is still available in the new trmmm by setting pointer C equal to pointer B,
+    and ldc equal to ldb.
+
+        alpha  is a scalar,  B  is an m by n matrix, C  is an m by n matrix,  A  is a unit, or
+        non-unit,  upper or lower triangular matrix  and  op( A )  is one  of
+
+        op( A ) = A     or
+        op( A ) = A^T   or
+        op( A ) = A^H.
+
+        When uplo == rocblas_fill_upper the  leading  k by k
+        upper triangular part of the array  A must contain the upper
+        triangular matrix and the strictly lower triangular part of
+        A is not referenced. Here k is m when side == rocblas_side_left
+        and is n when side == rocblas_side_right.
+
+        When uplo == rocblas_fill_lower the  leading  k by k
+        lower triangular part of the array  A must contain the lower
+        triangular matrix  and the strictly upper triangular part of
+        A is not referenced. Here k is m when  side == rocblas_side_left
+        and is n when side == rocblas_side_right.
+
+        Note that when  diag == rocblas_diagonal_unit  the diagonal elements of
+        A  are not referenced either,  but are assumed to be  unity.
+
+    - Supported precisions in hipBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : s,d,c,z
 
     @param[in]
@@ -14669,6 +14815,9 @@ cublasXtrmm API.")
 
     ********************************************************************/
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasStrmm with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasStrmm with A, B, and C arguments. The new hipblasStrmm has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasStrmm")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                                             hipblasSideMode_t  side,
                                             hipblasFillMode_t  uplo,
@@ -14682,6 +14831,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                                             float*             BP,
                                             int                ldb);
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasDtrmm with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasDtrmm with A, B, and C arguments. The new hipblasDtrmm has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasDtrmm")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
                                             hipblasSideMode_t  side,
                                             hipblasFillMode_t  uplo,
@@ -14695,6 +14847,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
                                             double*            BP,
                                             int                ldb);
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasCtrmm with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasCtrmm with A, B, and C arguments. The new hipblasCtrmm has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasCtrmm")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
                                             hipblasSideMode_t     side,
                                             hipblasFillMode_t     uplo,
@@ -14708,6 +14863,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
                                             hipblasComplex*       BP,
                                             int                   ldb);
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasZtrmm with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasZtrmm with A, B, and C arguments. The new hipblasZtrmm has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasZtrmm")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
                                             hipblasSideMode_t           side,
                                             hipblasFillMode_t           uplo,
@@ -14722,21 +14880,263 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
                                             int                         ldb);
 //! @}
 
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasStrmmOutofplace is deprecated, and it will be replaced by hipblasStrmm. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
+                                                      hipblasSideMode_t  side,
+                                                      hipblasFillMode_t  uplo,
+                                                      hipblasOperation_t transA,
+                                                      hipblasDiagType_t  diag,
+                                                      int                m,
+                                                      int                n,
+                                                      const float*       alpha,
+                                                      const float*       AP,
+                                                      int                lda,
+                                                      const float*       BP,
+                                                      int                ldb,
+                                                      float*             CP,
+                                                      int                ldc);
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasDtrmmOutofplace is deprecated, and it will be replaced by hipblasDtrmm. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmOutofplace(hipblasHandle_t    handle,
+                                                      hipblasSideMode_t  side,
+                                                      hipblasFillMode_t  uplo,
+                                                      hipblasOperation_t transA,
+                                                      hipblasDiagType_t  diag,
+                                                      int                m,
+                                                      int                n,
+                                                      const double*      alpha,
+                                                      const double*      AP,
+                                                      int                lda,
+                                                      const double*      BP,
+                                                      int                ldb,
+                                                      double*            CP,
+                                                      int                ldc);
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasCtrmmOutofplace is deprecated, and it will be replaced by hipblasCtrmm. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmOutofplace(hipblasHandle_t       handle,
+                                                      hipblasSideMode_t     side,
+                                                      hipblasFillMode_t     uplo,
+                                                      hipblasOperation_t    transA,
+                                                      hipblasDiagType_t     diag,
+                                                      int                   m,
+                                                      int                   n,
+                                                      const hipblasComplex* alpha,
+                                                      const hipblasComplex* AP,
+                                                      int                   lda,
+                                                      const hipblasComplex* BP,
+                                                      int                   ldb,
+                                                      hipblasComplex*       CP,
+                                                      int                   ldc);
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasZtrmmOutofplace is deprecated, and it will be replaced by hipblasZtrmm. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmOutofplace(hipblasHandle_t             handle,
+                                                      hipblasSideMode_t           side,
+                                                      hipblasFillMode_t           uplo,
+                                                      hipblasOperation_t          transA,
+                                                      hipblasDiagType_t           diag,
+                                                      int                         m,
+                                                      int                         n,
+                                                      const hipblasDoubleComplex* alpha,
+                                                      const hipblasDoubleComplex* AP,
+                                                      int                         lda,
+                                                      const hipblasDoubleComplex* BP,
+                                                      int                         ldb,
+                                                      hipblasDoubleComplex*       CP,
+                                                      int                         ldc);
+
 /*! @{
     \brief BLAS Level 3 API
 
     \details
+    The hipBLAS trmm_batched API is from Legacy BLAS and it supports only in-place functionality.
+    It is deprecated and it will be replaced with an API that supports both in-place and
+    out-of-place functionality. The new API is available in hipBLAS versions 1.x.x and later.
+    To get the new API compile with the directive -DHIPBLAS_V1.
 
-    trmmBatched performs one of the batched matrix-matrix operations
+        #ifndef HIPBLAS_V1  //  deprecated
 
-    B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
+            hipblasStatus_t hipblasStrmmBatched(hipblasHandle_t    handle,
+                                                hipblasSideMode_t  side,
+                                                hipblasFillMode_t  uplo,
+                                                hipblasOperation_t transA,
+                                                hipblasDiagType_t  diag,
+                                                int                m,
+                                                int                n,
+                                                const float*       alpha,
+                                                const float* const AP[],
+                                                int                lda,
+                                                float* const       BP[],
+                                                int                ldb,
+                                                int                batchCount);
 
-    where  alpha  is a scalar,  B_i  is an m by n matrix,  A_i  is a unit, or
-    non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+            hipblasStatus_t hipblasStrmmBatchedOutofplace(
+                                                hipblasHandle_t    handle,
+                                                hipblasSideMode_t  side,
+                                                hipblasFillMode_t  uplo,
+                                                hipblasOperation_t transA,
+                                                hipblasDiagType_t  diag,
+                                                int                m,
+                                                int                n,
+                                                const float*       alpha,
+                                                const float* const AP[],
+                                                int                lda,
+                                                const float* const BP[],
+                                                int                ldb,
+                                                float* const       CP[],
+                                                int                ldc,
+                                                int                batchCount);
+
+        #endif
+
+        #ifndef HIPBLAS_V1  //  deprecated
+
+            hipblasStatus_t hipblasDtrmmBatched(hipblasHandle_t     handle,
+                                                hipblasSideMode_t   side,
+                                                hipblasFillMode_t   uplo,
+                                                hipblasOperation_t  transA,
+                                                hipblasDiagType_t   diag,
+                                                int                 m,
+                                                int                 n,
+                                                const double*       alpha,
+                                                const double* const AP[],
+                                                int                 lda,
+                                                double* const       BP[],
+                                                int                 ldb,
+                                                int                 batchCount);
+
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+            hipblasStatus_t hipblasDtrmmBatchedOutofplace(
+                                                hipblasHandle_t     handle,
+                                                hipblasSideMode_t   side,
+                                                hipblasFillMode_t   uplo,
+                                                hipblasOperation_t  transA,
+                                                hipblasDiagType_t   diag,
+                                                int                 m,
+                                                int                 n,
+                                                const double*       alpha,
+                                                const double* const AP[],
+                                                int                 lda,
+                                                const double* const BP[],
+                                                int                 ldb,
+                                                double* const       CP[],
+                                                int                 ldc,
+                                                int                 batchCount);
+
+        #endif
+
+        #ifndef HIPBLAS_V1  //  deprecated
+
+            hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             handle,
+                                                hipblasSideMode_t           side,
+                                                hipblasFillMode_t           uplo,
+                                                hipblasOperation_t          transA,
+                                                hipblasDiagType_t           diag,
+                                                int                         m,
+                                                int                         n,
+                                                const hipblasComplex*       alpha,
+                                                const hipblasComplex* const AP[],
+                                                int                         lda,
+                                                hipblasComplex* const       BP[],
+                                                int                         ldb,
+                                                int                         batchCount);
+
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+            hipblasStatus_t hipblasCtrmmBatchedOutofplace(
+                                                hipblasHandle_t             handle,
+                                                hipblasSideMode_t           side,
+                                                hipblasFillMode_t           uplo,
+                                                hipblasOperation_t          transA,
+                                                hipblasDiagType_t           diag,
+                                                int                         m,
+                                                int                         n,
+                                                const hipblasComplex*       alpha,
+                                                const hipblasComplex* const AP[],
+                                                int                         lda,
+                                                const hipblasComplex* const BP[],
+                                                int                         ldb,
+                                                hipblasComplex* const       CP[],
+                                                int                         ldc,
+                                                int batchCount);
+
+        #endif
+
+        #ifndef HIPBLAS_V1  //  deprecated
+
+            hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t                   handle,
+                                                hipblasSideMode_t                 side,
+                                                hipblasFillMode_t                 uplo,
+                                                hipblasOperation_t                transA,
+                                                hipblasDiagType_t                 diag,
+                                                int                               m,
+                                                int                               n,
+                                                const hipblasDoubleComplex*       alpha,
+                                                const hipblasDoubleComplex* const AP[],
+                                                int                               lda,
+                                                hipblasDoubleComplex* const       BP[],
+                                                int                               ldb,
+                                                int                               batchCount);
+
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+            hipblasStatus_t hipblasZtrmmBatchedOutofplace(
+                                                hipblasHandle_t                   handle,
+                                                hipblasSideMode_t                 side,
+                                                hipblasFillMode_t                 uplo,
+                                                hipblasOperation_t                transA,
+                                                hipblasDiagType_t                 diag,
+                                                int                               m,
+                                                int                               n,
+                                                const hipblasDoubleComplex*       alpha,
+                                                const hipblasDoubleComplex* const AP[],
+                                                int                               lda,
+                                                const hipblasDoubleComplex* const BP[],
+                                                int                               ldb,
+                                                hipblasDoubleComplex* const       CP[],
+                                                int                               ldc,
+                                                int                               batchCount);
+
+        #endif
+
+    The deprecated Legacy BLAS in-place trmm_batched performs one of the batched matrix-matrix operations:
+
+        B_i := alpha*op( A_i )*B_i,   or
+        B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
+
+    The new trmm_batched performs one of the matrix-matrix operations:
+
+        C_i := alpha*op( A_i )*B_i,   or
+        C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
+
+    The in-place functionality is still available in the new trmmm_batched by setting pointer C equal to pointer B
+    and ldc equal to ldb.
+
+        alpha  is a scalar,  B_i  is an m by n matrix, C_i  is an m by n matrix,  A_i  is a unit, or
+        non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
 
         op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
 
-    - Supported precisions in rocBLAS : s,d,c,z
+
+    - Supported precisions in hipBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
 
     @param[in]
@@ -14822,6 +15222,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
                 number of instances i in the batch.
     ********************************************************************/
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasStrmmBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasStrmmBatched with A, B, and C arguments. The new hipblasStrmmBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasStrmmBatched")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmBatched(hipblasHandle_t    handle,
                                                    hipblasSideMode_t  side,
                                                    hipblasFillMode_t  uplo,
@@ -14836,6 +15239,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmBatched(hipblasHandle_t    handle,
                                                    int                ldb,
                                                    int                batchCount);
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasDtrmmBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasDtrmmBatched with A, B, and C arguments. The new hipblasDtrmmBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasDtrmmBatched")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmBatched(hipblasHandle_t     handle,
                                                    hipblasSideMode_t   side,
                                                    hipblasFillMode_t   uplo,
@@ -14850,6 +15256,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmBatched(hipblasHandle_t     handle,
                                                    int                 ldb,
                                                    int                 batchCount);
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasCtrmmBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasCtrmmBatched with A, B, and C arguments. The new hipblasCtrmmBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasCtrmmBatched")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             handle,
                                                    hipblasSideMode_t           side,
                                                    hipblasFillMode_t           uplo,
@@ -14864,6 +15273,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             h
                                                    int                         ldb,
                                                    int                         batchCount);
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasZtrmmBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasZtrmmBatched with A, B, and C arguments. The new hipblasZtrmmBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasZtrmmBatched")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t                   handle,
                                                    hipblasSideMode_t                 side,
                                                    hipblasFillMode_t                 uplo,
@@ -14879,21 +15291,289 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
                                                    int                               batchCount);
 //! @}
 
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasStrmmBatchedOutofplace is deprecated, and it will be replaced by hipblasStrmmBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmBatchedOutofplace(hipblasHandle_t    handle,
+                                                             hipblasSideMode_t  side,
+                                                             hipblasFillMode_t  uplo,
+                                                             hipblasOperation_t transA,
+                                                             hipblasDiagType_t  diag,
+                                                             int                m,
+                                                             int                n,
+                                                             const float*       alpha,
+                                                             const float* const AP[],
+                                                             int                lda,
+                                                             const float* const BP[],
+                                                             int                ldb,
+                                                             float* const       CP[],
+                                                             int                ldc,
+                                                             int                batchCount);
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasDtrmmBatchedOutofplace is deprecated, and it will be replaced by hipblasDtrmmBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmBatchedOutofplace(hipblasHandle_t     handle,
+                                                             hipblasSideMode_t   side,
+                                                             hipblasFillMode_t   uplo,
+                                                             hipblasOperation_t  transA,
+                                                             hipblasDiagType_t   diag,
+                                                             int                 m,
+                                                             int                 n,
+                                                             const double*       alpha,
+                                                             const double* const AP[],
+                                                             int                 lda,
+                                                             const double* const BP[],
+                                                             int                 ldb,
+                                                             double* const       CP[],
+                                                             int                 ldc,
+                                                             int                 batchCount);
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasCtrmmBatchedOutofplace is deprecated, and it will be replaced by hipblasCtrmmBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatchedOutofplace(hipblasHandle_t             handle,
+                                                             hipblasSideMode_t           side,
+                                                             hipblasFillMode_t           uplo,
+                                                             hipblasOperation_t          transA,
+                                                             hipblasDiagType_t           diag,
+                                                             int                         m,
+                                                             int                         n,
+                                                             const hipblasComplex*       alpha,
+                                                             const hipblasComplex* const AP[],
+                                                             int                         lda,
+                                                             const hipblasComplex* const BP[],
+                                                             int                         ldb,
+                                                             hipblasComplex* const       CP[],
+                                                             int                         ldc,
+                                                             int batchCount);
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasZtrmmBatchedOutofplace is deprecated, and it will be replaced by hipblasZtrmmBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatchedOutofplace(hipblasHandle_t             handle,
+                                                             hipblasSideMode_t           side,
+                                                             hipblasFillMode_t           uplo,
+                                                             hipblasOperation_t          transA,
+                                                             hipblasDiagType_t           diag,
+                                                             int                         m,
+                                                             int                         n,
+                                                             const hipblasDoubleComplex* alpha,
+                                                             const hipblasDoubleComplex* const AP[],
+                                                             int                               lda,
+                                                             const hipblasDoubleComplex* const BP[],
+                                                             int                               ldb,
+                                                             hipblasDoubleComplex* const       CP[],
+                                                             int                               ldc,
+                                                             int batchCount);
+
 /*! @{
     \brief BLAS Level 3 API
 
     \details
+    The hipBLAS trmm_strided_batched API is from Legacy BLAS and it supports only in-place functionality.
+    It is deprecated and it will be replaced with an API that supports both in-place and
+    out-of-place functionality. The new API is available in hipBLAS versions 1.x.x and later.
+    To get the new API compile with the directive -DHIPBLAS_V1.
 
-    trmmStridedBatched performs one of the strided_batched matrix-matrix operations
+        #ifndef HIPBLAS_V1  //  deprecated
+               hipblasStatus_t hipblasStrmmStridedBatched(
+                                   hipblasHandle_t    handle,
+                                   hipblasSideMode_t  side,
+                                   hipblasFillMode_t  uplo,
+                                   hipblasOperation_t transA,
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   int                n,
+                                   const float*       alpha,
+                                   const float*       AP,
+                                   int                lda,
+                                   hipblasStride      strideA,
+                                   float*             BP,
+                                   int                ldb,
+                                   hipblasStride      strideB,
+                                   int                batchCount);
 
-    B_i := alpha*op( A_i )*B_i,   or   B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
 
-    where  alpha  is a scalar,  B_i  is an m by n matrix,  A_i  is a unit, or
-    non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
+               hipblasStatus_t hipblasStrmmStridedBatchedOutofplace(
+                                   hipblasHandle_t    handle,
+                                   hipblasSideMode_t  side,
+                                   hipblasFillMode_t  uplo,
+                                   hipblasOperation_t transA,
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   int                n,
+                                   const float*       alpha,
+                                   const float*       AP,
+                                   int                lda,
+                                   hipblasStride      strideA,
+                                   const float*       BP,
+                                   int                ldb,
+                                   hipblasStride      strideB,
+                                   float*             CP,
+                                   int                ldc,
+                                   hipblasStride      strideC,
+                                   int                batchCount);
 
-        op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
+        #endif
 
-    - Supported precisions in rocBLAS : s,d,c,z
+        #ifndef HIPBLAS_V1  //  deprecated
+               hipblasStatus_t hipblasDtrmmStridedBatched(
+                                   hipblasHandle_t    handle,
+                                   hipblasSideMode_t  side,
+                                   hipblasFillMode_t  uplo,
+                                   hipblasOperation_t transA,
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   int                n,
+                                   const double*      alpha,
+                                   const double*      AP,
+                                   int                lda,
+                                   hipblasStride      strideA,
+                                   double*            BP,
+                                   int                ldb,
+                                   hipblasStride      strideB,
+                                   int                batchCount);
+
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+               hipblasStatus_t hipblasDtrmmStridedBatchedOutofplace(
+                                   hipblasHandle_t    handle,
+                                   hipblasSideMode_t  side,
+                                   hipblasFillMode_t  uplo,
+                                   hipblasOperation_t transA,
+                                   hipblasDiagType_t  diag,
+                                   int                m,
+                                   int                n,
+                                   const double*      alpha,
+                                   const double*      AP,
+                                   int                lda,
+                                   hipblasStride      strideA,
+                                   const double*      BP,
+                                   int                ldb,
+                                   hipblasStride      strideB,
+                                   double*            CP,
+                                   int                ldc,
+                                   hipblasStride      strideC,
+                                   int                batchCount);
+
+        #endif
+
+        #ifndef HIPBLAS_V1  //  deprecated
+
+               hipblasStatus_t hipblasCtrmmStridedBatched(
+                                   hipblasHandle_t       handle,
+                                   hipblasSideMode_t     side,
+                                   hipblasFillMode_t     uplo,
+                                   hipblasOperation_t    transA,
+                                   hipblasDiagType_t     diag,
+                                   int                   m,
+                                   int                   n,
+                                   const hipblasComplex* alpha,
+                                   const hipblasComplex* AP,
+                                   int                   lda,
+                                   hipblasStride         strideA,
+                                   hipblasComplex*       BP,
+                                   int                   ldb,
+                                   hipblasStride         strideB,
+                                   int                   batchCount);
+
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+               hipblasStatus_t hipblasCtrmmStridedBatchedOutofplace(
+                                   hipblasHandle_t       handle,
+                                   hipblasSideMode_t     side,
+                                   hipblasFillMode_t     uplo,
+                                   hipblasOperation_t    transA,
+                                   hipblasDiagType_t     diag,
+                                   int                   m,
+                                   int                   n,
+                                   const hipblasComplex* alpha,
+                                   const hipblasComplex* AP,
+                                   int                   lda,
+                                   hipblasStride         strideA,
+                                   const hipblasComplex* BP,
+                                   int                   ldb,
+                                   hipblasStride         strideB,
+                                   hipblasComplex*       CP,
+                                   int                   ldc,
+                                   hipblasStride         strideC,
+                                   int batchCount);
+
+        #endif
+
+        #ifndef HIPBLAS_V1  //  deprecated
+
+            hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t             handle,
+                                                       hipblasSideMode_t           side,
+                                                       hipblasFillMode_t           uplo,
+                                                       hipblasOperation_t          transA,
+                                                       hipblasDiagType_t           diag,
+                                                       int                         m,
+                                                       int                         n,
+                                                       const hipblasDoubleComplex* alpha,
+                                                       const hipblasDoubleComplex* AP,
+                                                       int                         lda,
+                                                       hipblasStride               strideA,
+                                                       hipblasDoubleComplex*       BP,
+                                                       int                         ldb,
+                                                       hipblasStride               strideB,
+                                                       int                         batchCount);
+
+        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+
+            hipblasStatus_t hipblasZtrmmStridedBatchedOutofplace(
+                                                        hipblasHandle_t             handle,
+                                                        hipblasSideMode_t           side,
+                                                        hipblasFillMode_t           uplo,
+                                                        hipblasOperation_t          transA,
+                                                        hipblasDiagType_t           diag,
+                                                        int                         m,
+                                                        int                         n,
+                                                        const hipblasDoubleComplex* alpha,
+                                                        const hipblasDoubleComplex* AP,
+                                                        int                         lda,
+                                                        hipblasStride               strideA,
+                                                        const hipblasDoubleComplex* BP,
+                                                        int                         ldb,
+                                                        hipblasStride               strideB,
+                                                        hipblasDoubleComplex*       BC,
+                                                        int                         ldc,
+                                                        hipblasStride               strideC,
+                                                        int                         batchCount);
+
+        #endif
+
+    The deprecated Legacy BLAS in-place trmm_strided_batched performs one of the strided_batched matrix-matrix operations:
+
+        B_i := alpha*op( A_i )*B_i,   or
+        B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
+
+    The new trmm_batched performs one of the matrix-matrix operations:
+
+        C_i := alpha*op( A_i )*B_i,   or
+        C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
+
+    The in-place functionality is still available in the new trmmm_batched by setting pointer C equal to pointer B,
+    setting ldc equal to ldb, and setting stride_C equal to stride_B.
+
+        alpha  is a scalar,  B_i  is an m by n matrix, C_i  is an m by n matrix,  A_i  is a unit, or
+        non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
+
+        op( A_i ) = A_i   or
+        op( A_i ) = A_i^T   or
+        op( A_i ) = A_i^H.
+
+    - Supported precisions in hipBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
 
     @param[in]
@@ -14986,6 +15666,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
                 number of instances i in the batch.
     ********************************************************************/
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasStrmmStridedBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasStrmmStridedBatched with A, B, and C arguments. The new hipblasStrmmStridedBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasStrmmStridedBatched")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasSideMode_t  side,
                                                           hipblasFillMode_t  uplo,
@@ -15002,6 +15685,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmStridedBatched(hipblasHandle_t    han
                                                           hipblasStride      strideB,
                                                           int                batchCount);
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasDtrmmStridedBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasDtrmmStridedBatched with A, B, and C arguments. The new hipblasDtrmmStridedBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasDtrmmStridedBatched")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasSideMode_t  side,
                                                           hipblasFillMode_t  uplo,
@@ -15018,6 +15704,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmStridedBatched(hipblasHandle_t    han
                                                           hipblasStride      strideB,
                                                           int                batchCount);
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasCtrmmStridedBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasCtrmmStridedBatched with A, B, and C arguments. The new hipblasCtrmmStridedBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasCtrmmStridedBatched")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       handle,
                                                           hipblasSideMode_t     side,
                                                           hipblasFillMode_t     uplo,
@@ -15034,6 +15723,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       
                                                           hipblasStride         strideB,
                                                           int                   batchCount);
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasZtrmmStridedBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasZtrmmStridedBatched with A, B, and C arguments. The new hipblasZtrmmStridedBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasZtrmmStridedBatched")
+// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t             handle,
                                                           hipblasSideMode_t           side,
                                                           hipblasFillMode_t           uplo,
@@ -15050,6 +15742,125 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t       
                                                           hipblasStride               strideB,
                                                           int                         batchCount);
 //! @}
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasStrmmStridedBatchedOutofplace is deprecated, and it will be replaced by hipblasStrmmStridedBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmStridedBatchedOutofplace(hipblasHandle_t    handle,
+                                                                    hipblasSideMode_t  side,
+                                                                    hipblasFillMode_t  uplo,
+                                                                    hipblasOperation_t transA,
+                                                                    hipblasDiagType_t  diag,
+                                                                    int                m,
+                                                                    int                n,
+                                                                    const float*       alpha,
+                                                                    const float*       AP,
+                                                                    int                lda,
+                                                                    hipblasStride      strideA,
+                                                                    const float*       BP,
+                                                                    int                ldb,
+                                                                    hipblasStride      strideB,
+                                                                    float*             CP,
+                                                                    int                ldc,
+                                                                    hipblasStride      strideC,
+                                                                    int                batchCount);
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasDtrmmStridedBatchedOutofplace is deprecated, and it will be replaced by hipblasDtrmmStridedBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmStridedBatchedOutofplace(hipblasHandle_t    handle,
+                                                                    hipblasSideMode_t  side,
+                                                                    hipblasFillMode_t  uplo,
+                                                                    hipblasOperation_t transA,
+                                                                    hipblasDiagType_t  diag,
+                                                                    int                m,
+                                                                    int                n,
+                                                                    const double*      alpha,
+                                                                    const double*      AP,
+                                                                    int                lda,
+                                                                    hipblasStride      strideA,
+                                                                    const double*      BP,
+                                                                    int                ldb,
+                                                                    hipblasStride      strideB,
+                                                                    double*            CP,
+                                                                    int                ldc,
+                                                                    hipblasStride      strideC,
+                                                                    int                batchCount);
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasCtrmmStridedBatchedOutofplace is deprecated, and it will be replaced by hipblasCtrmmStridedBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatchedOutofplace(hipblasHandle_t       handle,
+                                                                    hipblasSideMode_t     side,
+                                                                    hipblasFillMode_t     uplo,
+                                                                    hipblasOperation_t    transA,
+                                                                    hipblasDiagType_t     diag,
+                                                                    int                   m,
+                                                                    int                   n,
+                                                                    const hipblasComplex* alpha,
+                                                                    const hipblasComplex* AP,
+                                                                    int                   lda,
+                                                                    hipblasStride         strideA,
+                                                                    const hipblasComplex* BP,
+                                                                    int                   ldb,
+                                                                    hipblasStride         strideB,
+                                                                    hipblasComplex*       CP,
+                                                                    int                   ldc,
+                                                                    hipblasStride         strideC,
+                                                                    int batchCount);
+
+#ifndef HIPBLAS_V1
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasZtrmmStridedBatchedOutofplace is deprecated, and it will be replaced by hipblasZtrmmStridedBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
+// clang-format on
+#endif
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasZtrmmStridedBatchedOutofplace(hipblasHandle_t             handle,
+                                         hipblasSideMode_t           side,
+                                         hipblasFillMode_t           uplo,
+                                         hipblasOperation_t          transA,
+                                         hipblasDiagType_t           diag,
+                                         int                         m,
+                                         int                         n,
+                                         const hipblasDoubleComplex* alpha,
+                                         const hipblasDoubleComplex* AP,
+                                         int                         lda,
+                                         hipblasStride               strideA,
+                                         const hipblasDoubleComplex* BP,
+                                         int                         ldb,
+                                         hipblasStride               strideB,
+                                         hipblasDoubleComplex*       BC,
+                                         int                         ldc,
+                                         hipblasStride               strideC,
+                                         int                         batchCount);
+
+#ifdef HIPBLAS_V1
+#ifndef HIPBLAS_TRMM_V1
+#define HIPBLAS_TRMM_V1
+
+#define hipblasStrmm hipblasStrmmOutofplace
+#define hipblasDtrmm hipblasDtrmmOutofplace
+#define hipblasCtrmm hipblasCtrmmOutofplace
+#define hipblasZtrmm hipblasZtrmmOutofplace
+
+#define hipblasStrmmBatched hipblasStrmmBatchedOutofplace
+#define hipblasDtrmmBatched hipblasDtrmmBatchedOutofplace
+#define hipblasCtrmmBatched hipblasCtrmmBatchedOutofplace
+#define hipblasZtrmmBatched hipblasZtrmmBatchedOutofplace
+
+#define hipblasStrmmStridedBatched hipblasStrmmStridedBatchedOutofplace
+#define hipblasDtrmmStridedBatched hipblasDtrmmStridedBatchedOutofplace
+#define hipblasCtrmmStridedBatched hipblasCtrmmStridedBatchedOutofplace
+#define hipblasZtrmmStridedBatched hipblasZtrmmStridedBatchedOutofplace
+
+#endif /* HIPBLAS_TRMM_V1 */
+#endif /* HIPBLAS_V1 */
 
 /*! @{
     \brief BLAS Level 3 API
@@ -15150,7 +15961,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsm(hipblasHandle_t    handle,
                                             int                m,
                                             int                n,
                                             const float*       alpha,
-                                            float*             AP,
+                                            const float*       AP,
                                             int                lda,
                                             float*             BP,
                                             int                ldb);
@@ -15163,7 +15974,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsm(hipblasHandle_t    handle,
                                             int                m,
                                             int                n,
                                             const double*      alpha,
-                                            double*            AP,
+                                            const double*      AP,
                                             int                lda,
                                             double*            BP,
                                             int                ldb);
@@ -15176,7 +15987,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsm(hipblasHandle_t       handle,
                                             int                   m,
                                             int                   n,
                                             const hipblasComplex* alpha,
-                                            hipblasComplex*       AP,
+                                            const hipblasComplex* AP,
                                             int                   lda,
                                             hipblasComplex*       BP,
                                             int                   ldb);
@@ -15189,7 +16000,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsm(hipblasHandle_t             handle,
                                             int                         m,
                                             int                         n,
                                             const hipblasDoubleComplex* alpha,
-                                            hipblasDoubleComplex*       AP,
+                                            const hipblasDoubleComplex* AP,
                                             int                         lda,
                                             hipblasDoubleComplex*       BP,
                                             int                         ldb);
@@ -15281,53 +16092,53 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmBatched(hipblasHandle_t    handle,
                                                    int                m,
                                                    int                n,
                                                    const float*       alpha,
-                                                   float* const       AP[],
+                                                   const float* const AP[],
                                                    int                lda,
-                                                   float*             BP[],
+                                                   float* const       BP[],
                                                    int                ldb,
                                                    int                batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t    handle,
-                                                   hipblasSideMode_t  side,
-                                                   hipblasFillMode_t  uplo,
-                                                   hipblasOperation_t transA,
-                                                   hipblasDiagType_t  diag,
-                                                   int                m,
-                                                   int                n,
-                                                   const double*      alpha,
-                                                   double* const      AP[],
-                                                   int                lda,
-                                                   double*            BP[],
-                                                   int                ldb,
-                                                   int                batchCount);
+HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmBatched(hipblasHandle_t     handle,
+                                                   hipblasSideMode_t   side,
+                                                   hipblasFillMode_t   uplo,
+                                                   hipblasOperation_t  transA,
+                                                   hipblasDiagType_t   diag,
+                                                   int                 m,
+                                                   int                 n,
+                                                   const double*       alpha,
+                                                   const double* const AP[],
+                                                   int                 lda,
+                                                   double* const       BP[],
+                                                   int                 ldb,
+                                                   int                 batchCount);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t       handle,
-                                                   hipblasSideMode_t     side,
-                                                   hipblasFillMode_t     uplo,
-                                                   hipblasOperation_t    transA,
-                                                   hipblasDiagType_t     diag,
-                                                   int                   m,
-                                                   int                   n,
-                                                   const hipblasComplex* alpha,
-                                                   hipblasComplex* const AP[],
-                                                   int                   lda,
-                                                   hipblasComplex*       BP[],
-                                                   int                   ldb,
-                                                   int                   batchCount);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t             handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmBatched(hipblasHandle_t             handle,
                                                    hipblasSideMode_t           side,
                                                    hipblasFillMode_t           uplo,
                                                    hipblasOperation_t          transA,
                                                    hipblasDiagType_t           diag,
                                                    int                         m,
                                                    int                         n,
-                                                   const hipblasDoubleComplex* alpha,
-                                                   hipblasDoubleComplex* const AP[],
+                                                   const hipblasComplex*       alpha,
+                                                   const hipblasComplex* const AP[],
                                                    int                         lda,
-                                                   hipblasDoubleComplex*       BP[],
+                                                   hipblasComplex* const       BP[],
                                                    int                         ldb,
                                                    int                         batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmBatched(hipblasHandle_t                   handle,
+                                                   hipblasSideMode_t                 side,
+                                                   hipblasFillMode_t                 uplo,
+                                                   hipblasOperation_t                transA,
+                                                   hipblasDiagType_t                 diag,
+                                                   int                               m,
+                                                   int                               n,
+                                                   const hipblasDoubleComplex*       alpha,
+                                                   const hipblasDoubleComplex* const AP[],
+                                                   int                               lda,
+                                                   hipblasDoubleComplex* const       BP[],
+                                                   int                               ldb,
+                                                   int                               batchCount);
 //! @}
 
 /*! @{
@@ -15423,7 +16234,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    han
                                                           int                m,
                                                           int                n,
                                                           const float*       alpha,
-                                                          float*             AP,
+                                                          const float*       AP,
                                                           int                lda,
                                                           hipblasStride      strideA,
                                                           float*             BP,
@@ -15439,7 +16250,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsmStridedBatched(hipblasHandle_t    han
                                                           int                m,
                                                           int                n,
                                                           const double*      alpha,
-                                                          double*            AP,
+                                                          const double*      AP,
                                                           int                lda,
                                                           hipblasStride      strideA,
                                                           double*            BP,
@@ -15455,7 +16266,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsmStridedBatched(hipblasHandle_t       
                                                           int                   m,
                                                           int                   n,
                                                           const hipblasComplex* alpha,
-                                                          hipblasComplex*       AP,
+                                                          const hipblasComplex* AP,
                                                           int                   lda,
                                                           hipblasStride         strideA,
                                                           hipblasComplex*       BP,
@@ -15471,7 +16282,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsmStridedBatched(hipblasHandle_t       
                                                           int                         m,
                                                           int                         n,
                                                           const hipblasDoubleComplex* alpha,
-                                                          hipblasDoubleComplex*       AP,
+                                                          const hipblasDoubleComplex* AP,
                                                           int                         lda,
                                                           hipblasStride               strideA,
                                                           hipblasDoubleComplex*       BP,
@@ -17484,10 +18295,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
-    Note for int8 users - For rocBLAS backend, please read rocblas_gemm_ex documentation on int8
-    data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
-    format for a given device as documented in rocBLAS.
-
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -17584,10 +18391,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
     The number of pointers to matrices is batchCount.
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
-
-    Note for int8 users - For rocBLAS backend, please read rocblas_gemm_batched_ex documentation on int8
-    data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
-    format for a given device as documented in rocBLAS.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17696,10 +18499,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
     The number of matrices is batchCount.
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
-
-    Note for int8 users - For rocBLAS backend, please read rocblas_gemm_strided_batched_ex documentation on int8
-    data layout requirements. hipBLAS makes the assumption that the data layout is in the preferred
-    format for a given device as documented in rocBLAS.
 
     @param[in]
     handle    [hipblasHandle_t]

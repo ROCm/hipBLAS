@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,17 +51,6 @@ typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipblasData
 // clang-format off
 // vector of vector, each vector is a {M, N, K, lda, ldb, ldc};
 // add/delete as a group
-const vector<vector<int>> int8_matrix_size_range = {
-
-    { 4,  4,  4,  4,  4,  4},
-    { 8,  8,  8,  8,  8,  8},
-    {12, 12, 12, 12, 12, 12},
-    {16, 16, 16, 16, 16, 16},
-    {20, 20, 20, 20, 20, 20},
-    { 8,  4,  4,  8,  8,  8},
-    { 8, 12, 12, 12, 12, 12},
-};
-
 const vector<vector<int>> small_matrix_size_range = {
     { 1,  1,  1,  1,  1,  1},
     { 1,  2,  3,  4,  5,  6},
@@ -375,12 +364,23 @@ TEST_P(gemm_ex_gtest, standard)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else
+        else if(status == HIPBLAS_STATUS_ARCH_MISMATCH)
         {
             // Only available in cuda cc >= 5.0.
             // If we want we can change this to call query_device_property() and
             // call this only if cc < 5.0 on a CUDA device, else fail.
             EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
+        }
+        else
+        {
+#ifndef __HIP_PLATFORM_NVCC__
+            // on HIP we should pass all tests
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+#else
+            // cublas/rocblas do not have identical support
+            // (i.e. cublas doesn't support i8/i32 here)
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+#endif
         }
     }
 }
@@ -488,64 +488,9 @@ TEST_P(gemm_batch_ex_gtest, gemm_strided_batched_ex)
     }
 }
 
-// TODO: Disabling some gemm int8 tests as not supported by rocBLAS for all architectures
-// class parameterized_chunk_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
-// {
-// protected:
-//     parameterized_chunk_gemm_ex() {}
-//     virtual ~parameterized_chunk_gemm_ex() {}
-//     virtual void SetUp() {}
-//     virtual void TearDown() {}
-// };
-
-// TEST_P(parameterized_chunk_gemm_ex, float)
-// {
-//     // GetParam return a tuple. Tee setup routine unpack the tuple
-//     // and initializes arg(Arguments) which will be passed to testing routine
-//     // The Arguments data struture have physical meaning associated.
-//     // while the tuple is non-intuitive.
-
-//     Arguments arg = setup_gemm_ex_arguments(GetParam());
-
-//     hipblasStatus_t status = testing_gemm_ex(arg);
-
-//     // if not success, then the input argument is problematic, so detect the error message
-//     if(status != HIPBLAS_STATUS_SUCCESS)
-//     {
-//         if(arg.M < 0 || arg.N < 0 || arg.K < 0)
-//         {
-//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-//         }
-//         else if(arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
-//         {
-//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-//         }
-//         else if(arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N)
-//         {
-//             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
-//         }
-//         else
-//         {
-//             // Only available in cuda cc >= 5.0.
-//             // If we want we can change this to call query_device_property() and
-//             // call this only if cc < 5.0 on a CUDA device, else fail.
-//             EXPECT_EQ(HIPBLAS_STATUS_ARCH_MISMATCH, status);
-//         }
-//     }
-// }
-
-// class parameterized_half_gemm_ex : public ::TestWithParam<gemm_ex_tuple>
-// {
-// protected:
-//     parameterized_half_gemm_ex() {}
-//     virtual ~parameterized_half_gemm_ex() {}
-//     virtual void SetUp() {}
-//     virtual void TearDown() {}
-// };
-
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
                          gemm_ex_gtest,
-                         Combine(ValuesIn(int8_matrix_size_range),
+                         Combine(ValuesIn(medium_matrix_size_range),
                                  ValuesIn(alpha_beta_range_int8),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_int8),
@@ -703,7 +648,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
                          gemm_batch_ex_gtest,
-                         Combine(ValuesIn(int8_matrix_size_range),
+                         Combine(ValuesIn(medium_matrix_size_range),
                                  ValuesIn(alpha_beta_range_int8),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_int8),

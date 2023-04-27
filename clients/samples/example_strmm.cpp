@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 #include "hipblas.h"
 #include <iostream>
 #include <limits>
+#include <math.h> // isnan
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
@@ -70,81 +71,110 @@
     }
 #endif
 
-#define DIM1 1023
-#define DIM2 1024
-#define DIM3 1025
+#define DIM1 4
+#define DIM2 4
 
+// reference code for trmm (triangle matrix matrix multiplication)
 template <typename T>
-void mat_mat_mult(T   alpha,
-                  T   beta,
-                  int M,
-                  int N,
-                  int K,
-                  T*  A,
-                  int As1,
-                  int As2,
-                  T*  B,
-                  int Bs1,
-                  int Bs2,
-                  T*  C,
-                  int Cs1,
-                  int Cs2)
+void trmm_reference(hipblasSideMode_t  side,
+                    hipblasFillMode_t  uplo,
+                    hipblasOperation_t trans,
+                    hipblasDiagType_t  diag,
+                    int                M,
+                    int                N,
+                    T                  alpha,
+                    const T*           A,
+                    int                lda,
+                    const T*           B,
+                    int                ldb,
+                    T*                 C,
+                    int                ldc)
 {
-    for(int i1 = 0; i1 < M; i1++)
+    int As1 = HIPBLAS_OP_N == trans ? 1 : lda;
+    int As2 = HIPBLAS_OP_N == trans ? lda : 1;
+
+    // this is 3 loop gemm algorithm with non-relevant triangle part masked
+    if(HIPBLAS_SIDE_LEFT == side)
     {
-        for(int i2 = 0; i2 < N; i2++)
+        for(int i1 = 0; i1 < M; i1++)
         {
-            T t = 0.0;
-            for(int i3 = 0; i3 < K; i3++)
+            for(int i2 = 0; i2 < N; i2++)
             {
-                t += A[i1 * As1 + i3 * As2] * B[i3 * Bs1 + i2 * Bs2];
+                T t = 0.0;
+                for(int i3 = 0; i3 < M; i3++)
+                {
+                    if((i1 == i3) && (HIPBLAS_DIAG_UNIT == diag))
+                    {
+                        t += B[i3 + i2 * ldb];
+                    }
+                    else if(((i3 > i1) && (HIPBLAS_FILL_MODE_UPPER == uplo))
+                            || ((i1 > i3) && (HIPBLAS_FILL_MODE_LOWER == uplo))
+                            || ((i1 == i3) && (HIPBLAS_DIAG_NON_UNIT == diag)))
+                    {
+                        t += A[i1 * As1 + i3 * As2] * B[i3 + i2 * ldb];
+                    }
+                }
+                C[i1 + i2 * ldc] = alpha * t;
             }
-            C[i1 * Cs1 + i2 * Cs2] = beta * C[i1 * Cs1 + i2 * Cs2] + alpha * t;
+        }
+    }
+    else if(HIPBLAS_SIDE_RIGHT == side)
+    {
+        for(int i1 = 0; i1 < M; i1++)
+        {
+            for(int i2 = 0; i2 < N; i2++)
+            {
+                T t = 0.0;
+                for(int i3 = 0; i3 < N; i3++)
+                {
+                    if((i3 == i2) && (HIPBLAS_DIAG_UNIT == diag))
+                    {
+                        t += B[i1 + i3 * ldb];
+                    }
+                    else if(((i2 > i3) && (HIPBLAS_FILL_MODE_UPPER == uplo))
+                            || ((i3 > i2) && (HIPBLAS_FILL_MODE_LOWER == uplo))
+                            || ((i3 == i2) && (HIPBLAS_DIAG_NON_UNIT == diag)))
+                    {
+                        t += B[i1 + i3 * ldb] * A[i3 * As1 + i2 * As2];
+                    }
+                }
+                C[i1 + i2 * ldc] = alpha * t;
+            }
         }
     }
 }
 
 int main()
 {
-    hipblasOperation_t transa = HIPBLAS_OP_N, transb = HIPBLAS_OP_T;
-    float              alpha = 1.1, beta = 0.9;
+    hipblasSideMode_t  side   = HIPBLAS_SIDE_LEFT;
+    hipblasFillMode_t  uplo   = HIPBLAS_FILL_MODE_UPPER;
+    hipblasOperation_t transa = HIPBLAS_OP_N;
+    hipblasDiagType_t  diag   = HIPBLAS_DIAG_NON_UNIT;
+    float              alpha  = 1.0;
 
-    int m = DIM1, n = DIM2, k = DIM3;
+    int m = DIM1, n = DIM2;
     int lda, ldb, ldc, size_a, size_b, size_c;
-    int a_stride_1, a_stride_2, b_stride_1, b_stride_2;
-    std::cout << "sgemm example" << std::endl;
-    if(transa == HIPBLAS_OP_N)
+    std::cout << "strmm V3 example" << std::endl;
+
+    if(HIPBLAS_SIDE_LEFT == side)
     {
-        lda        = m;
-        size_a     = k * lda;
-        a_stride_1 = 1;
-        a_stride_2 = lda;
-        std::cout << "N";
+        lda    = m;
+        size_a = m * lda;
+        std::cout << "left";
     }
-    else
+    else if(HIPBLAS_SIDE_RIGHT == side)
     {
-        lda        = k;
-        size_a     = m * lda;
-        a_stride_1 = lda;
-        a_stride_2 = 1;
-        std::cout << "T";
+        lda    = n;
+        size_a = n * lda;
+        std::cout << "right";
     }
-    if(transb == HIPBLAS_OP_N)
-    {
-        ldb        = k;
-        size_b     = n * ldb;
-        b_stride_1 = 1;
-        b_stride_2 = ldb;
-        std::cout << "N: ";
-    }
-    else
-    {
-        ldb        = n;
-        size_b     = k * ldb;
-        b_stride_1 = ldb;
-        b_stride_2 = 1;
-        std::cout << "T: ";
-    }
+    HIPBLAS_FILL_MODE_UPPER == uplo ? std::cout << ",upper" : std::cout << ",lower";
+    HIPBLAS_OP_N == transa ? std::cout << ",N" : std::cout << ",T";
+    HIPBLAS_DIAG_NON_UNIT == diag ? std::cout << ",non_unit_diag:" : std::cout << ",unit_diag:";
+
+    ldb    = m;
+    size_b = n * ldb;
+
     ldc    = m;
     size_c = n * ldc;
 
@@ -158,15 +188,18 @@ int main()
     srand(1);
     for(int i = 0; i < size_a; ++i)
     {
-        ha[i] = rand() % 17;
+        ha[i] = 1.0;
+        //      ha[i] = rand() % 17;
     }
     for(int i = 0; i < size_b; ++i)
     {
-        hb[i] = rand() % 17;
+        hb[i] = 1.0;
+        //      hb[i] = rand() % 17;
     }
     for(int i = 0; i < size_c; ++i)
     {
-        hc[i] = rand() % 17;
+        hc[i] = 1.0;
+        //      hc[i] = rand() % 17;
     }
     hc_gold = hc;
 
@@ -184,43 +217,37 @@ int main()
     hipblasHandle_t handle;
     CHECK_HIPBLAS_ERROR(hipblasCreate(&handle));
 
+#ifdef HIPBLAS_V1
     CHECK_HIPBLAS_ERROR(
-        hipblasSgemm(handle, transa, transb, m, n, k, &alpha, da, lda, db, ldb, &beta, dc, ldc));
+        hipblasStrmm(handle, side, uplo, transa, diag, m, n, &alpha, da, lda, db, ldb, dc, ldc));
+#else
+    CHECK_HIPBLAS_ERROR(hipblasStrmmOutofplace(
+        handle, side, uplo, transa, diag, m, n, &alpha, da, lda, db, ldb, dc, ldc));
+#endif
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hc.data(), dc, sizeof(float) * size_c, hipMemcpyDeviceToHost));
 
-    std::cout << "m, n, k, lda, ldb, ldc = " << m << ", " << n << ", " << k << ", " << lda << ", "
-              << ldb << ", " << ldc << std::endl;
-
-    float max_relative_error = std::numeric_limits<float>::min();
+    std::cout << "m, n, lda, ldb, ldc = " << m << ", " << n << ", " << lda << ", " << ldb << ", "
+              << ldc << std::endl;
 
     // calculate golden or correct result
-    mat_mat_mult<float>(alpha,
-                        beta,
-                        m,
-                        n,
-                        k,
-                        ha.data(),
-                        a_stride_1,
-                        a_stride_2,
-                        hb.data(),
-                        b_stride_1,
-                        b_stride_2,
-                        hc_gold.data(),
-                        1,
-                        ldc);
+    trmm_reference<float>(
+        side, uplo, transa, diag, m, n, alpha, ha.data(), lda, hb.data(), ldb, hc_gold.data(), ldc);
 
+    float max_relative_error = 0;
     for(int i = 0; i < size_c; i++)
     {
-        float relative_error = (hc_gold[i] - hc[i]) / hc_gold[i];
+        std::cout << "i, hc_gold[i], hc[i] = " << i << ", " << hc_gold[i] << ", " << hc[i]
+                  << std::endl;
+        float relative_error = hc_gold[i] != 0 ? (hc_gold[i] - hc[i]) / hc_gold[i] : 0;
         relative_error       = relative_error > 0 ? relative_error : -relative_error;
         max_relative_error
             = relative_error < max_relative_error ? max_relative_error : relative_error;
     }
     float eps       = std::numeric_limits<float>::epsilon();
     float tolerance = 10;
-    if(max_relative_error != max_relative_error || max_relative_error > eps * tolerance)
+    if(isnan(max_relative_error) || max_relative_error > eps * tolerance)
     {
         std::cout << "FAIL: max_relative_error = " << max_relative_error << std::endl;
     }
