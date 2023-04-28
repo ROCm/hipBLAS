@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -58,11 +58,10 @@ endif()
 if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_SAMPLES )
   if( NOT WIN32 )
     if( BUILD_WITH_SOLVER )
-      add_library(hipblas_fortran_client ${hipblas_f90_source_clients} ${hipblas_f90_source_clients_solver})
+      add_library(hipblas_fortran_client STATIC ${hipblas_f90_source_clients} ${hipblas_f90_source_clients_solver})
     else()
-      add_library(hipblas_fortran_client ${hipblas_f90_source_clients})
+      add_library(hipblas_fortran_client STATIC ${hipblas_f90_source_clients})
     endif()
-    rocm_install(TARGETS hipblas_fortran_client COMPONENT clients-common)
     add_dependencies(hipblas_fortran_client hipblas_fortran)
   endif()
   include_directories(${CMAKE_BINARY_DIR}/include/hipblas)

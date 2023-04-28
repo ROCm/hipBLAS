@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,10 @@
 #pragma once
 #ifndef _HIPBLAS_HPP_
 #define _HIPBLAS_HPP_
+
+#ifndef HIPBLAS_NO_DEPRECATED_WARNINGS
+#define HIPBLAS_NO_DEPRECATED_WARNINGS
+#endif
 
 /* library headers */
 #include "hipblas.h"
