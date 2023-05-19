@@ -1,5 +1,9 @@
 # Change Log for hipBLAS
 
+## (Unreleased) hipBLAS 1.1.0
+### Changed
+- updated documentation requirements
+
 ## (Unreleased) hipBLAS 1.0.0
 ### Changed
 - added const qualifier to hipBLAS functions (swap, sbmv, spmv, symv, trsm) where missing
