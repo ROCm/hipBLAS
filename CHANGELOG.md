@@ -4,6 +4,9 @@
 ### Changed
 - updated documentation requirements
 
+### Dependencies
+- dependency rocSOLVER now depends on rocSPARSE
+
 ## (Unreleased) hipBLAS 1.0.0
 ### Changed
 - added const qualifier to hipBLAS functions (swap, sbmv, spmv, symv, trsm) where missing
