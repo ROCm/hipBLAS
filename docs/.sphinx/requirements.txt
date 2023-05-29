@@ -23,21 +23,9 @@ cffi==1.15.1
 charset-normalizer==3.1.0
     # via requests
 click==8.1.3
-<<<<<<< HEAD
-    # via
-    #   jupyter-cache
-    #   sphinx-external-toc
-comm==0.1.2
-    # via ipykernel
-debugpy==1.6.6
-    # via ipykernel
-decorator==5.1.1
-    # via ipython
-=======
     # via sphinx-external-toc
 cryptography==40.0.2
     # via pyjwt
->>>>>>> 910d826... Update documentation requirements (#594)
 deprecated==1.2.13
     # via pygithub
 docutils==0.16
