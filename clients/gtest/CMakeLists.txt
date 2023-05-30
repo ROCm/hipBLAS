@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -169,7 +169,7 @@ target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
-target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 )
+target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS)
 
 if( NOT USE_CUDA )
   target_link_libraries( hipblas-test PRIVATE hip::host )
@@ -205,7 +205,8 @@ if (WIN32)
     ${LAPACK_DIR}/bin/*.dll
     ${BLIS_DIR}/lib/*.dll
     ${OPENBLAS_DIR}/bin/*.dll
-    ${HIP_DIR}/bin/*.dll
+    ${HIP_DIR}/bin/amd*.dll
+    ${HIP_DIR}/bin/hiprt*.dll
     ${HIP_DIR}/bin/hipinfo.exe
     ${ROCBLAS_PATH}/bin/rocblas.dll
     ${ROCSOLVER_PATH}/bin/rocsolver.dll

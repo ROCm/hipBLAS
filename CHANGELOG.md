@@ -1,5 +1,23 @@
 # Change Log for hipBLAS
 
+## (Unreleased) hipBLAS 1.1.0
+### Changed
+- updated documentation requirements
+
+### Dependencies
+- dependency rocSOLVER now depends on rocSPARSE
+
+## (Unreleased) hipBLAS 1.0.0
+### Changed
+- added const qualifier to hipBLAS functions (swap, sbmv, spmv, symv, trsm) where missing
+
+### Removed
+- removed support for deprecated hipblasInt8Datatype_t enum
+- removed support for deprecated hipblasSetInt8Datatype and hipblasGetInt8Datatype functions
+
+### Deprecated
+- in-place trmm is deprecated. It will be replaced by trmm which includes both in-place and
+  out-of-place functionality
 
 ## (Unreleased) hipBLAS 0.54.0
 ### Added

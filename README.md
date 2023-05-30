@@ -8,6 +8,18 @@ For a detailed description of the **hipBLAS** library, its implemented routines,
 
 hipBLAS requires either **rocBLAS** + **rocSOLVER** or **cuBLAS** APIs for BLAS implementation. For more information dependent **roc*** libraries see [rocBLAS documentation](https://rocblas.readthedocs.io/en/latest/), and [rocSolver documentation](https://rocsolver.readthedocs.io/en/latest/).
 
+### How to build documentation
+
+Run the steps below to build documentation locally.
+
+```
+cd docs
+
+pip3 install -r .sphinx/requirements.txt
+
+python3 -m sphinx -T -E -b html -d _build/doctrees -D language=en . _build/html
+```
+
 ## Quickstart build
 
 To download the **hipBLAS** source code, use the below command to clone the repository

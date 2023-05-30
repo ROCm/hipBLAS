@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,8 @@
  *
  * ************************************************************************ */
 
-#ifndef HIPBLAS_VERSION_H_
-#define HIPBLAS_VERSION_H_
+#ifndef HIPBLAS_VERSION_H
+#define HIPBLAS_VERSION_H
 
 /* the configured version and settings
  */
@@ -34,4 +34,4 @@
 #define hipblasVersionTweak @hipblas_VERSION_TWEAK@
 // clang-format on
 
-#endif
+#endif /* HIPBLAS_VERSION_H */
