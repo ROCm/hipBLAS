@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ cat <<EOF
 
     --codecoverage                Build with code coverage profiling enabled, excluding release mode.
 
-    -d, --dependencies            Build and install external dependencies. Dependecies are to be installed in /usr/local.
+    -d, --dependencies            Build and install external dependencies. Dependencies are to be installed in /usr/local.
                                   This should be done only once (this does not install rocBLAS, rocSolver, or cuda).
 
     --installcuda                 Install cuda package.
@@ -256,7 +256,7 @@ install_packages( )
 
     # Custom rocblas installation
     # Do not install rocblas if --rocblas_path flag is set,
-    # as we will be building against our own rocblas intead.
+    # as we will be building against our own rocblas instead.
     if [[ -z ${rocblas_path+foo} ]]; then
       if [[ -z ${custom_rocblas+foo} ]]; then
         # Install base rocblas package unless -b/--rocblas flag is passed
@@ -396,7 +396,7 @@ make_absolute_path( ) {
 # #################################################
 # Pre-requisites check
 # #################################################
-# Exit code 0: alls well
+# Exit code 0: all is well
 # Exit code 1: problems with getopt
 # Exit code 2: problems with supported platforms
 
