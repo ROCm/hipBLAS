@@ -23,7 +23,6 @@
 
 #include "hipblas.h"
 #include "exceptions.hpp"
-#include <cublas.h>
 #include <cublas_v2.h>
 #include <cuda_runtime_api.h>
 #include <hip/hip_runtime.h>
@@ -350,7 +349,7 @@ hipblasStatus_t hipblasGetPointerMode(hipblasHandle_t handle, hipblasPointerMode
 try
 {
     cublasPointerMode_t cublasMode;
-    cublasStatus        status = cublasGetPointerMode((cublasHandle_t)handle, &cublasMode);
+    cublasStatus_t      status = cublasGetPointerMode((cublasHandle_t)handle, &cublasMode);
     *mode                      = CudaPointerModeToHIPPointerMode(cublasMode);
     return hipCUBLASStatusToHIPStatus(status);
 }
