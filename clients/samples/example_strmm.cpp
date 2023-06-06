@@ -21,7 +21,7 @@
  *
  * ************************************************************************ */
 
-#include "hipblas.h"
+#include <hipblas/hipblas.h>
 #include <iostream>
 #include <limits>
 #include <math.h> // isnan
