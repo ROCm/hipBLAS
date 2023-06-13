@@ -36,7 +36,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
-typedef std::tuple<int, int, double, int, vector<hipDataType>, bool> nrm2_ex_tuple;
+typedef std::tuple<int, int, double, int, vector<hipblasDatatype_t>, bool> nrm2_ex_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -78,13 +78,28 @@ const double stride_scale_range[] = {1.0, 2.5};
 const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 // All configs supported in rocBLAS and cuBLAS
-const vector<vector<hipDataType>> precisions{
+
+#ifdef HIPBLAS_USE_HIP_DATATYPE
+
+const vector<vector<hipblasDatatype_t>> precisions{
     {HIP_R_16F, HIP_R_16F, HIP_R_32F},
     {HIP_R_32F, HIP_R_32F, HIP_R_32F},
     {HIP_R_64F, HIP_R_64F, HIP_R_64F},
     {HIP_C_32F, HIP_R_32F, HIP_R_32F},
     {HIP_C_64F, HIP_R_64F, HIP_R_64F},
 };
+
+#else
+
+const vector<vector<hipblasDatatype_t>> precisions{
+    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
+    {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
+    {HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
+    {HIPBLAS_C_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
+    {HIPBLAS_C_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
+};
+
+#endif
 
 const bool is_fortran[] = {false, true};
 
@@ -102,12 +117,12 @@ protected:
 Arguments setup_nrm2_ex_arguments(nrm2_ex_tuple tup)
 {
     Arguments arg;
-    arg.N                               = std::get<0>(tup);
-    arg.incx                            = std::get<1>(tup);
-    arg.stride_scale                    = std::get<2>(tup);
-    arg.batch_count                     = std::get<3>(tup);
-    vector<hipDataType> precision_types = std::get<4>(tup);
-    arg.fortran                         = std::get<5>(tup);
+    arg.N                                     = std::get<0>(tup);
+    arg.incx                                  = std::get<1>(tup);
+    arg.stride_scale                          = std::get<2>(tup);
+    arg.batch_count                           = std::get<3>(tup);
+    vector<hipblasDatatype_t> precision_types = std::get<4>(tup);
+    arg.fortran                               = std::get<5>(tup);
 
     arg.a_type       = precision_types[0];
     arg.b_type       = precision_types[1];

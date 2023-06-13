@@ -45,9 +45,9 @@ inline hipblasStatus_t testing_nrm2_ex_template(const Arguments& arg)
     int N    = arg.N;
     int incx = arg.incx;
 
-    hipDataType xType         = arg.a_type;
-    hipDataType resultType    = arg.b_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t resultType    = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasLocalHandle handle(arg);
 
@@ -152,9 +152,9 @@ inline hipblasStatus_t testing_nrm2_ex_template(const Arguments& arg)
 
 inline hipblasStatus_t testing_nrm2_ex(Arguments arg)
 {
-    hipDataType xType         = arg.a_type;
-    hipDataType resultType    = arg.b_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t resultType    = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

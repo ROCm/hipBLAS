@@ -56,10 +56,10 @@ inline hipblasStatus_t testing_dot_batched_ex_template(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    hipDataType xType         = arg.a_type;
-    hipDataType yType         = arg.b_type;
-    hipDataType resultType    = arg.c_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(N <= 0 || batch_count <= 0)
@@ -248,10 +248,10 @@ inline hipblasStatus_t testing_dot_batched_ex_template(const Arguments& arg)
 
 inline hipblasStatus_t testing_dot_batched_ex(const Arguments& arg)
 {
-    hipDataType xType         = arg.a_type;
-    hipDataType yType         = arg.b_type;
-    hipDataType resultType    = arg.c_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -318,10 +318,10 @@ inline hipblasStatus_t testing_dot_batched_ex(const Arguments& arg)
 
 inline hipblasStatus_t testing_dotc_batched_ex(const Arguments& arg)
 {
-    hipDataType xType         = arg.a_type;
-    hipDataType yType         = arg.b_type;
-    hipDataType resultType    = arg.c_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

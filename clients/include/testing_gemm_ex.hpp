@@ -62,10 +62,10 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
     int                ldb    = arg.ldb;
     int                ldc    = arg.ldc;
 
-    hipDataType a_type       = arg.a_type;
-    hipDataType b_type       = arg.b_type;
-    hipDataType c_type       = arg.c_type;
-    hipDataType compute_type = arg.compute_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
+    hipblasDatatype_t compute_type = arg.compute_type;
 
     Tex h_alpha_Tc = arg.get_alpha<Tex>();
     Tex h_beta_Tc  = arg.get_beta<Tex>();
@@ -263,10 +263,10 @@ inline hipblasStatus_t testing_gemm_ex(const Arguments& arg)
 {
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    hipDataType a_type       = arg.a_type;
-    hipDataType b_type       = arg.b_type;
-    hipDataType c_type       = arg.c_type;
-    hipDataType compute_type = arg.compute_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
+    hipblasDatatype_t compute_type = arg.compute_type;
 
     if(a_type == HIP_R_16F && b_type == HIP_R_16F && c_type == HIP_R_16F && c_type == HIP_R_16F
        && compute_type == HIP_R_16F)

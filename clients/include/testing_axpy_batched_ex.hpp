@@ -47,10 +47,10 @@ inline hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& arg)
     int incy        = arg.incy;
     int batch_count = arg.batch_count;
 
-    hipDataType alphaType     = arg.a_type;
-    hipDataType xType         = arg.b_type;
-    hipDataType yType         = arg.c_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t yType         = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasLocalHandle handle(arg);
 
@@ -207,10 +207,10 @@ inline hipblasStatus_t testing_axpy_batched_ex_template(const Arguments& arg)
 
 inline hipblasStatus_t testing_axpy_batched_ex(Arguments arg)
 {
-    hipDataType alphaType     = arg.a_type;
-    hipDataType xType         = arg.b_type;
-    hipDataType yType         = arg.c_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t yType         = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

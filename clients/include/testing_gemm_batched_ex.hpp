@@ -73,10 +73,10 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
 
     int batch_count = arg.batch_count;
 
-    hipDataType a_type       = arg.a_type;
-    hipDataType b_type       = arg.b_type;
-    hipDataType c_type       = arg.c_type;
-    hipDataType compute_type = arg.compute_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
+    hipblasDatatype_t compute_type = arg.compute_type;
 
     Tex h_alpha_Tc = arg.get_alpha<Tex>();
     Tex h_beta_Tc  = arg.get_beta<Tex>();
@@ -285,10 +285,10 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
 
 inline hipblasStatus_t testing_gemm_batched_ex(const Arguments& arg)
 {
-    hipDataType a_type       = arg.a_type;
-    hipDataType b_type       = arg.b_type;
-    hipDataType c_type       = arg.c_type;
-    hipDataType compute_type = arg.compute_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
+    hipblasDatatype_t compute_type = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

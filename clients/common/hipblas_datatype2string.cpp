@@ -165,7 +165,10 @@ hipblasSideMode_t char2hipblas_side(char value)
 }
 
 // clang-format off
-hipDataType string2hipblas_datatype(const std::string& value)
+
+#ifdef HIPBLAS_USE_HIP_DATATYPE
+
+hipblasDatatype_t string2hipblas_datatype(const std::string& value)
 {
     return
         value == "f32_r" || value == "s" ? HIP_R_32F  :
@@ -196,6 +199,33 @@ hipDataType string2hipblas_datatype(const std::string& value)
         value == "i64_c"                 ? HIP_C_64I  :
         value == "u64_r"                 ? HIP_R_64U  :
         value == "u64_c"                 ? HIP_C_64U  :
-        (hipDataType)(-1);
+        (hipblasDatatype_t)(-1);
 }
+
+#else
+
+hipblasDatatype_t string2hipblas_datatype(const std::string& value)
+{
+    return
+        value == "f16_r" || value == "h" ? HIPBLAS_R_16F  :
+        value == "f32_r" || value == "s" ? HIPBLAS_R_32F  :
+        value == "f64_r" || value == "d" ? HIPBLAS_R_64F  :
+        value == "bf16_r"                ? HIPBLAS_R_16B :
+        value == "f16_c"                 ? HIPBLAS_C_16B  :
+        value == "f32_c" || value == "c" ? HIPBLAS_C_32F  :
+        value == "f64_c" || value == "z" ? HIPBLAS_C_64F  :
+        value == "bf16_c"                ? HIPBLAS_C_16B :
+        value == "i8_r"                  ? HIPBLAS_R_8I   :
+        value == "i32_r"                 ? HIPBLAS_R_32I  :
+        value == "i8_c"                  ? HIPBLAS_C_8I   :
+        value == "i32_c"                 ? HIPBLAS_C_32I  :
+        value == "u8_r"                  ? HIPBLAS_R_8U   :
+        value == "u32_r"                 ? HIPBLAS_R_32U  :
+        value == "u8_c"                  ? HIPBLAS_C_8U   :
+        value == "u32_c"                 ? HIPBLAS_C_32U  :
+        HIPBLAS_DATATYPE_INVALID;
+}
+
+#endif
+
 // clang-format on

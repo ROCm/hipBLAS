@@ -71,10 +71,10 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
     int                ldb    = arg.ldb;
     int                ldc    = arg.ldc;
 
-    hipDataType a_type       = arg.a_type;
-    hipDataType b_type       = arg.b_type;
-    hipDataType c_type       = arg.c_type;
-    hipDataType compute_type = arg.compute_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
+    hipblasDatatype_t compute_type = arg.compute_type;
 
     int batch_count = arg.batch_count;
 
@@ -299,10 +299,10 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
 
 inline hipblasStatus_t testing_gemm_strided_batched_ex(const Arguments& arg)
 {
-    hipDataType a_type       = arg.a_type;
-    hipDataType b_type       = arg.b_type;
-    hipDataType c_type       = arg.c_type;
-    hipDataType compute_type = arg.compute_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
+    hipblasDatatype_t compute_type = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

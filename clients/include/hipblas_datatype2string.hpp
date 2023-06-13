@@ -92,10 +92,12 @@ hipblasDiagType_t char2hipblas_diagonal(char value);
 
 hipblasSideMode_t char2hipblas_side(char value);
 
-hipDataType string2hipblas_datatype(const std::string& value);
+#ifdef HIPBLAS_USE_HIP_DATATYPE
+
+hipblasDatatype_t string2hipblas_datatype(const std::string& value);
 
 // return precision string for hipblas_datatype
-inline constexpr auto hipblas_datatype2string(hipDataType type)
+inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
 {
     switch(type)
     {
@@ -158,5 +160,54 @@ inline constexpr auto hipblas_datatype2string(hipDataType type)
     }
     return "invalid";
 }
+
+#else
+
+hipblasDatatype_t string2hipblas_datatype(const std::string& value);
+
+// return precision string for hipblas_datatype
+inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
+{
+    switch(type)
+    {
+    case HIPBLAS_R_16F:
+        return "f16_r";
+    case HIPBLAS_R_32F:
+        return "f32_r";
+    case HIPBLAS_R_64F:
+        return "f64_r";
+    case HIPBLAS_C_16F:
+        return "f16_k";
+    case HIPBLAS_C_32F:
+        return "f32_c";
+    case HIPBLAS_C_64F:
+        return "f64_c";
+    case HIPBLAS_R_8I:
+        return "i8_r";
+    case HIPBLAS_R_8U:
+        return "u8_r";
+    case HIPBLAS_R_32I:
+        return "i32_r";
+    case HIPBLAS_R_32U:
+        return "u32_r";
+    case HIPBLAS_C_8I:
+        return "i8_c";
+    case HIPBLAS_C_8U:
+        return "u8_c";
+    case HIPBLAS_C_32I:
+        return "i32_c";
+    case HIPBLAS_C_32U:
+        return "u32_c";
+    case HIPBLAS_R_16B:
+        return "bf16_r";
+    case HIPBLAS_C_16B:
+        return "bf16_c";
+    case HIPBLAS_DATATYPE_INVALID:
+        return "invalid";
+    }
+    return "invalid";
+}
+
+#endif
 
 #endif

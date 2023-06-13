@@ -46,9 +46,9 @@ inline hipblasStatus_t testing_nrm2_batched_ex_template(const Arguments& arg)
     int incx        = arg.incx;
     int batch_count = arg.batch_count;
 
-    hipDataType xType         = arg.a_type;
-    hipDataType resultType    = arg.b_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t resultType    = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasLocalHandle handle(arg);
 
@@ -200,9 +200,9 @@ inline hipblasStatus_t testing_nrm2_batched_ex_template(const Arguments& arg)
 
 inline hipblasStatus_t testing_nrm2_batched_ex(Arguments arg)
 {
-    hipDataType xType         = arg.a_type;
-    hipDataType resultType    = arg.b_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t resultType    = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

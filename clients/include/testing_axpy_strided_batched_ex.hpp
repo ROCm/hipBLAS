@@ -57,10 +57,10 @@ inline hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments&
     hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
     hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
 
-    hipDataType alphaType     = arg.a_type;
-    hipDataType xType         = arg.b_type;
-    hipDataType yType         = arg.c_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t yType         = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasLocalHandle handle(arg);
 
@@ -229,10 +229,10 @@ inline hipblasStatus_t testing_axpy_strided_batched_ex_template(const Arguments&
 
 inline hipblasStatus_t testing_axpy_strided_batched_ex(Arguments arg)
 {
-    hipDataType alphaType     = arg.a_type;
-    hipDataType xType         = arg.b_type;
-    hipDataType yType         = arg.c_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t yType         = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
