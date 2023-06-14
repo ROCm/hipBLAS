@@ -89,6 +89,10 @@ hipblasSideMode_t
 -----------------
 .. doxygenenum:: hipblasSideMode_t
 
+hipblasDatatype_t
+------------------
+.. doxygenenum:: hipblasDatatype_t
+
 hipblasGemmAlgo_t
 ------------------
 .. doxygenenum:: hipblasGemmAlgo_t

@@ -35,7 +35,6 @@
 #include "hipblas-export.h"
 #include "hipblas-version.h"
 #include <hip/hip_runtime_api.h>
-#include <hip/library_types.h>
 #include <stdint.h>
 
 /* Workaround clang bug:
@@ -104,55 +103,6 @@ typedef uint16_t hipblasHalf;
 
 #include <hip/hip_fp16.h>
 typedef __half hipblasHalf;
-
-#endif
-
-#ifdef HIPBLAS_V2
-
-typedef hipDataType hipblasDatatype_t;
-
-#define HIPBLAS_R_16F HIP_R_16F
-#define HIPBLAS_R_32F HIP_R_32F
-#define HIPBLAS_R_64F HIP_R_64F
-#define HIPBLAS_C_16F HIP_C_16F
-#define HIPBLAS_C_32F HIP_C_32F
-#define HIPBLAS_C_64F HIP_C_64F
-#define HIPBLAS_R_8I HIP_R_8I
-#define HIPBLAS_R_8U HIP_R_8U
-#define HIPBLAS_R_32I HIP_R_32I
-#define HIPBLAS_R_32U HIP_R_32U
-#define HIPBLAS_C_8I HIP_C_8I
-#define HIPBLAS_C_8U HIP_C_8U
-#define HIPBLAS_C_32I HIP_C_32I
-#define HIPBLAS_C_32U HIP_C_32U
-#define HIPBLAS_R_16B HIP_R_16BF
-#define HIPBLAS_C_16B HIP_C_16BF
-
-#else
-
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasDatatype_t is deprecated, and it will be replaced completely by hipDataType in the future. Compiling hipBLAS with -DHIPBLAS_V2 will replace hipblasDatatype_t in the API with hipDataType.")
-// clang-format on
-typedef enum
-{
-    HIPBLAS_R_16F            = 150, /**< 16 bit floating point, real */
-    HIPBLAS_R_32F            = 151, /**< 32 bit floating point, real */
-    HIPBLAS_R_64F            = 152, /**< 64 bit floating point, real */
-    HIPBLAS_C_16F            = 153, /**< 16 bit floating point, complex */
-    HIPBLAS_C_32F            = 154, /**< 32 bit floating point, complex */
-    HIPBLAS_C_64F            = 155, /**< 64 bit floating point, complex */
-    HIPBLAS_R_8I             = 160, /**<  8 bit signed integer, real */
-    HIPBLAS_R_8U             = 161, /**<  8 bit unsigned integer, real */
-    HIPBLAS_R_32I            = 162, /**< 32 bit signed integer, real */
-    HIPBLAS_R_32U            = 163, /**< 32 bit unsigned integer, real */
-    HIPBLAS_C_8I             = 164, /**<  8 bit signed integer, complex */
-    HIPBLAS_C_8U             = 165, /**<  8 bit unsigned integer, complex */
-    HIPBLAS_C_32I            = 166, /**< 32 bit signed integer, complex */
-    HIPBLAS_C_32U            = 167, /**< 32 bit unsigned integer, complex */
-    HIPBLAS_R_16B            = 168, /**< 16 bit bfloat, real */
-    HIPBLAS_C_16B            = 169, /**< 16 bit bfloat, complex */
-    HIPBLAS_DATATYPE_INVALID = 255, /**< Invalid datatype value, do not use */
-} hipblasDatatype_t;
 
 #endif
 
@@ -483,6 +433,56 @@ typedef enum
     = 142, /**< Multiply general matrix by symmetric, Hermitian or triangular matrix on the right. */
     HIPBLAS_SIDE_BOTH = 143
 } hipblasSideMode_t;
+
+#ifdef HIPBLAS_V2
+
+#include <hip/library_types.h>
+typedef hipDataType hipblasDatatype_t;
+
+#define HIPBLAS_R_16F HIP_R_16F
+#define HIPBLAS_R_32F HIP_R_32F
+#define HIPBLAS_R_64F HIP_R_64F
+#define HIPBLAS_C_16F HIP_C_16F
+#define HIPBLAS_C_32F HIP_C_32F
+#define HIPBLAS_C_64F HIP_C_64F
+#define HIPBLAS_R_8I HIP_R_8I
+#define HIPBLAS_R_8U HIP_R_8U
+#define HIPBLAS_R_32I HIP_R_32I
+#define HIPBLAS_R_32U HIP_R_32U
+#define HIPBLAS_C_8I HIP_C_8I
+#define HIPBLAS_C_8U HIP_C_8U
+#define HIPBLAS_C_32I HIP_C_32I
+#define HIPBLAS_C_32U HIP_C_32U
+#define HIPBLAS_R_16B HIP_R_16BF
+#define HIPBLAS_C_16B HIP_C_16BF
+
+#else
+
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasDatatype_t is deprecated, and it will be replaced completely by hipDataType in the future. Compiling hipBLAS with -DHIPBLAS_V2 will replace hipblasDatatype_t in the API with hipDataType.")
+// clang-format on
+typedef enum
+{
+    HIPBLAS_R_16F            = 150, /**< 16 bit floating point, real */
+    HIPBLAS_R_32F            = 151, /**< 32 bit floating point, real */
+    HIPBLAS_R_64F            = 152, /**< 64 bit floating point, real */
+    HIPBLAS_C_16F            = 153, /**< 16 bit floating point, complex */
+    HIPBLAS_C_32F            = 154, /**< 32 bit floating point, complex */
+    HIPBLAS_C_64F            = 155, /**< 64 bit floating point, complex */
+    HIPBLAS_R_8I             = 160, /**<  8 bit signed integer, real */
+    HIPBLAS_R_8U             = 161, /**<  8 bit unsigned integer, real */
+    HIPBLAS_R_32I            = 162, /**< 32 bit signed integer, real */
+    HIPBLAS_R_32U            = 163, /**< 32 bit unsigned integer, real */
+    HIPBLAS_C_8I             = 164, /**<  8 bit signed integer, complex */
+    HIPBLAS_C_8U             = 165, /**<  8 bit unsigned integer, complex */
+    HIPBLAS_C_32I            = 166, /**< 32 bit signed integer, complex */
+    HIPBLAS_C_32U            = 167, /**< 32 bit unsigned integer, complex */
+    HIPBLAS_R_16B            = 168, /**< 16 bit bfloat, real */
+    HIPBLAS_C_16B            = 169, /**< 16 bit bfloat, complex */
+    HIPBLAS_DATATYPE_INVALID = 255, /**< Invalid datatype value, do not use */
+} hipblasDatatype_t;
+
+#endif
 
 /*! \brief Indicates if layer is active with bitmask. */
 typedef enum

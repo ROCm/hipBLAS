@@ -78,3 +78,15 @@ The new API provides the legacy BLAS in-place functionality if you set pointer C
 ldc equal to ldb.
 
 There are similar deprecations for the _batched and _strided_batched versions of trmm.
+
+Announced in hipBLAS 2.0
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Remove hipblasDatatype_t and replace with hipDataType
+=====================================================
+Use of the deprecated hipblasDatatype_t will give deprecation warnings telling you to compile with -DHIPBLAS_V2
+and to use hipDataType instead.
+
+Note that there are no deprecation warnings for the hipBLAS Fortran API.
+
+hipblasDatatype_t will be removed in a future release, and the use of this type in the API will be replaced with hipDataType.
