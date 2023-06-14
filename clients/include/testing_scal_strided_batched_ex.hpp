@@ -197,40 +197,40 @@ inline hipblasStatus_t testing_scal_strided_batched_ex(const Arguments& arg)
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    if(alphaType == HIP_R_16F && xType == HIP_R_16F && executionType == HIP_R_16F)
+    if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && executionType == HIPBLAS_R_16F)
     {
         status = testing_scal_strided_batched_ex_template<hipblasHalf>(arg);
     }
-    else if(alphaType == HIP_R_16F && xType == HIP_R_16F && executionType == HIP_R_32F)
+    else if(alphaType == HIPBLAS_R_16F && xType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
     {
         status = testing_scal_strided_batched_ex_template<hipblasHalf, hipblasHalf, float>(arg);
     }
-    else if(alphaType == HIP_R_32F && xType == HIP_R_16F && executionType == HIP_R_32F)
+    else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
     {
         status = testing_scal_strided_batched_ex_template<float, hipblasHalf, float>(arg);
     }
-    else if(alphaType == HIP_R_32F && xType == HIP_R_32F && executionType == HIP_R_32F)
+    else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {
         status = testing_scal_strided_batched_ex_template<float>(arg);
     }
-    else if(alphaType == HIP_R_64F && xType == HIP_R_64F && executionType == HIP_R_64F)
+    else if(alphaType == HIPBLAS_R_64F && xType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
     {
         status = testing_scal_strided_batched_ex_template<double>(arg);
     }
-    else if(alphaType == HIP_C_32F && xType == HIP_C_32F && executionType == HIP_C_32F)
+    else if(alphaType == HIPBLAS_C_32F && xType == HIPBLAS_C_32F && executionType == HIPBLAS_C_32F)
     {
         status = testing_scal_strided_batched_ex_template<hipblasComplex>(arg);
     }
-    else if(alphaType == HIP_C_64F && xType == HIP_C_64F && executionType == HIP_C_64F)
+    else if(alphaType == HIPBLAS_C_64F && xType == HIPBLAS_C_64F && executionType == HIPBLAS_C_64F)
     {
         status = testing_scal_strided_batched_ex_template<hipblasDoubleComplex>(arg);
     }
-    else if(alphaType == HIP_R_32F && xType == HIP_C_32F && executionType == HIP_C_32F)
+    else if(alphaType == HIPBLAS_R_32F && xType == HIPBLAS_C_32F && executionType == HIPBLAS_C_32F)
     {
         status
             = testing_scal_strided_batched_ex_template<float, hipblasComplex, hipblasComplex>(arg);
     }
-    else if(alphaType == HIP_R_64F && xType == HIP_C_64F && executionType == HIP_C_64F)
+    else if(alphaType == HIPBLAS_R_64F && xType == HIPBLAS_C_64F && executionType == HIPBLAS_C_64F)
     {
         status = testing_scal_strided_batched_ex_template<double,
                                                           hipblasDoubleComplex,

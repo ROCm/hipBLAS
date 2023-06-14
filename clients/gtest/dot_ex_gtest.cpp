@@ -85,24 +85,6 @@ const double stride_scale_range[] = {1.0, 2.5};
 
 const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
-#ifdef HIPBLAS_USE_HIP_DATATYPE
-
-const vector<vector<hipblasDatatype_t>> precisions{
-// Not supported in cuBLAS
-#ifndef __HIP_PLATFORM_NVCC__
-    {HIP_R_16BF, HIP_R_16BF, HIP_R_16BF, HIP_R_32F},
-    {HIP_R_16F, HIP_R_16F, HIP_R_16F, HIP_R_16F},
-#endif
-
-    // Supported in both rocBLAS and cuBLAS
-    {HIP_R_16F, HIP_R_16F, HIP_R_16F, HIP_R_32F},
-    {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F},
-    {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F},
-    {HIP_C_32F, HIP_C_32F, HIP_C_32F, HIP_C_32F},
-    {HIP_C_64F, HIP_C_64F, HIP_C_64F, HIP_C_64F}};
-
-#else
-
 const vector<vector<hipblasDatatype_t>> precisions{
 // Not supported in cuBLAS
 #ifndef __HIP_PLATFORM_NVCC__
@@ -116,8 +98,6 @@ const vector<vector<hipblasDatatype_t>> precisions{
     {HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
     {HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F, HIPBLAS_C_32F},
     {HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F}};
-
-#endif // HIPBLAS_USE_HIP_DATATYPE
 
 const bool is_fortran[] = {false, true};
 

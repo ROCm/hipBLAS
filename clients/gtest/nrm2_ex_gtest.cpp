@@ -79,18 +79,6 @@ const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 // All configs supported in rocBLAS and cuBLAS
 
-#ifdef HIPBLAS_USE_HIP_DATATYPE
-
-const vector<vector<hipblasDatatype_t>> precisions{
-    {HIP_R_16F, HIP_R_16F, HIP_R_32F},
-    {HIP_R_32F, HIP_R_32F, HIP_R_32F},
-    {HIP_R_64F, HIP_R_64F, HIP_R_64F},
-    {HIP_C_32F, HIP_R_32F, HIP_R_32F},
-    {HIP_C_64F, HIP_R_64F, HIP_R_64F},
-};
-
-#else
-
 const vector<vector<hipblasDatatype_t>> precisions{
     {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_32F},
     {HIPBLAS_R_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
@@ -98,8 +86,6 @@ const vector<vector<hipblasDatatype_t>> precisions{
     {HIPBLAS_C_32F, HIPBLAS_R_32F, HIPBLAS_R_32F},
     {HIPBLAS_C_64F, HIPBLAS_R_64F, HIPBLAS_R_64F},
 };
-
-#endif
 
 const bool is_fortran[] = {false, true};
 

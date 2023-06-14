@@ -228,19 +228,19 @@ inline hipblasStatus_t testing_dot_ex(const Arguments& arg)
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    if(xType == HIP_R_16F && yType == HIP_R_16F && resultType == HIP_R_16F
-       && executionType == HIP_R_16F)
+    if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
+       && executionType == HIPBLAS_R_16F)
     {
         status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, hipblasHalf, false>(
             arg);
     }
-    else if(xType == HIP_R_16F && yType == HIP_R_16F && resultType == HIP_R_16F
-            && executionType == HIP_R_32F)
+    else if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
+            && executionType == HIPBLAS_R_32F)
     {
         status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, false>(arg);
     }
-    else if(xType == HIP_R_16BF && yType == HIP_R_16BF && resultType == HIP_R_16BF
-            && executionType == HIP_R_32F)
+    else if(xType == HIPBLAS_R_16B && yType == HIPBLAS_R_16B && resultType == HIPBLAS_R_16B
+            && executionType == HIPBLAS_R_32F)
     {
         status = testing_dot_ex_template<hipblasBfloat16,
                                          hipblasBfloat16,
@@ -248,18 +248,18 @@ inline hipblasStatus_t testing_dot_ex(const Arguments& arg)
                                          hipblasBfloat16,
                                          false>(arg);
     }
-    else if(xType == HIP_R_32F && yType == HIP_R_32F && resultType == HIP_R_32F
-            && executionType == HIP_R_32F)
+    else if(xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F
+            && executionType == HIPBLAS_R_32F)
     {
         status = testing_dot_ex_template<float, float, float, float, false>(arg);
     }
-    else if(xType == HIP_R_64F && yType == HIP_R_64F && resultType == HIP_R_64F
-            && executionType == HIP_R_64F)
+    else if(xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F
+            && executionType == HIPBLAS_R_64F)
     {
         status = testing_dot_ex_template<double, double, double, double, false>(arg);
     }
-    else if(xType == HIP_C_32F && yType == HIP_C_32F && resultType == HIP_C_32F
-            && executionType == HIP_C_32F)
+    else if(xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F
+            && executionType == HIPBLAS_C_32F)
     {
         status = testing_dot_ex_template<hipblasComplex,
                                          hipblasComplex,
@@ -267,8 +267,8 @@ inline hipblasStatus_t testing_dot_ex(const Arguments& arg)
                                          hipblasComplex,
                                          false>(arg);
     }
-    else if(xType == HIP_C_64F && yType == HIP_C_64F && resultType == HIP_C_64F
-            && executionType == HIP_C_64F)
+    else if(xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F
+            && executionType == HIPBLAS_C_64F)
     {
         status = testing_dot_ex_template<hipblasDoubleComplex,
                                          hipblasDoubleComplex,
@@ -293,19 +293,19 @@ inline hipblasStatus_t testing_dotc_ex(const Arguments& arg)
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    if(xType == HIP_R_16F && yType == HIP_R_16F && resultType == HIP_R_16F
-       && executionType == HIP_R_16F)
+    if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
+       && executionType == HIPBLAS_R_16F)
     {
         status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, hipblasHalf, true>(
             arg);
     }
-    else if(xType == HIP_R_16F && yType == HIP_R_16F && resultType == HIP_R_16F
-            && executionType == HIP_R_32F)
+    else if(xType == HIPBLAS_R_16F && yType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F
+            && executionType == HIPBLAS_R_32F)
     {
         status = testing_dot_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float, true>(arg);
     }
-    else if(xType == HIP_R_16BF && yType == HIP_R_16BF && resultType == HIP_R_16BF
-            && executionType == HIP_R_32F)
+    else if(xType == HIPBLAS_R_16B && yType == HIPBLAS_R_16B && resultType == HIPBLAS_R_16B
+            && executionType == HIPBLAS_R_32F)
     {
         status = testing_dot_ex_template<hipblasBfloat16,
                                          hipblasBfloat16,
@@ -313,18 +313,18 @@ inline hipblasStatus_t testing_dotc_ex(const Arguments& arg)
                                          hipblasBfloat16,
                                          true>(arg);
     }
-    else if(xType == HIP_R_32F && yType == HIP_R_32F && resultType == HIP_R_32F
-            && executionType == HIP_R_32F)
+    else if(xType == HIPBLAS_R_32F && yType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F
+            && executionType == HIPBLAS_R_32F)
     {
         status = testing_dot_ex_template<float, float, float, float, true>(arg);
     }
-    else if(xType == HIP_R_64F && yType == HIP_R_64F && resultType == HIP_R_64F
-            && executionType == HIP_R_64F)
+    else if(xType == HIPBLAS_R_64F && yType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F
+            && executionType == HIPBLAS_R_64F)
     {
         status = testing_dot_ex_template<double, double, double, double, true>(arg);
     }
-    else if(xType == HIP_C_32F && yType == HIP_C_32F && resultType == HIP_C_32F
-            && executionType == HIP_C_32F)
+    else if(xType == HIPBLAS_C_32F && yType == HIPBLAS_C_32F && resultType == HIPBLAS_C_32F
+            && executionType == HIPBLAS_C_32F)
     {
         status = testing_dot_ex_template<hipblasComplex,
                                          hipblasComplex,
@@ -332,8 +332,8 @@ inline hipblasStatus_t testing_dotc_ex(const Arguments& arg)
                                          hipblasComplex,
                                          true>(arg);
     }
-    else if(xType == HIP_C_64F && yType == HIP_C_64F && resultType == HIP_C_64F
-            && executionType == HIP_C_64F)
+    else if(xType == HIPBLAS_C_64F && yType == HIPBLAS_C_64F && resultType == HIPBLAS_C_64F
+            && executionType == HIPBLAS_C_64F)
     {
         status = testing_dot_ex_template<hipblasDoubleComplex,
                                          hipblasDoubleComplex,

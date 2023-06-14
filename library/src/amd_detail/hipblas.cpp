@@ -276,120 +276,6 @@ hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
     }
 }
 
-#ifdef HIPBLAS_USE_HIP_DATATYPE
-
-rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
-{
-    switch(type)
-    {
-    case HIP_R_16F:
-        return rocblas_datatype_f16_r;
-
-    case HIP_R_32F:
-        return rocblas_datatype_f32_r;
-
-    case HIP_R_64F:
-        return rocblas_datatype_f64_r;
-
-    case HIP_C_16F:
-        return rocblas_datatype_f16_c;
-
-    case HIP_C_32F:
-        return rocblas_datatype_f32_c;
-
-    case HIP_C_64F:
-        return rocblas_datatype_f64_c;
-
-    case HIP_R_8I:
-        return rocblas_datatype_i8_r;
-
-    case HIP_R_8U:
-        return rocblas_datatype_u8_r;
-
-    case HIP_R_32I:
-        return rocblas_datatype_i32_r;
-
-    case HIP_R_32U:
-        return rocblas_datatype_u32_r;
-
-    case HIP_C_8I:
-        return rocblas_datatype_i8_c;
-
-    case HIP_C_8U:
-        return rocblas_datatype_u8_c;
-
-    case HIP_C_32I:
-        return rocblas_datatype_i32_c;
-
-    case HIP_C_32U:
-        return rocblas_datatype_u32_c;
-
-    case HIP_R_16BF:
-        return rocblas_datatype_bf16_r;
-
-    case HIP_C_16BF:
-        return rocblas_datatype_bf16_c;
-    }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
-}
-
-hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
-{
-    switch(type)
-    {
-    case rocblas_datatype_f16_r:
-        return HIP_R_16F;
-
-    case rocblas_datatype_f32_r:
-        return HIP_R_32F;
-
-    case rocblas_datatype_f64_r:
-        return HIP_R_64F;
-
-    case rocblas_datatype_f16_c:
-        return HIP_C_16F;
-
-    case rocblas_datatype_f32_c:
-        return HIP_C_32F;
-
-    case rocblas_datatype_f64_c:
-        return HIP_C_64F;
-
-    case rocblas_datatype_i8_r:
-        return HIP_R_8I;
-
-    case rocblas_datatype_u8_r:
-        return HIP_R_8U;
-
-    case rocblas_datatype_i32_r:
-        return HIP_R_32I;
-
-    case rocblas_datatype_u32_r:
-        return HIP_R_32U;
-
-    case rocblas_datatype_i8_c:
-        return HIP_C_8I;
-
-    case rocblas_datatype_u8_c:
-        return HIP_C_8U;
-
-    case rocblas_datatype_i32_c:
-        return HIP_C_32I;
-
-    case rocblas_datatype_u32_c:
-        return HIP_C_32U;
-
-    case rocblas_datatype_bf16_r:
-        return HIP_R_16BF;
-
-    case rocblas_datatype_bf16_c:
-        return HIP_C_16BF;
-    }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
-}
-
-#else
-
 rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
 {
     switch(type)
@@ -475,8 +361,6 @@ hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
     }
     throw HIPBLAS_STATUS_INVALID_ENUM;
 }
-
-#endif
 
 hipblasStatus_t hipblasCreate(hipblasHandle_t* handle)
 try

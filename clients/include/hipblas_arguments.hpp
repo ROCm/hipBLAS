@@ -85,23 +85,11 @@ struct Arguments
     int ldc = 128;
     int ldd = 128;
 
-#ifdef HIPBLAS_USE_HIP_DATATYPE
-
-    hipblasDatatype_t a_type       = HIP_R_32F;
-    hipblasDatatype_t b_type       = HIP_R_32F;
-    hipblasDatatype_t c_type       = HIP_R_32F;
-    hipblasDatatype_t d_type       = HIP_R_32F;
-    hipblasDatatype_t compute_type = HIP_R_32F;
-
-#else
-
     hipblasDatatype_t a_type       = HIPBLAS_R_32F;
     hipblasDatatype_t b_type       = HIPBLAS_R_32F;
     hipblasDatatype_t c_type       = HIPBLAS_R_32F;
     hipblasDatatype_t d_type       = HIPBLAS_R_32F;
     hipblasDatatype_t compute_type = HIPBLAS_R_32F;
-
-#endif
 
     int incx = 1;
     int incy = 1;

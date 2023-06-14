@@ -107,12 +107,32 @@ typedef __half hipblasHalf;
 
 #endif
 
-#ifdef HIPBLAS_USE_HIP_DATATYPE
+#ifdef HIPBLAS_V2
 
 typedef hipDataType hipblasDatatype_t;
 
+#define HIPBLAS_R_16F HIP_R_16F
+#define HIPBLAS_R_32F HIP_R_32F
+#define HIPBLAS_R_64F HIP_R_64F
+#define HIPBLAS_C_16F HIP_C_16F
+#define HIPBLAS_C_32F HIP_C_32F
+#define HIPBLAS_C_64F HIP_C_64F
+#define HIPBLAS_R_8I HIP_R_8I
+#define HIPBLAS_R_8U HIP_R_8U
+#define HIPBLAS_R_32I HIP_R_32I
+#define HIPBLAS_R_32U HIP_R_32U
+#define HIPBLAS_C_8I HIP_C_8I
+#define HIPBLAS_C_8U HIP_C_8U
+#define HIPBLAS_C_32I HIP_C_32I
+#define HIPBLAS_C_32U HIP_C_32U
+#define HIPBLAS_R_16B HIP_R_16BF
+#define HIPBLAS_C_16B HIP_C_16BF
+
 #else
 
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasDatatype_t is deprecated, and it will be replaced completely by hipDataType in the future. Compiling hipBLAS with -DHIPBLAS_V2 will replace hipblasDatatype_t in the API with hipDataType.")
+// clang-format on
 typedef enum
 {
     HIPBLAS_R_16F            = 150, /**< 16 bit floating point, real */
@@ -133,17 +153,6 @@ typedef enum
     HIPBLAS_C_16B            = 169, /**< 16 bit bfloat, complex */
     HIPBLAS_DATATYPE_INVALID = 255, /**< Invalid datatype value, do not use */
 } hipblasDatatype_t;
-
-// TODO: quick way to test this out, should remove
-#define HIP_R_16F HIPBLAS_R_16F
-#define HIP_R_32F HIPBLAS_R_32F
-#define HIP_R_64F HIPBLAS_R_64F
-#define HIP_C_32F HIPBLAS_C_32F
-#define HIP_C_64F HIPBLAS_C_64F
-#define HIP_R_16F HIPBLAS_R_16F
-#define HIP_R_16BF HIPBLAS_R_16B
-#define HIP_R_8I HIPBLAS_R_8I
-#define HIP_R_32I HIPBLAS_R_32I
 
 #endif
 

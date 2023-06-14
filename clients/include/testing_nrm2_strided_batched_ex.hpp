@@ -216,23 +216,23 @@ inline hipblasStatus_t testing_nrm2_strided_batched_ex(Arguments arg)
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    if(xType == HIP_R_16F && resultType == HIP_R_16F && executionType == HIP_R_32F)
+    if(xType == HIPBLAS_R_16F && resultType == HIPBLAS_R_16F && executionType == HIPBLAS_R_32F)
     {
         status = testing_nrm2_strided_batched_ex_template<hipblasHalf, hipblasHalf, float>(arg);
     }
-    else if(xType == HIP_R_32F && resultType == HIP_R_32F && executionType == HIP_R_32F)
+    else if(xType == HIPBLAS_R_32F && resultType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {
         status = testing_nrm2_strided_batched_ex_template<float>(arg);
     }
-    else if(xType == HIP_R_64F && resultType == HIP_R_64F && executionType == HIP_R_64F)
+    else if(xType == HIPBLAS_R_64F && resultType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
     {
         status = testing_nrm2_strided_batched_ex_template<double>(arg);
     }
-    else if(xType == HIP_C_32F && resultType == HIP_R_32F && executionType == HIP_R_32F)
+    else if(xType == HIPBLAS_C_32F && resultType == HIPBLAS_R_32F && executionType == HIPBLAS_R_32F)
     {
         status = testing_nrm2_strided_batched_ex_template<hipblasComplex, float>(arg);
     }
-    else if(xType == HIP_C_64F && resultType == HIP_R_64F && executionType == HIP_R_64F)
+    else if(xType == HIPBLAS_C_64F && resultType == HIPBLAS_R_64F && executionType == HIPBLAS_R_64F)
     {
         status = testing_nrm2_strided_batched_ex_template<hipblasDoubleComplex, double>(arg);
     }

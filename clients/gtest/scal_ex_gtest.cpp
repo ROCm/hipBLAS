@@ -80,28 +80,6 @@ const double stride_scale_range[] = {1.0, 2.5};
 
 const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
-#ifdef HIPBLAS_USE_HIP_DATATYPE
-
-// Supported rocBLAS configs
-const vector<vector<hipblasDatatype_t>> precisions{// Not supported in cuBLAS
-#ifndef __HIP_PLATFORM_NVCC__
-                                                   {HIP_R_16F, HIP_R_16F, HIP_R_16F},
-                                                   {HIP_R_16F, HIP_R_16F, HIP_R_32F},
-                                                   {HIP_R_32F, HIP_C_32F, HIP_C_32F},
-                                                   {HIP_R_64F, HIP_C_64F, HIP_C_64F},
-#endif
-
-                                                   // Supported in both rocBLAS and cuBLAS
-                                                   {HIP_R_32F, HIP_R_16F, HIP_R_32F},
-                                                   {HIP_R_32F, HIP_R_32F, HIP_R_32F},
-                                                   {HIP_R_64F, HIP_R_64F, HIP_R_64F},
-                                                   {HIP_C_32F, HIP_C_32F, HIP_C_32F},
-                                                   {HIP_C_64F, HIP_C_64F, HIP_C_64F}
-
-};
-
-#else
-
 // Supported rocBLAS configs
 const vector<vector<hipblasDatatype_t>> precisions{// Not supported in cuBLAS
 #ifndef __HIP_PLATFORM_NVCC__
@@ -119,8 +97,6 @@ const vector<vector<hipblasDatatype_t>> precisions{// Not supported in cuBLAS
                                                    {HIPBLAS_C_64F, HIPBLAS_C_64F, HIPBLAS_C_64F}
 
 };
-
-#endif // HIPBLAS_USE_HIP_DATATYPE
 
 const bool is_fortran[] = {false, true};
 
@@ -173,8 +149,9 @@ TEST_P(scal_ex_gtest, scal_ex)
         {
             EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
         }
-        else if(arg.a_type == HIP_R_16F || (arg.a_type == HIP_R_32F && arg.b_type == HIP_C_32F)
-                || (arg.a_type == HIP_R_64F && arg.b_type == HIP_C_64F))
+        else if(arg.a_type == HIPBLAS_R_16F
+                || (arg.a_type == HIPBLAS_R_32F && arg.b_type == HIPBLAS_C_32F)
+                || (arg.a_type == HIPBLAS_R_64F && arg.b_type == HIPBLAS_C_64F))
         {
             EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status); // unsupported CUDA configs
         }

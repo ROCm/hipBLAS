@@ -187,89 +187,6 @@ const vector<vector<char>> transA_transB_range = {{'N', 'N'}, {'N', 'T'}, {'C', 
 
 // a_type, b_type, c_type, d_type, compute_type
 
-#ifdef HIPBLAS_USE_HIP_DATATYPE
-
-const vector<vector<hipblasDatatype_t>> precision_half = {{ HIP_R_16F,
-                                                            HIP_R_16F,
-                                                            HIP_R_16F,
-                                                            HIP_R_16F,
-                                                            HIP_R_16F  }};
-
-const vector<vector<hipblasDatatype_t>> precision_hpa_half = {{ HIP_R_16F,
-                                                                HIP_R_16F,
-                                                                HIP_R_16F,
-                                                                HIP_R_16F,
-                                                                HIP_R_32F  }};
-
-const vector<vector<hipblasDatatype_t>> precision_single = {{ HIP_R_32F,
-                                                              HIP_R_32F,
-                                                              HIP_R_32F,
-                                                              HIP_R_32F,
-                                                              HIP_R_32F  }};
-
-const vector<vector<hipblasDatatype_t>> precision_double = {{ HIP_R_64F,
-                                                              HIP_R_64F,
-                                                              HIP_R_64F,
-                                                              HIP_R_64F,
-                                                              HIP_R_64F  }};
-
-const vector<vector<hipblasDatatype_t>> precision_single_complex = {{ HIP_C_32F,
-                                                              HIP_C_32F,
-                                                              HIP_C_32F,
-                                                              HIP_C_32F,
-                                                              HIP_C_32F  }};
-
-const vector<vector<hipblasDatatype_t>> precision_double_complex = {{ HIP_C_64F,
-                                                              HIP_C_64F,
-                                                              HIP_C_64F,
-                                                              HIP_C_64F,
-                                                              HIP_C_64F  }};
-
-const vector<vector<hipblasDatatype_t>> precision_int8 = {{ HIP_R_8I,
-                                                              HIP_R_8I,
-                                                              HIP_R_32I,
-                                                              HIP_R_32I,
-                                                              HIP_R_32I  }};
-
-
-const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIP_R_16F,
-                                                                 HIP_R_16F,
-                                                                 HIP_R_16F,
-                                                                 HIP_R_16F,
-                                                                 HIP_R_16F},
-                                                                {HIP_R_16F,
-                                                                 HIP_R_16F,
-                                                                 HIP_R_16F,
-                                                                 HIP_R_16F,
-                                                                 HIP_R_32F},
-                                                                {HIP_R_32F,
-                                                                 HIP_R_32F,
-                                                                 HIP_R_32F,
-                                                                 HIP_R_32F,
-                                                                 HIP_R_32F},
-                                                                {HIP_R_64F,
-                                                                 HIP_R_64F,
-                                                                 HIP_R_64F,
-                                                                 HIP_R_64F,
-                                                                 HIP_R_64F},
-                                                                {HIP_C_32F,
-                                                                 HIP_C_32F,
-                                                                 HIP_C_32F,
-                                                                 HIP_C_32F,
-                                                                 HIP_C_32F},
-                                                                {HIP_C_64F,
-                                                                 HIP_C_64F,
-                                                                 HIP_C_64F,
-                                                                 HIP_C_64F,
-                                                                 HIP_C_64F},
-                                                                {HIP_R_8I,
-                                                                 HIP_R_8I,
-                                                                 HIP_R_32I,
-                                                                 HIP_R_32I,
-                                                                 HIP_R_32I}};
-
-#else
-
 const vector<vector<hipblasDatatype_t>> precision_half = {{ HIPBLAS_R_16F,
                                                             HIPBLAS_R_16F,
                                                             HIPBLAS_R_16F,
@@ -348,8 +265,6 @@ const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIPBLAS_R_16F,
                                                                  HIPBLAS_R_32I,
                                                                  HIPBLAS_R_32I,
                                                                  HIPBLAS_R_32I}};
-
-#endif
 
 const int batch_count_range[] = { -1, 1, 5 };
 const int batch_count_range_small[] = { 1 };

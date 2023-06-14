@@ -92,77 +92,6 @@ hipblasDiagType_t char2hipblas_diagonal(char value);
 
 hipblasSideMode_t char2hipblas_side(char value);
 
-#ifdef HIPBLAS_USE_HIP_DATATYPE
-
-hipblasDatatype_t string2hipblas_datatype(const std::string& value);
-
-// return precision string for hipblas_datatype
-inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
-{
-    switch(type)
-    {
-    case HIP_R_32F:
-        return "f32_r";
-    case HIP_R_64F:
-        return "f64_r";
-    case HIP_R_16F:
-        return "f16_r";
-    case HIP_R_8I:
-        return "i8_r";
-    case HIP_C_32F:
-        return "f32_c";
-    case HIP_C_64F:
-        return "f64_c";
-    case HIP_C_16F:
-        return "f16_c";
-    case HIP_C_8I:
-        return "i8_c";
-    case HIP_R_8U:
-        return "u8_r";
-    case HIP_C_8U:
-        return "u8_c";
-    case HIP_R_32I:
-        return "i32_r";
-    case HIP_C_32I:
-        return "i32_c";
-    case HIP_R_32U:
-        return "u32_r";
-    case HIP_C_32U:
-        return "u32_c";
-    case HIP_R_16BF:
-        return "bf16_r";
-    case HIP_C_16BF:
-        return "bf16_c";
-    case HIP_R_4I:
-        return "i4_r";
-    case HIP_C_4I:
-        return "i4_c";
-    case HIP_R_4U:
-        return "u4_r";
-    case HIP_C_4U:
-        return "u4_c";
-    case HIP_R_16I:
-        return "i16_r";
-    case HIP_C_16I:
-        return "i16_c";
-    case HIP_R_16U:
-        return "u16_r";
-    case HIP_C_16U:
-        return "u16_c";
-    case HIP_R_64I:
-        return "i64_r";
-    case HIP_C_64I:
-        return "i64_c";
-    case HIP_R_64U:
-        return "u64_r";
-    case HIP_C_64U:
-        return "u64_c";
-    }
-    return "invalid";
-}
-
-#else
-
 hipblasDatatype_t string2hipblas_datatype(const std::string& value);
 
 // return precision string for hipblas_datatype
@@ -202,12 +131,10 @@ inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
         return "bf16_r";
     case HIPBLAS_C_16B:
         return "bf16_c";
-    case HIPBLAS_DATATYPE_INVALID:
+    default:
         return "invalid";
     }
     return "invalid";
 }
-
-#endif
 
 #endif

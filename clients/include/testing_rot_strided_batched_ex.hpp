@@ -246,46 +246,47 @@ inline hipblasStatus_t testing_rot_strided_batched_ex(Arguments arg)
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    if(executionType == HIP_R_32F && xType == yType && xType == HIP_R_16BF && csType == HIP_R_16BF)
+    if(executionType == HIPBLAS_R_32F && xType == yType && xType == HIPBLAS_R_16B
+       && csType == HIPBLAS_R_16B)
     {
         status
             = testing_rot_strided_batched_ex_template<float, hipblasBfloat16, hipblasBfloat16>(arg);
     }
-    else if(executionType == HIP_R_32F && xType == yType && xType == HIP_R_16F
-            && csType == HIP_R_16F)
+    else if(executionType == HIPBLAS_R_32F && xType == yType && xType == HIPBLAS_R_16F
+            && csType == HIPBLAS_R_16F)
     {
         status = testing_rot_strided_batched_ex_template<float, hipblasHalf, hipblasHalf>(arg);
     }
-    else if(executionType == HIP_R_32F && xType == yType && xType == HIP_R_32F
-            && csType == HIP_R_32F)
+    else if(executionType == HIPBLAS_R_32F && xType == yType && xType == HIPBLAS_R_32F
+            && csType == HIPBLAS_R_32F)
     {
         status = testing_rot_strided_batched_ex_template<float>(arg);
     }
-    else if(executionType == HIP_R_64F && xType == yType && xType == HIP_R_64F
-            && csType == HIP_R_64F)
+    else if(executionType == HIPBLAS_R_64F && xType == yType && xType == HIPBLAS_R_64F
+            && csType == HIPBLAS_R_64F)
     {
         status = testing_rot_strided_batched_ex_template<double>(arg);
     }
-    else if(executionType == HIP_C_32F && xType == yType && xType == HIP_C_32F
-            && csType == HIP_R_32F)
+    else if(executionType == HIPBLAS_C_32F && xType == yType && xType == HIPBLAS_C_32F
+            && csType == HIPBLAS_R_32F)
     {
         status
             = testing_rot_strided_batched_ex_template<hipblasComplex, hipblasComplex, float>(arg);
     }
-    else if(executionType == HIP_C_32F && xType == yType && xType == HIP_C_32F
-            && csType == HIP_C_32F)
+    else if(executionType == HIPBLAS_C_32F && xType == yType && xType == HIPBLAS_C_32F
+            && csType == HIPBLAS_C_32F)
     {
         status = testing_rot_strided_batched_ex_template<hipblasComplex>(arg);
     }
-    else if(executionType == HIP_C_64F && xType == yType && xType == HIP_C_64F
-            && csType == HIP_R_64F)
+    else if(executionType == HIPBLAS_C_64F && xType == yType && xType == HIPBLAS_C_64F
+            && csType == HIPBLAS_R_64F)
     {
         status = testing_rot_strided_batched_ex_template<hipblasDoubleComplex,
                                                          hipblasDoubleComplex,
                                                          double>(arg);
     }
-    else if(executionType == HIP_C_64F && xType == yType && xType == HIP_C_64F
-            && csType == HIP_C_64F)
+    else if(executionType == HIPBLAS_C_64F && xType == yType && xType == HIPBLAS_C_64F
+            && csType == HIPBLAS_C_64F)
     {
         status = testing_rot_strided_batched_ex_template<hipblasDoubleComplex>(arg);
     }

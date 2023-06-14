@@ -166,44 +166,6 @@ hipblasSideMode_t char2hipblas_side(char value)
 
 // clang-format off
 
-#ifdef HIPBLAS_USE_HIP_DATATYPE
-
-hipblasDatatype_t string2hipblas_datatype(const std::string& value)
-{
-    return
-        value == "f32_r" || value == "s" ? HIP_R_32F  :
-        value == "f64_r" || value == "d" ? HIP_R_64F  :
-        value == "f16_r" || value == "h" ? HIP_R_16F  :
-        value == "i8_r"                  ? HIP_R_8I   :
-        value == "f32_c" || value == "c" ? HIP_C_32F  :
-        value == "f64_c" || value == "z" ? HIP_C_64F  :
-        value == "f16_c"                 ? HIP_C_16F  :
-        value == "i8_c"                  ? HIP_C_8I   :
-        value == "u8_r"                  ? HIP_R_8U   :
-        value == "u8_c"                  ? HIP_C_8U   :
-        value == "i32_r"                 ? HIP_R_32I  :
-        value == "i32_c"                 ? HIP_C_32I  :
-        value == "u32_r"                 ? HIP_R_32U  :
-        value == "u32_c"                 ? HIP_C_32U  :
-        value == "bf16_r"                ? HIP_R_16BF :
-        value == "bf16_c"                ? HIP_C_16BF :
-        value == "i4_r"                  ? HIP_R_4I   :
-        value == "i4_c"                  ? HIP_C_4I   :
-        value == "u4_r"                  ? HIP_R_4U   :
-        value == "u4_c"                  ? HIP_C_4U   :
-        value == "i16_r"                 ? HIP_R_16I  :
-        value == "i16_c"                 ? HIP_C_16I  :
-        value == "u16_r"                 ? HIP_R_16U  :
-        value == "u16_c"                 ? HIP_C_16U  :
-        value == "i64_r"                 ? HIP_R_64I  :
-        value == "i64_c"                 ? HIP_C_64I  :
-        value == "u64_r"                 ? HIP_R_64U  :
-        value == "u64_c"                 ? HIP_C_64U  :
-        (hipblasDatatype_t)(-1);
-}
-
-#else
-
 hipblasDatatype_t string2hipblas_datatype(const std::string& value)
 {
     return
@@ -223,9 +185,7 @@ hipblasDatatype_t string2hipblas_datatype(const std::string& value)
         value == "u32_r"                 ? HIPBLAS_R_32U  :
         value == "u8_c"                  ? HIPBLAS_C_8U   :
         value == "u32_c"                 ? HIPBLAS_C_32U  :
-        HIPBLAS_DATATYPE_INVALID;
+        hipblasDatatype_t(-1);
 }
-
-#endif
 
 // clang-format on
