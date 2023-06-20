@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -123,6 +123,7 @@ struct Arguments
     int batch_count  = 10;
 
     bool fortran = false;
+    bool inplace = false; // only for trmm
 
     int      norm_check = 0;
     int      unit_check = 1;
@@ -186,6 +187,7 @@ struct Arguments
     OPER(apiCallCount) SEP           \
     OPER(batch_count) SEP            \
     OPER(fortran) SEP                \
+    OPER(inplace) SEP                \
     OPER(norm_check) SEP             \
     OPER(unit_check) SEP             \
     OPER(timing) SEP                 \
