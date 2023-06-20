@@ -188,18 +188,18 @@ int main()
     srand(1);
     for(int i = 0; i < size_a; ++i)
     {
-        ha[i] = 1.0;
-        //      ha[i] = rand() % 17;
+        //      ha[i] = 1.0;
+        ha[i] = rand() % 17;
     }
     for(int i = 0; i < size_b; ++i)
     {
-        hb[i] = 1.0;
-        //      hb[i] = rand() % 17;
+        //      hb[i] = 1.0;
+        hb[i] = rand() % 17;
     }
     for(int i = 0; i < size_c; ++i)
     {
-        hc[i] = 1.0;
-        //      hc[i] = rand() % 17;
+        //      hc[i] = 1.0;
+        hc[i] = rand() % 17;
     }
     hc_gold = hc;
 
@@ -217,13 +217,8 @@ int main()
     hipblasHandle_t handle;
     CHECK_HIPBLAS_ERROR(hipblasCreate(&handle));
 
-#ifdef HIPBLAS_V1
     CHECK_HIPBLAS_ERROR(
         hipblasStrmm(handle, side, uplo, transa, diag, m, n, &alpha, da, lda, db, ldb, dc, ldc));
-#else
-    CHECK_HIPBLAS_ERROR(hipblasStrmmOutofplace(
-        handle, side, uplo, transa, diag, m, n, &alpha, da, lda, db, ldb, dc, ldc));
-#endif
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hc.data(), dc, sizeof(float) * size_c, hipMemcpyDeviceToHost));
