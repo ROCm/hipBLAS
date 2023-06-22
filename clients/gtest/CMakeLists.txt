@@ -161,7 +161,7 @@ target_include_directories( hipblas-test
 )
 
 if (NOT WIN32)
-    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
+    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client lapack cblas stdc++fs gfortran )
 endif()
 
 target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )

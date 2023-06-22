@@ -49,13 +49,10 @@ include( build-options )
 if( NOT WIN32 )
     set(hipblas_f90_source_clients_no_solver
       include/hipblas_fortran_no_solver_module.f90
-      # include/hipblas_fortran_blas.f90
     )
 
     set(hipblas_f90_source_clients_solver
       include/hipblas_fortran_module.f90
-      # include/hipblas_fortran_blas.f90
-      # include/hipblas_fortran_solver.f90
     )
 endif()
 
