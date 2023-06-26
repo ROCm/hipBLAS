@@ -2,7 +2,10 @@
 # or enums defined with c_int base clases and attributes.
 Datatypes:
   - int: c_int
-  - hipDataType:
+  - hipblasDatatype_t:
+    # note: hipblas-test and hipblas-bench don't use *.yaml as input,
+    #       these types have been updated to match hipDataType but aren't used,
+    #       so shouldn't break hipblasDatatype_t use either.
       bases: [ c_int ]
       attr:
         f32_r:   0
@@ -293,11 +296,11 @@ Arguments:
   - ldb: int
   - ldc: int
   - ldd: int
-  - a_type: hipDataType
-  - b_type: hipDataType
-  - c_type: hipDataType
-  - d_type: hipDataType
-  - compute_type: hipDataType
+  - a_type: hipblasDatatype_t
+  - b_type: hipblasDatatype_t
+  - c_type: hipblasDatatype_t
+  - d_type: hipblasDatatype_t
+  - compute_type: hipblasDatatype_t
   - incx: int
   - incy: int
   - incd: int

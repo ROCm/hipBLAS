@@ -207,6 +207,189 @@ hipblasPointerMode_t RocblasPointerModeToHIPPointerMode(rocblas_pointer_mode mod
     throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
+rocblas_gemm_algo HIPGemmAlgoToRocblasGemmAlgo(hipblasGemmAlgo_t algo)
+{
+    switch(algo)
+    {
+    case HIPBLAS_GEMM_DEFAULT:
+        return rocblas_gemm_algo_standard;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
+hipblasGemmAlgo_t RocblasGemmAlgoToHIPGemmAlgo(rocblas_gemm_algo algo)
+{
+    switch(algo)
+    {
+    case rocblas_gemm_algo_standard:
+        return HIPBLAS_GEMM_DEFAULT;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
+rocblas_atomics_mode HIPAtomicsModeToRocblasAtomicsMode(hipblasAtomicsMode_t mode)
+{
+    switch(mode)
+    {
+    case HIPBLAS_ATOMICS_NOT_ALLOWED:
+        return rocblas_atomics_not_allowed;
+    case HIPBLAS_ATOMICS_ALLOWED:
+        return rocblas_atomics_allowed;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
+hipblasAtomicsMode_t RocblasAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode mode)
+{
+    switch(mode)
+    {
+    case rocblas_atomics_not_allowed:
+        return HIPBLAS_ATOMICS_NOT_ALLOWED;
+    case rocblas_atomics_allowed:
+        return HIPBLAS_ATOMICS_ALLOWED;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
+hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
+{
+    switch(error)
+    {
+    case rocblas_status_size_unchanged:
+    case rocblas_status_size_increased:
+    case rocblas_status_success:
+        return HIPBLAS_STATUS_SUCCESS;
+    case rocblas_status_invalid_handle:
+        return HIPBLAS_STATUS_NOT_INITIALIZED;
+    case rocblas_status_not_implemented:
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+    case rocblas_status_invalid_pointer:
+    case rocblas_status_invalid_size:
+    case rocblas_status_invalid_value:
+        return HIPBLAS_STATUS_INVALID_VALUE;
+    case rocblas_status_memory_error:
+        return HIPBLAS_STATUS_ALLOC_FAILED;
+    case rocblas_status_internal_error:
+        return HIPBLAS_STATUS_INTERNAL_ERROR;
+    default:
+        return HIPBLAS_STATUS_UNKNOWN;
+    }
+}
+
+#ifdef HIPBLAS_USE_HIP_DATATYPE
+
+rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
+{
+    switch(type)
+    {
+    case HIP_R_16F:
+        return rocblas_datatype_f16_r;
+
+    case HIP_R_32F:
+        return rocblas_datatype_f32_r;
+
+    case HIP_R_64F:
+        return rocblas_datatype_f64_r;
+
+    case HIP_C_16F:
+        return rocblas_datatype_f16_c;
+
+    case HIP_C_32F:
+        return rocblas_datatype_f32_c;
+
+    case HIP_C_64F:
+        return rocblas_datatype_f64_c;
+
+    case HIP_R_8I:
+        return rocblas_datatype_i8_r;
+
+    case HIP_R_8U:
+        return rocblas_datatype_u8_r;
+
+    case HIP_R_32I:
+        return rocblas_datatype_i32_r;
+
+    case HIP_R_32U:
+        return rocblas_datatype_u32_r;
+
+    case HIP_C_8I:
+        return rocblas_datatype_i8_c;
+
+    case HIP_C_8U:
+        return rocblas_datatype_u8_c;
+
+    case HIP_C_32I:
+        return rocblas_datatype_i32_c;
+
+    case HIP_C_32U:
+        return rocblas_datatype_u32_c;
+
+    case HIP_R_16BF:
+        return rocblas_datatype_bf16_r;
+
+    case HIP_C_16BF:
+        return rocblas_datatype_bf16_c;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
+hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
+{
+    switch(type)
+    {
+    case rocblas_datatype_f16_r:
+        return HIP_R_16F;
+
+    case rocblas_datatype_f32_r:
+        return HIP_R_32F;
+
+    case rocblas_datatype_f64_r:
+        return HIP_R_64F;
+
+    case rocblas_datatype_f16_c:
+        return HIP_C_16F;
+
+    case rocblas_datatype_f32_c:
+        return HIP_C_32F;
+
+    case rocblas_datatype_f64_c:
+        return HIP_C_64F;
+
+    case rocblas_datatype_i8_r:
+        return HIP_R_8I;
+
+    case rocblas_datatype_u8_r:
+        return HIP_R_8U;
+
+    case rocblas_datatype_i32_r:
+        return HIP_R_32I;
+
+    case rocblas_datatype_u32_r:
+        return HIP_R_32U;
+
+    case rocblas_datatype_i8_c:
+        return HIP_C_8I;
+
+    case rocblas_datatype_u8_c:
+        return HIP_C_8U;
+
+    case rocblas_datatype_i32_c:
+        return HIP_C_32I;
+
+    case rocblas_datatype_u32_c:
+        return HIP_C_32U;
+
+    case rocblas_datatype_bf16_r:
+        return HIP_R_16BF;
+
+    case rocblas_datatype_bf16_c:
+        return HIP_C_16BF;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
+#else
+
 rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
 {
     switch(type)
@@ -293,74 +476,7 @@ hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
     throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
-rocblas_gemm_algo HIPGemmAlgoToRocblasGemmAlgo(hipblasGemmAlgo_t algo)
-{
-    switch(algo)
-    {
-    case HIPBLAS_GEMM_DEFAULT:
-        return rocblas_gemm_algo_standard;
-    }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
-}
-
-hipblasGemmAlgo_t RocblasGemmAlgoToHIPGemmAlgo(rocblas_gemm_algo algo)
-{
-    switch(algo)
-    {
-    case rocblas_gemm_algo_standard:
-        return HIPBLAS_GEMM_DEFAULT;
-    }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
-}
-
-rocblas_atomics_mode HIPAtomicsModeToRocblasAtomicsMode(hipblasAtomicsMode_t mode)
-{
-    switch(mode)
-    {
-    case HIPBLAS_ATOMICS_NOT_ALLOWED:
-        return rocblas_atomics_not_allowed;
-    case HIPBLAS_ATOMICS_ALLOWED:
-        return rocblas_atomics_allowed;
-    }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
-}
-
-hipblasAtomicsMode_t RocblasAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode mode)
-{
-    switch(mode)
-    {
-    case rocblas_atomics_not_allowed:
-        return HIPBLAS_ATOMICS_NOT_ALLOWED;
-    case rocblas_atomics_allowed:
-        return HIPBLAS_ATOMICS_ALLOWED;
-    }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
-}
-
-hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
-{
-    switch(error)
-    {
-    case rocblas_status_size_unchanged:
-    case rocblas_status_size_increased:
-    case rocblas_status_success:
-        return HIPBLAS_STATUS_SUCCESS;
-    case rocblas_status_invalid_handle:
-        return HIPBLAS_STATUS_NOT_INITIALIZED;
-    case rocblas_status_not_implemented:
-        return HIPBLAS_STATUS_NOT_SUPPORTED;
-    case rocblas_status_invalid_pointer:
-    case rocblas_status_invalid_size:
-    case rocblas_status_invalid_value:
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    case rocblas_status_memory_error:
-        return HIPBLAS_STATUS_ALLOC_FAILED;
-    case rocblas_status_internal_error:
-        return HIPBLAS_STATUS_INTERNAL_ERROR;
-    default:
-        return HIPBLAS_STATUS_UNKNOWN;
-    }
-}
+#endif
 
 hipblasStatus_t hipblasCreate(hipblasHandle_t* handle)
 try

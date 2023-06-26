@@ -22,6 +22,7 @@
 set( hipblas_samples_common ../common/utility.cpp )
 
 add_executable( hipblas-example-sscal example_sscal.cpp ${hipblas_samples_common} )
+add_executable( hipblas-example-scal-ex-v2 example_scal_ex_v2.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-strmm_v1 example_strmm.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
@@ -53,12 +54,13 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-strmm_v1 hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
+list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm_v1 hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
 
 target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
+target_compile_options( hipblas-example-scal-ex-v2 PRIVATE -DHIPBLAS_V2)
 
 # HIP on Windows: xhip is required with clang++ to get __half defined
 if ( WIN32 )
