@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -79,7 +79,7 @@ include( ROCMInstallSymlinks )
 include( ROCMClients )
 include( ROCMHeaderWrapper )
 
-set ( VERSION_STRING "1.1.0" )
+set ( VERSION_STRING "2.0.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
@@ -193,7 +193,7 @@ endif( )
 
 # Package specific CPACK vars
 if( NOT USE_CUDA )
-  rocm_package_add_dependencies(DEPENDS "rocblas >= 3.1.0" "rocsolver >= 3.23.0")
+  rocm_package_add_dependencies(DEPENDS "rocblas >= 4.0.0" "rocsolver >= 3.24.0")
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )

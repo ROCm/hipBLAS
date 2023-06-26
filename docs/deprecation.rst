@@ -79,6 +79,18 @@ ldc equal to ldb.
 
 There are similar deprecations for the _batched and _strided_batched versions of trmm.
 
+Removed in hipBLAS 1.0
+^^^^^^^^^^^^^^^^^^^^^^
+
+HIPBLAS_INT8_DATATYPE_PACK_INT8x4 hipblasGemmEx support removed
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Packed int8x4 was removed as support for arbitrary dimensioned int8_t data is a superset of this functionality:
+
+* enum hipblasInt8Datatype_t was removed
+* function hipblasSetInt8Datatype was removed
+* function hipblasGetInt8Datatype was removed
+
 Announced in hipBLAS 2.0
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

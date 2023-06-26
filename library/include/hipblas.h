@@ -2306,7 +2306,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdrot(hipblasHandle_t       handle,
     n       [int]
             number of elements in each x_i and y_i vectors.
     @param[inout]
-    x       device array of deivce pointers storing each vector x_i.
+    x       device array of device pointers storing each vector x_i.
     @param[in]
     incx    [int]
             specifies the increment between elements of each x_i.
@@ -3513,7 +3513,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZswapStridedBatched(hipblasHandle_t       
               Leading (kl + ku + 1) by n part of the matrix contains the coefficients
               of the banded matrix. The leading diagonal resides in row (ku + 1) with
               the first super-diagonal above on the RHS of row ku. The first sub-diagonal
-              resides below on the LHS of row ku + 2. This propogates up and down across
+              resides below on the LHS of row ku + 2. This propagates up and down across
               sub/super-diagonals.
                 Ex: (m = n = 7; ku = 2, kl = 2)
                 1 2 3 0 0 0 0             0 0 3 3 3 3 3
@@ -3647,7 +3647,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgbmv(hipblasHandle_t             handle,
               Leading (kl + ku + 1) by n part of the matrix contains the coefficients
               of the banded matrix. The leading diagonal resides in row (ku + 1) with
               the first super-diagonal above on the RHS of row ku. The first sub-diagonal
-              resides below on the LHS of row ku + 2. This propogates up and down across
+              resides below on the LHS of row ku + 2. This propagates up and down across
               sub/super-diagonals.
                 Ex: (m = n = 7; ku = 2, kl = 2)
                 1 2 3 0 0 0 0             0 0 3 3 3 3 3
@@ -3788,7 +3788,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgbmvBatched(hipblasHandle_t              
               Leading (kl + ku + 1) by n part of the matrix contains the coefficients
               of the banded matrix. The leading diagonal resides in row (ku + 1) with
               the first super-diagonal above on the RHS of row ku. The first sub-diagonal
-              resides below on the LHS of row ku + 2. This propogates up and down across
+              resides below on the LHS of row ku + 2. This propagates up and down across
               sub/super-diagonals.
                 Ex: (m = n = 7; ku = 2, kl = 2)
                 1 2 3 0 0 0 0             0 0 3 3 3 3 3
@@ -9390,7 +9390,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbsvStridedBatched(hipblasHandle_t       
 
     @param[in]
     AP       device pointer storing matrix A,
-            of dimension at leat ( m * ( m + 1 ) / 2 ).
+            of dimension at least ( m * ( m + 1 ) / 2 ).
           Before entry with uplo = HIPBLAS_FILL_MODE_UPPER, the array A
           must contain the upper triangular matrix packed sequentially,
           column by column, so that A[0] contains a_{0,0}, A[1] and A[2] contain
@@ -10765,13 +10765,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgemm(hipblasHandle_t             handle,
               specifies the form of op( B )
     @param[in]
     m         [int]
-              matrix dimention m.
+              matrix dimension m.
     @param[in]
     n         [int]
-              matrix dimention n.
+              matrix dimension n.
     @param[in]
     k         [int]
-              matrix dimention k.
+              matrix dimension k.
     @param[in]
     alpha     device pointer or host pointer specifying the scalar alpha.
     @param[in]
@@ -10911,13 +10911,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgemmBatched(hipblasHandle_t              
               specifies the form of op( B )
     @param[in]
     m         [int]
-              matrix dimention m.
+              matrix dimension m.
     @param[in]
     n         [int]
-              matrix dimention n.
+              matrix dimension n.
     @param[in]
     k         [int]
-              matrix dimention k.
+              matrix dimension k.
     @param[in]
     alpha     device pointer or host pointer specifying the scalar alpha.
     @param[in]
@@ -19731,7 +19731,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
     n       [int]
             number of elements in each x_i and y_i vectors.
     @param[inout]
-    x       device array of deivce pointers storing each vector x_i.
+    x       device array of device pointers storing each vector x_i.
     @param[in]
     xType [hipblasDatatype_t]
            specifies the datatype of each vector x_i.
