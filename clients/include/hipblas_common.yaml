@@ -4,7 +4,7 @@ Datatypes:
   - int: c_int
   - hipblasDatatype_t:
     # note: hipblas-test and hipblas-bench don't use *.yaml as input,
-    #       these types have been updated to match hipDataType but aren't used,
+    #       these types have been updated to match hipDataType enum but aren't used,
     #       so shouldn't break hipblasDatatype_t use either.
       bases: [ c_int ]
       attr:

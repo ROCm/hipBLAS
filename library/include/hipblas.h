@@ -465,7 +465,7 @@ typedef hipDataType hipblasDatatype_t;
 #else
 
 // clang-format off
-//HIPBLAS_DEPRECATED_MSG("hipblasDatatype_t is deprecated, and it will be replaced completely by hipDataType in the future. Compiling with -DHIPBLAS_V2 will replace hipblasDatatype_t in the API with hipDataType.")
+HIPBLAS_DEPRECATED_MSG("hipblasDatatype_t is deprecated and will be replaced by hipDataType in the future. Compile with -DHIPBLAS_V2 to get new API with hipDataType now.")
 // clang-format on
 typedef enum
 {
@@ -19865,7 +19865,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   hand
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
-    When compiling with HIPBLAS_V2, hipblasScalEx accepts hipDataType for alphaType,
+    With HIPBLAS_V2 define, hipblasScalEx accepts hipDataType for alphaType,
     xType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
@@ -19949,7 +19949,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
-    When compiling with HIPBLAS_V2, hipblasScalBatchedEx accepts hipDataType for alphaType,
+    With HIPBLAS_V2 define, hipblasScalBatchedEx accepts hipDataType for alphaType,
     xType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
@@ -20042,7 +20042,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
-    When compiling with HIPBLAS_V2, hipblasScalStridedBatchedEx accepts hipDataType for alphaType,
+    With HIPBLAS_V2 define, hipblasScalStridedBatchedEx accepts hipDataType for alphaType,
     xType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
