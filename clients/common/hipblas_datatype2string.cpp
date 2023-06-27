@@ -165,7 +165,6 @@ hipblasSideMode_t char2hipblas_side(char value)
 }
 
 // clang-format off
-
 hipblasDatatype_t string2hipblas_datatype(const std::string& value)
 {
     return
@@ -187,5 +186,4 @@ hipblasDatatype_t string2hipblas_datatype(const std::string& value)
         value == "u32_c"                 ? HIPBLAS_C_32U  :
         HIPBLAS_DATATYPE_INVALID;
 }
-
 // clang-format on
