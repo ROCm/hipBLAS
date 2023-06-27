@@ -38,6 +38,10 @@
 #include <hip/library_types.h>
 #include <stdint.h>
 
+#ifdef __HIP_PLATFORM_NVCC__
+#include <cublas_v2.h>
+#endif
+
 /* Workaround clang bug:
 
    This macro expands to static if clang is used; otherwise it expands empty.
@@ -461,7 +465,7 @@ typedef hipDataType hipblasDatatype_t;
 #else
 
 // clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasDatatype_t is deprecated, and it will be replaced completely by hipDataType in the future. Compiling with -DHIPBLAS_V2 will replace hipblasDatatype_t in the API with hipDataType.")
+//HIPBLAS_DEPRECATED_MSG("hipblasDatatype_t is deprecated, and it will be replaced completely by hipDataType in the future. Compiling with -DHIPBLAS_V2 will replace hipblasDatatype_t in the API with hipDataType.")
 // clang-format on
 typedef enum
 {
