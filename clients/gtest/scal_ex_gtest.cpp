@@ -81,6 +81,8 @@ const double stride_scale_range[] = {1.0, 2.5};
 const int batch_count_range[] = {-1, 0, 1, 2, 10};
 
 // Supported rocBLAS configs
+// For HIPBLAS_V2 these are all defined as corresponding hipDataTypes in hipblas.h
+// along with hipblasDatatype_t being a typedef of hipDataType
 const vector<vector<hipblasDatatype_t>> precisions{// Not supported in cuBLAS
 #ifndef __HIP_PLATFORM_NVCC__
                                                    {HIPBLAS_R_16F, HIPBLAS_R_16F, HIPBLAS_R_16F},
@@ -98,7 +100,14 @@ const vector<vector<hipblasDatatype_t>> precisions{// Not supported in cuBLAS
 
 };
 
+// Fortran interface doesn't change when compiling with HIPBLAS_V2 and will continue to accept hipblasDatatype_t for now.
+// When we remove hipblasDatatype_t, the Fortran interface will change accordingly.
+// So not testing fortran interface with hipblas_v2-test.
+#ifdef HIPBLAS_V2
+const bool is_fortran[] = {false};
+#else
 const bool is_fortran[] = {false, true};
+#endif
 
 /* ===============Google Unit Test==================================================== */
 

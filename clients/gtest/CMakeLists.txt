@@ -134,6 +134,7 @@ set( hipblas_test_common
 )
 
 add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
+add_executable( hipblas_v2-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
 
 if(LINK_BLIS)
     set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
@@ -144,11 +145,13 @@ target_include_directories( hipblas-test
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
 )
-
-
-
+target_include_directories( hipblas_v2-test
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+)
 
 target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
+target_compile_definitions( hipblas_v2-test PRIVATE GOOGLE_TEST )
 
 # External header includes included as SYSTEM files
 target_include_directories( hipblas-test
@@ -159,42 +162,64 @@ target_include_directories( hipblas-test
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
     ${ROCM_PATH}/include
 )
+target_include_directories( hipblas_v2-test
+  SYSTEM PRIVATE
+    $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
+    ${ROCM_PATH}/include
+)
 
 if (NOT WIN32)
     target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
+    target_link_libraries( hipblas_v2-test PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
 endif()
 
 target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )
+target_link_libraries( hipblas_v2-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
+target_compile_options( hipblas_v2-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
 target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS)
+target_compile_definitions( hipblas_v2-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS HIPBLAS_V2 )
 
 if( NOT USE_CUDA )
   target_link_libraries( hipblas-test PRIVATE hip::host )
+  target_link_libraries( hipblas_v2-test PRIVATE hip::host )
 
   if( CUSTOM_TARGET )
     target_link_libraries( hipblas-test PRIVATE hip::${CUSTOM_TARGET} )
+    target_link_libraries( hipblas_v2-test PRIVATE hip::${CUSTOM_TARGET} )
   endif( )
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
     # hip-clang needs specific flag to turn on pthread and m
     target_link_libraries( hipblas-test PRIVATE -lpthread -lm )
+    target_link_libraries( hipblas_v2-test PRIVATE -lpthread -lm )
 
     if(BUILD_ADDRESS_SANITIZER)
       target_link_libraries( hipblas-test PRIVATE -fuse-ld=lld -lgfortran )
+      target_link_libraries( hipblas_v2-test PRIVATE -fuse-ld=lld -lgfortran )
     endif()
   endif()
 else( )
   target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_NVCC__ )
+  target_compile_definitions( hipblas_v2-test PRIVATE __HIP_PLATFORM_NVCC__ )
 
   target_include_directories( hipblas-test
     PRIVATE
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
   )
+  target_include_directories( hipblas_v2-test
+    PRIVATE
+      $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
+  )
 
   target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} )
+  target_link_libraries( hipblas_v2-test PRIVATE ${CUDA_LIBRARIES} )
 endif( )
 
 if (WIN32)
@@ -215,9 +240,11 @@ if (WIN32)
   )
   foreach( file_i ${third_party_dlls})
     add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy ${file_i} ${PROJECT_BINARY_DIR}/staging/ )
+    add_custom_command( TARGET hipblas_v2-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy ${file_i} ${PROJECT_BINARY_DIR}/staging/ )
   endforeach( file_i )
 
   add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${ROCBLAS_PATH}/bin/rocblas/library/ ${PROJECT_BINARY_DIR}/staging/library/)
+  add_custom_command( TARGET hipblas_v2-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${ROCBLAS_PATH}/bin/rocblas/library/ ${PROJECT_BINARY_DIR}/staging/library/)
 endif()
 
 set_target_properties( hipblas-test PROPERTIES
@@ -229,5 +256,15 @@ set_target_properties( hipblas-test PROPERTIES
     LINKER_LANGUAGE CXX
     DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
+  set_target_properties( hipblas_v2-test PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARED_REQUIRED ON
+    CXX_EXTENSIONS OFF
+    IMPORT_PREFIX ""
+    IMPORT_SUFFIX ".lib"
+    LINKER_LANGUAGE CXX
+    DEBUG_POSTFIX "-d"
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 
 rocm_install(TARGETS hipblas-test COMPONENT tests)
+rocm_install(TARGETS hipblas_v2-test COMPONENT tests)
