@@ -75,7 +75,7 @@ int main()
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        printf("bad status: %d\n", status);
+        printf("Bad return status from hipblasScalEx: %d\n", status);
         CHECK_HIP_ERROR(hipFree(dx));
         hipblasDestroy(handle);
         return status;
