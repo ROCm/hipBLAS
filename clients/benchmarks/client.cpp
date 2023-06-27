@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -398,12 +398,29 @@ try
         return hipblas_bench_datafile();
 
     std::transform(precision.begin(), precision.end(), precision.begin(), ::tolower);
-    auto prec        = string2hipblas_datatype(precision);
-    arg.a_type       = a_type == "" ? prec : string2hipblas_datatype(a_type);
-    arg.b_type       = b_type == "" ? prec : string2hipblas_datatype(b_type);
-    arg.c_type       = c_type == "" ? prec : string2hipblas_datatype(c_type);
-    arg.d_type       = d_type == "" ? prec : string2hipblas_datatype(d_type);
+    auto prec = string2hipblas_datatype(precision);
+    if(prec == HIPBLAS_DATATYPE_INVALID)
+        throw std::invalid_argument("Invalid value for --precision " + precision);
+
+    arg.a_type = a_type == "" ? prec : string2hipblas_datatype(a_type);
+    if(arg.a_type == HIPBLAS_DATATYPE_INVALID)
+        throw std::invalid_argument("Invalid value for --a_type " + a_type);
+
+    arg.b_type = b_type == "" ? prec : string2hipblas_datatype(b_type);
+    if(arg.b_type == HIPBLAS_DATATYPE_INVALID)
+        throw std::invalid_argument("Invalid value for --b_type " + b_type);
+
+    arg.c_type = c_type == "" ? prec : string2hipblas_datatype(c_type);
+    if(arg.c_type == HIPBLAS_DATATYPE_INVALID)
+        throw std::invalid_argument("Invalid value for --c_type " + c_type);
+
+    arg.d_type = d_type == "" ? prec : string2hipblas_datatype(d_type);
+    if(arg.d_type == HIPBLAS_DATATYPE_INVALID)
+        throw std::invalid_argument("Invalid value for --d_type " + d_type);
+
     arg.compute_type = compute_type == "" ? prec : string2hipblas_datatype(compute_type);
+    if(arg.compute_type == HIPBLAS_DATATYPE_INVALID)
+        throw std::invalid_argument("Invalid value for --compute_type " + compute_type);
 
     arg.initialization = string2hipblas_initialization(initialization);
     if(arg.initialization == static_cast<hipblas_initialization>(0)) // invalid enum

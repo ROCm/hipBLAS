@@ -437,6 +437,7 @@ typedef enum
 
 #ifdef HIPBLAS_V2
 
+// Replacing use of hipblasDatatype_t with hipDataType which will be used in a future release.
 typedef hipDataType hipblasDatatype_t;
 
 #define HIPBLAS_R_16F HIP_R_16F
@@ -455,6 +456,7 @@ typedef hipDataType hipblasDatatype_t;
 #define HIPBLAS_C_32U HIP_C_32U
 #define HIPBLAS_R_16B HIP_R_16BF
 #define HIPBLAS_C_16B HIP_C_16BF
+#define HIPBLAS_DATATYPE_INVALID hipDataType(255)
 
 #else
 

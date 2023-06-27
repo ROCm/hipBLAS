@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -185,7 +185,7 @@ hipblasDatatype_t string2hipblas_datatype(const std::string& value)
         value == "u32_r"                 ? HIPBLAS_R_32U  :
         value == "u8_c"                  ? HIPBLAS_C_8U   :
         value == "u32_c"                 ? HIPBLAS_C_32U  :
-        hipblasDatatype_t(-1);
+        HIPBLAS_DATATYPE_INVALID;
 }
 
 // clang-format on
