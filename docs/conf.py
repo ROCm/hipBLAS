@@ -6,6 +6,9 @@
 
 from rocm_docs import ROCmDocs
 
+
+external_projects_current_project = "hipblas"
+
 docs_core = ROCmDocs("hipBLAS Documentation")
 docs_core.run_doxygen()
 docs_core.setup()
