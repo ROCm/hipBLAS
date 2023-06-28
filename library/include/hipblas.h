@@ -20544,6 +20544,29 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
                                                               hipDataType     executionType);
 
 #ifdef HIPBLAS_V2
+#define hipblasTrsmEx hipblasTrsmEx_v2
+#define hipblasTrsmBatchedEx hipblasTrsmBatchedEx_v2
+#define hipblasTrsmStridedBatchedEx hipblasTrsmStridedBatchedEx_v2
+
+#define hipblasAxpyEx hipblasAxpyEx_v2
+#define hipblasAxpyBatchedEx hipblasAxpyBatchedEx_v2
+#define hipblasAxpyStridedBatchedEx hipblasAxpyStridedBatchedEx_v2
+
+#define hipblasDotEx hipblasDotEx_v2
+#define hipblasDotcEx hipblasDotcEx_v2
+#define hipblasDotBatchedEx hipblasDotBatchedEx_v2
+#define hipblasDotcBatchedEx hipblasDotcBatchedEx_v2
+#define hipblasDotStridedBatchedEx hipblasDotStridedBatchedEx_v2
+#define hipblasDotcStridedBatchedEx hipblasDotcStridedBatchedEx_v2
+
+#define hipblasNrm2Ex hipblasNrm2Ex_v2
+#define hipblasNrm2BatchedEx hipblasNrm2BatchedEx_v2
+#define hipblasNrm2StridedBatchedEx hipblasNrm2StridedBatchedEx_v2
+
+#define hipblasRotEx hipblasRotEx_v2
+#define hipblasRotBatchedEx hipblasRotBatchedEx_v2
+#define hipblasRotStridedBatchedEx hipblasRotStridedBatchedEx_v2
+
 #define hipblasScalEx hipblasScalEx_v2
 #define hipblasScalBatchedEx hipblasScalBatchedEx_v2
 #define hipblasScalStridedBatchedEx hipblasScalStridedBatchedEx_v2
