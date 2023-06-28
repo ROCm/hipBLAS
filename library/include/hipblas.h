@@ -18670,6 +18670,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    ha
       - ldinvA = 128
       - batchCount = 1
 
+    With HIPBLAS_V2 define, hipblasTrsmEx accepts hipDataType for computeType
+    rather than hipblasDatatype_t.
+
     @param[in]
     handle  [hipblasHandle_t]
             handle to the hipblas library context queue.
@@ -18771,6 +18774,29 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
 /*! BLAS EX API
 
     \details
+    hipblasTrsmEx_v2 acts identically to hipblasTrsmEx but accepts hipDataType
+    rather than hipblasDatatype_t for computeType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx_v2(hipblasHandle_t    handle,
+                                                hipblasSideMode_t  side,
+                                                hipblasFillMode_t  uplo,
+                                                hipblasOperation_t transA,
+                                                hipblasDiagType_t  diag,
+                                                int                m,
+                                                int                n,
+                                                const void*        alpha,
+                                                void*              A,
+                                                int                lda,
+                                                void*              B,
+                                                int                ldb,
+                                                const void*        invA,
+                                                int                invAsize,
+                                                hipDataType        computeType);
+
+/*! BLAS EX API
+
+    \details
     trsmBatchedEx solves
 
         op(A_i)*X_i = alpha*B_i or X_i*op(A_i) = alpha*B_i,
@@ -18807,6 +18833,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
       - invA = invA + stride_invA * previousBatchCount
       - ldinvA = 128
       - batchCount = 1
+
+    With HIPBLAS_V2 define, hipblasTrsmBatchedEx accepts hipDataType for computeType
+    rather than hipblasDatatype_t.
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -18914,6 +18943,30 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
 /*! BLAS EX API
 
     \details
+    hipblasTrsmBatchedEx_v2 acts identically to hipblasTrsmEx but accepts hipDataType
+    rather than hipblasDatatype_t for computeType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx_v2(hipblasHandle_t    handle,
+                                                       hipblasSideMode_t  side,
+                                                       hipblasFillMode_t  uplo,
+                                                       hipblasOperation_t transA,
+                                                       hipblasDiagType_t  diag,
+                                                       int                m,
+                                                       int                n,
+                                                       const void*        alpha,
+                                                       void*              A,
+                                                       int                lda,
+                                                       void*              B,
+                                                       int                ldb,
+                                                       int                batchCount,
+                                                       const void*        invA,
+                                                       int                invAsize,
+                                                       hipDataType        computeType);
+
+/*! BLAS EX API
+
+    \details
     trsmStridedBatchedEx solves
 
         op(A_i)*X_i = alpha*B_i or X_i*op(A_i) = alpha*B_i,
@@ -18950,6 +19003,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
       - invA = invA + stride_invA * previousBatchCount
       - ldinvA = 128
       - batchCount = 1
+
+    With HIPBLAS_V2 define, hipblasStridedBatchedTrsmEx accepts hipDataType for computeType
+    rather than hipblasDatatype_t.
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -19070,6 +19126,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
                                                            hipblasStride      strideInvA,
                                                            hipblasDatatype_t  computeType);
 
+/*! BLAS EX API
+
+    \details
+    hipblasTrsmStridedBatchedEx_v2 acts identically to hipblasTrsmEx but accepts hipDataType
+    rather than hipblasDatatype_t for computeType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx_v2(hipblasHandle_t    handle,
+                                                              hipblasSideMode_t  side,
+                                                              hipblasFillMode_t  uplo,
+                                                              hipblasOperation_t transA,
+                                                              hipblasDiagType_t  diag,
+                                                              int                m,
+                                                              int                n,
+                                                              const void*        alpha,
+                                                              void*              A,
+                                                              int                lda,
+                                                              hipblasStride      strideA,
+                                                              void*              B,
+                                                              int                ldb,
+                                                              hipblasStride      strideB,
+                                                              int                batchCount,
+                                                              const void*        invA,
+                                                              int                invAsize,
+                                                              hipblasStride      strideInvA,
+                                                              hipDataType        computeType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -19078,6 +19161,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
         y := alpha * x + y
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasAxpyEx accepts hipDataType for alphaType,
+    xType, yType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19126,12 +19212,34 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
 /*! \brief BLAS EX API
 
     \details
+    hipblasAxpyEx_v2 acts identically to hipblasAxpyEx but accepts hipDataType
+    rather than hipblasDatatype_t for alphaType, xType, yType, and executionType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx_v2(hipblasHandle_t handle,
+                                                int             n,
+                                                const void*     alpha,
+                                                hipDataType     alphaType,
+                                                const void*     x,
+                                                hipDataType     xType,
+                                                int             incx,
+                                                void*           y,
+                                                hipDataType     yType,
+                                                int             incy,
+                                                hipDataType     executionType);
+
+/*! \brief BLAS EX API
+
+    \details
     axpyBatchedEx computes constant alpha multiplied by vector x, plus vector y over
                       a set of batched vectors.
 
         y := alpha * x + y
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasAxpyBatchedEx accepts hipDataType for alphaType,
+    xType, yType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19184,12 +19292,35 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
 /*! \brief BLAS EX API
 
     \details
+    hipblasAxpyBatchedEx_v2 acts identically to hipblasAxpyBatchedEx but accepts hipDataType
+    rather than hipblasDatatype_t for alphaType, xType, yType, and executionType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx_v2(hipblasHandle_t handle,
+                                                       int             n,
+                                                       const void*     alpha,
+                                                       hipDataType     alphaType,
+                                                       const void*     x,
+                                                       hipDataType     xType,
+                                                       int             incx,
+                                                       void*           y,
+                                                       hipDataType     yType,
+                                                       int             incy,
+                                                       int             batchCount,
+                                                       hipDataType     executionType);
+
+/*! \brief BLAS EX API
+
+    \details
     axpyStridedBatchedEx computes constant alpha multiplied by vector x, plus vector y over
                       a set of strided batched vectors.
 
         y := alpha * x + y
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasAxpyStridedBatchedEx accepts hipDataType for alphaType,
+    xType, yType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19253,6 +19384,28 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   han
                                                            int               batchCount,
                                                            hipblasDatatype_t executionType);
 
+/*! \brief BLAS EX API
+
+    \details
+    hipblasAxpyBatchedEx_v2 acts identically to hipblasAxpyBatchedEx but accepts hipDataType
+    rather than hipblasDatatype_t for alphaType, xType, yType, and executionType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx_v2(hipblasHandle_t handle,
+                                                              int             n,
+                                                              const void*     alpha,
+                                                              hipDataType     alphaType,
+                                                              const void*     x,
+                                                              hipDataType     xType,
+                                                              int             incx,
+                                                              hipblasStride   stridex,
+                                                              void*           y,
+                                                              hipDataType     yType,
+                                                              int             incy,
+                                                              hipblasStride   stridey,
+                                                              int             batchCount,
+                                                              hipDataType     executionType);
+
 /*! @{
     \brief BLAS EX API
 
@@ -19266,6 +19419,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   han
         result = conjugate (x) * y;
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasDot(c)Ex accepts hipDataType for xType, yType,
+    resultType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19331,6 +19487,40 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
     \brief BLAS EX API
 
     \details
+    hipblasDot(c)Ex_v2 acts identically to hipblasDot(c)Ex but accepts hipDataType
+    rather than hipblasDatatype_t for xType, yType, resultType, and executionType.
+
+    ********************************************************************/
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx_v2(hipblasHandle_t handle,
+                                               int             n,
+                                               const void*     x,
+                                               hipDataType     xType,
+                                               int             incx,
+                                               const void*     y,
+                                               hipDataType     yType,
+                                               int             incy,
+                                               void*           result,
+                                               hipDataType     resultType,
+                                               hipDataType     executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx_v2(hipblasHandle_t handle,
+                                                int             n,
+                                                const void*     x,
+                                                hipDataType     xType,
+                                                int             incx,
+                                                const void*     y,
+                                                hipDataType     yType,
+                                                int             incy,
+                                                void*           result,
+                                                hipDataType     resultType,
+                                                hipDataType     executionType);
+//! @}
+
+/*! @{
+    \brief BLAS EX API
+
+    \details
     dotBatchedEx performs a batch of dot products of vectors x and y
 
         result_i = x_i * y_i;
@@ -19343,6 +19533,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
     x_i and y_i are vectors, for i = 1, ..., batchCount
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasDot(c)BatchedEx accepts hipDataType for xType, yType,
+    resultType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19413,6 +19606,42 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
     \brief BLAS EX API
 
     \details
+    hipblasDot(c)BatchedEx_v2 acts identically to hipblasDot(c)BatchedEx but accepts hipDataType
+    rather than hipblasDatatype_t for xType, yType, resultType, and executionType.
+
+    ********************************************************************/
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx_v2(hipblasHandle_t handle,
+                                                      int             n,
+                                                      const void*     x,
+                                                      hipDataType     xType,
+                                                      int             incx,
+                                                      const void*     y,
+                                                      hipDataType     yType,
+                                                      int             incy,
+                                                      int             batchCount,
+                                                      void*           result,
+                                                      hipDataType     resultType,
+                                                      hipDataType     executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx_v2(hipblasHandle_t handle,
+                                                       int             n,
+                                                       const void*     x,
+                                                       hipDataType     xType,
+                                                       int             incx,
+                                                       const void*     y,
+                                                       hipDataType     yType,
+                                                       int             incy,
+                                                       int             batchCount,
+                                                       void*           result,
+                                                       hipDataType     resultType,
+                                                       hipDataType     executionType);
+//! @}
+
+/*! @{
+    \brief BLAS EX API
+
+    \details
     dotStridedBatchedEx  performs a batch of dot products of vectors x and y
 
         result_i = x_i * y_i;
@@ -19425,6 +19654,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
     x_i and y_i are vectors, for i = 1, ..., batchCount
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasDot(c)StridedBatchedEx accepts hipDataType for xType, yType,
+    resultType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19501,6 +19733,46 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   han
                                                            hipblasDatatype_t executionType);
 //! @}
 
+/*! @{
+    \brief BLAS EX API
+
+    \details
+    hipblasDot(c)StridedBatchedEx_v2 acts identically to hipblasDot(c)StridedBatchedEx but accepts hipDataType
+    rather than hipblasDatatype_t for xType, yType, resultType, and executionType.
+
+    ********************************************************************/
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx_v2(hipblasHandle_t   handle,
+                                                             int               n,
+                                                             const void*       x,
+                                                             hipblasDatatype_t xType,
+                                                             int               incx,
+                                                             hipblasStride     stridex,
+                                                             const void*       y,
+                                                             hipblasDatatype_t yType,
+                                                             int               incy,
+                                                             hipblasStride     stridey,
+                                                             int               batchCount,
+                                                             void*             result,
+                                                             hipblasDatatype_t resultType,
+                                                             hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx_v2(hipblasHandle_t handle,
+                                                              int             n,
+                                                              const void*     x,
+                                                              hipDataType     xType,
+                                                              int             incx,
+                                                              hipblasStride   stridex,
+                                                              const void*     y,
+                                                              hipDataType     yType,
+                                                              int             incy,
+                                                              hipblasStride   stridey,
+                                                              int             batchCount,
+                                                              void*           result,
+                                                              hipDataType     resultType,
+                                                              hipDataType     executionType);
+//! @}
+
 /*! \brief BLAS_EX API
 
     \details
@@ -19511,6 +19783,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   han
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasNrm2Ex accepts hipDataType for xType,
+    resultType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19549,12 +19823,31 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
 /*! \brief BLAS_EX API
 
     \details
+    hipblasNrm2Ex_v2 acts identically to hipblasNrm2Ex but accepts hipDataType
+    rather than hipblasDatatype_t for xType, resultType, and executionType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex_v2(hipblasHandle_t handle,
+                                                int             n,
+                                                const void*     x,
+                                                hipDataType     xType,
+                                                int             incx,
+                                                void*           result,
+                                                hipDataType     resultType,
+                                                hipDataType     executionType);
+
+/*! \brief BLAS_EX API
+
+    \details
     nrm2BatchedEx computes the euclidean norm over a batch of real or complex vectors
 
               result := sqrt( x_i'*x_i ) for real vectors x, for i = 1, ..., batchCount
               result := sqrt( x_i**H*x_i ) for complex vectors x, for i = 1, ..., batchCount
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasNrm2BatchedEx accepts hipDataType for xType,
+    resultType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19598,12 +19891,32 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
 /*! \brief BLAS_EX API
 
     \details
+    hipblasNrm2BatchedEx_v2 acts identically to hipblasNrm2BatchedEx but accepts hipDataType
+    rather than hipblasDatatype_t for xType, resultType, and executionType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx_v2(hipblasHandle_t handle,
+                                                       int             n,
+                                                       const void*     x,
+                                                       hipDataType     xType,
+                                                       int             incx,
+                                                       int             batchCount,
+                                                       void*           result,
+                                                       hipDataType     resultType,
+                                                       hipDataType     executionType);
+
+/*! \brief BLAS_EX API
+
+    \details
     nrm2StridedBatchedEx computes the euclidean norm over a batch of real or complex vectors
 
               := sqrt( x_i'*x_i ) for real vectors x, for i = 1, ..., batchCount
               := sqrt( x_i**H*x_i ) for complex vectors, for i = 1, ..., batchCount
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasNrm2StridedBatchedEx accepts hipDataType for xType,
+    resultType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19651,6 +19964,24 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   han
                                                            hipblasDatatype_t resultType,
                                                            hipblasDatatype_t executionType);
 
+/*! \brief BLAS_EX API
+
+    \details
+    hipblasNrm2StridedBatchedEx_v2 acts identically to hipblasNrm2StridedBatchedEx but accepts hipDataType
+    rather than hipblasDatatype_t for xType, resultType, and executionType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx_v2(hipblasHandle_t handle,
+                                                              int             n,
+                                                              const void*     x,
+                                                              hipDataType     xType,
+                                                              int             incx,
+                                                              hipblasStride   stridex,
+                                                              int             batchCount,
+                                                              void*           result,
+                                                              hipDataType     resultType,
+                                                              hipDataType     executionType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -19666,6 +19997,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   han
             y := real(c) * y - conj(s) * x
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasRotEx accepts hipDataType for xType, yType,
+    csType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -19714,6 +20048,26 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
                                             hipblasDatatype_t csType,
                                             hipblasDatatype_t executionType);
 
+/*! \brief BLAS_EX API
+
+    \details
+    hipblasRotEx_v2 acts identically to hipblasRotEx but accepts hipDataType
+    rather than hipblasDatatype_t for xType, yType, csType, and executionType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx_v2(hipblasHandle_t handle,
+                                               int             n,
+                                               void*           x,
+                                               hipDataType     xType,
+                                               int             incx,
+                                               void*           y,
+                                               hipDataType     yType,
+                                               int             incy,
+                                               const void*     c,
+                                               const void*     s,
+                                               hipDataType     csType,
+                                               hipDataType     executionType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -19729,6 +20083,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
             y := real(c) * y - conj(s) * x
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasRotBatchedEx accepts hipDataType for xType, yType,
+    csType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -19781,6 +20138,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
                                                    int               batchCount,
                                                    hipblasDatatype_t executionType);
 
+/*! \brief BLAS_EX API
+
+    \details
+    hipblasRotBatchedEx_v2 acts identically to hipblasRotBatchedEx but accepts hipDataType
+    rather than hipblasDatatype_t for xType, yType, csType, and executionType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx_v2(hipblasHandle_t handle,
+                                                      int             n,
+                                                      void*           x,
+                                                      hipDataType     xType,
+                                                      int             incx,
+                                                      void*           y,
+                                                      hipDataType     yType,
+                                                      int             incy,
+                                                      const void*     c,
+                                                      const void*     s,
+                                                      hipDataType     csType,
+                                                      int             batchCount,
+                                                      hipDataType     executionType);
+
 /*! \brief BLAS Level 1 API
 
     \details
@@ -19796,6 +20174,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
             y := real(c) * y - conj(s) * x
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasRotStridedBatchedEx accepts hipDataType for xType, yType,
+    csType, and executionType rather than hipblasDatatype_t.
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -19855,6 +20236,29 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   hand
                                                           hipblasDatatype_t csType,
                                                           int               batchCount,
                                                           hipblasDatatype_t executionType);
+
+/*! \brief BLAS_EX API
+
+    \details
+    hipblasRotStridedBatchedEx_v2 acts identically to hipblasRotStridedBatchedEx but accepts hipDataType
+    rather than hipblasDatatype_t for xType, yType, csType, and executionType.
+
+    ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx_v2(hipblasHandle_t handle,
+                                                             int             n,
+                                                             void*           x,
+                                                             hipDataType     xType,
+                                                             int             incx,
+                                                             hipblasStride   stridex,
+                                                             void*           y,
+                                                             hipDataType     yType,
+                                                             int             incy,
+                                                             hipblasStride   stridey,
+                                                             const void*     c,
+                                                             const void*     s,
+                                                             hipDataType     csType,
+                                                             int             batchCount,
+                                                             hipDataType     executionType);
 
 /*! \brief BLAS EX API
 
