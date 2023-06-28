@@ -460,7 +460,7 @@ typedef hipDataType hipblasDatatype_t;
 #define HIPBLAS_C_32U HIP_C_32U
 #define HIPBLAS_R_16B HIP_R_16BF
 #define HIPBLAS_C_16B HIP_C_16BF
-#define HIPBLAS_DATATYPE_INVALID hipDataType(255)
+#define HIPBLAS_DATATYPE_INVALID hipDataType(31) // Temporary until hipblasDatatype_t is gone.
 
 #else
 
