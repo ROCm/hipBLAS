@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -69,16 +69,16 @@ inline hipblasStatus_t testing_nrm2_strided_batched_ex_template(const Arguments&
                                   hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedExFortran(handle,
-                                                               N,
-                                                               nullptr,
-                                                               xType,
-                                                               incx,
-                                                               stridex,
-                                                               batch_count,
-                                                               d_hipblas_result_0,
-                                                               resultType,
-                                                               executionType));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedExFn(handle,
+                                                          N,
+                                                          nullptr,
+                                                          xType,
+                                                          incx,
+                                                          stridex,
+                                                          batch_count,
+                                                          d_hipblas_result_0,
+                                                          resultType,
+                                                          executionType));
 
         if(batch_count > 0)
         {

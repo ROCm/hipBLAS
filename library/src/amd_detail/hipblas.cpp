@@ -19384,11 +19384,11 @@ hipblasStatus_t hipblasDotcEx_v2(hipblasHandle_t handle,
                                  hipDataType     xType,
                                  int             incx,
                                  const void*     y,
-                                 const yType,
-                                 int   incy,
-                                 void* result,
-                                 const resultType,
-                                 const executionType)
+                                 hipDataType     yType,
+                                 int             incy,
+                                 void*           result,
+                                 hipDataType     resultType,
+                                 hipDataType     executionType)
 try
 {
     return rocBLASStatusToHIPStatus(
