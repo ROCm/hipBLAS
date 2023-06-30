@@ -90,3 +90,15 @@ Packed int8x4 was removed as support for arbitrary dimensioned int8_t data is a 
 * enum hipblasInt8Datatype_t was removed
 * function hipblasSetInt8Datatype was removed
 * function hipblasGetInt8Datatype was removed
+
+Announced in hipBLAS 2.0
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Remove hipblasDatatype_t and replace with hipDataType
+=====================================================
+Use of the deprecated hipblasDatatype_t will give deprecation warnings telling you to compile with -DHIPBLAS_V2
+and to use hipDataType instead.
+
+Note that there are no deprecation warnings for the hipBLAS Fortran API.
+
+hipblasDatatype_t will be removed in a future release, and the use of this type in the API will be replaced with hipDataType.
