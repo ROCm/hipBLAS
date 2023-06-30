@@ -19866,7 +19866,32 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   hand
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     With HIPBLAS_V2 define, hipblasScalEx accepts hipDataType for alphaType,
-    xType, and executionType rather than hipblasDatatype_t.
+    xType, and executionType rather than hipblasDatatype_t. hipblasScalEx will only
+    accept hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasScalEx(hipblasHandle_t handle,
+                                          int             n,
+                                          const void*     alpha,
+                                          hipDataType     alphaType,
+                                          void*           x,
+                                          hipDataType     xType,
+                                          int             incx,
+                                          hipDataType     executionType)
+
+        #else // Deprecated
+
+            hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
+                                          int               n,
+                                          const void*       alpha,
+                                          hipblasDatatype_t alphaType,
+                                          void*             x,
+                                          hipblasDatatype_t xType,
+                                          int               incx,
+                                          hipblasDatatype_t executionType)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19877,18 +19902,24 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   hand
     @param[in]
     alpha     device pointer or host pointer for the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t]
+    alphaType [hipblasDatatype_t] [DEPRECATED]
+               specifies the datatype of alpha.\n
+    alphaType [hipDataType]
                specifies the datatype of alpha.
     @param[inout]
     x         device pointer storing vector x.
     @param[in]
-    xType [hipblasDatatype_t]
+    xType [hipblasDatatype_t] [DEPRECATED]
+           specifies the datatype of vector x.\n
+    xType [hipDataType]
            specifies the datatype of vector x.
     @param[in]
     incx      [int]
               specifies the increment for the elements of x.
     @param[in]
-    executionType [hipblasDatatype_t]
+    executionType [hipblasDatatype_t] [DEPRECATED]
+                   specifies the datatype of computation.\n
+    executionType [hipDataType]
                    specifies the datatype of computation.
 
     ********************************************************************/
@@ -19901,36 +19932,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
                                              int               incx,
                                              hipblasDatatype_t executionType);
 
-/*! \brief BLAS EX API
-
-    \details
-    hipblasScalEx_v2 acts identically to hipblasScalEx but accepts hipDataType
-    rather than hipblasDatatype_t for alphaType, xType, and executionType.
-
-    @param[in]
-    handle    [hipblasHandle_t]
-              handle to the hipblas library context queue.
-    @param[in]
-    n         [int]
-              the number of elements in x.
-    @param[in]
-    alpha     device pointer or host pointer for the scalar alpha.
-    @param[in]
-    alphaType [hipDataType]
-               specifies the datatype of alpha.
-    @param[inout]
-    x         device pointer storing vector x.
-    @param[in]
-    xType [hipDataType]
-           specifies the datatype of vector x.
-    @param[in]
-    incx      [int]
-              specifies the increment for the elements of x.
-    @param[in]
-    executionType [hipDataType]
-                   specifies the datatype of computation.
-
-    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
                                                 int             n,
                                                 const void*     alpha,
@@ -19950,7 +19951,34 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     With HIPBLAS_V2 define, hipblasScalBatchedEx accepts hipDataType for alphaType,
-    xType, and executionType rather than hipblasDatatype_t.
+    xType, and executionType rather than hipblasDatatype_t. hipblasScalBatchedEx will only
+    accept hipDataType in a future release.
+
+    #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const void*     alpha,
+                                                 hipDataType     alphaType,
+                                                 void*           x,
+                                                 hipDataType     xType,
+                                                 int             incx,
+                                                 int             batchCount,
+                                                 hipDataType     executionType)
+
+        #else // Deprecated
+
+            hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
+                                                 int               n,
+                                                 const void*       alpha,
+                                                 hipblasDatatype_t alphaType,
+                                                 void*             x,
+                                                 hipblasDatatype_t xType,
+                                                 int               incx,
+                                                 int               batchCount,
+                                                 hipblasDatatype_t executionType)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19961,12 +19989,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
     @param[in]
     alpha     device pointer or host pointer for the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t]
+    alphaType [hipblasDatatype_t] [DEPRECATED]
+               specifies the datatype of alpha.\n
+    alphaType [hipDataType]
                specifies the datatype of alpha.
     @param[inout]
     x         device array of device pointers storing each vector x_i.
     @param[in]
-    xType [hipblasDatatype_t]
+    xType [hipblasDatatype_t] [DEPRECATED]
+           specifies the datatype of each vector x_i.\n
+    xType [hipDataType]
            specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -19975,7 +20007,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
     batchCount [int]
                 number of instances in the batch.
     @param[in]
-    executionType [hipblasDatatype_t]
+    executionType [hipblasDatatype_t] [DEPRECATED]
+                   specifies the datatype of computation.\n
+    executionType [hipDataType]
                    specifies the datatype of computation.
 
     ********************************************************************/
@@ -19989,39 +20023,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
                                                     int               batchCount,
                                                     hipblasDatatype_t executionType);
 
-/*! \brief BLAS EX API
-
-    \details
-    hipblasScalBatchedEx_v2 acts identically to hipblasScalBatchedEx but accepts hipDataType
-    rather than hipblasDatatype_t for alphaType, xType, and executionType.
-
-    @param[in]
-    handle    [hipblasHandle_t]
-              handle to the hipblas library context queue.
-    @param[in]
-    n         [int]
-              the number of elements in x.
-    @param[in]
-    alpha     device pointer or host pointer for the scalar alpha.
-    @param[in]
-    alphaType [hipDataType]
-               specifies the datatype of alpha.
-    @param[inout]
-    x         device array of device pointers storing each vector x_i.
-    @param[in]
-    xType [hipDataType]
-           specifies the datatype of each vector x_i.
-    @param[in]
-    incx      [int]
-              specifies the increment for the elements of each x_i.
-    @param[in]
-    batchCount [int]
-                number of instances in the batch.
-    @param[in]
-    executionType [hipDataType]
-                   specifies the datatype of computation.
-
-    ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
                                                        int             n,
                                                        const void*     alpha,
@@ -20043,7 +20044,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
     With HIPBLAS_V2 define, hipblasScalStridedBatchedEx accepts hipDataType for alphaType,
-    xType, and executionType rather than hipblasDatatype_t.
+    xType, and executionType rather than hipblasDatatype_t. hipblasScalStridedBatchedEx will only
+    accept hipDataType in a future release.
+
+    #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t handle,
+                                                        int             n,
+                                                        const void*     alpha,
+                                                        hipDataType     alphaType,
+                                                        void*           x,
+                                                        hipDataType     xType,
+                                                        int             incx,
+                                                        hipblasStride   stridex,
+                                                        int             batchCount,
+                                                        hipDataType     executionType)
+
+        #else // Deprecated
+
+            hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
+                                                        int               n,
+                                                        const void*       alpha,
+                                                        hipblasDatatype_t alphaType,
+                                                        void*             x,
+                                                        hipblasDatatype_t xType,
+                                                        int               incx,
+                                                        hipblasStride     stridex,
+                                                        int               batchCount,
+                                                        hipblasDatatype_t executionType)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -20054,61 +20084,15 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
     @param[in]
     alpha     device pointer or host pointer for the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t]
-               specifies the datatype of alpha.
-    @param[inout]
-    x         device pointer to the first vector x_1.
-    @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of each vector x_i.
-    @param[in]
-    incx      [int]
-              specifies the increment for the elements of each x_i.
-    @param[in]
-    stridex   [hipblasStride]
-              stride from the start of one vector (x_i) to the next one (x_i+1).
-              There are no restrictions placed on stridex, however the user should
-              take care to ensure that stridex is of appropriate size, for a typical
-              case this means stridex >= n * incx.
-    @param[in]
-    batchCount [int]
-                number of instances in the batch.
-    @param[in]
-    executionType [hipblasDatatype_t]
-                   specifies the datatype of computation.
-
-    ********************************************************************/
-HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
-                                                           int               n,
-                                                           const void*       alpha,
-                                                           hipblasDatatype_t alphaType,
-                                                           void*             x,
-                                                           hipblasDatatype_t xType,
-                                                           int               incx,
-                                                           hipblasStride     stridex,
-                                                           int               batchCount,
-                                                           hipblasDatatype_t executionType);
-
-/*! \brief BLAS EX API
-
-    \details
-    scalStridedBatchedEx_v2 acts identically to hipblasScalStridedBatchedEx but accepts hipDataType
-    rather than hipblasDatatype_t for alphaType, xType, and executionType.
-
-    @param[in]
-    handle    [hipblasHandle_t]
-              handle to the hipblas library context queue.
-    @param[in]
-    n         [int]
-              the number of elements in x.
-    @param[in]
-    alpha     device pointer or host pointer for the scalar alpha.
-    @param[in]
+    alphaType [hipblasDatatype_t] [DEPRECATED]
+               specifies the datatype of alpha.\n
     alphaType [hipDataType]
                specifies the datatype of alpha.
     @param[inout]
     x         device pointer to the first vector x_1.
     @param[in]
+    xType [hipblasDatatype_t] [DEPRECATED]
+           specifies the datatype of each vector x_i.\n
     xType [hipDataType]
            specifies the datatype of each vector x_i.
     @param[in]
@@ -20124,10 +20108,23 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   han
     batchCount [int]
                 number of instances in the batch.
     @param[in]
+    executionType [hipblasDatatype_t] [DEPRECATED]
+                   specifies the datatype of computation.\n
     executionType [hipDataType]
                    specifies the datatype of computation.
 
     ********************************************************************/
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
+                                                           int               n,
+                                                           const void*       alpha,
+                                                           hipblasDatatype_t alphaType,
+                                                           void*             x,
+                                                           hipblasDatatype_t xType,
+                                                           int               incx,
+                                                           hipblasStride     stridex,
+                                                           int               batchCount,
+                                                           hipblasDatatype_t executionType);
+
 HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t handle,
                                                               int             n,
                                                               const void*     alpha,
