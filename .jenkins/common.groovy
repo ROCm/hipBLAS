@@ -36,6 +36,17 @@ def runTestCommand (platform, project)
                 """
 
     platform.runCommand(this, command)
+
+    // In an upcoming release, we are replacing hipblasDatatype_t with hipDataType. We have created hipblas_v2-test to test the new
+    // interfaces while hipblasDatatype_t is deprecated. Thus, hipblas-test will be testing the old, deprecated, functions
+    // using hipblasDatatype_t, and hipblas_v2-test will be testing the upcoming interfaces.
+    def v2TestCommand = """#!/usr/bin/env bash
+                    set -x
+                    cd ${project.paths.project_build_prefix}/build/release/clients/staging
+                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas_v2-test --gtest_filter=*scal_ex*:*scal_batched_ex*:*scal_strided_batched_ex* --gtest_output=xml --gtest_color=yes
+                """
+
+    platform.runCommand(this, v2TestCommand)
     junit "${project.paths.project_build_prefix}/build/release/clients/staging/*.xml"
 }
 
