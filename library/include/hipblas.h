@@ -20841,15 +20841,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
                                                 int             incx,
                                                 hipDataType     executionType);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
-                                                int             n,
-                                                const void*     alpha,
-                                                hipDataType     alphaType,
-                                                void*           x,
-                                                hipDataType     xType,
-                                                int             incx,
-                                                hipDataType     executionType);
-
 /*! \brief BLAS EX API
 
     \details
@@ -20931,16 +20922,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
                                                     int               incx,
                                                     int               batchCount,
                                                     hipblasDatatype_t executionType);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
-                                                       int             n,
-                                                       const void*     alpha,
-                                                       hipDataType     alphaType,
-                                                       void*           x,
-                                                       hipDataType     xType,
-                                                       int             incx,
-                                                       int             batchCount,
-                                                       hipDataType     executionType);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
                                                        int             n,
