@@ -18789,9 +18789,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    ha
             invAsize specifies the number of elements of device memory in invA.
 
     @param[in]
-    computeType [hipblasDatatype_t] [DEPRECATED]
+    computeType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of computation.\n
-    computeType [hipDataType]
+    [hipDataType]
             specifies the datatype of computation.
 
     ********************************************************************/
@@ -18992,9 +18993,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx_v2(hipblasHandle_t    handle,
             invAsize specifies the number of elements of device memory in each invA_i.
 
     @param[in]
-    computeType [hipblasDatatype_t] [DEPRECATED]
+    computeType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of computation.\n
-    computeType [hipDataType]
+    [hipDataType]
             specifies the datatype of computation.
 
     ********************************************************************/
@@ -19216,9 +19218,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx_v2(hipblasHandle_t    handle
             The stride between each invA matrix.
 
     @param[in]
-    computeType [hipblasDatatype_t] [DEPRECATED]
+    computeType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of computation.\n
-    computeType [hipDataType]
+    [hipDataType]
             specifies the datatype of computation.
 
     ********************************************************************/
@@ -19314,16 +19317,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx_v2(hipblasHandle_t   
     @param[in]
     alpha     device pointer or host pointer to specify the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t] [DEPRECATED]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of alpha.\n
-    alphaType [hipDataType]
+    [hipDataType]
               specifies the datatype of alpha.
     @param[in]
     x         device pointer storing vector x.
     @param[in]
-    xType     [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of vector x.\n
-    xType     [hipDataType]
+    [hipDataType]
               specifies the datatype of vector x.
     @param[in]
     incx      [int]
@@ -19331,17 +19336,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx_v2(hipblasHandle_t   
     @param[inout]
     y         device pointer storing vector y.
     @param[in]
-    yType     [hipblasDatatype_t] [DEPRECATED]
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of vector y.\n
-    yType     [hipDataType]
+    [hipDataType]
               specifies the datatype of vector y.
     @param[in]
     incy      [int]
               specifies the increment for the elements of y.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
               specifies the datatype of computation.
 
     ********************************************************************/
@@ -19424,16 +19431,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx_v2(hipblasHandle_t handle,
     @param[in]
     alpha     device pointer or host pointer to specify the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t] [DEPRECATED]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of alpha.\n
-    alphaType [hipDataType]
+    [hipDataType]
               specifies the datatype of alpha.
     @param[in]
     x         device array of device pointers storing each vector x_i.
     @param[in]
-    xType     [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector x_i.\n
-    xType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -19441,9 +19450,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx_v2(hipblasHandle_t handle,
     @param[inout]
     y         device array of device pointers storing each vector y_i.
     @param[in]
-    yType     [hipblasDatatype_t] [DEPRECATED]
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector y_i.\n
-    yType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector y_i.
     @param[in]
     incy      [int]
@@ -19452,9 +19462,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx_v2(hipblasHandle_t handle,
     batchCount [int]
               number of instances in the batch.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
               specifies the datatype of computation.
 
     ********************************************************************/
@@ -19543,16 +19554,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx_v2(hipblasHandle_t handle,
     @param[in]
     alpha     device pointer or host pointer to specify the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t] [DEPRECATED]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of alpha.\n
-    alphaType [hipDataType]
+    [hipDataType]
               specifies the datatype of alpha.
     @param[in]
     x         device pointer to the first vector x_1.
     @param[in]
-    xType     [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector x_i.\n
-    xType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -19566,9 +19579,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx_v2(hipblasHandle_t handle,
     @param[inout]
     y         device pointer to the first vector y_1.
     @param[in]
-    yType     [hipblasDatatype_t] [DEPRECATED]
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector y_i.\n
-    yType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector y_i.
     @param[in]
     incy      [int]
@@ -19583,9 +19597,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx_v2(hipblasHandle_t handle,
     batchCount [int]
               number of instances in the batch.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
               specifies the datatype of computation.
 
     ********************************************************************/
@@ -19676,9 +19691,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx_v2(hipblasHandle_t ha
     @param[in]
     x         device pointer storing vector x.
     @param[in]
-    xType     [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of vector x.\n
-    xType     [hipDataType]
+    [hipDataType]
               specifies the datatype of vector x.
     @param[in]
     incx      [int]
@@ -19686,9 +19702,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx_v2(hipblasHandle_t ha
     @param[in]
     y         device pointer storing vector y.
     @param[in]
-    yType     [hipblasDatatype_t] [DEPRECATED]
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of vector y.\n
-    yType     [hipDataType]
+    [hipDataType]
               specifies the datatype of vector y.
     @param[in]
     incy      [int]
@@ -19698,14 +19715,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx_v2(hipblasHandle_t ha
               device pointer or host pointer to store the dot product.
               return is 0.0 if n <= 0.
     @param[in]
-    resultType [hipblasDatatype_t] [DEPRECATED]
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of the result.\n
-    resultType [hipDataType]
+    [hipDataType]
               specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
               specifies the datatype of computation.
 
     ********************************************************************/
@@ -19821,9 +19840,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx_v2(hipblasHandle_t handle,
     @param[in]
     x         device array of device pointers storing each vector x_i.
     @param[in]
-    xType     [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector x_i.\n
-    xType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -19831,9 +19851,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx_v2(hipblasHandle_t handle,
     @param[in]
     y         device array of device pointers storing each vector y_i.
     @param[in]
-    yType     [hipblasDatatype_t] [DEPRECATED]
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector y_i.\n
-    yType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector y_i.
     @param[in]
     incy      [int]
@@ -19846,14 +19867,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx_v2(hipblasHandle_t handle,
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
     @param[in]
-    resultType [hipblasDatatype_t] [DEPRECATED]
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of the result.\n
-    resultType [hipDataType]
+    [hipDataType]
               specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
               specifies the datatype of computation.
 
     ********************************************************************/
@@ -19977,9 +20000,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx_v2(hipblasHandle_t handle,
     @param[in]
     x         device pointer to the first vector (x_1) in the batch.
     @param[in]
-    xType     [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector x_i.\n
-    xType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -19990,9 +20014,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx_v2(hipblasHandle_t handle,
     @param[in]
     y         device pointer to the first vector (y_1) in the batch.
     @param[in]
-    yType     [hipblasDatatype_t] [DEPRECATED]
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector y_i.\n
-    yType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector y_i.
     @param[in]
     incy      [int]
@@ -20008,14 +20033,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx_v2(hipblasHandle_t handle,
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
     @param[in]
-    resultType [hipblasDatatype_t] [DEPRECATED]
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of the result.\n
-    resultType [hipDataType]
+    [hipDataType]
               specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
               specifies the datatype of computation.
 
     ********************************************************************/
@@ -20128,9 +20155,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx_v2(hipblasHandle_t ha
     @param[in]
     x         device pointer storing vector x.
     @param[in]
-    xType     [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of the vector x.\n
-    xType     [hipDataType]
+    [hipDataType]
               specifies the datatype of the vector x.
     @param[in]
     incx      [int]
@@ -20140,14 +20168,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx_v2(hipblasHandle_t ha
               device pointer or host pointer to store the nrm2 product.
               return is 0.0 if n, incx<=0.
     @param[in]
-    resultType [hipblasDatatype_t] [DEPRECATED]
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of the result.\n
-    resultType [hipDataType]
+    [hipDataType]
               specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
               specifies the datatype of computation.
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
@@ -20217,9 +20247,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex_v2(hipblasHandle_t handle,
     @param[in]
     x         device array of device pointers storing each vector x_i.
     @param[in]
-    xType     [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector x_i.\n
-    xType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -20232,14 +20263,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex_v2(hipblasHandle_t handle,
               device pointer or host pointer to array of batchCount size for nrm2 results.
               return is 0.0 for each element if n <= 0, incx<=0.
     @param[in]
-    resultType [hipblasDatatype_t] [DEPRECATED]
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of the result.\n
-    resultType [hipDataType]
+    [hipDataType]
               specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
               specifies the datatype of computation.
 
     ********************************************************************/
@@ -20314,9 +20347,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx_v2(hipblasHandle_t handle,
     @param[in]
     x         device pointer to the first vector x_1.
     @param[in]
-    xType     [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of each vector x_i.\n
-    xType     [hipDataType]
+    [hipDataType]
               specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -20335,14 +20369,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx_v2(hipblasHandle_t handle,
               device pointer or host pointer to array for storing contiguous batchCount results.
               return is 0.0 for each element if n <= 0, incx<=0.
     @param[in]
-    resultType [hipblasDatatype_t] [DEPRECATED]
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of the result.\n
-    resultType [hipDataType]
+    [hipDataType]
               specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
               specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
               specifies the datatype of computation.
 
     ********************************************************************/
@@ -20429,9 +20465,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx_v2(hipblasHandle_t ha
     @param[inout]
     x       device pointer storing vector x.
     @param[in]
-    xType   [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of vector x.\n
-    xType   [hipDataType]
+    [hipDataType]
             specifies the datatype of vector x.
     @param[in]
     incx    [int]
@@ -20439,9 +20476,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx_v2(hipblasHandle_t ha
     @param[inout]
     y       device pointer storing vector y.
     @param[in]
-    yType   [hipblasDatatype_t] [DEPRECATED]
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of vector y.\n
-    yType   [hipDataType]
+    [hipDataType]
             specifies the datatype of vector y.
     @param[in]
     incy    [int]
@@ -20451,14 +20489,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx_v2(hipblasHandle_t ha
     @param[in]
     s       device pointer or host pointer storing scalar sine component of the rotation matrix.
     @param[in]
-    csType  [hipblasDatatype_t] [DEPRECATED]
+    csType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of c and s.\n
-    csType  [hipDataType]
+    [hipDataType]
             specifies the datatype of c and s.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
             specifies the datatype of computation.
 
     ********************************************************************/
@@ -20551,9 +20591,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx_v2(hipblasHandle_t handle,
     @param[inout]
     x       device array of device pointers storing each vector x_i.
     @param[in]
-    xType   [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of each vector x_i.\n
-    xType   [hipDataType]
+    [hipDataType]
             specifies the datatype of each vector x_i.
     @param[in]
     incx    [int]
@@ -20561,9 +20602,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx_v2(hipblasHandle_t handle,
     @param[inout]
     y       device array of device pointers storing each vector y_i.
     @param[in]
-    yType   [hipblasDatatype_t] [DEPRECATED]
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of each vector y_i.\n
-    yType   [hipDataType]
+    [hipDataType]
             specifies the datatype of each vector y_i.
     @param[in]
     incy    [int]
@@ -20573,17 +20615,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx_v2(hipblasHandle_t handle,
     @param[in]
     s       device pointer or host pointer to scalar sine component of the rotation matrix.
     @param[in]
-    csType  [hipblasDatatype_t] [DEPRECATED]
+    csType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of c and s.\n
-    csType  [hipDataType]
+    [hipDataType]
             specifies the datatype of c and s.
     @param[in]
     batchCount [int]
             the number of x and y arrays, i.e. the number of batches.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
             specifies the datatype of computation.
 
     ********************************************************************/
@@ -20682,9 +20726,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx_v2(hipblasHandle_t handle,
     @param[inout]
     x       device pointer to the first vector x_1.
     @param[in]
-    xType   [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of each vector x_i.\n
-    xType   [hipDataType]
+    [hipDataType]
             specifies the datatype of each vector x_i.
     @param[in]
     incx    [int]
@@ -20695,9 +20740,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx_v2(hipblasHandle_t handle,
     @param[inout]
     y       device pointer to the first vector y_1.
     @param[in]
-    yType   [hipblasDatatype_t] [DEPRECATED]
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of each vector y_i.\n
-    yType   [hipDataType]
+    [hipDataType]
             specifies the datatype of each vector y_i.
     @param[in]
     incy    [int]
@@ -20710,17 +20756,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx_v2(hipblasHandle_t handle,
     @param[in]
     s       device pointer or host pointer to scalar sine component of the rotation matrix.
     @param[in]
-    csType  [hipblasDatatype_t] [DEPRECATED]
+    csType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of c and s.\n
-    csType  [hipDataType]
+    [hipDataType]
             specifies the datatype of c and s.
     @param[in]
     batchCount [int]
             the number of x and y arrays, i.e. the number of batches.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
             specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
             specifies the datatype of computation.
 
     ********************************************************************/
@@ -20771,7 +20819,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx_v2(hipblasHandle_t han
 
         #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
 
-            hipblasStatus_t hipblasScalEx(hipblasHandle_t handle,
+            hipblasStatus_t hipblasScalEx(hipblasHandle_t handle,a
                                           int             n,
                                           const void*     alpha,
                                           hipDataType     alphaType,
@@ -20802,24 +20850,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx_v2(hipblasHandle_t han
     @param[in]
     alpha     device pointer or host pointer for the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t] [DEPRECATED]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
                specifies the datatype of alpha.\n
-    alphaType [hipDataType]
+    [hipDataType]
                specifies the datatype of alpha.
     @param[inout]
     x         device pointer storing vector x.
     @param[in]
-    xType [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
            specifies the datatype of vector x.\n
-    xType [hipDataType]
+    [hipDataType]
            specifies the datatype of vector x.
     @param[in]
     incx      [int]
               specifies the increment for the elements of x.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
                    specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
                    specifies the datatype of computation.
 
     ********************************************************************/
@@ -20889,16 +20940,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
     @param[in]
     alpha     device pointer or host pointer for the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t] [DEPRECATED]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
                specifies the datatype of alpha.\n
-    alphaType [hipDataType]
+    [hipDataType]
                specifies the datatype of alpha.
     @param[inout]
     x         device array of device pointers storing each vector x_i.
     @param[in]
-    xType [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
            specifies the datatype of each vector x_i.\n
-    xType [hipDataType]
+    [hipDataType]
            specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -20907,9 +20960,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
     batchCount [int]
                 number of instances in the batch.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
                    specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
                    specifies the datatype of computation.
 
     ********************************************************************/
@@ -20984,16 +21038,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
     @param[in]
     alpha     device pointer or host pointer for the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t] [DEPRECATED]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
                specifies the datatype of alpha.\n
-    alphaType [hipDataType]
+    [hipDataType]
                specifies the datatype of alpha.
     @param[inout]
     x         device pointer to the first vector x_1.
     @param[in]
-    xType [hipblasDatatype_t] [DEPRECATED]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
            specifies the datatype of each vector x_i.\n
-    xType [hipDataType]
+    [hipDataType]
            specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -21008,9 +21064,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
     batchCount [int]
                 number of instances in the batch.
     @param[in]
-    executionType [hipblasDatatype_t] [DEPRECATED]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
                    specifies the datatype of computation.\n
-    executionType [hipDataType]
+    [hipDataType]
                    specifies the datatype of computation.
 
     ********************************************************************/
