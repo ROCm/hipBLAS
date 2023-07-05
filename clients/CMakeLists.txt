@@ -47,20 +47,21 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 include( build-options )
 
 if( NOT WIN32 )
-    set(hipblas_f90_source_clients
-      include/hipblas_fortran.f90
+    set(hipblas_f90_source_clients_no_solver
+      include/hipblas_fortran_no_solver_module.f90
     )
 
     set(hipblas_f90_source_clients_solver
-  include/hipblas_fortran_solver.f90)
+      include/hipblas_fortran_module.f90
+    )
 endif()
 
 if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_SAMPLES )
   if( NOT WIN32 )
     if( BUILD_WITH_SOLVER )
-      add_library(hipblas_fortran_client STATIC ${hipblas_f90_source_clients} ${hipblas_f90_source_clients_solver})
+      add_library(hipblas_fortran_client STATIC ${hipblas_f90_source_clients_solver})
     else()
-      add_library(hipblas_fortran_client STATIC ${hipblas_f90_source_clients})
+      add_library(hipblas_fortran_client STATIC ${hipblas_f90_source_clients_no_solver})
     endif()
     add_dependencies(hipblas_fortran_client hipblas_fortran)
   endif()
