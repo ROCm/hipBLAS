@@ -73,7 +73,7 @@ target_include_directories( hipblas-bench
 )
 
 if (NOT WIN32)
-    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs gfortran )
+    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
 endif()
 
 target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas Threads::Threads )
