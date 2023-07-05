@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -88,7 +88,14 @@ const vector<double> stride_scale_range = {2.5};
 
 const vector<int> batch_count_range = {-1, 0, 1, 2};
 
+// Fortran interface doesn't change when compiling with HIPBLAS_V2 and will continue to accept hipblasDatatype_t for now.
+// When we remove hipblasDatatype_t, the Fortran interface will change accordingly.
+// So not testing fortran interface with hipblas_v2-test.
+#ifdef HIPBLAS_V2
+const bool is_fortran[] = {false};
+#else
 const bool is_fortran[] = {false, true};
+#endif
 
 /* ===============Google Unit Test==================================================== */
 

@@ -18825,6 +18825,44 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasTrsmEx_v2(hipblasHandle_t    handle,
+                                 hipblasSideMode_t  side,
+                                 hipblasFillMode_t  uplo,
+                                 hipblasOperation_t transA,
+                                 hipblasDiagType_t  diag,
+                                 int                m,
+                                 int                n,
+                                 const void*        alpha,
+                                 void*              A,
+                                 int                lda,
+                                 void*              B,
+                                 int                ldb,
+                                 const void*        invA,
+                                 int                invA_size,
+                                 hipDataType        compute_type)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_trsm_ex((rocblas_handle)handle,
+                                                    hipSideToHCCSide(side),
+                                                    hipFillToHCCFill(uplo),
+                                                    hipOperationToHCCOperation(transA),
+                                                    hipDiagonalToHCCDiagonal(diag),
+                                                    m,
+                                                    n,
+                                                    alpha,
+                                                    A,
+                                                    lda,
+                                                    B,
+                                                    ldb,
+                                                    invA,
+                                                    invA_size,
+                                                    HIPDatatypeToRocblasDatatype_v2(compute_type)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
                                      hipblasSideMode_t  side,
                                      hipblasFillMode_t  uplo,
@@ -18860,6 +18898,47 @@ try
                                 invA,
                                 invA_size,
                                 HIPDatatypeToRocblasDatatype(compute_type)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasTrsmBatchedEx_v2(hipblasHandle_t    handle,
+                                        hipblasSideMode_t  side,
+                                        hipblasFillMode_t  uplo,
+                                        hipblasOperation_t transA,
+                                        hipblasDiagType_t  diag,
+                                        int                m,
+                                        int                n,
+                                        const void*        alpha,
+                                        void*              A,
+                                        int                lda,
+                                        void*              B,
+                                        int                ldb,
+                                        int                batch_count,
+                                        const void*        invA,
+                                        int                invA_size,
+                                        hipDataType        compute_type)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_trsm_batched_ex((rocblas_handle)handle,
+                                hipSideToHCCSide(side),
+                                hipFillToHCCFill(uplo),
+                                hipOperationToHCCOperation(transA),
+                                hipDiagonalToHCCDiagonal(diag),
+                                m,
+                                n,
+                                alpha,
+                                A,
+                                lda,
+                                B,
+                                ldb,
+                                batch_count,
+                                invA,
+                                invA_size,
+                                HIPDatatypeToRocblasDatatype_v2(compute_type)));
 }
 catch(...)
 {
@@ -18907,6 +18986,53 @@ try
                                         invA_size,
                                         stride_invA,
                                         HIPDatatypeToRocblasDatatype(compute_type)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasTrsmStridedBatchedEx_v2(hipblasHandle_t    handle,
+                                               hipblasSideMode_t  side,
+                                               hipblasFillMode_t  uplo,
+                                               hipblasOperation_t transA,
+                                               hipblasDiagType_t  diag,
+                                               int                m,
+                                               int                n,
+                                               const void*        alpha,
+                                               void*              A,
+                                               int                lda,
+                                               hipblasStride      stride_A,
+                                               void*              B,
+                                               int                ldb,
+                                               hipblasStride      stride_B,
+                                               int                batch_count,
+                                               const void*        invA,
+                                               int                invA_size,
+                                               hipblasStride      stride_invA,
+                                               hipDataType        compute_type)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_trsm_strided_batched_ex((rocblas_handle)handle,
+                                        hipSideToHCCSide(side),
+                                        hipFillToHCCFill(uplo),
+                                        hipOperationToHCCOperation(transA),
+                                        hipDiagonalToHCCDiagonal(diag),
+                                        m,
+                                        n,
+                                        alpha,
+                                        A,
+                                        lda,
+                                        stride_A,
+                                        B,
+                                        ldb,
+                                        stride_B,
+                                        batch_count,
+                                        invA,
+                                        invA_size,
+                                        stride_invA,
+                                        HIPDatatypeToRocblasDatatype_v2(compute_type)));
 }
 catch(...)
 {
@@ -18990,6 +19116,37 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasAxpyEx_v2(hipblasHandle_t handle,
+                                 int             n,
+                                 const void*     alpha,
+                                 hipDataType     alphaType,
+                                 const void*     x,
+                                 hipDataType     xType,
+                                 int             incx,
+                                 void*           y,
+                                 hipDataType     yType,
+                                 int             incy,
+                                 hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_axpy_ex((rocblas_handle)handle,
+                        n,
+                        alpha,
+                        HIPDatatypeToRocblasDatatype_v2(alphaType),
+                        x,
+                        HIPDatatypeToRocblasDatatype_v2(xType),
+                        incx,
+                        y,
+                        HIPDatatypeToRocblasDatatype_v2(yType),
+                        incy,
+                        HIPDatatypeToRocblasDatatype_v2(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
                                      int               n,
                                      const void*       alpha,
@@ -19017,6 +19174,39 @@ try
                                 incy,
                                 batch_count,
                                 HIPDatatypeToRocblasDatatype(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasAxpyBatchedEx_v2(hipblasHandle_t handle,
+                                        int             n,
+                                        const void*     alpha,
+                                        hipDataType     alphaType,
+                                        const void*     x,
+                                        hipDataType     xType,
+                                        int             incx,
+                                        void*           y,
+                                        hipDataType     yType,
+                                        int             incy,
+                                        int             batch_count,
+                                        hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_axpy_batched_ex((rocblas_handle)handle,
+                                n,
+                                alpha,
+                                HIPDatatypeToRocblasDatatype_v2(alphaType),
+                                x,
+                                HIPDatatypeToRocblasDatatype_v2(xType),
+                                incx,
+                                y,
+                                HIPDatatypeToRocblasDatatype_v2(yType),
+                                incy,
+                                batch_count,
+                                HIPDatatypeToRocblasDatatype_v2(executionType)));
 }
 catch(...)
 {
@@ -19060,6 +19250,43 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasAxpyStridedBatchedEx_v2(hipblasHandle_t handle,
+                                               int             n,
+                                               const void*     alpha,
+                                               hipDataType     alphaType,
+                                               const void*     x,
+                                               hipDataType     xType,
+                                               int             incx,
+                                               hipblasStride   stridex,
+                                               void*           y,
+                                               hipDataType     yType,
+                                               int             incy,
+                                               hipblasStride   stridey,
+                                               int             batch_count,
+                                               hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_axpy_strided_batched_ex((rocblas_handle)handle,
+                                        n,
+                                        alpha,
+                                        HIPDatatypeToRocblasDatatype_v2(alphaType),
+                                        x,
+                                        HIPDatatypeToRocblasDatatype_v2(xType),
+                                        incx,
+                                        stridex,
+                                        y,
+                                        HIPDatatypeToRocblasDatatype_v2(yType),
+                                        incy,
+                                        stridey,
+                                        batch_count,
+                                        HIPDatatypeToRocblasDatatype_v2(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // dot_ex
 hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
                              int               n,
@@ -19091,6 +19318,36 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasDotEx_v2(hipblasHandle_t handle,
+                                int             n,
+                                const void*     x,
+                                hipDataType     xType,
+                                int             incx,
+                                const void*     y,
+                                hipDataType     yType,
+                                int             incy,
+                                void*           result,
+                                hipDataType     resultType,
+                                hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_dot_ex((rocblas_handle)handle,
+                                                   n,
+                                                   x,
+                                                   HIPDatatypeToRocblasDatatype_v2(xType),
+                                                   incx,
+                                                   y,
+                                                   HIPDatatypeToRocblasDatatype_v2(yType),
+                                                   incy,
+                                                   result,
+                                                   HIPDatatypeToRocblasDatatype_v2(resultType),
+                                                   HIPDatatypeToRocblasDatatype_v2(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
                               int               n,
                               const void*       x,
@@ -19115,6 +19372,37 @@ try
                                                     result,
                                                     HIPDatatypeToRocblasDatatype(resultType),
                                                     HIPDatatypeToRocblasDatatype(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDotcEx_v2(hipblasHandle_t handle,
+                                 int             n,
+                                 const void*     x,
+                                 hipDataType     xType,
+                                 int             incx,
+                                 const void*     y,
+                                 hipDataType     yType,
+                                 int             incy,
+                                 void*           result,
+                                 hipDataType     resultType,
+                                 hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_dotc_ex((rocblas_handle)handle,
+                        n,
+                        x,
+                        HIPDatatypeToRocblasDatatype_v2(xType),
+                        incx,
+                        y,
+                        HIPDatatypeToRocblasDatatype_v2(yType),
+                        incy,
+                        result,
+                        HIPDatatypeToRocblasDatatype_v2(resultType),
+                        HIPDatatypeToRocblasDatatype_v2(executionType)));
 }
 catch(...)
 {
@@ -19154,6 +19442,39 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasDotBatchedEx_v2(hipblasHandle_t handle,
+                                       int             n,
+                                       const void*     x,
+                                       hipDataType     xType,
+                                       int             incx,
+                                       const void*     y,
+                                       hipDataType     yType,
+                                       int             incy,
+                                       int             batch_count,
+                                       void*           result,
+                                       hipDataType     resultType,
+                                       hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_dot_batched_ex((rocblas_handle)handle,
+                               n,
+                               x,
+                               HIPDatatypeToRocblasDatatype_v2(xType),
+                               incx,
+                               y,
+                               HIPDatatypeToRocblasDatatype_v2(yType),
+                               incy,
+                               batch_count,
+                               result,
+                               HIPDatatypeToRocblasDatatype_v2(resultType),
+                               HIPDatatypeToRocblasDatatype_v2(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
                                      int               n,
                                      const void*       x,
@@ -19181,6 +19502,39 @@ try
                                 result,
                                 HIPDatatypeToRocblasDatatype(resultType),
                                 HIPDatatypeToRocblasDatatype(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDotcBatchedEx_v2(hipblasHandle_t handle,
+                                        int             n,
+                                        const void*     x,
+                                        hipDataType     xType,
+                                        int             incx,
+                                        const void*     y,
+                                        hipDataType     yType,
+                                        int             incy,
+                                        int             batch_count,
+                                        void*           result,
+                                        hipDataType     resultType,
+                                        hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_dotc_batched_ex((rocblas_handle)handle,
+                                n,
+                                x,
+                                HIPDatatypeToRocblasDatatype_v2(xType),
+                                incx,
+                                y,
+                                HIPDatatypeToRocblasDatatype_v2(yType),
+                                incy,
+                                batch_count,
+                                result,
+                                HIPDatatypeToRocblasDatatype_v2(resultType),
+                                HIPDatatypeToRocblasDatatype_v2(executionType)));
 }
 catch(...)
 {
@@ -19224,6 +19578,43 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasDotStridedBatchedEx_v2(hipblasHandle_t handle,
+                                              int             n,
+                                              const void*     x,
+                                              hipDataType     xType,
+                                              int             incx,
+                                              hipblasStride   stridex,
+                                              const void*     y,
+                                              hipDataType     yType,
+                                              int             incy,
+                                              hipblasStride   stridey,
+                                              int             batch_count,
+                                              void*           result,
+                                              hipDataType     resultType,
+                                              hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_dot_strided_batched_ex((rocblas_handle)handle,
+                                       n,
+                                       x,
+                                       HIPDatatypeToRocblasDatatype_v2(xType),
+                                       incx,
+                                       stridex,
+                                       y,
+                                       HIPDatatypeToRocblasDatatype_v2(yType),
+                                       incy,
+                                       stridey,
+                                       batch_count,
+                                       result,
+                                       HIPDatatypeToRocblasDatatype_v2(resultType),
+                                       HIPDatatypeToRocblasDatatype_v2(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   handle,
                                             int               n,
                                             const void*       x,
@@ -19261,6 +19652,43 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasDotcStridedBatchedEx_v2(hipblasHandle_t handle,
+                                               int             n,
+                                               const void*     x,
+                                               hipDataType     xType,
+                                               int             incx,
+                                               hipblasStride   stridex,
+                                               const void*     y,
+                                               hipDataType     yType,
+                                               int             incy,
+                                               hipblasStride   stridey,
+                                               int             batch_count,
+                                               void*           result,
+                                               hipDataType     resultType,
+                                               hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_dotc_strided_batched_ex((rocblas_handle)handle,
+                                        n,
+                                        x,
+                                        HIPDatatypeToRocblasDatatype_v2(xType),
+                                        incx,
+                                        stridex,
+                                        y,
+                                        HIPDatatypeToRocblasDatatype_v2(yType),
+                                        incy,
+                                        stridey,
+                                        batch_count,
+                                        result,
+                                        HIPDatatypeToRocblasDatatype_v2(resultType),
+                                        HIPDatatypeToRocblasDatatype_v2(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // nrm2_ex
 hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
                               int               n,
@@ -19280,6 +19708,31 @@ try
                                                     result,
                                                     HIPDatatypeToRocblasDatatype(resultType),
                                                     HIPDatatypeToRocblasDatatype(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasNrm2Ex_v2(hipblasHandle_t handle,
+                                 int             n,
+                                 const void*     x,
+                                 hipDataType     xType,
+                                 int             incx,
+                                 void*           result,
+                                 hipDataType     resultType,
+                                 hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_nrm2_ex((rocblas_handle)handle,
+                        n,
+                        x,
+                        HIPDatatypeToRocblasDatatype_v2(xType),
+                        incx,
+                        result,
+                        HIPDatatypeToRocblasDatatype_v2(resultType),
+                        HIPDatatypeToRocblasDatatype_v2(executionType)));
 }
 catch(...)
 {
@@ -19307,6 +19760,33 @@ try
                                 result,
                                 HIPDatatypeToRocblasDatatype(resultType),
                                 HIPDatatypeToRocblasDatatype(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasNrm2BatchedEx_v2(hipblasHandle_t handle,
+                                        int             n,
+                                        const void*     x,
+                                        hipDataType     xType,
+                                        int             incx,
+                                        int             batch_count,
+                                        void*           result,
+                                        hipDataType     resultType,
+                                        hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_nrm2_batched_ex((rocblas_handle)handle,
+                                n,
+                                x,
+                                HIPDatatypeToRocblasDatatype_v2(xType),
+                                incx,
+                                batch_count,
+                                result,
+                                HIPDatatypeToRocblasDatatype_v2(resultType),
+                                HIPDatatypeToRocblasDatatype_v2(executionType)));
 }
 catch(...)
 {
@@ -19342,6 +19822,35 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasNrm2StridedBatchedEx_v2(hipblasHandle_t handle,
+                                               int             n,
+                                               const void*     x,
+                                               hipDataType     xType,
+                                               int             incx,
+                                               hipblasStride   stridex,
+                                               int             batch_count,
+                                               void*           result,
+                                               hipDataType     resultType,
+                                               hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_nrm2_strided_batched_ex((rocblas_handle)handle,
+                                        n,
+                                        x,
+                                        HIPDatatypeToRocblasDatatype_v2(xType),
+                                        incx,
+                                        stridex,
+                                        batch_count,
+                                        result,
+                                        HIPDatatypeToRocblasDatatype_v2(resultType),
+                                        HIPDatatypeToRocblasDatatype_v2(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // rot_ex
 hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
                              int               n,
@@ -19369,6 +19878,38 @@ try
                                                    s,
                                                    HIPDatatypeToRocblasDatatype(csType),
                                                    HIPDatatypeToRocblasDatatype(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasRotEx_v2(hipblasHandle_t handle,
+                                int             n,
+                                void*           x,
+                                hipDataType     xType,
+                                int             incx,
+                                void*           y,
+                                hipDataType     yType,
+                                int             incy,
+                                const void*     c,
+                                const void*     s,
+                                hipDataType     csType,
+                                hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_rot_ex((rocblas_handle)handle,
+                                                   n,
+                                                   x,
+                                                   HIPDatatypeToRocblasDatatype_v2(xType),
+                                                   incx,
+                                                   y,
+                                                   HIPDatatypeToRocblasDatatype_v2(yType),
+                                                   incy,
+                                                   c,
+                                                   s,
+                                                   HIPDatatypeToRocblasDatatype_v2(csType),
+                                                   HIPDatatypeToRocblasDatatype_v2(executionType)));
 }
 catch(...)
 {
@@ -19410,6 +19951,41 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasRotBatchedEx_v2(hipblasHandle_t handle,
+                                       int             n,
+                                       void*           x,
+                                       hipDataType     xType,
+                                       int             incx,
+                                       void*           y,
+                                       hipDataType     yType,
+                                       int             incy,
+                                       const void*     c,
+                                       const void*     s,
+                                       hipDataType     csType,
+                                       int             batch_count,
+                                       hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_rot_batched_ex((rocblas_handle)handle,
+                               n,
+                               x,
+                               HIPDatatypeToRocblasDatatype_v2(xType),
+                               incx,
+                               y,
+                               HIPDatatypeToRocblasDatatype_v2(yType),
+                               incy,
+                               c,
+                               s,
+                               HIPDatatypeToRocblasDatatype_v2(csType),
+                               batch_count,
+                               HIPDatatypeToRocblasDatatype_v2(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
                                            int               n,
                                            void*             x,
@@ -19443,6 +20019,45 @@ try
                                        HIPDatatypeToRocblasDatatype(csType),
                                        batch_count,
                                        HIPDatatypeToRocblasDatatype(executionType)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasRotStridedBatchedEx_v2(hipblasHandle_t handle,
+                                              int             n,
+                                              void*           x,
+                                              hipDataType     xType,
+                                              int             incx,
+                                              hipblasStride   stridex,
+                                              void*           y,
+                                              hipDataType     yType,
+                                              int             incy,
+                                              hipblasStride   stridey,
+                                              const void*     c,
+                                              const void*     s,
+                                              hipDataType     csType,
+                                              int             batch_count,
+                                              hipDataType     executionType)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_rot_strided_batched_ex((rocblas_handle)handle,
+                                       n,
+                                       x,
+                                       HIPDatatypeToRocblasDatatype_v2(xType),
+                                       incx,
+                                       stridex,
+                                       y,
+                                       HIPDatatypeToRocblasDatatype_v2(yType),
+                                       incy,
+                                       stridey,
+                                       c,
+                                       s,
+                                       HIPDatatypeToRocblasDatatype_v2(csType),
+                                       batch_count,
+                                       HIPDatatypeToRocblasDatatype_v2(executionType)));
 }
 catch(...)
 {
