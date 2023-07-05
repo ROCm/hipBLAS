@@ -277,6 +277,48 @@ cudaDataType_t HIPDatatypeToCudaDatatype_v2(hipDataType type)
     }
 }
 
+cudaDataType_t HIPComputetypeToCudaComputetype(hipblasComputeType_t type)
+{
+    switch(type)
+    {
+    case HIPBLAS_COMPUTE_16F:
+        return CUBLAS_COMPUTE_16F;
+
+    case HIPBLAS_COMPUTE_16F_PEDANTIC:
+        return CUBLAS_COMPUTE_16F_PEDANTIC;
+
+    case HIPBLAS_COMPUTE_32F:
+        return CUBLAS_COMPUTE_32F;
+
+    case HIPBLAS_COMPUTE_32F_PEDANTIC:
+        return CUBLAS_COMPUTE_32F_PEDANTIC;
+
+    case HIPBLAS_COMPUTE_32F_FAST_16F:
+        return CUBLAS_COMPUTE_32F_FAST_16F;
+
+    case HIPBLAS_COMPUTE_32F_FAST_16BF:
+        return CUBLAS_COMPUTE_32F_FAST_16BF;
+
+    case HIPBLAS_COMPUTE_32F_FAST_TF32:
+        return CUBLAS_COMPUTE_32F_FAST_TF32;
+
+    case HIPBLAS_COMPUTE_64F:
+        return CUBLAS_COMPUTE_64F;
+
+    case HIPBLAS_COMPUTE_64F_PEDANTIC:
+        return CUBLAS_COMPUTE_64F_PEDANTIC;
+
+    case HIPBLAS_COMPUTE_32I:
+        return CUBLAS_COMPUTE_32I;
+
+    case HIPBLAS_COMPUTE_32I_PEDANTIC:
+        return CUBLAS_COMPUTE_32I_PEDANTIC;
+
+    default:
+        throw HIPBLAS_STATUS_INVALID_ENUM;
+    }
+}
+
 cublasGemmAlgo_t HIPGemmAlgoToCudaGemmAlgo(hipblasGemmAlgo_t algo)
 {
     // Only support Default Algo for now
@@ -12057,6 +12099,52 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasGemmEx_v2(hipblasHandle_t      handle,
+                                 hipblasOperation_t   transa,
+                                 hipblasOperation_t   transb,
+                                 int                  m,
+                                 int                  n,
+                                 int                  k,
+                                 const void*          alpha,
+                                 const void*          A,
+                                 hipDataType          a_type,
+                                 int                  lda,
+                                 const void*          B,
+                                 hipDataType          b_type,
+                                 int                  ldb,
+                                 const void*          beta,
+                                 void*                C,
+                                 hipDataType          c_type,
+                                 int                  ldc,
+                                 hipblasComputeType_t compute_type,
+                                 hipblasGemmAlgo_t    algo)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasGemmEx((cublasHandle_t)handle,
+                                                   hipOperationToCudaOperation(transa),
+                                                   hipOperationToCudaOperation(transb),
+                                                   m,
+                                                   n,
+                                                   k,
+                                                   alpha,
+                                                   A,
+                                                   HIPDatatypeToCudaDatatype_v2(a_type),
+                                                   lda,
+                                                   B,
+                                                   HIPDatatypeToCudaDatatype_v2(b_type),
+                                                   ldb,
+                                                   beta,
+                                                   C,
+                                                   HIPDatatypeToCudaDatatype_v2(c_type),
+                                                   ldc,
+                                                   HIPComputetypeToCudaComputetype(compute_type),
+                                                   HIPGemmAlgoToCudaGemmAlgo(algo)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
                                      hipblasOperation_t transa,
                                      hipblasOperation_t transb,
@@ -12099,6 +12187,55 @@ try
                                                           batch_count,
                                                           HIPDatatypeToCudaDatatype(compute_type),
                                                           HIPGemmAlgoToCudaGemmAlgo(algo)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGemmBatchedEx_v2(hipblasHandle_t      handle,
+                                        hipblasOperation_t   transa,
+                                        hipblasOperation_t   transb,
+                                        int                  m,
+                                        int                  n,
+                                        int                  k,
+                                        const void*          alpha,
+                                        const void*          A[],
+                                        hipDataType          a_type,
+                                        int                  lda,
+                                        const void*          B[],
+                                        hipDataType          b_type,
+                                        int                  ldb,
+                                        const void*          beta,
+                                        void*                C[],
+                                        hipDataType          c_type,
+                                        int                  ldc,
+                                        int                  batch_count,
+                                        hipblasComputeType_t compute_type,
+                                        hipblasGemmAlgo_t    algo)
+try
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasGemmBatchedEx((cublasHandle_t)handle,
+                            hipOperationToCudaOperation(transa),
+                            hipOperationToCudaOperation(transb),
+                            m,
+                            n,
+                            k,
+                            alpha,
+                            A,
+                            HIPDatatypeToCudaDatatype_v2(a_type),
+                            lda,
+                            B,
+                            HIPDatatypeToCudaDatatype_v2(b_type),
+                            ldb,
+                            beta,
+                            C,
+                            HIPDatatypeToCudaDatatype_v2(c_type),
+                            ldc,
+                            batch_count,
+                            HIPComputetypeToCudaComputetype(compute_type),
+                            HIPGemmAlgoToCudaGemmAlgo(algo)));
 }
 catch(...)
 {
@@ -12153,6 +12290,61 @@ try
                                    stride_C,
                                    batch_count,
                                    HIPDatatypeToCudaDatatype(compute_type),
+                                   HIPGemmAlgoToCudaGemmAlgo(algo)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGemmStridedBatchedEx_v2(hipblasHandle_t      handle,
+                                               hipblasOperation_t   transa,
+                                               hipblasOperation_t   transb,
+                                               int                  m,
+                                               int                  n,
+                                               int                  k,
+                                               const void*          alpha,
+                                               const void*          A,
+                                               hipDataType          a_type,
+                                               int                  lda,
+                                               hipblasStride        stride_A,
+                                               const void*          B,
+                                               hipDataType          b_type,
+                                               int                  ldb,
+                                               hipblasStride        stride_B,
+                                               const void*          beta,
+                                               void*                C,
+                                               hipDataType          c_type,
+                                               int                  ldc,
+                                               hipblasStride        stride_C,
+                                               int                  batch_count,
+                                               hipblasComputeType_t compute_type,
+                                               hipblasGemmAlgo_t    algo)
+try
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasGemmStridedBatchedEx((cublasHandle_t)handle,
+                                   hipOperationToCudaOperation(transa),
+                                   hipOperationToCudaOperation(transb),
+                                   m,
+                                   n,
+                                   k,
+                                   alpha,
+                                   A,
+                                   HIPDatatypeToCudaDatatype_v2(a_type),
+                                   lda,
+                                   stride_A,
+                                   B,
+                                   HIPDatatypeToCudaDatatype_v2(b_type),
+                                   ldb,
+                                   stride_B,
+                                   beta,
+                                   C,
+                                   HIPDatatypeToCudaDatatype_v2(c_type),
+                                   ldc,
+                                   stride_C,
+                                   batch_count,
+                                   HIPComputetypeToCudaComputetype(compute_type),
                                    HIPGemmAlgoToCudaGemmAlgo(algo)));
 }
 catch(...)
