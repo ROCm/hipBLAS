@@ -301,6 +301,7 @@ Arguments:
   - c_type: hipblasDatatype_t
   - d_type: hipblasDatatype_t
   - compute_type: hipblasDatatype_t
+  - compute_type_gemm: hipblasComputeType_t
   - incx: int
   - incy: int
   - incd: int

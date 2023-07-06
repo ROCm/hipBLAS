@@ -62,13 +62,14 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
     int                ldb    = arg.ldb;
     int                ldc    = arg.ldc;
 
-    hipblasDatatype_t a_type       = arg.a_type;
-    hipblasDatatype_t b_type       = arg.b_type;
-    hipblasDatatype_t c_type       = arg.c_type;
-    hipblasDatatype_t compute_type = arg.compute_type;
+    hipblasDatatype_t    a_type            = arg.a_type;
+    hipblasDatatype_t    b_type            = arg.b_type;
+    hipblasDatatype_t    c_type            = arg.c_type;
+    hipblasDatatype_t    compute_type      = arg.compute_type;
+    hipblasComputeType_t compute_type_gemm = arg.compute_type_gemm;
 
-    Tex h_alpha_Tc = arg.get_alpha<Tex>();
-    Tex h_beta_Tc  = arg.get_beta<Tex>();
+    Tex h_alpha_Tex = arg.get_alpha<Tex>();
+    Tex h_beta_Tex  = arg.get_beta<Tex>();
 
     int norm_check = arg.norm_check;
     int unit_check = arg.unit_check;
@@ -119,8 +120,8 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
     CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(Tb) * size_B, hipMemcpyHostToDevice));
 
     CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha_Tc, sizeof(Tex), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta_Tc, sizeof(Tex), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha_Tex, sizeof(Tex), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta_Tex, sizeof(Tex), hipMemcpyHostToDevice));
 
     if(unit_check || norm_check)
     {
@@ -132,18 +133,22 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
                                             M,
                                             N,
                                             K,
-                                            &h_alpha_Tc,
+                                            &h_alpha_Tex,
                                             dA,
                                             a_type,
                                             lda,
                                             dB,
                                             b_type,
                                             ldb,
-                                            &h_beta_Tc,
+                                            &h_beta_Tex,
                                             dC,
                                             c_type,
                                             ldc,
+#ifdef HIPBLAS_V2
+                                            compute_type_gemm,
+#else
                                             compute_type,
+#endif
                                             algo));
 
         CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
@@ -167,7 +172,11 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
                                             dC,
                                             c_type,
                                             ldc,
+#ifdef HIPBLAS_V2
+                                            compute_type_gemm,
+#else
                                             compute_type,
+#endif
                                             algo));
 
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
@@ -178,12 +187,12 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
                                 M,
                                 N,
                                 K,
-                                h_alpha_Tc,
+                                h_alpha_Tex,
                                 hA.data(),
                                 lda,
                                 hB.data(),
                                 ldb,
-                                h_beta_Tc,
+                                h_beta_Tex,
                                 hC_gold.data(),
                                 ldc);
 
@@ -231,18 +240,22 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
                                                 M,
                                                 N,
                                                 K,
-                                                &h_alpha_Tc,
+                                                &h_alpha_Tex,
                                                 dA,
                                                 a_type,
                                                 lda,
                                                 dB,
                                                 b_type,
                                                 ldb,
-                                                &h_beta_Tc,
+                                                &h_beta_Tex,
                                                 dC,
                                                 c_type,
                                                 ldc,
+#ifdef HIPBLAS_V2
+                                                compute_type_gemm,
+#else
                                                 compute_type,
+#endif
                                                 algo));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -259,6 +272,81 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
     return HIPBLAS_STATUS_SUCCESS;
 }
 
+#ifdef HIPBLAS_V2
+
+inline hipblasStatus_t testing_gemm_ex(const Arguments& arg)
+{
+    // Support is essentially the same with HIPBLAS_V2, but just specified differently with hipblasComputeType_t.
+    // Tex is more accurately the precision in which the reference is calculated with, along with scalar type.
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+
+    hipblasDatatype_t    a_type            = arg.a_type;
+    hipblasDatatype_t    b_type            = arg.b_type;
+    hipblasDatatype_t    c_type            = arg.c_type;
+    hipblasComputeType_t compute_type_gemm = arg.compute_type_gemm;
+
+    if(a_type == HIP_R_16F && b_type == HIP_R_16F && c_type == HIP_R_16F
+       && compute_type_gemm == HIPBLAS_COMPUTE_16F)
+    {
+        status = testing_gemm_ex_template<hipblasHalf>(arg);
+    }
+    else if(a_type == HIP_R_16F && b_type == HIP_R_16F && c_type == HIP_R_16F
+            && compute_type_gemm == HIPBLAS_COMPUTE_32F)
+    {
+        status = testing_gemm_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float>(arg);
+    }
+    else if(a_type == HIP_R_16F && b_type == HIP_R_16F && c_type == HIP_R_32F
+            && compute_type_gemm == HIPBLAS_COMPUTE_32F)
+    {
+        status = testing_gemm_ex_template<hipblasHalf, hipblasHalf, float, float>(arg);
+    }
+    else if(a_type == HIP_R_16BF && b_type == HIP_R_16BF && c_type == HIP_R_16BF
+            && compute_type_gemm == HIPBLAS_COMPUTE_32F)
+    {
+        status = testing_gemm_ex_template<hipblasBfloat16, hipblasBfloat16, hipblasBfloat16, float>(
+            arg);
+    }
+    else if(a_type == HIP_R_16BF && b_type == HIP_R_16BF && c_type == HIP_R_32F
+            && compute_type_gemm == HIPBLAS_COMPUTE_32F)
+    {
+        status = testing_gemm_ex_template<hipblasBfloat16, hipblasBfloat16, float, float>(arg);
+    }
+    else if(a_type == HIP_R_32F && b_type == HIP_R_32F && c_type == HIP_R_32F
+            && compute_type_gemm == HIPBLAS_COMPUTE_32F)
+    {
+        status = testing_gemm_ex_template<float>(arg);
+    }
+    else if(a_type == HIP_R_64F && b_type == HIP_R_64F && c_type == HIP_R_64F
+            && compute_type_gemm == HIPBLAS_COMPUTE_64F)
+    {
+        status = testing_gemm_ex_template<double>(arg);
+    }
+    else if(a_type == HIP_R_8I && b_type == HIP_R_8I && c_type == HIP_R_32I
+            && compute_type_gemm == HIPBLAS_COMPUTE_32I)
+    {
+        status = testing_gemm_ex_template<int8_t, int8_t, int32_t, int32_t>(arg);
+    }
+    else if(a_type == HIP_C_32F && b_type == HIP_C_32F && c_type == HIP_C_32F
+            && compute_type_gemm == HIPBLAS_COMPUTE_32F)
+    {
+        status = testing_gemm_ex_template<hipblasComplex>(arg);
+    }
+    else if(a_type == HIP_C_64F && b_type == HIP_C_64F && c_type == HIP_C_64F
+            && compute_type_gemm == HIPBLAS_COMPUTE_64F)
+    {
+        status = testing_gemm_ex_template<hipblasDoubleComplex>(arg);
+    }
+    else
+    {
+        std::cout << "nope\n";
+        status = HIPBLAS_STATUS_NOT_SUPPORTED;
+    }
+
+    return status;
+}
+
+#else
+
 inline hipblasStatus_t testing_gemm_ex(const Arguments& arg)
 {
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
@@ -269,43 +357,53 @@ inline hipblasStatus_t testing_gemm_ex(const Arguments& arg)
     hipblasDatatype_t compute_type = arg.compute_type;
 
     if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
-       && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_16F)
+       && compute_type == HIPBLAS_R_16F)
     {
         status = testing_gemm_ex_template<hipblasHalf>(arg);
     }
     else if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
-            && c_type == HIPBLAS_R_16F && compute_type == HIPBLAS_R_32F)
+            && compute_type == HIPBLAS_R_32F)
     {
         status = testing_gemm_ex_template<hipblasHalf, hipblasHalf, hipblasHalf, float>(arg);
     }
+    else if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_32F
+            && compute_type == HIPBLAS_R_32F)
+    {
+        status = testing_gemm_ex_template<hipblasHalf, hipblasHalf, float, float>(arg);
+    }
     else if(a_type == HIPBLAS_R_16B && b_type == HIPBLAS_R_16B && c_type == HIPBLAS_R_16B
-            && c_type == HIPBLAS_R_16B && compute_type == HIPBLAS_R_32F)
+            && compute_type == HIPBLAS_R_32F)
     {
         status = testing_gemm_ex_template<hipblasBfloat16, hipblasBfloat16, hipblasBfloat16, float>(
             arg);
     }
+    else if(a_type == HIPBLAS_R_16B && b_type == HIPBLAS_R_16B && c_type == HIPBLAS_R_32F
+            && compute_type == HIPBLAS_R_32F)
+    {
+        status = testing_gemm_ex_template<hipblasBfloat16, hipblasBfloat16, float, float>(arg);
+    }
     else if(a_type == HIPBLAS_R_32F && b_type == HIPBLAS_R_32F && c_type == HIPBLAS_R_32F
-            && c_type == HIPBLAS_R_32F && compute_type == HIPBLAS_R_32F)
+            && compute_type == HIPBLAS_R_32F)
     {
         status = testing_gemm_ex_template<float>(arg);
     }
     else if(a_type == HIPBLAS_R_64F && b_type == HIPBLAS_R_64F && c_type == HIPBLAS_R_64F
-            && c_type == HIPBLAS_R_64F && compute_type == HIPBLAS_R_64F)
+            && compute_type == HIPBLAS_R_64F)
     {
         status = testing_gemm_ex_template<double>(arg);
     }
     else if(a_type == HIPBLAS_C_32F && b_type == HIPBLAS_C_32F && c_type == HIPBLAS_C_32F
-            && c_type == HIPBLAS_C_32F && compute_type == HIPBLAS_C_32F)
+            && compute_type == HIPBLAS_C_32F)
     {
         status = testing_gemm_ex_template<hipblasComplex>(arg);
     }
     else if(a_type == HIPBLAS_C_64F && b_type == HIPBLAS_C_64F && c_type == HIPBLAS_C_64F
-            && c_type == HIPBLAS_C_64F && compute_type == HIPBLAS_C_64F)
+            && compute_type == HIPBLAS_C_64F)
     {
         status = testing_gemm_ex_template<hipblasDoubleComplex>(arg);
     }
     else if(a_type == HIPBLAS_R_8I && b_type == HIPBLAS_R_8I && c_type == HIPBLAS_R_32I
-            && c_type == HIPBLAS_R_32I && compute_type == HIPBLAS_R_32I)
+            && compute_type == HIPBLAS_R_32I)
     {
         status = testing_gemm_ex_template<int8_t, int8_t, int32_t, int32_t>(arg);
     }
@@ -316,3 +414,5 @@ inline hipblasStatus_t testing_gemm_ex(const Arguments& arg)
 
     return status;
 }
+
+#endif

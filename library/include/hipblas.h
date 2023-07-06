@@ -506,10 +506,10 @@ typedef enum
     HIPBLAS_COMPUTE_64F_PEDANTIC = 8, /**< compute will be exactly 64-bit precision */
     HIPBLAS_COMPUTE_32I          = 9, /**< compute will be at least 32-bit integer precision */
     HIPBLAS_COMPUTE_32I_PEDANTIC = 10, /**< compute will be exactly 32-bit integer precision */
-} hipblasComputeType_t
+} hipblasComputeType_t;
 
-    /*! \brief Indicates if layer is active with bitmask. */
-    typedef enum
+/*! \brief Indicates if layer is active with bitmask. */
+typedef enum
 {
     HIPBLAS_GEMM_DEFAULT = 160 /**<  enumerator rocblas_gemm_algo_standard */
 } hipblasGemmAlgo_t;
@@ -18361,10 +18361,12 @@ TODO:?| HIP_R_16F  | HIP_R_16F  | HIP_R_16F  | HIPBLAS_COMPUTE_16F_PEDANTIC | Eq
 TODO:?| HIP_R_32F  | HIP_R_32F  | HIP_R_32F  | HIPBLAS_COMPUTE_32F_PEDANTIC | Currently equivalent to above call |
       | HIP_R_64F  | HIP_R_64F  | HIP_R_64F  | HIPBLAS_COMPUTE_64F          |          |
 TODO:?| HIP_R_64F  | HIP_R_64F  | HIP_R_64F  | HIPBLAS_COMPUTE_64F_PEDANTIC |          |
-      | HIP_R_8I   | HIP_R_8I   | HIP_C_32I  | HIPBLAS_COMPUTE_32I          |          |
+      | HIP_R_8I   | HIP_R_8I   | HIP_R_32I  | HIPBLAS_COMPUTE_32I          |          |
 TODO:?| HIP_R_8I   | HIP_R_8I   | HIP_C_32I  | HIPBLAS_COMPUTE_32I_PEDANTIC |          |
       | HIP_C_32F  | HIP_C_32F  | HIP_C_32F  | HIPBLAS_COMPUTE_32F          |          |
-TODO:?| HIP_C_32F  | HIP_C_32F  | HIP_C_32F  | HIPBLAS_COMPUTE_32F          |          |
+TODO:?| HIP_C_32F  | HIP_C_32F  | HIP_C_32F  | HIPBLAS_COMPUTE_32F_PEDANTIC |          |
+      | HIP_C_64F  | HIP_C_64F  | HIP_C_64F  | HIPBLAS_COMPUTE_64F          |          |
+TODO:?| HIP_C_64F  | HIP_C_64F  | HIP_C_64F  | HIPBLAS_COMPUTE_64F_PEDANTIC |          |
 
 
       TODO: Current thinking: Probably not worth supporting pedantic compute types in hipBLAS/rocBLAS? Would likely have to get
@@ -21396,6 +21398,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 #define hipblasTrsmEx hipblasTrsmEx_v2
 #define hipblasTrsmBatchedEx hipblasTrsmBatchedEx_v2
 #define hipblasTrsmStridedBatchedEx hipblasTrsmStridedBatchedEx_v2
+
+#define hipblasGemmEx hipblasGemmEx_v2
+#define hipblasGemmBatchedEx hipblasGemmBatchedEx_v2
+#define hipblasGemmStridedBatchedEx hipblasGemmStridedBatchedEx_v2
 
 #define hipblasAxpyEx hipblasAxpyEx_v2
 #define hipblasAxpyBatchedEx hipblasAxpyBatchedEx_v2

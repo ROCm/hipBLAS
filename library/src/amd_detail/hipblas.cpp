@@ -18672,7 +18672,7 @@ hipblasStatus_t hipblasInternalGemmExTypes(hipDataType          a_in,
                                            rocblas_datatype&    a_out,
                                            rocblas_datatype&    b_out,
                                            rocblas_datatype&    c_out,
-                                           rocblas_datatype     compute_out)
+                                           rocblas_datatype&    compute_out)
 {
     // TODO: pedantic modes?
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
@@ -18681,9 +18681,9 @@ hipblasStatus_t hipblasInternalGemmExTypes(hipDataType          a_in,
        && compute_in == HIPBLAS_COMPUTE_16F)
     {
         a_out = b_out = c_out = HIPDatatypeToRocblasDatatype_v2(a_in);
-        // HIPBLAS_COMPUTE_16F specifies at least 16-bits for compute. Upgrading here for now to 32-bit, but ideally this would
-        // be handled in rocblas/Tensile
-        compute_out = rocblas_datatype_f32_r;
+        // HIPBLAS_COMPUTE_16F specifies at least 16-bits for compute so we could use f32_r here, but would
+        // introduce some overhead with scalars. Leaving it to rocBLAS to choose hpa when possible.
+        compute_out = rocblas_datatype_f16_r;
     }
     else if(a_in == HIP_R_16F && b_in == HIP_R_16F && c_in == HIP_R_16F
             && compute_in == HIPBLAS_COMPUTE_32F)
@@ -18722,7 +18722,7 @@ hipblasStatus_t hipblasInternalGemmExTypes(hipDataType          a_in,
         a_out = b_out = c_out = compute_out = rocblas_datatype_f64_r;
     }
     else if(a_in == HIP_R_8I && b_in == HIP_R_8I && c_in == HIP_R_32I
-            && compute_int == HIPBLAS_COMPUTE_32I)
+            && compute_in == HIPBLAS_COMPUTE_32I)
     {
         a_out = b_out = rocblas_datatype_i8_r;
         c_out = compute_out = rocblas_datatype_i32_r;
