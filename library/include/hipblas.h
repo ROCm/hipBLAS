@@ -467,6 +467,9 @@ typedef hipDataType hipblasDatatype_t;
 // clang-format off
 HIPBLAS_DEPRECATED_MSG("hipblasDatatype_t is deprecated and will be replaced by hipDataType in the future. Compile with -DHIPBLAS_V2 to get new API with hipDataType now.")
 // clang-format on
+
+/*! \brief Indicates the precision of data used. hipblasDatatype_t is deprecated as of hipBLAS 2.0.0 and will
+           be removed in a future release as generally replaced by hipDataType. */
 typedef enum
 {
     HIPBLAS_R_16F            = 150, /**< 16 bit floating point, real */
@@ -18349,28 +18352,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
       For rocBLAS backend, conversion from hipblasComputeType_t to rocblas_datatype_t happens within hipBLAS.
       Supported types are as follows:
 
-      |   aType    |   bType    |   cType    |         computeType          | Comments |
-      | ---------- | ---------- | ---------- | ---------------------------- | -------- |
-      | HIP_R_16F  | HIP_R_16F  | HIP_R_16F  | HIPBLAS_COMPUTE_16F          | Better perf. than hgemm |
-      | HIP_R_16F  | HIP_R_16F  | HIP_R_16F  | HIPBLAS_COMPUTE_32F          | Currently equivalent to above call |
-TODO:?| HIP_R_16F  | HIP_R_16F  | HIP_R_16F  | HIPBLAS_COMPUTE_16F_PEDANTIC | Equivalent to rocblas_hgemm, slower than above |
-      | HIP_R_16F  | HIP_R_16F  | HIP_R_32F  | HIPBLAS_COMPUTE_32F          |          |
-      | HIP_R_16BF | HIP_R_16BF | HIP_R_16BF | HIPBLAS_COMPUTE_32F          |          |
-      | HIP_R_16BF | HIP_R_16BF | HIP_R_32F  | HIPBLAS_COMPUTE_32F          |          |
-      | HIP_R_32F  | HIP_R_32F  | HIP_R_32F  | HIPBLAS_COMPUTE_32F          | Equivalent to rocblas_sgemm |
-TODO:?| HIP_R_32F  | HIP_R_32F  | HIP_R_32F  | HIPBLAS_COMPUTE_32F_PEDANTIC | Currently equivalent to above call |
-      | HIP_R_64F  | HIP_R_64F  | HIP_R_64F  | HIPBLAS_COMPUTE_64F          |          |
-TODO:?| HIP_R_64F  | HIP_R_64F  | HIP_R_64F  | HIPBLAS_COMPUTE_64F_PEDANTIC |          |
-      | HIP_R_8I   | HIP_R_8I   | HIP_R_32I  | HIPBLAS_COMPUTE_32I          |          |
-TODO:?| HIP_R_8I   | HIP_R_8I   | HIP_C_32I  | HIPBLAS_COMPUTE_32I_PEDANTIC |          |
-      | HIP_C_32F  | HIP_C_32F  | HIP_C_32F  | HIPBLAS_COMPUTE_32F          |          |
-TODO:?| HIP_C_32F  | HIP_C_32F  | HIP_C_32F  | HIPBLAS_COMPUTE_32F_PEDANTIC |          |
-      | HIP_C_64F  | HIP_C_64F  | HIP_C_64F  | HIPBLAS_COMPUTE_64F          |          |
-TODO:?| HIP_C_64F  | HIP_C_64F  | HIP_C_64F  | HIPBLAS_COMPUTE_64F_PEDANTIC |          |
-
-
-      TODO: Current thinking: Probably not worth supporting pedantic compute types in hipBLAS/rocBLAS? Would likely have to get
-            buy-in from Tensile team as they would have to ensure future support. Not sure if these are widely used or needed.
+      |   aType    |   bType    |   cType    |     computeType     |
+      | ---------- | ---------- | ---------- | ------------------- |
+      | HIP_R_16F  | HIP_R_16F  | HIP_R_16F  | HIPBLAS_COMPUTE_16F |
+      | HIP_R_16F  | HIP_R_16F  | HIP_R_16F  | HIPBLAS_COMPUTE_32F |
+      | HIP_R_16F  | HIP_R_16F  | HIP_R_32F  | HIPBLAS_COMPUTE_32F |
+      | HIP_R_16BF | HIP_R_16BF | HIP_R_16BF | HIPBLAS_COMPUTE_32F |
+      | HIP_R_16BF | HIP_R_16BF | HIP_R_32F  | HIPBLAS_COMPUTE_32F |
+      | HIP_R_32F  | HIP_R_32F  | HIP_R_32F  | HIPBLAS_COMPUTE_32F |
+      | HIP_R_64F  | HIP_R_64F  | HIP_R_64F  | HIPBLAS_COMPUTE_64F |
+      | HIP_R_8I   | HIP_R_8I   | HIP_R_32I  | HIPBLAS_COMPUTE_32I |
+      | HIP_C_32F  | HIP_C_32F  | HIP_C_32F  | HIPBLAS_COMPUTE_32F |
+      | HIP_C_64F  | HIP_C_64F  | HIP_C_64F  | HIPBLAS_COMPUTE_64F |
 
     With HIPBLAS_V2 define, hipblasGemmEx accepts hipDataType for aType, bType, and cType.
     It also accepts hipblasComputeType_t for computeType. hipblasGemmEx will no

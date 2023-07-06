@@ -277,7 +277,7 @@ cudaDataType_t HIPDatatypeToCudaDatatype_v2(hipDataType type)
     }
 }
 
-cudaDataType_t HIPComputetypeToCudaComputetype(hipblasComputeType_t type)
+cublasComputeType_t HIPComputetypeToCudaComputetype(hipblasComputeType_t type)
 {
     switch(type)
     {

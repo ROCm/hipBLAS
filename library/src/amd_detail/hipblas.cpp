@@ -18674,7 +18674,6 @@ hipblasStatus_t hipblasInternalGemmExTypes(hipDataType          a_in,
                                            rocblas_datatype&    c_out,
                                            rocblas_datatype&    compute_out)
 {
-    // TODO: pedantic modes?
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     if(a_in == HIP_R_16F && b_in == HIP_R_16F && c_in == HIP_R_16F
