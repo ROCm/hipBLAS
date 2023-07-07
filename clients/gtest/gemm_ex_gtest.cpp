@@ -192,6 +192,7 @@ const vector<vector<char>> small_transA_transB_range = {{'N', 'N'}};
 const vector<vector<char>> transA_transB_range = {{'N', 'N'}, {'N', 'T'}, {'C', 'N'}, {'T', 'C'}};
 
 // a_type, b_type, c_type, compute_type
+// Testing all supported compute_types for rocBLAS backend, not thorough testing for cuBLAS backend.
 const vector<vector<hipblasDatatype_t>> precision_half = {{ HIPBLAS_R_16F,
                                                             HIPBLAS_R_16F,
                                                             HIPBLAS_R_16F,
