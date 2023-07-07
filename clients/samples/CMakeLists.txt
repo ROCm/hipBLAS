@@ -29,7 +29,7 @@ add_executable( hipblas-example-sgemm-strided-batched example_sgemm_strided_batc
 add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
 add_executable( hipblas-example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-hgemm-half example_hgemm_hip_half.cpp ${hipblas_samples_common})
-add_executable( hipblas-example-gemmex_v2 example_gemm_ex_v2.cpp ${hipblas_samples_common})
+add_executable( hipblas-example-gemmEx_v2 example_gemm_ex_v2.cpp ${hipblas_samples_common})
 
 target_compile_definitions( hipblas-example-strmm_v1 PRIVATE HIPBLAS_V1)
 
@@ -55,19 +55,19 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm_v1 hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-gemmex_v2 hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
+list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm_v1 hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-gemmEx_v2 hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
 
 target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
-target_compile_options( hipblas-example-gemmex_v2 PRIVATE -DHIPBLAS_USE_HIP_HALF -DHIPBLAS_V2 )
+target_compile_options( hipblas-example-gemmEx_v2 PRIVATE -DHIPBLAS_USE_HIP_HALF -DHIPBLAS_V2 )
 target_compile_options( hipblas-example-scal-ex-v2 PRIVATE -DHIPBLAS_V2)
 
 # HIP on Windows: xhip is required with clang++ to get __half defined
 if ( WIN32 )
 target_compile_options( hipblas-example-hgemm-half PRIVATE -xhip )
-target_compile_options( hipblas-example-gemmex_v2 PRIVATE -xhip )
+target_compile_options( hipblas-example-gemmEx_v2 PRIVATE -xhip )
 endif()
 
 foreach( exe IN LISTS hipblas-example-executables)

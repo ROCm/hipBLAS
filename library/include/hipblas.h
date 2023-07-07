@@ -18391,7 +18391,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
                                           hipblasComputeType_t computeType,
                                           hipblasGemmAlgo_t    algo)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                           hipblasOperation_t transA,
@@ -18570,7 +18570,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx_v2(hipblasHandle_t      handle,
                                                  hipblasComputeType_t computeType,
                                                  hipblasGemmAlgo_t    algo)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
                                                  hipblasOperation_t transA,
@@ -18765,7 +18765,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx_v2(hipblasHandle_t      hand
                                                         hipblasComputeType_t computeType,
                                                         hipblasGemmAlgo_t    algo)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
                                                         hipblasOperation_t transA,
@@ -18985,7 +18985,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx_v2(hipblasHandle_t   
                                           int                invAsize,
                                           hipDataType        computeType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
                                           hipblasSideMode_t  side,
@@ -19184,7 +19184,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx_v2(hipblasHandle_t    handle,
                                                  int                invAsize,
                                                  hipDataType        computeType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
                                                  hipblasSideMode_t  side,
@@ -19393,7 +19393,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx_v2(hipblasHandle_t    handle
                                                         hipblasStride      strideInvA,
                                                         hipDataType        computeType);
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
                                                         hipblasSideMode_t  side,
@@ -19586,7 +19586,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx_v2(hipblasHandle_t   
                                           int             incy,
                                           hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
                                           int               n,
@@ -19699,7 +19699,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx_v2(hipblasHandle_t handle,
                                                  int             batchCount,
                                                  hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
                                                  int               n,
@@ -19820,7 +19820,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx_v2(hipblasHandle_t handle,
                                                         int             batchCount,
                                                         hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   handle,
                                                         int               n,
@@ -19960,7 +19960,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx_v2(hipblasHandle_t ha
                                          hipDataType     resultType,
                                          hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
                                          int               n,
@@ -20108,7 +20108,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx_v2(hipblasHandle_t handle,
                                                 hipDataType     resultType,
                                                 hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
                                                 int               n,
@@ -20266,7 +20266,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx_v2(hipblasHandle_t handle,
                                                        hipDataType     resultType,
                                                        hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   handle,
                                                        int               n,
@@ -20427,7 +20427,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx_v2(hipblasHandle_t ha
                                           hipDataType     resultType,
                                           hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
                                           int               n,
@@ -20518,7 +20518,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex_v2(hipblasHandle_t handle,
                                                  hipDataType     resultType,
                                                  hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
                                                  int               n,
@@ -20617,7 +20617,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx_v2(hipblasHandle_t handle,
                                                         hipDataType     resultType,
                                                         hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   handle,
                                                         int               n,
@@ -20733,7 +20733,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx_v2(hipblasHandle_t ha
                                          hipDataType     csType,
                                          hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
                                          int               n,
@@ -20858,7 +20858,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx_v2(hipblasHandle_t handle,
                                                 int             batchCount,
                                                 hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
                                                 int               n,
@@ -20991,7 +20991,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx_v2(hipblasHandle_t handle,
                                                        int             batchCount,
                                                        hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
                                                        int               n,
@@ -21122,7 +21122,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx_v2(hipblasHandle_t han
                                           int             incx,
                                           hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
                                           int               n,
@@ -21211,7 +21211,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
                                                  int             batchCount,
                                                  hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
                                                  int               n,
@@ -21308,7 +21308,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
                                                         int             batchCount,
                                                         hipDataType     executionType)
 
-        #else // Deprecated
+        #else // [DEPRECATED]
 
             hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
                                                         int               n,
