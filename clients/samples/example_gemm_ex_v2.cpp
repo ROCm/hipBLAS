@@ -74,20 +74,20 @@
 #define DIM2 1024
 #define DIM3 1025
 
-void mat_mat_mult_hpa_half(float  alpha,
-                       float  beta,
-                       int     M,
-                       int     N,
-                       int     K,
-                       __half* A,
-                       size_t     As1,
-                       size_t     As2,
-                       __half* B,
-                       size_t     Bs1,
-                       size_t     Bs2,
-                       __half* C,
-                       size_t     Cs1,
-                       size_t     Cs2)
+void mat_mat_mult_hpa_half(float   alpha,
+                           float   beta,
+                           int     M,
+                           int     N,
+                           int     K,
+                           __half* A,
+                           size_t  As1,
+                           size_t  As2,
+                           __half* B,
+                           size_t  Bs1,
+                           size_t  Bs2,
+                           __half* C,
+                           size_t  Cs1,
+                           size_t  Cs2)
 {
     float beta_float  = beta;
     float alpha_float = alpha;
@@ -112,26 +112,26 @@ int main()
 {
     hipblasOperation_t transa = HIPBLAS_OP_N, transb = HIPBLAS_OP_T;
 
-    int m = DIM1, n = DIM2, k = DIM3;
-    int lda, ldb, ldc;
+    int    m = DIM1, n = DIM2, k = DIM3;
+    int    lda, ldb, ldc;
     size_t size_a, size_b, size_c;
-    int a_stride_1, a_stride_2, b_stride_1, b_stride_2;
+    int    a_stride_1, a_stride_2, b_stride_1, b_stride_2;
 
     hipblasGemmAlgo_t algo = HIPBLAS_GEMM_DEFAULT;
 
     // HPA
-    using T = __half;
+    using T   = __half;
     using Tex = float;
 #ifdef HIPBLAS_V2
     // Compiling with HIPBLAS_V2 in cmake
-    hipDataType a_type = HIP_R_16F;
-    hipDataType b_type = HIP_R_16F;
-    hipDataType c_type = HIP_R_16F;
+    hipDataType          a_type       = HIP_R_16F;
+    hipDataType          b_type       = HIP_R_16F;
+    hipDataType          c_type       = HIP_R_16F;
     hipblasComputeType_t compute_type = HIPBLAS_COMPUTE_32F;
 #else
-    hipblasDatatype_t a_type = HIPBLAS_R_16F;
-    hipblasDatatype_t b_type = HIPBLAS_R_16F;
-    hipblasDatatype_t c_type = HIPBLAS_R_16F;
+    hipblasDatatype_t a_type       = HIPBLAS_R_16F;
+    hipblasDatatype_t b_type       = HIPBLAS_R_16F;
+    hipblasDatatype_t c_type       = HIPBLAS_R_16F;
     hipblasDatatype_t compute_type = HIPBLAS_R_32F;
 #endif
 
@@ -212,8 +212,25 @@ int main()
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
-    CHECK_HIPBLAS_ERROR(
-        hipblasGemmEx(handle, transa, transb, m, n, k, &alpha, da, a_type, lda, db, b_type, ldb, &beta, dc, c_type, ldc, compute_type, algo));
+    CHECK_HIPBLAS_ERROR(hipblasGemmEx(handle,
+                                      transa,
+                                      transb,
+                                      m,
+                                      n,
+                                      k,
+                                      &alpha,
+                                      da,
+                                      a_type,
+                                      lda,
+                                      db,
+                                      b_type,
+                                      ldb,
+                                      &beta,
+                                      dc,
+                                      c_type,
+                                      ldc,
+                                      compute_type,
+                                      algo));
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hc.data(), dc, sizeof(T) * size_c, hipMemcpyDeviceToHost));
@@ -225,25 +242,26 @@ int main()
 
     // calculate golden or correct result
     mat_mat_mult_hpa_half(alpha,
-                        beta,
-                        m,
-                        n,
-                        k,
-                        ha.data(),
-                        a_stride_1,
-                        a_stride_2,
-                        hb.data(),
-                        b_stride_1,
-                        b_stride_2,
-                        hc_gold.data(),
-                        1,
-                        ldc);
+                          beta,
+                          m,
+                          n,
+                          k,
+                          ha.data(),
+                          a_stride_1,
+                          a_stride_2,
+                          hb.data(),
+                          b_stride_1,
+                          b_stride_2,
+                          hc_gold.data(),
+                          1,
+                          ldc);
 
     for(int i = 0; i < size_c; i++)
     {
         float hc_gold_val    = __half2float(hc_gold[i]);
         float hc_val         = __half2float(hc[i]);
-        float relative_error = (hc_gold_val - hc_val) / hc_gold_val;
+        float relative_error = hc_gold_val == 0 ? std::abs(hc_gold_val - hc_val)
+                                                : (hc_gold_val - hc_val) / hc_gold_val;
         relative_error       = relative_error > 0 ? relative_error : -relative_error;
         max_relative_error
             = relative_error < max_relative_error ? max_relative_error : relative_error;
