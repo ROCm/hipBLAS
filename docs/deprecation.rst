@@ -102,3 +102,52 @@ and to use hipDataType instead.
 Note that there are no deprecation warnings for the hipBLAS Fortran API.
 
 hipblasDatatype_t will be removed in a future release, and the use of this type in the API will be replaced with hipDataType.
+
+Removed in hipBLAS 2.0
+^^^^^^^^^^^^^^^^^^^^^^
+
+Legacy BLAS in-place trmm
+'''''''''''''''''''''''''
+The legacay BLAS in-place hipblasXtrmm that calculates B <- alpha * op(A) * B is removed and replaced with the
+out-of-place hipblasXtrmm that calculates C <- alpha * op(A) * B.
+
+The prototype for the removed legacy BLAS in-place functionality was
+
+::
+
+    hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
+                                 hipblasSideMode_t  side,
+                                 hipblasFillMode_t  uplo,
+                                 hipblasOperation_t transA,
+                                 hipblasDiagType_t  diag,
+                                 int                m,
+                                 int                n,
+                                 const float*       alpha,
+                                 const float*       A,
+                                 int                lda,
+                                 float*             B,
+                                 int                ldb);
+
+The prototype for the replacement in-place and out-of-place functionality is
+
+::
+
+    hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
+                                           hipblasSideMode_t  side,
+                                           hipblasFillMode_t  uplo,
+                                           hipblasOperation_t transA,
+                                           hipblasDiagType_t  diag,
+                                           int                m,
+                                           int                n,
+                                           const float*       alpha,
+                                           const float*       A,
+                                           int                lda,
+                                           const float*       B,
+                                           int                ldb,
+                                           float*             C,
+                                           int                ldc);
+
+The legacy BLAS in-place functionality can be obtained with the new function if you set pointer C equal to pointer B and
+ldc equal to ldb.
+
+The out-of-place functionality is from setting pointer B distinct from pointer C.
