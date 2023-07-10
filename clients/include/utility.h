@@ -862,6 +862,44 @@ void print_matrix(
                    double(GPU_result[j + i * lda].imag()));
 }
 
+/* ============================================================================================= */
+/*! \brief For testing purposes, copy one matrix into another with different leading dimensions  */
+template <typename T, typename U>
+void copy_matrix_with_different_leading_dimensions(T&     hB,
+                                                   U&     hC,
+                                                   int    M,
+                                                   int    N,
+                                                   size_t ldb,
+                                                   size_t ldc,
+                                                   size_t strideb     = 0,
+                                                   size_t stridec     = 0,
+                                                   int    batch_count = 1)
+{
+    for(int b = 0; b < batch_count; b++)
+    {
+        auto* B = hB + b * strideb;
+        auto* C = hC + b * stridec;
+        for(int i = 0; i < M; i++)
+            for(int j = 0; j < N; j++)
+                C[i + j * ldc] = B[i + j * ldb];
+    }
+}
+
+template <typename T, typename U>
+void copy_matrix_with_different_leading_dimensions_batched(
+    T& hB, U& hC, int M, int N, size_t ldb, size_t ldc)
+{
+    int batch_count = hB.batch_count();
+    for(int b = 0; b < batch_count; b++)
+    {
+        auto* B = hB[b];
+        auto* C = hC[b];
+        for(int i = 0; i < M; i++)
+            for(int j = 0; j < N; j++)
+                C[i + j * ldc] = B[i + j * ldb];
+    }
+}
+
 /* =============================================================================================== */
 
 /* ============================================================================================ */
