@@ -307,6 +307,10 @@ try
          value<hipblas_int>(&arg.batch_count)->default_value(1),
          "Number of matrices. Only applicable to batched and strided_batched routines")
 
+        ("inplace",
+         value<bool>(&arg.inplace)->default_value(false),
+         "Whether or not to use the in place version of the algorithm. Only applicable to trmm routines")
+
         ("verify,v",
          value<hipblas_int>(&arg.norm_check)->default_value(0),
          "Validate GPU results with CPU? 0 = No, 1 = Yes (default: No)")

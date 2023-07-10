@@ -129,6 +129,7 @@ struct Arguments
     int batch_count  = 10;
 
     bool fortran = false;
+    bool inplace = false; // only for trmm
 
     int      norm_check = 0;
     int      unit_check = 1;
@@ -193,6 +194,7 @@ struct Arguments
     OPER(apiCallCount) SEP           \
     OPER(batch_count) SEP            \
     OPER(fortran) SEP                \
+    OPER(inplace) SEP                \
     OPER(norm_check) SEP             \
     OPER(unit_check) SEP             \
     OPER(timing) SEP                 \
