@@ -87,7 +87,6 @@ inline hipblasStatus_t testing_trmm_bad_arg(const Arguments& arg)
 
         device_vector<T>* dOut = inplace ? &dB : &dC;
 
-#ifndef __HIP_PLATFORM_NVCC__
         // cuBLAS doesn't have CUBLAS_SIDE_BOTH so will return invalid_enum,
         // while rocBLAS has rocblas_side_both, but just invalid for this func.
         // invalid enums
@@ -105,22 +104,9 @@ inline hipblasStatus_t testing_trmm_bad_arg(const Arguments& arg)
                                             ldb,
                                             *dOut,
                                             ldOut),
+#ifndef __HIP_PLATFORM_NVCC__
                               HIPBLAS_STATUS_INVALID_VALUE);
 #else
-        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                            HIPBLAS_SIDE_BOTH,
-                                            uplo,
-                                            transA,
-                                            diag,
-                                            M,
-                                            N,
-                                            alpha,
-                                            dA,
-                                            lda,
-                                            dB,
-                                            ldb,
-                                            *dOut,
-                                            ldOut),
                               HIPBLAS_STATUS_INVALID_ENUM);
 #endif
 
@@ -138,7 +124,11 @@ inline hipblasStatus_t testing_trmm_bad_arg(const Arguments& arg)
                                             ldb,
                                             *dOut,
                                             ldOut),
+#ifndef __HIP_PLATFORM_NVCC__
                               HIPBLAS_STATUS_INVALID_VALUE);
+#else
+                              HIPBLAS_STATUS_INVALID_ENUM);
+#endif
 
         EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
                                             side,
