@@ -43,7 +43,7 @@ def runTestCommand (platform, project)
     def v2TestCommand = """#!/usr/bin/env bash
                     set -x
                     cd ${project.paths.project_build_prefix}/build/release/clients/staging
-                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas_v2-test --gtest_filter=*axpy*_ex*:*dot*_ex*:*nrm2*_ex*:*rot*_ex*:*scal*_ex*:*trsm*_ex* --gtest_output=xml --gtest_color=yes
+                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas_v2-test --gtest_filter=*axpy*_ex*:*dot*_ex*:*nrm2*_ex*:*rot*_ex*:*scal*_ex*:*trsm*_ex*:*gemm*_ex* --gtest_output=xml --gtest_color=yes
                 """
 
     platform.runCommand(this, v2TestCommand)

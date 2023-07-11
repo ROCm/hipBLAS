@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2355,23 +2355,23 @@ void cblas_gemm<hipblasHalf>(hipblasOperation_t transA,
     float alpha_float = half_to_float(alpha);
     float beta_float  = half_to_float(beta);
 
-    int sizeA = transA == HIPBLAS_OP_N ? k * lda : m * lda;
-    int sizeB = transB == HIPBLAS_OP_N ? n * ldb : k * ldb;
-    int sizeC = n * ldc;
+    size_t sizeA = transA == HIPBLAS_OP_N ? size_t(k) * lda : size_t(m) * lda;
+    size_t sizeB = transB == HIPBLAS_OP_N ? size_t(n) * ldb : size_t(k) * ldb;
+    size_t sizeC = size_t(n) * ldc;
 
     std::unique_ptr<float[]> A_float(new float[sizeA]());
     std::unique_ptr<float[]> B_float(new float[sizeB]());
     std::unique_ptr<float[]> C_float(new float[sizeC]());
 
-    for(int i = 0; i < sizeA; i++)
+    for(size_t i = 0; i < sizeA; i++)
     {
         A_float[i] = half_to_float(A[i]);
     }
-    for(int i = 0; i < sizeB; i++)
+    for(size_t i = 0; i < sizeB; i++)
     {
         B_float[i] = half_to_float(B[i]);
     }
-    for(int i = 0; i < sizeC; i++)
+    for(size_t i = 0; i < sizeC; i++)
     {
         C_float[i] = half_to_float(C[i]);
     }
@@ -2393,7 +2393,7 @@ void cblas_gemm<hipblasHalf>(hipblasOperation_t transA,
                 static_cast<float*>(C_float.get()),
                 ldc);
 
-    for(int i = 0; i < sizeC; i++)
+    for(size_t i = 0; i < sizeC; i++)
     {
         C[i] = float_to_half(C_float[i]);
     }
@@ -2405,35 +2405,35 @@ void cblas_gemm<hipblasHalf, hipblasHalf, float>(hipblasOperation_t transA,
                                                  int                m,
                                                  int                n,
                                                  int                k,
-                                                 float              alpha_float,
+                                                 float              alpha,
                                                  hipblasHalf*       A,
                                                  int                lda,
                                                  hipblasHalf*       B,
                                                  int                ldb,
-                                                 float              beta_float,
+                                                 float              beta,
                                                  hipblasHalf*       C,
                                                  int                ldc)
 {
     // cblas does not support hipblasHalf, so convert to higher precision float
     // This will give more precise result which is acceptable for testing
 
-    int sizeA = transA == HIPBLAS_OP_N ? k * lda : m * lda;
-    int sizeB = transB == HIPBLAS_OP_N ? n * ldb : k * ldb;
-    int sizeC = n * ldc;
+    size_t sizeA = transA == HIPBLAS_OP_N ? size_t(k) * lda : size_t(m) * lda;
+    size_t sizeB = transB == HIPBLAS_OP_N ? size_t(n) * ldb : size_t(k) * ldb;
+    size_t sizeC = n * ldc;
 
     std::unique_ptr<float[]> A_float(new float[sizeA]());
     std::unique_ptr<float[]> B_float(new float[sizeB]());
     std::unique_ptr<float[]> C_float(new float[sizeC]());
 
-    for(int i = 0; i < sizeA; i++)
+    for(size_t i = 0; i < sizeA; i++)
     {
         A_float[i] = half_to_float(A[i]);
     }
-    for(int i = 0; i < sizeB; i++)
+    for(size_t i = 0; i < sizeB; i++)
     {
         B_float[i] = half_to_float(B[i]);
     }
-    for(int i = 0; i < sizeC; i++)
+    for(size_t i = 0; i < sizeC; i++)
     {
         C_float[i] = half_to_float(C[i]);
     }
@@ -2446,19 +2446,70 @@ void cblas_gemm<hipblasHalf, hipblasHalf, float>(hipblasOperation_t transA,
                 m,
                 n,
                 k,
-                alpha_float,
+                alpha,
                 const_cast<const float*>(A_float.get()),
                 lda,
                 const_cast<const float*>(B_float.get()),
                 ldb,
-                beta_float,
+                beta,
                 static_cast<float*>(C_float.get()),
                 ldc);
 
-    for(int i = 0; i < sizeC; i++)
+    for(size_t i = 0; i < sizeC; i++)
     {
         C[i] = float_to_half(C_float[i]);
     }
+}
+
+template <>
+void cblas_gemm<hipblasHalf, float, float>(hipblasOperation_t transA,
+                                           hipblasOperation_t transB,
+                                           int                m,
+                                           int                n,
+                                           int                k,
+                                           float              alpha,
+                                           hipblasHalf*       A,
+                                           int                lda,
+                                           hipblasHalf*       B,
+                                           int                ldb,
+                                           float              beta,
+                                           float*             C,
+                                           int                ldc)
+{
+    // cblas does not support hipblasHalf, so convert to higher precision float
+    // This will give more precise result which is acceptable for testing
+
+    size_t sizeA = transA == HIPBLAS_OP_N ? size_t(k) * lda : size_t(m) * lda;
+    size_t sizeB = transB == HIPBLAS_OP_N ? size_t(n) * ldb : size_t(k) * ldb;
+
+    std::unique_ptr<float[]> A_float(new float[sizeA]());
+    std::unique_ptr<float[]> B_float(new float[sizeB]());
+
+    for(size_t i = 0; i < sizeA; i++)
+    {
+        A_float[i] = half_to_float(A[i]);
+    }
+    for(size_t i = 0; i < sizeB; i++)
+    {
+        B_float[i] = half_to_float(B[i]);
+    }
+
+    // just directly cast, since transA, transB are integers in the enum
+    // printf("transA: rocblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
+    cblas_sgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha,
+                const_cast<const float*>(A_float.get()),
+                lda,
+                const_cast<const float*>(B_float.get()),
+                ldb,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -2467,35 +2518,35 @@ void cblas_gemm<hipblasBfloat16, hipblasBfloat16, float>(hipblasOperation_t tran
                                                          int                m,
                                                          int                n,
                                                          int                k,
-                                                         float              alpha_float,
+                                                         float              alpha,
                                                          hipblasBfloat16*   A,
                                                          int                lda,
                                                          hipblasBfloat16*   B,
                                                          int                ldb,
-                                                         float              beta_float,
+                                                         float              beta,
                                                          hipblasBfloat16*   C,
                                                          int                ldc)
 {
     // cblas does not support hipblasBfloat16, so convert to higher precision float
     // This will give more precise result which is acceptable for testing
 
-    int sizeA = transA == HIPBLAS_OP_N ? k * lda : m * lda;
-    int sizeB = transB == HIPBLAS_OP_N ? n * ldb : k * ldb;
-    int sizeC = n * ldc;
+    size_t sizeA = transA == HIPBLAS_OP_N ? size_t(k) * lda : size_t(m) * lda;
+    size_t sizeB = transB == HIPBLAS_OP_N ? size_t(n) * ldb : size_t(k) * ldb;
+    size_t sizeC = size_t(n) * ldc;
 
     std::unique_ptr<float[]> A_float(new float[sizeA]());
     std::unique_ptr<float[]> B_float(new float[sizeB]());
     std::unique_ptr<float[]> C_float(new float[sizeC]());
 
-    for(int i = 0; i < sizeA; i++)
+    for(size_t i = 0; i < sizeA; i++)
     {
         A_float[i] = bfloat16_to_float(A[i]);
     }
-    for(int i = 0; i < sizeB; i++)
+    for(size_t i = 0; i < sizeB; i++)
     {
         B_float[i] = bfloat16_to_float(B[i]);
     }
-    for(int i = 0; i < sizeC; i++)
+    for(size_t i = 0; i < sizeC; i++)
     {
         C_float[i] = bfloat16_to_float(C[i]);
     }
@@ -2508,19 +2559,70 @@ void cblas_gemm<hipblasBfloat16, hipblasBfloat16, float>(hipblasOperation_t tran
                 m,
                 n,
                 k,
-                alpha_float,
+                alpha,
                 const_cast<const float*>(A_float.get()),
                 lda,
                 const_cast<const float*>(B_float.get()),
                 ldb,
-                beta_float,
+                beta,
                 static_cast<float*>(C_float.get()),
                 ldc);
 
-    for(int i = 0; i < sizeC; i++)
+    for(size_t i = 0; i < sizeC; i++)
     {
         C[i] = float_to_bfloat16(C_float[i]);
     }
+}
+
+template <>
+void cblas_gemm<hipblasBfloat16, float, float>(hipblasOperation_t transA,
+                                               hipblasOperation_t transB,
+                                               int                m,
+                                               int                n,
+                                               int                k,
+                                               float              alpha,
+                                               hipblasBfloat16*   A,
+                                               int                lda,
+                                               hipblasBfloat16*   B,
+                                               int                ldb,
+                                               float              beta,
+                                               float*             C,
+                                               int                ldc)
+{
+    // cblas does not support hipblasBfloat16, so convert to higher precision float
+    // This will give more precise result which is acceptable for testing
+
+    size_t sizeA = transA == HIPBLAS_OP_N ? size_t(k) * lda : size_t(m) * lda;
+    size_t sizeB = transB == HIPBLAS_OP_N ? size_t(n) * ldb : size_t(k) * ldb;
+
+    std::unique_ptr<float[]> A_float(new float[sizeA]());
+    std::unique_ptr<float[]> B_float(new float[sizeB]());
+
+    for(size_t i = 0; i < sizeA; i++)
+    {
+        A_float[i] = bfloat16_to_float(A[i]);
+    }
+    for(size_t i = 0; i < sizeB; i++)
+    {
+        B_float[i] = bfloat16_to_float(B[i]);
+    }
+
+    // just directly cast, since transA, transB are integers in the enum
+    // printf("transA: rocblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
+    cblas_sgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha,
+                const_cast<const float*>(A_float.get()),
+                lda,
+                const_cast<const float*>(B_float.get()),
+                ldb,
+                beta,
+                C,
+                ldc);
 }
 
 template <>

@@ -6404,6 +6404,17 @@ hipblasStatus_t hipblasZgemmStridedBatchedFortran(hipblasHandle_t             ha
                                                   int                         batchCount);
 
 // gemmex
+// If compiling with HIPBLAS_V2, fortran version will accept old interface.
+// We aren't testing fortran interface with HIPBLAS_V2 defined, so routing
+// fortran to regular C interface in that case to get test code to work.
+#ifdef HIPBLAS_V2
+
+#define hipblasGemmExFortran hipblasGemmEx
+#define hipblasGemmBatchedExFortran hipblasGemmBatchedEx
+#define hipblasGemmStridedBatchedExFortran hipblasGemmStridedBatchedEx
+
+#else
+
 hipblasStatus_t hipblasGemmExFortran(hipblasHandle_t    handle,
                                      hipblasOperation_t trans_a,
                                      hipblasOperation_t trans_b,
@@ -6468,6 +6479,8 @@ hipblasStatus_t hipblasGemmStridedBatchedExFortran(hipblasHandle_t    handle,
                                                    int                batch_count,
                                                    hipblasDatatype_t  compute_type,
                                                    hipblasGemmAlgo_t  algo);
+
+#endif
 
 // trsm_ex
 hipblasStatus_t hipblasTrsmExFortran(hipblasHandle_t    handle,
