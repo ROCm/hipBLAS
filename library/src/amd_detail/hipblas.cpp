@@ -18238,6 +18238,148 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasInternalGemmExTypes(hipDataType          a_in,
+                                           hipDataType          b_in,
+                                           hipDataType          c_in,
+                                           hipblasComputeType_t compute_in,
+                                           rocblas_datatype&    a_out,
+                                           rocblas_datatype&    b_out,
+                                           rocblas_datatype&    c_out,
+                                           rocblas_datatype&    compute_out)
+{
+    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+
+    if(a_in == HIP_R_16F && b_in == HIP_R_16F && c_in == HIP_R_16F
+       && compute_in == HIPBLAS_COMPUTE_16F)
+    {
+        a_out = b_out = c_out = HIPDatatypeToRocblasDatatype_v2(a_in);
+        // HIPBLAS_COMPUTE_16F specifies at least 16-bits for compute so we could use f32_r here, but would
+        // introduce some overhead with scalars. Leaving it to rocBLAS to choose hpa when possible.
+        compute_out = rocblas_datatype_f16_r;
+    }
+    else if(a_in == HIP_R_16F && b_in == HIP_R_16F && c_in == HIP_R_16F
+            && compute_in == HIPBLAS_COMPUTE_32F)
+    {
+        a_out = b_out = c_out = rocblas_datatype_f16_r;
+        compute_out           = rocblas_datatype_f32_r;
+    }
+    else if(a_in == HIP_R_16F && b_in == HIP_R_16F && c_in == HIP_R_32F
+            && compute_in == HIPBLAS_COMPUTE_32F)
+    {
+        a_out = b_out = rocblas_datatype_f16_r;
+        c_out         = rocblas_datatype_f32_r;
+        compute_out   = rocblas_datatype_f32_r;
+    }
+    else if(a_in == HIP_R_16BF && b_in == HIP_R_16BF && c_in == HIP_R_16BF
+            && compute_in == HIPBLAS_COMPUTE_32F)
+    {
+        a_out = b_out = c_out = rocblas_datatype_bf16_r;
+        compute_out           = rocblas_datatype_f32_r;
+    }
+    else if(a_in == HIP_R_16BF && b_in == HIP_R_16BF && c_in == HIP_R_32F
+            && compute_in == HIPBLAS_COMPUTE_32F)
+    {
+        a_out = b_out = rocblas_datatype_bf16_r;
+        c_out         = rocblas_datatype_f32_r;
+        compute_out   = rocblas_datatype_f32_r;
+    }
+    else if(a_in == HIP_R_32F && b_in == HIP_R_32F && c_in == HIP_R_32F
+            && compute_in == HIPBLAS_COMPUTE_32F)
+    {
+        a_out = b_out = c_out = compute_out = rocblas_datatype_f32_r;
+    }
+    else if(a_in == HIP_R_64F && b_in == HIP_R_64F && c_in == HIP_R_64F
+            && compute_in == HIPBLAS_COMPUTE_64F)
+    {
+        a_out = b_out = c_out = compute_out = rocblas_datatype_f64_r;
+    }
+    else if(a_in == HIP_R_8I && b_in == HIP_R_8I && c_in == HIP_R_32I
+            && compute_in == HIPBLAS_COMPUTE_32I)
+    {
+        a_out = b_out = rocblas_datatype_i8_r;
+        c_out = compute_out = rocblas_datatype_i32_r;
+    }
+    else if(a_in == HIP_C_32F && b_in == HIP_C_32F && c_in == HIP_C_32F
+            && compute_in == HIPBLAS_COMPUTE_32F)
+    {
+        a_out = b_out = c_out = compute_out = rocblas_datatype_f32_c;
+    }
+    else if(a_in == HIP_C_64F && b_in == HIP_C_64F && c_in == HIP_C_64F
+            && compute_in == HIPBLAS_COMPUTE_64F)
+    {
+        a_out = b_out = c_out = compute_out = rocblas_datatype_f64_c;
+    }
+    else
+    {
+        status = HIPBLAS_STATUS_NOT_SUPPORTED;
+    }
+    return status;
+}
+
+hipblasStatus_t hipblasGemmEx_v2(hipblasHandle_t      handle,
+                                 hipblasOperation_t   transa,
+                                 hipblasOperation_t   transb,
+                                 int                  m,
+                                 int                  n,
+                                 int                  k,
+                                 const void*          alpha,
+                                 const void*          A,
+                                 hipDataType          a_type,
+                                 int                  lda,
+                                 const void*          B,
+                                 hipDataType          b_type,
+                                 int                  ldb,
+                                 const void*          beta,
+                                 void*                C,
+                                 hipDataType          c_type,
+                                 int                  ldc,
+                                 hipblasComputeType_t compute_type,
+                                 hipblasGemmAlgo_t    algo)
+try
+{
+    // Not necessarily a 1-to-1 mapping between hipblasComputeType_t and rocblas_datatype, so handling supported cases
+    // individually, can be changed with rocBLAS if/when related changes happen there.
+
+    uint32_t           solution_index = 0;
+    rocblas_gemm_flags flags          = rocblas_gemm_flags_none;
+
+    rocblas_datatype a_type_roc, b_type_roc, c_type_roc, compute_type_roc;
+    hipblasStatus_t  status = hipblasInternalGemmExTypes(
+        a_type, b_type, c_type, compute_type, a_type_roc, b_type_roc, c_type_roc, compute_type_roc);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+        return status;
+
+    return rocBLASStatusToHIPStatus(rocblas_gemm_ex((rocblas_handle)handle,
+                                                    hipOperationToHCCOperation(transa),
+                                                    hipOperationToHCCOperation(transb),
+                                                    m,
+                                                    n,
+                                                    k,
+                                                    alpha,
+                                                    A,
+                                                    a_type_roc,
+                                                    lda,
+                                                    B,
+                                                    b_type_roc,
+                                                    ldb,
+                                                    beta,
+                                                    C,
+                                                    c_type_roc,
+                                                    ldc,
+                                                    C,
+                                                    c_type_roc,
+                                                    ldc,
+                                                    compute_type_roc,
+                                                    HIPGemmAlgoToRocblasGemmAlgo(algo),
+                                                    solution_index,
+                                                    flags));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
                                      hipblasOperation_t transa,
                                      hipblasOperation_t transb,
@@ -18289,6 +18431,72 @@ try
                                 HIPGemmAlgoToRocblasGemmAlgo(algo),
                                 solution_index,
                                 flags));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGemmBatchedEx_v2(hipblasHandle_t      handle,
+                                        hipblasOperation_t   transa,
+                                        hipblasOperation_t   transb,
+                                        int                  m,
+                                        int                  n,
+                                        int                  k,
+                                        const void*          alpha,
+                                        const void*          A[],
+                                        hipDataType          a_type,
+                                        int                  lda,
+                                        const void*          B[],
+                                        hipDataType          b_type,
+                                        int                  ldb,
+                                        const void*          beta,
+                                        void*                C[],
+                                        hipDataType          c_type,
+                                        int                  ldc,
+                                        int                  batch_count,
+                                        hipblasComputeType_t compute_type,
+                                        hipblasGemmAlgo_t    algo)
+try
+{
+    // Not necessarily a 1-to-1 mapping between hipblasComputeType_t and rocblas_datatype, so handling supported cases
+    // individually, can be changed with rocBLAS if/when related changes happen there.
+
+    uint32_t           solution_index = 0;
+    rocblas_gemm_flags flags          = rocblas_gemm_flags_none;
+
+    rocblas_datatype a_type_roc, b_type_roc, c_type_roc, compute_type_roc;
+    hipblasStatus_t  status = hipblasInternalGemmExTypes(
+        a_type, b_type, c_type, compute_type, a_type_roc, b_type_roc, c_type_roc, compute_type_roc);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+        return status;
+
+    return rocBLASStatusToHIPStatus(rocblas_gemm_batched_ex((rocblas_handle)handle,
+                                                            hipOperationToHCCOperation(transa),
+                                                            hipOperationToHCCOperation(transb),
+                                                            m,
+                                                            n,
+                                                            k,
+                                                            alpha,
+                                                            (void*)A,
+                                                            a_type_roc,
+                                                            lda,
+                                                            (void*)B,
+                                                            b_type_roc,
+                                                            ldb,
+                                                            beta,
+                                                            (void*)C,
+                                                            c_type_roc,
+                                                            ldc,
+                                                            (void*)C,
+                                                            c_type_roc,
+                                                            ldc,
+                                                            batch_count,
+                                                            compute_type_roc,
+                                                            HIPGemmAlgoToRocblasGemmAlgo(algo),
+                                                            solution_index,
+                                                            flags));
 }
 catch(...)
 {
@@ -18350,6 +18558,80 @@ try
                                         stride_C,
                                         batch_count,
                                         HIPDatatypeToRocblasDatatype(compute_type),
+                                        HIPGemmAlgoToRocblasGemmAlgo(algo),
+                                        solution_index,
+                                        flags));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGemmStridedBatchedEx_v2(hipblasHandle_t      handle,
+                                               hipblasOperation_t   transa,
+                                               hipblasOperation_t   transb,
+                                               int                  m,
+                                               int                  n,
+                                               int                  k,
+                                               const void*          alpha,
+                                               const void*          A,
+                                               hipDataType          a_type,
+                                               int                  lda,
+                                               hipblasStride        stride_A,
+                                               const void*          B,
+                                               hipDataType          b_type,
+                                               int                  ldb,
+                                               hipblasStride        stride_B,
+                                               const void*          beta,
+                                               void*                C,
+                                               hipDataType          c_type,
+                                               int                  ldc,
+                                               hipblasStride        stride_C,
+                                               int                  batch_count,
+                                               hipblasComputeType_t compute_type,
+                                               hipblasGemmAlgo_t    algo)
+try
+{
+    // Not necessarily a 1-to-1 mapping between hipblasComputeType_t and rocblas_datatype, so handling supported cases
+    // individually, can be changed with rocBLAS if/when related changes happen there.
+
+    uint32_t           solution_index = 0;
+    rocblas_gemm_flags flags          = rocblas_gemm_flags_none;
+
+    rocblas_datatype a_type_roc, b_type_roc, c_type_roc, compute_type_roc;
+    hipblasStatus_t  status = hipblasInternalGemmExTypes(
+        a_type, b_type, c_type, compute_type, a_type_roc, b_type_roc, c_type_roc, compute_type_roc);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+        return status;
+
+    return rocBLASStatusToHIPStatus(
+        rocblas_gemm_strided_batched_ex((rocblas_handle)handle,
+                                        hipOperationToHCCOperation(transa),
+                                        hipOperationToHCCOperation(transb),
+                                        m,
+                                        n,
+                                        k,
+                                        alpha,
+                                        A,
+                                        a_type_roc,
+                                        lda,
+                                        stride_A,
+                                        B,
+                                        b_type_roc,
+                                        ldb,
+                                        stride_B,
+                                        beta,
+                                        C,
+                                        c_type_roc,
+                                        ldc,
+                                        stride_C,
+                                        C,
+                                        c_type_roc,
+                                        ldc,
+                                        stride_C,
+                                        batch_count,
+                                        compute_type_roc,
                                         HIPGemmAlgoToRocblasGemmAlgo(algo),
                                         solution_index,
                                         flags));

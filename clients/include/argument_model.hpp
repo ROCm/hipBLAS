@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2020-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -130,6 +130,8 @@ public:
             value_list << hipblas_datatype2string(arg.d_type) << delim;
             name_list << "compute_type" << delim;
             value_list << hipblas_datatype2string(arg.compute_type) << delim;
+            name_list << "compute_type_gemm" << delim;
+            value_list << hipblas_computetype2string(arg.compute_type_gemm) << delim;
         }
 
         // Output (name, value) pairs to name_list and value_list

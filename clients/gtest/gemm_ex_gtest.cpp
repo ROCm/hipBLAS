@@ -45,7 +45,13 @@ README: This file contains testers to verify the correctness of
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, vector<double>, vector<char>, vector<hipblasDatatype_t>, int, bool>
+typedef std::tuple<vector<int>,
+                   vector<double>,
+                   vector<char>,
+                   vector<hipblasDatatype_t>,
+                   hipblasComputeType_t,
+                   int,
+                   bool>
     gemm_ex_tuple;
 
 // clang-format off
@@ -185,90 +191,80 @@ const vector<vector<double>> alpha_beta_range_int8 = {
 const vector<vector<char>> small_transA_transB_range = {{'N', 'N'}};
 const vector<vector<char>> transA_transB_range = {{'N', 'N'}, {'N', 'T'}, {'C', 'N'}, {'T', 'C'}};
 
-// a_type, b_type, c_type, d_type, compute_type
+// a_type, b_type, c_type, compute_type
+// Testing all supported compute_types for rocBLAS backend, not thorough testing for cuBLAS backend.
 const vector<vector<hipblasDatatype_t>> precision_half = {{ HIPBLAS_R_16F,
                                                             HIPBLAS_R_16F,
                                                             HIPBLAS_R_16F,
-                                                            HIPBLAS_R_16F,
                                                             HIPBLAS_R_16F  }};
+const vector<hipblasComputeType_t> compute_half = { HIPBLAS_COMPUTE_16F };
 
 const vector<vector<hipblasDatatype_t>> precision_hpa_half = {{ HIPBLAS_R_16F,
                                                                 HIPBLAS_R_16F,
                                                                 HIPBLAS_R_16F,
-                                                                HIPBLAS_R_16F,
                                                                 HIPBLAS_R_32F  }};
+const vector<hipblasComputeType_t> compute_hpa_half = { HIPBLAS_COMPUTE_32F };
+
+const vector<vector<hipblasDatatype_t>> precision_hpa_half_single_out = {{ HIPBLAS_R_16F,
+                                                                           HIPBLAS_R_16F,
+                                                                           HIPBLAS_R_32F,
+                                                                           HIPBLAS_R_32F  }};
+const vector<hipblasComputeType_t> compute_hpa_half_single_out = { HIPBLAS_COMPUTE_32F };
+
+const vector<vector<hipblasDatatype_t>> precision_bfloat16 = {{ HIPBLAS_R_16B,
+                                                                HIPBLAS_R_16B,
+                                                                HIPBLAS_R_16B,
+                                                                HIPBLAS_R_32F  }};
+const vector<hipblasComputeType_t> compute_bfloat16 = { HIPBLAS_COMPUTE_32F };
+
+const vector<vector<hipblasDatatype_t>> precision_bfloat16_single_out = {{ HIPBLAS_R_16B,
+                                                                           HIPBLAS_R_16B,
+                                                                           HIPBLAS_R_32F,
+                                                                           HIPBLAS_R_32F  }};
+const vector<hipblasComputeType_t> compute_bfloat16_single_out = { HIPBLAS_COMPUTE_32F };
 
 const vector<vector<hipblasDatatype_t>> precision_single = {{ HIPBLAS_R_32F,
                                                               HIPBLAS_R_32F,
                                                               HIPBLAS_R_32F,
-                                                              HIPBLAS_R_32F,
                                                               HIPBLAS_R_32F  }};
+const vector<hipblasComputeType_t> compute_single = { HIPBLAS_COMPUTE_32F };
 
 const vector<vector<hipblasDatatype_t>> precision_double = {{ HIPBLAS_R_64F,
                                                               HIPBLAS_R_64F,
                                                               HIPBLAS_R_64F,
-                                                              HIPBLAS_R_64F,
                                                               HIPBLAS_R_64F  }};
+const vector<hipblasComputeType_t> compute_double = { HIPBLAS_COMPUTE_64F };
 
 const vector<vector<hipblasDatatype_t>> precision_single_complex = {{ HIPBLAS_C_32F,
                                                               HIPBLAS_C_32F,
                                                               HIPBLAS_C_32F,
-                                                              HIPBLAS_C_32F,
                                                               HIPBLAS_C_32F  }};
+const vector<hipblasComputeType_t> compute_single_complex = { HIPBLAS_COMPUTE_32F };
 
 const vector<vector<hipblasDatatype_t>> precision_double_complex = {{ HIPBLAS_C_64F,
                                                               HIPBLAS_C_64F,
                                                               HIPBLAS_C_64F,
-                                                              HIPBLAS_C_64F,
                                                               HIPBLAS_C_64F  }};
+const vector<hipblasComputeType_t> compute_double_complex = { HIPBLAS_COMPUTE_64F };
 
 const vector<vector<hipblasDatatype_t>> precision_int8 = {{ HIPBLAS_R_8I,
                                                               HIPBLAS_R_8I,
                                                               HIPBLAS_R_32I,
-                                                              HIPBLAS_R_32I,
                                                               HIPBLAS_R_32I  }};
-
-
-const vector<vector<hipblasDatatype_t>> precision_type_range = {{HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F},
-                                                                {HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_16F,
-                                                                 HIPBLAS_R_32F},
-                                                                {HIPBLAS_R_32F,
-                                                                 HIPBLAS_R_32F,
-                                                                 HIPBLAS_R_32F,
-                                                                 HIPBLAS_R_32F,
-                                                                 HIPBLAS_R_32F},
-                                                                {HIPBLAS_R_64F,
-                                                                 HIPBLAS_R_64F,
-                                                                 HIPBLAS_R_64F,
-                                                                 HIPBLAS_R_64F,
-                                                                 HIPBLAS_R_64F},
-                                                                {HIPBLAS_C_32F,
-                                                                 HIPBLAS_C_32F,
-                                                                 HIPBLAS_C_32F,
-                                                                 HIPBLAS_C_32F,
-                                                                 HIPBLAS_C_32F},
-                                                                {HIPBLAS_C_64F,
-                                                                 HIPBLAS_C_64F,
-                                                                 HIPBLAS_C_64F,
-                                                                 HIPBLAS_C_64F,
-                                                                 HIPBLAS_C_64F},
-                                                                {HIPBLAS_R_8I,
-                                                                 HIPBLAS_R_8I,
-                                                                 HIPBLAS_R_32I,
-                                                                 HIPBLAS_R_32I,
-                                                                 HIPBLAS_R_32I}};
+const vector<hipblasComputeType_t> compute_int8 = { HIPBLAS_COMPUTE_32I };
 
 const int batch_count_range[] = { -1, 1, 5 };
 const int batch_count_range_small[] = { 1 };
 
+// Fortran interface doesn't change when compiling with HIPBLAS_V2 and will continue to accept hipblasDatatype_t for now.
+// When we remove hipblasDatatype_t, the Fortran interface will change accordingly.
+// So not testing fortran interface with hipblas_v2-test.
+
+#ifdef HIPBLAS_V2
+const bool is_fortran[] = {false};
+#else
 const bool is_fortran[] = {false, true};
+#endif
 const bool is_fortran_false[] = {false};
 // clang-format on
 
@@ -293,8 +289,9 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
     vector<double>            alpha_beta      = std::get<1>(tup);
     vector<char>              transA_transB   = std::get<2>(tup);
     vector<hipblasDatatype_t> precision_types = std::get<3>(tup);
-    int                       batch_count     = std::get<4>(tup);
-    bool                      fortran         = std::get<5>(tup);
+    hipblasComputeType_t      compute_type    = std::get<4>(tup);
+    int                       batch_count     = std::get<5>(tup);
+    bool                      fortran         = std::get<6>(tup);
 
     Arguments arg;
 
@@ -317,10 +314,11 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
 
     arg.timing = 0;
 
-    arg.a_type       = precision_types[0];
-    arg.b_type       = precision_types[1];
-    arg.c_type       = precision_types[2];
-    arg.compute_type = precision_types[4];
+    arg.a_type            = precision_types[0];
+    arg.b_type            = precision_types[1];
+    arg.c_type            = precision_types[2];
+    arg.compute_type      = precision_types[3];
+    arg.compute_type_gemm = compute_type;
 
     arg.batch_count = batch_count;
 
@@ -494,6 +492,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
                                  ValuesIn(alpha_beta_range_int8),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_int8),
+                                 ValuesIn(compute_int8),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
 
@@ -506,6 +505,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_hpa_half,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_hpa_half),
+                                 ValuesIn(compute_hpa_half),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
 
@@ -515,6 +515,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_half,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_half),
+                                 ValuesIn(compute_half),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
 
@@ -524,6 +525,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_single),
+                                 ValuesIn(compute_single),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
 
@@ -533,6 +535,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_double),
+                                 ValuesIn(compute_double),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
 
@@ -542,6 +545,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single_complex,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_single_complex),
+                                 ValuesIn(compute_single_complex),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
 
@@ -551,6 +555,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_double_complex),
+                                 ValuesIn(compute_double_complex),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran)));
 
@@ -561,6 +566,7 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_hpa_half),
+                                 ValuesIn(compute_hpa_half),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran_false)));
 
@@ -570,6 +576,7 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_half,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_half),
+                                 ValuesIn(compute_half),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran_false)));
 
@@ -579,6 +586,7 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_float,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_single),
+                                 ValuesIn(compute_single),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran_false)));
 
@@ -588,6 +596,37 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_double,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_double),
+                                 ValuesIn(compute_double),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
+
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half_single_out,
+                         gemm_ex_gtest,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half_single_out),
+                                 ValuesIn(compute_hpa_half_single_out),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
+
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_bfloat16,
+                         gemm_ex_gtest,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_bfloat16),
+                                 ValuesIn(compute_bfloat16),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran_false)));
+
+INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_bfloat16_single_out,
+                         gemm_ex_gtest,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_bfloat16_single_out),
+                                 ValuesIn(compute_bfloat16_single_out),
                                  ValuesIn(batch_count_range_small),
                                  ValuesIn(is_fortran_false)));
 
@@ -598,6 +637,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_hpa_half),
+                                 ValuesIn(compute_hpa_half),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
 
@@ -607,6 +647,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_half,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_half),
+                                 ValuesIn(compute_half),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
 
@@ -616,6 +657,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_single),
+                                 ValuesIn(compute_single),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
 
@@ -625,6 +667,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_double),
+                                 ValuesIn(compute_double),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
 
@@ -634,6 +677,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single_complex,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_single_complex),
+                                 ValuesIn(compute_single_complex),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
 
@@ -643,6 +687,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
                                  ValuesIn(alpha_beta_range),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_double_complex),
+                                 ValuesIn(compute_double_complex),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));
 
@@ -652,5 +697,36 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
                                  ValuesIn(alpha_beta_range_int8),
                                  ValuesIn(transA_transB_range),
                                  ValuesIn(precision_int8),
+                                 ValuesIn(compute_int8),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half_single_out,
+                         gemm_batch_ex_gtest,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range_int8),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half_single_out),
+                                 ValuesIn(compute_hpa_half_single_out),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_bfloat16,
+                         gemm_batch_ex_gtest,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range_int8),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_bfloat16),
+                                 ValuesIn(compute_bfloat16),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran)));
+
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_bfloat16_single_out,
+                         gemm_batch_ex_gtest,
+                         Combine(ValuesIn(medium_matrix_size_range),
+                                 ValuesIn(alpha_beta_range_int8),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_bfloat16_single_out),
+                                 ValuesIn(compute_bfloat16_single_out),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran)));

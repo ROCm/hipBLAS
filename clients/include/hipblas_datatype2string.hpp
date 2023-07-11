@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -94,6 +94,8 @@ hipblasSideMode_t char2hipblas_side(char value);
 
 hipblasDatatype_t string2hipblas_datatype(const std::string& value);
 
+hipblasComputeType_t string2hipblas_computetype(const std::string& value);
+
 // return precision string for hipblas_datatype
 inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
 {
@@ -134,6 +136,38 @@ inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
     case HIPBLAS_DATATYPE_INVALID:
         return "invalid";
     }
+    return "invalid";
+}
+
+// return string for hipblasComputeType_t
+inline constexpr auto hipblas_computetype2string(hipblasComputeType_t type)
+{
+    switch(type)
+    {
+    case HIPBLAS_COMPUTE_16F:
+        return "16f";
+    case HIPBLAS_COMPUTE_16F_PEDANTIC:
+        return "16f_pedantic";
+    case HIPBLAS_COMPUTE_32F:
+        return "32f";
+    case HIPBLAS_COMPUTE_32F_PEDANTIC:
+        return "32f_pedantic";
+    case HIPBLAS_COMPUTE_32F_FAST_16F:
+        return "32f_fast_16f";
+    case HIPBLAS_COMPUTE_32F_FAST_16BF:
+        return "32f_fast_16Bf";
+    case HIPBLAS_COMPUTE_32F_FAST_TF32:
+        return "32f_fast_tf32";
+    case HIPBLAS_COMPUTE_64F:
+        return "64f";
+    case HIPBLAS_COMPUTE_64F_PEDANTIC:
+        return "64f_pedantic";
+    case HIPBLAS_COMPUTE_32I:
+        return "32i";
+    case HIPBLAS_COMPUTE_32I_PEDANTIC:
+        return "32i_pedantic";
+    }
+
     return "invalid";
 }
 
