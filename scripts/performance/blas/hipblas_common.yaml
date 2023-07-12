@@ -5,6 +5,24 @@ Datatypes:
   - hipblasDatatype_t:
       bases: [ c_int ]
       attr:
+        f16_r: 150
+        f32_r: 151
+        f64_r: 152
+        f16_c: 153
+        f32_c: 154
+        f64_c: 155
+        i8_r:  160
+        u8_r:  161
+        i32_r: 162
+        u32_r: 163
+        i8_c:  164
+        u8_c:  165
+        i32_c: 166
+        u32_c: 167
+        bf16_r: 168
+        bf16_c: 169
+      attr_v2:
+        # temporary workaround for using HIPBLAS_V2 define. Parsed in hipblas_gentest.py
         f32_r:   0
         f64_r:   1
         f16_r:   2
@@ -41,11 +59,44 @@ Datatypes:
         rand_int: 111
         trig_float: 222
         hpl: 333
+      attr_v2:
+        rand_int: 111
+        trig_float: 222
+        hpl: 333
   - hipblas_atomics_mode:
       bases: [ c_int ]
       attr:
         atomics_not_allowed: 0
         atomics_allowed: 1
+      attr_v2:
+        atomics_not_allowed: 0
+        atomics_allowed: 1
+  - hipblasComputeType_t:
+      bases: [ c_int ]
+      attr:
+        16f: 0
+        16f_pedantic: 1
+        32f: 2
+        32f_pedantic: 3
+        32f_fast_16f: 4
+        32f_fast_16bf: 5
+        32f_fast_tf32: 6
+        64f: 7
+        64f_pedantic: 8
+        32i: 9
+        32i_pedantic: 10
+      attr_v2:
+        16f: 0
+        16f_pedantic: 1
+        32f: 2
+        32f_pedantic: 3
+        32f_fast_16f: 4
+        32f_fast_16bf: 5
+        32f_fast_tf32: 6
+        64f: 7
+        64f_pedantic: 8
+        32i: 9
+        32i_pedantic: 10
 
 Real precisions: &real_precisions
   - &half_precision
@@ -287,6 +338,8 @@ Arguments:
   - K: int
   - KL: int
   - KU: int
+  - rows: int
+  - cols: int
   - lda: int
   - ldb: int
   - ldc: int
@@ -296,10 +349,21 @@ Arguments:
   - c_type: hipblasDatatype_t
   - d_type: hipblasDatatype_t
   - compute_type: hipblasDatatype_t
+  - compute_type_gemm: hipblasComputeType_t
   - incx: int
   - incy: int
   - incd: int
   - incb: int
+  - stride_scale: c_double
+  - stride_a: c_int64
+  - stride_b: c_int64
+  - stride_c: c_int64
+  - stride_d: c_int64
+  - stride_x: c_int64
+  - stride_y: c_int64
+  - start: int
+  - end: int
+  - step: int
   - alpha: c_double
   - alphai: c_double
   - beta: c_double
@@ -309,14 +373,10 @@ Arguments:
   - side: c_char
   - uplo: c_char
   - diag: c_char
+  - call_count: int
   - batch_count: int
-  - stride_a: int
-  - stride_b: int
-  - stride_c: int
-  - stride_d: int
-  - stride_x: int
-  - stride_y: int
   - fortran: c_bool
+  - inplace: c_bool
   - norm_check: int
   - unit_check: int
   - timing: int
@@ -324,13 +384,15 @@ Arguments:
   - cold_iters: int
   - algo: c_uint
   - solution_index: c_int
+  - flags: c_uint
   - function: c_char*64
   - name: c_char*64
   - category: c_char*64
-  - initialization: hipblas_initialization
-  - known_bug_platforms: c_char*64
-  - c_noalias_d: c_bool
   - atomics_mode: hipblas_atomics_mode
+  - initialization: hipblas_initialization
+  # - known_bug_platforms: c_char*64
+  # - c_noalias_d: c_bool
+
 
 # These named dictionary lists [ {dict1}, {dict2}, etc. ] supply subsets of
 # test arguments in a structured way. The dictionaries are applied to the test
@@ -373,10 +435,16 @@ Defaults:
   K: -1
   KL: -1
   KU: -1
-  incx: 0
-  incy: 0
+  rows: 128
+  cols: 128
+  incx: 1
+  incy: 1
   incd: 0
   incb: 0
+  stride_scale: 1.0
+  start: 1024
+  end: 10240
+  step: 1000
   alpha: 1.0
   alphai: 0.0
   beta: 0.0
@@ -386,8 +454,10 @@ Defaults:
   side: '*'
   uplo: '*'
   diag: '*'
+  call_count: 1
   batch_count: -1
   fortran: false
+  inplace: false
   norm_check: 0
   unit_check: 1
   timing: 0
@@ -395,10 +465,13 @@ Defaults:
   cold_iters: 2
   algo: 0
   solution_index: 0
-  atomics_mode: atomics_allowed
-  workspace_size: 0
-  initialization: rand_int
-  category: nightly
-  known_bug_platforms: ''
+  flags: 0
   name: hipblas-bench
-  c_noalias_d: false
+  category: nightly
+  # default benchmarking to faster atomics_allowed (test is default not allowed)
+  atomics_mode: atomics_allowed
+  initialization: rand_int
+  compute_type_gemm: 2
+#workspace_size: 0
+#  known_bug_platforms: ''
+#c_noalias_d: false
