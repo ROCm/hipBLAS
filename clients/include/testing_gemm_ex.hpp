@@ -48,8 +48,6 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
     auto hipblasGemmExFn = FORTRAN ? hipblasGemmExFortran : hipblasGemmEx;
 
     hipblasGemmAlgo_t algo           = HIPBLAS_GEMM_DEFAULT;
-    uint32_t          solution_index = 0;
-    uint32_t          flags          = 0;
     size_t*           workspace_size = 0;
     void*             workspace      = 0;
 
@@ -351,9 +349,9 @@ inline hipblasStatus_t testing_gemm_ex(const Arguments& arg)
 {
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    hipblasDatatype_t a_type = arg.a_type;
-    hipblasDatatype_t b_type = arg.b_type;
-    hipblasDatatype_t c_type = arg.c_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
     hipblasDatatype_t compute_type = arg.compute_type;
 
     if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F
