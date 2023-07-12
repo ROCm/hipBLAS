@@ -12396,7 +12396,7 @@ end function hipblasZgeamStridedBatchedFortran
 ! gemmEx
 function hipblasGemmExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
                                 b, b_type, ldb, beta, c, c_type, ldc, &
-                                compute_type, algo, solution_index, flags) &
+                                compute_type, algo) &
     bind(c, name='hipblasGemmExFortran')
     use iso_c_binding
     use hipblas_enums
@@ -12421,19 +12421,15 @@ function hipblasGemmExFortran(handle, transA, transB, m, n, k, alpha, a, a_type,
     integer(c_int), value :: ldc
     integer(kind(HIPBLAS_R_16F)), value :: compute_type
     integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-    integer(c_int32_t), value :: solution_index
-    ! No unsigned types in fortran. If larger values are needed
-    ! we will need a workaround.
-    integer(c_int32_t), value :: flags
             hipblasGemmExFortran = &
         hipblasGemmEx(handle, transA, transB, m, n, k, alpha, &
                         a, a_type, lda, b, b_type, ldb, beta, c, c_type, ldc, &
-                        compute_type, algo, solution_index, flags)
+                        compute_type, algo)
 end function hipblasGemmExFortran
 
 function hipblasGemmBatchedExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
                                         b, b_type, ldb, beta, c, c_type, ldc, &
-                                        batch_count, compute_type, algo, solution_index, flags) &
+                                        batch_count, compute_type, algo) &
     bind(c, name='hipblasGemmBatchedExFortran')
     use iso_c_binding
     use hipblas_enums
@@ -12459,19 +12455,15 @@ function hipblasGemmBatchedExFortran(handle, transA, transB, m, n, k, alpha, a, 
     integer(c_int), value :: batch_count
     integer(kind(HIPBLAS_R_16F)), value :: compute_type
     integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-    integer(c_int32_t), value :: solution_index
-    ! No unsigned types in fortran. If larger values are needed
-    ! we will need a workaround.
-    integer(c_int32_t), value :: flags
             hipblasGemmBatchedExFortran = &
         hipblasGemmBatchedEx(handle, transA, transB, m, n, k, alpha, &
                                 a, a_type, lda, b, b_type, ldb, beta, c, c_type, ldc, &
-                                batch_count, compute_type, algo, solution_index, flags)
+                                batch_count, compute_type, algo)
 end function hipblasGemmBatchedExFortran
 
 function hipblasGemmStridedBatchedExFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, stride_a, &
                                             b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, &
-                                            batch_count, compute_type, algo, solution_index, flags) &
+                                            batch_count, compute_type, algo) &
     bind(c, name='hipblasGemmStridedBatchedExFortran')
     use iso_c_binding
     use hipblas_enums
@@ -12500,14 +12492,10 @@ function hipblasGemmStridedBatchedExFortran(handle, transA, transB, m, n, k, alp
     integer(c_int), value :: batch_count
     integer(kind(HIPBLAS_R_16F)), value :: compute_type
     integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-    integer(c_int32_t), value :: solution_index
-    ! No unsigned types in fortran. If larger values are needed
-    ! we will need a workaround.
-    integer(c_int32_t), value :: flags
             hipblasGemmStridedBatchedExFortran = &
         hipblasGemmStridedBatchedEx(handle, transA, transB, m, n, k, alpha, &
                                     a, a_type, lda, stride_a, b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, &
-                                    batch_count, compute_type, algo, solution_index, flags)
+                                    batch_count, compute_type, algo)
 end function hipblasGemmStridedBatchedExFortran
 
 ! trsmEx

@@ -58,9 +58,7 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
     auto hipblasGemmStridedBatchedExFn
         = FORTRAN ? hipblasGemmStridedBatchedExFortran : hipblasGemmStridedBatchedExFortran;
 
-    hipblasGemmAlgo_t algo           = HIPBLAS_GEMM_DEFAULT;
-    uint32_t          solution_index = 0;
-    uint32_t          flags          = 0;
+    hipblasGemmAlgo_t algo = HIPBLAS_GEMM_DEFAULT;
 
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
     hipblasOperation_t transB = char2hipblas_operation(arg.transB);
@@ -395,9 +393,9 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex(const Arguments& arg)
 
 inline hipblasStatus_t testing_gemm_strided_batched_ex(const Arguments& arg)
 {
-    hipblasDatatype_t a_type = arg.a_type;
-    hipblasDatatype_t b_type = arg.b_type;
-    hipblasDatatype_t c_type = arg.c_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
     hipblasDatatype_t compute_type = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
