@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+"""Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -114,6 +114,9 @@ Expand hipBLAS YAML test data file into binary Arguments records
                         default=[])
     parser.add_argument('-t', '--template',
                         type=argparse.FileType('r'))
+    parser.add_argument('--hipblas_v2',
+                        action='store_true',
+                        help="Uses HIPBLAS_V2 datatypes, ensure HIPBLAS_V2 is defined in your build when using this.")
     return parser.parse_args()
 
 
@@ -182,13 +185,14 @@ def get_datatypes(doc):
         for name, decl in declaration.items():
             if isinstance(decl, dict):
                 # Create derived class type based on bases and attr entries
+                decl_attr = decl.get('attr_v2') if args.get('hipblas_v2') else decl.get('attr')
                 dt[name] = type(name,
                                 tuple([eval(t, dt)
                                        for t in decl.get('bases') or ()
                                        if TYPE_RE.match(t)]
-                                      ), decl.get('attr') or {})
+                                      ), decl_attr or {})
                 # Import class' attributes into the datatype namespace
-                for subtype in decl.get('attr') or {}:
+                for subtype in decl_attr or {}:
                     if TYPE_RE.match(subtype):
                         dt[subtype] = eval(name+'.'+subtype, dt)
             elif isinstance(decl, str) and TYPE_RE.match(decl):
@@ -457,14 +461,11 @@ def instantiate(test):
                  if decl[1].__module__ == '__main__']
     try:
         setdefaults(test)
-
         # For enum arguments, replace name with value
         for typename in enum_args:
             if test[typename] in datatypes:
                 test[typename] = datatypes[test[typename]]
-
         known_bug_platforms = set()
-
         # Match known bugs
         if test['category'] not in ('known_bug', 'disabled'):
             for bug in param['known_bugs']:
@@ -497,9 +498,7 @@ def instantiate(test):
         # known_bug_platforms to a space-separated list of platforms
         test['known_bug_platforms'] = ' ' . join(known_bug_platforms) if test[
             'category'] not in ('known_bug', 'disabled') else ''
-
         write_test(test)
-
     except KeyError as err:
         sys.exit("Undefined value " + str(err) + "\n" + str(test))
 

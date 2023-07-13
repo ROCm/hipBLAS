@@ -3,11 +3,26 @@
 Datatypes:
   - int: c_int
   - hipblasDatatype_t:
-    # note: hipblas-test and hipblas-bench don't use *.yaml as input,
-    #       these types have been updated to match hipDataType enum but aren't used,
-    #       so shouldn't break hipblasDatatype_t use either.
       bases: [ c_int ]
       attr:
+        f16_r: 150
+        f32_r: 151
+        f64_r: 152
+        f16_c: 153
+        f32_c: 154
+        f64_c: 155
+        i8_r:  160
+        u8_r:  161
+        i32_r: 162
+        u32_r: 163
+        i8_c:  164
+        u8_c:  165
+        i32_c: 166
+        u32_c: 167
+        bf16_r: 168
+        bf16_c: 169
+      attr_v2:
+        # temporary workaround for using HIPBLAS_V2 define. Parsed in hipblas_gentest.py
         f32_r:   0
         f64_r:   1
         f16_r:   2
@@ -44,11 +59,44 @@ Datatypes:
         rand_int: 111
         trig_float: 222
         hpl: 333
+      attr_v2:
+        rand_int: 111
+        trig_float: 222
+        hpl: 333
   - hipblas_atomics_mode:
       bases: [ c_int ]
       attr:
         atomics_not_allowed: 0
         atomics_allowed: 1
+      attr_v2:
+        atomics_not_allowed: 0
+        atomics_allowed: 1
+  - hipblasComputeType_t:
+      bases: [ c_int ]
+      attr:
+        16f: 0
+        16f_pedantic: 1
+        32f: 2
+        32f_pedantic: 3
+        32f_fast_16f: 4
+        32f_fast_16bf: 5
+        32f_fast_tf32: 6
+        64f: 7
+        64f_pedantic: 8
+        32i: 9
+        32i_pedantic: 10
+      attr_v2:
+        16f: 0
+        16f_pedantic: 1
+        32f: 2
+        32f_pedantic: 3
+        32f_fast_16f: 4
+        32f_fast_16bf: 5
+        32f_fast_tf32: 6
+        64f: 7
+        64f_pedantic: 8
+        32i: 9
+        32i_pedantic: 10
 
 Real precisions: &real_precisions
   - &half_precision
@@ -328,6 +376,7 @@ Arguments:
   - call_count: int
   - batch_count: int
   - fortran: c_bool
+  - inplace: c_bool
   - norm_check: int
   - unit_check: int
   - timing: int
@@ -408,6 +457,7 @@ Defaults:
   call_count: 1
   batch_count: -1
   fortran: false
+  inplace: false
   norm_check: 0
   unit_check: 1
   timing: 0
@@ -421,6 +471,7 @@ Defaults:
   # default benchmarking to faster atomics_allowed (test is default not allowed)
   atomics_mode: atomics_allowed
   initialization: rand_int
+  compute_type_gemm: 2
 #workspace_size: 0
 #  known_bug_platforms: ''
 #c_noalias_d: false
