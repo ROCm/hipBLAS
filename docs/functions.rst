@@ -28,7 +28,7 @@ Naming conventions
 
 hipBLAS follows the following naming conventions:
 
-- Big case for matrix, e.g. matrix A, B, C   GEMM (C = A*B)
+- Upper case for matrix, e.g. matrix A, B, C   GEMM (C = A*B)
 - Lower case for vector, e.g. vector x, y    GEMV (y = A*x)
 
 
