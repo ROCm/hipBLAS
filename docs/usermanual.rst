@@ -12,6 +12,5 @@ User Guide
    install
    deprecation
    orga
-   api
    functions
    contributing

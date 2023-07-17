@@ -2,22 +2,40 @@
 
 
 *************
-Guidelines
+hipBLAS API
 *************
+
+hipBLAS Interface
+=================
+
+The hipBLAS interface is compatible with rocBLAS and cuBLAS-v2 APIs.  Porting a CUDA application which originally calls the cuBLAS API to an application calling hipBLAS API should be relatively straightforward. For example, the hipBLAS SGEMV interface is:
+
+GEMV API
+--------
+
+.. code-block:: cpp
+
+   hipblasStatus_t
+   hipblasSgemv(hipblasHandle_t handle,
+                hipblasOperation_t trans,
+                int m, int n, const float *alpha,
+                const float *A, int lda,
+                const float *x, int incx, const float *beta,
+                float *y, int incy );
 
 Naming conventions
 ==================
 
-hipBLAS follows the following naming conventions,
+hipBLAS follows the following naming conventions:
 
-- Big case for matrix, e.g. matrix A, B, C   GEMM (C = A*B)
+- Upper case for matrix, e.g. matrix A, B, C   GEMM (C = A*B)
 - Lower case for vector, e.g. vector x, y    GEMV (y = A*x)
 
 
 Notations
 =========
 
-hipBLAS function uses the following notations to denote precisions,
+hipBLAS function uses the following notations to denote precisions:
 
 - h  = half
 - bf = 16 bit brain floating point
@@ -1309,6 +1327,61 @@ hipblasXdgmm + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZdgmmStridedBatched
 
+BLAS Extensions
+===============
+.. contents:: List of BLAS Extension Functions
+   :local:
+   :backlinks: top
+
+
+hipblasGemmEx + Batched, StridedBatched
+------------------------------------------
+.. doxygenfunction:: hipblasGemmEx
+.. doxygenfunction:: hipblasGemmBatchedEx
+.. doxygenfunction:: hipblasGemmStridedBatchedEx
+
+hipblasTrsmEx + Batched, StridedBatched
+------------------------------------------
+.. doxygenfunction:: hipblasTrsmEx
+.. doxygenfunction:: hipblasTrsmBatchedEx
+.. doxygenfunction:: hipblasTrsmStridedBatchedEx
+
+hipblasAxpyEx + Batched, StridedBatched
+------------------------------------------
+.. doxygenfunction:: hipblasAxpyEx
+.. doxygenfunction:: hipblasAxpyBatchedEx
+.. doxygenfunction:: hipblasAxpyStridedBatchedEx
+
+hipblasDotEx + Batched, StridedBatched
+------------------------------------------
+.. doxygenfunction:: hipblasDotEx
+.. doxygenfunction:: hipblasDotBatchedEx
+.. doxygenfunction:: hipblasDotStridedBatchedEx
+
+hipblasDotcEx + Batched, StridedBatched
+------------------------------------------
+.. doxygenfunction:: hipblasDotcEx
+.. doxygenfunction:: hipblasDotcBatchedEx
+.. doxygenfunction:: hipblasDotcStridedBatchedEx
+
+hipblasNrm2Ex + Batched, StridedBatched
+------------------------------------------
+.. doxygenfunction:: hipblasNrm2Ex
+.. doxygenfunction:: hipblasNrm2BatchedEx
+.. doxygenfunction:: hipblasNrm2StridedBatchedEx
+
+hipblasRotEx + Batched, StridedBatched
+------------------------------------------
+.. doxygenfunction:: hipblasRotEx
+.. doxygenfunction:: hipblasRotBatchedEx
+.. doxygenfunction:: hipblasRotStridedBatchedEx
+
+hipblasScalEx + Batched, StridedBatched
+------------------------------------------
+.. doxygenfunction:: hipblasScalEx
+.. doxygenfunction:: hipblasScalBatchedEx
+.. doxygenfunction:: hipblasScalStridedBatchedEx
+
 SOLVER API
 ===========
 .. contents:: List of SOLVER APIs
@@ -1431,62 +1504,6 @@ hipblasXgels + Batched, StridedBatched
 .. doxygenfunction:: hipblasCgelsStridedBatched
     :outline:
 .. doxygenfunction:: hipblasZgelsStridedBatched
-
-BLAS Extensions
-===============
-.. contents:: List of BLAS Extension Functions
-   :local:
-   :backlinks: top
-
-
-hipblasGemmEx + Batched, StridedBatched
-------------------------------------------
-.. doxygenfunction:: hipblasGemmEx
-.. doxygenfunction:: hipblasGemmBatchedEx
-.. doxygenfunction:: hipblasGemmStridedBatchedEx
-
-hipblasTrsmEx + Batched, StridedBatched
-------------------------------------------
-.. doxygenfunction:: hipblasTrsmEx
-.. doxygenfunction:: hipblasTrsmBatchedEx
-.. doxygenfunction:: hipblasTrsmStridedBatchedEx
-
-hipblasAxpyEx + Batched, StridedBatched
-------------------------------------------
-.. doxygenfunction:: hipblasAxpyEx
-.. doxygenfunction:: hipblasAxpyBatchedEx
-.. doxygenfunction:: hipblasAxpyStridedBatchedEx
-
-hipblasDotEx + Batched, StridedBatched
-------------------------------------------
-.. doxygenfunction:: hipblasDotEx
-.. doxygenfunction:: hipblasDotBatchedEx
-.. doxygenfunction:: hipblasDotStridedBatchedEx
-
-hipblasDotcEx + Batched, StridedBatched
-------------------------------------------
-.. doxygenfunction:: hipblasDotcEx
-.. doxygenfunction:: hipblasDotcBatchedEx
-.. doxygenfunction:: hipblasDotcStridedBatchedEx
-
-hipblasNrm2Ex + Batched, StridedBatched
-------------------------------------------
-.. doxygenfunction:: hipblasNrm2Ex
-.. doxygenfunction:: hipblasNrm2BatchedEx
-.. doxygenfunction:: hipblasNrm2StridedBatchedEx
-
-hipblasRotEx + Batched, StridedBatched
-------------------------------------------
-.. doxygenfunction:: hipblasRotEx
-.. doxygenfunction:: hipblasRotBatchedEx
-.. doxygenfunction:: hipblasRotStridedBatchedEx
-
-hipblasScalEx + Batched, StridedBatched
-------------------------------------------
-.. doxygenfunction:: hipblasScalEx
-.. doxygenfunction:: hipblasScalBatchedEx
-.. doxygenfunction:: hipblasScalStridedBatchedEx
-
 
 Auxiliary
 =========
