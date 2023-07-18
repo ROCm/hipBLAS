@@ -517,7 +517,9 @@ typedef enum
     HIPBLAS_GEMM_DEFAULT = 160 /**<  enumerator rocblas_gemm_algo_standard */
 } hipblasGemmAlgo_t;
 
-/*! \brief Indicates if atomics operations are allowed. Not allowing atomic operations may generally improve determinism and repeatability of results at a cost of performance. */
+/*! \brief Indicates if atomics operations are allowed. Not allowing atomic operations may generally improve determinism and repeatability of results at a cost of performance.
+ *         By default, the rocBLAS backend will allow atomic operations while the cuBLAS backend will disallow atomic operations. See backend documentation
+ *         for more detail. */
 typedef enum
 {
     HIPBLAS_ATOMICS_NOT_ALLOWED = 0, /**<  Algorithms will refrain from atomics where applicable. */
