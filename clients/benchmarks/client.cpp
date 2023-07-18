@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -140,6 +140,7 @@ try
     std::string c_type;
     std::string d_type;
     std::string compute_type;
+    std::string compute_type_gemm;
     std::string initialization;
     hipblas_int device_id;
     hipblas_int parallel_devices;
@@ -270,8 +271,12 @@ try
          "Options: h,s,d,c,z,f16_r,f32_r,f64_r,bf16_r,f32_c,f64_c,i8_r,i32_r")
 
         ("compute_type",
-         value<std::string>(&compute_type), "Precision of computation. "
+         value<std::string>(&compute_type), "Precision of computation. See compute_type_gemm for gemm_ex"
          "Options: h,s,d,c,z,f16_r,f32_r,f64_r,bf16_r,f32_c,f64_c,i8_r,i32_r")
+
+        ("compute_type_gemm",
+         value<std::string>(&compute_type_gemm), "Precision of computation for gemm_ex with HIPBLAS_V2 define"
+         "Options: 16f,16f_pedantic,32f,32f_pedantic,32f_fast_16f,32f_fast_16bf,32f_fast_tf32,64f,64f_pedantic,32i,32i_pedantic")
 
         ("initialization",
          value<std::string>(&initialization)->default_value("hpl"),
@@ -301,6 +306,10 @@ try
         ("batch_count",
          value<hipblas_int>(&arg.batch_count)->default_value(1),
          "Number of matrices. Only applicable to batched and strided_batched routines")
+
+        ("inplace",
+         value<bool>(&arg.inplace)->default_value(false),
+         "Whether or not to use the in place version of the algorithm. Only applicable to trmm routines")
 
         ("verify,v",
          value<hipblas_int>(&arg.norm_check)->default_value(0),
@@ -421,6 +430,8 @@ try
     arg.compute_type = compute_type == "" ? prec : string2hipblas_datatype(compute_type);
     if(arg.compute_type == HIPBLAS_DATATYPE_INVALID)
         throw std::invalid_argument("Invalid value for --compute_type " + compute_type);
+
+    arg.compute_type_gemm = string2hipblas_computetype(compute_type_gemm);
 
     arg.initialization = string2hipblas_initialization(initialization);
     if(arg.initialization == static_cast<hipblas_initialization>(0)) // invalid enum

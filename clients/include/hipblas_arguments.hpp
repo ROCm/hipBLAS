@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -85,11 +85,17 @@ struct Arguments
     int ldc = 128;
     int ldd = 128;
 
-    hipblasDatatype_t a_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t b_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t c_type       = HIPBLAS_R_32F;
-    hipblasDatatype_t d_type       = HIPBLAS_R_32F;
+    hipblasDatatype_t a_type = HIPBLAS_R_32F;
+    hipblasDatatype_t b_type = HIPBLAS_R_32F;
+    hipblasDatatype_t c_type = HIPBLAS_R_32F;
+    hipblasDatatype_t d_type = HIPBLAS_R_32F;
+
+    // used for all _ex functions except for gemmEx. Used in gemmEx
+    // without HIPBLAS_V2 define.
     hipblasDatatype_t compute_type = HIPBLAS_R_32F;
+
+    // used for gemmEx with HIPBLAS_V2 define
+    hipblasComputeType_t compute_type_gemm = HIPBLAS_COMPUTE_32F;
 
     int incx = 1;
     int incy = 1;
@@ -123,6 +129,7 @@ struct Arguments
     int batch_count  = 10;
 
     bool fortran = false;
+    bool inplace = false; // only for trmm
 
     int      norm_check = 0;
     int      unit_check = 1;
@@ -160,6 +167,7 @@ struct Arguments
     OPER(c_type) SEP                 \
     OPER(d_type) SEP                 \
     OPER(compute_type) SEP           \
+    OPER(compute_type_gemm) SEP      \
     OPER(incx) SEP                   \
     OPER(incy) SEP                   \
     OPER(incd) SEP                   \
@@ -186,6 +194,7 @@ struct Arguments
     OPER(apiCallCount) SEP           \
     OPER(batch_count) SEP            \
     OPER(fortran) SEP                \
+    OPER(inplace) SEP                \
     OPER(norm_check) SEP             \
     OPER(unit_check) SEP             \
     OPER(timing) SEP                 \

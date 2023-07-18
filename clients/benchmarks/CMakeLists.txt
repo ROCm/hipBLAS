@@ -48,17 +48,25 @@ set( hipblas_benchmark_common
     )
 
 add_executable( hipblas-bench ${hipblas_bench_source} ${hipblas_benchmark_common} )
+add_executable( hipblas_v2-bench ${hipblas_bench_source} ${hipblas_benchmark_common} )
 
 target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
+target_compile_features( hipblas_v2-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 
 if(LINK_BLIS)
   target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
+  target_link_libraries( hipblas_v2-bench PRIVATE ${BLIS_LIBRARY} )
 elseif(NOT WIN32)
   target_link_libraries( hipblas-bench PRIVATE blas )
+  target_link_libraries( hipblas_v2-bench PRIVATE blas )
 endif()
 
 # Internal header includes
 target_include_directories( hipblas-bench
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+)
+target_include_directories( hipblas_v2-bench
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
 )
@@ -71,42 +79,63 @@ target_include_directories( hipblas-bench
     $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
 )
+target_include_directories( hipblas_v2-bench
+  SYSTEM PRIVATE
+    $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
+)
 
 if (NOT WIN32)
     target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
+    target_link_libraries( hipblas_v2-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
 endif()
 
 target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas Threads::Threads )
+target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas Threads::Threads )
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
+target_compile_options( hipblas_v2-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
 target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS)
+target_compile_definitions( hipblas_v2-bench PRIVATE HIPBLAS_BENCH HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS HIPBLAS_V2)
 
 if( NOT USE_CUDA )
   target_link_libraries( hipblas-bench PRIVATE hip::host )
+  target_link_libraries( hipblas_v2-bench PRIVATE hip::host )
 
   if( CUSTOM_TARGET )
     target_link_libraries( hipblas-bench PRIVATE hip::${CUSTOM_TARGET} )
+    target_link_libraries( hipblas_v2-bench PRIVATE hip::${CUSTOM_TARGET} )
   endif()
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
     # hip-clang needs specific flag to turn on pthread and m
     target_link_libraries( hipblas-bench PRIVATE -lpthread -lm )
+    target_link_libraries( hipblas_v2-bench PRIVATE -lpthread -lm )
 
     if(BUILD_ADDRESS_SANITIZER)
       target_link_libraries( hipblas-bench PRIVATE -fuse-ld=lld -lgfortran )
+      target_link_libraries( hipblas_v2-bench PRIVATE -fuse-ld=lld -lgfortran )
     endif()
   endif()
 else( )
   target_compile_definitions( hipblas-bench PRIVATE __HIP_PLATFORM_NVCC__ )
+  target_compile_definitions( hipblas_v2-bench PRIVATE __HIP_PLATFORM_NVCC__ )
 
   target_include_directories( hipblas-bench
     PRIVATE
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
   )
+  target_include_directories( hipblas_v2-bench
+    PRIVATE
+      $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
+  )
 
   target_link_libraries( hipblas-bench PRIVATE ${CUDA_LIBRARIES} )
+  target_link_libraries( hipblas_v2-bench PRIVATE ${CUDA_LIBRARIES} )
 endif( )
 
 set_target_properties( hipblas-bench PROPERTIES
@@ -114,7 +143,14 @@ set_target_properties( hipblas-bench PROPERTIES
   CXX_EXTENSIONS OFF
   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
 )
+set_target_properties( hipblas_v2-bench PROPERTIES
+  DEBUG_POSTFIX "-d"
+  CXX_EXTENSIONS OFF
+  RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
+)
 
 add_dependencies( hipblas-bench hipblas-common )
+add_dependencies( hipblas_v2-bench hipblas-common )
 
 rocm_install(TARGETS hipblas-bench COMPONENT benchmarks)
+rocm_install(TARGETS hipblas_v2-bench COMPONENT benchmarks)

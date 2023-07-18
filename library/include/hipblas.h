@@ -35,7 +35,12 @@
 #include "hipblas-export.h"
 #include "hipblas-version.h"
 #include <hip/hip_runtime_api.h>
+#include <hip/library_types.h>
 #include <stdint.h>
+
+#ifdef __HIP_PLATFORM_NVCC__
+#include <cublas_v2.h>
+#endif
 
 /* Workaround clang bug:
 
@@ -459,7 +464,37 @@ static_assert(HIPBLAS_SIDE_BOTH == 143);
 
 #endif // __cplusplus
 
-/*! \brief Indicates the precision width of data stored in a blas type. */
+#ifdef HIPBLAS_V2
+
+// Replacing use of hipblasDatatype_t with hipDataType which will be used in a future release.
+typedef hipDataType hipblasDatatype_t;
+
+#define HIPBLAS_R_16F HIP_R_16F
+#define HIPBLAS_R_32F HIP_R_32F
+#define HIPBLAS_R_64F HIP_R_64F
+#define HIPBLAS_C_16F HIP_C_16F
+#define HIPBLAS_C_32F HIP_C_32F
+#define HIPBLAS_C_64F HIP_C_64F
+#define HIPBLAS_R_8I HIP_R_8I
+#define HIPBLAS_R_8U HIP_R_8U
+#define HIPBLAS_R_32I HIP_R_32I
+#define HIPBLAS_R_32U HIP_R_32U
+#define HIPBLAS_C_8I HIP_C_8I
+#define HIPBLAS_C_8U HIP_C_8U
+#define HIPBLAS_C_32I HIP_C_32I
+#define HIPBLAS_C_32U HIP_C_32U
+#define HIPBLAS_R_16B HIP_R_16BF
+#define HIPBLAS_C_16B HIP_C_16BF
+#define HIPBLAS_DATATYPE_INVALID hipDataType(31) // Temporary until hipblasDatatype_t is gone.
+
+#else
+
+// clang-format off
+HIPBLAS_DEPRECATED_MSG("hipblasDatatype_t is deprecated and will be replaced by hipDataType in the future. Compile with -DHIPBLAS_V2 to get new API with hipDataType now.")
+// clang-format on
+
+/*! \brief Indicates the precision of data used. hipblasDatatype_t is deprecated as of hipBLAS 2.0.0 and will
+           be removed in a future release as generally replaced by hipDataType. */
 typedef enum
 {
     HIPBLAS_R_16F            = 150, /**< 16 bit floating point, real */
@@ -481,13 +516,35 @@ typedef enum
     HIPBLAS_DATATYPE_INVALID = 255, /**< Invalid datatype value, do not use */
 } hipblasDatatype_t;
 
+#endif
+
+typedef enum
+{
+    // Note that these types are taken from cuBLAS. With the rocBLAS backend, currently hipBLAS will
+    // convert to rocBLAS types to get equivalent functionality where supported.
+    HIPBLAS_COMPUTE_16F           = 0, /**< compute will be at least 16-bit precision */
+    HIPBLAS_COMPUTE_16F_PEDANTIC  = 1, /**< compute will be exactly 16-bit precision */
+    HIPBLAS_COMPUTE_32F           = 2, /**< compute will be at least 32-bit precision */
+    HIPBLAS_COMPUTE_32F_PEDANTIC  = 3, /**< compute will be exactly 32-bit precision */
+    HIPBLAS_COMPUTE_32F_FAST_16F  = 4, /**< 32-bit input can use 16-bit compute */
+    HIPBLAS_COMPUTE_32F_FAST_16BF = 5, /**< 32-bit input can is bf16 compute */
+    HIPBLAS_COMPUTE_32F_FAST_TF32
+    = 6, /**< 32-bit input can use tensor cores w/ TF32 compute. Only supported with cuBLAS backend currently */
+    HIPBLAS_COMPUTE_64F          = 7, /**< compute will be at least 64-bit precision */
+    HIPBLAS_COMPUTE_64F_PEDANTIC = 8, /**< compute will be exactly 64-bit precision */
+    HIPBLAS_COMPUTE_32I          = 9, /**< compute will be at least 32-bit integer precision */
+    HIPBLAS_COMPUTE_32I_PEDANTIC = 10, /**< compute will be exactly 32-bit integer precision */
+} hipblasComputeType_t;
+
 /*! \brief Indicates if layer is active with bitmask. */
 typedef enum
 {
     HIPBLAS_GEMM_DEFAULT = 160 /**<  enumerator rocblas_gemm_algo_standard */
 } hipblasGemmAlgo_t;
 
-/*! \brief Indicates if atomics operations are allowed. Not allowing atomic operations may generally improve determinism and repeatability of results at a cost of performance. */
+/*! \brief Indicates if atomics operations are allowed. Not allowing atomic operations may generally improve determinism and repeatability of results at a cost of performance.
+ *         By default, the rocBLAS backend will allow atomic operations while the cuBLAS backend will disallow atomic operations. See backend documentation
+ *         for more detail. */
 typedef enum
 {
     HIPBLAS_ATOMICS_NOT_ALLOWED = 0, /**<  Algorithms will refrain from atomics where applicable. */
@@ -14586,178 +14643,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
 
     \details
 
-       #ifndef HIPBLAS_V1  //  deprecated
+    trmm performs one of the matrix-matrix operations
 
-               hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
-                                            hipblasSideMode_t  side,
-                                            hipblasFillMode_t  uplo,
-                                            hipblasOperation_t transA,
-                                            hipblasDiagType_t  diag,
-                                            int                m,
-                                            int                n,
-                                            const float*       alpha,
-                                            const float*       AP,
-                                            int                lda,
-                                            float*             BP,
-                                            int                ldb);
+    C := alpha*op( A )*B,   or   C := alpha*B*op( A )
 
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+    where  alpha  is a scalar, B and C are an m by n matrices,  A  is a unit, or
+    non-unit,  upper or lower triangular matrix  and  op( A )  is one  of
 
-               hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
-                                                      hipblasSideMode_t  side,
-                                                      hipblasFillMode_t  uplo,
-                                                      hipblasOperation_t transA,
-                                                      hipblasDiagType_t  diag,
-                                                      int                m,
-                                                      int                n,
-                                                      const float*       alpha,
-                                                      const float*       AP,
-                                                      int                lda,
-                                                      const float*       BP,
-                                                      int                ldb,
-                                                      float*             CP,
-                                                      int                ldc);
+        op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
 
-        #endif
+    Note that trmm can provide in-place functionality by passing in the same address for both
+    matrices B and C and by setting ldb equal to ldc.
 
-        #ifndef HIPBLAS_V1  //  deprecated
-
-               hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
-                                            hipblasSideMode_t  side,
-                                            hipblasFillMode_t  uplo,
-                                            hipblasOperation_t transA,
-                                            hipblasDiagType_t  diag,
-                                            int                m,
-                                            int                n,
-                                            const double*      alpha,
-                                            const double*      AP,
-                                            int                lda,
-                                            double*            BP,
-                                            int                ldb);
-
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-               hipblasStatus_t hipblasDtrmmOutofplace(hipblasHandle_t    handle,
-                                                      hipblasSideMode_t  side,
-                                                      hipblasFillMode_t  uplo,
-                                                      hipblasOperation_t transA,
-                                                      hipblasDiagType_t  diag,
-                                                      int                m,
-                                                      int                n,
-                                                      const double*      alpha,
-                                                      const double*      AP,
-                                                      int                lda,
-                                                      const double*      BP,
-                                                      int                ldb,
-                                                      double*            CP,
-                                                      int                ldc);
-
-        #endif
-
-        #ifndef HIPBLAS_V1  //  deprecated
-
-               hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
-                                            hipblasSideMode_t     side,
-                                            hipblasFillMode_t     uplo,
-                                            hipblasOperation_t    transA,
-                                            hipblasDiagType_t     diag,
-                                            int                   m,
-                                            int                   n,
-                                            const hipblasComplex* alpha,
-                                            const hipblasComplex* AP,
-                                            int                   lda,
-                                            hipblasComplex*       BP,
-                                            int                   ldb);
-
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-               hipblasStatus_t hipblasCtrmmOutofplace(hipblasHandle_t       handle,
-                                                      hipblasSideMode_t     side,
-                                                      hipblasFillMode_t     uplo,
-                                                      hipblasOperation_t    transA,
-                                                      hipblasDiagType_t     diag,
-                                                      int                   m,
-                                                      int                   n,
-                                                      const hipblasComplex* alpha,
-                                                      const hipblasComplex* AP,
-                                                      int                   lda,
-                                                      const hipblasComplex* BP,
-                                                      int                   ldb,
-                                                      hipblasComplex*       CP,
-                                                      int                   ldc);
-
-        #endif
-
-        #ifndef HIPBLAS_V1  //  deprecated
-
-               hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
-                                            hipblasSideMode_t           side,
-                                            hipblasFillMode_t           uplo,
-                                            hipblasOperation_t          transA,
-                                            hipblasDiagType_t           diag,
-                                            int                         m,
-                                            int                         n,
-                                            const hipblasDoubleComplex* alpha,
-                                            const hipblasDoubleComplex* AP,
-                                            int                         lda,
-                                            hipblasDoubleComplex*       BP,
-                                            int                         ldb);
-
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-               hipblasStatus_t hipblasZtrmmOutofplace(hipblasHandle_t             handle,
-                                                      hipblasSideMode_t           side,
-                                                      hipblasFillMode_t           uplo,
-                                                      hipblasOperation_t          transA,
-                                                      hipblasDiagType_t           diag,
-                                                      int                         m,
-                                                      int                         n,
-                                                      const hipblasDoubleComplex* alpha,
-                                                      const hipblasDoubleComplex* AP,
-                                                      int                         lda,
-                                                      const hipblasDoubleComplex* BP,
-                                                      int                         ldb,
-                                                      hipblasDoubleComplex*       CP,
-                                                      int                         ldc);
-
-        #endif
-
-    The deprecated Legacy BLAS in-place trmm performs one of the matrix-matrix operations:
-
-        B := alpha*op( A )*B,   or
-        B := alpha*B*op( A ),
-
-    The new trmm performs one of the matrix-matrix operations:
-
-        C := alpha*op( A )*B,   or
-        C := alpha*B*op( A ),
-
-    The in-place functionality is still available in the new trmmm by setting pointer C equal to pointer B,
-    and ldc equal to ldb.
-
-        alpha  is a scalar,  B  is an m by n matrix, C  is an m by n matrix,  A  is a unit, or
-        non-unit,  upper or lower triangular matrix  and  op( A )  is one  of
-
-        op( A ) = A     or
-        op( A ) = A^T   or
-        op( A ) = A^H.
-
-        When uplo == rocblas_fill_upper the  leading  k by k
-        upper triangular part of the array  A must contain the upper
-        triangular matrix and the strictly lower triangular part of
-        A is not referenced. Here k is m when side == rocblas_side_left
-        and is n when side == rocblas_side_right.
-
-        When uplo == rocblas_fill_lower the  leading  k by k
-        lower triangular part of the array  A must contain the lower
-        triangular matrix  and the strictly upper triangular part of
-        A is not referenced. Here k is m when  side == rocblas_side_left
-        and is n when side == rocblas_side_right.
-
-        Note that when  diag == rocblas_diagonal_unit  the diagonal elements of
-        A  are not referenced either,  but are assumed to be  unity.
-
-    - Supported precisions in hipBLAS : s,d,c,z
+    - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : s,d,c,z
 
     @param[in]
@@ -14767,8 +14665,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
     @param[in]
     side    [hipblasSideMode_t]
             Specifies whether op(A) multiplies B from the left or right as follows:
-            HIPBLAS_SIDE_LEFT:       B := alpha*op( A )*B.
-            HIPBLAS_SIDE_RIGHT:      B := alpha*B*op( A ).
+            HIPBLAS_SIDE_LEFT:       C := alpha*op( A )*B.
+            HIPBLAS_SIDE_RIGHT:      C := alpha*B*op( A ).
 
     @param[in]
     uplo    [hipblasFillMode_t]
@@ -14781,7 +14679,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
             Specifies the form of op(A) to be used in the matrix multiplication as follows:
             HIPBLAS_OP_N: op(A) = A.
             HIPBLAS_OP_T: op(A) = A^T.
-            HIPBLAS_OP_C:  op(A) = A^H.
+            HIPBLAS_OP_C: op(A) = A^H.
 
     @param[in]
     diag    [hipblasDiagType_t]
@@ -14791,11 +14689,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
 
     @param[in]
     m       [int]
-            m specifies the number of rows of B. m >= 0.
+            m specifies the number of rows of B and C. m >= 0.
 
     @param[in]
     n       [int]
-            n specifies the number of columns of B. n >= 0.
+            n specifies the number of columns of B and C. n >= 0.
 
     @param[in]
     alpha
@@ -14804,7 +14702,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
             entry.
 
     @param[in]
-    AP       Device pointer to matrix A on the GPU.
+    A       Device pointer to matrix A on the GPU.
             A has dimension ( lda, k ), where k is m
             when  side == HIPBLAS_SIDE_LEFT  and
             is  n  when  side == HIPBLAS_SIDE_RIGHT.
@@ -14829,20 +14727,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
             if side == HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
 
     @param[inout]
-    BP       Device pointer to the first matrix B_0 on the GPU.
-            On entry,  the leading  m by n part of the array  B must
-           contain the matrix  B,  and  on exit  is overwritten  by the
-           transformed matrix.
+    B       Device pointer to the matrix B of dimension (ldb, n) on the GPU.
 
     @param[in]
     ldb    [int]
            ldb specifies the first dimension of B. ldb >= max( 1, m ).
 
+    @param[in]
+    C      Device pointer to the matrix C of dimension (ldc, n) on the GPU.
+           Users can pass in the same matrix B to parameter C to achieve
+           in-place functionality of trmm.
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, m ).
+
     ********************************************************************/
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasStrmm with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasStrmm with A, B, and C arguments. The new hipblasStrmm has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasStrmm")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                                             hipblasSideMode_t  side,
                                             hipblasFillMode_t  uplo,
@@ -14851,14 +14751,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                                             int                m,
                                             int                n,
                                             const float*       alpha,
-                                            const float*       AP,
+                                            const float*       A,
                                             int                lda,
-                                            float*             BP,
-                                            int                ldb);
+                                            const float*       B,
+                                            int                ldb,
+                                            float*             C,
+                                            int                ldc);
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasDtrmm with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasDtrmm with A, B, and C arguments. The new hipblasDtrmm has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasDtrmm")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
                                             hipblasSideMode_t  side,
                                             hipblasFillMode_t  uplo,
@@ -14867,14 +14766,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
                                             int                m,
                                             int                n,
                                             const double*      alpha,
-                                            const double*      AP,
+                                            const double*      A,
                                             int                lda,
-                                            double*            BP,
-                                            int                ldb);
+                                            const double*      B,
+                                            int                ldb,
+                                            double*            C,
+                                            int                ldc);
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasCtrmm with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasCtrmm with A, B, and C arguments. The new hipblasCtrmm has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasCtrmm")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
                                             hipblasSideMode_t     side,
                                             hipblasFillMode_t     uplo,
@@ -14883,14 +14781,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
                                             int                   m,
                                             int                   n,
                                             const hipblasComplex* alpha,
-                                            const hipblasComplex* AP,
+                                            const hipblasComplex* A,
                                             int                   lda,
-                                            hipblasComplex*       BP,
-                                            int                   ldb);
+                                            const hipblasComplex* B,
+                                            int                   ldb,
+                                            hipblasComplex*       C,
+                                            int                   ldc);
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasZtrmm with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasZtrmm with A, B, and C arguments. The new hipblasZtrmm has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasZtrmm")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
                                             hipblasSideMode_t           side,
                                             hipblasFillMode_t           uplo,
@@ -14899,269 +14796,32 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
                                             int                         m,
                                             int                         n,
                                             const hipblasDoubleComplex* alpha,
-                                            const hipblasDoubleComplex* AP,
+                                            const hipblasDoubleComplex* A,
                                             int                         lda,
-                                            hipblasDoubleComplex*       BP,
-                                            int                         ldb);
+                                            const hipblasDoubleComplex* B,
+                                            int                         ldb,
+                                            hipblasDoubleComplex*       C,
+                                            int                         ldc);
 //! @}
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasStrmmOutofplace is deprecated, and it will be replaced by hipblasStrmm. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
-                                                      hipblasSideMode_t  side,
-                                                      hipblasFillMode_t  uplo,
-                                                      hipblasOperation_t transA,
-                                                      hipblasDiagType_t  diag,
-                                                      int                m,
-                                                      int                n,
-                                                      const float*       alpha,
-                                                      const float*       AP,
-                                                      int                lda,
-                                                      const float*       BP,
-                                                      int                ldb,
-                                                      float*             CP,
-                                                      int                ldc);
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasDtrmmOutofplace is deprecated, and it will be replaced by hipblasDtrmm. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmOutofplace(hipblasHandle_t    handle,
-                                                      hipblasSideMode_t  side,
-                                                      hipblasFillMode_t  uplo,
-                                                      hipblasOperation_t transA,
-                                                      hipblasDiagType_t  diag,
-                                                      int                m,
-                                                      int                n,
-                                                      const double*      alpha,
-                                                      const double*      AP,
-                                                      int                lda,
-                                                      const double*      BP,
-                                                      int                ldb,
-                                                      double*            CP,
-                                                      int                ldc);
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasCtrmmOutofplace is deprecated, and it will be replaced by hipblasCtrmm. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmOutofplace(hipblasHandle_t       handle,
-                                                      hipblasSideMode_t     side,
-                                                      hipblasFillMode_t     uplo,
-                                                      hipblasOperation_t    transA,
-                                                      hipblasDiagType_t     diag,
-                                                      int                   m,
-                                                      int                   n,
-                                                      const hipblasComplex* alpha,
-                                                      const hipblasComplex* AP,
-                                                      int                   lda,
-                                                      const hipblasComplex* BP,
-                                                      int                   ldb,
-                                                      hipblasComplex*       CP,
-                                                      int                   ldc);
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasZtrmmOutofplace is deprecated, and it will be replaced by hipblasZtrmm. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmOutofplace(hipblasHandle_t             handle,
-                                                      hipblasSideMode_t           side,
-                                                      hipblasFillMode_t           uplo,
-                                                      hipblasOperation_t          transA,
-                                                      hipblasDiagType_t           diag,
-                                                      int                         m,
-                                                      int                         n,
-                                                      const hipblasDoubleComplex* alpha,
-                                                      const hipblasDoubleComplex* AP,
-                                                      int                         lda,
-                                                      const hipblasDoubleComplex* BP,
-                                                      int                         ldb,
-                                                      hipblasDoubleComplex*       CP,
-                                                      int                         ldc);
 
 /*! @{
     \brief BLAS Level 3 API
 
     \details
-    The hipBLAS trmm_batched API is from Legacy BLAS and it supports only in-place functionality.
-    It is deprecated and it will be replaced with an API that supports both in-place and
-    out-of-place functionality. The new API is available in hipBLAS versions 1.x.x and later.
-    To get the new API compile with the directive -DHIPBLAS_V1.
 
-        #ifndef HIPBLAS_V1  //  deprecated
+    trmmBatched performs one of the batched matrix-matrix operations
 
-            hipblasStatus_t hipblasStrmmBatched(hipblasHandle_t    handle,
-                                                hipblasSideMode_t  side,
-                                                hipblasFillMode_t  uplo,
-                                                hipblasOperation_t transA,
-                                                hipblasDiagType_t  diag,
-                                                int                m,
-                                                int                n,
-                                                const float*       alpha,
-                                                const float* const AP[],
-                                                int                lda,
-                                                float* const       BP[],
-                                                int                ldb,
-                                                int                batchCount);
+    C_i := alpha*op( A_i )*B_i,   or   C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
 
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-            hipblasStatus_t hipblasStrmmBatchedOutofplace(
-                                                hipblasHandle_t    handle,
-                                                hipblasSideMode_t  side,
-                                                hipblasFillMode_t  uplo,
-                                                hipblasOperation_t transA,
-                                                hipblasDiagType_t  diag,
-                                                int                m,
-                                                int                n,
-                                                const float*       alpha,
-                                                const float* const AP[],
-                                                int                lda,
-                                                const float* const BP[],
-                                                int                ldb,
-                                                float* const       CP[],
-                                                int                ldc,
-                                                int                batchCount);
-
-        #endif
-
-        #ifndef HIPBLAS_V1  //  deprecated
-
-            hipblasStatus_t hipblasDtrmmBatched(hipblasHandle_t     handle,
-                                                hipblasSideMode_t   side,
-                                                hipblasFillMode_t   uplo,
-                                                hipblasOperation_t  transA,
-                                                hipblasDiagType_t   diag,
-                                                int                 m,
-                                                int                 n,
-                                                const double*       alpha,
-                                                const double* const AP[],
-                                                int                 lda,
-                                                double* const       BP[],
-                                                int                 ldb,
-                                                int                 batchCount);
-
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-            hipblasStatus_t hipblasDtrmmBatchedOutofplace(
-                                                hipblasHandle_t     handle,
-                                                hipblasSideMode_t   side,
-                                                hipblasFillMode_t   uplo,
-                                                hipblasOperation_t  transA,
-                                                hipblasDiagType_t   diag,
-                                                int                 m,
-                                                int                 n,
-                                                const double*       alpha,
-                                                const double* const AP[],
-                                                int                 lda,
-                                                const double* const BP[],
-                                                int                 ldb,
-                                                double* const       CP[],
-                                                int                 ldc,
-                                                int                 batchCount);
-
-        #endif
-
-        #ifndef HIPBLAS_V1  //  deprecated
-
-            hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             handle,
-                                                hipblasSideMode_t           side,
-                                                hipblasFillMode_t           uplo,
-                                                hipblasOperation_t          transA,
-                                                hipblasDiagType_t           diag,
-                                                int                         m,
-                                                int                         n,
-                                                const hipblasComplex*       alpha,
-                                                const hipblasComplex* const AP[],
-                                                int                         lda,
-                                                hipblasComplex* const       BP[],
-                                                int                         ldb,
-                                                int                         batchCount);
-
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-            hipblasStatus_t hipblasCtrmmBatchedOutofplace(
-                                                hipblasHandle_t             handle,
-                                                hipblasSideMode_t           side,
-                                                hipblasFillMode_t           uplo,
-                                                hipblasOperation_t          transA,
-                                                hipblasDiagType_t           diag,
-                                                int                         m,
-                                                int                         n,
-                                                const hipblasComplex*       alpha,
-                                                const hipblasComplex* const AP[],
-                                                int                         lda,
-                                                const hipblasComplex* const BP[],
-                                                int                         ldb,
-                                                hipblasComplex* const       CP[],
-                                                int                         ldc,
-                                                int batchCount);
-
-        #endif
-
-        #ifndef HIPBLAS_V1  //  deprecated
-
-            hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t                   handle,
-                                                hipblasSideMode_t                 side,
-                                                hipblasFillMode_t                 uplo,
-                                                hipblasOperation_t                transA,
-                                                hipblasDiagType_t                 diag,
-                                                int                               m,
-                                                int                               n,
-                                                const hipblasDoubleComplex*       alpha,
-                                                const hipblasDoubleComplex* const AP[],
-                                                int                               lda,
-                                                hipblasDoubleComplex* const       BP[],
-                                                int                               ldb,
-                                                int                               batchCount);
-
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-            hipblasStatus_t hipblasZtrmmBatchedOutofplace(
-                                                hipblasHandle_t                   handle,
-                                                hipblasSideMode_t                 side,
-                                                hipblasFillMode_t                 uplo,
-                                                hipblasOperation_t                transA,
-                                                hipblasDiagType_t                 diag,
-                                                int                               m,
-                                                int                               n,
-                                                const hipblasDoubleComplex*       alpha,
-                                                const hipblasDoubleComplex* const AP[],
-                                                int                               lda,
-                                                const hipblasDoubleComplex* const BP[],
-                                                int                               ldb,
-                                                hipblasDoubleComplex* const       CP[],
-                                                int                               ldc,
-                                                int                               batchCount);
-
-        #endif
-
-    The deprecated Legacy BLAS in-place trmm_batched performs one of the batched matrix-matrix operations:
-
-        B_i := alpha*op( A_i )*B_i,   or
-        B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
-
-    The new trmm_batched performs one of the matrix-matrix operations:
-
-        C_i := alpha*op( A_i )*B_i,   or
-        C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
-
-    The in-place functionality is still available in the new trmmm_batched by setting pointer C equal to pointer B
-    and ldc equal to ldb.
-
-        alpha  is a scalar,  B_i  is an m by n matrix, C_i  is an m by n matrix,  A_i  is a unit, or
-        non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
+    where alpha is a scalar, B_i and C_i are m by n matrices, A_i is a unit, or
+    non-unit, upper or lower triangular matrix and op( A_i ) is one of
 
         op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
 
+    Note that trmmBatched can provide in-place functionality by passing in the same address for both
+    matrices B and C and by setting ldb equal to ldc.
 
-    - Supported precisions in hipBLAS : s,d,c,z
+    - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
 
     @param[in]
@@ -15183,8 +14843,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmOutofplace(hipblasHandle_t           
     @param[in]
     transA  [hipblasOperation_t]
             Specifies the form of op(A_i) to be used in the matrix multiplication as follows:
-            HIPBLAS_OP_N:    op(A_i) = A_i.
-            HIPBLAS_OP_T:      op(A_i) = A_i^T.
+            HIPBLAS_OP_N:  op(A_i) = A_i.
+            HIPBLAS_OP_T:  op(A_i) = A_i^T.
             HIPBLAS_OP_C:  op(A_i) = A_i^H.
 
     @param[in]
@@ -15195,11 +14855,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmOutofplace(hipblasHandle_t           
 
     @param[in]
     m       [int]
-            m specifies the number of rows of B_i. m >= 0.
+            m specifies the number of rows of B_i and C_i. m >= 0.
 
     @param[in]
     n       [int]
-            n specifies the number of columns of B_i. n >= 0.
+            n specifies the number of columns of B_i and C_i. n >= 0.
 
     @param[in]
     alpha
@@ -15208,7 +14868,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmOutofplace(hipblasHandle_t           
             entry.
 
     @param[in]
-    AP       Device array of device pointers storing each matrix A_i on the GPU.
+    A       Device array of device pointers storing each matrix A_i on the GPU.
             Each A_i is of dimension ( lda, k ), where k is m
             when  side == HIPBLAS_SIDE_LEFT  and
             is  n  when  side == HIPBLAS_SIDE_RIGHT.
@@ -15233,23 +14893,26 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmOutofplace(hipblasHandle_t           
             if side == HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
 
     @param[inout]
-    BP       device array of device pointers storing each matrix B_i on the GPU.
-            On entry,  the leading  m by n part of the array  B_i must
-           contain the matrix  B_i,  and  on exit  is overwritten  by the
-           transformed matrix.
+    B       device array of device pointers storing each matrix B_i of
+            dimension (ldb, n) on the GPU.
 
     @param[in]
     ldb    [int]
            ldb specifies the first dimension of B_i. ldb >= max( 1, m ).
 
     @param[in]
+    C      device array of device pointers storing each matrix C_i of
+           dimension (ldc, n) on the GPU. Users can pass in the same
+           matrices B to parameter C to achieve in-place functionality of trmmBatched.
+
+    @param[in]
+    ldc    lec specifies the first dimension of C_i. ldc >= max( 1, m ).
+
+    @param[in]
     batchCount [int]
                 number of instances i in the batch.
     ********************************************************************/
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasStrmmBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasStrmmBatched with A, B, and C arguments. The new hipblasStrmmBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasStrmmBatched")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmBatched(hipblasHandle_t    handle,
                                                    hipblasSideMode_t  side,
                                                    hipblasFillMode_t  uplo,
@@ -15258,15 +14921,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmBatched(hipblasHandle_t    handle,
                                                    int                m,
                                                    int                n,
                                                    const float*       alpha,
-                                                   const float* const AP[],
+                                                   const float* const A[],
                                                    int                lda,
-                                                   float* const       BP[],
+                                                   const float* const B[],
                                                    int                ldb,
+                                                   float* const       C[],
+                                                   int                ldc,
                                                    int                batchCount);
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasDtrmmBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasDtrmmBatched with A, B, and C arguments. The new hipblasDtrmmBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasDtrmmBatched")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmBatched(hipblasHandle_t     handle,
                                                    hipblasSideMode_t   side,
                                                    hipblasFillMode_t   uplo,
@@ -15275,15 +14937,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmBatched(hipblasHandle_t     handle,
                                                    int                 m,
                                                    int                 n,
                                                    const double*       alpha,
-                                                   const double* const AP[],
+                                                   const double* const A[],
                                                    int                 lda,
-                                                   double* const       BP[],
+                                                   const double* const B[],
                                                    int                 ldb,
+                                                   double* const       C[],
+                                                   int                 ldc,
                                                    int                 batchCount);
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasCtrmmBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasCtrmmBatched with A, B, and C arguments. The new hipblasCtrmmBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasCtrmmBatched")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             handle,
                                                    hipblasSideMode_t           side,
                                                    hipblasFillMode_t           uplo,
@@ -15292,15 +14953,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             h
                                                    int                         m,
                                                    int                         n,
                                                    const hipblasComplex*       alpha,
-                                                   const hipblasComplex* const AP[],
+                                                   const hipblasComplex* const A[],
                                                    int                         lda,
-                                                   hipblasComplex* const       BP[],
+                                                   const hipblasComplex* const B[],
                                                    int                         ldb,
+                                                   hipblasComplex* const       C[],
+                                                   int                         ldc,
                                                    int                         batchCount);
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasZtrmmBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasZtrmmBatched with A, B, and C arguments. The new hipblasZtrmmBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasZtrmmBatched")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t                   handle,
                                                    hipblasSideMode_t                 side,
                                                    hipblasFillMode_t                 uplo,
@@ -15309,296 +14969,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
                                                    int                               m,
                                                    int                               n,
                                                    const hipblasDoubleComplex*       alpha,
-                                                   const hipblasDoubleComplex* const AP[],
+                                                   const hipblasDoubleComplex* const A[],
                                                    int                               lda,
-                                                   hipblasDoubleComplex* const       BP[],
+                                                   const hipblasDoubleComplex* const B[],
                                                    int                               ldb,
+                                                   hipblasDoubleComplex* const       C[],
+                                                   int                               ldc,
                                                    int                               batchCount);
 //! @}
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasStrmmBatchedOutofplace is deprecated, and it will be replaced by hipblasStrmmBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmBatchedOutofplace(hipblasHandle_t    handle,
-                                                             hipblasSideMode_t  side,
-                                                             hipblasFillMode_t  uplo,
-                                                             hipblasOperation_t transA,
-                                                             hipblasDiagType_t  diag,
-                                                             int                m,
-                                                             int                n,
-                                                             const float*       alpha,
-                                                             const float* const AP[],
-                                                             int                lda,
-                                                             const float* const BP[],
-                                                             int                ldb,
-                                                             float* const       CP[],
-                                                             int                ldc,
-                                                             int                batchCount);
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasDtrmmBatchedOutofplace is deprecated, and it will be replaced by hipblasDtrmmBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmBatchedOutofplace(hipblasHandle_t     handle,
-                                                             hipblasSideMode_t   side,
-                                                             hipblasFillMode_t   uplo,
-                                                             hipblasOperation_t  transA,
-                                                             hipblasDiagType_t   diag,
-                                                             int                 m,
-                                                             int                 n,
-                                                             const double*       alpha,
-                                                             const double* const AP[],
-                                                             int                 lda,
-                                                             const double* const BP[],
-                                                             int                 ldb,
-                                                             double* const       CP[],
-                                                             int                 ldc,
-                                                             int                 batchCount);
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasCtrmmBatchedOutofplace is deprecated, and it will be replaced by hipblasCtrmmBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatchedOutofplace(hipblasHandle_t             handle,
-                                                             hipblasSideMode_t           side,
-                                                             hipblasFillMode_t           uplo,
-                                                             hipblasOperation_t          transA,
-                                                             hipblasDiagType_t           diag,
-                                                             int                         m,
-                                                             int                         n,
-                                                             const hipblasComplex*       alpha,
-                                                             const hipblasComplex* const AP[],
-                                                             int                         lda,
-                                                             const hipblasComplex* const BP[],
-                                                             int                         ldb,
-                                                             hipblasComplex* const       CP[],
-                                                             int                         ldc,
-                                                             int batchCount);
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasZtrmmBatchedOutofplace is deprecated, and it will be replaced by hipblasZtrmmBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatchedOutofplace(hipblasHandle_t             handle,
-                                                             hipblasSideMode_t           side,
-                                                             hipblasFillMode_t           uplo,
-                                                             hipblasOperation_t          transA,
-                                                             hipblasDiagType_t           diag,
-                                                             int                         m,
-                                                             int                         n,
-                                                             const hipblasDoubleComplex* alpha,
-                                                             const hipblasDoubleComplex* const AP[],
-                                                             int                               lda,
-                                                             const hipblasDoubleComplex* const BP[],
-                                                             int                               ldb,
-                                                             hipblasDoubleComplex* const       CP[],
-                                                             int                               ldc,
-                                                             int batchCount);
 
 /*! @{
     \brief BLAS Level 3 API
 
     \details
-    The hipBLAS trmm_strided_batched API is from Legacy BLAS and it supports only in-place functionality.
-    It is deprecated and it will be replaced with an API that supports both in-place and
-    out-of-place functionality. The new API is available in hipBLAS versions 1.x.x and later.
-    To get the new API compile with the directive -DHIPBLAS_V1.
 
-        #ifndef HIPBLAS_V1  //  deprecated
-               hipblasStatus_t hipblasStrmmStridedBatched(
-                                   hipblasHandle_t    handle,
-                                   hipblasSideMode_t  side,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   int                n,
-                                   const float*       alpha,
-                                   const float*       AP,
-                                   int                lda,
-                                   hipblasStride      strideA,
-                                   float*             BP,
-                                   int                ldb,
-                                   hipblasStride      strideB,
-                                   int                batchCount);
+    trmmStridedBatched performs one of the strided_batched matrix-matrix operations
 
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
+    C_i := alpha*op( A_i )*B_i,   or   C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
 
-               hipblasStatus_t hipblasStrmmStridedBatchedOutofplace(
-                                   hipblasHandle_t    handle,
-                                   hipblasSideMode_t  side,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   int                n,
-                                   const float*       alpha,
-                                   const float*       AP,
-                                   int                lda,
-                                   hipblasStride      strideA,
-                                   const float*       BP,
-                                   int                ldb,
-                                   hipblasStride      strideB,
-                                   float*             CP,
-                                   int                ldc,
-                                   hipblasStride      strideC,
-                                   int                batchCount);
+    where alpha is a scalar,  B_i and C_i are m by n matrices, A_i is a unit, or
+    non-unit, upper or lower triangular matrix and op( A_i ) is one of
 
-        #endif
+        op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
 
-        #ifndef HIPBLAS_V1  //  deprecated
-               hipblasStatus_t hipblasDtrmmStridedBatched(
-                                   hipblasHandle_t    handle,
-                                   hipblasSideMode_t  side,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   int                n,
-                                   const double*      alpha,
-                                   const double*      AP,
-                                   int                lda,
-                                   hipblasStride      strideA,
-                                   double*            BP,
-                                   int                ldb,
-                                   hipblasStride      strideB,
-                                   int                batchCount);
+    Note that trmmStridedBatched can provide in-place functionality by passing
+    in the same address for both matrices B and C and by setting ldb equal to ldc.
 
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-               hipblasStatus_t hipblasDtrmmStridedBatchedOutofplace(
-                                   hipblasHandle_t    handle,
-                                   hipblasSideMode_t  side,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   int                n,
-                                   const double*      alpha,
-                                   const double*      AP,
-                                   int                lda,
-                                   hipblasStride      strideA,
-                                   const double*      BP,
-                                   int                ldb,
-                                   hipblasStride      strideB,
-                                   double*            CP,
-                                   int                ldc,
-                                   hipblasStride      strideC,
-                                   int                batchCount);
-
-        #endif
-
-        #ifndef HIPBLAS_V1  //  deprecated
-
-               hipblasStatus_t hipblasCtrmmStridedBatched(
-                                   hipblasHandle_t       handle,
-                                   hipblasSideMode_t     side,
-                                   hipblasFillMode_t     uplo,
-                                   hipblasOperation_t    transA,
-                                   hipblasDiagType_t     diag,
-                                   int                   m,
-                                   int                   n,
-                                   const hipblasComplex* alpha,
-                                   const hipblasComplex* AP,
-                                   int                   lda,
-                                   hipblasStride         strideA,
-                                   hipblasComplex*       BP,
-                                   int                   ldb,
-                                   hipblasStride         strideB,
-                                   int                   batchCount);
-
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-               hipblasStatus_t hipblasCtrmmStridedBatchedOutofplace(
-                                   hipblasHandle_t       handle,
-                                   hipblasSideMode_t     side,
-                                   hipblasFillMode_t     uplo,
-                                   hipblasOperation_t    transA,
-                                   hipblasDiagType_t     diag,
-                                   int                   m,
-                                   int                   n,
-                                   const hipblasComplex* alpha,
-                                   const hipblasComplex* AP,
-                                   int                   lda,
-                                   hipblasStride         strideA,
-                                   const hipblasComplex* BP,
-                                   int                   ldb,
-                                   hipblasStride         strideB,
-                                   hipblasComplex*       CP,
-                                   int                   ldc,
-                                   hipblasStride         strideC,
-                                   int batchCount);
-
-        #endif
-
-        #ifndef HIPBLAS_V1  //  deprecated
-
-            hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t             handle,
-                                                       hipblasSideMode_t           side,
-                                                       hipblasFillMode_t           uplo,
-                                                       hipblasOperation_t          transA,
-                                                       hipblasDiagType_t           diag,
-                                                       int                         m,
-                                                       int                         n,
-                                                       const hipblasDoubleComplex* alpha,
-                                                       const hipblasDoubleComplex* AP,
-                                                       int                         lda,
-                                                       hipblasStride               strideA,
-                                                       hipblasDoubleComplex*       BP,
-                                                       int                         ldb,
-                                                       hipblasStride               strideB,
-                                                       int                         batchCount);
-
-        #else  //  available in hipBLAS version 1.x.x and later with -DHIPBLAS_V1
-
-            hipblasStatus_t hipblasZtrmmStridedBatchedOutofplace(
-                                                        hipblasHandle_t             handle,
-                                                        hipblasSideMode_t           side,
-                                                        hipblasFillMode_t           uplo,
-                                                        hipblasOperation_t          transA,
-                                                        hipblasDiagType_t           diag,
-                                                        int                         m,
-                                                        int                         n,
-                                                        const hipblasDoubleComplex* alpha,
-                                                        const hipblasDoubleComplex* AP,
-                                                        int                         lda,
-                                                        hipblasStride               strideA,
-                                                        const hipblasDoubleComplex* BP,
-                                                        int                         ldb,
-                                                        hipblasStride               strideB,
-                                                        hipblasDoubleComplex*       BC,
-                                                        int                         ldc,
-                                                        hipblasStride               strideC,
-                                                        int                         batchCount);
-
-        #endif
-
-    The deprecated Legacy BLAS in-place trmm_strided_batched performs one of the strided_batched matrix-matrix operations:
-
-        B_i := alpha*op( A_i )*B_i,   or
-        B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
-
-    The new trmm_batched performs one of the matrix-matrix operations:
-
-        C_i := alpha*op( A_i )*B_i,   or
-        C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
-
-    The in-place functionality is still available in the new trmmm_batched by setting pointer C equal to pointer B,
-    setting ldc equal to ldb, and setting stride_C equal to stride_B.
-
-        alpha  is a scalar,  B_i  is an m by n matrix, C_i  is an m by n matrix,  A_i  is a unit, or
-        non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
-
-        op( A_i ) = A_i   or
-        op( A_i ) = A_i^T   or
-        op( A_i ) = A_i^H.
-
-    - Supported precisions in hipBLAS : s,d,c,z
+    - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
 
     @param[in]
@@ -15608,8 +15005,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatchedOutofplace(hipblasHandle_t    
     @param[in]
     side    [hipblasSideMode_t]
             Specifies whether op(A_i) multiplies B_i from the left or right as follows:
-            HIPBLAS_SIDE_LEFT:       B_i := alpha*op( A_i )*B_i.
-            HIPBLAS_SIDE_RIGHT:      B_i := alpha*B_i*op( A_i ).
+            HIPBLAS_SIDE_LEFT:       C_i := alpha*op( A_i )*B_i.
+            HIPBLAS_SIDE_RIGHT:      C_i := alpha*B_i*op( A_i ).
 
     @param[in]
     uplo    [hipblasFillMode_t]
@@ -15620,8 +15017,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatchedOutofplace(hipblasHandle_t    
     @param[in]
     transA  [hipblasOperation_t]
             Specifies the form of op(A_i) to be used in the matrix multiplication as follows:
-            HIPBLAS_OP_N:    op(A_i) = A_i.
-            HIPBLAS_OP_T:      op(A_i) = A_i^T.
+            HIPBLAS_OP_N:  op(A_i) = A_i.
+            HIPBLAS_OP_T:  op(A_i) = A_i^T.
             HIPBLAS_OP_C:  op(A_i) = A_i^H.
 
     @param[in]
@@ -15632,11 +15029,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatchedOutofplace(hipblasHandle_t    
 
     @param[in]
     m       [int]
-            m specifies the number of rows of B_i. m >= 0.
+            m specifies the number of rows of B_i and C_i. m >= 0.
 
     @param[in]
     n       [int]
-            n specifies the number of columns of B_i. n >= 0.
+            n specifies the number of columns of B_i and C_i. n >= 0.
 
     @param[in]
     alpha
@@ -15645,7 +15042,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatchedOutofplace(hipblasHandle_t    
             entry.
 
     @param[in]
-    AP       Device pointer to the first matrix A_0 on the GPU.
+    A       Device pointer to the first matrix A_0 on the GPU.
             Each A_i is of dimension ( lda, k ), where k is m
             when  side == HIPBLAS_SIDE_LEFT  and
             is  n  when  side == HIPBLAS_SIDE_RIGHT.
@@ -15674,26 +15071,34 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatchedOutofplace(hipblasHandle_t    
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[inout]
-    BP       Device pointer to the first matrix B_0 on the GPU.
-            On entry,  the leading  m by n part of the array  B_i must
-           contain the matrix  B_i,  and  on exit  is overwritten  by the
-           transformed matrix.
+    B      Device pointer to the first matrix B_0 on the GPU. Each B_i is of
+           dimension ( ldb, n )
 
     @param[in]
     ldb    [int]
            ldb specifies the first dimension of B_i. ldb >= max( 1, m ).
 
-           @param[in]
+    @param[in]
     strideB  [hipblasStride]
               stride from the start of one matrix (B_i) and the next one (B_i+1)
+
+    @param[in]
+    C      Device pointer to the first matrix C_0 on the GPU. Each C_i is of
+           dimension ( ldc, n ).
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C_i. ldc >= max( 1, m ).
+
+    @param[in]
+    strideC [hipblasStride]
+            stride from the start of one matrix (C_i) and the next one (C_i+1)
+
     @param[in]
     batchCount [int]
                 number of instances i in the batch.
     ********************************************************************/
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasStrmmStridedBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasStrmmStridedBatched with A, B, and C arguments. The new hipblasStrmmStridedBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasStrmmStridedBatched")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasSideMode_t  side,
                                                           hipblasFillMode_t  uplo,
@@ -15702,17 +15107,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmStridedBatched(hipblasHandle_t    han
                                                           int                m,
                                                           int                n,
                                                           const float*       alpha,
-                                                          const float*       AP,
+                                                          const float*       A,
                                                           int                lda,
                                                           hipblasStride      strideA,
-                                                          float*             BP,
+                                                          const float*       B,
                                                           int                ldb,
                                                           hipblasStride      strideB,
+                                                          float*             C,
+                                                          int                ldc,
+                                                          hipblasStride      strideC,
                                                           int                batchCount);
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasDtrmmStridedBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasDtrmmStridedBatched with A, B, and C arguments. The new hipblasDtrmmStridedBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasDtrmmStridedBatched")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmStridedBatched(hipblasHandle_t    handle,
                                                           hipblasSideMode_t  side,
                                                           hipblasFillMode_t  uplo,
@@ -15721,17 +15126,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmStridedBatched(hipblasHandle_t    han
                                                           int                m,
                                                           int                n,
                                                           const double*      alpha,
-                                                          const double*      AP,
+                                                          const double*      A,
                                                           int                lda,
                                                           hipblasStride      strideA,
-                                                          double*            BP,
+                                                          const double*      B,
                                                           int                ldb,
                                                           hipblasStride      strideB,
+                                                          double*            C,
+                                                          int                ldc,
+                                                          hipblasStride      strideC,
                                                           int                batchCount);
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasCtrmmStridedBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasCtrmmStridedBatched with A, B, and C arguments. The new hipblasCtrmmStridedBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasCtrmmStridedBatched")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       handle,
                                                           hipblasSideMode_t     side,
                                                           hipblasFillMode_t     uplo,
@@ -15740,17 +15145,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       
                                                           int                   m,
                                                           int                   n,
                                                           const hipblasComplex* alpha,
-                                                          const hipblasComplex* AP,
+                                                          const hipblasComplex* A,
                                                           int                   lda,
                                                           hipblasStride         strideA,
-                                                          hipblasComplex*       BP,
+                                                          const hipblasComplex* B,
                                                           int                   ldb,
                                                           hipblasStride         strideB,
+                                                          hipblasComplex*       C,
+                                                          int                   ldc,
+                                                          hipblasStride         strideC,
                                                           int                   batchCount);
 
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasZtrmmStridedBatched with A and B arguments provides in-place functionality. It is deprecated, and it will be replaced by hipblasZtrmmStridedBatched with A, B, and C arguments. The new hipblasZtrmmStridedBatched has in-place and out-of-place functionality. Compiling with -DHIPBLAS_V1 will provide the new hipblasZtrmmStridedBatched")
-// clang-format on
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t             handle,
                                                           hipblasSideMode_t           side,
                                                           hipblasFillMode_t           uplo,
@@ -15759,133 +15164,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t       
                                                           int                         m,
                                                           int                         n,
                                                           const hipblasDoubleComplex* alpha,
-                                                          const hipblasDoubleComplex* AP,
+                                                          const hipblasDoubleComplex* A,
                                                           int                         lda,
                                                           hipblasStride               strideA,
-                                                          hipblasDoubleComplex*       BP,
+                                                          const hipblasDoubleComplex* B,
                                                           int                         ldb,
                                                           hipblasStride               strideB,
+                                                          hipblasDoubleComplex*       C,
+                                                          int                         ldc,
+                                                          hipblasStride               strideC,
                                                           int                         batchCount);
 //! @}
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasStrmmStridedBatchedOutofplace is deprecated, and it will be replaced by hipblasStrmmStridedBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmStridedBatchedOutofplace(hipblasHandle_t    handle,
-                                                                    hipblasSideMode_t  side,
-                                                                    hipblasFillMode_t  uplo,
-                                                                    hipblasOperation_t transA,
-                                                                    hipblasDiagType_t  diag,
-                                                                    int                m,
-                                                                    int                n,
-                                                                    const float*       alpha,
-                                                                    const float*       AP,
-                                                                    int                lda,
-                                                                    hipblasStride      strideA,
-                                                                    const float*       BP,
-                                                                    int                ldb,
-                                                                    hipblasStride      strideB,
-                                                                    float*             CP,
-                                                                    int                ldc,
-                                                                    hipblasStride      strideC,
-                                                                    int                batchCount);
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasDtrmmStridedBatchedOutofplace is deprecated, and it will be replaced by hipblasDtrmmStridedBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmStridedBatchedOutofplace(hipblasHandle_t    handle,
-                                                                    hipblasSideMode_t  side,
-                                                                    hipblasFillMode_t  uplo,
-                                                                    hipblasOperation_t transA,
-                                                                    hipblasDiagType_t  diag,
-                                                                    int                m,
-                                                                    int                n,
-                                                                    const double*      alpha,
-                                                                    const double*      AP,
-                                                                    int                lda,
-                                                                    hipblasStride      strideA,
-                                                                    const double*      BP,
-                                                                    int                ldb,
-                                                                    hipblasStride      strideB,
-                                                                    double*            CP,
-                                                                    int                ldc,
-                                                                    hipblasStride      strideC,
-                                                                    int                batchCount);
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasCtrmmStridedBatchedOutofplace is deprecated, and it will be replaced by hipblasCtrmmStridedBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatchedOutofplace(hipblasHandle_t       handle,
-                                                                    hipblasSideMode_t     side,
-                                                                    hipblasFillMode_t     uplo,
-                                                                    hipblasOperation_t    transA,
-                                                                    hipblasDiagType_t     diag,
-                                                                    int                   m,
-                                                                    int                   n,
-                                                                    const hipblasComplex* alpha,
-                                                                    const hipblasComplex* AP,
-                                                                    int                   lda,
-                                                                    hipblasStride         strideA,
-                                                                    const hipblasComplex* BP,
-                                                                    int                   ldb,
-                                                                    hipblasStride         strideB,
-                                                                    hipblasComplex*       CP,
-                                                                    int                   ldc,
-                                                                    hipblasStride         strideC,
-                                                                    int batchCount);
-
-#ifndef HIPBLAS_V1
-// clang-format off
-HIPBLAS_DEPRECATED_MSG("hipblasZtrmmStridedBatchedOutofplace is deprecated, and it will be replaced by hipblasZtrmmStridedBatched. Compiling with -DHIPBLAS_V1 will provide the new function")
-// clang-format on
-#endif
-HIPBLAS_EXPORT hipblasStatus_t
-    hipblasZtrmmStridedBatchedOutofplace(hipblasHandle_t             handle,
-                                         hipblasSideMode_t           side,
-                                         hipblasFillMode_t           uplo,
-                                         hipblasOperation_t          transA,
-                                         hipblasDiagType_t           diag,
-                                         int                         m,
-                                         int                         n,
-                                         const hipblasDoubleComplex* alpha,
-                                         const hipblasDoubleComplex* AP,
-                                         int                         lda,
-                                         hipblasStride               strideA,
-                                         const hipblasDoubleComplex* BP,
-                                         int                         ldb,
-                                         hipblasStride               strideB,
-                                         hipblasDoubleComplex*       BC,
-                                         int                         ldc,
-                                         hipblasStride               strideC,
-                                         int                         batchCount);
-
-#ifdef HIPBLAS_V1
-#ifndef HIPBLAS_TRMM_V1
-#define HIPBLAS_TRMM_V1
-
-#define hipblasStrmm hipblasStrmmOutofplace
-#define hipblasDtrmm hipblasDtrmmOutofplace
-#define hipblasCtrmm hipblasCtrmmOutofplace
-#define hipblasZtrmm hipblasZtrmmOutofplace
-
-#define hipblasStrmmBatched hipblasStrmmBatchedOutofplace
-#define hipblasDtrmmBatched hipblasDtrmmBatchedOutofplace
-#define hipblasCtrmmBatched hipblasCtrmmBatchedOutofplace
-#define hipblasZtrmmBatched hipblasZtrmmBatchedOutofplace
-
-#define hipblasStrmmStridedBatched hipblasStrmmStridedBatchedOutofplace
-#define hipblasDtrmmStridedBatched hipblasDtrmmStridedBatchedOutofplace
-#define hipblasCtrmmStridedBatched hipblasCtrmmStridedBatchedOutofplace
-#define hipblasZtrmmStridedBatched hipblasZtrmmStridedBatchedOutofplace
-
-#endif /* HIPBLAS_TRMM_V1 */
-#endif /* HIPBLAS_V1 */
 
 /*! @{
     \brief BLAS Level 3 API
@@ -18318,7 +17607,72 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
     alpha and beta are scalars, and A, B, and C are matrices, with
     op( A ) an m by k matrix, op( B ) a k by n matrix and C is a m by n matrix.
 
-    - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+    - Supported types are determined by the backend. See cuBLAS documentation for cuBLAS backend.
+      For rocBLAS backend, conversion from hipblasComputeType_t to rocblas_datatype_t happens within hipBLAS.
+      Supported types are as follows:
+
+      |   aType    |   bType    |   cType    |     computeType     |
+      | ---------- | ---------- | ---------- | ------------------- |
+      | HIP_R_16F  | HIP_R_16F  | HIP_R_16F  | HIPBLAS_COMPUTE_16F |
+      | HIP_R_16F  | HIP_R_16F  | HIP_R_16F  | HIPBLAS_COMPUTE_32F |
+      | HIP_R_16F  | HIP_R_16F  | HIP_R_32F  | HIPBLAS_COMPUTE_32F |
+      | HIP_R_16BF | HIP_R_16BF | HIP_R_16BF | HIPBLAS_COMPUTE_32F |
+      | HIP_R_16BF | HIP_R_16BF | HIP_R_32F  | HIPBLAS_COMPUTE_32F |
+      | HIP_R_32F  | HIP_R_32F  | HIP_R_32F  | HIPBLAS_COMPUTE_32F |
+      | HIP_R_64F  | HIP_R_64F  | HIP_R_64F  | HIPBLAS_COMPUTE_64F |
+      | HIP_R_8I   | HIP_R_8I   | HIP_R_32I  | HIPBLAS_COMPUTE_32I |
+      | HIP_C_32F  | HIP_C_32F  | HIP_C_32F  | HIPBLAS_COMPUTE_32F |
+      | HIP_C_64F  | HIP_C_64F  | HIP_C_64F  | HIPBLAS_COMPUTE_64F |
+
+    With HIPBLAS_V2 define, hipblasGemmEx accepts hipDataType for aType, bType, and cType.
+    It also accepts hipblasComputeType_t for computeType. hipblasGemmEx will no
+    longer support hipblasDataType_t for these parameters in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasGemmEx(hipblasHandle_t      handle,
+                                          hipblasOperation_t   transA,
+                                          hipblasOperation_t   transB,
+                                          int                  m,
+                                          int                  n,
+                                          int                  k,
+                                          const void*          alpha,
+                                          const void*          A,
+                                          hipDataType          aType,
+                                          int                  lda,
+                                          const void*          B,
+                                          hipDataType          bType,
+                                          int                  ldb,
+                                          const void*          beta,
+                                          void*                C,
+                                          hipDataType          cType,
+                                          int                  ldc,
+                                          hipblasComputeType_t computeType,
+                                          hipblasGemmAlgo_t    algo)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
+                                          hipblasOperation_t transA,
+                                          hipblasOperation_t transB,
+                                          int                m,
+                                          int                n,
+                                          int                k,
+                                          const void*        alpha,
+                                          const void*        A,
+                                          hipblasDatatype_t  aType,
+                                          int                lda,
+                                          const void*        B,
+                                          hipblasDatatype_t  bType,
+                                          int                ldb,
+                                          const void*        beta,
+                                          void*              C,
+                                          hipblasDatatype_t  cType,
+                                          int                ldc,
+                                          hipblasDatatype_t  computeType,
+                                          hipblasGemmAlgo_t  algo)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -18345,7 +17699,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
     A         [void *]
               device pointer storing matrix A.
     @param[in]
-    aType    [hipblasDatatype_t]
+    aType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of matrix A.\n
+    [hipDataType]
               specifies the datatype of matrix A.
     @param[in]
     lda       [int]
@@ -18354,7 +17711,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
     B         [void *]
               device pointer storing matrix B.
     @param[in]
-    bType    [hipblasDatatype_t]
+    bType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of matrix B.\n
+    [hipDataType]
               specifies the datatype of matrix B.
     @param[in]
     ldb       [int]
@@ -18366,14 +17726,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
     C         [void *]
               device pointer storing matrix C.
     @param[in]
-    cType    [hipblasDatatype_t]
+    cType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of matrix C.\n
+    [hipDataType]
               specifies the datatype of matrix C.
     @param[in]
     ldc       [int]
               specifies the leading dimension of C.
     @param[in]
     computeType
-              [hipblasDatatype_t]
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipblasComputeType_t]
               specifies the datatype of computation.
     @param[in]
     algo      [hipblasGemmAlgo_t]
@@ -18400,6 +17765,26 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
                                              hipblasDatatype_t  computeType,
                                              hipblasGemmAlgo_t  algo);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx_v2(hipblasHandle_t      handle,
+                                                hipblasOperation_t   transA,
+                                                hipblasOperation_t   transB,
+                                                int                  m,
+                                                int                  n,
+                                                int                  k,
+                                                const void*          alpha,
+                                                const void*          A,
+                                                hipDataType          aType,
+                                                int                  lda,
+                                                const void*          B,
+                                                hipDataType          bType,
+                                                int                  ldb,
+                                                const void*          beta,
+                                                void*                C,
+                                                hipDataType          cType,
+                                                int                  ldc,
+                                                hipblasComputeType_t computeType,
+                                                hipblasGemmAlgo_t    algo);
+
 /*! \brief BLAS EX API
     \details
     gemmBatchedEx performs one of the batched matrix-matrix operations
@@ -18416,6 +17801,58 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
     The number of pointers to matrices is batchCount.
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasGemmBatchedEx accepts hipDataType for aType, bType, and cType.
+    It also accepts hipblasComputeType_t for computeType. hipblasGemmBatchedEx will no
+    longer support hipblasDataType_t for these parameters in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t      handle,
+                                                 hipblasOperation_t   transA,
+                                                 hipblasOperation_t   transB,
+                                                 int                  m,
+                                                 int                  n,
+                                                 int                  k,
+                                                 const void*          alpha,
+                                                 const void*          A[],
+                                                 hipDataType          aType,
+                                                 int                  lda,
+                                                 const void*          B[],
+                                                 hipDataType          bType,
+                                                 int                  ldb,
+                                                 const void*          beta,
+                                                 void*                C[],
+                                                 hipDataType          cType,
+                                                 int                  ldc,
+                                                 int                  batchCount,
+                                                 hipblasComputeType_t computeType,
+                                                 hipblasGemmAlgo_t    algo)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
+                                                 hipblasOperation_t transA,
+                                                 hipblasOperation_t transB,
+                                                 int                m,
+                                                 int                n,
+                                                 int                k,
+                                                 const void*        alpha,
+                                                 const void*        A[],
+                                                 hipblasDatatype_t  aType,
+                                                 int                lda,
+                                                 const void*        B[],
+                                                 hipblasDatatype_t  bType,
+                                                 int                ldb,
+                                                 const void*        beta,
+                                                 void*              C[],
+                                                 hipblasDatatype_t  cType,
+                                                 int                ldc,
+                                                 int                batchCount,
+                                                 hipblasDatatype_t  computeType,
+                                                 hipblasGemmAlgo_t  algo)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -18442,7 +17879,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
     A         [void *]
               device pointer storing array of pointers to each matrix A_i.
     @param[in]
-    aType    [hipblasDatatype_t]
+    aType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each matrix A_i.\n
+    [hipDataType]
               specifies the datatype of each matrix A_i.
     @param[in]
     lda       [int]
@@ -18451,7 +17891,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
     B         [void *]
               device pointer storing array of pointers to each matrix B_i.
     @param[in]
-    bType    [hipblasDatatype_t]
+    bType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each matrix B_i.\n
+    [hipDataType]
               specifies the datatype of each matrix B_i.
     @param[in]
     ldb       [int]
@@ -18463,7 +17906,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
     C         [void *]
               device array of device pointers to each matrix C_i.
     @param[in]
-    cType    [hipblasDatatype_t]
+    cType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each matrix C_i.\n
+    [hipDataType]
               specifies the datatype of each matrix C_i.
     @param[in]
     ldc       [int]
@@ -18474,7 +17920,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
               number of gemm operations in the batch.
     @param[in]
     computeType
-              [hipblasDatatype_t]
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipblasComputeType_t]
               specifies the datatype of computation.
     @param[in]
     algo      [hipblasGemmAlgo_t]
@@ -18502,6 +17950,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
                                                     hipblasDatatype_t  computeType,
                                                     hipblasGemmAlgo_t  algo);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx_v2(hipblasHandle_t      handle,
+                                                       hipblasOperation_t   transA,
+                                                       hipblasOperation_t   transB,
+                                                       int                  m,
+                                                       int                  n,
+                                                       int                  k,
+                                                       const void*          alpha,
+                                                       const void*          A[],
+                                                       hipDataType          aType,
+                                                       int                  lda,
+                                                       const void*          B[],
+                                                       hipDataType          bType,
+                                                       int                  ldb,
+                                                       const void*          beta,
+                                                       void*                C[],
+                                                       hipDataType          cType,
+                                                       int                  ldc,
+                                                       int                  batchCount,
+                                                       hipblasComputeType_t computeType,
+                                                       hipblasGemmAlgo_t    algo);
+
 /*! \brief BLAS EX API
 
     \details
@@ -18524,6 +17993,64 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
     The number of matrices is batchCount.
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasGemmStridedBatchedEx accepts hipDataType for aType, bType, and cType.
+    It also accepts hipblasComputeType_t for computeType. hipblasGemmStridedBatchedEx will no
+    longer support hipblasDataType_t for these parameters in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t      handle,
+                                                        hipblasOperation_t   transA,
+                                                        hipblasOperation_t   transB,
+                                                        int                  m,
+                                                        int                  n,
+                                                        int                  k,
+                                                        const void*          alpha,
+                                                        const void*          A,
+                                                        hipDataType          aType,
+                                                        int                  lda,
+                                                        hipblasStride        strideA,
+                                                        const void*          B,
+                                                        hipDataType          bType,
+                                                        int                  ldb,
+                                                        hipblasStride        strideB,
+                                                        const void*          beta,
+                                                        void*                C,
+                                                        hipDataType          cType,
+                                                        int                  ldc,
+                                                        hipblasStride        strideC,
+                                                        int                  batchCount,
+                                                        hipblasComputeType_t computeType,
+                                                        hipblasGemmAlgo_t    algo)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
+                                                        hipblasOperation_t transA,
+                                                        hipblasOperation_t transB,
+                                                        int                m,
+                                                        int                n,
+                                                        int                k,
+                                                        const void*        alpha,
+                                                        const void*        A,
+                                                        hipblasDatatype_t  aType,
+                                                        int                lda,
+                                                        hipblasStride      strideA,
+                                                        const void*        B,
+                                                        hipblasDatatype_t  bType,
+                                                        int                ldb,
+                                                        hipblasStride      strideB,
+                                                        const void*        beta,
+                                                        void*              C,
+                                                        hipblasDatatype_t  cType,
+                                                        int                ldc,
+                                                        hipblasStride      strideC,
+                                                        int                batchCount,
+                                                        hipblasDatatype_t  computeType,
+                                                        hipblasGemmAlgo_t  algo)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -18550,7 +18077,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
     A         [void *]
               device pointer pointing to first matrix A_1.
     @param[in]
-    aType    [hipblasDatatype_t]
+    aType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each matrix A_i.\n
+    [hipDataType]
               specifies the datatype of each matrix A_i.
     @param[in]
     lda       [int]
@@ -18562,7 +18092,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
     B         [void *]
               device pointer pointing to first matrix B_1.
     @param[in]
-    bType    [hipblasDatatype_t]
+    bType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each matrix B_i.\n
+    [hipDataType]
               specifies the datatype of each matrix B_i.
     @param[in]
     ldb       [int]
@@ -18577,7 +18110,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
     C         [void *]
               device pointer pointing to first matrix C_1.
     @param[in]
-    cType    [hipblasDatatype_t]
+    cType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each matrix C_i.\n
+    [hipDataType]
               specifies the datatype of each matrix C_i.
     @param[in]
     ldc       [int]
@@ -18591,7 +18127,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
               number of gemm operations in the batch.
     @param[in]
     computeType
-              [hipblasDatatype_t]
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipblasComputeType_t]
               specifies the datatype of computation.
     @param[in]
     algo      [hipblasGemmAlgo_t]
@@ -18621,6 +18159,30 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    ha
                                                            int                batchCount,
                                                            hipblasDatatype_t  computeType,
                                                            hipblasGemmAlgo_t  algo);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx_v2(hipblasHandle_t      handle,
+                                                              hipblasOperation_t   transA,
+                                                              hipblasOperation_t   transB,
+                                                              int                  m,
+                                                              int                  n,
+                                                              int                  k,
+                                                              const void*          alpha,
+                                                              const void*          A,
+                                                              hipDataType          aType,
+                                                              int                  lda,
+                                                              hipblasStride        strideA,
+                                                              const void*          B,
+                                                              hipDataType          bType,
+                                                              int                  ldb,
+                                                              hipblasStride        strideB,
+                                                              const void*          beta,
+                                                              void*                C,
+                                                              hipDataType          cType,
+                                                              int                  ldc,
+                                                              hipblasStride        strideC,
+                                                              int                  batchCount,
+                                                              hipblasComputeType_t computeType,
+                                                              hipblasGemmAlgo_t    algo);
 
 /*! BLAS EX API
 
@@ -18660,6 +18222,47 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    ha
       - invA = invA + stride_invA * previousBatchCount
       - ldinvA = 128
       - batchCount = 1
+
+    With HIPBLAS_V2 define, hipblasTrsmEx accepts hipDataType for computeType rather than
+    hipblasDatatype_t. hipblasTrsmEx will only accept hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
+                                          hipblasSideMode_t  side,
+                                          hipblasFillMode_t  uplo,
+                                          hipblasOperation_t transA,
+                                          hipblasDiagType_t  diag,
+                                          int                m,
+                                          int                n,
+                                          const void*        alpha,
+                                          void*              A,
+                                          int                lda,
+                                          void*              B,
+                                          int                ldb,
+                                          const void*        invA,
+                                          int                invAsize,
+                                          hipDataType        computeType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
+                                          hipblasSideMode_t  side,
+                                          hipblasFillMode_t  uplo,
+                                          hipblasOperation_t transA,
+                                          hipblasDiagType_t  diag,
+                                          int                m,
+                                          int                n,
+                                          const void*        alpha,
+                                          void*              A,
+                                          int                lda,
+                                          void*              B,
+                                          int                ldb,
+                                          const void*        invA,
+                                          int                invAsize,
+                                          hipblasDatatype_t  computeType)
+
+        #endif
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -18739,8 +18342,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    ha
             invAsize specifies the number of elements of device memory in invA.
 
     @param[in]
-    computeType [hipblasDatatype_t]
-            specifies the datatype of computation
+    computeType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of computation.\n
+    [hipDataType]
+            specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
@@ -18758,6 +18364,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
                                              const void*        invA,
                                              int                invAsize,
                                              hipblasDatatype_t  computeType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx_v2(hipblasHandle_t    handle,
+                                                hipblasSideMode_t  side,
+                                                hipblasFillMode_t  uplo,
+                                                hipblasOperation_t transA,
+                                                hipblasDiagType_t  diag,
+                                                int                m,
+                                                int                n,
+                                                const void*        alpha,
+                                                void*              A,
+                                                int                lda,
+                                                void*              B,
+                                                int                ldb,
+                                                const void*        invA,
+                                                int                invAsize,
+                                                hipDataType        computeType);
 
 /*! BLAS EX API
 
@@ -18798,6 +18420,49 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
       - invA = invA + stride_invA * previousBatchCount
       - ldinvA = 128
       - batchCount = 1
+
+    With HIPBLAS_V2 define, hipblasTrsmBatchedEx accepts hipDataType for computeType rather than
+    hipblasDatatype_t. hipblasTrsmBatchedEx will only accept hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
+                                                 hipblasSideMode_t  side,
+                                                 hipblasFillMode_t  uplo,
+                                                 hipblasOperation_t transA,
+                                                 hipblasDiagType_t  diag,
+                                                 int                m,
+                                                 int                n,
+                                                 const void*        alpha,
+                                                 void*              A,
+                                                 int                lda,
+                                                 void*              B,
+                                                 int                ldb,
+                                                 int                batchCount,
+                                                 const void*        invA,
+                                                 int                invAsize,
+                                                 hipDataType        computeType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
+                                                 hipblasSideMode_t  side,
+                                                 hipblasFillMode_t  uplo,
+                                                 hipblasOperation_t transA,
+                                                 hipblasDiagType_t  diag,
+                                                 int                m,
+                                                 int                n,
+                                                 const void*        alpha,
+                                                 void*              A,
+                                                 int                lda,
+                                                 void*              B,
+                                                 int                ldb,
+                                                 int                batchCount,
+                                                 const void*        invA,
+                                                 int                invAsize,
+                                                 hipblasDatatype_t  computeType)
+
+        #endif
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -18881,8 +18546,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
             invAsize specifies the number of elements of device memory in each invA_i.
 
     @param[in]
-    computeType [hipblasDatatype_t]
-            specifies the datatype of computation
+    computeType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of computation.\n
+    [hipDataType]
+            specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
@@ -18901,6 +18569,23 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
                                                     const void*        invA,
                                                     int                invAsize,
                                                     hipblasDatatype_t  computeType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx_v2(hipblasHandle_t    handle,
+                                                       hipblasSideMode_t  side,
+                                                       hipblasFillMode_t  uplo,
+                                                       hipblasOperation_t transA,
+                                                       hipblasDiagType_t  diag,
+                                                       int                m,
+                                                       int                n,
+                                                       const void*        alpha,
+                                                       void*              A,
+                                                       int                lda,
+                                                       void*              B,
+                                                       int                ldb,
+                                                       int                batchCount,
+                                                       const void*        invA,
+                                                       int                invAsize,
+                                                       hipDataType        computeType);
 
 /*! BLAS EX API
 
@@ -18941,6 +18626,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
       - invA = invA + stride_invA * previousBatchCount
       - ldinvA = 128
       - batchCount = 1
+
+    With HIPBLAS_V2 define, hipblasStridedBatchedTrsmEx accepts hipDataType for computeType rather than
+    hipblasDatatype_t. hipblasTrsmStridedBatchedEx will only accept hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
+                                                        hipblasSideMode_t  side,
+                                                        hipblasFillMode_t  uplo,
+                                                        hipblasOperation_t transA,
+                                                        hipblasDiagType_t  diag,
+                                                        int                m,
+                                                        int                n,
+                                                        const void*        alpha,
+                                                        void*              A,
+                                                        int                lda,
+                                                        hipblasStride      strideA,
+                                                        void*              B,
+                                                        int                ldb,
+                                                        hipblasStride      strideB,
+                                                        int                batchCount,
+                                                        const void*        invA,
+                                                        int                invAsize,
+                                                        hipblasStride      strideInvA,
+                                                        hipDataType        computeType);
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
+                                                        hipblasSideMode_t  side,
+                                                        hipblasFillMode_t  uplo,
+                                                        hipblasOperation_t transA,
+                                                        hipblasDiagType_t  diag,
+                                                        int                m,
+                                                        int                n,
+                                                        const void*        alpha,
+                                                        void*              A,
+                                                        int                lda,
+                                                        hipblasStride      strideA,
+                                                        void*              B,
+                                                        int                ldb,
+                                                        hipblasStride      strideB,
+                                                        int                batchCount,
+                                                        const void*        invA,
+                                                        int                invAsize,
+                                                        hipblasStride      strideInvA,
+                                                        hipblasDatatype_t  computeType)
+
+        #endif
 
     @param[in]
     handle  [hipblasHandle_t]
@@ -19037,8 +18771,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmBatchedEx(hipblasHandle_t    handle,
             The stride between each invA matrix.
 
     @param[in]
-    computeType [hipblasDatatype_t]
-            specifies the datatype of computation
+    computeType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of computation.\n
+    [hipDataType]
+            specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    handle,
@@ -19061,6 +18798,26 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
                                                            hipblasStride      strideInvA,
                                                            hipblasDatatype_t  computeType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx_v2(hipblasHandle_t    handle,
+                                                              hipblasSideMode_t  side,
+                                                              hipblasFillMode_t  uplo,
+                                                              hipblasOperation_t transA,
+                                                              hipblasDiagType_t  diag,
+                                                              int                m,
+                                                              int                n,
+                                                              const void*        alpha,
+                                                              void*              A,
+                                                              int                lda,
+                                                              hipblasStride      strideA,
+                                                              void*              B,
+                                                              int                ldb,
+                                                              hipblasStride      strideB,
+                                                              int                batchCount,
+                                                              const void*        invA,
+                                                              int                invAsize,
+                                                              hipblasStride      strideInvA,
+                                                              hipDataType        computeType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -19069,6 +18826,40 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
         y := alpha * x + y
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasAxpyEx accepts hipDataType for alphaType, xType, yType,
+    and executionType rather than hipblasDatatype_t. hipblasAxpyEx will only accept hipDataType
+    in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasAxpyEx(hipblasHandle_t handle,
+                                          int             n,
+                                          const void*     alpha,
+                                          hipDataType     alphaType,
+                                          const void*     x,
+                                          hipDataType     xType,
+                                          int             incx,
+                                          void*           y,
+                                          hipDataType     yType,
+                                          int             incy,
+                                          hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
+                                          int               n,
+                                          const void*       alpha,
+                                          hipblasDatatype_t alphaType,
+                                          const void*       x,
+                                          hipblasDatatype_t xType,
+                                          int               incx,
+                                          void*             y,
+                                          hipblasDatatype_t yType,
+                                          int               incy,
+                                          hipblasDatatype_t executionType)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19079,27 +18870,39 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasTrsmStridedBatchedEx(hipblasHandle_t    ha
     @param[in]
     alpha     device pointer or host pointer to specify the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of alpha.\n
+    [hipDataType]
               specifies the datatype of alpha.
     @param[in]
     x         device pointer storing vector x.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of vector x.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of vector x.\n
+    [hipDataType]
+              specifies the datatype of vector x.
     @param[in]
     incx      [int]
               specifies the increment for the elements of x.
     @param[inout]
     y         device pointer storing vector y.
     @param[in]
-    yType [hipblasDatatype_t]
-          specifies the datatype of vector y.
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of vector y.\n
+    [hipDataType]
+              specifies the datatype of vector y.
     @param[in]
     incy      [int]
               specifies the increment for the elements of y.
     @param[in]
-    executionType [hipblasDatatype_t]
-                  specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipDataType]
+              specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
@@ -19114,6 +18917,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
                                              int               incy,
                                              hipblasDatatype_t executionType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx_v2(hipblasHandle_t handle,
+                                                int             n,
+                                                const void*     alpha,
+                                                hipDataType     alphaType,
+                                                const void*     x,
+                                                hipDataType     xType,
+                                                int             incx,
+                                                void*           y,
+                                                hipDataType     yType,
+                                                int             incy,
+                                                hipDataType     executionType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -19124,6 +18939,42 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasAxpyBatchedEx accepts hipDataType for alphaType, xType, yType,
+    and executionType rather than hipblasDatatype_t. hipblasAxpyBatchedEx will only accept hipDataType
+    in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const void*     alpha,
+                                                 hipDataType     alphaType,
+                                                 const void*     x,
+                                                 hipDataType     xType,
+                                                 int             incx,
+                                                 void*           y,
+                                                 hipDataType     yType,
+                                                 int             incy,
+                                                 int             batchCount,
+                                                 hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
+                                                 int               n,
+                                                 const void*       alpha,
+                                                 hipblasDatatype_t alphaType,
+                                                 const void*       x,
+                                                 hipblasDatatype_t xType,
+                                                 int               incx,
+                                                 void*             y,
+                                                 hipblasDatatype_t yType,
+                                                 int               incy,
+                                                 int               batchCount,
+                                                 hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -19133,30 +18984,42 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx(hipblasHandle_t   handle,
     @param[in]
     alpha     device pointer or host pointer to specify the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of alpha.\n
+    [hipDataType]
               specifies the datatype of alpha.
     @param[in]
     x         device array of device pointers storing each vector x_i.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of each vector x_i.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector x_i.\n
+    [hipDataType]
+              specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
               specifies the increment for the elements of each x_i.
     @param[inout]
     y         device array of device pointers storing each vector y_i.
     @param[in]
-    yType [hipblasDatatype_t]
-          specifies the datatype of each vector y_i.
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector y_i.\n
+    [hipDataType]
+              specifies the datatype of each vector y_i.
     @param[in]
     incy      [int]
               specifies the increment for the elements of each y_i.
     @param[in]
     batchCount [int]
-                number of instances in the batch.
+              number of instances in the batch.
     @param[in]
-    executionType [hipblasDatatype_t]
-                  specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipDataType]
+              specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
@@ -19172,6 +19035,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
                                                     int               batchCount,
                                                     hipblasDatatype_t executionType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx_v2(hipblasHandle_t handle,
+                                                       int             n,
+                                                       const void*     alpha,
+                                                       hipDataType     alphaType,
+                                                       const void*     x,
+                                                       hipDataType     xType,
+                                                       int             incx,
+                                                       void*           y,
+                                                       hipDataType     yType,
+                                                       int             incy,
+                                                       int             batchCount,
+                                                       hipDataType     executionType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -19182,6 +19058,46 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasAxpyStridedBatchedEx accepts hipDataType for alphaType, xType, yType,
+    and executionType rather than hipblasDatatype_t. hipblasAxpyStridedBatchedEx will only accept hipDataType
+    in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t handle,
+                                                        int             n,
+                                                        const void*     alpha,
+                                                        hipDataType     alphaType,
+                                                        const void*     x,
+                                                        hipDataType     xType,
+                                                        int             incx,
+                                                        hipblasStride   stridex,
+                                                        void*           y,
+                                                        hipDataType     yType,
+                                                        int             incy,
+                                                        hipblasStride   stridey,
+                                                        int             batchCount,
+                                                        hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   handle,
+                                                        int               n,
+                                                        const void*       alpha,
+                                                        hipblasDatatype_t alphaType,
+                                                        const void*       x,
+                                                        hipblasDatatype_t xType,
+                                                        int               incx,
+                                                        hipblasStride     stridex,
+                                                        void*             y,
+                                                        hipblasDatatype_t yType,
+                                                        int               incy,
+                                                        hipblasStride     stridey,
+                                                        int               batchCount,
+                                                        hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -19191,13 +19107,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
     @param[in]
     alpha     device pointer or host pointer to specify the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of alpha.\n
+    [hipDataType]
               specifies the datatype of alpha.
     @param[in]
     x         device pointer to the first vector x_1.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of each vector x_i.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector x_i.\n
+    [hipDataType]
+              specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
               specifies the increment for the elements of each x_i.
@@ -19210,8 +19132,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
     @param[inout]
     y         device pointer to the first vector y_1.
     @param[in]
-    yType [hipblasDatatype_t]
-          specifies the datatype of each vector y_i.
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector y_i.\n
+    [hipDataType]
+              specifies the datatype of each vector y_i.
     @param[in]
     incy      [int]
               specifies the increment for the elements of each y_i.
@@ -19223,10 +19148,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx(hipblasHandle_t   handle,
               case this means stridey >= n * incy.
     @param[in]
     batchCount [int]
-                number of instances in the batch.
+              number of instances in the batch.
     @param[in]
-    executionType [hipblasDatatype_t]
-                  specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipDataType]
+              specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   handle,
@@ -19244,6 +19172,21 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   han
                                                            int               batchCount,
                                                            hipblasDatatype_t executionType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx_v2(hipblasHandle_t handle,
+                                                              int             n,
+                                                              const void*     alpha,
+                                                              hipDataType     alphaType,
+                                                              const void*     x,
+                                                              hipDataType     xType,
+                                                              int             incx,
+                                                              hipblasStride   stridex,
+                                                              void*           y,
+                                                              hipDataType     yType,
+                                                              int             incy,
+                                                              hipblasStride   stridey,
+                                                              int             batchCount,
+                                                              hipDataType     executionType);
+
 /*! @{
     \brief BLAS EX API
 
@@ -19258,6 +19201,40 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   han
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasDot(c)Ex accepts hipDataType for xType, yType,
+    resultType, and executionType rather than hipblasDatatype_t. hipblasDot(c)Ex will only
+    accept hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasDotEx(hipblasHandle_t handle,
+                                         int             n,
+                                         const void*     x,
+                                         hipDataType     xType,
+                                         int             incx,
+                                         const void*     y,
+                                         hipDataType     yType,
+                                         int             incy,
+                                         void*           result,
+                                         hipDataType     resultType,
+                                         hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasDotEx(hipblasHandle_t   handle,
+                                         int               n,
+                                         const void*       x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         const void*       y,
+                                         hipblasDatatype_t yType,
+                                         int               incy,
+                                         void*             result,
+                                         hipblasDatatype_t resultType,
+                                         hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -19267,16 +19244,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   han
     @param[in]
     x         device pointer storing vector x.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of vector x.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of vector x.\n
+    [hipDataType]
+              specifies the datatype of vector x.
     @param[in]
     incx      [int]
               specifies the increment for the elements of y.
     @param[in]
     y         device pointer storing vector y.
     @param[in]
-    yType [hipblasDatatype_t]
-          specifies the datatype of vector y.
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of vector y.\n
+    [hipDataType]
+              specifies the datatype of vector y.
     @param[in]
     incy      [int]
               specifies the increment for the elements of y.
@@ -19285,11 +19268,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx(hipblasHandle_t   han
               device pointer or host pointer to store the dot product.
               return is 0.0 if n <= 0.
     @param[in]
-    resultType [hipblasDatatype_t]
-                specifies the datatype of the result.
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of the result.\n
+    [hipDataType]
+              specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t]
-                  specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipDataType]
+              specifies the datatype of computation.
 
     ********************************************************************/
 
@@ -19318,6 +19307,30 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
                                              hipblasDatatype_t executionType);
 //! @}
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx_v2(hipblasHandle_t handle,
+                                               int             n,
+                                               const void*     x,
+                                               hipDataType     xType,
+                                               int             incx,
+                                               const void*     y,
+                                               hipDataType     yType,
+                                               int             incy,
+                                               void*           result,
+                                               hipDataType     resultType,
+                                               hipDataType     executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx_v2(hipblasHandle_t handle,
+                                                int             n,
+                                                const void*     x,
+                                                hipDataType     xType,
+                                                int             incx,
+                                                const void*     y,
+                                                hipDataType     yType,
+                                                int             incy,
+                                                void*           result,
+                                                hipDataType     resultType,
+                                                hipDataType     executionType);
+
 /*! @{
     \brief BLAS EX API
 
@@ -19335,6 +19348,42 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasDot(c)BatchedEx accepts hipDataType for xType, yType,
+    resultType, and executionType rather than hipblasDatatype_t. hipblasDot(c)BatchedEx will only
+    accept hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t handle,
+                                                int             n,
+                                                const void*     x,
+                                                hipDataType     xType,
+                                                int             incx,
+                                                const void*     y,
+                                                hipDataType     yType,
+                                                int             incy,
+                                                int             batchCount,
+                                                void*           result,
+                                                hipDataType     resultType,
+                                                hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasDotBatchedEx(hipblasHandle_t   handle,
+                                                int               n,
+                                                const void*       x,
+                                                hipblasDatatype_t xType,
+                                                int               incx,
+                                                const void*       y,
+                                                hipblasDatatype_t yType,
+                                                int               incy,
+                                                int               batchCount,
+                                                void*             result,
+                                                hipblasDatatype_t resultType,
+                                                hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -19344,32 +19393,44 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx(hipblasHandle_t   handle,
     @param[in]
     x         device array of device pointers storing each vector x_i.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of each vector x_i.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector x_i.\n
+    [hipDataType]
+              specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
               specifies the increment for the elements of each x_i.
     @param[in]
     y         device array of device pointers storing each vector y_i.
     @param[in]
-    yType [hipblasDatatype_t]
-          specifies the datatype of each vector y_i.
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector y_i.\n
+    [hipDataType]
+              specifies the datatype of each vector y_i.
     @param[in]
     incy      [int]
               specifies the increment for the elements of each y_i.
     @param[in]
     batchCount [int]
-                number of instances in the batch
+              number of instances in the batch
     @param[inout]
     result
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
     @param[in]
-    resultType [hipblasDatatype_t]
-                specifies the datatype of the result.
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of the result.\n
+    [hipDataType]
+              specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t]
-                  specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipDataType]
+              specifies the datatype of computation.
 
     ********************************************************************/
 
@@ -19400,6 +19461,32 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
                                                     hipblasDatatype_t executionType);
 //! @}
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx_v2(hipblasHandle_t handle,
+                                                      int             n,
+                                                      const void*     x,
+                                                      hipDataType     xType,
+                                                      int             incx,
+                                                      const void*     y,
+                                                      hipDataType     yType,
+                                                      int             incy,
+                                                      int             batchCount,
+                                                      void*           result,
+                                                      hipDataType     resultType,
+                                                      hipDataType     executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx_v2(hipblasHandle_t handle,
+                                                       int             n,
+                                                       const void*     x,
+                                                       hipDataType     xType,
+                                                       int             incx,
+                                                       const void*     y,
+                                                       hipDataType     yType,
+                                                       int             incy,
+                                                       int             batchCount,
+                                                       void*           result,
+                                                       hipDataType     resultType,
+                                                       hipDataType     executionType);
+
 /*! @{
     \brief BLAS EX API
 
@@ -19417,6 +19504,46 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
 
         - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasDot(c)StridedBatchedEx accepts hipDataType for xType, yType,
+    resultType, and executionType rather than hipblasDatatype_t. hipblasDot(c)StridedBatchedEx will only
+    accept hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t handle,
+                                                       int             n,
+                                                       const void*     x,
+                                                       hipDataType     xType,
+                                                       int             incx,
+                                                       hipblasStride   stridex,
+                                                       const void*     y,
+                                                       hipDataType     yType,
+                                                       int             incy,
+                                                       hipblasStride   stridey,
+                                                       int             batchCount,
+                                                       void*           result,
+                                                       hipDataType     resultType,
+                                                       hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasDotStridedBatchedEx(hipblasHandle_t   handle,
+                                                       int               n,
+                                                       const void*       x,
+                                                       hipblasDatatype_t xType,
+                                                       int               incx,
+                                                       hipblasStride     stridex,
+                                                       const void*       y,
+                                                       hipblasDatatype_t yType,
+                                                       int               incy,
+                                                       hipblasStride     stridey,
+                                                       int               batchCount,
+                                                       void*             result,
+                                                       hipblasDatatype_t resultType,
+                                                       hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -19426,38 +19553,50 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx(hipblasHandle_t   handle,
     @param[in]
     x         device pointer to the first vector (x_1) in the batch.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of each vector x_i.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector x_i.\n
+    [hipDataType]
+              specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
               specifies the increment for the elements of each x_i.
     @param[in]
-    stridex    [hipblasStride]
-                stride from the start of one vector (x_i) and the next one (x_i+1)
+    stridex   [hipblasStride]
+              stride from the start of one vector (x_i) and the next one (x_i+1)
     @param[in]
     y         device pointer to the first vector (y_1) in the batch.
     @param[in]
-    yType [hipblasDatatype_t]
-          specifies the datatype of each vector y_i.
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector y_i.\n
+    [hipDataType]
+              specifies the datatype of each vector y_i.
     @param[in]
     incy      [int]
               specifies the increment for the elements of each y_i.
     @param[in]
-    stridey    [hipblasStride]
-                stride from the start of one vector (y_i) and the next one (y_i+1)
+    stridey   [hipblasStride]
+              stride from the start of one vector (y_i) and the next one (y_i+1)
     @param[in]
     batchCount [int]
-                number of instances in the batch
+              number of instances in the batch
     @param[inout]
     result
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
     @param[in]
-    resultType [hipblasDatatype_t]
-                specifies the datatype of the result.
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of the result.\n
+    [hipDataType]
+              specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t]
-                  specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipDataType]
+              specifies the datatype of computation.
 
     ********************************************************************/
 
@@ -19492,6 +19631,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   han
                                                            hipblasDatatype_t executionType);
 //! @}
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx_v2(hipblasHandle_t handle,
+                                                             int             n,
+                                                             const void*     x,
+                                                             hipDataType     xType,
+                                                             int             incx,
+                                                             hipblasStride   stridex,
+                                                             const void*     y,
+                                                             hipDataType     yType,
+                                                             int             incy,
+                                                             hipblasStride   stridey,
+                                                             int             batchCount,
+                                                             void*           result,
+                                                             hipDataType     resultType,
+                                                             hipDataType     executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx_v2(hipblasHandle_t handle,
+                                                              int             n,
+                                                              const void*     x,
+                                                              hipDataType     xType,
+                                                              int             incx,
+                                                              hipblasStride   stridex,
+                                                              const void*     y,
+                                                              hipDataType     yType,
+                                                              int             incy,
+                                                              hipblasStride   stridey,
+                                                              int             batchCount,
+                                                              void*           result,
+                                                              hipDataType     resultType,
+                                                              hipDataType     executionType);
+
 /*! \brief BLAS_EX API
 
     \details
@@ -19502,6 +19671,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   han
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasNrm2Ex accepts hipDataType for xType, resultType,
+    and executionType rather than hipblasDatatype_t. hipblasNrm2Ex will only accept
+    hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t handle,
+                                          int             n,
+                                          const void*     x,
+                                          hipDataType     xType,
+                                          int             incx,
+                                          void*           result,
+                                          hipDataType     resultType,
+                                          hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
+                                          int               n,
+                                          const void*       x,
+                                          hipblasDatatype_t xType,
+                                          int               incx,
+                                          void*             result,
+                                          hipblasDatatype_t resultType,
+                                          hipblasDatatype_t executionType)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19512,8 +19708,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   han
     @param[in]
     x         device pointer storing vector x.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of the vector x.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of the vector x.\n
+    [hipDataType]
+              specifies the datatype of the vector x.
     @param[in]
     incx      [int]
               specifies the increment for the elements of y.
@@ -19522,11 +19721,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx(hipblasHandle_t   han
               device pointer or host pointer to store the nrm2 product.
               return is 0.0 if n, incx<=0.
     @param[in]
-    resultType [hipblasDatatype_t]
-                specifies the datatype of the result.
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of the result.\n
+    [hipDataType]
+              specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t]
-                  specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipDataType]
+              specifies the datatype of computation.
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
                                              int               n,
@@ -19536,6 +19741,15 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
                                              void*             result,
                                              hipblasDatatype_t resultType,
                                              hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex_v2(hipblasHandle_t handle,
+                                                int             n,
+                                                const void*     x,
+                                                hipDataType     xType,
+                                                int             incx,
+                                                void*           result,
+                                                hipDataType     resultType,
+                                                hipDataType     executionType);
 
 /*! \brief BLAS_EX API
 
@@ -19547,6 +19761,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasNrm2BatchedEx accepts hipDataType for xType, resultType,
+    and executionType rather than hipblasDatatype_t. hipblasNrm2BatchedEx will only accept
+    hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const void*     x,
+                                                 hipDataType     xType,
+                                                 int             incx,
+                                                 int             batchCount,
+                                                 void*           result,
+                                                 hipDataType     resultType,
+                                                 hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
+                                                 int               n,
+                                                 const void*       x,
+                                                 hipblasDatatype_t xType,
+                                                 int               incx,
+                                                 int               batchCount,
+                                                 void*             result,
+                                                 hipblasDatatype_t resultType,
+                                                 hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -19556,8 +19800,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
     @param[in]
     x         device array of device pointers storing each vector x_i.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of each vector x_i.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector x_i.\n
+    [hipDataType]
+              specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
               specifies the increment for the elements of each x_i. incx must be > 0.
@@ -19569,11 +19816,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex(hipblasHandle_t   handle,
               device pointer or host pointer to array of batchCount size for nrm2 results.
               return is 0.0 for each element if n <= 0, incx<=0.
     @param[in]
-    resultType [hipblasDatatype_t]
-                specifies the datatype of the result.
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of the result.\n
+    [hipDataType]
+              specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t]
-                  specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipDataType]
+              specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
@@ -19586,6 +19839,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
                                                     hipblasDatatype_t resultType,
                                                     hipblasDatatype_t executionType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx_v2(hipblasHandle_t handle,
+                                                       int             n,
+                                                       const void*     x,
+                                                       hipDataType     xType,
+                                                       int             incx,
+                                                       int             batchCount,
+                                                       void*           result,
+                                                       hipDataType     resultType,
+                                                       hipDataType     executionType);
+
 /*! \brief BLAS_EX API
 
     \details
@@ -19596,6 +19859,38 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasNrm2StridedBatchedEx accepts hipDataType for xType, resultType,
+    and executionType rather than hipblasDatatype_t. hipblasNrm2StridedBatchedEx will only accept
+    hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t handle,
+                                                        int             n,
+                                                        const void*     x,
+                                                        hipDataType     xType,
+                                                        int             incx,
+                                                        hipblasStride   stridex,
+                                                        int             batchCount,
+                                                        void*           result,
+                                                        hipDataType     resultType,
+                                                        hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   handle,
+                                                        int               n,
+                                                        const void*       x,
+                                                        hipblasDatatype_t xType,
+                                                        int               incx,
+                                                        hipblasStride     stridex,
+                                                        int               batchCount,
+                                                        void*             result,
+                                                        hipblasDatatype_t resultType,
+                                                        hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -19605,8 +19900,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
     @param[in]
     x         device pointer to the first vector x_1.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of each vector x_i.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of each vector x_i.\n
+    [hipDataType]
+              specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
               specifies the increment for the elements of each x_i. incx must be > 0.
@@ -19624,11 +19922,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx(hipblasHandle_t   handle,
               device pointer or host pointer to array for storing contiguous batchCount results.
               return is 0.0 for each element if n <= 0, incx<=0.
     @param[in]
-    resultType [hipblasDatatype_t]
-                specifies the datatype of the result.
+    resultType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of the result.\n
+    [hipDataType]
+              specifies the datatype of the result.
     @param[in]
-    executionType [hipblasDatatype_t]
-                  specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+              specifies the datatype of computation.\n
+    [hipDataType]
+              specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   handle,
@@ -19641,6 +19945,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   han
                                                            void*             result,
                                                            hipblasDatatype_t resultType,
                                                            hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx_v2(hipblasHandle_t handle,
+                                                              int             n,
+                                                              const void*     x,
+                                                              hipDataType     xType,
+                                                              int             incx,
+                                                              hipblasStride   stridex,
+                                                              int             batchCount,
+                                                              void*           result,
+                                                              hipDataType     resultType,
+                                                              hipDataType     executionType);
 
 /*! \brief BLAS EX API
 
@@ -19658,6 +19973,42 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   han
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasRotEx accepts hipDataType for xType, yType, csType,
+    and executionType rather than hipblasDatatype_t. hipblasRotEx will only accept
+    hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasRotEx(hipblasHandle_t handle,
+                                         int             n,
+                                         void*           x,
+                                         hipDataType     xType,
+                                         int             incx,
+                                         void*           y,
+                                         hipDataType     yType,
+                                         int             incy,
+                                         const void*     c,
+                                         const void*     s,
+                                         hipDataType     csType,
+                                         hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
+                                         int               n,
+                                         void*             x,
+                                         hipblasDatatype_t xType,
+                                         int               incx,
+                                         void*             y,
+                                         hipblasDatatype_t yType,
+                                         int               incy,
+                                         const void*       c,
+                                         const void*       s,
+                                         hipblasDatatype_t csType,
+                                         hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle  [hipblasHandle_t]
             handle to the hipblas library context queue.
@@ -19667,16 +20018,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   han
     @param[inout]
     x       device pointer storing vector x.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of vector x.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of vector x.\n
+    [hipDataType]
+            specifies the datatype of vector x.
     @param[in]
     incx    [int]
             specifies the increment between elements of x.
     @param[inout]
     y       device pointer storing vector y.
     @param[in]
-    yType [hipblasDatatype_t]
-           specifies the datatype of vector y.
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of vector y.\n
+    [hipDataType]
+            specifies the datatype of vector y.
     @param[in]
     incy    [int]
             specifies the increment between elements of y.
@@ -19685,11 +20042,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx(hipblasHandle_t   han
     @param[in]
     s       device pointer or host pointer storing scalar sine component of the rotation matrix.
     @param[in]
-    csType [hipblasDatatype_t]
+    csType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of c and s.\n
+    [hipDataType]
             specifies the datatype of c and s.
     @param[in]
-    executionType [hipblasDatatype_t]
-                   specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of computation.\n
+    [hipDataType]
+            specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
@@ -19704,6 +20067,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
                                             const void*       s,
                                             hipblasDatatype_t csType,
                                             hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx_v2(hipblasHandle_t handle,
+                                               int             n,
+                                               void*           x,
+                                               hipDataType     xType,
+                                               int             incx,
+                                               void*           y,
+                                               hipDataType     yType,
+                                               int             incy,
+                                               const void*     c,
+                                               const void*     s,
+                                               hipDataType     csType,
+                                               hipDataType     executionType);
 
 /*! \brief BLAS EX API
 
@@ -19721,6 +20097,44 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasRotBatchedEx accepts hipDataType for xType, yType, csType,
+    and executionType rather than hipblasDatatype_t. hipblasRotBatchedEx will only accept
+    hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t handle,
+                                                int             n,
+                                                void*           x,
+                                                hipDataType     xType,
+                                                int             incx,
+                                                void*           y,
+                                                hipDataType     yType,
+                                                int             incy,
+                                                const void*     c,
+                                                const void*     s,
+                                                hipDataType     csType,
+                                                int             batchCount,
+                                                hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
+                                                int               n,
+                                                void*             x,
+                                                hipblasDatatype_t xType,
+                                                int               incx,
+                                                void*             y,
+                                                hipblasDatatype_t yType,
+                                                int               incy,
+                                                const void*       c,
+                                                const void*       s,
+                                                hipblasDatatype_t csType,
+                                                int               batchCount,
+                                                hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle  [hipblasHandle_t]
             handle to the hipblas library context queue.
@@ -19730,16 +20144,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
     @param[inout]
     x       device array of device pointers storing each vector x_i.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of each vector x_i.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of each vector x_i.\n
+    [hipDataType]
+            specifies the datatype of each vector x_i.
     @param[in]
     incx    [int]
             specifies the increment between elements of each x_i.
     @param[inout]
     y       device array of device pointers storing each vector y_i.
     @param[in]
-    yType [hipblasDatatype_t]
-           specifies the datatype of each vector y_i.
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of each vector y_i.\n
+    [hipDataType]
+            specifies the datatype of each vector y_i.
     @param[in]
     incy    [int]
             specifies the increment between elements of each y_i.
@@ -19748,14 +20168,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx(hipblasHandle_t   handle,
     @param[in]
     s       device pointer or host pointer to scalar sine component of the rotation matrix.
     @param[in]
-    csType [hipblasDatatype_t]
+    csType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of c and s.\n
+    [hipDataType]
             specifies the datatype of c and s.
     @param[in]
     batchCount [int]
-                the number of x and y arrays, i.e. the number of batches.
+            the number of x and y arrays, i.e. the number of batches.
     @param[in]
-    executionType [hipblasDatatype_t]
-                   specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of computation.\n
+    [hipDataType]
+            specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
@@ -19771,6 +20197,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
                                                    hipblasDatatype_t csType,
                                                    int               batchCount,
                                                    hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx_v2(hipblasHandle_t handle,
+                                                      int             n,
+                                                      void*           x,
+                                                      hipDataType     xType,
+                                                      int             incx,
+                                                      void*           y,
+                                                      hipDataType     yType,
+                                                      int             incy,
+                                                      const void*     c,
+                                                      const void*     s,
+                                                      hipDataType     csType,
+                                                      int             batchCount,
+                                                      hipDataType     executionType);
 
 /*! \brief BLAS Level 1 API
 
@@ -19788,6 +20228,48 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasRotStridedBatchedEx accepts hipDataType for xType, yType, csType,
+    and executionType rather than hipblasDatatype_t. hipblasRotStridedBatchedEx will only accept
+    hipDataType in a future release.
+
+         #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t handle,
+                                                       int             n,
+                                                       void*           x,
+                                                       hipDataType     xType,
+                                                       int             incx,
+                                                       hipblasStride   stridex,
+                                                       void*           y,
+                                                       hipDataType     yType,
+                                                       int             incy,
+                                                       hipblasStride   stridey,
+                                                       const void*     c,
+                                                       const void*     s,
+                                                       hipDataType     csType,
+                                                       int             batchCount,
+                                                       hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
+                                                       int               n,
+                                                       void*             x,
+                                                       hipblasDatatype_t xType,
+                                                       int               incx,
+                                                       hipblasStride     stridex,
+                                                       void*             y,
+                                                       hipblasDatatype_t yType,
+                                                       int               incy,
+                                                       hipblasStride     stridey,
+                                                       const void*       c,
+                                                       const void*       s,
+                                                       hipblasDatatype_t csType,
+                                                       int               batchCount,
+                                                       hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle  [hipblasHandle_t]
             handle to the hipblas library context queue.
@@ -19797,38 +20279,50 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx(hipblasHandle_t   handle,
     @param[inout]
     x       device pointer to the first vector x_1.
     @param[in]
-    xType [hipblasDatatype_t]
-           specifies the datatype of each vector x_i.
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of each vector x_i.\n
+    [hipDataType]
+            specifies the datatype of each vector x_i.
     @param[in]
     incx    [int]
             specifies the increment between elements of each x_i.
     @param[in]
     stridex [hipblasStride]
-             specifies the increment from the beginning of x_i to the beginning of x_(i+1)
+            specifies the increment from the beginning of x_i to the beginning of x_(i+1)
     @param[inout]
     y       device pointer to the first vector y_1.
     @param[in]
-    yType [hipblasDatatype_t]
-           specifies the datatype of each vector y_i.
+    yType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of each vector y_i.\n
+    [hipDataType]
+            specifies the datatype of each vector y_i.
     @param[in]
     incy    [int]
             specifies the increment between elements of each y_i.
     @param[in]
     stridey [hipblasStride]
-             specifies the increment from the beginning of y_i to the beginning of y_(i+1)
+            specifies the increment from the beginning of y_i to the beginning of y_(i+1)
     @param[in]
     c       device pointer or host pointer to scalar cosine component of the rotation matrix.
     @param[in]
     s       device pointer or host pointer to scalar sine component of the rotation matrix.
     @param[in]
-    csType [hipblasDatatype_t]
+    csType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of c and s.\n
+    [hipDataType]
             specifies the datatype of c and s.
     @param[in]
     batchCount [int]
             the number of x and y arrays, i.e. the number of batches.
     @param[in]
-    executionType [hipblasDatatype_t]
-                   specifies the datatype of computation.
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+            specifies the datatype of computation.\n
+    [hipDataType]
+            specifies the datatype of computation.
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   handle,
@@ -19847,6 +20341,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   hand
                                                           int               batchCount,
                                                           hipblasDatatype_t executionType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx_v2(hipblasHandle_t handle,
+                                                             int             n,
+                                                             void*           x,
+                                                             hipDataType     xType,
+                                                             int             incx,
+                                                             hipblasStride   stridex,
+                                                             void*           y,
+                                                             hipDataType     yType,
+                                                             int             incy,
+                                                             hipblasStride   stridey,
+                                                             const void*     c,
+                                                             const void*     s,
+                                                             hipDataType     csType,
+                                                             int             batchCount,
+                                                             hipDataType     executionType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -19855,6 +20365,34 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   hand
         x := alpha * x
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasScalEx accepts hipDataType for alphaType,
+    xType, and executionType rather than hipblasDatatype_t. hipblasScalEx will only
+    accept hipDataType in a future release.
+
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasScalEx(hipblasHandle_t handle,a
+                                          int             n,
+                                          const void*     alpha,
+                                          hipDataType     alphaType,
+                                          void*           x,
+                                          hipDataType     xType,
+                                          int             incx,
+                                          hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
+                                          int               n,
+                                          const void*       alpha,
+                                          hipblasDatatype_t alphaType,
+                                          void*             x,
+                                          hipblasDatatype_t xType,
+                                          int               incx,
+                                          hipblasDatatype_t executionType)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19865,18 +20403,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx(hipblasHandle_t   hand
     @param[in]
     alpha     device pointer or host pointer for the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
+               specifies the datatype of alpha.\n
+    [hipDataType]
                specifies the datatype of alpha.
     @param[inout]
     x         device pointer storing vector x.
     @param[in]
-    xType [hipblasDatatype_t]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+           specifies the datatype of vector x.\n
+    [hipDataType]
            specifies the datatype of vector x.
     @param[in]
     incx      [int]
               specifies the increment for the elements of x.
     @param[in]
-    executionType [hipblasDatatype_t]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+                   specifies the datatype of computation.\n
+    [hipDataType]
                    specifies the datatype of computation.
 
     ********************************************************************/
@@ -19889,6 +20436,15 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
                                              int               incx,
                                              hipblasDatatype_t executionType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
+                                                int             n,
+                                                const void*     alpha,
+                                                hipDataType     alphaType,
+                                                void*           x,
+                                                hipDataType     xType,
+                                                int             incx,
+                                                hipDataType     executionType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -19897,6 +20453,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
         x_i := alpha * x_i
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
+
+    With HIPBLAS_V2 define, hipblasScalBatchedEx accepts hipDataType for alphaType,
+    xType, and executionType rather than hipblasDatatype_t. hipblasScalBatchedEx will only
+    accept hipDataType in a future release.
+
+    #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const void*     alpha,
+                                                 hipDataType     alphaType,
+                                                 void*           x,
+                                                 hipDataType     xType,
+                                                 int             incx,
+                                                 int             batchCount,
+                                                 hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
+                                                 int               n,
+                                                 const void*       alpha,
+                                                 hipblasDatatype_t alphaType,
+                                                 void*             x,
+                                                 hipblasDatatype_t xType,
+                                                 int               incx,
+                                                 int               batchCount,
+                                                 hipblasDatatype_t executionType)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -19907,12 +20493,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
     @param[in]
     alpha     device pointer or host pointer for the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
+               specifies the datatype of alpha.\n
+    [hipDataType]
                specifies the datatype of alpha.
     @param[inout]
     x         device array of device pointers storing each vector x_i.
     @param[in]
-    xType [hipblasDatatype_t]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+           specifies the datatype of each vector x_i.\n
+    [hipDataType]
            specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -19921,7 +20513,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx(hipblasHandle_t   handle,
     batchCount [int]
                 number of instances in the batch.
     @param[in]
-    executionType [hipblasDatatype_t]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+                   specifies the datatype of computation.\n
+    [hipDataType]
                    specifies the datatype of computation.
 
     ********************************************************************/
@@ -19935,6 +20530,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
                                                     int               batchCount,
                                                     hipblasDatatype_t executionType);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
+                                                       int             n,
+                                                       const void*     alpha,
+                                                       hipDataType     alphaType,
+                                                       void*           x,
+                                                       hipDataType     xType,
+                                                       int             incx,
+                                                       int             batchCount,
+                                                       hipDataType     executionType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -19945,6 +20550,38 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    With HIPBLAS_V2 define, hipblasScalStridedBatchedEx accepts hipDataType for alphaType,
+    xType, and executionType rather than hipblasDatatype_t. hipblasScalStridedBatchedEx will only
+    accept hipDataType in a future release.
+
+    #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+
+            hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t handle,
+                                                        int             n,
+                                                        const void*     alpha,
+                                                        hipDataType     alphaType,
+                                                        void*           x,
+                                                        hipDataType     xType,
+                                                        int             incx,
+                                                        hipblasStride   stridex,
+                                                        int             batchCount,
+                                                        hipDataType     executionType)
+
+        #else // [DEPRECATED]
+
+            hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
+                                                        int               n,
+                                                        const void*       alpha,
+                                                        hipblasDatatype_t alphaType,
+                                                        void*             x,
+                                                        hipblasDatatype_t xType,
+                                                        int               incx,
+                                                        hipblasStride     stridex,
+                                                        int               batchCount,
+                                                        hipblasDatatype_t executionType)
+
+        #endif
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -19954,12 +20591,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
     @param[in]
     alpha     device pointer or host pointer for the scalar alpha.
     @param[in]
-    alphaType [hipblasDatatype_t]
+    alphaType
+    [hipblasDatatype_t] [DEPRECATED]
+               specifies the datatype of alpha.\n
+    [hipDataType]
                specifies the datatype of alpha.
     @param[inout]
     x         device pointer to the first vector x_1.
     @param[in]
-    xType [hipblasDatatype_t]
+    xType
+    [hipblasDatatype_t] [DEPRECATED]
+           specifies the datatype of each vector x_i.\n
+    [hipDataType]
            specifies the datatype of each vector x_i.
     @param[in]
     incx      [int]
@@ -19974,7 +20617,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
     batchCount [int]
                 number of instances in the batch.
     @param[in]
-    executionType [hipblasDatatype_t]
+    executionType
+    [hipblasDatatype_t] [DEPRECATED]
+                   specifies the datatype of computation.\n
+    [hipDataType]
                    specifies the datatype of computation.
 
     ********************************************************************/
@@ -19988,6 +20634,50 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   han
                                                            hipblasStride     stridex,
                                                            int               batchCount,
                                                            hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t handle,
+                                                              int             n,
+                                                              const void*     alpha,
+                                                              hipDataType     alphaType,
+                                                              void*           x,
+                                                              hipDataType     xType,
+                                                              int             incx,
+                                                              hipblasStride   stridex,
+                                                              int             batchCount,
+                                                              hipDataType     executionType);
+
+#ifdef HIPBLAS_V2
+#define hipblasTrsmEx hipblasTrsmEx_v2
+#define hipblasTrsmBatchedEx hipblasTrsmBatchedEx_v2
+#define hipblasTrsmStridedBatchedEx hipblasTrsmStridedBatchedEx_v2
+
+#define hipblasGemmEx hipblasGemmEx_v2
+#define hipblasGemmBatchedEx hipblasGemmBatchedEx_v2
+#define hipblasGemmStridedBatchedEx hipblasGemmStridedBatchedEx_v2
+
+#define hipblasAxpyEx hipblasAxpyEx_v2
+#define hipblasAxpyBatchedEx hipblasAxpyBatchedEx_v2
+#define hipblasAxpyStridedBatchedEx hipblasAxpyStridedBatchedEx_v2
+
+#define hipblasDotEx hipblasDotEx_v2
+#define hipblasDotcEx hipblasDotcEx_v2
+#define hipblasDotBatchedEx hipblasDotBatchedEx_v2
+#define hipblasDotcBatchedEx hipblasDotcBatchedEx_v2
+#define hipblasDotStridedBatchedEx hipblasDotStridedBatchedEx_v2
+#define hipblasDotcStridedBatchedEx hipblasDotcStridedBatchedEx_v2
+
+#define hipblasNrm2Ex hipblasNrm2Ex_v2
+#define hipblasNrm2BatchedEx hipblasNrm2BatchedEx_v2
+#define hipblasNrm2StridedBatchedEx hipblasNrm2StridedBatchedEx_v2
+
+#define hipblasRotEx hipblasRotEx_v2
+#define hipblasRotBatchedEx hipblasRotBatchedEx_v2
+#define hipblasRotStridedBatchedEx hipblasRotStridedBatchedEx_v2
+
+#define hipblasScalEx hipblasScalEx_v2
+#define hipblasScalBatchedEx hipblasScalBatchedEx_v2
+#define hipblasScalStridedBatchedEx hipblasScalStridedBatchedEx_v2
+#endif
 
 /*! HIPBLAS Auxiliary API
 

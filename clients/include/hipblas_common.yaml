@@ -21,6 +21,36 @@ Datatypes:
         u32_c: 167
         bf16_r: 168
         bf16_c: 169
+      attr_v2:
+        # temporary workaround for using HIPBLAS_V2 define. Parsed in hipblas_gentest.py
+        f32_r:   0
+        f64_r:   1
+        f16_r:   2
+        i8_r:    3
+        f32_c:   4
+        f64_c:   5
+        f16_c:   6
+        i8_c:    7
+        u8_r:    8
+        u8_c:    9
+        i32_r:  10
+        i32_c:  11
+        u32_r:  12
+        u32_c:  13
+        bf16_r: 14
+        bf16_c: 15
+        i4_r:   16
+        i4_c:   17
+        u4_r:   18
+        u4_c:   19
+        i16_r:  20
+        i16_c:  21
+        u16_r:  22
+        u16_c:  23
+        i64_r:  24
+        i64_c:  25
+        u64_r:  26
+        u64_c:  27
   - { half: f16_r, single: f32_r, double: f64_r }
   - { half complex: f16_c, single complex: f32_c, double complex: f64_c }
   - hipblas_initialization:
@@ -29,11 +59,44 @@ Datatypes:
         rand_int: 111
         trig_float: 222
         hpl: 333
+      attr_v2:
+        rand_int: 111
+        trig_float: 222
+        hpl: 333
   - hipblas_atomics_mode:
       bases: [ c_int ]
       attr:
         atomics_not_allowed: 0
         atomics_allowed: 1
+      attr_v2:
+        atomics_not_allowed: 0
+        atomics_allowed: 1
+  - hipblasComputeType_t:
+      bases: [ c_int ]
+      attr:
+        16f: 0
+        16f_pedantic: 1
+        32f: 2
+        32f_pedantic: 3
+        32f_fast_16f: 4
+        32f_fast_16bf: 5
+        32f_fast_tf32: 6
+        64f: 7
+        64f_pedantic: 8
+        32i: 9
+        32i_pedantic: 10
+      attr_v2:
+        16f: 0
+        16f_pedantic: 1
+        32f: 2
+        32f_pedantic: 3
+        32f_fast_16f: 4
+        32f_fast_16bf: 5
+        32f_fast_tf32: 6
+        64f: 7
+        64f_pedantic: 8
+        32i: 9
+        32i_pedantic: 10
 
 Real precisions: &real_precisions
   - &half_precision
@@ -286,6 +349,7 @@ Arguments:
   - c_type: hipblasDatatype_t
   - d_type: hipblasDatatype_t
   - compute_type: hipblasDatatype_t
+  - compute_type_gemm: hipblasComputeType_t
   - incx: int
   - incy: int
   - incd: int
@@ -312,6 +376,7 @@ Arguments:
   - call_count: int
   - batch_count: int
   - fortran: c_bool
+  - inplace: c_bool
   - norm_check: int
   - unit_check: int
   - timing: int
@@ -392,6 +457,7 @@ Defaults:
   call_count: 1
   batch_count: -1
   fortran: false
+  inplace: false
   norm_check: 0
   unit_check: 1
   timing: 0
@@ -405,6 +471,7 @@ Defaults:
   # default benchmarking to faster atomics_allowed (test is default not allowed)
   atomics_mode: atomics_allowed
   initialization: rand_int
+  compute_type_gemm: 2
 #workspace_size: 0
 #  known_bug_platforms: ''
 #c_noalias_d: false

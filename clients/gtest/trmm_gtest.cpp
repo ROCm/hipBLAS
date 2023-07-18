@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,8 @@ using ::testing::ValuesIn;
 
 // only GCC/VS 2010 comes with std::tr1::tuple, but it is unnecessary,  std::tuple is good enough;
 
-typedef std::tuple<vector<int>, double, vector<char>, double, int, bool> trmm_tuple;
+typedef std::tuple<vector<int>, double, vector<char>, double, int, bool, bool> trmm_tuple;
+typedef std::tuple<bool, bool>                                                 trmm_bad_arg_tuple;
 
 /* =====================================================================
 README: This file contains testers to verify the correctness of
@@ -57,16 +58,16 @@ Yet, the goal of this file is to verify result correctness not argument-checkers
 Representative sampling is sufficient, endless brute-force sampling is not necessary
 =================================================================== */
 
-// vector of vector, each vector is a {M, N, lda, ldb};
+// vector of vector, each vector is a {M, N, lda, ldb, ldc};
 // add/delete as a group
 const vector<vector<int>> matrix_size_range = {
-    {-1, -1, 1, 1}, {10, 10, 20, 100},
+    {-1, -1, 1, 1, 1}, {10, 10, 20, 100, 150},
     //                {600, 500, 600, 600} ,
     //                {1024, 1024, 1024, 1024}
 };
 
 const vector<vector<int>> full_matrix_size_range = {
-    {192, 192, 192, 192},
+    {192, 192, 192, 192, 192},
     //                                      {640, 640, 960, 960},
     //                                      {1000, 1000, 1000, 1000},
     //                                      {2000, 2000, 2000, 2000},
@@ -118,6 +119,8 @@ const vector<int> batch_count_range = {1, 3};
 const bool is_fortran[]       = {false, true};
 const bool is_fortran_false[] = {false};
 
+const bool is_inplace[] = {false, true};
+
 /* ===============Google Unit Test==================================================== */
 
 /* =====================================================================
@@ -143,6 +146,7 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     double       stride_scale          = std::get<3>(tup);
     int          batch_count           = std::get<4>(tup);
     bool         fortran               = std::get<5>(tup);
+    bool         inplace               = std::get<6>(tup);
 
     Arguments arg;
 
@@ -151,6 +155,7 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     arg.N   = matrix_size[1];
     arg.lda = matrix_size[2];
     arg.ldb = matrix_size[3];
+    arg.ldc = matrix_size[4];
 
     arg.alpha = alpha;
 
@@ -165,9 +170,19 @@ Arguments setup_trmm_arguments(trmm_tuple tup)
     arg.batch_count  = batch_count;
 
     arg.fortran = fortran;
+    arg.inplace = inplace;
 
     return arg;
 }
+
+class trmm_bad_arg_gtest : public ::TestWithParam<trmm_bad_arg_tuple>
+{
+protected:
+    trmm_bad_arg_gtest() {}
+    virtual ~trmm_bad_arg_gtest() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
 
 class trmm_gtest : public ::TestWithParam<trmm_tuple>
 {
@@ -177,6 +192,16 @@ protected:
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
+
+TEST_P(trmm_bad_arg_gtest, trmm_bad_arg_gtest_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_trmm_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+}
 
 TEST_P(trmm_gtest, trmm_gtest_float)
 {
@@ -233,6 +258,27 @@ TEST_P(trmm_gtest, trmm_gtest_double_complex)
 }
 
 #ifndef __HIP_PLATFORM_NVCC__
+
+TEST_P(trmm_bad_arg_gtest, trmm_batched_bad_arg_gtest_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_trmm_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_batched_bad_arg<hipblasDoubleComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+}
+
+TEST_P(trmm_bad_arg_gtest, trmm_strided_batched_bad_arg_gtest_test)
+{
+    Arguments arg;
+
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<float>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<double>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<hipblasComplex>(arg), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_EQ(testing_trmm_strided_batched_bad_arg<hipblasDoubleComplex>(arg),
+              HIPBLAS_STATUS_SUCCESS);
+}
 
 TEST_P(trmm_gtest, trmm_batched_gtest_float)
 {
@@ -360,7 +406,8 @@ INSTANTIATE_TEST_SUITE_P(hipblastrmm_matrix_size,
                                  ValuesIn(side_uplo_transA_diag_range),
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(is_inplace)));
 
 // THis function mainly test the scope of  full_side_uplo_transA_diag_range,.the scope of
 // matrix_size_range is small
@@ -371,4 +418,9 @@ INSTANTIATE_TEST_SUITE_P(hipblastrmm_scalar_transpose,
                                  ValuesIn(full_side_uplo_transA_diag_range),
                                  ValuesIn(stride_scale_range),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran_false)));
+                                 ValuesIn(is_fortran_false),
+                                 ValuesIn(is_inplace)));
+
+INSTANTIATE_TEST_SUITE_P(hipblasTrmmBadArg,
+                         trmm_bad_arg_gtest,
+                         Combine(ValuesIn(is_fortran), ValuesIn(is_inplace)));
