@@ -119,10 +119,15 @@ typedef int64_t hipblasStride;
 
 /*! \brief  Struct to represent a 16 bit Brain floating-point number.*/
 
+// Keep previous behaviour for non-HIPBLAS_V2
+#ifndef HIPBLAS_V2
+
 #if __cplusplus < 201103L || !defined(HIPBLAS_BFLOAT16_CLASS)
 
 // If this is a C or C++ compiler below C++11, or not requesting HIPBLAS_BFLOAT16_CLASS,
 // we only include a minimal definition of hipblasBfloat16
+HIPBLAS_DEPRECATED_MSG("hipblasBfloat16 is deprecated and will be replaced by hip_bfloat16 in the "
+                       "future. Compile with -DHIPBLAS_V2 to get new API with hip_bfloat16 now.")
 typedef struct hipblasBfloat16
 {
     uint16_t data;
@@ -207,6 +212,14 @@ static_assert(std::is_trivial<hipblasBfloat16>{},
 static_assert(sizeof(hipblasBfloat16) == sizeof(hipblasBfloat16_public)
                   && offsetof(hipblasBfloat16, data) == offsetof(hipblasBfloat16_public, data),
               "internal hipblasBfloat16 does not match public hipblasBfloat16_public");
+
+#endif
+
+#else
+
+// if HIPBLAS_V2 is defined, use hip_bfloat16 type
+#include <hip/hip_bfloat16.h>
+typedef hip_bfloat16 hipblasBfloat16;
 
 #endif
 
