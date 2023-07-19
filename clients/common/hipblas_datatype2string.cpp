@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -185,5 +185,21 @@ hipblasDatatype_t string2hipblas_datatype(const std::string& value)
         value == "u8_c"                  ? HIPBLAS_C_8U   :
         value == "u32_c"                 ? HIPBLAS_C_32U  :
         HIPBLAS_DATATYPE_INVALID;
+}
+
+hipblasComputeType_t string2hipblas_computetype(const std::string& value)
+{
+    return value == "16f"           ? HIPBLAS_COMPUTE_16F :
+           value == "16f_pedantic"  ? HIPBLAS_COMPUTE_16F_PEDANTIC :
+           value == "32f"           ? HIPBLAS_COMPUTE_32F :
+           value == "32f_pedantic"  ? HIPBLAS_COMPUTE_32F_PEDANTIC :
+           value == "32f_fast_16f"  ? HIPBLAS_COMPUTE_32F_FAST_16F :
+           value == "32f_fast_16Bf" ? HIPBLAS_COMPUTE_32F_FAST_16BF :
+           value == "32f_fast_tf32" ? HIPBLAS_COMPUTE_32F_FAST_TF32 :
+           value == "64f"           ? HIPBLAS_COMPUTE_64F :
+           value == "64f_pedantic"  ? HIPBLAS_COMPUTE_64F_PEDANTIC :
+           value == "32i"           ? HIPBLAS_COMPUTE_32I :
+           value == "32i_pedantic"  ? HIPBLAS_COMPUTE_32I_PEDANTIC :
+           HIPBLAS_COMPUTE_32F; // Default
 }
 // clang-format on
