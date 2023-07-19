@@ -175,11 +175,6 @@ inline hipblasBfloat16 float_to_bfloat16(float f)
     return rv;
 }
 
-inline hipblasHalf float_to_half(hipblasBfloat16 val)
-{
-    return float_to_half(bfloat16_to_float(val));
-}
-
 inline float half_to_float(hipblasHalf val)
 {
 #ifdef HIPBLAS_USE_HIP_HALF
@@ -981,10 +976,10 @@ public:
 
     ~hipblasLocalHandle();
 
-    hipblasLocalHandle(const hipblasLocalHandle&)            = delete;
-    hipblasLocalHandle(hipblasLocalHandle&&)                 = delete;
+    hipblasLocalHandle(const hipblasLocalHandle&) = delete;
+    hipblasLocalHandle(hipblasLocalHandle&&)      = delete;
     hipblasLocalHandle& operator=(const hipblasLocalHandle&) = delete;
-    hipblasLocalHandle& operator=(hipblasLocalHandle&&)      = delete;
+    hipblasLocalHandle& operator=(hipblasLocalHandle&&) = delete;
 
     // Allow hipblasLocalHandle to be used anywhere hipblas_handle is expected
     operator hipblasHandle_t&()
