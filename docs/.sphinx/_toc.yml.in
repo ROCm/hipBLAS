@@ -4,10 +4,9 @@ root: index
 subtrees:
   - numbered: False
     entries:
-    - file: designdoc
     - file: install
     - file: orga
-    - file: api
     - file: functions
+    - file: clients
     - file: deprecation
     - file: contributing

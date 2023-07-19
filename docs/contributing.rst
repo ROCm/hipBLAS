@@ -20,7 +20,7 @@ The hipBLAS repository follows a workflow which dictates a /master branch where 
    the compute bound limit or memory bound limit.
 
 Coding Guidelines:
-=================
+==================
 -  Do not use unnamed namespaces inside of header files.
 
 -  Use either ``template`` or ``inline`` (or both) for functions defined outside of classes in header files.

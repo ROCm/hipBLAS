@@ -17201,7 +17201,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSgelsStridedBatched(hipblasHandle_t     ha
                                                           const hipblasStride strideB,
                                                           int*                info,
                                                           int*                deviceInfo,
-                                                          const int           batch_count);
+                                                          const int           batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDgelsStridedBatched(hipblasHandle_t     handle,
                                                           hipblasOperation_t  trans,
@@ -17216,7 +17216,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDgelsStridedBatched(hipblasHandle_t     ha
                                                           const hipblasStride strideB,
                                                           int*                info,
                                                           int*                deviceInfo,
-                                                          const int           batch_count);
+                                                          const int           batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCgelsStridedBatched(hipblasHandle_t     handle,
                                                           hipblasOperation_t  trans,
@@ -17231,7 +17231,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCgelsStridedBatched(hipblasHandle_t     ha
                                                           const hipblasStride strideB,
                                                           int*                info,
                                                           int*                deviceInfo,
-                                                          const int           batch_count);
+                                                          const int           batchCount);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZgelsStridedBatched(hipblasHandle_t       handle,
                                                           hipblasOperation_t    trans,
@@ -17246,7 +17246,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgelsStridedBatched(hipblasHandle_t       
                                                           const hipblasStride   strideB,
                                                           int*                  info,
                                                           int*                  deviceInfo,
-                                                          const int             batch_count);
+                                                          const int             batchCount);
 ///@}
 
 /*! @{
@@ -20432,33 +20432,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
     With HIPBLAS_V2 define, hipblasScalBatchedEx accepts hipDataType for alphaType,
     xType, and executionType rather than hipblasDatatype_t. hipblasScalBatchedEx will only
     accept hipDataType in a future release.
+    \code{.cpp}
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
 
-    #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+                hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t handle,
+                                                    int             n,
+                                                    const void*     alpha,
+                                                    hipDataType     alphaType,
+                                                    void*           x,
+                                                    hipDataType     xType,
+                                                    int             incx,
+                                                    int             batchCount,
+                                                    hipDataType     executionType)
 
-            hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t handle,
-                                                 int             n,
-                                                 const void*     alpha,
-                                                 hipDataType     alphaType,
-                                                 void*           x,
-                                                 hipDataType     xType,
-                                                 int             incx,
-                                                 int             batchCount,
-                                                 hipDataType     executionType)
+            #else // [DEPRECATED]
 
-        #else // [DEPRECATED]
+                hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
+                                                    int               n,
+                                                    const void*       alpha,
+                                                    hipblasDatatype_t alphaType,
+                                                    void*             x,
+                                                    hipblasDatatype_t xType,
+                                                    int               incx,
+                                                    int               batchCount,
+                                                    hipblasDatatype_t executionType)
 
-            hipblasStatus_t hipblasScalBatchedEx(hipblasHandle_t   handle,
-                                                 int               n,
-                                                 const void*       alpha,
-                                                 hipblasDatatype_t alphaType,
-                                                 void*             x,
-                                                 hipblasDatatype_t xType,
-                                                 int               incx,
-                                                 int               batchCount,
-                                                 hipblasDatatype_t executionType)
-
-        #endif
-
+            #endif
+    \endcode
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -20528,35 +20528,35 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
     With HIPBLAS_V2 define, hipblasScalStridedBatchedEx accepts hipDataType for alphaType,
     xType, and executionType rather than hipblasDatatype_t. hipblasScalStridedBatchedEx will only
     accept hipDataType in a future release.
+    \code{.cpp}
+        #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
 
-    #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
+                hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t handle,
+                                                            int             n,
+                                                            const void*     alpha,
+                                                            hipDataType     alphaType,
+                                                            void*           x,
+                                                            hipDataType     xType,
+                                                            int             incx,
+                                                            hipblasStride   stridex,
+                                                            int             batchCount,
+                                                            hipDataType     executionType)
 
-            hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t handle,
-                                                        int             n,
-                                                        const void*     alpha,
-                                                        hipDataType     alphaType,
-                                                        void*           x,
-                                                        hipDataType     xType,
-                                                        int             incx,
-                                                        hipblasStride   stridex,
-                                                        int             batchCount,
-                                                        hipDataType     executionType)
+            #else // [DEPRECATED]
 
-        #else // [DEPRECATED]
+                hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
+                                                            int               n,
+                                                            const void*       alpha,
+                                                            hipblasDatatype_t alphaType,
+                                                            void*             x,
+                                                            hipblasDatatype_t xType,
+                                                            int               incx,
+                                                            hipblasStride     stridex,
+                                                            int               batchCount,
+                                                            hipblasDatatype_t executionType)
 
-            hipblasStatus_t hipblasScalStridedBatchedEx(hipblasHandle_t   handle,
-                                                        int               n,
-                                                        const void*       alpha,
-                                                        hipblasDatatype_t alphaType,
-                                                        void*             x,
-                                                        hipblasDatatype_t xType,
-                                                        int               incx,
-                                                        hipblasStride     stridex,
-                                                        int               batchCount,
-                                                        hipblasDatatype_t executionType)
-
-        #endif
-
+            #endif
+    \endcode
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.

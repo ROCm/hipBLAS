@@ -49,7 +49,7 @@ Atomic Operations
 
 Some functions in hipBLAS may use atomic operations to increase performance which may cause functions to not give bit-wise reproducible results.
 By default, the rocBLAS backend allows the use of atomics while the cuBLAS backend disallows the use of atomics. To set the desired behavior, users should call
-:ref:`hipblasSetAtomicsMode`. Please see the rocBLAS or cuBLAS documentation for more information regarding specifics of atomic operations in the backend library.
+:any:`hipblasSetAtomicsMode`. Please see the rocBLAS or cuBLAS documentation for more information regarding specifics of atomic operations in the backend library.
 
 *************
 hipBLAS Types
