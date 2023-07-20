@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Copyright (C) 2020-2022 Advanced Micro Devices, Inc. All rights reserved.
+"""Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -87,6 +87,12 @@ def parse_args():
 
     parser.add_argument(      '--static', required=False, default = False, dest='static_lib', action='store_true',
                         help='Build hipblas as a static library.(optional, default: False). hipblas must be built statically when the used companion rocblas is also static')
+
+    parser.add_argument('--hip-clang', dest='use_hipcc_compiler', required=False, default=True, action='store_true',
+                        help='Build hipBLAS using hipcc compiler')
+
+    parser.add_argument('--no-hip-clang', dest='use_hipcc_compiler', required=False, default=True, action='store_false',
+                        help='Build hipBLAS with g++ compiler instead of hipcc compiler')
 
     parser.add_argument('-v', '--verbose', required=False, default = False, action='store_true',
                         help='Verbose build (optional, default: False)')
@@ -210,8 +216,20 @@ def config_cmd():
     create_dir( os.path.join(build_path, "clients") )
     os.chdir( build_path )
 
+    # compiler
+    if args.use_hipcc_compiler:
+        cmake_options.append(f"-DCMAKE_C_COMPILER={rocm_path}/bin/hipcc")
+        cmake_options.append(f"-DCMAKE_CXX_COMPILER={rocm_path}/bin/hipcc")
+    else:
+        cmake_options.append(f"-DCMAKE_C_COMPILER=gcc")
+        cmake_options.append(f"-DCMAKE_CXX_COMPILER=g++")
+
     if args.static_lib:
         cmake_options.append( f"-DBUILD_SHARED_LIBS=OFF" )
+        # force hipcc for static libs
+        cmake_options.append(f"-DCMAKE_C_COMPILER={rocm_path}/bin/hipcc")
+        cmake_options.append(f"-DCMAKE_CXX_COMPILER={rocm_path}/bin/hipcc")
+        print("Forcing compiler to hipcc for static library.")
 
     if args.relocatable:
         rocm_rpath = os.getenv( 'ROCM_RPATH', "/opt/rocm/lib:/opt/rocm/lib64")

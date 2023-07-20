@@ -11,11 +11,11 @@ endif()
 
 # relying on env and path for backward compatibility with external recipes
 if (NOT DEFINED ENV{CXX} AND NOT CMAKE_CXX_COMPILER)
-  set(CMAKE_CXX_COMPILER "hipcc")
+  set(CMAKE_CXX_COMPILER "${rocm_bin}/hipcc")
 endif()
 
 if (NOT DEFINED ENV{CC} AND NOT CMAKE_C_COMPILER)
-  set(CMAKE_C_COMPILER "hipcc")
+  set(CMAKE_C_COMPILER "${rocm_bin}/hipcc")
 endif()
 
 if (NOT DEFINED ENV{FC} AND NOT CMAKE_Fortran_COMPILER)

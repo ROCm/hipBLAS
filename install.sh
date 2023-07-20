@@ -52,7 +52,7 @@ cat <<EOF
 
     --cmake-arg                   Forward the given argument to CMake when configuring the build.
 
-    --compiler </compier/path>    Specify path to host compiler. (e.g. /opt/bin/hipcc)
+    --compiler </compier/path>    Specify path to host compiler. (e.g. /opt/rocm/bin/hipcc)
 
     --custom-target <target>      Specify custom target to link the library against (eg. host, device).
 
@@ -236,7 +236,7 @@ install_packages( )
   if [[ "${build_cuda}" == true ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
     library_dependencies_ubuntu+=( "" ) # removed, use --installcuda option to install cuda
-  elif [[ "${build_hip_clang}" == false ]]; then
+  else
     # Custom rocm-dev installation
     if [[ -z ${custom_rocm_dev+foo} ]]; then
       # Install base rocm-dev package unless -v/--rocm-dev flag is passed
@@ -427,7 +427,6 @@ install_prefix=hipblas-install
 build_clients=false
 build_solver=true
 build_cuda=false
-build_hip_clang=true
 build_release=true
 build_relocatable=false
 build_address_sanitizer=false
@@ -497,10 +496,10 @@ while true; do
         build_codecoverage=true
         shift ;;
     --hip-clang)
-        build_hip_clang=true
+        compiler=hipcc
         shift ;;
     --no-hip-clang)
-        build_hip_clang=false
+        compiler=g++
         shift ;;
     --compiler)
         compiler=${2}
