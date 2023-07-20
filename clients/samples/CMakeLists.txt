@@ -39,6 +39,10 @@ if(NOT WIN32)
     #add_executable( hipblas-example-sscal-fortran example_sscal_fortran.f90 )
 endif()
 
+if( NOT USE_CUDA )
+  add_executable(hipblas-example-bfdot-hip-bfloat16 example_bfdot_hip_bfloat16.cpp ${hipblas_samples_common})
+endif()
+
 # We test for C99 compatibility in the example_c.c test
 set_source_files_properties(example_c.c PROPERTIES LANGUAGE CXX)
 set_source_files_properties(example_c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
@@ -57,6 +61,10 @@ list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-s
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
+if( NOT USE_CUDA )
+  list (APPEND hipblas-example-executables hipblas-example-bfdot-hip-bfloat16)
+  target_compile_options(hipblas-example-bfdot-hip-bfloat16 PRIVATE -DHIPBLAS_USE_HIP_BFLOAT16)
+endif()
 
 target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
 target_compile_options( hipblas-example-gemmEx_v2 PRIVATE -DHIPBLAS_USE_HIP_HALF -DHIPBLAS_V2 )

@@ -184,11 +184,6 @@ inline float half_to_float(hipblasHalf val)
 #endif
 }
 
-inline std::ostream& operator<<(std::ostream& os, const hipblasBfloat16& bf)
-{
-    return os << bfloat16_to_float(bf);
-}
-
 /* =============================================================================================== */
 /* Complex / real helpers.                                                                         */
 template <typename T>
