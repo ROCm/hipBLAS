@@ -89,6 +89,14 @@ int main()
     =================================================================== */
 
     status = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST);
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        CHECK_HIP_ERROR(hipFree(dx));
+        CHECK_HIP_ERROR(hipFree(dy));
+        hipblasDestroy(handle);
+        return status;
+    }
+
     status = hipblasBfdot(handle, N, dx, incx, dy, incy, &hipblas_result);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

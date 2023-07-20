@@ -120,7 +120,6 @@ typedef int64_t hipblasStride;
 /*! \brief  Struct to represent a 16 bit Brain floating-point number.*/
 #if defined(HIPBLAS_USE_HIP_BFLOAT16)
 
-// if HIPBLAS_V2 is defined, use hip_bfloat16 type
 // note that hip_bfloat16 isn't currently supported with cuda backend
 #include <hip/hip_bfloat16.h>
 typedef hip_bfloat16 hipblasBfloat16;
@@ -129,8 +128,6 @@ typedef hip_bfloat16 hipblasBfloat16;
 
 // If this is a C or C++ compiler below C++11, or not requesting HIPBLAS_BFLOAT16_CLASS,
 // we only include a minimal definition of hipblasBfloat16
-HIPBLAS_DEPRECATED_MSG("hipblasBfloat16 is deprecated and will be replaced by hip_bfloat16 in the "
-                       "future. Compile with -DHIPBLAS_V2 to get new API with hip_bfloat16 now.")
 typedef struct hipblasBfloat16
 {
     uint16_t data;
