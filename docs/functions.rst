@@ -47,8 +47,8 @@ hipBLAS function uses the following notations to denote precisions:
 bfloat 16 Datatype
 ==================
 hipBLAS defines a hipblasBfloat16 datatype. This type is exposed as a struct simply containing 16 bits of data. There is also a C++ hipblasBfloat16 class defined
-which gives slightly more functionality, including conversion to and from a 32-bit float datatype. This class can be used by defining HIPBLAS_BFLOAT16_CLASS before including
-the header file hipblas.h.
+which gives slightly more functionality, including conversion to and from a 32-bit float datatype. This class can be used in C++11 or greater by defining
+HIPBLAS_BFLOAT16_CLASS before including the header file hipblas.h.
 
 Furthermore, there is also an option to interpret the API as using the hip_bfloat16 datatype. This is provided to avoid casting when using the hip_bfloat16 datatype. To expose the API
 using hip_bfloat16, HIPBLAS_USE_HIP_BFLOAT16 can be defined before including the header file hipblas.h. Note that the hip_bfloat16 datatype is only supported on AMD platforms.

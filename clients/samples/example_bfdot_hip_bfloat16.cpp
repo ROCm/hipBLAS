@@ -119,11 +119,11 @@ int main()
     if(diff)
     {
         printf("CPU RESULT: %f, GPU_RESULT: %f\n", gold_resf, hip_resf);
-        printf("SSCAL TEST FAILS\n");
+        printf("BFDOT TEST FAILS\n");
     }
     else
     {
-        printf("SSCAL TEST PASSES\n");
+        printf("BFDOT TEST PASSES\n");
     }
 
     CHECK_HIP_ERROR(hipFree(dx));
