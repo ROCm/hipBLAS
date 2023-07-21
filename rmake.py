@@ -217,7 +217,7 @@ def config_cmd():
     os.chdir( build_path )
 
     # compiler
-    if os.name == "nt":
+    if os.name != "nt":
         if args.use_hipcc_compiler:
             cmake_options.append(f"-DCMAKE_C_COMPILER={rocm_path}/bin/hipcc")
             cmake_options.append(f"-DCMAKE_CXX_COMPILER={rocm_path}/bin/hipcc")
