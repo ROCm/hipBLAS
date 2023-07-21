@@ -26,18 +26,26 @@
 #include <vector>
 
 #include "utility.h"
+#include <hip/hip_bfloat16.h>
 #include <hipblas/hipblas.h>
 
 /* ============================================================================================ */
 
-// if just using host compiler, hip gives minimum definition of bfloat16, so doing
+template <typename T>
+float bfloat16_to_float_helper(T bf)
+{
+    union
+    {
+        uint32_t int32;
+        float    fp32;
+    } u = {uint32_t(bf.data) << 16};
+    return u.fp32;
+}
+
+// if just using host compiler with hip_bfloat16, hip gives minimum definition of bfloat16, so doing
 // most of the work in fp32
-void reference_bfdot(int                             n,
-                     std::vector<hip_bfloat16>       hx,
-                     int                             incx,
-                     const std::vector<hip_bfloat16> hy,
-                     int                             incy,
-                     hip_bfloat16*                   res)
+void reference_bfdot(
+    int n, hipblasBfloat16* hx, int incx, hipblasBfloat16* hy, int incy, hipblasBfloat16* res)
 {
     float tmp = 0;
     for(int i = 0; i < n; i++)
@@ -71,9 +79,10 @@ int main()
 
     // Initial Data on CPU
     // Initializes in range of [1, 3]
+    // hipblasBfloat16 and hip_bfloat16 have same format, can be casted to use our helper functions
     srand(1);
-    hipblas_init<hip_bfloat16>(hx, 1, N, incx);
-    hipblas_init<hip_bfloat16>(hy, 1, N, incy);
+    hipblas_init<hipblasBfloat16>((hipblasBfloat16*)hx.data(), 1, N, incx);
+    hipblas_init<hipblasBfloat16>((hipblasBfloat16*)hy.data(), 1, N, incy);
 
     hip_bfloat16 hipblas_result, gold_result;
 
@@ -97,7 +106,19 @@ int main()
         return status;
     }
 
+#ifdef HIPBLAS_USE_HIP_BFLOAT16
     status = hipblasBfdot(handle, N, dx, incx, dy, incy, &hipblas_result);
+#else
+    // without exposing hip_bfloat16 interface, we can cast to hipblasBfloat16 pointers
+    status = hipblasBfdot(handle,
+                          N,
+                          (hipblasBfloat16*)dx,
+                          incx,
+                          (hipblasBfloat16*)dy,
+                          incy,
+                          (hipblasBfloat16*)(&hipblas_result));
+#endif
+
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
         CHECK_HIP_ERROR(hipFree(dx));
@@ -109,9 +130,14 @@ int main()
     gpu_time_used = get_time_us() - gpu_time_used;
 
     // verify hipblas_bfdot result
-    reference_bfdot(N, hx, incx, hy, incy, &gold_result);
-    float gold_resf = bfloat16_to_float(gold_result);
-    float hip_resf  = bfloat16_to_float(hipblas_result);
+    reference_bfdot(N,
+                    (hipblasBfloat16*)hx.data(),
+                    incx,
+                    (hipblasBfloat16*)hy.data(),
+                    incy,
+                    (hipblasBfloat16*)(&gold_result));
+    float gold_resf = bfloat16_to_float_helper((gold_result));
+    float hip_resf  = bfloat16_to_float_helper((hipblas_result));
     float diff      = std::abs(gold_resf - hip_resf);
 
     printf("%d    %8.2f        \n", (int)N, gpu_time_used);
