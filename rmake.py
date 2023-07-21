@@ -92,7 +92,7 @@ def parse_args():
                         help='Build hipBLAS using hipcc compiler')
 
     parser.add_argument('--no-hip-clang', dest='use_hipcc_compiler', required=False, default=True, action='store_false',
-                        help='Build hipBLAS with g++ compiler instead of hipcc compiler')
+                        help='Build hipBLAS with g++ compiler instead of hipcc compiler, not currently supported on Windows')
 
     parser.add_argument('-v', '--verbose', required=False, default = False, action='store_true',
                         help='Verbose build (optional, default: False)')
@@ -221,15 +221,14 @@ def config_cmd():
         cmake_options.append(f"-DCMAKE_C_COMPILER={rocm_path}/bin/hipcc")
         cmake_options.append(f"-DCMAKE_CXX_COMPILER={rocm_path}/bin/hipcc")
     else:
-        cmake_options.append(f"-DCMAKE_C_COMPILER=gcc")
-        cmake_options.append(f"-DCMAKE_CXX_COMPILER=g++")
+        if os.name == "nt":
+            print("Currently forcing hip-clang compiler on Windows.")
+        else:
+            cmake_options.append(f"-DCMAKE_C_COMPILER=gcc")
+            cmake_options.append(f"-DCMAKE_CXX_COMPILER=g++")
 
     if args.static_lib:
         cmake_options.append( f"-DBUILD_SHARED_LIBS=OFF" )
-        # force hipcc for static libs
-        cmake_options.append(f"-DCMAKE_C_COMPILER={rocm_path}/bin/hipcc")
-        cmake_options.append(f"-DCMAKE_CXX_COMPILER={rocm_path}/bin/hipcc")
-        print("Forcing compiler to hipcc for static library.")
 
     if args.relocatable:
         rocm_rpath = os.getenv( 'ROCM_RPATH', "/opt/rocm/lib:/opt/rocm/lib64")
