@@ -406,9 +406,9 @@ typedef enum
 } hipblasPointerMode_t;
 
 // set the values of enum constants to be the same as those used in cblas
-#ifndef HIPBLAS_SHARED_ENUMS
-#define HIPBLAS_SHARED_ENUMS
 
+#ifndef HIPBLAS_OPERATION_DECLARED
+#define HIPBLAS_OPERATION_DECLARED
 /*! \brief Used to specify whether the matrix is to be transposed or not. */
 typedef enum
 {
@@ -417,6 +417,14 @@ typedef enum
     HIPBLAS_OP_C = 113 /**< Operate with the conjugate transpose of the matrix. */
 } hipblasOperation_t;
 
+#elif __cplusplus >= 201103L
+static_assert(HIPBLAS_OP_N == 111, "Inconsistent declaration of HIPBLAS_OP_N");
+static_assert(HIPBLAS_OP_T == 112, "Inconsistent declaration of HIPBLAS_OP_T");
+static_assert(HIPBLAS_OP_C == 113, "Inconsistent declaration of HIPBLAS_OP_C");
+#endif // HIPBLAS_OPERATION_DECLARED
+
+#ifndef HIPBLAS_FILL_MODE_DECLARED
+#define HIPBLAS_FILL_MODE_DECLARED
 /*! \brief Used by the Hermitian, symmetric and triangular matrix routines to specify whether the upper or lower triangle is being referenced. */
 typedef enum
 {
@@ -425,6 +433,16 @@ typedef enum
     HIPBLAS_FILL_MODE_FULL  = 123
 } hipblasFillMode_t;
 
+#elif __cplusplus >= 201103L
+static_assert(HIPBLAS_FILL_MODE_UPPER == 121,
+              "Inconsistent declaration of HIPBLAS_FILL_MODE_UPPER");
+static_assert(HIPBLAS_FILL_MODE_LOWER == 122,
+              "Inconsistent declaration of HIPBLAS_FILL_MODE_LOWER");
+static_assert(HIPBLAS_FILL_MODE_FULL == 123, "Inconsistent declaration of HIPBLAS_FILL_MODE_FULL");
+#endif // HIPBLAS_FILL_MODE_DECLARED
+
+#ifndef HIPBLAS_DIAG_TYPE_DECLARED
+#define HIPBLAS_DIAG_TYPE_DECLARED
 /*! \brief It is used by the triangular matrix routines to specify whether the matrix is unit triangular.*/
 typedef enum
 {
@@ -432,6 +450,13 @@ typedef enum
     HIPBLAS_DIAG_UNIT     = 132 /**<  Unit triangular. */
 } hipblasDiagType_t;
 
+#elif __cplusplus >= 201103L
+static_assert(HIPBLAS_DIAG_NON_UNIT == 131, "Inconsistent declaration of HIPBLAS_DIAG_NON_UNIT");
+static_assert(HIPBLAS_DIAG_UNIT == 132, "Inconsistent declaration of HIPBLAS_DIAG_UNIT");
+#endif // HIPBLAS_DIAG_TYPE_DECLARED
+
+#ifndef HIPBLAS_SIDE_MODE_DECLARED
+#define HIPBLAS_SIDE_MODE_DECLARED
 /*! \brief Indicates the side matrix A is located relative to matrix B during multiplication. */
 typedef enum
 {
@@ -442,27 +467,11 @@ typedef enum
     HIPBLAS_SIDE_BOTH = 143
 } hipblasSideMode_t;
 
-#endif // HIPBLAS_SHARED_ENUMS
-
-// Ensure hipBLAS enums have expected values
-#if __cplusplus >= 201103L
-
-static_assert(HIPBLAS_OP_N == 111);
-static_assert(HIPBLAS_OP_T == 112);
-static_assert(HIPBLAS_OP_C == 113);
-
-static_assert(HIPBLAS_FILL_MODE_UPPER == 121);
-static_assert(HIPBLAS_FILL_MODE_LOWER == 122);
-static_assert(HIPBLAS_FILL_MODE_FULL == 123);
-
-static_assert(HIPBLAS_DIAG_NON_UNIT == 131);
-static_assert(HIPBLAS_DIAG_UNIT == 132);
-
-static_assert(HIPBLAS_SIDE_LEFT == 141);
-static_assert(HIPBLAS_SIDE_RIGHT == 142);
-static_assert(HIPBLAS_SIDE_BOTH == 143);
-
-#endif // __cplusplus
+#elif __cplusplus >= 201103L
+static_assert(HIPBLAS_SIDE_LEFT == 141, "Inconsistent declaration of HIPBLAS_SIDE_LEFT");
+static_assert(HIPBLAS_SIDE_RIGHT == 142, "Inconsistent declaration of HIPBLAS_SIDE_RIGHT");
+static_assert(HIPBLAS_SIDE_BOTH == 143, "Inconsistent declaration of HIPBLAS_SIDE_BOTH");
+#endif // HIPBLAS_SIDE_MODE_DECLARED
 
 #ifdef HIPBLAS_V2
 
