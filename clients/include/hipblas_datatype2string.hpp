@@ -136,6 +136,9 @@ inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
     case HIPBLAS_DATATYPE_INVALID:
         return "invalid";
     default:
+        // Missing some datatypes for hipDataType with HIPBLAS_V2. Types included
+        // here are thorough for our use cases for now, can be expanded on once hipDataType
+        // is used more regularly and is stable.
         return "invalid";
     }
     return "invalid";
