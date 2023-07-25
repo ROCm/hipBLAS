@@ -135,6 +135,11 @@ inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
         return "bf16_c";
     case HIPBLAS_DATATYPE_INVALID:
         return "invalid";
+    default:
+        // Missing some datatypes for hipDataType with HIPBLAS_V2. Types included
+        // here are thorough for our use cases for now, can be expanded on once hipDataType
+        // is used more regularly and is stable.
+        return "invalid";
     }
     return "invalid";
 }
@@ -166,6 +171,8 @@ inline constexpr auto hipblas_computetype2string(hipblasComputeType_t type)
         return "32i";
     case HIPBLAS_COMPUTE_32I_PEDANTIC:
         return "32i_pedantic";
+    default:
+        return "invalid";
     }
 
     return "invalid";
