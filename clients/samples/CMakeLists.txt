@@ -36,7 +36,10 @@ if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
 endif( )
 
 if(NOT WIN32)
-    #add_executable( hipblas-example-sscal-fortran example_sscal_fortran.f90 )
+    add_executable( hipblas-example-sscal-fortran example_sscal_fortran.f90 $<TARGET_OBJECTS:hipblas_fortran>)
+    add_executable( hipblas-example-gemmEx-fortran example_gemm_ex_fortran.f90 $<TARGET_OBJECTS:hipblas_fortran>)
+
+    set( sample_list_fortran hipblas-example-sscal-fortran hipblas-example-gemmEx-fortran )
 endif()
 
 # We test for C99 compatibility in the example_c.c test
@@ -53,7 +56,7 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-gemmEx_v2 hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
+list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-gemmEx_v2 hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half ${sample_list_fortran} )
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
@@ -67,6 +70,10 @@ if ( WIN32 )
 target_compile_options( hipblas-example-hgemm-half PRIVATE -xhip )
 target_compile_options( hipblas-example-gemmEx_v2 PRIVATE -xhip )
 endif()
+
+foreach( exe ${sample_list_fortran} )
+  target_link_libraries( ${exe} PRIVATE hipblas_fortran_client )
+endforeach( )
 
 foreach( exe IN LISTS hipblas-example-executables)
 
