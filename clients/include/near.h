@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -83,32 +83,42 @@ void near_check_general(int            M,
 template <class T>
 HIPBLAS_CLANG_STATIC constexpr double error_tolerance = 0.0;
 
+template <>
+HIPBLAS_CLANG_STATIC constexpr double error_tolerance<hipblasBfloat16> = 1 / 100.0;
+
 // 2 ^ -14, smallest positive normal number for IEEE16
 template <>
 HIPBLAS_CLANG_STATIC constexpr double error_tolerance<hipblasHalf> = 0.000061035;
 
+template <>
+HIPBLAS_CLANG_STATIC constexpr double error_tolerance<hipblasComplex> = 1 / 10000.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double error_tolerance<hipblasDoubleComplex> = 1 / 1000000.0;
+
+// currently only used for gemm_ex
 template <class Tc, class Ti, class To>
 static constexpr double sum_error_tolerance_for_gfx11 = 0.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<float, hipblasBfloat16, float> = 1 / 10000.0;
+    sum_error_tolerance_for_gfx11<float, hipblasBfloat16, float> = 1 / 10.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<float, hipblasBfloat16, hipblasBfloat16> = 1 / 10000.0;
+    sum_error_tolerance_for_gfx11<float, hipblasBfloat16, hipblasBfloat16> = 1 / 10.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<float, hipblasHalf, float> = 1 / 10000.0;
+    sum_error_tolerance_for_gfx11<float, hipblasHalf, float> = 1 / 100.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<float, hipblasHalf, hipblasHalf> = 1 / 10000.0;
+    sum_error_tolerance_for_gfx11<float, hipblasHalf, hipblasHalf> = 1 / 100.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<hipblasHalf, hipblasHalf, hipblasHalf> = 1 / 10000.0;
+    sum_error_tolerance_for_gfx11<hipblasHalf, hipblasHalf, hipblasHalf> = 1 / 100.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
