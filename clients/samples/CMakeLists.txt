@@ -71,10 +71,6 @@ target_compile_options( hipblas-example-hgemm-half PRIVATE -xhip )
 target_compile_options( hipblas-example-gemmEx_v2 PRIVATE -xhip )
 endif()
 
-foreach( exe ${sample_list_fortran} )
-  target_link_libraries( ${exe} PRIVATE hipblas_fortran_client )
-endforeach( )
-
 foreach( exe IN LISTS hipblas-example-executables)
 
   # External header includes included as SYSTEM files
