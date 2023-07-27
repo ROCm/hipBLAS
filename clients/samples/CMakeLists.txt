@@ -36,8 +36,8 @@ if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
 endif( )
 
 if(NOT WIN32)
-    add_executable( hipblas-example-sscal-fortran example_sscal_fortran.f90 $<TARGET_OBJECTS:hipblas_fortran>)
-    add_executable( hipblas-example-gemmEx-fortran example_gemm_ex_fortran.f90 $<TARGET_OBJECTS:hipblas_fortran>)
+    add_executable( hipblas-example-sscal-fortran example_sscal_fortran.F90 $<TARGET_OBJECTS:hipblas_fortran>)
+    add_executable( hipblas-example-gemmEx-fortran example_gemm_ex_fortran.F90 $<TARGET_OBJECTS:hipblas_fortran>)
 
     set( sample_list_fortran hipblas-example-sscal-fortran hipblas-example-gemmEx-fortran )
 endif()
@@ -70,10 +70,6 @@ if ( WIN32 )
 target_compile_options( hipblas-example-hgemm-half PRIVATE -xhip )
 target_compile_options( hipblas-example-gemmEx_v2 PRIVATE -xhip )
 endif()
-
-foreach( exe ${sample_list_fortran} )
-  target_link_libraries( ${exe} PRIVATE hipblas_fortran_client )
-endforeach( )
 
 foreach( exe IN LISTS hipblas-example-executables)
 
