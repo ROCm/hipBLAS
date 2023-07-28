@@ -46,6 +46,10 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
 {
     bool FORTRAN         = arg.fortran;
     auto hipblasGemmExFn = FORTRAN ? hipblasGemmExFortran : hipblasGemmEx;
+#ifdef HIPBLAS_V2
+    auto hipblasGemmExWithFlagsFn
+        = FORTRAN ? hipblasGemmExWithFlagsFortran : hipblasGemmExWithFlags;
+#endif
 
     hipblasGemmAlgo_t algo           = HIPBLAS_GEMM_DEFAULT;
     size_t*           workspace_size = 0;
@@ -65,6 +69,7 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
     hipblasDatatype_t    c_type            = arg.c_type;
     hipblasDatatype_t    compute_type      = arg.compute_type;
     hipblasComputeType_t compute_type_gemm = arg.compute_type_gemm;
+    hipblasGemmFlags_t   flags             = hipblasGemmFlags_t(arg.flags);
 
     Tex h_alpha_Tex = arg.get_alpha<Tex>();
     Tex h_beta_Tex  = arg.get_beta<Tex>();
@@ -125,29 +130,57 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
     {
         // hipBLAS
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
-                                            transA,
-                                            transB,
-                                            M,
-                                            N,
-                                            K,
-                                            &h_alpha_Tex,
-                                            dA,
-                                            a_type,
-                                            lda,
-                                            dB,
-                                            b_type,
-                                            ldb,
-                                            &h_beta_Tex,
-                                            dC,
-                                            c_type,
-                                            ldc,
+        if(!arg.with_flags)
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
+                                                transA,
+                                                transB,
+                                                M,
+                                                N,
+                                                K,
+                                                &h_alpha_Tex,
+                                                dA,
+                                                a_type,
+                                                lda,
+                                                dB,
+                                                b_type,
+                                                ldb,
+                                                &h_beta_Tex,
+                                                dC,
+                                                c_type,
+                                                ldc,
 #ifdef HIPBLAS_V2
-                                            compute_type_gemm,
+                                                compute_type_gemm,
 #else
-                                            compute_type,
+                                                compute_type,
 #endif
-                                            algo));
+                                                algo));
+        }
+#ifdef HIPBLAS_V2
+        else
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmExWithFlagsFn(handle,
+                                                         transA,
+                                                         transB,
+                                                         M,
+                                                         N,
+                                                         K,
+                                                         &h_alpha_Tex,
+                                                         dA,
+                                                         a_type,
+                                                         lda,
+                                                         dB,
+                                                         b_type,
+                                                         ldb,
+                                                         &h_beta_Tex,
+                                                         dC,
+                                                         c_type,
+                                                         ldc,
+                                                         compute_type_gemm,
+                                                         algo,
+                                                         flags));
+        }
+#endif
 
         CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(Tc) * size_C, hipMemcpyHostToDevice));

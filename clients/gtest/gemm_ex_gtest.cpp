@@ -51,7 +51,8 @@ typedef std::tuple<vector<int>,
                    vector<hipblasDatatype_t>,
                    hipblasComputeType_t,
                    int,
-                   bool>
+                   bool,
+                   int>
     gemm_ex_tuple;
 
 // clang-format off
@@ -266,6 +267,10 @@ const bool is_fortran[] = {false};
 const bool is_fortran[] = {false, true};
 #endif
 const bool is_fortran_false[] = {false};
+
+const int without_flags[] = { -1 };
+const int with_and_without_flags[] = { -1, HIPBLAS_GEMM_FLAGS_NONE, HIPBLAS_GEMM_FLAGS_FP16_ALT_IMPL };
+
 // clang-format on
 
 /* ===============Google Unit Test==================================================== */
@@ -292,6 +297,7 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
     hipblasComputeType_t      compute_type    = std::get<4>(tup);
     int                       batch_count     = std::get<5>(tup);
     bool                      fortran         = std::get<6>(tup);
+    int                       flags           = std::get<7>(tup);
 
     Arguments arg;
 
@@ -323,6 +329,12 @@ Arguments setup_gemm_ex_arguments(gemm_ex_tuple tup)
     arg.batch_count = batch_count;
 
     arg.fortran = fortran;
+
+    if(flags >= 0)
+    {
+        arg.flags      = flags;
+        arg.with_flags = true;
+    }
 
     return arg;
 }
@@ -494,11 +506,25 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_int8,
                                  ValuesIn(precision_int8),
                                  ValuesIn(compute_int8),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 // TEST(pre_checkin_blas_ex_bad_arg, float) { testing_gemm_ex_bad_arg(); }
 
 //----small
+
+#ifdef HIPBLAS_V2
+INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_hpa_half_with_flags,
+                         gemm_ex_gtest,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half),
+                                 ValuesIn(compute_hpa_half),
+                                 ValuesIn(batch_count_range_small),
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(with_and_without_flags)));
+#else
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_hpa_half,
                          gemm_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
@@ -507,7 +533,9 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_hpa_half,
                                  ValuesIn(precision_hpa_half),
                                  ValuesIn(compute_hpa_half),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
+#endif
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_half,
                          gemm_ex_gtest,
@@ -517,7 +545,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_half,
                                  ValuesIn(precision_half),
                                  ValuesIn(compute_half),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single,
                          gemm_ex_gtest,
@@ -527,7 +556,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single,
                                  ValuesIn(precision_single),
                                  ValuesIn(compute_single),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double,
                          gemm_ex_gtest,
@@ -537,7 +567,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double,
                                  ValuesIn(precision_double),
                                  ValuesIn(compute_double),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single_complex,
                          gemm_ex_gtest,
@@ -547,7 +578,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_single_complex,
                                  ValuesIn(precision_single_complex),
                                  ValuesIn(compute_single_complex),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
                          gemm_ex_gtest,
@@ -557,7 +589,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_ex_small_double_complex,
                                  ValuesIn(precision_double_complex),
                                  ValuesIn(compute_double_complex),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 //----medium
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,
@@ -568,7 +601,8 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half,
                                  ValuesIn(precision_hpa_half),
                                  ValuesIn(compute_hpa_half),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran_false)));
+                                 ValuesIn(is_fortran_false),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_half,
                          gemm_ex_gtest,
@@ -578,7 +612,8 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_half,
                                  ValuesIn(precision_half),
                                  ValuesIn(compute_half),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran_false)));
+                                 ValuesIn(is_fortran_false),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_float,
                          gemm_ex_gtest,
@@ -588,7 +623,8 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_float,
                                  ValuesIn(precision_single),
                                  ValuesIn(compute_single),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran_false)));
+                                 ValuesIn(is_fortran_false),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_double,
                          gemm_ex_gtest,
@@ -598,7 +634,8 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_double,
                                  ValuesIn(precision_double),
                                  ValuesIn(compute_double),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran_false)));
+                                 ValuesIn(is_fortran_false),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half_single_out,
                          gemm_ex_gtest,
@@ -608,7 +645,8 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_hpa_half_single_out,
                                  ValuesIn(precision_hpa_half_single_out),
                                  ValuesIn(compute_hpa_half_single_out),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran_false)));
+                                 ValuesIn(is_fortran_false),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_bfloat16,
                          gemm_ex_gtest,
@@ -618,7 +656,8 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_bfloat16,
                                  ValuesIn(precision_bfloat16),
                                  ValuesIn(compute_bfloat16),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran_false)));
+                                 ValuesIn(is_fortran_false),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_bfloat16_single_out,
                          gemm_ex_gtest,
@@ -628,7 +667,8 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_bfloat16_single_out,
                                  ValuesIn(precision_bfloat16_single_out),
                                  ValuesIn(compute_bfloat16_single_out),
                                  ValuesIn(batch_count_range_small),
-                                 ValuesIn(is_fortran_false)));
+                                 ValuesIn(is_fortran_false),
+                                 ValuesIn(without_flags)));
 
 //----small-batched
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half,
@@ -639,7 +679,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half,
                                  ValuesIn(precision_hpa_half),
                                  ValuesIn(compute_hpa_half),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_half,
                          gemm_batch_ex_gtest,
@@ -649,7 +690,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_half,
                                  ValuesIn(precision_half),
                                  ValuesIn(compute_half),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single,
                          gemm_batch_ex_gtest,
@@ -659,7 +701,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single,
                                  ValuesIn(precision_single),
                                  ValuesIn(compute_single),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double,
                          gemm_batch_ex_gtest,
@@ -669,7 +712,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double,
                                  ValuesIn(precision_double),
                                  ValuesIn(compute_double),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single_complex,
                          gemm_batch_ex_gtest,
@@ -679,7 +723,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_single_complex,
                                  ValuesIn(precision_single_complex),
                                  ValuesIn(compute_single_complex),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
                          gemm_batch_ex_gtest,
@@ -689,7 +734,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_double_complex,
                                  ValuesIn(precision_double_complex),
                                  ValuesIn(compute_double_complex),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
                          gemm_batch_ex_gtest,
@@ -699,7 +745,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_int8,
                                  ValuesIn(precision_int8),
                                  ValuesIn(compute_int8),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half_single_out,
                          gemm_batch_ex_gtest,
@@ -709,7 +756,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half_single_out,
                                  ValuesIn(precision_hpa_half_single_out),
                                  ValuesIn(compute_hpa_half_single_out),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_bfloat16,
                          gemm_batch_ex_gtest,
@@ -719,7 +767,8 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_bfloat16,
                                  ValuesIn(precision_bfloat16),
                                  ValuesIn(compute_bfloat16),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_bfloat16_single_out,
                          gemm_batch_ex_gtest,
@@ -729,4 +778,5 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_bfloat16_single_out,
                                  ValuesIn(precision_bfloat16_single_out),
                                  ValuesIn(compute_bfloat16_single_out),
                                  ValuesIn(batch_count_range),
-                                 ValuesIn(is_fortran)));
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(without_flags)));
