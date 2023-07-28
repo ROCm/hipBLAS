@@ -132,20 +132,20 @@ The prototype for the replacement in-place and out-of-place functionality is
 
 ::
 
-    hipblasStatus_t hipblasStrmmOutofplace(hipblasHandle_t    handle,
-                                           hipblasSideMode_t  side,
-                                           hipblasFillMode_t  uplo,
-                                           hipblasOperation_t transA,
-                                           hipblasDiagType_t  diag,
-                                           int                m,
-                                           int                n,
-                                           const float*       alpha,
-                                           const float*       A,
-                                           int                lda,
-                                           const float*       B,
-                                           int                ldb,
-                                           float*             C,
-                                           int                ldc);
+    hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
+                                 hipblasSideMode_t  side,
+                                 hipblasFillMode_t  uplo,
+                                 hipblasOperation_t transA,
+                                 hipblasDiagType_t  diag,
+                                 int                m,
+                                 int                n,
+                                 const float*       alpha,
+                                 const float*       A,
+                                 int                lda,
+                                 const float*       B,
+                                 int                ldb,
+                                 float*             C,
+                                 int                ldc);
 
 The legacy BLAS in-place functionality can be obtained with the new function if you set pointer C equal to pointer B and
 ldc equal to ldb.
