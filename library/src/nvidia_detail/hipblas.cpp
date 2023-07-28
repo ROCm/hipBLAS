@@ -11832,11 +11832,10 @@ hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t    handle,
                                        int                ldc,
                                        hipblasDatatype_t  compute_type,
                                        hipblasGemmAlgo_t  algo,
-                                       int32_t            solution_index,
                                        hipblasGemmFlags_t flags)
 try
 {
-    // solution_index and flags are ignored, call original function
+    // flags are ignored, call original function
     return hipCUBLASStatusToHIPStatus(cublasGemmEx((cublasHandle_t)handle,
                                                    hipOperationToCudaOperation(transa),
                                                    hipOperationToCudaOperation(transb),
@@ -11927,11 +11926,10 @@ hipblasStatus_t hipblasGemmExWithFlags_v2(hipblasHandle_t      handle,
                                           int                  ldc,
                                           hipblasComputeType_t compute_type,
                                           hipblasGemmAlgo_t    algo,
-                                          int32_t              solution_index,
                                           hipblasGemmFlags_t   flags)
 try
 {
-    // solution_index and flags are ignored, call original function
+    // flags are ignored, call original function
     return hipCUBLASStatusToHIPStatus(cublasGemmEx((cublasHandle_t)handle,
                                                    hipOperationToCudaOperation(transa),
                                                    hipOperationToCudaOperation(transb),
@@ -12025,11 +12023,10 @@ hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t    handle,
                                               int                batch_count,
                                               hipblasDatatype_t  compute_type,
                                               hipblasGemmAlgo_t  algo,
-                                              int32_t            solution_index,
                                               hipblasGemmFlags_t flags)
 try
 {
-    // solution_index and flags are ignored, call original function
+    // flags are ignored, call original function
     return hipCUBLASStatusToHIPStatus(cublasGemmBatchedEx((cublasHandle_t)handle,
                                                           hipOperationToCudaOperation(transa),
                                                           hipOperationToCudaOperation(transb),
@@ -12125,11 +12122,10 @@ hipblasStatus_t hipblasGemmBatchedExWithFlags_v2(hipblasHandle_t      handle,
                                                  int                  batch_count,
                                                  hipblasComputeType_t compute_type,
                                                  hipblasGemmAlgo_t    algo,
-                                                 int32_t              solution_index,
                                                  hipblasGemmFlags_t   flags)
 try
 {
-    // solution_index and flags are ignored, call original function
+    // flags are ignored, call original function
     return hipCUBLASStatusToHIPStatus(
         cublasGemmBatchedEx((cublasHandle_t)handle,
                             hipOperationToCudaOperation(transa),
@@ -12235,11 +12231,10 @@ hipblasStatus_t hipblasGemmStridedBatchedExWithFlags(hipblasHandle_t    handle,
                                                      int                batch_count,
                                                      hipblasDatatype_t  compute_type,
                                                      hipblasGemmAlgo_t  algo,
-                                                     int32_t            solution_index,
                                                      hipblasGemmFlags_t flags)
 try
 {
-    // solution_index and flags are ignored, call original function
+    // flags are ignored, call original function
     return hipCUBLASStatusToHIPStatus(
         cublasGemmStridedBatchedEx((cublasHandle_t)handle,
                                    hipOperationToCudaOperation(transa),
@@ -12348,11 +12343,10 @@ hipblasStatus_t hipblasGemmStridedBatchedExWithFlags_v2(hipblasHandle_t      han
                                                         int                  batch_count,
                                                         hipblasComputeType_t compute_type,
                                                         hipblasGemmAlgo_t    algo,
-                                                        int32_t              solution_index,
                                                         hipblasGemmFlags_t   flags)
 try
 {
-    // solution_index and flags are ignored, call original function
+    // flags are ignored, call original function
     return hipCUBLASStatusToHIPStatus(
         cublasGemmStridedBatchedEx((cublasHandle_t)handle,
                                    hipOperationToCudaOperation(transa),

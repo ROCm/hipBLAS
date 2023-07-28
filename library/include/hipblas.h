@@ -17772,7 +17772,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t    handle,
                                                       int                ldc,
                                                       hipblasDatatype_t  computeType,
                                                       hipblasGemmAlgo_t  algo,
-                                                      int32_t            solution_index,
                                                       hipblasGemmFlags_t flags);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx_v2(hipblasHandle_t      handle,
@@ -17814,7 +17813,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags_v2(hipblasHandle_t      ha
                                                          int                  ldc,
                                                          hipblasComputeType_t computeType,
                                                          hipblasGemmAlgo_t    algo,
-                                                         int32_t              solution_index,
                                                          hipblasGemmFlags_t   flags);
 
 /*! \brief BLAS EX API
@@ -18002,7 +18000,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t    
                                                              int                batchCount,
                                                              hipblasDatatype_t  computeType,
                                                              hipblasGemmAlgo_t  algo,
-                                                             int32_t            solution_index,
                                                              hipblasGemmFlags_t flags);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx_v2(hipblasHandle_t      handle,
@@ -18046,7 +18043,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags_v2(hipblasHandle_t 
                                                                 int                  batchCount,
                                                                 hipblasComputeType_t computeType,
                                                                 hipblasGemmAlgo_t    algo,
-                                                                int32_t              solution_index,
                                                                 hipblasGemmFlags_t   flags);
 
 /*! \brief BLAS EX API
@@ -18261,7 +18257,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedExWithFlags(hipblasHandl
                                                                     int                batchCount,
                                                                     hipblasDatatype_t  computeType,
                                                                     hipblasGemmAlgo_t  algo,
-                                                                    int32_t solution_index,
                                                                     hipblasGemmFlags_t flags);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx_v2(hipblasHandle_t      handle,
@@ -18312,7 +18307,6 @@ HIPBLAS_EXPORT hipblasStatus_t
                                             int                  batchCount,
                                             hipblasComputeType_t computeType,
                                             hipblasGemmAlgo_t    algo,
-                                            int32_t              solution_index,
                                             hipblasGemmFlags_t   flags);
 
 /*! BLAS EX API

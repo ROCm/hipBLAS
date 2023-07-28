@@ -18293,10 +18293,11 @@ hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t    handle,
                                        int                ldc,
                                        hipblasDatatype_t  compute_type,
                                        hipblasGemmAlgo_t  algo,
-                                       int32_t            solution_index,
                                        hipblasGemmFlags_t flags)
 try
 {
+    int32_t solution_index = 0;
+
     return rocBLASStatusToHIPStatus(rocblas_gemm_ex((rocblas_handle)handle,
                                                     hipOperationToHCCOperation(transa),
                                                     hipOperationToHCCOperation(transb),
@@ -18488,13 +18489,13 @@ hipblasStatus_t hipblasGemmExWithFlags_v2(hipblasHandle_t      handle,
                                           int                  ldc,
                                           hipblasComputeType_t compute_type,
                                           hipblasGemmAlgo_t    algo,
-                                          int32_t              solution_index,
                                           hipblasGemmFlags_t   flags)
 try
 {
     // Not necessarily a 1-to-1 mapping between hipblasComputeType_t and rocblas_datatype, so handling supported cases
     // individually, can be changed with rocBLAS if/when related changes happen there.
 
+    int32_t          solution_index = 0;
     rocblas_datatype a_type_roc, b_type_roc, c_type_roc, compute_type_roc;
     hipblasStatus_t  status = hipblasInternalGemmExTypes(
         a_type, b_type, c_type, compute_type, a_type_roc, b_type_roc, c_type_roc, compute_type_roc);
@@ -18609,10 +18610,11 @@ hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t    handle,
                                               int                batch_count,
                                               hipblasDatatype_t  compute_type,
                                               hipblasGemmAlgo_t  algo,
-                                              int32_t            solution_index,
                                               hipblasGemmFlags_t flags)
 try
 {
+    int32_t solution_index = 0;
+
     return rocBLASStatusToHIPStatus(
         rocblas_gemm_batched_ex((rocblas_handle)handle,
                                 hipOperationToHCCOperation(transa),
@@ -18731,13 +18733,13 @@ hipblasStatus_t hipblasGemmBatchedExWithFlags_v2(hipblasHandle_t      handle,
                                                  int                  batch_count,
                                                  hipblasComputeType_t compute_type,
                                                  hipblasGemmAlgo_t    algo,
-                                                 int32_t              solution_index,
                                                  hipblasGemmFlags_t   flags)
 try
 {
     // Not necessarily a 1-to-1 mapping between hipblasComputeType_t and rocblas_datatype, so handling supported cases
     // individually, can be changed with rocBLAS if/when related changes happen there.
 
+    int32_t          solution_index = 0;
     rocblas_datatype a_type_roc, b_type_roc, c_type_roc, compute_type_roc;
     hipblasStatus_t  status = hipblasInternalGemmExTypes(
         a_type, b_type, c_type, compute_type, a_type_roc, b_type_roc, c_type_roc, compute_type_roc);
@@ -18863,10 +18865,11 @@ hipblasStatus_t hipblasGemmStridedBatchedExWithFlags(hipblasHandle_t    handle,
                                                      int                batch_count,
                                                      hipblasDatatype_t  compute_type,
                                                      hipblasGemmAlgo_t  algo,
-                                                     int32_t            solution_index,
                                                      hipblasGemmFlags_t flags)
 try
 {
+    int32_t solution_index = 0;
+
     return rocBLASStatusToHIPStatus(
         rocblas_gemm_strided_batched_ex((rocblas_handle)handle,
                                         hipOperationToHCCOperation(transa),
@@ -19000,13 +19003,13 @@ hipblasStatus_t hipblasGemmStridedBatchedExWithFlags_v2(hipblasHandle_t      han
                                                         int                  batch_count,
                                                         hipblasComputeType_t compute_type,
                                                         hipblasGemmAlgo_t    algo,
-                                                        int32_t              solution_index,
                                                         hipblasGemmFlags_t   flags)
 try
 {
     // Not necessarily a 1-to-1 mapping between hipblasComputeType_t and rocblas_datatype, so handling supported cases
     // individually, can be changed with rocBLAS if/when related changes happen there.
 
+    int32_t          solution_index = 0;
     rocblas_datatype a_type_roc, b_type_roc, c_type_roc, compute_type_roc;
     hipblasStatus_t  status = hipblasInternalGemmExTypes(
         a_type, b_type, c_type, compute_type, a_type_roc, b_type_roc, c_type_roc, compute_type_roc);
