@@ -49,6 +49,12 @@ inline T convert_alpha_beta(double r, double i)
 }
 
 template <>
+inline hipblasBfloat16 convert_alpha_beta<hipblasBfloat16>(double r, double i)
+{
+    return float_to_bfloat16(r);
+}
+
+template <>
 inline hipblasHalf convert_alpha_beta<hipblasHalf>(double r, double i)
 {
     return float_to_half(r);
@@ -230,17 +236,25 @@ struct Arguments
     template <typename T>
     T get_alpha() const
     {
-        return hipblas_isnan(alpha) || (is_complex<T> && hipblas_isnan(alphai))
-                   ? T(0.0)
-                   : convert_alpha_beta<T>(alpha, alphai);
+        if constexpr(std::is_same_v<T, hipblasBfloat16>)
+            return hipblas_isnan(alpha) ? float_to_bfloat16(0.0)
+                                        : convert_alpha_beta<T>(alpha, alphai);
+        else
+            return hipblas_isnan(alpha) || (is_complex<T> && hipblas_isnan(alphai))
+                       ? T(0.0)
+                       : convert_alpha_beta<T>(alpha, alphai);
     }
 
     template <typename T>
     T get_beta() const
     {
-        return hipblas_isnan(beta) || (is_complex<T> && hipblas_isnan(betai))
-                   ? T(0.0)
-                   : convert_alpha_beta<T>(beta, betai);
+        if constexpr(std::is_same_v<T, hipblasBfloat16>)
+            return hipblas_isnan(beta) ? float_to_bfloat16(0.0)
+                                       : convert_alpha_beta<T>(beta, betai);
+        else
+            return hipblas_isnan(beta) || (is_complex<T> && hipblas_isnan(betai))
+                       ? T(0.0)
+                       : convert_alpha_beta<T>(beta, betai);
     }
 
 private:

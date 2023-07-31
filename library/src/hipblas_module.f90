@@ -90,7 +90,7 @@ module hipblas_enums
     end enum
 
     enum, bind(c)
-        enumerator :: HIPBLAS_GEMM_DEFAULT = 100
+        enumerator :: HIPBLAS_GEMM_DEFAULT = 160
     end enum
 
     enum, bind(c)
@@ -168,7 +168,7 @@ module hipblas
             implicit none
             integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSetPointerMode
             type(c_ptr), value :: handle
-            type(c_ptr), value :: mode
+            integer(c_int), value :: mode
         end function hipblasSetPointerMode
     end interface
 

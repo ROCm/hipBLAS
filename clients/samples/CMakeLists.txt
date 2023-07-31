@@ -36,7 +36,14 @@ if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
 endif( )
 
 if(NOT WIN32)
-    #add_executable( hipblas-example-sscal-fortran example_sscal_fortran.f90 )
+    add_executable( hipblas-example-sscal-fortran example_sscal_fortran.F90 $<TARGET_OBJECTS:hipblas_fortran>)
+    add_executable( hipblas-example-gemmEx-fortran example_gemm_ex_fortran.F90 $<TARGET_OBJECTS:hipblas_fortran>)
+
+    set( sample_list_fortran hipblas-example-sscal-fortran hipblas-example-gemmEx-fortran )
+endif()
+
+if( NOT USE_CUDA )
+  add_executable(hipblas-example-bfdot-hip-bfloat16 example_bfdot_hip_bfloat16.cpp ${hipblas_samples_common})
 endif()
 
 # We test for C99 compatibility in the example_c.c test
@@ -53,10 +60,14 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-gemmEx_v2 hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half)
+list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-gemmEx_v2 hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half ${sample_list_fortran} )
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
+if( NOT USE_CUDA )
+  list (APPEND hipblas-example-executables hipblas-example-bfdot-hip-bfloat16)
+  target_compile_options(hipblas-example-bfdot-hip-bfloat16 PRIVATE -DHIPBLAS_USE_HIP_BFLOAT16)
+endif()
 
 target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
 target_compile_options( hipblas-example-gemmEx_v2 PRIVATE -DHIPBLAS_USE_HIP_HALF -DHIPBLAS_V2 )
