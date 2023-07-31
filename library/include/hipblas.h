@@ -531,7 +531,8 @@ typedef enum
     HIPBLAS_ATOMICS_ALLOWED = 1 /**< Algorithms will take advantage of atomics where applicable. */
 } hipblasAtomicsMode_t;
 
-/*! \brief Control flags passed into gemm ex with flags algorithms. Only relevant with rocBLAS backend. */
+/*! \brief Control flags passed into gemm ex with flags algorithms. Only relevant with rocBLAS backend. See rocBLAS documentation
+ *         for more information.*/
 typedef enum
 {
     HIPBLAS_GEMM_FLAGS_NONE = 0x0, /**< Default empty flags */
@@ -17667,6 +17668,32 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
 
         #endif
 
+        hipblasGemmExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasGemmEx
+        with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
+        rocBLAS backend. When using a cuBLAS backend this parameter is ignored. Note that this API uses
+        hipDataType and hipblasComputeType_t and does not provide an interface using hipblasDatatype_t.
+
+            hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t      handle,
+                                                   hipblasOperation_t   transA,
+                                                   hipblasOperation_t   transB,
+                                                   int                  m,
+                                                   int                  n,
+                                                   int                  k,
+                                                   const void*          alpha,
+                                                   const void*          A,
+                                                   hipDataType          aType,
+                                                   int                  lda,
+                                                   const void*          B,
+                                                   hipDataType          bType,
+                                                   int                  ldb,
+                                                   const void*          beta,
+                                                   void*                C,
+                                                   hipDataType          cType,
+                                                   int                  ldc,
+                                                   hipblasComputeType_t computeType,
+                                                   hipblasGemmAlgo_t    algo,
+                                                   hipblasGemmFlags_t   flags)
+
     @param[in]
     handle    [hipblasHandle_t]
               handle to the hipblas library context queue.
@@ -17867,6 +17894,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t      handl
                                                  hipblasGemmAlgo_t  algo)
 
         #endif
+
+        hipblasGemmBatchedExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasGemmBatchedEx
+        with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
+        rocBLAS backend. When using a cuBLAS backend this parameter is ignored. Note that this API uses
+        hipDataType and hipblasComputeType_t and does not provide an interface using hipblasDatatype_t.
+
+            hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t      handle,
+                                                          hipblasOperation_t   transA,
+                                                          hipblasOperation_t   transB,
+                                                          int                  m,
+                                                          int                  n,
+                                                          int                  k,
+                                                          const void*          alpha,
+                                                          const void*          A[],
+                                                          hipDataType          aType,
+                                                          int                  lda,
+                                                          const void*          B[],
+                                                          hipDataType          bType,
+                                                          int                  ldb,
+                                                          const void*          beta,
+                                                          void*                C[],
+                                                          hipDataType          cType,
+                                                          int                  ldc,
+                                                          int                  batchCount,
+                                                          hipblasComputeType_t computeType,
+                                                          hipblasGemmAlgo_t    algo,
+                                                          hipblasGemmFlags_t   flags)
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -18087,6 +18141,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t    
                                                         hipblasGemmAlgo_t  algo)
 
         #endif
+
+        hipblasGemmStridedBatchedExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasStridedBatchedGemmEx
+        with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
+        rocBLAS backend. When using a cuBLAS backend this parameter is ignored. Note that this API uses
+        hipDataType and hipblasComputeType_t and does not provide an interface using hipblasDatatype_t.
+
+            hipblasStatus_t hipblasGemmStridedBatchedExWithFlags(hipblasHandle_t      handle,
+                                                                 hipblasOperation_t   transA,
+                                                                 hipblasOperation_t   transB,
+                                                                 int                  m,
+                                                                 int                  n,
+                                                                 int                  k,
+                                                                 const void*          alpha,
+                                                                 const void*          A,
+                                                                 hipDataType          aType,
+                                                                 int                  lda,
+                                                                 hipblasStride        strideA,
+                                                                 const void*          B,
+                                                                 hipDataType          bType,
+                                                                 int                  ldb,
+                                                                 hipblasStride        strideB,
+                                                                 const void*          beta,
+                                                                 void*                C,
+                                                                 hipDataType          cType,
+                                                                 int                  ldc,
+                                                                 hipblasStride        strideC,
+                                                                 int                  batchCount,
+                                                                 hipblasComputeType_t computeType,
+                                                                 hipblasGemmAlgo_t    algo,
+                                                                 hipblasGemmFlags_t   flags)
 
     @param[in]
     handle    [hipblasHandle_t]
