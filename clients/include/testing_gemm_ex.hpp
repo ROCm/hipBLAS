@@ -186,29 +186,57 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
         CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
-                                            transA,
-                                            transB,
-                                            M,
-                                            N,
-                                            K,
-                                            d_alpha,
-                                            dA,
-                                            a_type,
-                                            lda,
-                                            dB,
-                                            b_type,
-                                            ldb,
-                                            d_beta,
-                                            dC,
-                                            c_type,
-                                            ldc,
+        if(!arg.with_flags)
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
+                                                transA,
+                                                transB,
+                                                M,
+                                                N,
+                                                K,
+                                                d_alpha,
+                                                dA,
+                                                a_type,
+                                                lda,
+                                                dB,
+                                                b_type,
+                                                ldb,
+                                                d_beta,
+                                                dC,
+                                                c_type,
+                                                ldc,
 #ifdef HIPBLAS_V2
-                                            compute_type_gemm,
+                                                compute_type_gemm,
 #else
-                                            compute_type,
+                                                compute_type,
 #endif
-                                            algo));
+                                                algo));
+        }
+#ifdef HIPBLAS_V2
+        else
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmExWithFlagsFn(handle,
+                                                         transA,
+                                                         transB,
+                                                         M,
+                                                         N,
+                                                         K,
+                                                         d_alpha,
+                                                         dA,
+                                                         a_type,
+                                                         lda,
+                                                         dB,
+                                                         b_type,
+                                                         ldb,
+                                                         d_beta,
+                                                         dC,
+                                                         c_type,
+                                                         ldc,
+                                                         compute_type_gemm,
+                                                         algo,
+                                                         flags));
+        }
+#endif
 
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
 
@@ -265,29 +293,57 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
-                                                transA,
-                                                transB,
-                                                M,
-                                                N,
-                                                K,
-                                                &h_alpha_Tex,
-                                                dA,
-                                                a_type,
-                                                lda,
-                                                dB,
-                                                b_type,
-                                                ldb,
-                                                &h_beta_Tex,
-                                                dC,
-                                                c_type,
-                                                ldc,
+            if(!arg.with_flags)
+            {
+                CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
+                                                    transA,
+                                                    transB,
+                                                    M,
+                                                    N,
+                                                    K,
+                                                    &h_alpha_Tex,
+                                                    dA,
+                                                    a_type,
+                                                    lda,
+                                                    dB,
+                                                    b_type,
+                                                    ldb,
+                                                    &h_beta_Tex,
+                                                    dC,
+                                                    c_type,
+                                                    ldc,
 #ifdef HIPBLAS_V2
-                                                compute_type_gemm,
+                                                    compute_type_gemm,
 #else
-                                                compute_type,
+                                                    compute_type,
 #endif
-                                                algo));
+                                                    algo));
+            }
+#ifdef HIPBLAS_V2
+            else
+            {
+                CHECK_HIPBLAS_ERROR(hipblasGemmExWithFlagsFn(handle,
+                                                             transA,
+                                                             transB,
+                                                             M,
+                                                             N,
+                                                             K,
+                                                             &h_alpha_Tex,
+                                                             dA,
+                                                             a_type,
+                                                             lda,
+                                                             dB,
+                                                             b_type,
+                                                             ldb,
+                                                             &h_beta_Tex,
+                                                             dC,
+                                                             c_type,
+                                                             ldc,
+                                                             compute_type_gemm,
+                                                             algo,
+                                                             flags));
+            }
+#endif
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -382,9 +438,9 @@ inline hipblasStatus_t testing_gemm_ex(const Arguments& arg)
 {
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    hipblasDatatype_t a_type = arg.a_type;
-    hipblasDatatype_t b_type = arg.b_type;
-    hipblasDatatype_t c_type = arg.c_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
     hipblasDatatype_t compute_type = arg.compute_type;
 
     if(a_type == HIPBLAS_R_16F && b_type == HIPBLAS_R_16F && c_type == HIPBLAS_R_16F

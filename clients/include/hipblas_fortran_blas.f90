@@ -12532,6 +12532,79 @@ function hipblasGemmExWithFlagsFortran(handle, transA, transB, m, n, k, alpha, a
                         compute_type, algo, flags)
 end function hipblasGemmExWithFlagsFortran
 
+function hipblasGemmBatchedExWithFlagsFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
+                                        b, b_type, ldb, beta, c, c_type, ldc, &
+                                        batch_count, compute_type, algo, flags) &
+    bind(c, name='hipblasGemmBatchedExWithFlagsFortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasGemmBatchedExWithFlagsFortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: transA
+    integer(kind(HIPBLAS_OP_N)), value :: transB
+    integer(c_int), value :: m
+    integer(c_int), value :: n
+    integer(c_int), value :: k
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: a
+    integer(kind(HIPBLAS_R_16F)), value :: a_type
+    integer(c_int), value :: lda
+    type(c_ptr), value :: b
+    integer(kind(HIPBLAS_R_16F)), value :: b_type
+    integer(c_int), value :: ldb
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: c
+    integer(kind(HIPBLAS_R_16F)), value :: c_type
+    integer(c_int), value :: ldc
+    integer(c_int), value :: batch_count
+    integer(kind(HIPBLAS_R_16F)), value :: compute_type
+    integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+    integer(kind(HIPBLAS_GEMM_FLAGS_NONE)), value :: flags
+            hipblasGemmBatchedExWithFlagsFortran = &
+        hipblasGemmBatchedExWithFlags(handle, transA, transB, m, n, k, alpha, &
+                                a, a_type, lda, b, b_type, ldb, beta, c, c_type, ldc, &
+                                batch_count, compute_type, algo, flags)
+end function hipblasGemmBatchedExWithFlagsFortran
+
+function hipblasGemmStridedBatchedExWithFlagsFortran(handle, transA, transB, m, n, k, alpha, a, a_type, lda, stride_a, &
+                                            b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, &
+                                            batch_count, compute_type, algo, flags) &
+    bind(c, name='hipblasGemmStridedBatchedExWithFlagsFortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasGemmStridedBatchedExWithFlagsFortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: transA
+    integer(kind(HIPBLAS_OP_N)), value :: transB
+    integer(c_int), value :: m
+    integer(c_int), value :: n
+    integer(c_int), value :: k
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: a
+    integer(kind(HIPBLAS_R_16F)), value :: a_type
+    integer(c_int), value :: lda
+    integer(c_int64_t), value :: stride_a
+    type(c_ptr), value :: b
+    integer(kind(HIPBLAS_R_16F)), value :: b_type
+    integer(c_int), value :: ldb
+    integer(c_int64_t), value :: stride_b
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: c
+    integer(kind(HIPBLAS_R_16F)), value :: c_type
+    integer(c_int), value :: ldc
+    integer(c_int64_t), value :: stride_c
+    integer(c_int), value :: batch_count
+    integer(kind(HIPBLAS_R_16F)), value :: compute_type
+    integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+    integer(kind(HIPBLAS_GEMM_FLAGS_NONE)), value :: flags
+            hipblasGemmStridedBatchedExWithFlagsFortran = &
+        hipblasGemmStridedBatchedExWithFlags(handle, transA, transB, m, n, k, alpha, &
+                                    a, a_type, lda, stride_a, b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, &
+                                    batch_count, compute_type, algo, flags)
+end function hipblasGemmStridedBatchedExWithFlagsFortran
+
 ! trsmEx
 function hipblasTrsmExFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, &
                                 B, ldb, invA, invA_size, compute_type) &

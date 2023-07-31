@@ -57,6 +57,11 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
     bool FORTRAN = arg.fortran;
     auto hipblasGemmStridedBatchedExFn
         = FORTRAN ? hipblasGemmStridedBatchedExFortran : hipblasGemmStridedBatchedExFortran;
+#ifdef HIPBLAS_V2
+    auto hipblasGemmStridedBatchedExWithFlagsFn = FORTRAN
+                                                      ? hipblasGemmStridedBatchedExWithFlagsFortran
+                                                      : hipblasGemmStridedBatchedExWithFlags;
+#endif
 
     hipblasGemmAlgo_t algo = HIPBLAS_GEMM_DEFAULT;
 
@@ -74,6 +79,7 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
     hipblasDatatype_t    c_type            = arg.c_type;
     hipblasDatatype_t    compute_type      = arg.compute_type;
     hipblasComputeType_t compute_type_gemm = arg.compute_type_gemm;
+    hipblasGemmFlags_t   flags             = hipblasGemmFlags_t(arg.flags);
 
     int batch_count = arg.batch_count;
 
@@ -147,65 +153,129 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
     {
         // hipBLAS
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExFn(handle,
-                                                          transA,
-                                                          transB,
-                                                          M,
-                                                          N,
-                                                          K,
-                                                          &h_alpha_Tex,
-                                                          dA,
-                                                          a_type,
-                                                          lda,
-                                                          stride_A,
-                                                          dB,
-                                                          b_type,
-                                                          ldb,
-                                                          stride_B,
-                                                          &h_beta_Tex,
-                                                          dC,
-                                                          c_type,
-                                                          ldc,
-                                                          stride_C,
-                                                          batch_count,
+        if(!arg.with_flags)
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExFn(handle,
+                                                              transA,
+                                                              transB,
+                                                              M,
+                                                              N,
+                                                              K,
+                                                              &h_alpha_Tex,
+                                                              dA,
+                                                              a_type,
+                                                              lda,
+                                                              stride_A,
+                                                              dB,
+                                                              b_type,
+                                                              ldb,
+                                                              stride_B,
+                                                              &h_beta_Tex,
+                                                              dC,
+                                                              c_type,
+                                                              ldc,
+                                                              stride_C,
+                                                              batch_count,
 #ifdef HIPBLAS_V2
-                                                          compute_type_gemm,
+                                                              compute_type_gemm,
 #else
-                                                          compute_type,
+                                                              compute_type,
 #endif
-                                                          algo));
+                                                              algo));
+        }
+#ifdef HIPBLAS_V2
+        else
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExWithFlagsFn(handle,
+                                                                       transA,
+                                                                       transB,
+                                                                       M,
+                                                                       N,
+                                                                       K,
+                                                                       &h_alpha_Tex,
+                                                                       dA,
+                                                                       a_type,
+                                                                       lda,
+                                                                       stride_A,
+                                                                       dB,
+                                                                       b_type,
+                                                                       ldb,
+                                                                       stride_B,
+                                                                       &h_beta_Tex,
+                                                                       dC,
+                                                                       c_type,
+                                                                       ldc,
+                                                                       stride_C,
+                                                                       batch_count,
+                                                                       compute_type_gemm,
+                                                                       algo,
+                                                                       flags));
+        }
+#endif
 
         CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExFn(handle,
-                                                          transA,
-                                                          transB,
-                                                          M,
-                                                          N,
-                                                          K,
-                                                          d_alpha,
-                                                          dA,
-                                                          a_type,
-                                                          lda,
-                                                          stride_A,
-                                                          dB,
-                                                          b_type,
-                                                          ldb,
-                                                          stride_B,
-                                                          d_beta,
-                                                          dC,
-                                                          c_type,
-                                                          ldc,
-                                                          stride_C,
-                                                          batch_count,
+        if(!arg.with_flags)
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExFn(handle,
+                                                              transA,
+                                                              transB,
+                                                              M,
+                                                              N,
+                                                              K,
+                                                              d_alpha,
+                                                              dA,
+                                                              a_type,
+                                                              lda,
+                                                              stride_A,
+                                                              dB,
+                                                              b_type,
+                                                              ldb,
+                                                              stride_B,
+                                                              d_beta,
+                                                              dC,
+                                                              c_type,
+                                                              ldc,
+                                                              stride_C,
+                                                              batch_count,
 #ifdef HIPBLAS_V2
-                                                          compute_type_gemm,
+                                                              compute_type_gemm,
 #else
-                                                          compute_type,
+                                                              compute_type,
 #endif
-                                                          algo));
+                                                              algo));
+        }
+#ifdef HIPBLAS_V2
+        else
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExWithFlagsFn(handle,
+                                                                       transA,
+                                                                       transB,
+                                                                       M,
+                                                                       N,
+                                                                       K,
+                                                                       d_alpha,
+                                                                       dA,
+                                                                       a_type,
+                                                                       lda,
+                                                                       stride_A,
+                                                                       dB,
+                                                                       b_type,
+                                                                       ldb,
+                                                                       stride_B,
+                                                                       d_beta,
+                                                                       dC,
+                                                                       c_type,
+                                                                       ldc,
+                                                                       stride_C,
+                                                                       batch_count,
+                                                                       compute_type_gemm,
+                                                                       algo,
+                                                                       flags));
+        }
+#endif
 
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
 
@@ -266,33 +336,65 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExFn(handle,
-                                                              transA,
-                                                              transB,
-                                                              M,
-                                                              N,
-                                                              K,
-                                                              &h_alpha_Tex,
-                                                              dA,
-                                                              a_type,
-                                                              lda,
-                                                              stride_A,
-                                                              dB,
-                                                              b_type,
-                                                              ldb,
-                                                              stride_B,
-                                                              &h_beta_Tex,
-                                                              dC,
-                                                              c_type,
-                                                              ldc,
-                                                              stride_C,
-                                                              batch_count,
+            if(!arg.with_flags)
+            {
+                CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExFn(handle,
+                                                                  transA,
+                                                                  transB,
+                                                                  M,
+                                                                  N,
+                                                                  K,
+                                                                  &h_alpha_Tex,
+                                                                  dA,
+                                                                  a_type,
+                                                                  lda,
+                                                                  stride_A,
+                                                                  dB,
+                                                                  b_type,
+                                                                  ldb,
+                                                                  stride_B,
+                                                                  &h_beta_Tex,
+                                                                  dC,
+                                                                  c_type,
+                                                                  ldc,
+                                                                  stride_C,
+                                                                  batch_count,
 #ifdef HIPBLAS_V2
-                                                              compute_type_gemm,
+                                                                  compute_type_gemm,
 #else
-                                                              compute_type,
+                                                                  compute_type,
 #endif
-                                                              algo));
+                                                                  algo));
+            }
+#ifdef HIPBLAS_V2
+            else
+            {
+                CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExWithFlagsFn(handle,
+                                                                           transA,
+                                                                           transB,
+                                                                           M,
+                                                                           N,
+                                                                           K,
+                                                                           &h_alpha_Tex,
+                                                                           dA,
+                                                                           a_type,
+                                                                           lda,
+                                                                           stride_A,
+                                                                           dB,
+                                                                           b_type,
+                                                                           ldb,
+                                                                           stride_B,
+                                                                           &h_beta_Tex,
+                                                                           dC,
+                                                                           c_type,
+                                                                           ldc,
+                                                                           stride_C,
+                                                                           batch_count,
+                                                                           compute_type_gemm,
+                                                                           algo,
+                                                                           flags));
+            }
+#endif
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -393,9 +495,9 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex(const Arguments& arg)
 
 inline hipblasStatus_t testing_gemm_strided_batched_ex(const Arguments& arg)
 {
-    hipblasDatatype_t a_type = arg.a_type;
-    hipblasDatatype_t b_type = arg.b_type;
-    hipblasDatatype_t c_type = arg.c_type;
+    hipblasDatatype_t a_type       = arg.a_type;
+    hipblasDatatype_t b_type       = arg.b_type;
+    hipblasDatatype_t c_type       = arg.c_type;
     hipblasDatatype_t compute_type = arg.compute_type;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;

@@ -671,6 +671,18 @@ INSTANTIATE_TEST_SUITE_P(pre_checkin_blas_ex_medium_bfloat16_single_out,
                                  ValuesIn(without_flags)));
 
 //----small-batched
+#ifdef HIPBLAS_V2
+INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half_with_flags,
+                         gemm_batch_ex_gtest,
+                         Combine(ValuesIn(small_matrix_size_range),
+                                 ValuesIn(alpha_beta_range),
+                                 ValuesIn(transA_transB_range),
+                                 ValuesIn(precision_hpa_half),
+                                 ValuesIn(compute_hpa_half),
+                                 ValuesIn(batch_count_range),
+                                 ValuesIn(is_fortran),
+                                 ValuesIn(with_and_without_flags)));
+#else
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half,
                          gemm_batch_ex_gtest,
                          Combine(ValuesIn(small_matrix_size_range),
@@ -681,6 +693,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half,
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran),
                                  ValuesIn(without_flags)));
+#endif
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_half,
                          gemm_batch_ex_gtest,

@@ -531,7 +531,7 @@ typedef enum
     HIPBLAS_ATOMICS_ALLOWED = 1 /**< Algorithms will take advantage of atomics where applicable. */
 } hipblasAtomicsMode_t;
 
-/*! \brief Control flags passed into gemm ex with flags algorithms */
+/*! \brief Control flags passed into gemm ex with flags algorithms. Only relevant with rocBLAS backend. */
 typedef enum
 {
     HIPBLAS_GEMM_FLAGS_NONE = 0x0, /**< Default empty flags */
