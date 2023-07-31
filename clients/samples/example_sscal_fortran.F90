@@ -58,7 +58,11 @@ program example_fortran_scal
     interface
         function hipMalloc(ptr, size) &
                 result(c_int) &
+#ifdef __HIP_PLATFORM_NVCC__
+                bind(c, name = 'cudaMalloc')
+#else
                 bind(c, name = 'hipMalloc')
+#endif
             use iso_c_binding
             implicit none
             type(c_ptr), value :: ptr
@@ -69,7 +73,11 @@ program example_fortran_scal
     interface
         function hipFree(ptr) &
                 result(c_int) &
+#ifdef __HIP_PLATFORM_NVCC__
+                bind(c, name = 'cudaFree')
+#else
                 bind(c, name = 'hipFree')
+#endif
             use iso_c_binding
             implicit none
             type(c_ptr), value :: ptr
@@ -79,7 +87,11 @@ program example_fortran_scal
     interface
         function hipMemcpy(dst, src, size, kind) &
                 result(c_int) &
+#ifdef __HIP_PLATFORM_NVCC__
+                bind(c, name = 'cudaMemcpy')
+#else
                 bind(c, name = 'hipMemcpy')
+#endif
             use iso_c_binding
             implicit none
             type(c_ptr), value :: dst
@@ -90,21 +102,13 @@ program example_fortran_scal
     end interface
 
     interface
-        function hipMemset(dst, val, size) &
-                result(c_int) &
-                bind(c, name = 'hipMemset')
-            use iso_c_binding
-            implicit none
-            type(c_ptr), value :: dst
-            integer(c_int), value :: val
-            integer(c_size_t), value :: size
-        end function hipMemset
-    end interface
-
-    interface
         function hipDeviceSynchronize() &
                 result(c_int) &
+#ifdef __HIP_PLATFORM_NVCC__
+                bind(c, name = 'cudaDeviceSynchronize')
+#else
                 bind(c, name = 'hipDeviceSynchronize')
+#endif
             use iso_c_binding
             implicit none
         end function hipDeviceSynchronize
@@ -113,13 +117,16 @@ program example_fortran_scal
     interface
         function hipDeviceReset() &
                 result(c_int) &
+#ifdef __HIP_PLATFORM_NVCC__
+                bind(c, name = 'cudaDeviceReset')
+#else
                 bind(c, name = 'hipDeviceReset')
+#endif
             use iso_c_binding
             implicit none
         end function hipDeviceReset
     end interface
     ! TODO end
-
 
     integer tbegin(8)
     integer tend(8)

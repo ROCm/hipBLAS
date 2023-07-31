@@ -90,7 +90,7 @@ module hipblas_enums
     end enum
 
     enum, bind(c)
-        enumerator :: HIPBLAS_GEMM_DEFAULT = 100
+        enumerator :: HIPBLAS_GEMM_DEFAULT = 160
     end enum
 
     enum, bind(c)
@@ -160,7 +160,7 @@ module hipblas
             implicit none
             integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSetPointerMode
             type(c_ptr), value :: handle
-            type(c_ptr), value :: mode
+            integer(c_int), value :: mode
         end function hipblasSetPointerMode
     end interface
 
@@ -12028,7 +12028,7 @@ module hipblas
     interface
         function hipblasGemmEx(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
                                b, b_type, ldb, beta, c, c_type, ldc, &
-                               compute_type, algo, solution_index, flags) &
+                               compute_type, algo) &
             bind(c, name='hipblasGemmEx')
             use iso_c_binding
             use hipblas_enums
@@ -12053,17 +12053,13 @@ module hipblas
             integer(c_int), value :: ldc
             integer(kind(HIPBLAS_R_16F)), value :: compute_type
             integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-            integer(c_int32_t), value :: solution_index
-            ! No unsigned types in fortran. If larger values are needed
-            ! we will need a workaround.
-            integer(c_int32_t), value :: flags
         end function hipblasGemmEx
     end interface
 
     interface
         function hipblasGemmBatchedEx(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
                                       b, b_type, ldb, beta, c, c_type, ldc, &
-                                      batch_count, compute_type, algo, solution_index, flags) &
+                                      batch_count, compute_type, algo) &
             bind(c, name='hipblasGemmBatchedEx')
             use iso_c_binding
             use hipblas_enums
@@ -12089,17 +12085,13 @@ module hipblas
             integer(c_int), value :: batch_count
             integer(kind(HIPBLAS_R_16F)), value :: compute_type
             integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-            integer(c_int32_t), value :: solution_index
-            ! No unsigned types in fortran. If larger values are needed
-            ! we will need a workaround.
-            integer(c_int32_t), value :: flags
         end function hipblasGemmBatchedEx
     end interface
 
     interface
         function hipblasGemmStridedBatchedEx(handle, transA, transB, m, n, k, alpha, a, a_type, lda, stride_a, &
                                              b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, &
-                                             batch_count, compute_type, algo, solution_index, flags) &
+                                             batch_count, compute_type, algo) &
             bind(c, name='hipblasGemmStridedBatchedEx')
             use iso_c_binding
             use hipblas_enums
@@ -12128,10 +12120,6 @@ module hipblas
             integer(c_int), value :: batch_count
             integer(kind(HIPBLAS_R_16F)), value :: compute_type
             integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-            integer(c_int32_t), value :: solution_index
-            ! No unsigned types in fortran. If larger values are needed
-            ! we will need a workaround.
-            integer(c_int32_t), value :: flags
         end function hipblasGemmStridedBatchedEx
     end interface
 
