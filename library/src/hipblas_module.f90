@@ -12092,7 +12092,7 @@ module hipblas
             integer(c_int), value :: ldc
             integer(kind(HIPBLAS_R_16F)), value :: compute_type
             integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-            integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: flags
+            integer(kind(HIPBLAS_GEMM_FLAGS_NONE)), value :: flags
         end function hipblasGemmExWithFlags
     end interface
 
@@ -12157,7 +12157,7 @@ module hipblas
             integer(c_int), value :: batch_count
             integer(kind(HIPBLAS_R_16F)), value :: compute_type
             integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-            integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: flags
+            integer(kind(HIPBLAS_GEMM_FLAGS_NONE)), value :: flags
         end function hipblasGemmBatchedExWithFlags
     end interface
 
@@ -12228,7 +12228,7 @@ module hipblas
             integer(c_int), value :: batch_count
             integer(kind(HIPBLAS_R_16F)), value :: compute_type
             integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
-            integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: flags
+            integer(kind(HIPBLAS_GEMM_FLAGS_NONE)), value :: flags
         end function hipblasGemmStridedBatchedExWithFlags
     end interface
 
