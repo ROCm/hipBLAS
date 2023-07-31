@@ -118,8 +118,13 @@ typedef int8_t hipblasInt8;
 typedef int64_t hipblasStride;
 
 /*! \brief  Struct to represent a 16 bit Brain floating-point number.*/
+#if defined(HIPBLAS_USE_HIP_BFLOAT16)
 
-#if __cplusplus < 201103L || !defined(HIPBLAS_BFLOAT16_CLASS)
+// note that hip_bfloat16 isn't currently supported with cuda backend
+#include <hip/hip_bfloat16.h>
+typedef hip_bfloat16 hipblasBfloat16;
+
+#elif __cplusplus < 201103L || !defined(HIPBLAS_BFLOAT16_CLASS)
 
 // If this is a C or C++ compiler below C++11, or not requesting HIPBLAS_BFLOAT16_CLASS,
 // we only include a minimal definition of hipblasBfloat16
