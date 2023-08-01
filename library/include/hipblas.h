@@ -17618,7 +17618,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
       | HIP_C_32F  | HIP_C_32F  | HIP_C_32F  | HIPBLAS_COMPUTE_32F |
       | HIP_C_64F  | HIP_C_64F  | HIP_C_64F  | HIPBLAS_COMPUTE_64F |
 
-    hipblasGemmExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasGemmEx
+    hipblasGemmExWithFlags is also available which is identical to hipblasGemmEx
     with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
     rocBLAS backend. When using a cuBLAS backend this parameter is ignored.
 
@@ -17885,7 +17885,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags_v2(hipblasHandle_t      ha
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
-    hipblasGemmBatchedExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasGemmBatchedEx
+    hipblasGemmBatchedExWithFlags is also available which is identical to hipblasGemmBatchedEx
     with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
     rocBLAS backend. When using a cuBLAS backend this parameter is ignored.
 

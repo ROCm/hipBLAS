@@ -18463,7 +18463,7 @@ try
                                                     HIPDatatypeToRocblasDatatype(compute_type),
                                                     HIPGemmAlgoToRocblasGemmAlgo(algo),
                                                     solution_index,
-                                                    flags));
+                                                    HIPGemmFlagsToRocblasGemmFlags(flags)));
 }
 catch(...)
 {
@@ -18706,7 +18706,7 @@ try
                                 HIPDatatypeToRocblasDatatype(compute_type),
                                 HIPGemmAlgoToRocblasGemmAlgo(algo),
                                 solution_index,
-                                flags));
+                                HIPGemmFlagsToRocblasGemmFlags(flags)));
 }
 catch(...)
 {
@@ -18942,8 +18942,7 @@ hipblasStatus_t hipblasGemmStridedBatchedExWithFlags(hipblasHandle_t    handle,
                                                      hipblasGemmFlags_t flags)
 try
 {
-    int32_t            solution_index = 0;
-    rocblas_gemm_flags flags          = rocblas_gemm_flags_none;
+    int32_t solution_index = 0;
 
     return rocBLASStatusToHIPStatus(
         rocblas_gemm_strided_batched_ex((rocblas_handle)handle,
@@ -18974,7 +18973,7 @@ try
                                         HIPDatatypeToRocblasDatatype(compute_type),
                                         HIPGemmAlgoToRocblasGemmAlgo(algo),
                                         solution_index,
-                                        flags));
+                                        HIPGemmFlagsToRocblasGemmFlags(flags)));
 }
 catch(...)
 {
