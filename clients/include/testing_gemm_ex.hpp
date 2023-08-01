@@ -46,10 +46,8 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
 {
     bool FORTRAN         = arg.fortran;
     auto hipblasGemmExFn = FORTRAN ? hipblasGemmExFortran : hipblasGemmEx;
-#ifdef HIPBLAS_V2
     auto hipblasGemmExWithFlagsFn
         = FORTRAN ? hipblasGemmExWithFlagsFortran : hipblasGemmExWithFlags;
-#endif
 
     hipblasGemmAlgo_t algo           = HIPBLAS_GEMM_DEFAULT;
     size_t*           workspace_size = 0;
@@ -156,7 +154,6 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
 #endif
                                                 algo));
         }
-#ifdef HIPBLAS_V2
         else
         {
             CHECK_HIPBLAS_ERROR(hipblasGemmExWithFlagsFn(handle,
@@ -176,11 +173,14 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
                                                          dC,
                                                          c_type,
                                                          ldc,
+#ifdef HIPBLAS_V2
                                                          compute_type_gemm,
+#else
+                                                         compute_type,
+#endif
                                                          algo,
                                                          flags));
         }
-#endif
 
         CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
@@ -212,7 +212,6 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
 #endif
                                                 algo));
         }
-#ifdef HIPBLAS_V2
         else
         {
             CHECK_HIPBLAS_ERROR(hipblasGemmExWithFlagsFn(handle,
@@ -232,11 +231,14 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
                                                          dC,
                                                          c_type,
                                                          ldc,
+#ifdef HIPBLAS_V2
                                                          compute_type_gemm,
+#else
+                                                         compute_type,
+#endif
                                                          algo,
                                                          flags));
         }
-#endif
 
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
 
@@ -319,7 +321,6 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
 #endif
                                                     algo));
             }
-#ifdef HIPBLAS_V2
             else
             {
                 CHECK_HIPBLAS_ERROR(hipblasGemmExWithFlagsFn(handle,
@@ -339,11 +340,14 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
                                                              dC,
                                                              c_type,
                                                              ldc,
+#ifdef HIPBLAS_V2
                                                              compute_type_gemm,
+#else
+                                                             compute_type,
+#endif
                                                              algo,
                                                              flags));
             }
-#endif
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

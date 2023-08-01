@@ -17618,9 +17618,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
       | HIP_C_32F  | HIP_C_32F  | HIP_C_32F  | HIPBLAS_COMPUTE_32F |
       | HIP_C_64F  | HIP_C_64F  | HIP_C_64F  | HIPBLAS_COMPUTE_64F |
 
+    hipblasGemmExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasGemmEx
+    with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
+    rocBLAS backend. When using a cuBLAS backend this parameter is ignored.
+
     With HIPBLAS_V2 define, hipblasGemmEx accepts hipDataType for aType, bType, and cType.
     It also accepts hipblasComputeType_t for computeType. hipblasGemmEx will no
-    longer support hipblasDataType_t for these parameters in a future release.
+    longer support hipblasDataType_t for these parameters in a future release. hipblasGemmEx follows
+    the same convention.
 
         #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
 
@@ -17644,6 +17649,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
                                           hipblasComputeType_t computeType,
                                           hipblasGemmAlgo_t    algo)
 
+            hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t      handle,
+                                                   hipblasOperation_t   transA,
+                                                   hipblasOperation_t   transB,
+                                                   int                  m,
+                                                   int                  n,
+                                                   int                  k,
+                                                   const void*          alpha,
+                                                   const void*          A,
+                                                   hipDataType          aType,
+                                                   int                  lda,
+                                                   const void*          B,
+                                                   hipDataType          bType,
+                                                   int                  ldb,
+                                                   const void*          beta,
+                                                   void*                C,
+                                                   hipDataType          cType,
+                                                   int                  ldc,
+                                                   hipblasComputeType_t computeType,
+                                                   hipblasGemmAlgo_t    algo,
+                                                   hipblasGemmFlags_t   flags)
+
         #else // [DEPRECATED]
 
             hipblasStatus_t hipblasGemmEx(hipblasHandle_t    handle,
@@ -17666,13 +17692,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
                                           hipblasDatatype_t  computeType,
                                           hipblasGemmAlgo_t  algo)
 
-        #endif
-
-        hipblasGemmExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasGemmEx
-        with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
-        rocBLAS backend. When using a cuBLAS backend this parameter is ignored. Note that this API uses
-        hipDataType and hipblasComputeType_t and does not provide an interface using hipblasDatatype_t.
-
             hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t      handle,
                                                    hipblasOperation_t   transA,
                                                    hipblasOperation_t   transB,
@@ -17681,18 +17700,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t      
                                                    int                  k,
                                                    const void*          alpha,
                                                    const void*          A,
-                                                   hipDataType          aType,
+                                                   hipblasDatatype_t    aType,
                                                    int                  lda,
                                                    const void*          B,
-                                                   hipDataType          bType,
+                                                   hipblasDatatype_t    bType,
                                                    int                  ldb,
                                                    const void*          beta,
                                                    void*                C,
-                                                   hipDataType          cType,
+                                                   hipblasDatatype_t    cType,
                                                    int                  ldc,
-                                                   hipblasComputeType_t computeType,
+                                                   hipblasDatatype_t    computeType,
                                                    hipblasGemmAlgo_t    algo,
                                                    hipblasGemmFlags_t   flags)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -17805,26 +17826,47 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx_v2(hipblasHandle_t      handle,
                                                 hipblasComputeType_t computeType,
                                                 hipblasGemmAlgo_t    algo);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t      handle,
-                                                      hipblasOperation_t   transA,
-                                                      hipblasOperation_t   transB,
-                                                      int                  m,
-                                                      int                  n,
-                                                      int                  k,
-                                                      const void*          alpha,
-                                                      const void*          A,
-                                                      hipDataType          aType,
-                                                      int                  lda,
-                                                      const void*          B,
-                                                      hipDataType          bType,
-                                                      int                  ldb,
-                                                      const void*          beta,
-                                                      void*                C,
-                                                      hipDataType          cType,
-                                                      int                  ldc,
-                                                      hipblasComputeType_t computeType,
-                                                      hipblasGemmAlgo_t    algo,
-                                                      hipblasGemmFlags_t   flags);
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t    handle,
+                                                      hipblasOperation_t transA,
+                                                      hipblasOperation_t transB,
+                                                      int                m,
+                                                      int                n,
+                                                      int                k,
+                                                      const void*        alpha,
+                                                      const void*        A,
+                                                      hipblasDatatype_t  aType,
+                                                      int                lda,
+                                                      const void*        B,
+                                                      hipblasDatatype_t  bType,
+                                                      int                ldb,
+                                                      const void*        beta,
+                                                      void*              C,
+                                                      hipblasDatatype_t  cType,
+                                                      int                ldc,
+                                                      hipblasDatatype_t  computeType,
+                                                      hipblasGemmAlgo_t  algo,
+                                                      hipblasGemmFlags_t flags);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags_v2(hipblasHandle_t      handle,
+                                                         hipblasOperation_t   transA,
+                                                         hipblasOperation_t   transB,
+                                                         int                  m,
+                                                         int                  n,
+                                                         int                  k,
+                                                         const void*          alpha,
+                                                         const void*          A,
+                                                         hipDataType          aType,
+                                                         int                  lda,
+                                                         const void*          B,
+                                                         hipDataType          bType,
+                                                         int                  ldb,
+                                                         const void*          beta,
+                                                         void*                C,
+                                                         hipDataType          cType,
+                                                         int                  ldc,
+                                                         hipblasComputeType_t computeType,
+                                                         hipblasGemmAlgo_t    algo,
+                                                         hipblasGemmFlags_t   flags);
 
 /*! \brief BLAS EX API
     \details
@@ -17843,9 +17885,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t      handl
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    hipblasGemmBatchedExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasGemmBatchedEx
+    with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
+    rocBLAS backend. When using a cuBLAS backend this parameter is ignored.
+
     With HIPBLAS_V2 define, hipblasGemmBatchedEx accepts hipDataType for aType, bType, and cType.
     It also accepts hipblasComputeType_t for computeType. hipblasGemmBatchedEx will no
-    longer support hipblasDataType_t for these parameters in a future release.
+    longer support hipblasDataType_t for these parameters in a future release. hipblasGemmBatchedExWithFlags
+    follows the same convention.
 
         #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
 
@@ -17870,6 +17917,28 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t      handl
                                                  hipblasComputeType_t computeType,
                                                  hipblasGemmAlgo_t    algo)
 
+            hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t      handle,
+                                                          hipblasOperation_t   transA,
+                                                          hipblasOperation_t   transB,
+                                                          int                  m,
+                                                          int                  n,
+                                                          int                  k,
+                                                          const void*          alpha,
+                                                          const void*          A[],
+                                                          hipDataType          aType,
+                                                          int                  lda,
+                                                          const void*          B[],
+                                                          hipDataType          bType,
+                                                          int                  ldb,
+                                                          const void*          beta,
+                                                          void*                C[],
+                                                          hipDataType          cType,
+                                                          int                  ldc,
+                                                          int                  batchCount,
+                                                          hipblasComputeType_t computeType,
+                                                          hipblasGemmAlgo_t    algo,
+                                                          hipblasGemmFlags_t   flags)
+
         #else // [DEPRECATED]
 
             hipblasStatus_t hipblasGemmBatchedEx(hipblasHandle_t    handle,
@@ -17893,13 +17962,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t      handl
                                                  hipblasDatatype_t  computeType,
                                                  hipblasGemmAlgo_t  algo)
 
-        #endif
-
-        hipblasGemmBatchedExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasGemmBatchedEx
-        with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
-        rocBLAS backend. When using a cuBLAS backend this parameter is ignored. Note that this API uses
-        hipDataType and hipblasComputeType_t and does not provide an interface using hipblasDatatype_t.
-
             hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t      handle,
                                                           hipblasOperation_t   transA,
                                                           hipblasOperation_t   transB,
@@ -17908,19 +17970,25 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags(hipblasHandle_t      handl
                                                           int                  k,
                                                           const void*          alpha,
                                                           const void*          A[],
-                                                          hipDataType          aType,
+                                                          hipblasDatatype_t    aType,
                                                           int                  lda,
                                                           const void*          B[],
-                                                          hipDataType          bType,
+                                                          hipblasDatatype_t    bType,
                                                           int                  ldb,
                                                           const void*          beta,
                                                           void*                C[],
-                                                          hipDataType          cType,
+                                                          hipblasDatatype_t    cType,
                                                           int                  ldc,
                                                           int                  batchCount,
-                                                          hipblasComputeType_t computeType,
+                                                          hipblasDatatype_t    computeType,
                                                           hipblasGemmAlgo_t    algo,
                                                           hipblasGemmFlags_t   flags)
+
+        #endif
+
+
+
+
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -18039,27 +18107,49 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx_v2(hipblasHandle_t      hand
                                                        hipblasComputeType_t computeType,
                                                        hipblasGemmAlgo_t    algo);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t      handle,
-                                                             hipblasOperation_t   transA,
-                                                             hipblasOperation_t   transB,
-                                                             int                  m,
-                                                             int                  n,
-                                                             int                  k,
-                                                             const void*          alpha,
-                                                             const void*          A[],
-                                                             hipDataType          aType,
-                                                             int                  lda,
-                                                             const void*          B[],
-                                                             hipDataType          bType,
-                                                             int                  ldb,
-                                                             const void*          beta,
-                                                             void*                C[],
-                                                             hipDataType          cType,
-                                                             int                  ldc,
-                                                             int                  batchCount,
-                                                             hipblasComputeType_t computeType,
-                                                             hipblasGemmAlgo_t    algo,
-                                                             hipblasGemmFlags_t   flags);
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t    handle,
+                                                             hipblasOperation_t transA,
+                                                             hipblasOperation_t transB,
+                                                             int                m,
+                                                             int                n,
+                                                             int                k,
+                                                             const void*        alpha,
+                                                             const void*        A[],
+                                                             hipblasDatatype_t  aType,
+                                                             int                lda,
+                                                             const void*        B[],
+                                                             hipblasDatatype_t  bType,
+                                                             int                ldb,
+                                                             const void*        beta,
+                                                             void*              C[],
+                                                             hipblasDatatype_t  cType,
+                                                             int                ldc,
+                                                             int                batchCount,
+                                                             hipblasDatatype_t  computeType,
+                                                             hipblasGemmAlgo_t  algo,
+                                                             hipblasGemmFlags_t flags);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags_v2(hipblasHandle_t      handle,
+                                                                hipblasOperation_t   transA,
+                                                                hipblasOperation_t   transB,
+                                                                int                  m,
+                                                                int                  n,
+                                                                int                  k,
+                                                                const void*          alpha,
+                                                                const void*          A[],
+                                                                hipDataType          aType,
+                                                                int                  lda,
+                                                                const void*          B[],
+                                                                hipDataType          bType,
+                                                                int                  ldb,
+                                                                const void*          beta,
+                                                                void*                C[],
+                                                                hipDataType          cType,
+                                                                int                  ldc,
+                                                                int                  batchCount,
+                                                                hipblasComputeType_t computeType,
+                                                                hipblasGemmAlgo_t    algo,
+                                                                hipblasGemmFlags_t   flags);
 
 /*! \brief BLAS EX API
 
@@ -18084,9 +18174,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t    
 
     - Supported types are determined by the backend. See rocBLAS/cuBLAS documentation.
 
+    hipblasGemmStridedBatchedExWithFlags is also available which is identical to hipblasStridedBatchedGemmEx
+    with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
+    rocBLAS backend. When using a cuBLAS backend this parameter is ignored.
+
     With HIPBLAS_V2 define, hipblasGemmStridedBatchedEx accepts hipDataType for aType, bType, and cType.
     It also accepts hipblasComputeType_t for computeType. hipblasGemmStridedBatchedEx will no
-    longer support hipblasDataType_t for these parameters in a future release.
+    longer support hipblasDataType_t for these parameters in a future release. hipblasGemmStridedBatchedExWithFlags
+    follows the same convention.
 
         #ifdef HIPBLAS_V2 // available in hipBLAS version 2.0.0 and later with -DHIPBLAS_V2
 
@@ -18114,6 +18209,31 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t    
                                                         hipblasComputeType_t computeType,
                                                         hipblasGemmAlgo_t    algo)
 
+            hipblasStatus_t hipblasGemmStridedBatchedExWithFlags(hipblasHandle_t      handle,
+                                                                 hipblasOperation_t   transA,
+                                                                 hipblasOperation_t   transB,
+                                                                 int                  m,
+                                                                 int                  n,
+                                                                 int                  k,
+                                                                 const void*          alpha,
+                                                                 const void*          A,
+                                                                 hipDataType          aType,
+                                                                 int                  lda,
+                                                                 hipblasStride        strideA,
+                                                                 const void*          B,
+                                                                 hipDataType          bType,
+                                                                 int                  ldb,
+                                                                 hipblasStride        strideB,
+                                                                 const void*          beta,
+                                                                 void*                C,
+                                                                 hipDataType          cType,
+                                                                 int                  ldc,
+                                                                 hipblasStride        strideC,
+                                                                 int                  batchCount,
+                                                                 hipblasComputeType_t computeType,
+                                                                 hipblasGemmAlgo_t    algo,
+                                                                 hipblasGemmFlags_t   flags)
+
         #else // [DEPRECATED]
 
             hipblasStatus_t hipblasGemmStridedBatchedEx(hipblasHandle_t    handle,
@@ -18140,13 +18260,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t    
                                                         hipblasDatatype_t  computeType,
                                                         hipblasGemmAlgo_t  algo)
 
-        #endif
-
-        hipblasGemmStridedBatchedExWithFlags is also available which is identical to the HIPBLAS_V2 version of hipblasStridedBatchedGemmEx
-        with the addition of a "flags" parameter which controls flags used in Tensile to control gemm algorithms with the
-        rocBLAS backend. When using a cuBLAS backend this parameter is ignored. Note that this API uses
-        hipDataType and hipblasComputeType_t and does not provide an interface using hipblasDatatype_t.
-
             hipblasStatus_t hipblasGemmStridedBatchedExWithFlags(hipblasHandle_t      handle,
                                                                  hipblasOperation_t   transA,
                                                                  hipblasOperation_t   transB,
@@ -18155,22 +18268,24 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags(hipblasHandle_t    
                                                                  int                  k,
                                                                  const void*          alpha,
                                                                  const void*          A,
-                                                                 hipDataType          aType,
+                                                                 hipblasDatatype_t    aType,
                                                                  int                  lda,
                                                                  hipblasStride        strideA,
                                                                  const void*          B,
-                                                                 hipDataType          bType,
+                                                                 hipblasDatatype_t    bType,
                                                                  int                  ldb,
                                                                  hipblasStride        strideB,
                                                                  const void*          beta,
                                                                  void*                C,
-                                                                 hipDataType          cType,
+                                                                 hipblasDatatype_t    cType,
                                                                  int                  ldc,
                                                                  hipblasStride        strideC,
                                                                  int                  batchCount,
-                                                                 hipblasComputeType_t computeType,
+                                                                 hipblasDatatype_t    computeType,
                                                                  hipblasGemmAlgo_t    algo,
                                                                  hipblasGemmFlags_t   flags)
+
+        #endif
 
     @param[in]
     handle    [hipblasHandle_t]
@@ -18304,31 +18419,56 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx_v2(hipblasHandle_t   
                                                               hipblasComputeType_t computeType,
                                                               hipblasGemmAlgo_t    algo);
 
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedExWithFlags(hipblasHandle_t    handle,
+                                                                    hipblasOperation_t transA,
+                                                                    hipblasOperation_t transB,
+                                                                    int                m,
+                                                                    int                n,
+                                                                    int                k,
+                                                                    const void*        alpha,
+                                                                    const void*        A,
+                                                                    hipblasDatatype_t  aType,
+                                                                    int                lda,
+                                                                    hipblasStride      strideA,
+                                                                    const void*        B,
+                                                                    hipblasDatatype_t  bType,
+                                                                    int                ldb,
+                                                                    hipblasStride      strideB,
+                                                                    const void*        beta,
+                                                                    void*              C,
+                                                                    hipblasDatatype_t  cType,
+                                                                    int                ldc,
+                                                                    hipblasStride      strideC,
+                                                                    int                batchCount,
+                                                                    hipblasDatatype_t  computeType,
+                                                                    hipblasGemmAlgo_t  algo,
+                                                                    hipblasGemmFlags_t flags);
+
 HIPBLAS_EXPORT hipblasStatus_t
-    hipblasGemmStridedBatchedExWithFlags(hipblasHandle_t      handle,
-                                         hipblasOperation_t   transA,
-                                         hipblasOperation_t   transB,
-                                         int                  m,
-                                         int                  n,
-                                         int                  k,
-                                         const void*          alpha,
-                                         const void*          A,
-                                         hipDataType          aType,
-                                         int                  lda,
-                                         hipblasStride        strideA,
-                                         const void*          B,
-                                         hipDataType          bType,
-                                         int                  ldb,
-                                         hipblasStride        strideB,
-                                         const void*          beta,
-                                         void*                C,
-                                         hipDataType          cType,
-                                         int                  ldc,
-                                         hipblasStride        strideC,
-                                         int                  batchCount,
-                                         hipblasComputeType_t computeType,
-                                         hipblasGemmAlgo_t    algo,
-                                         hipblasGemmFlags_t   flags);
+    hipblasGemmStridedBatchedExWithFlags_v2(hipblasHandle_t      handle,
+                                            hipblasOperation_t   transA,
+                                            hipblasOperation_t   transB,
+                                            int                  m,
+                                            int                  n,
+                                            int                  k,
+                                            const void*          alpha,
+                                            const void*          A,
+                                            hipDataType          aType,
+                                            int                  lda,
+                                            hipblasStride        strideA,
+                                            const void*          B,
+                                            hipDataType          bType,
+                                            int                  ldb,
+                                            hipblasStride        strideB,
+                                            const void*          beta,
+                                            void*                C,
+                                            hipDataType          cType,
+                                            int                  ldc,
+                                            hipblasStride        strideC,
+                                            int                  batchCount,
+                                            hipblasComputeType_t computeType,
+                                            hipblasGemmAlgo_t    algo,
+                                            hipblasGemmFlags_t   flags);
 
 /*! BLAS EX API
 
@@ -20800,6 +20940,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 #define hipblasGemmEx hipblasGemmEx_v2
 #define hipblasGemmBatchedEx hipblasGemmBatchedEx_v2
 #define hipblasGemmStridedBatchedEx hipblasGemmStridedBatchedEx_v2
+
+#define hipblasGemmExWithFlags hipblasGemmExWithFlags_v2
+#define hipblasGemmBatchedExWithFlags hipblasGemmBatchedExWithFlags_v2
+#define hipblasGemmStridedBatchedExWithFlags hipblasGemmStridedBatchedExWithFlags_v2
 
 #define hipblasAxpyEx hipblasAxpyEx_v2
 #define hipblasAxpyBatchedEx hipblasAxpyBatchedEx_v2

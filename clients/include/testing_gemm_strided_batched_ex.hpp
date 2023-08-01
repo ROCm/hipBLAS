@@ -57,11 +57,9 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
     bool FORTRAN = arg.fortran;
     auto hipblasGemmStridedBatchedExFn
         = FORTRAN ? hipblasGemmStridedBatchedExFortran : hipblasGemmStridedBatchedExFortran;
-#ifdef HIPBLAS_V2
     auto hipblasGemmStridedBatchedExWithFlagsFn = FORTRAN
                                                       ? hipblasGemmStridedBatchedExWithFlagsFortran
                                                       : hipblasGemmStridedBatchedExWithFlags;
-#endif
 
     hipblasGemmAlgo_t algo = HIPBLAS_GEMM_DEFAULT;
 
@@ -183,7 +181,6 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
 #endif
                                                               algo));
         }
-#ifdef HIPBLAS_V2
         else
         {
             CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExWithFlagsFn(handle,
@@ -207,11 +204,14 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
                                                                        ldc,
                                                                        stride_C,
                                                                        batch_count,
+#ifdef HIPBLAS_V2
                                                                        compute_type_gemm,
+#else
+                                                                       compute_type,
+#endif
                                                                        algo,
                                                                        flags));
         }
-#endif
 
         CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
@@ -247,7 +247,6 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
 #endif
                                                               algo));
         }
-#ifdef HIPBLAS_V2
         else
         {
             CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExWithFlagsFn(handle,
@@ -271,11 +270,14 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
                                                                        ldc,
                                                                        stride_C,
                                                                        batch_count,
+#ifdef HIPBLAS_V2
                                                                        compute_type_gemm,
+#else
+                                                                       compute_type,
+#endif
                                                                        algo,
                                                                        flags));
         }
-#endif
 
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
 
@@ -366,7 +368,6 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
 #endif
                                                                   algo));
             }
-#ifdef HIPBLAS_V2
             else
             {
                 CHECK_HIPBLAS_ERROR(hipblasGemmStridedBatchedExWithFlagsFn(handle,
@@ -390,11 +391,14 @@ inline hipblasStatus_t testing_gemm_strided_batched_ex_template(const Arguments&
                                                                            ldc,
                                                                            stride_C,
                                                                            batch_count,
+#ifdef HIPBLAS_V2
                                                                            compute_type_gemm,
+#else
+                                                                           compute_type,
+#endif
                                                                            algo,
                                                                            flags));
             }
-#endif
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
