@@ -403,7 +403,17 @@ typedef enum
     HIPBLAS_STATUS_UNKNOWN           = 11, /**<  back-end returned an unsupported status code */
 } hipblasStatus_t;
 
+/*! \brief Indicates if scalar pointers are on host or device. This is used for scalars alpha and beta and for scalar function return values. */
+typedef enum
+{
+    HIPBLAS_POINTER_MODE_HOST, /**< Scalar values affected by this variable will be located on the host. */
+    HIPBLAS_POINTER_MODE_DEVICE /**<  Scalar values affected by this variable will be located on the device. */
+} hipblasPointerMode_t;
+
 // set the values of enum constants to be the same as those used in cblas
+
+#ifndef HIPBLAS_OPERATION_DECLARED
+#define HIPBLAS_OPERATION_DECLARED
 /*! \brief Used to specify whether the matrix is to be transposed or not. */
 typedef enum
 {
@@ -412,13 +422,14 @@ typedef enum
     HIPBLAS_OP_C = 113 /**< Operate with the conjugate transpose of the matrix. */
 } hipblasOperation_t;
 
-/*! \brief Indicates if scalar pointers are on host or device. This is used for scalars alpha and beta and for scalar function return values. */
-typedef enum
-{
-    HIPBLAS_POINTER_MODE_HOST, /**< Scalar values affected by this variable will be located on the host. */
-    HIPBLAS_POINTER_MODE_DEVICE /**<  Scalar values affected by this variable will be located on the device. */
-} hipblasPointerMode_t;
+#elif __cplusplus >= 201103L
+static_assert(HIPBLAS_OP_N == 111, "Inconsistent declaration of HIPBLAS_OP_N");
+static_assert(HIPBLAS_OP_T == 112, "Inconsistent declaration of HIPBLAS_OP_T");
+static_assert(HIPBLAS_OP_C == 113, "Inconsistent declaration of HIPBLAS_OP_C");
+#endif // HIPBLAS_OPERATION_DECLARED
 
+#ifndef HIPBLAS_FILL_MODE_DECLARED
+#define HIPBLAS_FILL_MODE_DECLARED
 /*! \brief Used by the Hermitian, symmetric and triangular matrix routines to specify whether the upper or lower triangle is being referenced. */
 typedef enum
 {
@@ -427,6 +438,16 @@ typedef enum
     HIPBLAS_FILL_MODE_FULL  = 123
 } hipblasFillMode_t;
 
+#elif __cplusplus >= 201103L
+static_assert(HIPBLAS_FILL_MODE_UPPER == 121,
+              "Inconsistent declaration of HIPBLAS_FILL_MODE_UPPER");
+static_assert(HIPBLAS_FILL_MODE_LOWER == 122,
+              "Inconsistent declaration of HIPBLAS_FILL_MODE_LOWER");
+static_assert(HIPBLAS_FILL_MODE_FULL == 123, "Inconsistent declaration of HIPBLAS_FILL_MODE_FULL");
+#endif // HIPBLAS_FILL_MODE_DECLARED
+
+#ifndef HIPBLAS_DIAG_TYPE_DECLARED
+#define HIPBLAS_DIAG_TYPE_DECLARED
 /*! \brief It is used by the triangular matrix routines to specify whether the matrix is unit triangular.*/
 typedef enum
 {
@@ -434,6 +455,13 @@ typedef enum
     HIPBLAS_DIAG_UNIT     = 132 /**<  Unit triangular. */
 } hipblasDiagType_t;
 
+#elif __cplusplus >= 201103L
+static_assert(HIPBLAS_DIAG_NON_UNIT == 131, "Inconsistent declaration of HIPBLAS_DIAG_NON_UNIT");
+static_assert(HIPBLAS_DIAG_UNIT == 132, "Inconsistent declaration of HIPBLAS_DIAG_UNIT");
+#endif // HIPBLAS_DIAG_TYPE_DECLARED
+
+#ifndef HIPBLAS_SIDE_MODE_DECLARED
+#define HIPBLAS_SIDE_MODE_DECLARED
 /*! \brief Indicates the side matrix A is located relative to matrix B during multiplication. */
 typedef enum
 {
@@ -443,6 +471,12 @@ typedef enum
     = 142, /**< Multiply general matrix by symmetric, Hermitian or triangular matrix on the right. */
     HIPBLAS_SIDE_BOTH = 143
 } hipblasSideMode_t;
+
+#elif __cplusplus >= 201103L
+static_assert(HIPBLAS_SIDE_LEFT == 141, "Inconsistent declaration of HIPBLAS_SIDE_LEFT");
+static_assert(HIPBLAS_SIDE_RIGHT == 142, "Inconsistent declaration of HIPBLAS_SIDE_RIGHT");
+static_assert(HIPBLAS_SIDE_BOTH == 143, "Inconsistent declaration of HIPBLAS_SIDE_BOTH");
+#endif // HIPBLAS_SIDE_MODE_DECLARED
 
 #ifdef HIPBLAS_V2
 
