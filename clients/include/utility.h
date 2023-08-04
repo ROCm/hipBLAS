@@ -933,9 +933,34 @@ int query_device_property();
 /*  set current device to device_id */
 void set_device(int device_id);
 
+typedef enum hipblasClientProcessor
+{
+    // matching enum used in hipGcnArch
+    // only including supported types
+    gfx803  = 803,
+    gfx900  = 900,
+    gfx906  = 906,
+    gfx908  = 908,
+    gfx90a  = 910,
+    gfx940  = 940,
+    gfx941  = 941,
+    gfx942  = 942,
+    gfx1010 = 1010,
+    gfx1011 = 1011,
+    gfx1012 = 1012,
+    gfx1030 = 1030,
+    gfx1031 = 1031,
+    gfx1032 = 1032,
+    gfx1034 = 1034,
+    gfx1035 = 1035,
+    gfx1100 = 1100,
+    gfx1101 = 1101,
+    gfx1102 = 1102
+} hipblasClientProcessor;
+
 /* get architecture number */
-int getArch();
-int getArchMajor();
+hipblasClientProcessor getArch();
+int                    getArchMajor();
 
 /* ============================================================================================ */
 /*  timing: HIP only provides very limited timers function clock() and not general;
@@ -971,10 +996,10 @@ public:
 
     ~hipblasLocalHandle();
 
-    hipblasLocalHandle(const hipblasLocalHandle&) = delete;
-    hipblasLocalHandle(hipblasLocalHandle&&)      = delete;
+    hipblasLocalHandle(const hipblasLocalHandle&)            = delete;
+    hipblasLocalHandle(hipblasLocalHandle&&)                 = delete;
     hipblasLocalHandle& operator=(const hipblasLocalHandle&) = delete;
-    hipblasLocalHandle& operator=(hipblasLocalHandle&&) = delete;
+    hipblasLocalHandle& operator=(hipblasLocalHandle&&)      = delete;
 
     // Allow hipblasLocalHandle to be used anywhere hipblas_handle is expected
     operator hipblasHandle_t&()
