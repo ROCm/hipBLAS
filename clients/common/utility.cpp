@@ -321,19 +321,83 @@ void set_device(int device_id)
 /*******************************************************************************
  * GPU architecture-related functions
  ******************************************************************************/
-
-int getArch()
+hipblasClientProcessor getArch()
 {
     int device;
     CHECK_HIP_ERROR(hipGetDevice(&device));
     hipDeviceProp_t deviceProperties;
     CHECK_HIP_ERROR(hipGetDeviceProperties(&deviceProperties, device));
-    return deviceProperties.gcnArch;
+
+    // strip out xnack/ecc from name
+    std::string deviceFullString(deviceProperties.gcnArchName);
+    std::string deviceString = deviceFullString.substr(0, deviceFullString.find(":"));
+
+    if(deviceString.find("gfx803") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx803;
+    }
+    else if(deviceString.find("gfx900") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx900;
+    }
+    else if(deviceString.find("gfx906") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx906;
+    }
+    else if(deviceString.find("gfx908") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx908;
+    }
+    else if(deviceString.find("gfx90a") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx90a;
+    }
+    else if(deviceString.find("gfx940") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx940;
+    }
+    else if(deviceString.find("gfx941") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx941;
+    }
+    else if(deviceString.find("gfx942") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx942;
+    }
+    else if(deviceString.find("gfx1010") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx1010;
+    }
+    else if(deviceString.find("gfx1011") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx1011;
+    }
+    else if(deviceString.find("gfx1012") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx1012;
+    }
+    else if(deviceString.find("gfx1030") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx1030;
+    }
+    else if(deviceString.find("gfx1100") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx1100;
+    }
+    else if(deviceString.find("gfx1101") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx1101;
+    }
+    else if(deviceString.find("gfx1102") != std::string::npos)
+    {
+        return hipblasClientProcessor::gfx1102;
+    }
+    return static_cast<hipblasClientProcessor>(0);
 }
 
 int getArchMajor()
 {
-    return getArch() / 100;
+    return static_cast<int>(getArch()) / 100;
 }
 
 #ifdef __cplusplus
