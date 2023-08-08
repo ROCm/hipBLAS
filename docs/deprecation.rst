@@ -97,7 +97,10 @@ Announced in hipBLAS 2.0
 Remove hipblasDatatype_t and replace with hipDataType
 =====================================================
 Use of the deprecated hipblasDatatype_t will give deprecation warnings telling you to compile with -DHIPBLAS_V2
-and to use hipDataType instead.
+and to use hipDataType instead. All functions which currently use hipblasDatatype_t are therefore deprecated as well,
+and will be replaced with functions which use hipDataType in the place of hipblasDatatype_t. These functions include:
+hipblasTrsmEx, hipblasGemmEx, hipblasAxpyEx, hipblasDot(c)Ex, hipblasNrm2Ex, hipblasRotEx, hipblasScalEx, and the batched
+and strided-batched variants of these. Please see the documentation for each function for more information.
 
 Note that there are no deprecation warnings for the hipBLAS Fortran API.
 
