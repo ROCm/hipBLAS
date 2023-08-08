@@ -744,7 +744,7 @@ INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_hpa_half_single_out,
                                  ValuesIn(compute_hpa_half_single_out),
                                  ValuesIn(batch_count_range),
                                  ValuesIn(is_fortran),
-                                 ValuesIn(without_flags)));
+                                 ValuesIn(with_and_without_flags)));
 
 INSTANTIATE_TEST_SUITE_P(quick_blas_batched_ex_small_bfloat16,
                          gemm_batch_ex_gtest,
