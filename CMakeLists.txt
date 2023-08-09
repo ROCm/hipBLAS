@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -177,6 +177,14 @@ if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
   if(BUILD_CLIENTS_BENCHMARKS)
     rocm_package_setup_client_component(
       benchmarks
+      DEPENDS
+        COMPONENT clients-common
+        DEB "${GFORTRAN_DEB}"
+        RPM "${GFORTRAN_RPM}")
+  endif()
+  if(BUILD_CLIENTS_SAMPLES)
+    rocm_package_setup_client_component(
+      samples
       DEPENDS
         COMPONENT clients-common
         DEB "${GFORTRAN_DEB}"
