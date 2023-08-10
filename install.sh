@@ -52,7 +52,7 @@ cat <<EOF
 
     --cmake-arg                   Forward the given argument to CMake when configuring the build.
 
-    --compiler </compier/path>    Specify path to host compiler. (e.g. /opt/rocm/bin/hipcc)
+    --compiler </compiler/path>    Specify path to host compiler. (e.g. /opt/rocm/bin/hipcc)
 
     --custom-target <target>      Specify custom target to link the library against (eg. host, device).
 
