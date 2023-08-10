@@ -34,6 +34,7 @@
 
 #include "hipblas-export.h"
 #include "hipblas-version.h"
+#include <hip/hip_complex.h>
 #include <hip/hip_runtime_api.h>
 #include <hip/library_types.h>
 #include <stdint.h>
@@ -218,9 +219,10 @@ static_assert(sizeof(hipblasBfloat16) == sizeof(hipblasBfloat16_public)
 #if defined(ROCM_MATHLIBS_API_USE_HIP_COMPLEX)
 // Using hip complex types
 
-#include <hip/hip_complex.h>
-
 /*! \brief hip type to represent a complex number with single precision real and imaginary parts. */
+HIPBLAS_DEPRECATED_MSG("ROCM_MATHLIBS_API_USE_HIP_COMPLEX define to use HIP complex types is "
+                       "deprecated and will be removed in a future release. "
+                       + "HIP complex datatypes will be used by default in the future.")
 typedef hipFloatComplex hipblasComplex;
 
 /*! \brief hip type to represent a complex number with double precision real and imaginary parts. */
@@ -230,6 +232,10 @@ typedef hipDoubleComplex hipblasDoubleComplex;
 // using internal complex class for API
 
 /*! \brief Struct to represent a complex number with single precision real and imaginary parts.*/
+HIPBLAS_DEPRECATED_MSG("hipblasComplex and hipblasDoubleComplex are deprecated for external use "
+                       "and will be replaced by hipComplex and hipDoubleComplex "
+                       + "in the API in the future. Compile with -DHIPBLAS_V2 to get new API with "
+                         "the HIP complex types now.")
 typedef struct hipblasComplex
 {
 #ifndef __cplusplus
@@ -849,6 +855,12 @@ HIPBLAS_EXPORT hipblasStatus_t
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasIzamax(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasIcamax_v2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasIzamax_v2(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result);
 //! @}
 
 /*! @{
@@ -898,6 +910,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxBatched(hipblasHandle_t             
                                                     int                               incx,
                                                     int                               batchCount,
                                                     int*                              result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasIcamaxBatched_v2(hipblasHandle_t         handle,
+                                                       int                     n,
+                                                       const hipComplex* const x[],
+                                                       int                     incx,
+                                                       int                     batchCount,
+                                                       int*                    result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxBatched_v2(hipblasHandle_t               handle,
+                                                       int                           n,
+                                                       const hipDoubleComplex* const x[],
+                                                       int                           incx,
+                                                       int                           batchCount,
+                                                       int*                          result);
 //! @}
 
 /*! @{
@@ -964,6 +990,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxStridedBatched(hipblasHandle_t      
                                                            hipblasStride               stridex,
                                                            int                         batchCount,
                                                            int*                        result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasIcamaxStridedBatched_v2(hipblasHandle_t   handle,
+                                                              int               n,
+                                                              const hipComplex* x,
+                                                              int               incx,
+                                                              hipblasStride     stridex,
+                                                              int               batchCount,
+                                                              int*              result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxStridedBatched_v2(hipblasHandle_t         handle,
+                                                              int                     n,
+                                                              const hipDoubleComplex* x,
+                                                              int                     incx,
+                                                              hipblasStride           stridex,
+                                                              int                     batchCount,
+                                                              int*                    result);
 //! @}
 
 /*! @{
@@ -20691,6 +20733,15 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 #define hipblasScalEx hipblasScalEx_v2
 #define hipblasScalBatchedEx hipblasScalBatchedEx_v2
 #define hipblasScalStridedBatchedEx hipblasScalStridedBatchedEx_v2
+
+#define hipblasIcamax hipblasIcamax_v2
+#define hipblasIzamax hipblasIzamax_v2
+
+#define hipblasIcamaxBatched hipblasIcamaxBatched_v2
+#define hipblasIzamaxBatched hipblasIzamaxBatched_v2
+
+#define hipblasIcamaxStridedBatched hipblasIcamaxStridedBatched_v2
+#define hipblasIzamaxStridedBatched hipblasIzamaxStridedBatched_v2
 #endif
 
 /*! HIPBLAS Auxiliary API

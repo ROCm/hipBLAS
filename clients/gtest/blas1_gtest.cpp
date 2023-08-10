@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2247,6 +2247,20 @@ TEST_P(blas1_gtest, amax_float_complex)
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
 
+TEST_P(blas1_gtest, amax_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_blas1_arguments(GetParam());
+
+    hipblasStatus_t status = testing_amax<hipblasDoubleComplex>(arg);
+
+    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
 #ifndef __HIP_PLATFORM_NVCC__
 
 // amax_batched
@@ -2272,6 +2286,24 @@ TEST_P(blas1_gtest, amax_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_amax_batched<hipblasComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas1_gtest, amax_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amax_batched<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2323,6 +2355,24 @@ TEST_P(blas1_gtest, amax_strided_batched_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, amax_strided_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amax_strided_batched<hipblasDoubleComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 #endif
 
 // amin
@@ -2340,6 +2390,15 @@ TEST_P(blas1_gtest, amin_float_complex)
     Arguments arg = setup_blas1_arguments(GetParam());
 
     hipblasStatus_t status = testing_amin<hipblasComplex>(arg);
+
+    EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+}
+
+TEST_P(blas1_gtest, amin_double_complex)
+{
+    Arguments arg = setup_blas1_arguments(GetParam());
+
+    hipblasStatus_t status = testing_amin<hipblasDoubleComplex>(arg);
 
     EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
 }
@@ -2383,6 +2442,24 @@ TEST_P(blas1_gtest, amin_batched_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, amin_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amin_batched<hipblasDoubleComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 // amin_strided_batched
 TEST_P(blas1_gtest, amin_strided_batched_float)
 {
@@ -2405,7 +2482,25 @@ TEST_P(blas1_gtest, amin_strided_batched_float)
 TEST_P(blas1_gtest, amin_strided_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_amin_strided_batched<float>(arg);
+    hipblasStatus_t status = testing_amin_strided_batched<hipblasComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas1_gtest, amin_strided_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_amin_strided_batched<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {

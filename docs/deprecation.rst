@@ -106,6 +106,17 @@ Note that there are no deprecation warnings for the hipBLAS Fortran API.
 
 hipblasDatatype_t will be removed in a future release, and the use of this type in the API will be replaced with hipDataType.
 
+Remove hipblasComplex and hipblasDoubleComplex, replaced by hipComplex and hipDoubleComplex
+===========================================================================================
+Use of these datatypes will give deprecation warnings telling you to compile with -DHIPBLAS_V2 and to use HIP complex types
+instead. All functions which currently use hipblasComplex and hipblasDoubleComplex are therefore deprecated as well,
+and will be replaced with functions which use hipComplex and hipDoubleComplex in their place.
+
+Note that there are no deprecation warnings for the hipBLAS Fortran API.
+
+hipComplex and hipDoubleComplex will be removed in a future release, and the use of this type in the API will be replaced by
+hipComplex and hipDoubleComplex.
+
 Removed in hipBLAS 2.0
 ^^^^^^^^^^^^^^^^^^^^^^
 
