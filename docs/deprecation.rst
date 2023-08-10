@@ -117,6 +117,8 @@ Note that there are no deprecation warnings for the hipBLAS Fortran API.
 hipComplex and hipDoubleComplex will be removed in a future release, and the use of this type in the API will be replaced by
 hipComplex and hipDoubleComplex.
 
+ROCM_MATHLIBS_API_USE_HIP_COMPLEX is also deprecated as the behavior provided by defining it will be the default in the future.
+
 Removed in hipBLAS 2.0
 ^^^^^^^^^^^^^^^^^^^^^^
 
