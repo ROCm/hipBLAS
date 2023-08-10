@@ -220,9 +220,9 @@ static_assert(sizeof(hipblasBfloat16) == sizeof(hipblasBfloat16_public)
 // Using hip complex types
 
 /*! \brief hip type to represent a complex number with single precision real and imaginary parts. */
-HIPBLAS_DEPRECATED_MSG("ROCM_MATHLIBS_API_USE_HIP_COMPLEX define to use HIP complex types is "
-                       "deprecated and will be removed in a future release. "
-                       + "HIP complex datatypes will be used by default in the future.")
+HIPBLAS_DEPRECATED_MSG("ROCM_MATHLIBS_API_USE_HIP_COMPLEX define to use HIP complex types is \
+deprecated and will be removed in a future release. \
+HIP complex datatypes will be used by default in the future.")
 typedef hipFloatComplex hipblasComplex;
 
 /*! \brief hip type to represent a complex number with double precision real and imaginary parts. */
@@ -232,10 +232,10 @@ typedef hipDoubleComplex hipblasDoubleComplex;
 // using internal complex class for API
 
 /*! \brief Struct to represent a complex number with single precision real and imaginary parts.*/
-HIPBLAS_DEPRECATED_MSG("hipblasComplex and hipblasDoubleComplex are deprecated for external use "
-                       "and will be replaced by hipComplex and hipDoubleComplex "
-                       + "in the API in the future. Compile with -DHIPBLAS_V2 to get new API with "
-                         "the HIP complex types now.")
+HIPBLAS_DEPRECATED_MSG("hipblasComplex and hipblasDoubleComplex are deprecated for external use \
+and will be replaced by hipComplex and hipDoubleComplex \
+in the API in the future. Compile with -DHIPBLAS_V2 to get new API with \
+the HIP complex types now.")
 typedef struct hipblasComplex
 {
 #ifndef __cplusplus
