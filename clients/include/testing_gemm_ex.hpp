@@ -46,10 +46,10 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
 {
     bool FORTRAN         = arg.fortran;
     auto hipblasGemmExFn = FORTRAN ? hipblasGemmExFortran : hipblasGemmEx;
+    auto hipblasGemmExWithFlagsFn
+        = FORTRAN ? hipblasGemmExWithFlagsFortran : hipblasGemmExWithFlags;
 
     hipblasGemmAlgo_t algo           = HIPBLAS_GEMM_DEFAULT;
-    uint32_t          solution_index = 0;
-    uint32_t          flags          = 0;
     size_t*           workspace_size = 0;
     void*             workspace      = 0;
 
@@ -67,6 +67,7 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
     hipblasDatatype_t    c_type            = arg.c_type;
     hipblasDatatype_t    compute_type      = arg.compute_type;
     hipblasComputeType_t compute_type_gemm = arg.compute_type_gemm;
+    hipblasGemmFlags_t   flags             = hipblasGemmFlags_t(arg.flags);
 
     Tex h_alpha_Tex = arg.get_alpha<Tex>();
     Tex h_beta_Tex  = arg.get_beta<Tex>();
@@ -127,57 +128,117 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
     {
         // hipBLAS
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
-                                            transA,
-                                            transB,
-                                            M,
-                                            N,
-                                            K,
-                                            &h_alpha_Tex,
-                                            dA,
-                                            a_type,
-                                            lda,
-                                            dB,
-                                            b_type,
-                                            ldb,
-                                            &h_beta_Tex,
-                                            dC,
-                                            c_type,
-                                            ldc,
+        if(!arg.with_flags)
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
+                                                transA,
+                                                transB,
+                                                M,
+                                                N,
+                                                K,
+                                                &h_alpha_Tex,
+                                                dA,
+                                                a_type,
+                                                lda,
+                                                dB,
+                                                b_type,
+                                                ldb,
+                                                &h_beta_Tex,
+                                                dC,
+                                                c_type,
+                                                ldc,
 #ifdef HIPBLAS_V2
-                                            compute_type_gemm,
+                                                compute_type_gemm,
 #else
-                                            compute_type,
+                                                compute_type,
 #endif
-                                            algo));
+                                                algo));
+        }
+        else
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmExWithFlagsFn(handle,
+                                                         transA,
+                                                         transB,
+                                                         M,
+                                                         N,
+                                                         K,
+                                                         &h_alpha_Tex,
+                                                         dA,
+                                                         a_type,
+                                                         lda,
+                                                         dB,
+                                                         b_type,
+                                                         ldb,
+                                                         &h_beta_Tex,
+                                                         dC,
+                                                         c_type,
+                                                         ldc,
+#ifdef HIPBLAS_V2
+                                                         compute_type_gemm,
+#else
+                                                         compute_type,
+#endif
+                                                         algo,
+                                                         flags));
+        }
 
         CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(Tc) * size_C, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
-                                            transA,
-                                            transB,
-                                            M,
-                                            N,
-                                            K,
-                                            d_alpha,
-                                            dA,
-                                            a_type,
-                                            lda,
-                                            dB,
-                                            b_type,
-                                            ldb,
-                                            d_beta,
-                                            dC,
-                                            c_type,
-                                            ldc,
+        if(!arg.with_flags)
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
+                                                transA,
+                                                transB,
+                                                M,
+                                                N,
+                                                K,
+                                                d_alpha,
+                                                dA,
+                                                a_type,
+                                                lda,
+                                                dB,
+                                                b_type,
+                                                ldb,
+                                                d_beta,
+                                                dC,
+                                                c_type,
+                                                ldc,
 #ifdef HIPBLAS_V2
-                                            compute_type_gemm,
+                                                compute_type_gemm,
 #else
-                                            compute_type,
+                                                compute_type,
 #endif
-                                            algo));
+                                                algo));
+        }
+        else
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmExWithFlagsFn(handle,
+                                                         transA,
+                                                         transB,
+                                                         M,
+                                                         N,
+                                                         K,
+                                                         d_alpha,
+                                                         dA,
+                                                         a_type,
+                                                         lda,
+                                                         dB,
+                                                         b_type,
+                                                         ldb,
+                                                         d_beta,
+                                                         dC,
+                                                         c_type,
+                                                         ldc,
+#ifdef HIPBLAS_V2
+                                                         compute_type_gemm,
+#else
+                                                         compute_type,
+#endif
+                                                         algo,
+                                                         flags));
+        }
 
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(Tc) * size_C, hipMemcpyDeviceToHost));
 
@@ -234,29 +295,59 @@ inline hipblasStatus_t testing_gemm_ex_template(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
-                                                transA,
-                                                transB,
-                                                M,
-                                                N,
-                                                K,
-                                                &h_alpha_Tex,
-                                                dA,
-                                                a_type,
-                                                lda,
-                                                dB,
-                                                b_type,
-                                                ldb,
-                                                &h_beta_Tex,
-                                                dC,
-                                                c_type,
-                                                ldc,
+            if(!arg.with_flags)
+            {
+                CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle,
+                                                    transA,
+                                                    transB,
+                                                    M,
+                                                    N,
+                                                    K,
+                                                    &h_alpha_Tex,
+                                                    dA,
+                                                    a_type,
+                                                    lda,
+                                                    dB,
+                                                    b_type,
+                                                    ldb,
+                                                    &h_beta_Tex,
+                                                    dC,
+                                                    c_type,
+                                                    ldc,
 #ifdef HIPBLAS_V2
-                                                compute_type_gemm,
+                                                    compute_type_gemm,
 #else
-                                                compute_type,
+                                                    compute_type,
 #endif
-                                                algo));
+                                                    algo));
+            }
+            else
+            {
+                CHECK_HIPBLAS_ERROR(hipblasGemmExWithFlagsFn(handle,
+                                                             transA,
+                                                             transB,
+                                                             M,
+                                                             N,
+                                                             K,
+                                                             &h_alpha_Tex,
+                                                             dA,
+                                                             a_type,
+                                                             lda,
+                                                             dB,
+                                                             b_type,
+                                                             ldb,
+                                                             &h_beta_Tex,
+                                                             dC,
+                                                             c_type,
+                                                             ldc,
+#ifdef HIPBLAS_V2
+                                                             compute_type_gemm,
+#else
+                                                             compute_type,
+#endif
+                                                             algo,
+                                                             flags));
+            }
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
