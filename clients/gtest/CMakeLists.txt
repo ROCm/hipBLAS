@@ -264,5 +264,8 @@ set_target_properties( hipblas-test PROPERTIES
     DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 
+add_dependencies( hipblas-test hipblas-common )
+add_dependencies( hipblas_v2-test hipblas-common )
+
 rocm_install(TARGETS hipblas-test COMPONENT tests)
 rocm_install(TARGETS hipblas_v2-test COMPONENT tests)

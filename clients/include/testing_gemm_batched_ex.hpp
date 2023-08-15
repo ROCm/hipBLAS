@@ -55,10 +55,10 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
 {
     bool FORTRAN                = arg.fortran;
     auto hipblasGemmBatchedExFn = FORTRAN ? hipblasGemmBatchedExFortran : hipblasGemmBatchedEx;
+    auto hipblasGemmBatchedExWithFlagsFn
+        = FORTRAN ? hipblasGemmBatchedExWithFlagsFortran : hipblasGemmBatchedExWithFlags;
 
-    hipblasGemmAlgo_t algo           = HIPBLAS_GEMM_DEFAULT;
-    uint32_t          solution_index = 0;
-    uint32_t          flags          = 0;
+    hipblasGemmAlgo_t algo = HIPBLAS_GEMM_DEFAULT;
 
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
     hipblasOperation_t transB = char2hipblas_operation(arg.transB);
@@ -78,6 +78,7 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
     hipblasDatatype_t    c_type            = arg.c_type;
     hipblasDatatype_t    compute_type      = arg.compute_type;
     hipblasComputeType_t compute_type_gemm = arg.compute_type_gemm;
+    hipblasGemmFlags_t   flags             = hipblasGemmFlags_t(arg.flags);
 
     Tex h_alpha_Tex = arg.get_alpha<Tex>();
     Tex h_beta_Tex  = arg.get_beta<Tex>();
@@ -143,59 +144,123 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
     {
         // hipBLAS
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
-                                                   transA,
-                                                   transB,
-                                                   M,
-                                                   N,
-                                                   K,
-                                                   &h_alpha_Tex,
-                                                   (const void**)(Ta**)dA.ptr_on_device(),
-                                                   a_type,
-                                                   lda,
-                                                   (const void**)(Tb**)dB.ptr_on_device(),
-                                                   b_type,
-                                                   ldb,
-                                                   &h_beta_Tex,
-                                                   (void**)(Tc**)dC.ptr_on_device(),
-                                                   c_type,
-                                                   ldc,
-                                                   batch_count,
+        if(!arg.with_flags)
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
+                                                       transA,
+                                                       transB,
+                                                       M,
+                                                       N,
+                                                       K,
+                                                       &h_alpha_Tex,
+                                                       (const void**)(Ta**)dA.ptr_on_device(),
+                                                       a_type,
+                                                       lda,
+                                                       (const void**)(Tb**)dB.ptr_on_device(),
+                                                       b_type,
+                                                       ldb,
+                                                       &h_beta_Tex,
+                                                       (void**)(Tc**)dC.ptr_on_device(),
+                                                       c_type,
+                                                       ldc,
+                                                       batch_count,
 #ifdef HIPBLAS_V2
-                                                   compute_type_gemm,
+                                                       compute_type_gemm,
 #else
-                                                   compute_type,
+                                                       compute_type,
 #endif
-                                                   algo));
+                                                       algo));
+        }
+        else
+        {
+            CHECK_HIPBLAS_ERROR(
+                hipblasGemmBatchedExWithFlagsFn(handle,
+                                                transA,
+                                                transB,
+                                                M,
+                                                N,
+                                                K,
+                                                &h_alpha_Tex,
+                                                (const void**)(Ta**)dA.ptr_on_device(),
+                                                a_type,
+                                                lda,
+                                                (const void**)(Tb**)dB.ptr_on_device(),
+                                                b_type,
+                                                ldb,
+                                                &h_beta_Tex,
+                                                (void**)(Tc**)dC.ptr_on_device(),
+                                                c_type,
+                                                ldc,
+                                                batch_count,
+#ifdef HIPBLAS_V2
+                                                compute_type_gemm,
+#else
+                                                compute_type,
+#endif
+                                                algo,
+                                                flags));
+        }
 
         CHECK_HIP_ERROR(hC_host.transfer_from(dC));
         CHECK_HIP_ERROR(dC.transfer_from(hC_device));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
-                                                   transA,
-                                                   transB,
-                                                   M,
-                                                   N,
-                                                   K,
-                                                   d_alpha,
-                                                   (const void**)(Ta**)dA.ptr_on_device(),
-                                                   a_type,
-                                                   lda,
-                                                   (const void**)(Tb**)dB.ptr_on_device(),
-                                                   b_type,
-                                                   ldb,
-                                                   d_beta,
-                                                   (void**)(Tc**)dC.ptr_on_device(),
-                                                   c_type,
-                                                   ldc,
-                                                   batch_count,
+        if(!arg.with_flags)
+        {
+            CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
+                                                       transA,
+                                                       transB,
+                                                       M,
+                                                       N,
+                                                       K,
+                                                       d_alpha,
+                                                       (const void**)(Ta**)dA.ptr_on_device(),
+                                                       a_type,
+                                                       lda,
+                                                       (const void**)(Tb**)dB.ptr_on_device(),
+                                                       b_type,
+                                                       ldb,
+                                                       d_beta,
+                                                       (void**)(Tc**)dC.ptr_on_device(),
+                                                       c_type,
+                                                       ldc,
+                                                       batch_count,
 #ifdef HIPBLAS_V2
-                                                   compute_type_gemm,
+                                                       compute_type_gemm,
 #else
-                                                   compute_type,
+                                                       compute_type,
 #endif
-                                                   algo));
+                                                       algo));
+        }
+        else
+        {
+            CHECK_HIPBLAS_ERROR(
+                hipblasGemmBatchedExWithFlagsFn(handle,
+                                                transA,
+                                                transB,
+                                                M,
+                                                N,
+                                                K,
+                                                d_alpha,
+                                                (const void**)(Ta**)dA.ptr_on_device(),
+                                                a_type,
+                                                lda,
+                                                (const void**)(Tb**)dB.ptr_on_device(),
+                                                b_type,
+                                                ldb,
+                                                d_beta,
+                                                (void**)(Tc**)dC.ptr_on_device(),
+                                                c_type,
+                                                ldc,
+                                                batch_count,
+#ifdef HIPBLAS_V2
+                                                compute_type_gemm,
+#else
+                                                compute_type,
+#endif
+                                                algo,
+                                                flags));
+        }
 
         CHECK_HIP_ERROR(hC_device.transfer_from(dC));
 
@@ -257,30 +322,62 @@ inline hipblasStatus_t testing_gemm_batched_ex_template(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
-                                                       transA,
-                                                       transB,
-                                                       M,
-                                                       N,
-                                                       K,
-                                                       &h_alpha_Tex,
-                                                       (const void**)(Ta**)dA.ptr_on_device(),
-                                                       a_type,
-                                                       lda,
-                                                       (const void**)(Tb**)dB.ptr_on_device(),
-                                                       b_type,
-                                                       ldb,
-                                                       &h_beta_Tex,
-                                                       (void**)(Tc**)dC.ptr_on_device(),
-                                                       c_type,
-                                                       ldc,
-                                                       batch_count,
+            if(!arg.with_flags)
+            {
+                CHECK_HIPBLAS_ERROR(hipblasGemmBatchedExFn(handle,
+                                                           transA,
+                                                           transB,
+                                                           M,
+                                                           N,
+                                                           K,
+                                                           &h_alpha_Tex,
+                                                           (const void**)(Ta**)dA.ptr_on_device(),
+                                                           a_type,
+                                                           lda,
+                                                           (const void**)(Tb**)dB.ptr_on_device(),
+                                                           b_type,
+                                                           ldb,
+                                                           &h_beta_Tex,
+                                                           (void**)(Tc**)dC.ptr_on_device(),
+                                                           c_type,
+                                                           ldc,
+                                                           batch_count,
 #ifdef HIPBLAS_V2
-                                                       compute_type_gemm,
+                                                           compute_type_gemm,
 #else
-                                                       compute_type,
+                                                           compute_type,
 #endif
-                                                       algo));
+                                                           algo));
+            }
+            else
+            {
+                CHECK_HIPBLAS_ERROR(
+                    hipblasGemmBatchedExWithFlagsFn(handle,
+                                                    transA,
+                                                    transB,
+                                                    M,
+                                                    N,
+                                                    K,
+                                                    &h_alpha_Tex,
+                                                    (const void**)(Ta**)dA.ptr_on_device(),
+                                                    a_type,
+                                                    lda,
+                                                    (const void**)(Tb**)dB.ptr_on_device(),
+                                                    b_type,
+                                                    ldb,
+                                                    &h_beta_Tex,
+                                                    (void**)(Tc**)dC.ptr_on_device(),
+                                                    c_type,
+                                                    ldc,
+                                                    batch_count,
+#ifdef HIPBLAS_V2
+                                                    compute_type_gemm,
+#else
+                                                    compute_type,
+#endif
+                                                    algo,
+                                                    flags));
+            }
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
