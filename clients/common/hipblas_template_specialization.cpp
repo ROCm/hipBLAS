@@ -1898,7 +1898,7 @@ hipblasStatus_t hipblasIamax<hipblasComplex>(
     hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result)
 {
 #ifdef HIPBLAS_V2
-    return hipblasIcamax(handle, n, (hipComplex*)x, incx, result);
+    return hipblasIcamax(handle, n, (const hipComplex*)x, incx, result);
 #else
     return hipblasIcamax(handle, n, x, incx, result);
 #endif
@@ -1909,7 +1909,7 @@ hipblasStatus_t hipblasIamax<hipblasDoubleComplex>(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result)
 {
 #ifdef HIPBLAS_V2
-    return hipblasIzamax(handle, n, (hipDoubleComplex*)x, incx, result);
+    return hipblasIzamax(handle, n, (const hipDoubleComplex*)x, incx, result);
 #else
     return hipblasIzamax(handle, n, x, incx, result);
 #endif
@@ -1997,7 +1997,7 @@ hipblasStatus_t hipblasIamaxStridedBatched<hipblasComplex>(hipblasHandle_t      
 {
 #ifdef HIPBLAS_V2
     return hipblasIcamaxStridedBatched(
-        handle, n, (hipComplex*)x, incx, stridex, batch_count, result);
+        handle, n, (const hipComplex*)x, incx, stridex, batch_count, result);
 #else
     return hipblasIcamaxStridedBatched(handle, n, x, incx, stridex, batch_count, result);
 #endif
@@ -2014,7 +2014,7 @@ hipblasStatus_t hipblasIamaxStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
 {
 #ifdef HIPBLAS_V2
     return hipblasIzamaxStridedBatched(
-        handle, n, (hipDoubleComplex*)x, incx, stridex, batch_count, result);
+        handle, n, (const hipDoubleComplex*)x, incx, stridex, batch_count, result);
 #else
     return hipblasIzamaxStridedBatched(handle, n, x, incx, stridex, batch_count, result);
 #endif
@@ -12281,14 +12281,22 @@ template <>
 hipblasStatus_t hipblasIamax<hipblasComplex, true>(
     hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result)
 {
+#ifdef HIPBLAS_V2
+    return hipblasIcamaxFortran(handle, n, (const hipComplex*)x, incx, result);
+#else
     return hipblasIcamaxFortran(handle, n, x, incx, result);
+#endif
 }
 
 template <>
 hipblasStatus_t hipblasIamax<hipblasDoubleComplex, true>(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result)
 {
+#ifdef HIPBLAS_V2
+    return hipblasIzamaxFortran(handle, n, (const hipDoubleComplex*)x, incx, result);
+#else
     return hipblasIzamaxFortran(handle, n, x, incx, result);
+#endif
 }
 
 // amax_batched
@@ -12314,7 +12322,12 @@ hipblasStatus_t hipblasIamaxBatched<hipblasComplex, true>(hipblasHandle_t       
                                                           int                         batch_count,
                                                           int*                        result)
 {
+#ifdef HIPBLAS_V2
+    return hipblasIcamaxBatchedFortran(
+        handle, n, (const hipComplex* const*)x, incx, batch_count, result);
+#else
     return hipblasIcamaxBatchedFortran(handle, n, x, incx, batch_count, result);
+#endif
 }
 
 template <>
@@ -12326,7 +12339,12 @@ hipblasStatus_t
                                                     int                               batch_count,
                                                     int*                              result)
 {
+#ifdef HIPBLAS_V2
+    return hipblasIzamaxBatchedFortran(
+        handle, n, (const hipDoubleComplex* const*)x, incx, batch_count, result);
+#else
     return hipblasIzamaxBatchedFortran(handle, n, x, incx, batch_count, result);
+#endif
 }
 
 // amax_strided_batched
@@ -12363,7 +12381,12 @@ hipblasStatus_t hipblasIamaxStridedBatched<hipblasComplex, true>(hipblasHandle_t
                                                                  int                   batch_count,
                                                                  int*                  result)
 {
+#ifdef HIPBLAS_V2
+    return hipblasIcamaxStridedBatchedFortran(
+        handle, n, (const hipComplex*)x, incx, stridex, batch_count, result);
+#else
     return hipblasIcamaxStridedBatchedFortran(handle, n, x, incx, stridex, batch_count, result);
+#endif
 }
 
 template <>
@@ -12376,7 +12399,12 @@ hipblasStatus_t
                                                            int                         batch_count,
                                                            int*                        result)
 {
+#ifdef HIPBLAS_V2
+    return hipblasIzamaxStridedBatchedFortran(
+        handle, n, (const hipDoubleComplex*)x, incx, stridex, batch_count, result);
+#else
     return hipblasIzamaxStridedBatchedFortran(handle, n, x, incx, stridex, batch_count, result);
+#endif
 }
 
 // amin

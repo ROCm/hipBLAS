@@ -890,11 +890,19 @@ hipblasStatus_t
 hipblasStatus_t
     hipblasIdamaxFortran(hipblasHandle_t handle, int n, const double* x, int incx, int* result);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t
+    hipblasIcamaxFortran(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result);
+
+hipblasStatus_t hipblasIzamaxFortran(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result);
+#else
 hipblasStatus_t hipblasIcamaxFortran(
     hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result);
 
 hipblasStatus_t hipblasIzamaxFortran(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result);
+#endif
 
 // amaxBatched
 hipblasStatus_t hipblasIsamaxBatchedFortran(
@@ -903,6 +911,21 @@ hipblasStatus_t hipblasIsamaxBatchedFortran(
 hipblasStatus_t hipblasIdamaxBatchedFortran(
     hipblasHandle_t handle, int n, const double* const x[], int incx, int batch_count, int* result);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasIcamaxBatchedFortran(hipblasHandle_t         handle,
+                                            int                     n,
+                                            const hipComplex* const x[],
+                                            int                     incx,
+                                            int                     batch_count,
+                                            int*                    result);
+
+hipblasStatus_t hipblasIzamaxBatchedFortran(hipblasHandle_t               handle,
+                                            int                           n,
+                                            const hipDoubleComplex* const x[],
+                                            int                           incx,
+                                            int                           batch_count,
+                                            int*                          result);
+#else
 hipblasStatus_t hipblasIcamaxBatchedFortran(hipblasHandle_t             handle,
                                             int                         n,
                                             const hipblasComplex* const x[],
@@ -916,6 +939,7 @@ hipblasStatus_t hipblasIzamaxBatchedFortran(hipblasHandle_t                   ha
                                             int                               incx,
                                             int                               batch_count,
                                             int*                              result);
+#endif
 
 // amaxStridedBatched
 hipblasStatus_t hipblasIsamaxStridedBatchedFortran(hipblasHandle_t handle,
@@ -934,6 +958,23 @@ hipblasStatus_t hipblasIdamaxStridedBatchedFortran(hipblasHandle_t handle,
                                                    int             batch_count,
                                                    int*            result);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasIcamaxStridedBatchedFortran(hipblasHandle_t   handle,
+                                                   int               n,
+                                                   const hipComplex* x,
+                                                   int               incx,
+                                                   hipblasStride     stridex,
+                                                   int               batch_count,
+                                                   int*              result);
+
+hipblasStatus_t hipblasIzamaxStridedBatchedFortran(hipblasHandle_t         handle,
+                                                   int                     n,
+                                                   const hipDoubleComplex* x,
+                                                   int                     incx,
+                                                   hipblasStride           stridex,
+                                                   int                     batch_count,
+                                                   int*                    result);
+#else
 hipblasStatus_t hipblasIcamaxStridedBatchedFortran(hipblasHandle_t       handle,
                                                    int                   n,
                                                    const hipblasComplex* x,
@@ -949,6 +990,7 @@ hipblasStatus_t hipblasIzamaxStridedBatchedFortran(hipblasHandle_t             h
                                                    hipblasStride               stridex,
                                                    int                         batch_count,
                                                    int*                        result);
+#endif
 
 // amin
 hipblasStatus_t
