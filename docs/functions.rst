@@ -80,7 +80,7 @@ users can use either a compiler define or inline #define ROCM_MATHLIBS_API_USE_H
 API is compatible with both forms, but recompilation is required to avoid casting if switching to pass in the hip complex types.
 
 Note that hipblasComplex, hipblasDoubleComplex, and use of ROCM_MATHLIBS_API_USE_HIP_COMPLEX are now deprecated. The API will provide interfaces
-using hipComplex and hipDoubleComplex only in the future.
+using only hipComplex and hipDoubleComplex in the future.
 
 Atomic Operations
 =================
