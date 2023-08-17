@@ -1984,6 +1984,42 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasCcopy_v2(
+    hipblasHandle_t handle, int n, const hipComplex* x, int incx, hipComplex* y, int incy)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_ccopy((rocblas_handle)handle,
+                                                  n,
+                                                  (rocblas_float_complex*)x,
+                                                  incx,
+                                                  (rocblas_float_complex*)y,
+                                                  incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZcopy_v2(hipblasHandle_t         handle,
+                                int                     n,
+                                const hipDoubleComplex* x,
+                                int                     incx,
+                                hipDoubleComplex*       y,
+                                int                     incy)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zcopy((rocblas_handle)handle,
+                                                  n,
+                                                  (rocblas_double_complex*)x,
+                                                  incx,
+                                                  (rocblas_double_complex*)y,
+                                                  incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // copy_batched
 hipblasStatus_t hipblasScopyBatched(hipblasHandle_t    handle,
                                     int                n,
@@ -2048,6 +2084,50 @@ hipblasStatus_t hipblasZcopyBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zcopy_batched((rocblas_handle)handle,
+                                                          n,
+                                                          (rocblas_double_complex**)x,
+                                                          incx,
+                                                          (rocblas_double_complex**)y,
+                                                          incy,
+                                                          batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCcopyBatched_v2(hipblasHandle_t         handle,
+                                       int                     n,
+                                       const hipComplex* const x[],
+                                       int                     incx,
+                                       hipComplex* const       y[],
+                                       int                     incy,
+                                       int                     batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_ccopy_batched((rocblas_handle)handle,
+                                                          n,
+                                                          (rocblas_float_complex**)x,
+                                                          incx,
+                                                          (rocblas_float_complex**)y,
+                                                          incy,
+                                                          batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZcopyBatched_v2(hipblasHandle_t               handle,
+                                       int                           n,
+                                       const hipDoubleComplex* const x[],
+                                       int                           incx,
+                                       hipDoubleComplex* const       y[],
+                                       int                           incy,
+                                       int                           batchCount)
 try
 {
     return rocBLASStatusToHIPStatus(rocblas_zcopy_batched((rocblas_handle)handle,
@@ -2137,6 +2217,58 @@ hipblasStatus_t hipblasZcopyStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zcopy_strided_batched((rocblas_handle)handle,
+                                                                  n,
+                                                                  (rocblas_double_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_double_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCcopyStridedBatched_v2(hipblasHandle_t   handle,
+                                              int               n,
+                                              const hipComplex* x,
+                                              int               incx,
+                                              hipblasStride     stridex,
+                                              hipComplex*       y,
+                                              int               incy,
+                                              hipblasStride     stridey,
+                                              int               batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_ccopy_strided_batched((rocblas_handle)handle,
+                                                                  n,
+                                                                  (rocblas_float_complex*)x,
+                                                                  incx,
+                                                                  stridex,
+                                                                  (rocblas_float_complex*)y,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZcopyStridedBatched_v2(hipblasHandle_t         handle,
+                                              int                     n,
+                                              const hipDoubleComplex* x,
+                                              int                     incx,
+                                              hipblasStride           stridex,
+                                              hipDoubleComplex*       y,
+                                              int                     incy,
+                                              hipblasStride           stridey,
+                                              int                     batchCount)
 try
 {
     return rocBLASStatusToHIPStatus(rocblas_zcopy_strided_batched((rocblas_handle)handle,
