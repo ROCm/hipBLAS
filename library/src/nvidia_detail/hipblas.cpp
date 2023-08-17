@@ -2943,6 +2943,33 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t
+    hipblasCrotg_v2(hipblasHandle_t handle, hipComplex* a, hipComplex* b, float* c, hipComplex* s)
+try
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasCrotg((cublasHandle_t)handle, (cuComplex*)a, (cuComplex*)b, c, (cuComplex*)s));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZrotg_v2(hipblasHandle_t   handle,
+                                hipDoubleComplex* a,
+                                hipDoubleComplex* b,
+                                double*           c,
+                                hipDoubleComplex* s)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasZrotg(
+        (cublasHandle_t)handle, (cuDoubleComplex*)a, (cuDoubleComplex*)b, c, (cuDoubleComplex*)s));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // rotg_batchced
 hipblasStatus_t hipblasSrotgBatched(hipblasHandle_t handle,
                                     float* const    a[],
@@ -2980,6 +3007,26 @@ hipblasStatus_t hipblasZrotgBatched(hipblasHandle_t             handle,
                                     double* const               c[],
                                     hipblasDoubleComplex* const s[],
                                     int                         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCrotgBatched_v2(hipblasHandle_t   handle,
+                                       hipComplex* const a[],
+                                       hipComplex* const b[],
+                                       float* const      c[],
+                                       hipComplex* const s[],
+                                       int               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZrotgBatched_v2(hipblasHandle_t         handle,
+                                       hipDoubleComplex* const a[],
+                                       hipDoubleComplex* const b[],
+                                       double* const           c[],
+                                       hipDoubleComplex* const s[],
+                                       int                     batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -3037,6 +3084,34 @@ hipblasStatus_t hipblasZrotgStridedBatched(hipblasHandle_t       handle,
                                            hipblasDoubleComplex* s,
                                            hipblasStride         stride_s,
                                            int                   batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCrotgStridedBatched_v2(hipblasHandle_t handle,
+                                              hipComplex*     a,
+                                              hipblasStride   stride_a,
+                                              hipComplex*     b,
+                                              hipblasStride   stride_b,
+                                              float*          c,
+                                              hipblasStride   stride_c,
+                                              hipComplex*     s,
+                                              hipblasStride   stride_s,
+                                              int             batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZrotgStridedBatched_v2(hipblasHandle_t   handle,
+                                              hipDoubleComplex* a,
+                                              hipblasStride     stride_a,
+                                              hipDoubleComplex* b,
+                                              hipblasStride     stride_b,
+                                              double*           c,
+                                              hipblasStride     stride_c,
+                                              hipDoubleComplex* s,
+                                              hipblasStride     stride_s,
+                                              int               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }

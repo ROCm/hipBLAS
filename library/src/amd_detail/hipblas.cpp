@@ -4218,6 +4218,39 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t
+    hipblasCrotg_v2(hipblasHandle_t handle, hipComplex* a, hipComplex* b, float* c, hipComplex* s)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_crotg((rocblas_handle)handle,
+                                                  (rocblas_float_complex*)a,
+                                                  (rocblas_float_complex*)b,
+                                                  c,
+                                                  (rocblas_float_complex*)s));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZrotg_v2(hipblasHandle_t   handle,
+                                hipDoubleComplex* a,
+                                hipDoubleComplex* b,
+                                double*           c,
+                                hipDoubleComplex* s)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zrotg((rocblas_handle)handle,
+                                                  (rocblas_double_complex*)a,
+                                                  (rocblas_double_complex*)b,
+                                                  c,
+                                                  (rocblas_double_complex*)s));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // rotg_batched
 hipblasStatus_t hipblasSrotgBatched(hipblasHandle_t handle,
                                     float* const    a[],
@@ -4277,6 +4310,46 @@ hipblasStatus_t hipblasZrotgBatched(hipblasHandle_t             handle,
                                     double* const               c[],
                                     hipblasDoubleComplex* const s[],
                                     int                         batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zrotg_batched((rocblas_handle)handle,
+                                                          (rocblas_double_complex**)a,
+                                                          (rocblas_double_complex**)b,
+                                                          c,
+                                                          (rocblas_double_complex**)s,
+                                                          batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCrotgBatched_v2(hipblasHandle_t   handle,
+                                       hipComplex* const a[],
+                                       hipComplex* const b[],
+                                       float* const      c[],
+                                       hipComplex* const s[],
+                                       int               batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_crotg_batched((rocblas_handle)handle,
+                                                          (rocblas_float_complex**)a,
+                                                          (rocblas_float_complex**)b,
+                                                          c,
+                                                          (rocblas_float_complex**)s,
+                                                          batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZrotgBatched_v2(hipblasHandle_t         handle,
+                                       hipDoubleComplex* const a[],
+                                       hipDoubleComplex* const b[],
+                                       double* const           c[],
+                                       hipDoubleComplex* const s[],
+                                       int                     batchCount)
 try
 {
     return rocBLASStatusToHIPStatus(rocblas_zrotg_batched((rocblas_handle)handle,
@@ -4370,6 +4443,62 @@ hipblasStatus_t hipblasZrotgStridedBatched(hipblasHandle_t       handle,
                                            hipblasDoubleComplex* s,
                                            hipblasStride         stride_s,
                                            int                   batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zrotg_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_double_complex*)a,
+                                                                  stride_a,
+                                                                  (rocblas_double_complex*)b,
+                                                                  stride_b,
+                                                                  c,
+                                                                  stride_c,
+                                                                  (rocblas_double_complex*)s,
+                                                                  stride_s,
+                                                                  batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCrotgStridedBatched_v2(hipblasHandle_t handle,
+                                              hipComplex*     a,
+                                              hipblasStride   stride_a,
+                                              hipComplex*     b,
+                                              hipblasStride   stride_b,
+                                              float*          c,
+                                              hipblasStride   stride_c,
+                                              hipComplex*     s,
+                                              hipblasStride   stride_s,
+                                              int             batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_crotg_strided_batched((rocblas_handle)handle,
+                                                                  (rocblas_float_complex*)a,
+                                                                  stride_a,
+                                                                  (rocblas_float_complex*)b,
+                                                                  stride_b,
+                                                                  c,
+                                                                  stride_c,
+                                                                  (rocblas_float_complex*)s,
+                                                                  stride_s,
+                                                                  batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZrotgStridedBatched_v2(hipblasHandle_t   handle,
+                                              hipDoubleComplex* a,
+                                              hipblasStride     stride_a,
+                                              hipDoubleComplex* b,
+                                              hipblasStride     stride_b,
+                                              double*           c,
+                                              hipblasStride     stride_c,
+                                              hipDoubleComplex* s,
+                                              hipblasStride     stride_s,
+                                              int               batchCount)
 try
 {
     return rocBLASStatusToHIPStatus(rocblas_zrotg_strided_batched((rocblas_handle)handle,

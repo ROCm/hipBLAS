@@ -2323,6 +2323,17 @@ TEST_P(blas1_gtest, rotg_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, rotg_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotg<hipblasDoubleComplex>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+    }
+}
+
 #ifndef __HIP_PLATFORM_NVCC__
 
 // rotg_batched
@@ -2362,6 +2373,24 @@ TEST_P(blas1_gtest, rotg_batched_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, rotg_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotg_batched<hipblasDoubleComplex>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 // rotg_strided_batched
 TEST_P(blas1_gtest, rotg_strided_batched_float)
 {
@@ -2385,6 +2414,24 @@ TEST_P(blas1_gtest, rotg_strided_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_rotg_strided_batched<hipblasComplex>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas1_gtest, rotg_strided_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_rotg_strided_batched<hipblasDoubleComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
