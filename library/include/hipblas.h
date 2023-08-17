@@ -1251,6 +1251,12 @@ HIPBLAS_EXPORT hipblasStatus_t
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDzasum(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, double* result);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasScasum_v2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDzasum_v2(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
 //! @}
 
 /*! @{
@@ -1307,6 +1313,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched(hipblasHandle_t             
                                                     int                               incx,
                                                     int                               batchCount,
                                                     double*                           result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScasumBatched_v2(hipblasHandle_t         handle,
+                                                       int                     n,
+                                                       const hipComplex* const x[],
+                                                       int                     incx,
+                                                       int                     batchCount,
+                                                       float*                  result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched_v2(hipblasHandle_t               handle,
+                                                       int                           n,
+                                                       const hipDoubleComplex* const x[],
+                                                       int                           incx,
+                                                       int                           batchCount,
+                                                       double*                       result);
 //! @}
 
 /*! @{
@@ -1377,6 +1397,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched(hipblasHandle_t      
                                                            hipblasStride               stridex,
                                                            int                         batchCount,
                                                            double*                     result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScasumStridedBatched_v2(hipblasHandle_t   handle,
+                                                              int               n,
+                                                              const hipComplex* x,
+                                                              int               incx,
+                                                              hipblasStride     stridex,
+                                                              int               batchCount,
+                                                              float*            result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched_v2(hipblasHandle_t         handle,
+                                                              int                     n,
+                                                              const hipDoubleComplex* x,
+                                                              int                     incx,
+                                                              hipblasStride           stridex,
+                                                              int                     batchCount,
+                                                              double*                 result);
 //! @}
 
 /*! @{
@@ -21097,6 +21133,16 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 
 #define hipblasIcaminStridedBatched hipblasIcaminStridedBatched_v2
 #define hipblasIzaminStridedBatched hipblasIzaminStridedBatched_v2
+
+#define hipblasScasum hipblasScasum_v2
+#define hipblasDzasum hipblasDzasum_v2
+
+#define hipblasScasumBatched hipblasScasumBatched_v2
+#define hipblasDzasumBatched hipblasDzasumBatched_v2
+
+#define hipblasScasumStridedBatched hipblasScasumStridedBatched_v2
+#define hipblasDzasumStridedBatched hipblasDzasumStridedBatched_v2
+
 #endif
 
 /*! HIPBLAS Auxiliary API
