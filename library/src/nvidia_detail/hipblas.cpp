@@ -1227,6 +1227,45 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasCaxpy_v2(hipblasHandle_t   handle,
+                                int               n,
+                                const hipComplex* alpha,
+                                const hipComplex* x,
+                                int               incx,
+                                hipComplex*       y,
+                                int               incy)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasCaxpy(
+        (cublasHandle_t)handle, n, (cuComplex*)alpha, (cuComplex*)x, incx, (cuComplex*)y, incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZaxpy_v2(hipblasHandle_t         handle,
+                                int                     n,
+                                const hipDoubleComplex* alpha,
+                                const hipDoubleComplex* x,
+                                int                     incx,
+                                hipDoubleComplex*       y,
+                                int                     incy)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasZaxpy((cublasHandle_t)handle,
+                                                  n,
+                                                  (cuDoubleComplex*)alpha,
+                                                  (cuDoubleComplex*)x,
+                                                  incx,
+                                                  (cuDoubleComplex*)y,
+                                                  incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // axpy_batched
 hipblasStatus_t hipblasHaxpyBatched(hipblasHandle_t          handle,
                                     int                      n,
@@ -1292,6 +1331,30 @@ hipblasStatus_t hipblasZaxpyBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCaxpyBatched_v2(hipblasHandle_t         handle,
+                                       int                     n,
+                                       const hipComplex*       alpha,
+                                       const hipComplex* const x[],
+                                       int                     incx,
+                                       hipComplex* const       y[],
+                                       int                     incy,
+                                       int                     batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZaxpyBatched_v2(hipblasHandle_t               handle,
+                                       int                           n,
+                                       const hipDoubleComplex*       alpha,
+                                       const hipDoubleComplex* const x[],
+                                       int                           incx,
+                                       hipDoubleComplex* const       y[],
+                                       int                           incy,
+                                       int                           batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -1363,6 +1426,34 @@ hipblasStatus_t hipblasZaxpyStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCaxpyStridedBatched_v2(hipblasHandle_t   handle,
+                                              int               n,
+                                              const hipComplex* alpha,
+                                              const hipComplex* x,
+                                              int               incx,
+                                              hipblasStride     stridex,
+                                              hipComplex*       y,
+                                              int               incy,
+                                              hipblasStride     stridey,
+                                              int               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZaxpyStridedBatched_v2(hipblasHandle_t         handle,
+                                              int                     n,
+                                              const hipDoubleComplex* alpha,
+                                              const hipDoubleComplex* x,
+                                              int                     incx,
+                                              hipblasStride           stridex,
+                                              hipDoubleComplex*       y,
+                                              int                     incy,
+                                              hipblasStride           stridey,
+                                              int                     batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }

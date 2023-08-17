@@ -606,6 +606,23 @@ hipblasStatus_t hipblasDaxpyFortran(hipblasHandle_t handle,
                                     double*         y,
                                     const int       incy);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCaxpyFortran(hipblasHandle_t   handle,
+                                    const int         N,
+                                    const hipComplex* alpha,
+                                    const hipComplex* x,
+                                    const int         incx,
+                                    hipComplex*       y,
+                                    const int         incy);
+
+hipblasStatus_t hipblasZaxpyFortran(hipblasHandle_t         handle,
+                                    const int               N,
+                                    const hipDoubleComplex* alpha,
+                                    const hipDoubleComplex* x,
+                                    const int               incx,
+                                    hipDoubleComplex*       y,
+                                    const int               incy);
+#else
 hipblasStatus_t hipblasCaxpyFortran(hipblasHandle_t       handle,
                                     const int             N,
                                     const hipblasComplex* alpha,
@@ -621,6 +638,7 @@ hipblasStatus_t hipblasZaxpyFortran(hipblasHandle_t             handle,
                                     const int                   incx,
                                     hipblasDoubleComplex*       y,
                                     const int                   incy);
+#endif
 
 // axpyBatched
 hipblasStatus_t hipblasHaxpyBatchedFortran(hipblasHandle_t          handle,
@@ -641,15 +659,6 @@ hipblasStatus_t hipblasSaxpyBatchedFortran(hipblasHandle_t    handle,
                                            const int          incy,
                                            const int          batch_count);
 
-hipblasStatus_t hipblasSaxpyBatchedFortran(hipblasHandle_t    handle,
-                                           const int          N,
-                                           const float*       alpha,
-                                           const float* const x[],
-                                           const int          incx,
-                                           float* const       y[],
-                                           const int          incy,
-                                           const int          batch_count);
-
 hipblasStatus_t hipblasDaxpyBatchedFortran(hipblasHandle_t     handle,
                                            const int           N,
                                            const double*       alpha,
@@ -659,6 +668,25 @@ hipblasStatus_t hipblasDaxpyBatchedFortran(hipblasHandle_t     handle,
                                            const int           incy,
                                            const int           batch_count);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCaxpyBatchedFortran(hipblasHandle_t         handle,
+                                           const int               N,
+                                           const hipComplex*       alpha,
+                                           const hipComplex* const x[],
+                                           const int               incx,
+                                           hipComplex* const       y[],
+                                           const int               incy,
+                                           const int               batch_count);
+
+hipblasStatus_t hipblasZaxpyBatchedFortran(hipblasHandle_t               handle,
+                                           const int                     N,
+                                           const hipDoubleComplex*       alpha,
+                                           const hipDoubleComplex* const x[],
+                                           const int                     incx,
+                                           hipDoubleComplex* const       y[],
+                                           const int                     incy,
+                                           const int                     batch_count);
+#else
 hipblasStatus_t hipblasCaxpyBatchedFortran(hipblasHandle_t             handle,
                                            const int                   N,
                                            const hipblasComplex*       alpha,
@@ -676,6 +704,7 @@ hipblasStatus_t hipblasZaxpyBatchedFortran(hipblasHandle_t                   han
                                            hipblasDoubleComplex* const       y[],
                                            const int                         incy,
                                            const int                         batch_count);
+#endif
 
 // axpyStridedBatched
 hipblasStatus_t hipblasHaxpyStridedBatchedFortran(hipblasHandle_t     handle,
@@ -711,6 +740,29 @@ hipblasStatus_t hipblasDaxpyStridedBatchedFortran(hipblasHandle_t     handle,
                                                   const hipblasStride stride_y,
                                                   const int           batch_count);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCaxpyStridedBatchedFortran(hipblasHandle_t     handle,
+                                                  const int           N,
+                                                  const hipComplex*   alpha,
+                                                  const hipComplex*   x,
+                                                  const int           incx,
+                                                  const hipblasStride stride_x,
+                                                  hipComplex*         y,
+                                                  const int           incy,
+                                                  const hipblasStride stride_y,
+                                                  const int           batch_count);
+
+hipblasStatus_t hipblasZaxpyStridedBatchedFortran(hipblasHandle_t         handle,
+                                                  const int               N,
+                                                  const hipDoubleComplex* alpha,
+                                                  const hipDoubleComplex* x,
+                                                  const int               incx,
+                                                  const hipblasStride     stride_x,
+                                                  hipDoubleComplex*       y,
+                                                  const int               incy,
+                                                  const hipblasStride     stride_y,
+                                                  const int               batch_count);
+#else
 hipblasStatus_t hipblasCaxpyStridedBatchedFortran(hipblasHandle_t       handle,
                                                   const int             N,
                                                   const hipblasComplex* alpha,
@@ -732,6 +784,7 @@ hipblasStatus_t hipblasZaxpyStridedBatchedFortran(hipblasHandle_t             ha
                                                   const int                   incy,
                                                   const hipblasStride         stride_y,
                                                   const int                   batch_count);
+#endif
 
 // asum
 hipblasStatus_t

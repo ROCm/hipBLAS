@@ -84,7 +84,12 @@ hipblasStatus_t hipblasAxpy<hipblasComplex>(hipblasHandle_t       handle,
                                             hipblasComplex*       y,
                                             int                   incy)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCaxpy(
+        handle, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, (hipComplex*)y, incy);
+#else
     return hipblasCaxpy(handle, n, alpha, x, incx, y, incy);
+#endif
 }
 
 template <>
@@ -96,7 +101,17 @@ hipblasStatus_t hipblasAxpy<hipblasDoubleComplex>(hipblasHandle_t             ha
                                                   hipblasDoubleComplex*       y,
                                                   int                         incy)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZaxpy(handle,
+                        n,
+                        (const hipDoubleComplex*)alpha,
+                        (const hipDoubleComplex*)x,
+                        incx,
+                        (hipDoubleComplex*)y,
+                        incy);
+#else
     return hipblasZaxpy(handle, n, alpha, x, incx, y, incy);
+#endif
 }
 
 // axpy_batched
@@ -149,7 +164,18 @@ hipblasStatus_t hipblasAxpyBatched<hipblasComplex>(hipblasHandle_t             h
                                                    int                         incy,
                                                    int                         batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCaxpyBatched(handle,
+                               n,
+                               (const hipComplex*)alpha,
+                               (const hipComplex* const*)x,
+                               incx,
+                               (hipComplex* const*)y,
+                               incy,
+                               batch_count);
+#else
     return hipblasCaxpyBatched(handle, n, alpha, x, incx, y, incy, batch_count);
+#endif
 }
 
 template <>
@@ -162,7 +188,18 @@ hipblasStatus_t hipblasAxpyBatched<hipblasDoubleComplex>(hipblasHandle_t        
                                                          int                               incy,
                                                          int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZaxpyBatched(handle,
+                               n,
+                               (const hipDoubleComplex*)alpha,
+                               (const hipDoubleComplex* const*)x,
+                               incx,
+                               (hipDoubleComplex* const*)y,
+                               incy,
+                               batch_count);
+#else
     return hipblasZaxpyBatched(handle, n, alpha, x, incx, y, incy, batch_count);
+#endif
 }
 
 // axpy_strided_batched
@@ -226,8 +263,21 @@ hipblasStatus_t hipblasAxpyStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           hipblasStride         stridey,
                                                           int                   batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCaxpyStridedBatched(handle,
+                                      n,
+                                      (const hipComplex*)alpha,
+                                      (const hipComplex*)x,
+                                      incx,
+                                      stridex,
+                                      (hipComplex*)y,
+                                      incy,
+                                      stridey,
+                                      batch_count);
+#else
     return hipblasCaxpyStridedBatched(
         handle, n, alpha, x, incx, stridex, y, incy, stridey, batch_count);
+#endif
 }
 
 template <>
@@ -242,8 +292,21 @@ hipblasStatus_t hipblasAxpyStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 hipblasStride               stridey,
                                                                 int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZaxpyStridedBatched(handle,
+                                      n,
+                                      (const hipDoubleComplex*)alpha,
+                                      (const hipDoubleComplex*)x,
+                                      incx,
+                                      stridex,
+                                      (hipDoubleComplex*)y,
+                                      incy,
+                                      stridey,
+                                      batch_count);
+#else
     return hipblasZaxpyStridedBatched(
         handle, n, alpha, x, incx, stridex, y, incy, stridey, batch_count);
+#endif
 }
 
 // scal
@@ -10490,7 +10553,12 @@ hipblasStatus_t hipblasAxpy<hipblasComplex, true>(hipblasHandle_t       handle,
                                                   hipblasComplex*       y,
                                                   int                   incy)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCaxpyFortran(
+        handle, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, (hipComplex*)y, incy);
+#else
     return hipblasCaxpyFortran(handle, n, alpha, x, incx, y, incy);
+#endif
 }
 
 template <>
@@ -10502,7 +10570,17 @@ hipblasStatus_t hipblasAxpy<hipblasDoubleComplex, true>(hipblasHandle_t         
                                                         hipblasDoubleComplex*       y,
                                                         int                         incy)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZaxpyFortran(handle,
+                               n,
+                               (const hipDoubleComplex*)alpha,
+                               (const hipDoubleComplex*)x,
+                               incx,
+                               (hipDoubleComplex*)y,
+                               incy);
+#else
     return hipblasZaxpyFortran(handle, n, alpha, x, incx, y, incy);
+#endif
 }
 
 // axpy_batched
@@ -10555,7 +10633,18 @@ hipblasStatus_t hipblasAxpyBatched<hipblasComplex, true>(hipblasHandle_t        
                                                          int                         incy,
                                                          int                         batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCaxpyBatchedFortran(handle,
+                                      n,
+                                      (const hipComplex*)alpha,
+                                      (const hipComplex* const*)x,
+                                      incx,
+                                      (hipComplex* const*)y,
+                                      incy,
+                                      batch_count);
+#else
     return hipblasCaxpyBatchedFortran(handle, n, alpha, x, incx, y, incy, batch_count);
+#endif
 }
 
 template <>
@@ -10569,7 +10658,18 @@ hipblasStatus_t
                                                    int                               incy,
                                                    int                               batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZaxpyBatchedFortran(handle,
+                                      n,
+                                      (const hipDoubleComplex*)alpha,
+                                      (const hipDoubleComplex* const*)x,
+                                      incx,
+                                      (hipDoubleComplex* const*)y,
+                                      incy,
+                                      batch_count);
+#else
     return hipblasZaxpyBatchedFortran(handle, n, alpha, x, incx, y, incy, batch_count);
+#endif
 }
 
 // axpy_strided_batched
@@ -10633,8 +10733,21 @@ hipblasStatus_t hipblasAxpyStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 hipblasStride         stridey,
                                                                 int                   batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCaxpyStridedBatchedFortran(handle,
+                                             n,
+                                             (const hipComplex*)alpha,
+                                             (const hipComplex*)x,
+                                             incx,
+                                             stridex,
+                                             (hipComplex*)y,
+                                             incy,
+                                             stridey,
+                                             batch_count);
+#else
     return hipblasCaxpyStridedBatchedFortran(
         handle, n, alpha, x, incx, stridex, y, incy, stridey, batch_count);
+#endif
 }
 
 template <>
@@ -10650,8 +10763,21 @@ hipblasStatus_t
                                                           hipblasStride               stridey,
                                                           int                         batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZaxpyStridedBatchedFortran(handle,
+                                             n,
+                                             (const hipDoubleComplex*)alpha,
+                                             (const hipDoubleComplex*)x,
+                                             incx,
+                                             stridex,
+                                             (hipDoubleComplex*)y,
+                                             incy,
+                                             stridey,
+                                             batch_count);
+#else
     return hipblasZaxpyStridedBatchedFortran(
         handle, n, alpha, x, incx, stridex, y, incy, stridey, batch_count);
+#endif
 }
 
 // scal

@@ -240,6 +240,28 @@ TEST_P(blas1_gtest, axpy_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, axpy_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_axpy<hipblasDoubleComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(!arg.incx || !arg.incy)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 #ifndef __HIP_PLATFORM_NVCC__
 
 // axpy_batched
@@ -295,6 +317,32 @@ TEST_P(blas1_gtest, axpy_batched_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, axpy_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_axpy_batched<hipblasDoubleComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(!arg.incx || !arg.incy)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 // axpy_strided_batched
 TEST_P(blas1_gtest, axpy_strided_batched_float)
 {
@@ -326,6 +374,32 @@ TEST_P(blas1_gtest, axpy_strided_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_axpy_strided_batched<hipblasComplex>(arg);
+
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(!arg.incx || !arg.incy)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas1_gtest, axpy_strided_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_axpy_strided_batched<hipblasDoubleComplex>(arg);
 
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
