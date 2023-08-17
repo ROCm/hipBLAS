@@ -688,6 +688,30 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t
+    hipblasIcamax_v2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_icamax((rocblas_handle)handle, n, (rocblas_float_complex*)x, incx, result));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasIzamax_v2(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_izamax((rocblas_handle)handle, n, (rocblas_double_complex*)x, incx, result));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // amax_batched
 hipblasStatus_t hipblasIsamaxBatched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* result)
@@ -721,8 +745,12 @@ hipblasStatus_t hipblasIcamaxBatched(hipblasHandle_t             handle,
                                      int*                        result)
 try
 {
-    return rocBLASStatusToHIPStatus(rocblas_icamax_batched(
-        (rocblas_handle)handle, n, (rocblas_float_complex* const*)x, incx, batchCount, result));
+    return rocBLASStatusToHIPStatus(rocblas_icamax_batched((rocblas_handle)handle,
+                                                           n,
+                                                           (const rocblas_float_complex* const*)x,
+                                                           incx,
+                                                           batchCount,
+                                                           result));
 }
 catch(...)
 {
@@ -737,8 +765,52 @@ hipblasStatus_t hipblasIzamaxBatched(hipblasHandle_t                   handle,
                                      int*                              result)
 try
 {
-    return rocBLASStatusToHIPStatus(rocblas_izamax_batched(
-        (rocblas_handle)handle, n, (rocblas_double_complex* const*)x, incx, batchCount, result));
+    return rocBLASStatusToHIPStatus(rocblas_izamax_batched((rocblas_handle)handle,
+                                                           n,
+                                                           (const rocblas_double_complex* const*)x,
+                                                           incx,
+                                                           batchCount,
+                                                           result));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasIcamaxBatched_v2(hipblasHandle_t         handle,
+                                        int                     n,
+                                        const hipComplex* const x[],
+                                        int                     incx,
+                                        int                     batchCount,
+                                        int*                    result)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_icamax_batched((rocblas_handle)handle,
+                                                           n,
+                                                           (const rocblas_float_complex* const*)x,
+                                                           incx,
+                                                           batchCount,
+                                                           result));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasIzamaxBatched_v2(hipblasHandle_t               handle,
+                                        int                           n,
+                                        const hipDoubleComplex* const x[],
+                                        int                           incx,
+                                        int                           batchCount,
+                                        int*                          result)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_izamax_batched((rocblas_handle)handle,
+                                                           n,
+                                                           (const rocblas_double_complex* const*)x,
+                                                           incx,
+                                                           batchCount,
+                                                           result));
 }
 catch(...)
 {
@@ -804,6 +876,40 @@ hipblasStatus_t hipblasIzamaxStridedBatched(hipblasHandle_t             handle,
                                             hipblasStride               stridex,
                                             int                         batchCount,
                                             int*                        result)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_izamax_strided_batched(
+        (rocblas_handle)handle, n, (rocblas_double_complex*)x, incx, stridex, batchCount, result));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasIcamaxStridedBatched_v2(hipblasHandle_t   handle,
+                                               int               n,
+                                               const hipComplex* x,
+                                               int               incx,
+                                               hipblasStride     stridex,
+                                               int               batchCount,
+                                               int*              result)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_icamax_strided_batched(
+        (rocblas_handle)handle, n, (rocblas_float_complex*)x, incx, stridex, batchCount, result));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasIzamaxStridedBatched_v2(hipblasHandle_t         handle,
+                                               int                     n,
+                                               const hipDoubleComplex* x,
+                                               int                     incx,
+                                               hipblasStride           stridex,
+                                               int                     batchCount,
+                                               int*                    result)
 try
 {
     return rocBLASStatusToHIPStatus(rocblas_izamax_strided_batched(

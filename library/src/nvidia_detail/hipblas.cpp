@@ -613,6 +613,30 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t
+    hipblasIcamax_v2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, int* result)
+try
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasIcamax((cublasHandle_t)handle, n, (cuComplex*)x, incx, result));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasIzamax_v2(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, int* result)
+try
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasIzamax((cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, result));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // amax_batched
 hipblasStatus_t hipblasIsamaxBatched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* result)
@@ -642,6 +666,26 @@ hipblasStatus_t hipblasIzamaxBatched(hipblasHandle_t                   handle,
                                      int                               incx,
                                      int                               batchCount,
                                      int*                              result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasIcamaxBatched_v2(hipblasHandle_t         handle,
+                                        int                     n,
+                                        const hipComplex* const x[],
+                                        int                     incx,
+                                        int                     batchCount,
+                                        int*                    result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasIzamaxBatched_v2(hipblasHandle_t               handle,
+                                        int                           n,
+                                        const hipDoubleComplex* const x[],
+                                        int                           incx,
+                                        int                           batchCount,
+                                        int*                          result)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -687,6 +731,28 @@ hipblasStatus_t hipblasIzamaxStridedBatched(hipblasHandle_t             handle,
                                             hipblasStride               stridex,
                                             int                         batchCount,
                                             int*                        result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasIcamaxStridedBatched_v2(hipblasHandle_t   handle,
+                                               int               n,
+                                               const hipComplex* x,
+                                               int               incx,
+                                               hipblasStride     stridex,
+                                               int               batchCount,
+                                               int*              result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasIzamaxStridedBatched_v2(hipblasHandle_t         handle,
+                                               int                     n,
+                                               const hipDoubleComplex* x,
+                                               int                     incx,
+                                               hipblasStride           stridex,
+                                               int                     batchCount,
+                                               int*                    result)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
