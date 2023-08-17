@@ -2480,6 +2480,12 @@ HIPBLAS_EXPORT hipblasStatus_t
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, double* result);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasScnrm2_v2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2_v2(
+    hipblasHandle_t handle, int n, const hipDoubleComplex* x, int incx, double* result);
 //! @}
 
 /*! @{
@@ -2537,6 +2543,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2Batched(hipblasHandle_t             
                                                     int                               incx,
                                                     int                               batchCount,
                                                     double*                           result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2Batched_v2(hipblasHandle_t         handle,
+                                                       int                     n,
+                                                       const hipComplex* const x[],
+                                                       int                     incx,
+                                                       int                     batchCount,
+                                                       float*                  result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2Batched_v2(hipblasHandle_t               handle,
+                                                       int                           n,
+                                                       const hipDoubleComplex* const x[],
+                                                       int                           incx,
+                                                       int                           batchCount,
+                                                       double*                       result);
 //! @}
 
 /*! @{
@@ -2609,6 +2629,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2StridedBatched(hipblasHandle_t      
                                                            hipblasStride               stridex,
                                                            int                         batchCount,
                                                            double*                     result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScnrm2StridedBatched_v2(hipblasHandle_t   handle,
+                                                              int               n,
+                                                              const hipComplex* x,
+                                                              int               incx,
+                                                              hipblasStride     stridex,
+                                                              int               batchCount,
+                                                              float*            result);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2StridedBatched_v2(hipblasHandle_t         handle,
+                                                              int                     n,
+                                                              const hipDoubleComplex* x,
+                                                              int                     incx,
+                                                              hipblasStride           stridex,
+                                                              int                     batchCount,
+                                                              double*                 result);
 //! @}
 
 /*! @{
@@ -21389,6 +21425,15 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 #define hipblasCdotcStridedBatched hipblasCdotcStridedBatched_v2
 #define hipblasZdotuStridedBatched hipblasZdotuStridedBatched_v2
 #define hipblasZdotcStridedBatched hipblasZdotcStridedBatched_v2
+
+#define hipblasScnrm2 hipblasScnrm2_v2
+#define hipblasDznrm2 hipblasDznrm2_v2
+
+#define hipblasScnrm2Batched hipblasScnrm2Batched_v2
+#define hipblasDznrm2Batched hipblasDznrm2Batched_v2
+
+#define hipblasScnrm2StridedBatched hipblasScnrm2StridedBatched_v2
+#define hipblasDznrm2StridedBatched hipblasDznrm2StridedBatched_v2
 
 #endif
 
