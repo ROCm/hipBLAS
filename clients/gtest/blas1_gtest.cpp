@@ -706,6 +706,32 @@ TEST_P(blas1_gtest, scal_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, scal_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_scal<hipblasDoubleComplex>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 TEST_P(blas1_gtest, scal_float_complex_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -714,6 +740,33 @@ TEST_P(blas1_gtest, scal_float_complex_float)
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_scal<hipblasComplex, float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas1_gtest, scal_double_complex_double)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_scal<hipblasDoubleComplex, double>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
@@ -798,6 +851,37 @@ TEST_P(blas1_gtest, scal_batched_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, scal_batched_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_scal_batched<hipblasDoubleComplex>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            // for cublas
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+        }
+    }
+}
+
 TEST_P(blas1_gtest, scal_batched_float_complex_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -806,6 +890,37 @@ TEST_P(blas1_gtest, scal_batched_float_complex_float)
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_scal_batched<hipblasComplex, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            // for cublas
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+        }
+    }
+}
+
+TEST_P(blas1_gtest, scal_batched_double_complex_double)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_scal_batched<hipblasDoubleComplex, double>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -892,6 +1007,37 @@ TEST_P(blas1_gtest, scal_strided_batched_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, scal_strided_batched_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_scal_strided_batched<hipblasDoubleComplex>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            // for cublas
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+        }
+    }
+}
+
 TEST_P(blas1_gtest, scal_strided_batched_float_complex_float)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -900,6 +1046,37 @@ TEST_P(blas1_gtest, scal_strided_batched_float_complex_float)
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_scal_strided_batched<hipblasComplex, float>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            // for cublas
+            EXPECT_EQ(HIPBLAS_STATUS_NOT_SUPPORTED, status);
+        }
+    }
+}
+
+TEST_P(blas1_gtest, scal_strided_batched_double_complex_double)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_scal_strided_batched<hipblasDoubleComplex, double>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
