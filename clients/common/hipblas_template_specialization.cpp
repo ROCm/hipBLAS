@@ -1601,7 +1601,12 @@ hipblasStatus_t hipblasRot<hipblasComplex, float>(hipblasHandle_t       handle,
                                                   const float*          c,
                                                   const hipblasComplex* s)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCrot(
+        handle, n, (hipComplex*)x, incx, (hipComplex*)y, incy, c, (const hipComplex*)s);
+#else
     return hipblasCrot(handle, n, x, incx, y, incy, c, s);
+#endif
 }
 
 template <>
@@ -1614,7 +1619,11 @@ hipblasStatus_t hipblasRot<hipblasComplex, float, float>(hipblasHandle_t handle,
                                                          const float*    c,
                                                          const float*    s)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCsrot(handle, n, (hipComplex*)x, incx, (hipComplex*)y, incy, c, s);
+#else
     return hipblasCsrot(handle, n, x, incx, y, incy, c, s);
+#endif
 }
 
 template <>
@@ -1627,7 +1636,18 @@ hipblasStatus_t hipblasRot<hipblasDoubleComplex, double>(hipblasHandle_t        
                                                          const double*               c,
                                                          const hipblasDoubleComplex* s)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZrot(handle,
+                       n,
+                       (hipDoubleComplex*)x,
+                       incx,
+                       (hipDoubleComplex*)y,
+                       incy,
+                       c,
+                       (const hipDoubleComplex*)s);
+#else
     return hipblasZrot(handle, n, x, incx, y, incy, c, s);
+#endif
 }
 
 template <>
@@ -1640,7 +1660,11 @@ hipblasStatus_t hipblasRot<hipblasDoubleComplex, double, double>(hipblasHandle_t
                                                                  const double*         c,
                                                                  const double*         s)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZdrot(handle, n, (hipDoubleComplex*)x, incx, (hipDoubleComplex*)y, incy, c, s);
+#else
     return hipblasZdrot(handle, n, x, incx, y, incy, c, s);
+#endif
 }
 
 // rot_batched
@@ -1683,7 +1707,19 @@ hipblasStatus_t hipblasRotBatched<hipblasComplex, float>(hipblasHandle_t       h
                                                          const hipblasComplex* s,
                                                          int                   batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCrotBatched(handle,
+                              n,
+                              (hipComplex* const*)x,
+                              incx,
+                              (hipComplex* const*)y,
+                              incy,
+                              c,
+                              (const hipComplex*)s,
+                              batch_count);
+#else
     return hipblasCrotBatched(handle, n, x, incx, y, incy, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -1697,7 +1733,12 @@ hipblasStatus_t hipblasRotBatched<hipblasComplex, float, float>(hipblasHandle_t 
                                                                 const float*          s,
                                                                 int                   batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCsrotBatched(
+        handle, n, (hipComplex* const*)x, incx, (hipComplex* const*)y, incy, c, s, batch_count);
+#else
     return hipblasCsrotBatched(handle, n, x, incx, y, incy, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -1711,7 +1752,19 @@ hipblasStatus_t hipblasRotBatched<hipblasDoubleComplex, double>(hipblasHandle_t 
                                                                 const hipblasDoubleComplex* s,
                                                                 int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZrotBatched(handle,
+                              n,
+                              (hipDoubleComplex* const*)x,
+                              incx,
+                              (hipDoubleComplex* const*)y,
+                              incy,
+                              c,
+                              (const hipDoubleComplex*)s,
+                              batch_count);
+#else
     return hipblasZrotBatched(handle, n, x, incx, y, incy, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -1726,7 +1779,19 @@ hipblasStatus_t
                                                             const double*               s,
                                                             int                         batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZdrotBatched(handle,
+                               n,
+                               (hipDoubleComplex* const*)x,
+                               incx,
+                               (hipDoubleComplex* const*)y,
+                               incy,
+                               c,
+                               s,
+                               batch_count);
+#else
     return hipblasZdrotBatched(handle, n, x, incx, y, incy, c, s, batch_count);
+#endif
 }
 
 // rot_strided_batched
@@ -1777,8 +1842,22 @@ hipblasStatus_t hipblasRotStridedBatched<hipblasComplex, float>(hipblasHandle_t 
                                                                 const hipblasComplex* s,
                                                                 int                   batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCrotStridedBatched(handle,
+                                     n,
+                                     (hipComplex*)x,
+                                     incx,
+                                     stridex,
+                                     (hipComplex*)y,
+                                     incy,
+                                     stridey,
+                                     c,
+                                     (const hipComplex*)s,
+                                     batch_count);
+#else
     return hipblasCrotStridedBatched(
         handle, n, x, incx, stridex, y, incy, stridey, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -1794,8 +1873,13 @@ hipblasStatus_t hipblasRotStridedBatched<hipblasComplex, float, float>(hipblasHa
                                                                        const float*    s,
                                                                        int             batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCsrotStridedBatched(
+        handle, n, (hipComplex*)x, incx, stridex, (hipComplex*)y, incy, stridey, c, s, batch_count);
+#else
     return hipblasCsrotStridedBatched(
         handle, n, x, incx, stridex, y, incy, stridey, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -1812,8 +1896,22 @@ hipblasStatus_t
                                                            const hipblasDoubleComplex* s,
                                                            int                         batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZrotStridedBatched(handle,
+                                     n,
+                                     (hipDoubleComplex*)x,
+                                     incx,
+                                     stridex,
+                                     (hipDoubleComplex*)y,
+                                     incy,
+                                     stridey,
+                                     c,
+                                     (const hipDoubleComplex*)s,
+                                     batch_count);
+#else
     return hipblasZrotStridedBatched(
         handle, n, x, incx, stridex, y, incy, stridey, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -1830,8 +1928,22 @@ hipblasStatus_t
                                                                    const double*         s,
                                                                    int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZdrotStridedBatched(handle,
+                                      n,
+                                      (hipDoubleComplex*)x,
+                                      incx,
+                                      stridex,
+                                      (hipDoubleComplex*)y,
+                                      incy,
+                                      stridey,
+                                      c,
+                                      s,
+                                      batch_count);
+#else
     return hipblasZdrotStridedBatched(
         handle, n, x, incx, stridex, y, incy, stridey, c, s, batch_count);
+#endif
 }
 
 // rotg
@@ -12279,7 +12391,12 @@ hipblasStatus_t hipblasRot<hipblasComplex, float, hipblasComplex, true>(hipblasH
                                                                         const float*    c,
                                                                         const hipblasComplex* s)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCrotFortran(
+        handle, n, (hipComplex*)x, incx, (hipComplex*)y, incy, c, (const hipComplex*)s);
+#else
     return hipblasCrotFortran(handle, n, x, incx, y, incy, c, s);
+#endif
 }
 
 template <>
@@ -12292,7 +12409,11 @@ hipblasStatus_t hipblasRot<hipblasComplex, float, float, true>(hipblasHandle_t h
                                                                const float*    c,
                                                                const float*    s)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCsrotFortran(handle, n, (hipComplex*)x, incx, (hipComplex*)y, incy, c, s);
+#else
     return hipblasCsrotFortran(handle, n, x, incx, y, incy, c, s);
+#endif
 }
 
 template <>
@@ -12306,7 +12427,18 @@ hipblasStatus_t hipblasRot<hipblasDoubleComplex, double, hipblasDoubleComplex, t
     const double*               c,
     const hipblasDoubleComplex* s)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZrotFortran(handle,
+                              n,
+                              (hipDoubleComplex*)x,
+                              incx,
+                              (hipDoubleComplex*)y,
+                              incy,
+                              c,
+                              (const hipDoubleComplex*)s);
+#else
     return hipblasZrotFortran(handle, n, x, incx, y, incy, c, s);
+#endif
 }
 
 template <>
@@ -12319,7 +12451,12 @@ hipblasStatus_t hipblasRot<hipblasDoubleComplex, double, double, true>(hipblasHa
                                                                        const double*         c,
                                                                        const double*         s)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZdrotFortran(
+        handle, n, (hipDoubleComplex*)x, incx, (hipDoubleComplex*)y, incy, c, s);
+#else
     return hipblasZdrotFortran(handle, n, x, incx, y, incy, c, s);
+#endif
 }
 
 // rot_batched
@@ -12363,7 +12500,19 @@ hipblasStatus_t
                                                                    const hipblasComplex* s,
                                                                    int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCrotBatchedFortran(handle,
+                                     n,
+                                     (hipComplex* const*)x,
+                                     incx,
+                                     (hipComplex* const*)y,
+                                     incy,
+                                     c,
+                                     (const hipComplex*)s,
+                                     batch_count);
+#else
     return hipblasCrotBatchedFortran(handle, n, x, incx, y, incy, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -12377,7 +12526,12 @@ hipblasStatus_t hipblasRotBatched<hipblasComplex, float, float, true>(hipblasHan
                                                                       const float*          s,
                                                                       int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCsrotBatchedFortran(
+        handle, n, (hipComplex* const*)x, incx, (hipComplex* const*)y, incy, c, s, batch_count);
+#else
     return hipblasCsrotBatchedFortran(handle, n, x, incx, y, incy, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -12392,7 +12546,19 @@ hipblasStatus_t hipblasRotBatched<hipblasDoubleComplex, double, hipblasDoubleCom
     const hipblasDoubleComplex* s,
     int                         batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZrotBatchedFortran(handle,
+                                     n,
+                                     (hipDoubleComplex* const*)x,
+                                     incx,
+                                     (hipDoubleComplex* const*)y,
+                                     incy,
+                                     c,
+                                     (const hipDoubleComplex*)s,
+                                     batch_count);
+#else
     return hipblasZrotBatchedFortran(handle, n, x, incx, y, incy, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -12407,7 +12573,19 @@ hipblasStatus_t
                                                                   const double*               s,
                                                                   int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZdrotBatchedFortran(handle,
+                                      n,
+                                      (hipDoubleComplex* const*)x,
+                                      incx,
+                                      (hipDoubleComplex* const*)y,
+                                      incy,
+                                      c,
+                                      s,
+                                      batch_count);
+#else
     return hipblasZdrotBatchedFortran(handle, n, x, incx, y, incy, c, s, batch_count);
+#endif
 }
 
 // rot_strided_batched
@@ -12459,8 +12637,22 @@ hipblasStatus_t
                                                                           const hipblasComplex* s,
                                                                           int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCrotStridedBatchedFortran(handle,
+                                            n,
+                                            (hipComplex*)x,
+                                            incx,
+                                            stridex,
+                                            (hipComplex*)y,
+                                            incy,
+                                            stridey,
+                                            c,
+                                            (const hipComplex*)s,
+                                            batch_count);
+#else
     return hipblasCrotStridedBatchedFortran(
         handle, n, x, incx, stridex, y, incy, stridey, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -12476,8 +12668,13 @@ hipblasStatus_t hipblasRotStridedBatched<hipblasComplex, float, float, true>(hip
                                                                              const float*  s,
                                                                              int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCsrotStridedBatchedFortran(
+        handle, n, (hipComplex*)x, incx, stridex, (hipComplex*)y, incy, stridey, c, s, batch_count);
+#else
     return hipblasCsrotStridedBatchedFortran(
         handle, n, x, incx, stridex, y, incy, stridey, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -12494,8 +12691,22 @@ hipblasStatus_t hipblasRotStridedBatched<hipblasDoubleComplex, double, hipblasDo
     const hipblasDoubleComplex* s,
     int                         batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZrotStridedBatchedFortran(handle,
+                                            n,
+                                            (hipDoubleComplex*)x,
+                                            incx,
+                                            stridex,
+                                            (hipDoubleComplex*)y,
+                                            incy,
+                                            stridey,
+                                            c,
+                                            (const hipDoubleComplex*)s,
+                                            batch_count);
+#else
     return hipblasZrotStridedBatchedFortran(
         handle, n, x, incx, stridex, y, incy, stridey, c, s, batch_count);
+#endif
 }
 
 template <>
@@ -12512,8 +12723,22 @@ hipblasStatus_t
                                                                          const double* s,
                                                                          int           batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZdrotStridedBatchedFortran(handle,
+                                             n,
+                                             (hipDoubleComplex*)x,
+                                             incx,
+                                             stridex,
+                                             (hipDoubleComplex*)y,
+                                             incy,
+                                             stridey,
+                                             c,
+                                             s,
+                                             batch_count);
+#else
     return hipblasZdrotStridedBatchedFortran(
         handle, n, x, incx, stridex, y, incy, stridey, c, s, batch_count);
+#endif
 }
 
 // rotg
