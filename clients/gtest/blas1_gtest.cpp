@@ -1147,6 +1147,28 @@ TEST_P(blas1_gtest, swap_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, swap_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_swap<hipblasDoubleComplex>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 #ifndef __HIP_PLATFORM_NVCC__
 
 // swap_batched tests
@@ -1202,6 +1224,32 @@ TEST_P(blas1_gtest, swap_batched_float_complex)
     }
 }
 
+TEST_P(blas1_gtest, swap_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_swap_batched<hipblasDoubleComplex>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+        }
+    }
+}
+
 // swap_strided_batched tests
 TEST_P(blas1_gtest, swap_strided_batched_float)
 {
@@ -1233,6 +1281,32 @@ TEST_P(blas1_gtest, swap_strided_batched_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
     hipblasStatus_t status = testing_swap_strided_batched<hipblasComplex>(arg);
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.incx < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else if(arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+        }
+    }
+}
+
+TEST_P(blas1_gtest, swap_strided_batched_double_complex)
+{
+    Arguments       arg    = setup_blas1_arguments(GetParam());
+    hipblasStatus_t status = testing_swap_strided_batched<hipblasDoubleComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
