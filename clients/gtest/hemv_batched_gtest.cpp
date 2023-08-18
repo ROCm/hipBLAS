@@ -174,6 +174,27 @@ TEST_P(hemv_batched_gtest, hemv_gtest_float_complex)
     }
 }
 
+TEST_P(hemv_batched_gtest, hemv_gtest_double_complex)
+{
+    Arguments arg = setup_hemv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_hemv_batched<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.lda < 1 || arg.incx == 0 || arg.incy == 0
+           || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+        }
+    }
+}
+
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
