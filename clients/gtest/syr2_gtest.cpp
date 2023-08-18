@@ -183,6 +183,31 @@ TEST_P(blas2_syr2_gtest, syr2_gtest_float_complex)
     }
 }
 
+TEST_P(blas2_syr2_gtest, syr2_gtest_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_syr2_arguments(GetParam());
+
+    hipblasStatus_t status = testing_syr2<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.incx == 0 || arg.incy == 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 #ifndef __HIP_PLATFORM_NVCC__
 
 // syr2_batched
@@ -236,6 +261,31 @@ TEST_P(blas2_syr2_gtest, syr2_batched_gtest_float_complex)
     }
 }
 
+TEST_P(blas2_syr2_gtest, syr2_batched_gtest_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_syr2_arguments(GetParam());
+
+    hipblasStatus_t status = testing_syr2_batched<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.incx == 0 || arg.incy == 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 // syr2_strided_batched
 TEST_P(blas2_syr2_gtest, syr2_strided_batched_gtest_float)
 {
@@ -272,6 +322,31 @@ TEST_P(blas2_syr2_gtest, syr2_strided_batched_gtest_float_complex)
     Arguments arg = setup_syr2_arguments(GetParam());
 
     hipblasStatus_t status = testing_syr2_strided_batched<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.incx == 0 || arg.incy == 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas2_syr2_gtest, syr2_strided_batched_gtest_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_syr2_arguments(GetParam());
+
+    hipblasStatus_t status = testing_syr2_strided_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
