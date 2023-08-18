@@ -4033,7 +4033,11 @@ hipblasStatus_t hipblasHpr<hipblasComplex, float>(hipblasHandle_t       handle,
                                                   int                   incx,
                                                   hipblasComplex*       AP)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChpr(handle, uplo, n, alpha, (const hipComplex*)x, incx, (hipComplex*)AP);
+#else
     return hipblasChpr(handle, uplo, n, alpha, x, incx, AP);
+#endif
 }
 
 template <>
@@ -4045,7 +4049,11 @@ hipblasStatus_t hipblasHpr<hipblasDoubleComplex, double>(hipblasHandle_t        
                                                          int                         incx,
                                                          hipblasDoubleComplex*       AP)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhpr(handle, uplo, n, alpha, (const hipDoubleComplex*)x, incx, (hipDoubleComplex*)AP);
+#else
     return hipblasZhpr(handle, uplo, n, alpha, x, incx, AP);
+#endif
 }
 
 // hpr_batched
@@ -4059,7 +4067,11 @@ hipblasStatus_t hipblasHprBatched<hipblasComplex, float>(hipblasHandle_t        
                                                          hipblasComplex* const       AP[],
                                                          int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChprBatched(handle, uplo, n, alpha, (const hipComplex* const*)x, incx, (hipComplex* const*)AP, batchCount);
+#else
     return hipblasChprBatched(handle, uplo, n, alpha, x, incx, AP, batchCount);
+#endif
 }
 
 template <>
@@ -4073,7 +4085,11 @@ hipblasStatus_t
                                                     hipblasDoubleComplex* const       AP[],
                                                     int                               batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhprBatched(handle, uplo, n, alpha, (const hipDoubleComplex* const*)x, incx, (hipDoubleComplex* const*)AP, batchCount);
+#else
     return hipblasZhprBatched(handle, uplo, n, alpha, x, incx, AP, batchCount);
+#endif
 }
 
 // hpr_strided_batched
@@ -4089,8 +4105,13 @@ hipblasStatus_t hipblasHprStridedBatched<hipblasComplex, float>(hipblasHandle_t 
                                                                 hipblasStride         strideAP,
                                                                 int                   batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChprStridedBatched(
+        handle, uplo, n, alpha, (const hipComplex*)x, incx, stridex, (hipComplex*)AP, strideAP, batchCount);
+#else
     return hipblasChprStridedBatched(
         handle, uplo, n, alpha, x, incx, stridex, AP, strideAP, batchCount);
+#endif
 }
 
 template <>
@@ -4106,8 +4127,13 @@ hipblasStatus_t
                                                            hipblasStride               strideAP,
                                                            int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhprStridedBatched(
+        handle, uplo, n, alpha, (const hipDoubleComplex*)x, incx, stridex, (hipDoubleComplex*)AP, strideAP, batchCount);
+#else
     return hipblasZhprStridedBatched(
         handle, uplo, n, alpha, x, incx, stridex, AP, strideAP, batchCount);
+#endif
 }
 
 // hpr2
@@ -4122,7 +4148,11 @@ hipblasStatus_t hipblasHpr2(hipblasHandle_t       handle,
                             int                   incy,
                             hipblasComplex*       AP)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChpr2(handle, uplo, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, (const hipComplex*)y, incy, (hipComplex*)AP);
+#else
     return hipblasChpr2(handle, uplo, n, alpha, x, incx, y, incy, AP);
+#endif
 }
 
 template <>
@@ -4136,7 +4166,11 @@ hipblasStatus_t hipblasHpr2(hipblasHandle_t             handle,
                             int                         incy,
                             hipblasDoubleComplex*       AP)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhpr2(handle, uplo, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex*)x, incx, (const hipDoubleComplex*)y, incy, (hipDoubleComplex*)AP);
+#else
     return hipblasZhpr2(handle, uplo, n, alpha, x, incx, y, incy, AP);
+#endif
 }
 
 // hpr2_batched
@@ -4152,7 +4186,11 @@ hipblasStatus_t hipblasHpr2Batched(hipblasHandle_t             handle,
                                    hipblasComplex* const       AP[],
                                    int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChpr2Batched(handle, uplo, n, (const hipComplex*)alpha, (const hipComplex* const*)x, incx, (const hipComplex* const*)y, incy, (hipComplex* const*)AP, batchCount);
+#else
     return hipblasChpr2Batched(handle, uplo, n, alpha, x, incx, y, incy, AP, batchCount);
+#endif
 }
 
 template <>
@@ -4167,7 +4205,11 @@ hipblasStatus_t hipblasHpr2Batched(hipblasHandle_t                   handle,
                                    hipblasDoubleComplex* const       AP[],
                                    int                               batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhpr2Batched(handle, uplo, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex* const*)x, incx, (const hipDoubleComplex* const*)y, incy, (hipDoubleComplex* const*)AP, batchCount);
+#else
     return hipblasZhpr2Batched(handle, uplo, n, alpha, x, incx, y, incy, AP, batchCount);
+#endif
 }
 
 // hpr2_strided_batched
@@ -4186,8 +4228,13 @@ hipblasStatus_t hipblasHpr2StridedBatched(hipblasHandle_t       handle,
                                           hipblasStride         strideAP,
                                           int                   batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChpr2StridedBatched(
+        handle, uplo, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, stridex, (const hipComplex*)y, incy, stridey, (hipComplex*)AP, strideAP, batchCount);
+#else
     return hipblasChpr2StridedBatched(
         handle, uplo, n, alpha, x, incx, stridex, y, incy, stridey, AP, strideAP, batchCount);
+#endif
 }
 
 template <>
@@ -4205,8 +4252,13 @@ hipblasStatus_t hipblasHpr2StridedBatched(hipblasHandle_t             handle,
                                           hipblasStride               strideAP,
                                           int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhpr2StridedBatched(
+        handle, uplo, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex*)x, incx, stridex, (const hipDoubleComplex*)y, incy, stridey, (hipDoubleComplex*)AP, strideAP, batchCount);
+#else
     return hipblasZhpr2StridedBatched(
         handle, uplo, n, alpha, x, incx, stridex, y, incy, stridey, AP, strideAP, batchCount);
+#endif
 }
 
 // sbmv
@@ -14745,7 +14797,11 @@ hipblasStatus_t hipblasHpr<hipblasComplex, float, true>(hipblasHandle_t       ha
                                                         int                   incx,
                                                         hipblasComplex*       AP)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChprFortran(handle, uplo, n, alpha, (const hipComplex*)x, incx, (hipComplex*)AP);
+#else
     return hipblasChprFortran(handle, uplo, n, alpha, x, incx, AP);
+#endif
 }
 
 template <>
@@ -14757,7 +14813,11 @@ hipblasStatus_t hipblasHpr<hipblasDoubleComplex, double, true>(hipblasHandle_t  
                                                                int                         incx,
                                                                hipblasDoubleComplex*       AP)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhprFortran(handle, uplo, n, alpha, (const hipDoubleComplex*)x, incx, (hipDoubleComplex*)AP);
+#else
     return hipblasZhprFortran(handle, uplo, n, alpha, x, incx, AP);
+#endif
 }
 
 // hpr_batched
@@ -14771,7 +14831,11 @@ hipblasStatus_t hipblasHprBatched<hipblasComplex, float, true>(hipblasHandle_t  
                                                                hipblasComplex* const       AP[],
                                                                int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChprBatchedFortran(handle, uplo, n, alpha, (const hipComplex* const*)x, incx, (hipComplex* const*)AP, batchCount);
+#else
     return hipblasChprBatchedFortran(handle, uplo, n, alpha, x, incx, AP, batchCount);
+#endif
 }
 
 template <>
@@ -14785,7 +14849,11 @@ hipblasStatus_t
                                                           hipblasDoubleComplex* const       AP[],
                                                           int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhprBatchedFortran(handle, uplo, n, alpha, (const hipDoubleComplex* const*)x, incx, (hipDoubleComplex* const*)AP, batchCount);
+#else
     return hipblasZhprBatchedFortran(handle, uplo, n, alpha, x, incx, AP, batchCount);
+#endif
 }
 
 // hpr_strided_batched
@@ -14801,8 +14869,13 @@ hipblasStatus_t hipblasHprStridedBatched<hipblasComplex, float, true>(hipblasHan
                                                                       hipblasStride strideAP,
                                                                       int           batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChprStridedBatchedFortran(
+        handle, uplo, n, alpha, (const hipComplex*)x, incx, stridex, (hipComplex*)AP, strideAP, batchCount);
+#else
     return hipblasChprStridedBatchedFortran(
         handle, uplo, n, alpha, x, incx, stridex, AP, strideAP, batchCount);
+#endif
 }
 
 template <>
@@ -14818,8 +14891,13 @@ hipblasStatus_t
                                                                  hipblasStride         strideAP,
                                                                  int                   batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhprStridedBatchedFortran(
+        handle, uplo, n, alpha, (const hipDoubleComplex*)x, incx, stridex, (hipDoubleComplex*)AP, strideAP, batchCount);
+#else
     return hipblasZhprStridedBatchedFortran(
         handle, uplo, n, alpha, x, incx, stridex, AP, strideAP, batchCount);
+#endif
 }
 
 // hpr2
@@ -14834,7 +14912,11 @@ hipblasStatus_t hipblasHpr2<hipblasComplex, true>(hipblasHandle_t       handle,
                                                   int                   incy,
                                                   hipblasComplex*       AP)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChpr2Fortran(handle, uplo, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, (const hipComplex*)y, incy, (hipComplex*)AP);
+#else
     return hipblasChpr2Fortran(handle, uplo, n, alpha, x, incx, y, incy, AP);
+#endif
 }
 
 template <>
@@ -14848,7 +14930,11 @@ hipblasStatus_t hipblasHpr2<hipblasDoubleComplex, true>(hipblasHandle_t         
                                                         int                         incy,
                                                         hipblasDoubleComplex*       AP)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhpr2Fortran(handle, uplo, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex*)x, incx, (const hipDoubleComplex*)y, incy, (hipDoubleComplex*)AP);
+#else
     return hipblasZhpr2Fortran(handle, uplo, n, alpha, x, incx, y, incy, AP);
+#endif
 }
 
 // hpr2_batched
@@ -14864,7 +14950,11 @@ hipblasStatus_t hipblasHpr2Batched<hipblasComplex, true>(hipblasHandle_t        
                                                          hipblasComplex* const       AP[],
                                                          int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChpr2BatchedFortran(handle, uplo, n, (const hipComplex*)alpha, (const hipComplex* const*)x, incx, (const hipComplex* const*)y, incy, (hipComplex* const*)AP, batchCount);
+#else
     return hipblasChpr2BatchedFortran(handle, uplo, n, alpha, x, incx, y, incy, AP, batchCount);
+#endif
 }
 
 template <>
@@ -14880,7 +14970,11 @@ hipblasStatus_t
                                                    hipblasDoubleComplex* const       AP[],
                                                    int                               batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhpr2BatchedFortran(handle, uplo, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex* const*)x, incx, (const hipDoubleComplex* const*)y, incy, (hipDoubleComplex* const*)AP, batchCount);
+#else
     return hipblasZhpr2BatchedFortran(handle, uplo, n, alpha, x, incx, y, incy, AP, batchCount);
+#endif
 }
 
 // hpr2_strided_batched
@@ -14899,8 +14993,13 @@ hipblasStatus_t hipblasHpr2StridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 hipblasStride         strideAP,
                                                                 int                   batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasChpr2StridedBatchedFortran(
+        handle, uplo, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, stridex, (const hipComplex*)y, incy, stridey, (hipComplex*)AP, strideAP, batchCount);
+#else
     return hipblasChpr2StridedBatchedFortran(
         handle, uplo, n, alpha, x, incx, stridex, y, incy, stridey, AP, strideAP, batchCount);
+#endif
 }
 
 template <>
@@ -14919,8 +15018,13 @@ hipblasStatus_t
                                                           hipblasStride               strideAP,
                                                           int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZhpr2StridedBatchedFortran(
+        handle, uplo, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex*)x, incx, stridex, (const hipDoubleComplex*)y, incy, stridey, (hipDoubleComplex*)AP, strideAP, batchCount);
+#else
     return hipblasZhpr2StridedBatchedFortran(
         handle, uplo, n, alpha, x, incx, stridex, y, incy, stridey, AP, strideAP, batchCount);
+#endif
 }
 
 // sbmv
