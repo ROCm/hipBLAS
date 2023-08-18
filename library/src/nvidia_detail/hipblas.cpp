@@ -6728,6 +6728,66 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasCsymv_v2(hipblasHandle_t       handle,
+                             hipblasFillMode_t     uplo,
+                             int                   n,
+                             const hipComplex* alpha,
+                             const hipComplex* A,
+                             int                   lda,
+                             const hipComplex* x,
+                             int                   incx,
+                             const hipComplex* beta,
+                             hipComplex*       y,
+                             int                   incy)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasCsymv((cublasHandle_t)handle,
+                                                  hipFillToCudaFill(uplo),
+                                                  n,
+                                                  (cuComplex*)alpha,
+                                                  (cuComplex*)A,
+                                                  lda,
+                                                  (cuComplex*)x,
+                                                  incx,
+                                                  (cuComplex*)beta,
+                                                  (cuComplex*)y,
+                                                  incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZsymv_v2(hipblasHandle_t             handle,
+                             hipblasFillMode_t           uplo,
+                             int                         n,
+                             const hipDoubleComplex* alpha,
+                             const hipDoubleComplex* A,
+                             int                         lda,
+                             const hipDoubleComplex* x,
+                             int                         incx,
+                             const hipDoubleComplex* beta,
+                             hipDoubleComplex*       y,
+                             int                         incy)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasZsymv((cublasHandle_t)handle,
+                                                  hipFillToCudaFill(uplo),
+                                                  n,
+                                                  (cuDoubleComplex*)alpha,
+                                                  (cuDoubleComplex*)A,
+                                                  lda,
+                                                  (cuDoubleComplex*)x,
+                                                  incx,
+                                                  (cuDoubleComplex*)beta,
+                                                  (cuDoubleComplex*)y,
+                                                  incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // symv_batched
 hipblasStatus_t hipblasSsymvBatched(hipblasHandle_t    handle,
                                     hipblasFillMode_t  uplo,
@@ -6787,6 +6847,38 @@ hipblasStatus_t hipblasZsymvBatched(hipblasHandle_t                   handle,
                                     int                               incx,
                                     const hipblasDoubleComplex*       beta,
                                     hipblasDoubleComplex* const       y[],
+                                    int                               incy,
+                                    int                               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCsymvBatched_v2(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    int                         n,
+                                    const hipComplex*       alpha,
+                                    const hipComplex* const A[],
+                                    int                         lda,
+                                    const hipComplex* const x[],
+                                    int                         incx,
+                                    const hipComplex*       beta,
+                                    hipComplex* const       y[],
+                                    int                         incy,
+                                    int                         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZsymvBatched_v2(hipblasHandle_t                   handle,
+                                    hipblasFillMode_t                 uplo,
+                                    int                               n,
+                                    const hipDoubleComplex*       alpha,
+                                    const hipDoubleComplex* const A[],
+                                    int                               lda,
+                                    const hipDoubleComplex* const x[],
+                                    int                               incx,
+                                    const hipDoubleComplex*       beta,
+                                    hipDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
 {
@@ -6863,6 +6955,44 @@ hipblasStatus_t hipblasZsymvStridedBatched(hipblasHandle_t             handle,
                                            hipblasStride               stridex,
                                            const hipblasDoubleComplex* beta,
                                            hipblasDoubleComplex*       y,
+                                           int                         incy,
+                                           hipblasStride               stridey,
+                                           int                         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCsymvStridedBatched_v2(hipblasHandle_t       handle,
+                                           hipblasFillMode_t     uplo,
+                                           int                   n,
+                                           const hipComplex* alpha,
+                                           const hipComplex* A,
+                                           int                   lda,
+                                           hipblasStride         strideA,
+                                           const hipComplex* x,
+                                           int                   incx,
+                                           hipblasStride         stridex,
+                                           const hipComplex* beta,
+                                           hipComplex*       y,
+                                           int                   incy,
+                                           hipblasStride         stridey,
+                                           int                   batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZsymvStridedBatched_v2(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           int                         n,
+                                           const hipDoubleComplex* alpha,
+                                           const hipDoubleComplex* A,
+                                           int                         lda,
+                                           hipblasStride               strideA,
+                                           const hipDoubleComplex* x,
+                                           int                         incx,
+                                           hipblasStride               stridex,
+                                           const hipDoubleComplex* beta,
+                                           hipDoubleComplex*       y,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batchCount)
