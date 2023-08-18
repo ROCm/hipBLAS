@@ -2916,8 +2916,11 @@ hipblasStatus_t hipblasGer<hipblasComplex, false>(hipblasHandle_t       handle,
                                                   hipblasComplex*       A,
                                                   int                   lda)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasCgeru(handle, m, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, (const hipComplex*)y, incy, (hipComplex*)A, lda);
+#else
     return hipblasCgeru(handle, m, n, alpha, x, incx, y, incy, A, lda);
+#endif
 }
 
 template <>
@@ -2932,8 +2935,11 @@ hipblasStatus_t hipblasGer<hipblasComplex, true>(hipblasHandle_t       handle,
                                                  hipblasComplex*       A,
                                                  int                   lda)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasCgerc(handle, m, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, (const hipComplex*)y, incy, (hipComplex*)A, lda);
+#else
     return hipblasCgerc(handle, m, n, alpha, x, incx, y, incy, A, lda);
+#endif
 }
 
 template <>
@@ -2948,8 +2954,11 @@ hipblasStatus_t hipblasGer<hipblasDoubleComplex, false>(hipblasHandle_t         
                                                         hipblasDoubleComplex*       A,
                                                         int                         lda)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasZgeru(handle, m, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex*)x, incx, (const hipDoubleComplex*)y, incy, (hipDoubleComplex*)A, lda);
+#else
     return hipblasZgeru(handle, m, n, alpha, x, incx, y, incy, A, lda);
+#endif
 }
 
 template <>
@@ -2964,8 +2973,11 @@ hipblasStatus_t hipblasGer<hipblasDoubleComplex, true>(hipblasHandle_t          
                                                        hipblasDoubleComplex*       A,
                                                        int                         lda)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasZgerc(handle, m, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex*)x, incx, (const hipDoubleComplex*)y, incy, (hipDoubleComplex*)A, lda);
+#else
     return hipblasZgerc(handle, m, n, alpha, x, incx, y, incy, A, lda);
+#endif
 }
 
 // ger_batched
@@ -3016,8 +3028,11 @@ hipblasStatus_t hipblasGerBatched<hipblasComplex, false>(hipblasHandle_t        
                                                          int                         lda,
                                                          int                         batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasCgeruBatched(handle, m, n, (const hipComplex*)alpha, (const hipComplex* const*)x, incx, (const hipComplex* const*)y, incy, (hipComplex* const*)A, lda, batch_count);
+#else
     return hipblasCgeruBatched(handle, m, n, alpha, x, incx, y, incy, A, lda, batch_count);
+#endif
 }
 
 template <>
@@ -3033,8 +3048,11 @@ hipblasStatus_t hipblasGerBatched<hipblasComplex, true>(hipblasHandle_t         
                                                         int                         lda,
                                                         int                         batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasCgercBatched(handle, m, n, (const hipComplex*)alpha, (const hipComplex* const*)x, incx, (const hipComplex* const*)y, incy, (hipComplex* const*)A, lda, batch_count);
+#else
     return hipblasCgercBatched(handle, m, n, alpha, x, incx, y, incy, A, lda, batch_count);
+#endif
 }
 
 template <>
@@ -3051,8 +3069,11 @@ hipblasStatus_t
                                                    int                               lda,
                                                    int                               batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasZgeruBatched(handle, m, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex* const*)x, incx, (const hipDoubleComplex* const*)y, incy, (hipDoubleComplex* const*)A, lda, batch_count);
+#else
     return hipblasZgeruBatched(handle, m, n, alpha, x, incx, y, incy, A, lda, batch_count);
+#endif
 }
 
 template <>
@@ -3068,15 +3089,27 @@ hipblasStatus_t hipblasGerBatched<hipblasDoubleComplex, true>(hipblasHandle_t   
                                                               int                         lda,
                                                               int batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasZgercBatched(handle, m, n, (const hipDoubleComplex#ifdef HIPBLAS_V2*)alpha, (const hipDoubleComplex* const*)x, incx, (const hipDoubleComplex* const*)y, incy, (hipDoubleComplex* const*)A, lda, batch_count);
+#else
     return hipblasZgercBatched(handle, m, n, alpha, x, incx, y, incy, A, lda, batch_count);
+#endif
 }
 
 // ger_strided_batched
-template <>
-hipblasStatus_t hipblasGerStridedBatched<float, false>(hipblasHandle_t handle,
+template
+#else
+    #else
+    return hipblasZgercBatched(handle, m, n, alpha, x, incx, y, incy, A, lda, batch_count);
+#endif
+}
+
+// ger_strided_batched
+template
+#endif<>
+(const hipComplex*)hipblasStatus_t hipblasGerStridedBatched<(const hipComplex*)float, false>(hipblasHandle_t (const hipComplex*)handle,
                                                        int             m,
-                                                       int             n,
+                                                       int             (hipComplex*)n,
                                                        const float*    alpha,
                                                        const float*    x,
                                                        int             incx,
@@ -3131,9 +3164,13 @@ hipblasStatus_t hipblasGerStridedBatched<hipblasComplex, false>(hipblasHandle_t 
                                                                 hipblasStride         strideA,
                                                                 int                   batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasCgeruStridedBatched(
+        handle, m, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, stridex, (const hipComplex*)y, incy, stridey, (hipComplex*)A, lda, strideA, batch_count);
+#else
     return hipblasCgeruStridedBatched(
         handle, m, n, alpha, x, incx, stridex, y, incy, stridey, A, lda, strideA, batch_count);
+#endif
 }
 
 template <>
@@ -3152,9 +3189,13 @@ hipblasStatus_t hipblasGerStridedBatched<hipblasComplex, true>(hipblasHandle_t  
                                                                hipblasStride         strideA,
                                                                int                   batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasCgercStridedBatched(
+        handle, m, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, stridex, (const hipComplex*)y, incy, stridey, (hipComplex*)A, lda, strideA, batch_count);
+#else
     return hipblasCgercStridedBatched(
         handle, m, n, alpha, x, incx, stridex, y, incy, stridey, A, lda, strideA, batch_count);
+#endif
 }
 
 template <>
@@ -3174,9 +3215,13 @@ hipblasStatus_t
                                                           hipblasStride               strideA,
                                                           int                         batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasZgeruStridedBatched(
+        handle, m, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex*)x, incx, stridex, (const hipDoubleComplex*)y, incy, stridey, (hipDoubleComplex*)A, lda, strideA, batch_count);
+#else
     return hipblasZgeruStridedBatched(
         handle, m, n, alpha, x, incx, stridex, y, incy, stridey, A, lda, strideA, batch_count);
+#endif
 }
 
 template <>
@@ -3196,9 +3241,13 @@ hipblasStatus_t
                                                          hipblasStride               strideA,
                                                          int                         batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasZgercStridedBatched(
+        handle, m, n, (const hipDoubleComplex*)alpha, (const hipDoubleComplex*)x, incx, stridex, (const hipDoubleComplex*)y, incy, stridey, (hipDoubleComplex*)A, lda, strideA, batch_count);
+#else
     return hipblasZgercStridedBatched(
         handle, m, n, alpha, x, incx, stridex, y, incy, stridey, A, lda, strideA, batch_count);
+#endif
 }
 
 // hbmv
