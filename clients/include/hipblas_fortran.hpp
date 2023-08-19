@@ -33,6 +33,12 @@
  *     Fortran functions
  * ============================================================================
  */
+
+// Temporarily replacing hipblasComplex with hipComplex
+// #ifdef HIPBLAS_V2
+// #define hipblasComplex hipComplex
+// #define hipblasDoubleComplex hipDoubleComplex
+// #endif
 extern "C" {
 
 /* ==========
@@ -4501,6 +4507,7 @@ hipblasStatus_t hipblasDtpmvFortran(hipblasHandle_t    handle,
                                     double*            x,
                                     int                incx);
 
+#ifdef HIPBLAS_V2
 hipblasStatus_t hipblasCtpmvFortran(hipblasHandle_t       handle,
                                     hipblasFillMode_t     uplo,
                                     hipblasOperation_t    transA,
@@ -4518,6 +4525,26 @@ hipblasStatus_t hipblasZtpmvFortran(hipblasHandle_t             handle,
                                     const hipblasDoubleComplex* AP,
                                     hipblasDoubleComplex*       x,
                                     int                         incx);
+#else
+hipblasStatus_t hipblasCtpmvFortran(hipblasHandle_t       handle,
+                                    hipblasFillMode_t     uplo,
+                                    hipblasOperation_t    transA,
+                                    hipblasDiagType_t     diag,
+                                    int                   m,
+                                    const hipComplex* AP,
+                                    hipComplex*       x,
+                                    int                   incx);
+
+hipblasStatus_t hipblasZtpmvFortran(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    hipblasOperation_t          transA,
+                                    hipblasDiagType_t           diag,
+                                    int                         m,
+                                    const hipDoubleComplex* AP,
+                                    hipDoubleComplex*       x,
+                                    int                         incx);
+#endif
+
 
 // tpmv_batched
 hipblasStatus_t hipblasStpmvBatchedFortran(hipblasHandle_t    handle,
@@ -4540,6 +4567,27 @@ hipblasStatus_t hipblasDtpmvBatchedFortran(hipblasHandle_t     handle,
                                            int                 incx,
                                            int                 batchCount);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCtpmvBatchedFortran(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           hipblasOperation_t          transA,
+                                           hipblasDiagType_t           diag,
+                                           int                         m,
+                                           const hipComplex* const AP[],
+                                           hipComplex* const       x[],
+                                           int                         incx,
+                                           int                         batchCount);
+
+hipblasStatus_t hipblasZtpmvBatchedFortran(hipblasHandle_t                   handle,
+                                           hipblasFillMode_t                 uplo,
+                                           hipblasOperation_t                transA,
+                                           hipblasDiagType_t                 diag,
+                                           int                               m,
+                                           const hipDoubleComplex* const AP[],
+                                           hipDoubleComplex* const       x[],
+                                           int                               incx,
+                                           int                               batchCount);
+#else
 hipblasStatus_t hipblasCtpmvBatchedFortran(hipblasHandle_t             handle,
                                            hipblasFillMode_t           uplo,
                                            hipblasOperation_t          transA,
@@ -4559,6 +4607,7 @@ hipblasStatus_t hipblasZtpmvBatchedFortran(hipblasHandle_t                   han
                                            hipblasDoubleComplex* const       x[],
                                            int                               incx,
                                            int                               batchCount);
+#endif
 
 // tpmv_strided_batched
 hipblasStatus_t hipblasStpmvStridedBatchedFortran(hipblasHandle_t    handle,
@@ -4585,6 +4634,31 @@ hipblasStatus_t hipblasDtpmvStridedBatchedFortran(hipblasHandle_t    handle,
                                                   hipblasStride      stridex,
                                                   int                batchCount);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCtpmvStridedBatchedFortran(hipblasHandle_t       handle,
+                                                  hipblasFillMode_t     uplo,
+                                                  hipblasOperation_t    transA,
+                                                  hipblasDiagType_t     diag,
+                                                  int                   m,
+                                                  const hipComplex* AP,
+                                                  hipblasStride         strideAP,
+                                                  hipComplex*       x,
+                                                  int                   incx,
+                                                  hipblasStride         stridex,
+                                                  int                   batchCount);
+
+hipblasStatus_t hipblasZtpmvStridedBatchedFortran(hipblasHandle_t             handle,
+                                                  hipblasFillMode_t           uplo,
+                                                  hipblasOperation_t          transA,
+                                                  hipblasDiagType_t           diag,
+                                                  int                         m,
+                                                  const hipDoubleComplex* AP,
+                                                  hipblasStride               strideAP,
+                                                  hipDoubleComplex*       x,
+                                                  int                         incx,
+                                                  hipblasStride               stridex,
+                                                  int                         batchCount);
+#else
 hipblasStatus_t hipblasCtpmvStridedBatchedFortran(hipblasHandle_t       handle,
                                                   hipblasFillMode_t     uplo,
                                                   hipblasOperation_t    transA,
@@ -4608,6 +4682,7 @@ hipblasStatus_t hipblasZtpmvStridedBatchedFortran(hipblasHandle_t             ha
                                                   int                         incx,
                                                   hipblasStride               stridex,
                                                   int                         batchCount);
+#endif
 
 // tpsv
 hipblasStatus_t hipblasStpsvFortran(hipblasHandle_t    handle,
@@ -4628,6 +4703,25 @@ hipblasStatus_t hipblasDtpsvFortran(hipblasHandle_t    handle,
                                     double*            x,
                                     int                incx);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCtpsvFortran(hipblasHandle_t       handle,
+                                    hipblasFillMode_t     uplo,
+                                    hipblasOperation_t    transA,
+                                    hipblasDiagType_t     diag,
+                                    int                   m,
+                                    const hipComplex* AP,
+                                    hipComplex*       x,
+                                    int                   incx);
+
+hipblasStatus_t hipblasZtpsvFortran(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    hipblasOperation_t          transA,
+                                    hipblasDiagType_t           diag,
+                                    int                         m,
+                                    const hipDoubleComplex* AP,
+                                    hipDoubleComplex*       x,
+                                    int                         incx);
+#else
 hipblasStatus_t hipblasCtpsvFortran(hipblasHandle_t       handle,
                                     hipblasFillMode_t     uplo,
                                     hipblasOperation_t    transA,
@@ -4645,6 +4739,7 @@ hipblasStatus_t hipblasZtpsvFortran(hipblasHandle_t             handle,
                                     const hipblasDoubleComplex* AP,
                                     hipblasDoubleComplex*       x,
                                     int                         incx);
+#endif
 
 // tpsv_bathced
 hipblasStatus_t hipblasStpsvBatchedFortran(hipblasHandle_t    handle,
@@ -4667,6 +4762,27 @@ hipblasStatus_t hipblasDtpsvBatchedFortran(hipblasHandle_t     handle,
                                            int                 incx,
                                            int                 batchCount);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCtpsvBatchedFortran(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           hipblasOperation_t          transA,
+                                           hipblasDiagType_t           diag,
+                                           int                         m,
+                                           const hipComplex* const AP[],
+                                           hipComplex* const       x[],
+                                           int                         incx,
+                                           int                         batchCount);
+
+hipblasStatus_t hipblasZtpsvBatchedFortran(hipblasHandle_t                   handle,
+                                           hipblasFillMode_t                 uplo,
+                                           hipblasOperation_t                transA,
+                                           hipblasDiagType_t                 diag,
+                                           int                               m,
+                                           const hipDoubleComplex* const AP[],
+                                           hipDoubleComplex* const       x[],
+                                           int                               incx,
+                                           int                               batchCount);
+#else
 hipblasStatus_t hipblasCtpsvBatchedFortran(hipblasHandle_t             handle,
                                            hipblasFillMode_t           uplo,
                                            hipblasOperation_t          transA,
@@ -4686,6 +4802,7 @@ hipblasStatus_t hipblasZtpsvBatchedFortran(hipblasHandle_t                   han
                                            hipblasDoubleComplex* const       x[],
                                            int                               incx,
                                            int                               batchCount);
+#endif
 
 // tpsv_strided_batched
 hipblasStatus_t hipblasStpsvStridedBatchedFortran(hipblasHandle_t    handle,
@@ -4712,6 +4829,31 @@ hipblasStatus_t hipblasDtpsvStridedBatchedFortran(hipblasHandle_t    handle,
                                                   hipblasStride      stridex,
                                                   int                batchCount);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCtpsvStridedBatchedFortran(hipblasHandle_t       handle,
+                                                  hipblasFillMode_t     uplo,
+                                                  hipblasOperation_t    transA,
+                                                  hipblasDiagType_t     diag,
+                                                  int                   m,
+                                                  const hipComplex* AP,
+                                                  hipblasStride         strideAP,
+                                                  hipComplex*       x,
+                                                  int                   incx,
+                                                  hipblasStride         stridex,
+                                                  int                   batchCount);
+
+hipblasStatus_t hipblasZtpsvStridedBatchedFortran(hipblasHandle_t             handle,
+                                                  hipblasFillMode_t           uplo,
+                                                  hipblasOperation_t          transA,
+                                                  hipblasDiagType_t           diag,
+                                                  int                         m,
+                                                  const hipDoubleComplex* AP,
+                                                  hipblasStride               strideAP,
+                                                  hipDoubleComplex*       x,
+                                                  int                         incx,
+                                                  hipblasStride               stridex,
+                                                  int                         batchCount);
+#else
 hipblasStatus_t hipblasCtpsvStridedBatchedFortran(hipblasHandle_t       handle,
                                                   hipblasFillMode_t     uplo,
                                                   hipblasOperation_t    transA,
@@ -4735,6 +4877,7 @@ hipblasStatus_t hipblasZtpsvStridedBatchedFortran(hipblasHandle_t             ha
                                                   int                         incx,
                                                   hipblasStride               stridex,
                                                   int                         batchCount);
+#endif
 
 // trmv
 hipblasStatus_t hipblasStrmvFortran(hipblasHandle_t    handle,
