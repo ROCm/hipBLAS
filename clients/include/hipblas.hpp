@@ -854,7 +854,7 @@ hipblasStatus_t hipblasSymvBatched(hipblasHandle_t   handle,
                                    const T* const    x[],
                                    int               incx,
                                    const T*          beta,
-                                   T*                y[],
+                                   T* const          y[],
                                    int               incy,
                                    int               batchCount);
 
