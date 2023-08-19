@@ -146,7 +146,7 @@ TEST_P(blas2_tpsv_gtest, tpsv_float)
     }
 }
 
-TEST_P(blas2_tpsv_gtest, tpsv_single_complex)
+TEST_P(blas2_tpsv_gtest, tpsv_float_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
@@ -218,7 +218,7 @@ TEST_P(blas2_tpsv_gtest, tpsv_batched_float)
     }
 }
 
-TEST_P(blas2_tpsv_gtest, tpsv_batched_single_complex)
+TEST_P(blas2_tpsv_gtest, tpsv_batched_float_complex)
 {
     Arguments arg = setup_tpsv_arguments(GetParam());
 
@@ -278,7 +278,7 @@ TEST_P(blas2_tpsv_gtest, tpsv_strided_batched_float)
     }
 }
 
-TEST_P(blas2_tpsv_gtest, tpsv_strided_batched_single_complex)
+TEST_P(blas2_tpsv_gtest, tpsv_strided_batched_float_complex)
 {
     Arguments arg = setup_tpsv_arguments(GetParam());
 
