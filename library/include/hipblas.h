@@ -65,9 +65,9 @@
 #ifndef HIPBLAS_NO_DEPRECATED_WARNINGS
 #ifndef HIPBLAS_DEPRECATED_MSG
 #ifndef _MSC_VER
-#define HIPBLAS_DEPRECATED_MSG(MSG) // __attribute__((deprecated(#MSG)))
+#define HIPBLAS_DEPRECATED_MSG(MSG) __attribute__((deprecated(#MSG)))
 #else
-#define HIPBLAS_DEPRECATED_MSG(MSG) // __declspec(deprecated(#MSG))
+#define HIPBLAS_DEPRECATED_MSG(MSG) __declspec(deprecated(#MSG))
 #endif
 #endif
 #else
