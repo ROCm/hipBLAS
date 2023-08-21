@@ -86,7 +86,7 @@ hipblasStatus_t hipblasSwap(hipblasHandle_t handle, int n, T* x, int incx, T* y,
 
 template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasSwapBatched(
-    hipblasHandle_t handle, int n, T* x[], int incx, T* y[], int incy, int batch_count);
+    hipblasHandle_t handle, int n, T* const x[], int incx, T* const y[], int incy, int batch_count);
 
 template <typename T, bool FORTRAN = false>
 hipblasStatus_t hipblasSwapStridedBatched(hipblasHandle_t handle,
