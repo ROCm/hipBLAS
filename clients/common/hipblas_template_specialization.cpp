@@ -5693,7 +5693,24 @@ hipblasStatus_t hipblasGemm<hipblasComplex>(hipblasHandle_t       handle,
                                             hipblasComplex*       C,
                                             int                   ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgemm(handle,
+                        transA,
+                        transB,
+                        m,
+                        n,
+                        k,
+                        (const hipComplex*)alpha,
+                        (const hipComplex*)A,
+                        lda,
+                        (const hipComplex*)B,
+                        ldb,
+                        (const hipComplex*)beta,
+                        (hipComplex*)C,
+                        ldc);
+#else
     return hipblasCgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 template <>
@@ -5712,7 +5729,24 @@ hipblasStatus_t hipblasGemm<hipblasDoubleComplex>(hipblasHandle_t             ha
                                                   hipblasDoubleComplex*       C,
                                                   int                         ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgemm(handle,
+                        transA,
+                        transB,
+                        m,
+                        n,
+                        k,
+                        (const hipDoubleComplex*)alpha,
+                        (const hipDoubleComplex*)A,
+                        lda,
+                        (const hipDoubleComplex*)B,
+                        ldb,
+                        (const hipDoubleComplex*)beta,
+                        (hipDoubleComplex*)C,
+                        ldc);
+#else
     return hipblasZgemm(handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 // gemm_batched
@@ -5796,8 +5830,26 @@ hipblasStatus_t hipblasGemmBatched<hipblasComplex>(hipblasHandle_t             h
                                                    int                         ldc,
                                                    int                         batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgemmBatched(handle,
+                               transA,
+                               transB,
+                               m,
+                               n,
+                               k,
+                               (const hipComplex*)alpha,
+                               (const hipComplex* const*)A,
+                               lda,
+                               (const hipComplex* const*)B,
+                               ldb,
+                               (const hipComplex*)beta,
+                               (hipComplex* const*)C,
+                               ldc,
+                               batch_count);
+#else
     return hipblasCgemmBatched(
         handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
+#endif
 }
 
 template <>
@@ -5817,8 +5869,26 @@ hipblasStatus_t hipblasGemmBatched<hipblasDoubleComplex>(hipblasHandle_t        
                                                          int                               ldc,
                                                          int batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgemmBatched(handle,
+                               transA,
+                               transB,
+                               m,
+                               n,
+                               k,
+                               (const hipDoubleComplex*)alpha,
+                               (const hipDoubleComplex* const*)A,
+                               lda,
+                               (const hipDoubleComplex* const*)B,
+                               ldb,
+                               (const hipDoubleComplex*)beta,
+                               (hipDoubleComplex* const*)C,
+                               ldc,
+                               batch_count);
+#else
     return hipblasZgemmBatched(
         handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
+#endif
 }
 
 // gemm_strided_batched
@@ -5965,7 +6035,26 @@ hipblasStatus_t hipblasGemmStridedBatched<hipblasComplex>(hipblasHandle_t       
                                                           int                   bsc,
                                                           int                   batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasCgemmStridedBatched(handle,
+                                      transA,
+                                      transB,
+                                      m,
+                                      n,
+                                      k,
+                                      (const hipComplex*)alpha,
+                                      (const hipComplex*)A,
+                                      lda,
+                                      bsa,
+                                      (const hipComplex*)B,
+                                      ldb,
+                                      bsb,
+                                      (const hipComplex*)beta,
+                                      (hipComplex*)C,
+                                      ldc,
+                                      bsc,
+                                      batch_count);
+#else
     return hipblasCgemmStridedBatched(handle,
                                       transA,
                                       transB,
@@ -5984,6 +6073,7 @@ hipblasStatus_t hipblasGemmStridedBatched<hipblasComplex>(hipblasHandle_t       
                                       ldc,
                                       bsc,
                                       batch_count);
+#endif
 }
 
 template <>
@@ -6006,7 +6096,26 @@ hipblasStatus_t hipblasGemmStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                                                 int                         bsc,
                                                                 int batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasZgemmStridedBatched(handle,
+                                      transA,
+                                      transB,
+                                      m,
+                                      n,
+                                      k,
+                                      (const hipDoubleComplex*)alpha,
+                                      (const hipDoubleComplex*)A,
+                                      lda,
+                                      bsa,
+                                      (const hipDoubleComplex*)B,
+                                      ldb,
+                                      bsb,
+                                      (const hipDoubleComplex*)beta,
+                                      (hipDoubleComplex*)C,
+                                      ldc,
+                                      bsc,
+                                      batch_count);
+#else
     return hipblasZgemmStridedBatched(handle,
                                       transA,
                                       transB,
@@ -6025,6 +6134,7 @@ hipblasStatus_t hipblasGemmStridedBatched<hipblasDoubleComplex>(hipblasHandle_t 
                                       ldc,
                                       bsc,
                                       batch_count);
+#endif
 }
 
 // herk
@@ -17082,8 +17192,25 @@ hipblasStatus_t hipblasGemm<hipblasComplex, true>(hipblasHandle_t       handle,
                                                   hipblasComplex*       C,
                                                   int                   ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgemmFortran(handle,
+                               transA,
+                               transB,
+                               m,
+                               n,
+                               k,
+                               (const hipComplex*)alpha,
+                               (const hipComplex*)A,
+                               lda,
+                               (const hipComplex*)B,
+                               ldb,
+                               (const hipComplex*)beta,
+                               (hipComplex*)C,
+                               ldc);
+#else
     return hipblasCgemmFortran(
         handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 template <>
@@ -17102,8 +17229,25 @@ hipblasStatus_t hipblasGemm<hipblasDoubleComplex, true>(hipblasHandle_t         
                                                         hipblasDoubleComplex*       C,
                                                         int                         ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgemmFortran(handle,
+                               transA,
+                               transB,
+                               m,
+                               n,
+                               k,
+                               (const hipDoubleComplex*)alpha,
+                               (const hipDoubleComplex*)A,
+                               lda,
+                               (const hipDoubleComplex*)B,
+                               ldb,
+                               (const hipDoubleComplex*)beta,
+                               (hipDoubleComplex*)C,
+                               ldc);
+#else
     return hipblasZgemmFortran(
         handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 // gemm_batched
@@ -17187,8 +17331,26 @@ hipblasStatus_t hipblasGemmBatched<hipblasComplex, true>(hipblasHandle_t        
                                                          int                         ldc,
                                                          int                         batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgemmBatchedFortran(handle,
+                                      transA,
+                                      transB,
+                                      m,
+                                      n,
+                                      k,
+                                      (const hipComplex*)alpha,
+                                      (const hipComplex* const*)A,
+                                      lda,
+                                      (const hipComplex* const*)B,
+                                      ldb,
+                                      (const hipComplex*)beta,
+                                      (hipComplex* const*)C,
+                                      ldc,
+                                      batch_count);
+#else
     return hipblasCgemmBatchedFortran(
         handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
+#endif
 }
 
 template <>
@@ -17209,8 +17371,26 @@ hipblasStatus_t
                                                    int                               ldc,
                                                    int                               batch_count)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgemmBatchedFortran(handle,
+                                      transA,
+                                      transB,
+                                      m,
+                                      n,
+                                      k,
+                                      (const hipDoubleComplex*)alpha,
+                                      (const hipDoubleComplex* const*)A,
+                                      lda,
+                                      (const hipDoubleComplex* const*)B,
+                                      ldb,
+                                      (const hipDoubleComplex*)beta,
+                                      (hipDoubleComplex* const*)C,
+                                      ldc,
+                                      batch_count);
+#else
     return hipblasZgemmBatchedFortran(
         handle, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batch_count);
+#endif
 }
 
 // gemm_strided_batched
@@ -17357,7 +17537,26 @@ hipblasStatus_t hipblasGemmStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                                                 int                   bsc,
                                                                 int                   batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasCgemmStridedBatchedFortran(handle,
+                                             transA,
+                                             transB,
+                                             m,
+                                             n,
+                                             k,
+                                             (const hipComplex*)alpha,
+                                             (const hipComplex*)A,
+                                             lda,
+                                             bsa,
+                                             (const hipComplex*)B,
+                                             ldb,
+                                             bsb,
+                                             (const hipComplex*)beta,
+                                             (hipComplex*)C,
+                                             ldc,
+                                             bsc,
+                                             batch_count);
+#else
     return hipblasCgemmStridedBatchedFortran(handle,
                                              transA,
                                              transB,
@@ -17376,6 +17575,7 @@ hipblasStatus_t hipblasGemmStridedBatched<hipblasComplex, true>(hipblasHandle_t 
                                              ldc,
                                              bsc,
                                              batch_count);
+#endif
 }
 
 template <>
@@ -17399,7 +17599,26 @@ hipblasStatus_t
                                                           int                         bsc,
                                                           int                         batch_count)
 {
-
+#ifdef HIPBLAS_V2
+    return hipblasZgemmStridedBatchedFortran(handle,
+                                             transA,
+                                             transB,
+                                             m,
+                                             n,
+                                             k,
+                                             (const hipDoubleComplex*)alpha,
+                                             (const hipDoubleComplex*)A,
+                                             lda,
+                                             bsa,
+                                             (const hipDoubleComplex*)B,
+                                             ldb,
+                                             bsb,
+                                             (const hipDoubleComplex*)beta,
+                                             (hipDoubleComplex*)C,
+                                             ldc,
+                                             bsc,
+                                             batch_count);
+#else
     return hipblasZgemmStridedBatchedFortran(handle,
                                              transA,
                                              transB,
@@ -17418,6 +17637,7 @@ hipblasStatus_t
                                              ldc,
                                              bsc,
                                              batch_count);
+#endif
 }
 
 // herk
