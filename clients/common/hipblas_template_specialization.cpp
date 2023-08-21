@@ -11547,7 +11547,11 @@ hipblasStatus_t hipblasGeqrf<hipblasComplex>(hipblasHandle_t handle,
                                              hipblasComplex* ipiv,
                                              int*            info)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgeqrf(handle, m, n, (hipComplex*)A, lda, (hipComplex*)ipiv, info);
+#else
     return hipblasCgeqrf(handle, m, n, A, lda, ipiv, info);
+#endif
 }
 
 template <>
@@ -11559,7 +11563,11 @@ hipblasStatus_t hipblasGeqrf<hipblasDoubleComplex>(hipblasHandle_t       handle,
                                                    hipblasDoubleComplex* ipiv,
                                                    int*                  info)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgeqrf(handle, m, n, (hipDoubleComplex*)A, lda, (hipDoubleComplex*)ipiv, info);
+#else
     return hipblasZgeqrf(handle, m, n, A, lda, ipiv, info);
+#endif
 }
 
 // geqrf_batched
@@ -11599,7 +11607,12 @@ hipblasStatus_t hipblasGeqrfBatched<hipblasComplex>(hipblasHandle_t       handle
                                                     int*                  info,
                                                     const int             batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgeqrfBatched(
+        handle, m, n, (hipComplex* const*)A, lda, (hipComplex* const*)ipiv, info, batchCount);
+#else
     return hipblasCgeqrfBatched(handle, m, n, A, lda, ipiv, info, batchCount);
+#endif
 }
 
 template <>
@@ -11612,7 +11625,18 @@ hipblasStatus_t hipblasGeqrfBatched<hipblasDoubleComplex>(hipblasHandle_t       
                                                           int*                        info,
                                                           const int                   batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgeqrfBatched(handle,
+                                m,
+                                n,
+                                (hipDoubleComplex* const*)A,
+                                lda,
+                                (hipDoubleComplex* const*)ipiv,
+                                info,
+                                batchCount);
+#else
     return hipblasZgeqrfBatched(handle, m, n, A, lda, ipiv, info, batchCount);
+#endif
 }
 
 // geqrf_strided_batched
@@ -11660,8 +11684,13 @@ hipblasStatus_t hipblasGeqrfStridedBatched<hipblasComplex>(hipblasHandle_t     h
                                                            int*                info,
                                                            const int           batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgeqrfStridedBatched(
+        handle, m, n, (hipComplex*)A, lda, strideA, (hipComplex*)ipiv, strideP, info, batchCount);
+#else
     return hipblasCgeqrfStridedBatched(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+#endif
 }
 
 template <>
@@ -11676,8 +11705,21 @@ hipblasStatus_t hipblasGeqrfStridedBatched<hipblasDoubleComplex>(hipblasHandle_t
                                                                  int*                  info,
                                                                  const int             batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgeqrfStridedBatched(handle,
+                                       m,
+                                       n,
+                                       (hipDoubleComplex*)A,
+                                       lda,
+                                       strideA,
+                                       (hipDoubleComplex*)ipiv,
+                                       strideP,
+                                       info,
+                                       batchCount);
+#else
     return hipblasZgeqrfStridedBatched(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+#endif
 }
 
 // gels
@@ -23616,7 +23658,11 @@ hipblasStatus_t hipblasGeqrf<hipblasComplex, true>(hipblasHandle_t handle,
                                                    hipblasComplex* ipiv,
                                                    int*            info)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgeqrfFortran(handle, m, n, (hipComplex*)A, lda, (hipComplex*)ipiv, info);
+#else
     return hipblasCgeqrfFortran(handle, m, n, A, lda, ipiv, info);
+#endif
 }
 
 template <>
@@ -23628,7 +23674,12 @@ hipblasStatus_t hipblasGeqrf<hipblasDoubleComplex, true>(hipblasHandle_t       h
                                                          hipblasDoubleComplex* ipiv,
                                                          int*                  info)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgeqrfFortran(
+        handle, m, n, (hipDoubleComplex*)A, lda, (hipDoubleComplex*)ipiv, info);
+#else
     return hipblasZgeqrfFortran(handle, m, n, A, lda, ipiv, info);
+#endif
 }
 
 // geqrf_batched
@@ -23668,7 +23719,12 @@ hipblasStatus_t hipblasGeqrfBatched<hipblasComplex, true>(hipblasHandle_t       
                                                           int*                  info,
                                                           const int             batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgeqrfBatchedFortran(
+        handle, m, n, (hipComplex* const*)A, lda, (hipComplex* const*)ipiv, info, batchCount);
+#else
     return hipblasCgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
+#endif
 }
 
 template <>
@@ -23681,7 +23737,18 @@ hipblasStatus_t hipblasGeqrfBatched<hipblasDoubleComplex, true>(hipblasHandle_t 
                                                                 int*                        info,
                                                                 const int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgeqrfBatchedFortran(handle,
+                                       m,
+                                       n,
+                                       (hipDoubleComplex* const*)A,
+                                       lda,
+                                       (hipDoubleComplex* const*)ipiv,
+                                       info,
+                                       batchCount);
+#else
     return hipblasZgeqrfBatchedFortran(handle, m, n, A, lda, ipiv, info, batchCount);
+#endif
 }
 
 // geqrf_strided_batched
@@ -23729,8 +23796,13 @@ hipblasStatus_t hipblasGeqrfStridedBatched<hipblasComplex, true>(hipblasHandle_t
                                                                  int*                info,
                                                                  const int           batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCgeqrfStridedBatchedFortran(
+        handle, m, n, (hipComplex*)A, lda, strideA, (hipComplex*)ipiv, strideP, info, batchCount);
+#else
     return hipblasCgeqrfStridedBatchedFortran(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+#endif
 }
 
 template <>
@@ -23745,8 +23817,21 @@ hipblasStatus_t hipblasGeqrfStridedBatched<hipblasDoubleComplex, true>(hipblasHa
                                                                        int*                info,
                                                                        const int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZgeqrfStridedBatchedFortran(handle,
+                                              m,
+                                              n,
+                                              (hipDoubleComplex*)A,
+                                              lda,
+                                              strideA,
+                                              (hipDoubleComplex*)ipiv,
+                                              strideP,
+                                              info,
+                                              batchCount);
+#else
     return hipblasZgeqrfStridedBatchedFortran(
         handle, m, n, A, lda, strideA, ipiv, strideP, info, batchCount);
+#endif
 }
 
 // gels

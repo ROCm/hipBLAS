@@ -12850,6 +12850,28 @@ hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+hipblasStatus_t hipblasCgeqrf_v2(hipblasHandle_t handle,
+                                 const int       m,
+                                 const int       n,
+                                 hipComplex*     A,
+                                 const int       lda,
+                                 hipComplex*     ipiv,
+                                 int*            info)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZgeqrf_v2(hipblasHandle_t   handle,
+                                 const int         m,
+                                 const int         n,
+                                 hipDoubleComplex* A,
+                                 const int         lda,
+                                 hipDoubleComplex* ipiv,
+                                 int*              info)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
 // geqrf_batched
 hipblasStatus_t hipblasSgeqrfBatched(hipblasHandle_t handle,
                                      const int       m,
@@ -12929,6 +12951,48 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasCgeqrfBatched_v2(hipblasHandle_t   handle,
+                                        const int         m,
+                                        const int         n,
+                                        hipComplex* const A[],
+                                        const int         lda,
+                                        hipComplex* const ipiv[],
+                                        int*              info,
+                                        const int         batch_count)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasCgeqrfBatched(
+        (cublasHandle_t)handle, m, n, (cuComplex**)A, lda, (cuComplex**)ipiv, info, batch_count));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZgeqrfBatched_v2(hipblasHandle_t         handle,
+                                        const int               m,
+                                        const int               n,
+                                        hipDoubleComplex* const A[],
+                                        const int               lda,
+                                        hipDoubleComplex* const ipiv[],
+                                        int*                    info,
+                                        const int               batch_count)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasZgeqrfBatched((cublasHandle_t)handle,
+                                                          m,
+                                                          n,
+                                                          (cuDoubleComplex**)A,
+                                                          lda,
+                                                          (cuDoubleComplex**)ipiv,
+                                                          info,
+                                                          batch_count));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // geqrf_strided_batched
 hipblasStatus_t hipblasSgeqrfStridedBatched(hipblasHandle_t     handle,
                                             const int           m,
@@ -12982,6 +13046,34 @@ hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
                                             const hipblasStride   strideP,
                                             int*                  info,
                                             const int             batch_count)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCgeqrfStridedBatched_v2(hipblasHandle_t     handle,
+                                               const int           m,
+                                               const int           n,
+                                               hipComplex*         A,
+                                               const int           lda,
+                                               const hipblasStride strideA,
+                                               hipComplex*         ipiv,
+                                               const hipblasStride strideP,
+                                               int*                info,
+                                               const int           batch_count)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZgeqrfStridedBatched_v2(hipblasHandle_t     handle,
+                                               const int           m,
+                                               const int           n,
+                                               hipDoubleComplex*   A,
+                                               const int           lda,
+                                               const hipblasStride strideA,
+                                               hipDoubleComplex*   ipiv,
+                                               const hipblasStride strideP,
+                                               int*                info,
+                                               const int           batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
