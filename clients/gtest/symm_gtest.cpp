@@ -337,7 +337,7 @@ TEST_P(symm_gtest, symm_strided_batched_gtest_float)
     }
 }
 
-TEST_P(symm_gtest, symm_strided_batched_gtest_complex)
+TEST_P(symm_gtest, symm_strided_batched_gtest_float_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
     // and initializes arg(Arguments) which will be passed to testing routine
