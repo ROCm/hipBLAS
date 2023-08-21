@@ -8816,6 +8816,31 @@ hipblasStatus_t hipblasDgelsFortran(hipblasHandle_t    handle,
                                     int*               info,
                                     int*               deviceInfo);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCgelsFortran(hipblasHandle_t    handle,
+                                    hipblasOperation_t trans,
+                                    const int          m,
+                                    const int          n,
+                                    const int          nrhs,
+                                    hipComplex*        A,
+                                    const int          lda,
+                                    hipComplex*        B,
+                                    const int          ldb,
+                                    int*               info,
+                                    int*               deviceInfo);
+
+hipblasStatus_t hipblasZgelsFortran(hipblasHandle_t    handle,
+                                    hipblasOperation_t trans,
+                                    const int          m,
+                                    const int          n,
+                                    const int          nrhs,
+                                    hipDoubleComplex*  A,
+                                    const int          lda,
+                                    hipDoubleComplex*  B,
+                                    const int          ldb,
+                                    int*               info,
+                                    int*               deviceInfo);
+#else
 hipblasStatus_t hipblasCgelsFortran(hipblasHandle_t    handle,
                                     hipblasOperation_t trans,
                                     const int          m,
@@ -8839,6 +8864,7 @@ hipblasStatus_t hipblasZgelsFortran(hipblasHandle_t       handle,
                                     const int             ldb,
                                     int*                  info,
                                     int*                  deviceInfo);
+#endif
 
 // gelsBatched
 hipblasStatus_t hipblasSgelsBatchedFortran(hipblasHandle_t    handle,
@@ -8867,6 +8893,33 @@ hipblasStatus_t hipblasDgelsBatchedFortran(hipblasHandle_t    handle,
                                            int*               deviceInfo,
                                            const int          batchCount);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCgelsBatchedFortran(hipblasHandle_t    handle,
+                                           hipblasOperation_t trans,
+                                           const int          m,
+                                           const int          n,
+                                           const int          nrhs,
+                                           hipComplex* const  A[],
+                                           const int          lda,
+                                           hipComplex* const  B[],
+                                           const int          ldb,
+                                           int*               info,
+                                           int*               deviceInfo,
+                                           const int          batchCount);
+
+hipblasStatus_t hipblasZgelsBatchedFortran(hipblasHandle_t         handle,
+                                           hipblasOperation_t      trans,
+                                           const int               m,
+                                           const int               n,
+                                           const int               nrhs,
+                                           hipDoubleComplex* const A[],
+                                           const int               lda,
+                                           hipDoubleComplex* const B[],
+                                           const int               ldb,
+                                           int*                    info,
+                                           int*                    deviceInfo,
+                                           const int               batchCount);
+#else
 hipblasStatus_t hipblasCgelsBatchedFortran(hipblasHandle_t       handle,
                                            hipblasOperation_t    trans,
                                            const int             m,
@@ -8892,6 +8945,7 @@ hipblasStatus_t hipblasZgelsBatchedFortran(hipblasHandle_t             handle,
                                            int*                        info,
                                            int*                        deviceInfo,
                                            const int                   batchCount);
+#endif
 
 // gelsStridedBatched
 hipblasStatus_t hipblasSgelsStridedBatchedFortran(hipblasHandle_t     handle,
@@ -8924,6 +8978,37 @@ hipblasStatus_t hipblasDgelsStridedBatchedFortran(hipblasHandle_t     handle,
                                                   int*                deviceInfo,
                                                   const int           batchCount);
 
+#ifdef HIPBLAS_V2
+hipblasStatus_t hipblasCgelsStridedBatchedFortran(hipblasHandle_t     handle,
+                                                  hipblasOperation_t  trans,
+                                                  const int           m,
+                                                  const int           n,
+                                                  const int           nrhs,
+                                                  hipComplex*         A,
+                                                  const int           lda,
+                                                  const hipblasStride strideA,
+                                                  hipComplex*         B,
+                                                  const int           ldb,
+                                                  const hipblasStride strideB,
+                                                  int*                info,
+                                                  int*                deviceInfo,
+                                                  const int           batchCount);
+
+hipblasStatus_t hipblasZgelsStridedBatchedFortran(hipblasHandle_t     handle,
+                                                  hipblasOperation_t  trans,
+                                                  const int           m,
+                                                  const int           n,
+                                                  const int           nrhs,
+                                                  hipDoubleComplex*   A,
+                                                  const int           lda,
+                                                  const hipblasStride strideA,
+                                                  hipDoubleComplex*   B,
+                                                  const int           ldb,
+                                                  const hipblasStride strideB,
+                                                  int*                info,
+                                                  int*                deviceInfo,
+                                                  const int           batchCount);
+#else
 hipblasStatus_t hipblasCgelsStridedBatchedFortran(hipblasHandle_t     handle,
                                                   hipblasOperation_t  trans,
                                                   const int           m,
@@ -8953,6 +9038,7 @@ hipblasStatus_t hipblasZgelsStridedBatchedFortran(hipblasHandle_t       handle,
                                                   int*                  info,
                                                   int*                  deviceInfo,
                                                   const int             batchCount);
+#endif
 }
 
 #endif

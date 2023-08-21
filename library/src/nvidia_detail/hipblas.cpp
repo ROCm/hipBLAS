@@ -13048,6 +13048,36 @@ hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+hipblasStatus_t hipblasCgels_v2(hipblasHandle_t    handle,
+                                hipblasOperation_t trans,
+                                const int          m,
+                                const int          n,
+                                const int          nrhs,
+                                hipComplex*        A,
+                                const int          lda,
+                                hipComplex*        B,
+                                const int          ldb,
+                                int*               info,
+                                int*               deviceInfo)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZgels_v2(hipblasHandle_t    handle,
+                                hipblasOperation_t trans,
+                                const int          m,
+                                const int          n,
+                                const int          nrhs,
+                                hipDoubleComplex*  A,
+                                const int          lda,
+                                hipDoubleComplex*  B,
+                                const int          ldb,
+                                int*               info,
+                                int*               deviceInfo)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
 // gelsBatched
 hipblasStatus_t hipblasSgelsBatched(hipblasHandle_t    handle,
                                     hipblasOperation_t trans,
@@ -13177,6 +13207,70 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+hipblasStatus_t hipblasCgelsBatched_v2(hipblasHandle_t    handle,
+                                       hipblasOperation_t trans,
+                                       const int          m,
+                                       const int          n,
+                                       const int          nrhs,
+                                       hipComplex* const  A[],
+                                       const int          lda,
+                                       hipComplex* const  B[],
+                                       const int          ldb,
+                                       int*               info,
+                                       int*               deviceInfo,
+                                       const int          batchCount)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasCgelsBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         (cuComplex**)A,
+                                                         lda,
+                                                         (cuComplex**)B,
+                                                         ldb,
+                                                         info,
+                                                         deviceInfo,
+                                                         batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZgelsBatched_v2(hipblasHandle_t         handle,
+                                       hipblasOperation_t      trans,
+                                       const int               m,
+                                       const int               n,
+                                       const int               nrhs,
+                                       hipDoubleComplex* const A[],
+                                       const int               lda,
+                                       hipDoubleComplex* const B[],
+                                       const int               ldb,
+                                       int*                    info,
+                                       int*                    deviceInfo,
+                                       const int               batchCount)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasZgelsBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         nrhs,
+                                                         (cuDoubleComplex**)A,
+                                                         lda,
+                                                         (cuDoubleComplex**)B,
+                                                         ldb,
+                                                         info,
+                                                         deviceInfo,
+                                                         batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // gelsStridedBatched
 hipblasStatus_t hipblasSgelsStridedBatched(hipblasHandle_t     handle,
                                            hipblasOperation_t  trans,
@@ -13249,6 +13343,44 @@ hipblasStatus_t hipblasZgelsStridedBatched(hipblasHandle_t       handle,
                                            int*                  info,
                                            int*                  deviceInfo,
                                            const int             batchCount)
+{
+    // only batched variants of gels are supported in cuBLAS
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCgelsStridedBatched_v2(hipblasHandle_t     handle,
+                                              hipblasOperation_t  trans,
+                                              const int           m,
+                                              const int           n,
+                                              const int           nrhs,
+                                              hipComplex*         A,
+                                              const int           lda,
+                                              const hipblasStride strideA,
+                                              hipComplex*         B,
+                                              const int           ldb,
+                                              const hipblasStride strideB,
+                                              int*                info,
+                                              int*                deviceInfo,
+                                              const int           batchCount)
+{
+    // only batched variants of gels are supported in cuBLAS
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZgelsStridedBatched_v2(hipblasHandle_t     handle,
+                                              hipblasOperation_t  trans,
+                                              const int           m,
+                                              const int           n,
+                                              const int           nrhs,
+                                              hipDoubleComplex*   A,
+                                              const int           lda,
+                                              const hipblasStride strideA,
+                                              hipDoubleComplex*   B,
+                                              const int           ldb,
+                                              const hipblasStride strideB,
+                                              int*                info,
+                                              int*                deviceInfo,
+                                              const int           batchCount)
 {
     // only batched variants of gels are supported in cuBLAS
     return HIPBLAS_STATUS_NOT_SUPPORTED;
