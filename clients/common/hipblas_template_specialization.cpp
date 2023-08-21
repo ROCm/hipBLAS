@@ -6151,7 +6151,12 @@ hipblasStatus_t hipblasHerk(hipblasHandle_t       handle,
                             hipblasComplex*       C,
                             int                   ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherk(
+        handle, uplo, transA, n, k, alpha, (const hipComplex*)A, lda, beta, (hipComplex*)C, ldc);
+#else
     return hipblasCherk(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc);
+#endif
 }
 
 template <>
@@ -6167,7 +6172,21 @@ hipblasStatus_t hipblasHerk(hipblasHandle_t             handle,
                             hipblasDoubleComplex*       C,
                             int                         ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherk(handle,
+                        uplo,
+                        transA,
+                        n,
+                        k,
+                        alpha,
+                        (const hipDoubleComplex*)A,
+                        lda,
+                        beta,
+                        (hipDoubleComplex*)C,
+                        ldc);
+#else
     return hipblasZherk(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc);
+#endif
 }
 
 // herk_batched
@@ -6185,7 +6204,22 @@ hipblasStatus_t hipblasHerkBatched(hipblasHandle_t             handle,
                                    int                         ldc,
                                    int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkBatched(handle,
+                               uplo,
+                               transA,
+                               n,
+                               k,
+                               alpha,
+                               (const hipComplex* const*)A,
+                               lda,
+                               beta,
+                               (hipComplex* const*)C,
+                               ldc,
+                               batchCount);
+#else
     return hipblasCherkBatched(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc, batchCount);
+#endif
 }
 
 template <>
@@ -6202,7 +6236,22 @@ hipblasStatus_t hipblasHerkBatched(hipblasHandle_t                   handle,
                                    int                               ldc,
                                    int                               batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkBatched(handle,
+                               uplo,
+                               transA,
+                               n,
+                               k,
+                               alpha,
+                               (const hipDoubleComplex* const*)A,
+                               lda,
+                               beta,
+                               (hipDoubleComplex* const*)C,
+                               ldc,
+                               batchCount);
+#else
     return hipblasZherkBatched(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc, batchCount);
+#endif
 }
 
 // herk_strided_batched
@@ -6222,8 +6271,25 @@ hipblasStatus_t hipblasHerkStridedBatched(hipblasHandle_t       handle,
                                           hipblasStride         strideC,
                                           int                   batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkStridedBatched(handle,
+                                      uplo,
+                                      transA,
+                                      n,
+                                      k,
+                                      alpha,
+                                      (const hipComplex*)A,
+                                      lda,
+                                      strideA,
+                                      beta,
+                                      (hipComplex*)C,
+                                      ldc,
+                                      strideC,
+                                      batchCount);
+#else
     return hipblasCherkStridedBatched(
         handle, uplo, transA, n, k, alpha, A, lda, strideA, beta, C, ldc, strideC, batchCount);
+#endif
 }
 
 template <>
@@ -6242,8 +6308,25 @@ hipblasStatus_t hipblasHerkStridedBatched(hipblasHandle_t             handle,
                                           hipblasStride               strideC,
                                           int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkStridedBatched(handle,
+                                      uplo,
+                                      transA,
+                                      n,
+                                      k,
+                                      alpha,
+                                      (const hipDoubleComplex*)A,
+                                      lda,
+                                      strideA,
+                                      beta,
+                                      (hipDoubleComplex*)C,
+                                      ldc,
+                                      strideC,
+                                      batchCount);
+#else
     return hipblasZherkStridedBatched(
         handle, uplo, transA, n, k, alpha, A, lda, strideA, beta, C, ldc, strideC, batchCount);
+#endif
 }
 
 // her2k
@@ -6262,7 +6345,23 @@ hipblasStatus_t hipblasHer2k(hipblasHandle_t       handle,
                              hipblasComplex*       C,
                              int                   ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCher2k(handle,
+                         uplo,
+                         transA,
+                         n,
+                         k,
+                         (const hipComplex*)alpha,
+                         (const hipComplex*)A,
+                         lda,
+                         (const hipComplex*)B,
+                         ldb,
+                         beta,
+                         (hipComplex*)C,
+                         ldc);
+#else
     return hipblasCher2k(handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 template <>
@@ -6280,7 +6379,23 @@ hipblasStatus_t hipblasHer2k(hipblasHandle_t             handle,
                              hipblasDoubleComplex*       C,
                              int                         ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZher2k(handle,
+                         uplo,
+                         transA,
+                         n,
+                         k,
+                         (const hipDoubleComplex*)alpha,
+                         (const hipDoubleComplex*)A,
+                         lda,
+                         (const hipDoubleComplex*)B,
+                         ldb,
+                         beta,
+                         (hipDoubleComplex*)C,
+                         ldc);
+#else
     return hipblasZher2k(handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 // her2k_batched
@@ -6300,8 +6415,25 @@ hipblasStatus_t hipblasHer2kBatched(hipblasHandle_t             handle,
                                     int                         ldc,
                                     int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCher2kBatched(handle,
+                                uplo,
+                                transA,
+                                n,
+                                k,
+                                (const hipComplex*)alpha,
+                                (const hipComplex* const*)A,
+                                lda,
+                                (const hipComplex* const*)B,
+                                ldb,
+                                beta,
+                                (hipComplex* const*)C,
+                                ldc,
+                                batchCount);
+#else
     return hipblasCher2kBatched(
         handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+#endif
 }
 
 template <>
@@ -6320,8 +6452,25 @@ hipblasStatus_t hipblasHer2kBatched(hipblasHandle_t                   handle,
                                     int                               ldc,
                                     int                               batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZher2kBatched(handle,
+                                uplo,
+                                transA,
+                                n,
+                                k,
+                                (const hipDoubleComplex*)alpha,
+                                (const hipDoubleComplex* const*)A,
+                                lda,
+                                (const hipDoubleComplex* const*)B,
+                                ldb,
+                                beta,
+                                (hipDoubleComplex* const*)C,
+                                ldc,
+                                batchCount);
+#else
     return hipblasZher2kBatched(
         handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+#endif
 }
 
 // her2k_strided_batched
@@ -6344,6 +6493,25 @@ hipblasStatus_t hipblasHer2kStridedBatched(hipblasHandle_t       handle,
                                            hipblasStride         strideC,
                                            int                   batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCher2kStridedBatched(handle,
+                                       uplo,
+                                       transA,
+                                       n,
+                                       k,
+                                       (const hipComplex*)alpha,
+                                       (const hipComplex*)A,
+                                       lda,
+                                       strideA,
+                                       (const hipComplex*)B,
+                                       ldb,
+                                       strideB,
+                                       beta,
+                                       (hipComplex*)C,
+                                       ldc,
+                                       strideC,
+                                       batchCount);
+#else
     return hipblasCher2kStridedBatched(handle,
                                        uplo,
                                        transA,
@@ -6361,6 +6529,7 @@ hipblasStatus_t hipblasHer2kStridedBatched(hipblasHandle_t       handle,
                                        ldc,
                                        strideC,
                                        batchCount);
+#endif
 }
 
 template <>
@@ -6382,6 +6551,25 @@ hipblasStatus_t hipblasHer2kStridedBatched(hipblasHandle_t             handle,
                                            hipblasStride               strideC,
                                            int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZher2kStridedBatched(handle,
+                                       uplo,
+                                       transA,
+                                       n,
+                                       k,
+                                       (const hipDoubleComplex*)alpha,
+                                       (const hipDoubleComplex*)A,
+                                       lda,
+                                       strideA,
+                                       (const hipDoubleComplex*)B,
+                                       ldb,
+                                       strideB,
+                                       beta,
+                                       (hipDoubleComplex*)C,
+                                       ldc,
+                                       strideC,
+                                       batchCount);
+#else
     return hipblasZher2kStridedBatched(handle,
                                        uplo,
                                        transA,
@@ -6399,6 +6587,7 @@ hipblasStatus_t hipblasHer2kStridedBatched(hipblasHandle_t             handle,
                                        ldc,
                                        strideC,
                                        batchCount);
+#endif
 }
 
 // herkx
@@ -6417,7 +6606,23 @@ hipblasStatus_t hipblasHerkx(hipblasHandle_t       handle,
                              hipblasComplex*       C,
                              int                   ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkx(handle,
+                         uplo,
+                         transA,
+                         n,
+                         k,
+                         (const hipComplex*)alpha,
+                         (const hipComplex*)A,
+                         lda,
+                         (const hipComplex*)B,
+                         ldb,
+                         beta,
+                         (hipComplex*)C,
+                         ldc);
+#else
     return hipblasCherkx(handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 template <>
@@ -6435,7 +6640,23 @@ hipblasStatus_t hipblasHerkx(hipblasHandle_t             handle,
                              hipblasDoubleComplex*       C,
                              int                         ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkx(handle,
+                         uplo,
+                         transA,
+                         n,
+                         k,
+                         (const hipDoubleComplex*)alpha,
+                         (const hipDoubleComplex*)A,
+                         lda,
+                         (const hipDoubleComplex*)B,
+                         ldb,
+                         beta,
+                         (hipDoubleComplex*)C,
+                         ldc);
+#else
     return hipblasZherkx(handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 // herkx_batched
@@ -6455,8 +6676,25 @@ hipblasStatus_t hipblasHerkxBatched(hipblasHandle_t             handle,
                                     int                         ldc,
                                     int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkxBatched(handle,
+                                uplo,
+                                transA,
+                                n,
+                                k,
+                                (const hipComplex*)alpha,
+                                (const hipComplex* const*)A,
+                                lda,
+                                (const hipComplex* const*)B,
+                                ldb,
+                                beta,
+                                (hipComplex* const*)C,
+                                ldc,
+                                batchCount);
+#else
     return hipblasCherkxBatched(
         handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+#endif
 }
 
 template <>
@@ -6475,8 +6713,25 @@ hipblasStatus_t hipblasHerkxBatched(hipblasHandle_t                   handle,
                                     int                               ldc,
                                     int                               batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkxBatched(handle,
+                                uplo,
+                                transA,
+                                n,
+                                k,
+                                (const hipDoubleComplex*)alpha,
+                                (const hipDoubleComplex* const*)A,
+                                lda,
+                                (const hipDoubleComplex* const*)B,
+                                ldb,
+                                beta,
+                                (hipDoubleComplex* const*)C,
+                                ldc,
+                                batchCount);
+#else
     return hipblasZherkxBatched(
         handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+#endif
 }
 
 // herkx_strided_batched
@@ -6499,6 +6754,25 @@ hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t       handle,
                                            hipblasStride         strideC,
                                            int                   batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkxStridedBatched(handle,
+                                       uplo,
+                                       transA,
+                                       n,
+                                       k,
+                                       (const hipComplex*)alpha,
+                                       (const hipComplex*)A,
+                                       lda,
+                                       strideA,
+                                       (const hipComplex*)B,
+                                       ldb,
+                                       strideB,
+                                       beta,
+                                       (hipComplex*)C,
+                                       ldc,
+                                       strideC,
+                                       batchCount);
+#else
     return hipblasCherkxStridedBatched(handle,
                                        uplo,
                                        transA,
@@ -6516,6 +6790,7 @@ hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t       handle,
                                        ldc,
                                        strideC,
                                        batchCount);
+#endif
 }
 
 template <>
@@ -6537,6 +6812,25 @@ hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t             handle,
                                            hipblasStride               strideC,
                                            int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkxStridedBatched(handle,
+                                       uplo,
+                                       transA,
+                                       n,
+                                       k,
+                                       (const hipComplex*)alpha,
+                                       (const hipComplex*)A,
+                                       lda,
+                                       strideA,
+                                       (const hipComplex*)B,
+                                       ldb,
+                                       strideB,
+                                       beta,
+                                       (hipComplex*)C,
+                                       ldc,
+                                       strideC,
+                                       batchCount);
+#else
     return hipblasZherkxStridedBatched(handle,
                                        uplo,
                                        transA,
@@ -6554,6 +6848,7 @@ hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t             handle,
                                        ldc,
                                        strideC,
                                        batchCount);
+#endif
 }
 
 // symm
@@ -17654,7 +17949,12 @@ hipblasStatus_t hipblasHerk<hipblasComplex, float, true>(hipblasHandle_t       h
                                                          hipblasComplex*       C,
                                                          int                   ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkFortran(
+        handle, uplo, transA, n, k, alpha, (const hipComplex*)A, lda, beta, (hipComplex*)C, ldc);
+#else
     return hipblasCherkFortran(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc);
+#endif
 }
 
 template <>
@@ -17670,7 +17970,21 @@ hipblasStatus_t hipblasHerk<hipblasDoubleComplex, double, true>(hipblasHandle_t 
                                                                 hipblasDoubleComplex*       C,
                                                                 int                         ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkFortran(handle,
+                               uplo,
+                               transA,
+                               n,
+                               k,
+                               alpha,
+                               (const hipDoubleComplex*)A,
+                               lda,
+                               beta,
+                               (hipDoubleComplex*)C,
+                               ldc);
+#else
     return hipblasZherkFortran(handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc);
+#endif
 }
 
 // herk_batched
@@ -17688,8 +18002,23 @@ hipblasStatus_t hipblasHerkBatched<hipblasComplex, float, true>(hipblasHandle_t 
                                                                 int                         ldc,
                                                                 int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkBatchedFortran(handle,
+                                      uplo,
+                                      transA,
+                                      n,
+                                      k,
+                                      alpha,
+                                      (const hipComplex* const*)A,
+                                      lda,
+                                      beta,
+                                      (hipComplex* const*)C,
+                                      ldc,
+                                      batchCount);
+#else
     return hipblasCherkBatchedFortran(
         handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc, batchCount);
+#endif
 }
 
 template <>
@@ -17707,8 +18036,23 @@ hipblasStatus_t
                                                            int                               ldc,
                                                            int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkBatchedFortran(handle,
+                                      uplo,
+                                      transA,
+                                      n,
+                                      k,
+                                      alpha,
+                                      (const hipDoubleComplex* const*)A,
+                                      lda,
+                                      beta,
+                                      (hipDoubleComplex* const*)C,
+                                      ldc,
+                                      batchCount);
+#else
     return hipblasZherkBatchedFortran(
         handle, uplo, transA, n, k, alpha, A, lda, beta, C, ldc, batchCount);
+#endif
 }
 
 // herk_strided_batched
@@ -17728,8 +18072,25 @@ hipblasStatus_t hipblasHerkStridedBatched<hipblasComplex, float, true>(hipblasHa
                                                                        hipblasStride   strideC,
                                                                        int             batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkStridedBatchedFortran(handle,
+                                             uplo,
+                                             transA,
+                                             n,
+                                             k,
+                                             alpha,
+                                             (const hipComplex*)A,
+                                             lda,
+                                             strideA,
+                                             beta,
+                                             (hipComplex*)C,
+                                             ldc,
+                                             strideC,
+                                             batchCount);
+#else
     return hipblasCherkStridedBatchedFortran(
         handle, uplo, transA, n, k, alpha, A, lda, strideA, beta, C, ldc, strideC, batchCount);
+#endif
 }
 
 template <>
@@ -17749,8 +18110,25 @@ hipblasStatus_t
                                                                   hipblasStride         strideC,
                                                                   int                   batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkStridedBatchedFortran(handle,
+                                             uplo,
+                                             transA,
+                                             n,
+                                             k,
+                                             alpha,
+                                             (const hipDoubleComplex*)A,
+                                             lda,
+                                             strideA,
+                                             beta,
+                                             (hipDoubleComplex*)C,
+                                             ldc,
+                                             strideC,
+                                             batchCount);
+#else
     return hipblasZherkStridedBatchedFortran(
         handle, uplo, transA, n, k, alpha, A, lda, strideA, beta, C, ldc, strideC, batchCount);
+#endif
 }
 
 // her2k
@@ -17769,7 +18147,23 @@ hipblasStatus_t hipblasHer2k<hipblasComplex, float, true>(hipblasHandle_t       
                                                           hipblasComplex*       C,
                                                           int                   ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCher2kFortran(handle,
+                                uplo,
+                                transA,
+                                n,
+                                k,
+                                (const hipComplex*)alpha,
+                                (const hipComplex*)A,
+                                lda,
+                                (const hipComplex*)B,
+                                ldb,
+                                beta,
+                                (hipComplex*)C,
+                                ldc);
+#else
     return hipblasCher2kFortran(handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 template <>
@@ -17787,7 +18181,23 @@ hipblasStatus_t hipblasHer2k<hipblasDoubleComplex, double, true>(hipblasHandle_t
                                                                  hipblasDoubleComplex*       C,
                                                                  int                         ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZher2kFortran(handle,
+                                uplo,
+                                transA,
+                                n,
+                                k,
+                                (const hipDoubleComplex*)alpha,
+                                (const hipDoubleComplex*)A,
+                                lda,
+                                (const hipDoubleComplex*)B,
+                                ldb,
+                                beta,
+                                (hipDoubleComplex*)C,
+                                ldc);
+#else
     return hipblasZher2kFortran(handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 // her2k_batched
@@ -17807,8 +18217,25 @@ hipblasStatus_t hipblasHer2kBatched<hipblasComplex, float, true>(hipblasHandle_t
                                                                  int                         ldc,
                                                                  int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCher2kBatchedFortran(handle,
+                                       uplo,
+                                       transA,
+                                       n,
+                                       k,
+                                       (const hipComplex*)alpha,
+                                       (const hipComplex* const*)A,
+                                       lda,
+                                       (const hipComplex* const*)B,
+                                       ldb,
+                                       beta,
+                                       (hipComplex* const*)C,
+                                       ldc,
+                                       batchCount);
+#else
     return hipblasCher2kBatchedFortran(
         handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+#endif
 }
 
 template <>
@@ -17828,8 +18255,25 @@ hipblasStatus_t
                                                             int                               ldc,
                                                             int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZher2kBatchedFortran(handle,
+                                       uplo,
+                                       transA,
+                                       n,
+                                       k,
+                                       (const hipDoubleComplex*)alpha,
+                                       (const hipDoubleComplex* const*)A,
+                                       lda,
+                                       (const hipDoubleComplex* const*)B,
+                                       ldb,
+                                       beta,
+                                       (hipDoubleComplex* const*)C,
+                                       ldc,
+                                       batchCount);
+#else
     return hipblasZher2kBatchedFortran(
         handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+#endif
 }
 
 // her2k_strided_batched
@@ -17852,6 +18296,25 @@ hipblasStatus_t hipblasHer2kStridedBatched<hipblasComplex, float, true>(hipblasH
                                                                         hipblasStride   strideC,
                                                                         int             batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCher2kStridedBatchedFortran(handle,
+                                              uplo,
+                                              transA,
+                                              n,
+                                              k,
+                                              (const hipComplex*)alpha,
+                                              (const hipComplex*)A,
+                                              lda,
+                                              strideA,
+                                              (const hipComplex*)B,
+                                              ldb,
+                                              strideB,
+                                              beta,
+                                              (hipComplex*)C,
+                                              ldc,
+                                              strideC,
+                                              batchCount);
+#else
     return hipblasCher2kStridedBatchedFortran(handle,
                                               uplo,
                                               transA,
@@ -17869,6 +18332,7 @@ hipblasStatus_t hipblasHer2kStridedBatched<hipblasComplex, float, true>(hipblasH
                                               ldc,
                                               strideC,
                                               batchCount);
+#endif
 }
 
 template <>
@@ -17891,6 +18355,25 @@ hipblasStatus_t hipblasHer2kStridedBatched<hipblasDoubleComplex, double, true>(
     hipblasStride               strideC,
     int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZher2kStridedBatchedFortran(handle,
+                                              uplo,
+                                              transA,
+                                              n,
+                                              k,
+                                              (const hipDoubleComplex*)alpha,
+                                              (const hipDoubleComplex*)A,
+                                              lda,
+                                              strideA,
+                                              (const hipDoubleComplex*)B,
+                                              ldb,
+                                              strideB,
+                                              beta,
+                                              (hipDoubleComplex*)C,
+                                              ldc,
+                                              strideC,
+                                              batchCount);
+#else
     return hipblasZher2kStridedBatchedFortran(handle,
                                               uplo,
                                               transA,
@@ -17908,6 +18391,7 @@ hipblasStatus_t hipblasHer2kStridedBatched<hipblasDoubleComplex, double, true>(
                                               ldc,
                                               strideC,
                                               batchCount);
+#endif
 }
 
 // herkx
@@ -17926,7 +18410,24 @@ hipblasStatus_t hipblasHerkx<hipblasComplex, float, true>(hipblasHandle_t       
                                                           hipblasComplex*       C,
                                                           int                   ldc)
 {
-    return hipblasCherkxFortran(handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#ifdef HIPBLAS_V2
+    return hipblasCherkxFortran(handle,
+                                uplo,
+                                transA,
+                                n,
+                                k,
+                                (const hipComplex*)alpha,
+                                (const hipComplex*)A,
+                                lda,
+                                (const hipComplex*)B,
+                                ldb,
+                                beta,
+                                (hipComplex*)C,
+                                ldc);
+#else
+    return hipblasCherkxFortran(
+        handle, uplo, transA, n, Fortrank, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 template <>
@@ -17944,7 +18445,23 @@ hipblasStatus_t hipblasHerkx<hipblasDoubleComplex, double, true>(hipblasHandle_t
                                                                  hipblasDoubleComplex*       C,
                                                                  int                         ldc)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkxFortran(handle,
+                                uplo,
+                                transA,
+                                n,
+                                k,
+                                (const hipDoubleComplex*)alpha,
+                                (const hipDoubleComplex*)A,
+                                lda,
+                                (const hipDoubleComplex*)B,
+                                ldb,
+                                beta,
+                                (hipDoubleComplex*)C,
+                                ldc);
+#else
     return hipblasZherkxFortran(handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+#endif
 }
 
 // herkx_batched
@@ -17964,8 +18481,25 @@ hipblasStatus_t hipblasHerkxBatched<hipblasComplex, float, true>(hipblasHandle_t
                                                                  int                         ldc,
                                                                  int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkxBatchedFortran(handle,
+                                       uplo,
+                                       transA,
+                                       n,
+                                       k,
+                                       (const hipComplex*)alpha,
+                                       (const hipComplex* const*)A,
+                                       lda,
+                                       (const hipComplex* const*)B,
+                                       ldb,
+                                       beta,
+                                       (hipComplex* const*)C,
+                                       ldc,
+                                       batchCount);
+#else
     return hipblasCherkxBatchedFortran(
         handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+#endif
 }
 
 template <>
@@ -17985,8 +18519,25 @@ hipblasStatus_t
                                                             int                               ldc,
                                                             int batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkxBatchedFortran(handle,
+                                       uplo,
+                                       transA,
+                                       n,
+                                       k,
+                                       (const hipDoubleComplex*)alpha,
+                                       (const hipDoubleComplex* const*)A,
+                                       lda,
+                                       (const hipDoubleComplex* const*)B,
+                                       ldb,
+                                       beta,
+                                       (hipDoubleComplex* const*)C,
+                                       ldc,
+                                       batchCount);
+#else
     return hipblasZherkxBatchedFortran(
         handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc, batchCount);
+#endif
 }
 
 // herkx_strided_batched
@@ -18009,6 +18560,25 @@ hipblasStatus_t hipblasHerkxStridedBatched<hipblasComplex, float, true>(hipblasH
                                                                         hipblasStride   strideC,
                                                                         int             batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasCherkxStridedBatchedFortran(handle,
+                                              uplo,
+                                              transA,
+                                              n,
+                                              k,
+                                              (const hipComplex*)alpha,
+                                              (const hipComplex*)A,
+                                              lda,
+                                              strideA,
+                                              (const hipComplex*)B,
+                                              ldb,
+                                              strideB,
+                                              beta,
+                                              (hipComplex*)C,
+                                              ldc,
+                                              strideC,
+                                              batchCount);
+#else
     return hipblasCherkxStridedBatchedFortran(handle,
                                               uplo,
                                               transA,
@@ -18026,6 +18596,7 @@ hipblasStatus_t hipblasHerkxStridedBatched<hipblasComplex, float, true>(hipblasH
                                               ldc,
                                               strideC,
                                               batchCount);
+#endif
 }
 
 template <>
@@ -18048,6 +18619,25 @@ hipblasStatus_t hipblasHerkxStridedBatched<hipblasDoubleComplex, double, true>(
     hipblasStride               strideC,
     int                         batchCount)
 {
+#ifdef HIPBLAS_V2
+    return hipblasZherkxStridedBatchedFortran(handle,
+                                              uplo,
+                                              transA,
+                                              n,
+                                              k,
+                                              (const hipComplex*)alpha,
+                                              (const hipComplex*)A,
+                                              lda,
+                                              strideA,
+                                              (const hipComplex*)B,
+                                              ldb,
+                                              strideB,
+                                              beta,
+                                              (hipComplex*)C,
+                                              ldc,
+                                              strideC,
+                                              batchCount);
+#else
     return hipblasZherkxStridedBatchedFortran(handle,
                                               uplo,
                                               transA,
@@ -18065,6 +18655,7 @@ hipblasStatus_t hipblasHerkxStridedBatched<hipblasDoubleComplex, double, true>(
                                               ldc,
                                               strideC,
                                               batchCount);
+#endif
 }
 
 // symm
