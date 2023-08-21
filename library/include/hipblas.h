@@ -17567,6 +17567,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
                                              const int             lda,
                                              int*                  ipiv,
                                              int*                  info);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrf_v2(
+    hipblasHandle_t handle, const int n, hipComplex* A, const int lda, int* ipiv, int* info);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrf_v2(
+    hipblasHandle_t handle, const int n, hipDoubleComplex* A, const int lda, int* ipiv, int* info);
 //! @}
 
 /*! @{
@@ -17658,6 +17664,22 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrfBatched(hipblasHandle_t             
                                                     int*                        ipiv,
                                                     int*                        info,
                                                     const int                   batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfBatched_v2(hipblasHandle_t   handle,
+                                                       const int         n,
+                                                       hipComplex* const A[],
+                                                       const int         lda,
+                                                       int*              ipiv,
+                                                       int*              info,
+                                                       const int         batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrfBatched_v2(hipblasHandle_t         handle,
+                                                       const int               n,
+                                                       hipDoubleComplex* const A[],
+                                                       const int               lda,
+                                                       int*                    ipiv,
+                                                       int*                    info,
+                                                       const int               batchCount);
 //! @}
 
 /*! @{
@@ -17765,6 +17787,26 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t      
                                                            const hipblasStride   strideP,
                                                            int*                  info,
                                                            const int             batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrfStridedBatched_v2(hipblasHandle_t     handle,
+                                                              const int           n,
+                                                              hipComplex*         A,
+                                                              const int           lda,
+                                                              const hipblasStride strideA,
+                                                              int*                ipiv,
+                                                              const hipblasStride strideP,
+                                                              int*                info,
+                                                              const int           batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrfStridedBatched_v2(hipblasHandle_t     handle,
+                                                              const int           n,
+                                                              hipDoubleComplex*   A,
+                                                              const int           lda,
+                                                              const hipblasStride strideA,
+                                                              int*                ipiv,
+                                                              const hipblasStride strideP,
+                                                              int*                info,
+                                                              const int           batchCount);
 //! @}
 
 /*! @{
@@ -17866,6 +17908,28 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
                                              hipblasDoubleComplex*    B,
                                              const int                ldb,
                                              int*                     info);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrs_v2(hipblasHandle_t          handle,
+                                                const hipblasOperation_t trans,
+                                                const int                n,
+                                                const int                nrhs,
+                                                hipComplex*              A,
+                                                const int                lda,
+                                                const int*               ipiv,
+                                                hipComplex*              B,
+                                                const int                ldb,
+                                                int*                     info);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrs_v2(hipblasHandle_t          handle,
+                                                const hipblasOperation_t trans,
+                                                const int                n,
+                                                const int                nrhs,
+                                                hipDoubleComplex*        A,
+                                                const int                lda,
+                                                const int*               ipiv,
+                                                hipDoubleComplex*        B,
+                                                const int                ldb,
+                                                int*                     info);
 //! @}
 
 /*! @{
@@ -17974,6 +18038,30 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             
                                                     const int                   ldb,
                                                     int*                        info,
                                                     const int                   batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsBatched_v2(hipblasHandle_t          handle,
+                                                       const hipblasOperation_t trans,
+                                                       const int                n,
+                                                       const int                nrhs,
+                                                       hipComplex* const        A[],
+                                                       const int                lda,
+                                                       const int*               ipiv,
+                                                       hipComplex* const        B[],
+                                                       const int                ldb,
+                                                       int*                     info,
+                                                       const int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsBatched_v2(hipblasHandle_t          handle,
+                                                       const hipblasOperation_t trans,
+                                                       const int                n,
+                                                       const int                nrhs,
+                                                       hipDoubleComplex* const  A[],
+                                                       const int                lda,
+                                                       const int*               ipiv,
+                                                       hipDoubleComplex* const  B[],
+                                                       const int                ldb,
+                                                       int*                     info,
+                                                       const int                batchCount);
 //! @}
 
 /*! @{
@@ -18107,6 +18195,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t      
                                                            const hipblasStride      strideB,
                                                            int*                     info,
                                                            const int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgetrsStridedBatched_v2(hipblasHandle_t          handle,
+                                                              const hipblasOperation_t trans,
+                                                              const int                n,
+                                                              const int                nrhs,
+                                                              hipComplex*              A,
+                                                              const int                lda,
+                                                              const hipblasStride      strideA,
+                                                              const int*               ipiv,
+                                                              const hipblasStride      strideP,
+                                                              hipComplex*              B,
+                                                              const int                ldb,
+                                                              const hipblasStride      strideB,
+                                                              int*                     info,
+                                                              const int                batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgetrsStridedBatched_v2(hipblasHandle_t          handle,
+                                                              const hipblasOperation_t trans,
+                                                              const int                n,
+                                                              const int                nrhs,
+                                                              hipDoubleComplex*        A,
+                                                              const int                lda,
+                                                              const hipblasStride      strideA,
+                                                              const int*               ipiv,
+                                                              const hipblasStride      strideP,
+                                                              hipDoubleComplex*        B,
+                                                              const int                ldb,
+                                                              const hipblasStride      strideB,
+                                                              int*                     info,
+                                                              const int                batchCount);
 //! @}
 
 /*! @{
@@ -18196,6 +18314,26 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             
                                                     const int                   ldc,
                                                     int*                        info,
                                                     const int                   batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCgetriBatched_v2(hipblasHandle_t   handle,
+                                                       const int         n,
+                                                       hipComplex* const A[],
+                                                       const int         lda,
+                                                       int*              ipiv,
+                                                       hipComplex* const C[],
+                                                       const int         ldc,
+                                                       int*              info,
+                                                       const int         batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZgetriBatched_v2(hipblasHandle_t         handle,
+                                                       const int               n,
+                                                       hipDoubleComplex* const A[],
+                                                       const int               lda,
+                                                       int*                    ipiv,
+                                                       hipDoubleComplex* const C[],
+                                                       const int               ldc,
+                                                       int*                    info,
+                                                       const int               batchCount);
 //! @}
 
 /*! @{
@@ -22411,6 +22549,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 
 #define hipblasCdgmmStridedBatched hipblasCdgmmStridedBatched_v2
 #define hipblasZdgmmStridedBatched hipblasZdgmmStridedBatched_v2
+
+#define hipblasCgetrf hipblasCgetrf_v2
+#define hipblasZgetrf hipblasZgetrf_v2
+
+#define hipblasCgetrfBatched hipblasCgetrfBatched_v2
+#define hipblasZgetrfBatched hipblasZgetrfBatched_v2
+
+#define hipblasCgetrfStridedBatched hipblasCgetrfStridedBatched_v2
+#define hipblasZgetrfStridedBatched hipblasZgetrfStridedBatched_v2
+
+#define hipblasCgetrs hipblasCgetrs_v2
+#define hipblasZgetrs hipblasZgetrs_v2
+
+#define hipblasCgetrsBatched hipblasCgetrsBatched_v2
+#define hipblasZgetrsBatched hipblasZgetrsBatched_v2
+
+#define hipblasCgetrsStridedBatched hipblasCgetrsStridedBatched_v2
+#define hipblasZgetrsStridedBatched hipblasZgetrsStridedBatched_v2
+
+#define hipblasCgetriBatched hipblasCgetriBatched_v2
+#define hipblasZgetriBatched hipblasZgetriBatched_v2
 
 #endif
 
