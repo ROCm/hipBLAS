@@ -57,7 +57,6 @@ program example_fortran_scal
     ! TODO: hip workaround until plugin is ready.
     interface
         function hipMalloc(ptr, size) &
-                result(c_int) &
 #ifdef __HIP_PLATFORM_NVCC__
                 bind(c, name = 'cudaMalloc')
 #else
@@ -65,14 +64,12 @@ program example_fortran_scal
 #endif
             use iso_c_binding
             implicit none
-            type(c_ptr), value :: ptr
+            integer :: hipMalloc
+            type(c_ptr) :: ptr
             integer(c_size_t), value :: size
         end function hipMalloc
-    end interface
 
-    interface
         function hipFree(ptr) &
-                result(c_int) &
 #ifdef __HIP_PLATFORM_NVCC__
                 bind(c, name = 'cudaFree')
 #else
@@ -80,13 +77,11 @@ program example_fortran_scal
 #endif
             use iso_c_binding
             implicit none
+            integer :: hipFree
             type(c_ptr), value :: ptr
         end function hipFree
-    end interface
 
-    interface
         function hipMemcpy(dst, src, size, kind) &
-                result(c_int) &
 #ifdef __HIP_PLATFORM_NVCC__
                 bind(c, name = 'cudaMemcpy')
 #else
@@ -94,16 +89,14 @@ program example_fortran_scal
 #endif
             use iso_c_binding
             implicit none
+            integer :: hipMemcpy
             type(c_ptr), value :: dst
             type(c_ptr), intent(in), value :: src
             integer(c_size_t), value :: size
             integer(c_int), value :: kind
         end function hipMemcpy
-    end interface
 
-    interface
         function hipDeviceSynchronize() &
-                result(c_int) &
 #ifdef __HIP_PLATFORM_NVCC__
                 bind(c, name = 'cudaDeviceSynchronize')
 #else
@@ -111,12 +104,10 @@ program example_fortran_scal
 #endif
             use iso_c_binding
             implicit none
+            integer :: hipDeviceSynchronize
         end function hipDeviceSynchronize
-    end interface
 
-    interface
         function hipDeviceReset() &
-                result(c_int) &
 #ifdef __HIP_PLATFORM_NVCC__
                 bind(c, name = 'cudaDeviceReset')
 #else
@@ -124,6 +115,7 @@ program example_fortran_scal
 #endif
             use iso_c_binding
             implicit none
+            integer :: hipDeviceReset
         end function hipDeviceReset
     end interface
     ! TODO end
@@ -154,7 +146,7 @@ program example_fortran_scal
     allocate(hz(n))
 
     ! Allocate device-side memory
-    call HIP_CHECK(hipMalloc(c_loc(dx), int(n, c_size_t) * 4))
+    call HIP_CHECK(hipMalloc(dx, int(n, c_size_t) * 4))
 
     ! Initialize host memory
     do i = 1, n
@@ -185,7 +177,6 @@ program example_fortran_scal
             write(*,*) '[hipblasSscal] ERROR: ', res, '!=', hx(element)
         end if
     end do
-
     ! Calculate time
     tbegin = tend - tbegin
     timing = (0.001d0 * tbegin(8) + tbegin(7) + 60d0 * tbegin(6) + 3600d0 * tbegin(5)) / 200d0 * 1000d0
