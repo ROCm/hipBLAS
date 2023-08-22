@@ -12367,20 +12367,21 @@ catch(...)
 }
 
 // trsm_strided_batched
-hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t            handle,
-                                           hipblasSideMode_t          side,
-                                           hipblasFillMode_t          uplo,
-                                           hipblasOperation_t         transA,
-                                           hipblasDiagType_t diag int m,
-                                           int                        n,
-                                           const float*               alpha,
-                                           const float*               A,
-                                           int                        lda,
-                                           hipblasStride              strideA,
-                                           float*                     B,
-                                           int                        ldb,
-                                           hipblasStride              strideB,
-                                           int                        batch_count)
+hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t    handle,
+                                           hipblasSideMode_t  side,
+                                           hipblasFillMode_t  uplo,
+                                           hipblasOperation_t transA,
+                                           hipblasDiagType_t  diag,
+                                           int                m,
+                                           int                n,
+                                           const float*       alpha,
+                                           const float*       A,
+                                           int                lda,
+                                           hipblasStride      strideA,
+                                           float*             B,
+                                           int                ldb,
+                                           hipblasStride      strideB,
+                                           int                batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
