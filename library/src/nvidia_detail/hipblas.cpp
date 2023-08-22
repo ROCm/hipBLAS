@@ -11418,6 +11418,42 @@ hipblasStatus_t hipblasZhemmBatched(hipblasHandle_t                   handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+hipblasStatus_t hipblasChemmBatched_v2(hipblasHandle_t         handle,
+                                       hipblasSideMode_t       side,
+                                       hipblasFillMode_t       uplo,
+                                       int                     n,
+                                       int                     k,
+                                       const hipComplex*       alpha,
+                                       const hipComplex* const A[],
+                                       int                     lda,
+                                       const hipComplex* const B[],
+                                       int                     ldb,
+                                       const hipComplex*       beta,
+                                       hipComplex* const       C[],
+                                       int                     ldc,
+                                       int                     batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZhemmBatched_v2(hipblasHandle_t               handle,
+                                       hipblasSideMode_t             side,
+                                       hipblasFillMode_t             uplo,
+                                       int                           n,
+                                       int                           k,
+                                       const hipDoubleComplex*       alpha,
+                                       const hipDoubleComplex* const A[],
+                                       int                           lda,
+                                       const hipDoubleComplex* const B[],
+                                       int                           ldb,
+                                       const hipDoubleComplex*       beta,
+                                       hipDoubleComplex* const       C[],
+                                       int                           ldc,
+                                       int                           batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
 // hemm_strided_batched
 hipblasStatus_t hipblasChemmStridedBatched(hipblasHandle_t       handle,
                                            hipblasSideMode_t     side,
