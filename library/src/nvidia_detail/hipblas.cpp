@@ -12365,24 +12365,22 @@ catch(...)
 {
     return exception_to_hipblas_status();
 }
-_v2
 
-    // trsm_strided_batched
-    hipblasStatus_t
-    hipblasStrsmStridedBatched(hipblasHandle_t            handle,
-                               hipblasSideMode_t          side,
-                               hipblasFillMode_t          uplo,
-                               hipblasOperation_t         transA,
-                               hipblasDiagType_t diag int m,
-                               int                        n,
-                               const float*               alpha,
-                               const float*               A,
-                               int                        lda,
-                               hipblasStride              strideA,
-                               float*                     B,
-                               int                        ldb,
-                               hipblasStride              strideB,
-                               int                        batch_count)
+// trsm_strided_batched
+hipblasStatus_t hipblasStrsmStridedBatched(hipblasHandle_t            handle,
+                                           hipblasSideMode_t          side,
+                                           hipblasFillMode_t          uplo,
+                                           hipblasOperation_t         transA,
+                                           hipblasDiagType_t diag int m,
+                                           int                        n,
+                                           const float*               alpha,
+                                           const float*               A,
+                                           int                        lda,
+                                           hipblasStride              strideA,
+                                           float*                     B,
+                                           int                        ldb,
+                                           hipblasStride              strideB,
+                                           int                        batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -14856,82 +14854,6 @@ try
                                                          ldb,
                                                          beta,
                                                          C,
-                                                         ldc,
-                                                         batchCount));
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
-}
-
-hipblasStatus_t hipblasCgemmBatched_v2(hipblasHandle_t         handle,
-                                       hipblasOperation_t      transa,
-                                       hipblasOperation_t      transb,
-                                       int                     m,
-                                       int                     n,
-                                       int                     k,
-                                       const hipComplex*       alpha,
-                                       const hipComplex* const A[],
-                                       int                     lda,
-                                       const hipComplex* const B[],
-                                       int                     ldb,
-                                       const hipComplex*       beta,
-                                       hipComplex* const       C[],
-                                       int                     ldc,
-                                       int                     batchCount)
-try
-{
-    return hipCUBLASStatusToHIPStatus(cublasCgemmBatched((cublasHandle_t)handle,
-                                                         hipOperationToCudaOperation(transa),
-                                                         hipOperationToCudaOperation(transb),
-                                                         m,
-                                                         n,
-                                                         k,
-                                                         (cuComplex*)alpha,
-                                                         (cuComplex* const*)A,
-                                                         lda,
-                                                         (cuComplex* const*)B,
-                                                         ldb,
-                                                         (cuComplex*)beta,
-                                                         (cuComplex* const*)C,
-                                                         ldc,
-                                                         batchCount));
-}
-catch(...)
-{
-    return exception_to_hipblas_status();
-}
-
-hipblasStatus_t hipblasZgemmBatched_v2(hipblasHandle_t               handle,
-                                       hipblasOperation_t            transa,
-                                       hipblasOperation_t            transb,
-                                       int                           m,
-                                       int                           n,
-                                       int                           k,
-                                       const hipDoubleComplex*       alpha,
-                                       const hipDoubleComplex* const A[],
-                                       int                           lda,
-                                       const hipDoubleComplex* const B[],
-                                       int                           ldb,
-                                       const hipDoubleComplex*       beta,
-                                       hipDoubleComplex* const       C[],
-                                       int                           ldc,
-                                       int                           batchCount)
-try
-{
-    return hipCUBLASStatusToHIPStatus(cublasZgemmBatched((cublasHandle_t)handle,
-                                                         hipOperationToCudaOperation(transa),
-                                                         hipOperationToCudaOperation(transb),
-                                                         m,
-                                                         n,
-                                                         k,
-                                                         (cuDoubleComplex*)alpha,
-                                                         (cuDoubleComplex* const*)A,
-                                                         lda,
-                                                         (cuDoubleComplex* const*)B,
-                                                         ldb,
-                                                         (cuDoubleComplex*)beta,
-                                                         (cuDoubleComplex* const*)C,
                                                          ldc,
                                                          batchCount));
 }
