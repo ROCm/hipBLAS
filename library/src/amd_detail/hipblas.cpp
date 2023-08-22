@@ -18273,7 +18273,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasCgetrf_V2(
+hipblasStatus_t hipblasCgetrf_v2(
     hipblasHandle_t handle, const int n, hipComplex* A, const int lda, int* ipiv, int* info)
 try
 {
@@ -18289,7 +18289,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasZgetrf_V2(
+hipblasStatus_t hipblasZgetrf_v2(
     hipblasHandle_t handle, const int n, hipDoubleComplex* A, const int lda, int* ipiv, int* info)
 try
 {
@@ -18945,21 +18945,19 @@ catch(...)
 {
     return exception_to_hipblas_status();
 }
-_v2
 
-    // getrs_batched
-    hipblasStatus_t
-    hipblasSgetrsBatched(hipblasHandle_t          handle,
-                         const hipblasOperation_t trans,
-                         const int                n,
-                         const int                nrhs,
-                         float* const             A[],
-                         const int                lda,
-                         const int*               ipiv,
-                         float* const             B[],
-                         const int                ldb,
-                         int*                     info,
-                         const int                batch_count)
+// getrs_batched
+hipblasStatus_t hipblasSgetrsBatched(hipblasHandle_t          handle,
+                                     const hipblasOperation_t trans,
+                                     const int                n,
+                                     const int                nrhs,
+                                     float* const             A[],
+                                     const int                lda,
+                                     const int*               ipiv,
+                                     float* const             B[],
+                                     const int                ldb,
+                                     int*                     info,
+                                     const int                batch_count)
 try
 {
     if(info == NULL)

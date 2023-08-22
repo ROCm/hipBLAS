@@ -5304,7 +5304,7 @@ hipblasStatus_t hipblasTrtriBatched<float>(hipblasHandle_t    handle,
                                            int                n,
                                            const float* const A[],
                                            int                lda,
-                                           float* const       invA[],
+                                           float*             invA[],
                                            int                ldinvA,
                                            int                batch_count)
 {
@@ -5318,7 +5318,7 @@ hipblasStatus_t hipblasTrtriBatched<double>(hipblasHandle_t     handle,
                                             int                 n,
                                             const double* const A[],
                                             int                 lda,
-                                            double* const       invA[],
+                                            double*             invA[],
                                             int                 ldinvA,
                                             int                 batch_count)
 {
@@ -5332,7 +5332,7 @@ hipblasStatus_t hipblasTrtriBatched<hipblasComplex>(hipblasHandle_t             
                                                     int                         n,
                                                     const hipblasComplex* const A[],
                                                     int                         lda,
-                                                    hipblasComplex* const       invA[],
+                                                    hipblasComplex*             invA[],
                                                     int                         ldinvA,
                                                     int                         batch_count)
 {
@@ -5343,7 +5343,7 @@ hipblasStatus_t hipblasTrtriBatched<hipblasComplex>(hipblasHandle_t             
                                 n,
                                 (const hipComplex* const*)A,
                                 lda,
-                                (hipComplex* const*)invA,
+                                (hipComplex**)invA,
                                 ldinvA,
                                 batch_count);
 #else
@@ -5358,7 +5358,7 @@ hipblasStatus_t hipblasTrtriBatched<hipblasDoubleComplex>(hipblasHandle_t       
                                                           int                               n,
                                                           const hipblasDoubleComplex* const A[],
                                                           int                               lda,
-                                                          hipblasDoubleComplex* const       invA[],
+                                                          hipblasDoubleComplex*             invA[],
                                                           int                               ldinvA,
                                                           int batch_count)
 {
@@ -5369,7 +5369,7 @@ hipblasStatus_t hipblasTrtriBatched<hipblasDoubleComplex>(hipblasHandle_t       
                                 n,
                                 (const hipDoubleComplex* const*)A,
                                 lda,
-                                (hipDoubleComplex* const*)invA,
+                                (hipDoubleComplex**)invA,
                                 ldinvA,
                                 batch_count);
 #else
@@ -6968,15 +6968,15 @@ hipblasStatus_t hipblasHerkxStridedBatched(hipblasHandle_t             handle,
                                        transA,
                                        n,
                                        k,
-                                       (const hipComplex*)alpha,
-                                       (const hipComplex*)A,
+                                       (const hipDoubleComplex*)alpha,
+                                       (const hipDoubleComplex*)A,
                                        lda,
                                        strideA,
-                                       (const hipComplex*)B,
+                                       (const hipDoubleComplex*)B,
                                        ldb,
                                        strideB,
                                        beta,
-                                       (hipComplex*)C,
+                                       (hipDoubleComplex*)C,
                                        ldc,
                                        strideC,
                                        batchCount);
@@ -8514,15 +8514,15 @@ hipblasStatus_t hipblasSyrkxStridedBatched(hipblasHandle_t             handle,
                                        transA,
                                        n,
                                        k,
-                                       (const hipComplex*)alpha,
-                                       (const hipComplex*)A,
+                                       (const hipDoubleComplex*)alpha,
+                                       (const hipDoubleComplex*)A,
                                        lda,
                                        strideA,
-                                       (const hipComplex*)B,
+                                       (const hipDoubleComplex*)B,
                                        ldb,
                                        strideB,
-                                       (const hipComplex*)beta,
-                                       (hipComplex*)C,
+                                       (const hipDoubleComplex*)beta,
+                                       (hipDoubleComplex*)C,
                                        ldc,
                                        strideC,
                                        batchCount);
@@ -10208,9 +10208,9 @@ hipblasStatus_t hipblasTrsm<float>(hipblasHandle_t    handle,
                                    int                m,
                                    int                n,
                                    const float*       alpha,
-                                   float*             A,
+                                   const float*       A,
                                    int                lda,
-                                   const float*       B,
+                                   float*             B,
                                    int                ldb)
 {
     return hipblasStrsm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
@@ -10287,11 +10287,11 @@ hipblasStatus_t hipblasTrsm<hipblasDoubleComplex>(hipblasHandle_t             ha
                         diag,
                         m,
                         n,
-                        alpha,
+                        (const hipDoubleComplex*)alpha,
                         (const hipDoubleComplex*)A,
-                        (const hipDoubleComplex*)lda,
-                        B,
-                        (hipDoubleComplex*)ldb);
+                        lda,
+                        (hipDoubleComplex*)B,
+                        ldb);
 #else
     return hipblasZtrsm(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
 #endif
@@ -10959,15 +10959,15 @@ hipblasStatus_t hipblasGeamStridedBatched(hipblasHandle_t             handle,
                                       transB,
                                       m,
                                       n,
-                                      (const hipComplex*)alpha,
-                                      (const hipComplex*)A,
+                                      (const hipDoubleComplex*)alpha,
+                                      (const hipDoubleComplex*)A,
                                       lda,
                                       strideA,
-                                      (const hipComplex*)beta,
-                                      (const hipComplex*)B,
+                                      (const hipDoubleComplex*)beta,
+                                      (const hipDoubleComplex*)B,
                                       ldb,
                                       strideB,
-                                      (hipComplex*)C,
+                                      (hipDoubleComplex*)C,
                                       ldc,
                                       strideC,
                                       batchCount);
@@ -18317,7 +18317,7 @@ hipblasStatus_t hipblasTrtriBatched<float, true>(hipblasHandle_t    handle,
                                                  int                n,
                                                  const float* const A[],
                                                  int                lda,
-                                                 float* const       invA[],
+                                                 float*             invA[],
                                                  int                ldinvA,
                                                  int                batch_count)
 {
@@ -18331,7 +18331,7 @@ hipblasStatus_t hipblasTrtriBatched<double, true>(hipblasHandle_t     handle,
                                                   int                 n,
                                                   const double* const A[],
                                                   int                 lda,
-                                                  double* const       invA[],
+                                                  double*             invA[],
                                                   int                 ldinvA,
                                                   int                 batch_count)
 {
@@ -18345,7 +18345,7 @@ hipblasStatus_t hipblasTrtriBatched<hipblasComplex, true>(hipblasHandle_t       
                                                           int                         n,
                                                           const hipblasComplex* const A[],
                                                           int                         lda,
-                                                          hipblasComplex* const       invA[],
+                                                          hipblasComplex*             invA[],
                                                           int                         ldinvA,
                                                           int                         batch_count)
 {
@@ -18356,7 +18356,7 @@ hipblasStatus_t hipblasTrtriBatched<hipblasComplex, true>(hipblasHandle_t       
                                        n,
                                        (const hipComplex* const*)A,
                                        lda,
-                                       (hipComplex* const*)invA,
+                                       (hipComplex**)invA,
                                        ldinvA,
                                        batch_count);
 #else
@@ -18372,7 +18372,7 @@ hipblasStatus_t
                                                     int                               n,
                                                     const hipblasDoubleComplex* const A[],
                                                     int                               lda,
-                                                    hipblasDoubleComplex* const       invA[],
+                                                    hipblasDoubleComplex*             invA[],
                                                     int                               ldinvA,
                                                     int                               batch_count)
 {
@@ -18383,7 +18383,7 @@ hipblasStatus_t
                                        n,
                                        (const hipDoubleComplex* const*)A,
                                        lda,
-                                       (hipDoubleComplex* const*)invA,
+                                       (hipDoubleComplex**)invA,
                                        ldinvA,
                                        batch_count);
 #else
@@ -19800,8 +19800,7 @@ hipblasStatus_t hipblasHerkx<hipblasComplex, float, true>(hipblasHandle_t       
                                 (hipComplex*)C,
                                 ldc);
 #else
-    return hipblasCherkxFortran(
-        handle, uplo, transA, n, Fortrank, alpha, A, lda, B, ldb, beta, C, ldc);
+    return hipblasCherkxFortran(handle, uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 #endif
 }
 
@@ -20000,15 +19999,15 @@ hipblasStatus_t hipblasHerkxStridedBatched<hipblasDoubleComplex, double, true>(
                                               transA,
                                               n,
                                               k,
-                                              (const hipComplex*)alpha,
-                                              (const hipComplex*)A,
+                                              (const hipDoubleComplex*)alpha,
+                                              (const hipDoubleComplex*)A,
                                               lda,
                                               strideA,
-                                              (const hipComplex*)B,
+                                              (const hipDoubleComplex*)B,
                                               ldb,
                                               strideB,
                                               beta,
-                                              (hipComplex*)C,
+                                              (hipDoubleComplex*)C,
                                               ldc,
                                               strideC,
                                               batchCount);
@@ -21558,15 +21557,15 @@ hipblasStatus_t
                                               transA,
                                               n,
                                               k,
-                                              (const hipComplex*)alpha,
-                                              (const hipComplex*)A,
+                                              (const hipDoubleComplex*)alpha,
+                                              (const hipDoubleComplex*)A,
                                               lda,
                                               strideA,
-                                              (const hipComplex*)B,
+                                              (const hipDoubleComplex*)B,
                                               ldb,
                                               strideB,
-                                              (const hipComplex*)beta,
-                                              (hipComplex*)C,
+                                              (const hipDoubleComplex*)beta,
+                                              (hipDoubleComplex*)C,
                                               ldc,
                                               strideC,
                                               batchCount);
@@ -22384,11 +22383,11 @@ hipblasStatus_t hipblasTrsm<hipblasDoubleComplex, true>(hipblasHandle_t         
                                diag,
                                m,
                                n,
-                               alpha,
+                               (const hipDoubleComplex*)alpha,
                                (const hipDoubleComplex*)A,
-                               (const hipDoubleComplex*)lda,
-                               B,
-                               (hipDoubleComplex*)ldb);
+                               lda,
+                               (hipDoubleComplex*)B,
+                               ldb);
 #else
     return hipblasZtrsmFortran(handle, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
 #endif
@@ -23060,15 +23059,15 @@ hipblasStatus_t
                                              transB,
                                              m,
                                              n,
-                                             (const hipComplex*)alpha,
-                                             (const hipComplex*)A,
+                                             (const hipDoubleComplex*)alpha,
+                                             (const hipDoubleComplex*)A,
                                              lda,
                                              strideA,
-                                             (const hipComplex*)beta,
-                                             (const hipComplex*)B,
+                                             (const hipDoubleComplex*)beta,
+                                             (const hipDoubleComplex*)B,
                                              ldb,
                                              strideB,
-                                             (hipComplex*)C,
+                                             (hipDoubleComplex*)C,
                                              ldc,
                                              strideC,
                                              batchCount);

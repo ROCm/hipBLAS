@@ -65,9 +65,9 @@
 #ifndef HIPBLAS_NO_DEPRECATED_WARNINGS
 #ifndef HIPBLAS_DEPRECATED_MSG
 #ifndef _MSC_VER
-#define HIPBLAS_DEPRECATED_MSG(MSG) __attribute__((deprecated(#MSG)))
+#define HIPBLAS_DEPRECATED_MSG(MSG) //__attribute__((deprecated(#MSG)))
 #else
-#define HIPBLAS_DEPRECATED_MSG(MSG) __declspec(deprecated(#MSG))
+#define HIPBLAS_DEPRECATED_MSG(MSG) //__declspec(deprecated(#MSG))
 #endif
 #endif
 #else
@@ -22605,32 +22605,32 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 #define hipblasCher2kStridedBatched hipblasCher2kStridedBatched_v2
 #define hipblasZher2kStridedBatched hipblasZher2kStridedBatched_v2
 
-#define hipblasCSyrk hipblasCSyrk_v2
-#define hipblasZSyrk hipblasZSyrk_v2
+#define hipblasCsyrk hipblasCsyrk_v2
+#define hipblasZsyrk hipblasZsyrk_v2
 
-#define hipblasCSyrkBatched hipblasCSyrkBatched_v2
-#define hipblasZSyrkBatched hipblasZSyrkBatched_v2
+#define hipblasCsyrkBatched hipblasCsyrkBatched_v2
+#define hipblasZsyrkBatched hipblasZsyrkBatched_v2
 
-#define hipblasCSyrkStridedBatched hipblasCSyrkStridedBatched_v2
-#define hipblasZSyrkStridedBatched hipblasZSyrkStridedBatched_v2
+#define hipblasCsyrkStridedBatched hipblasCsyrkStridedBatched_v2
+#define hipblasZsyrkStridedBatched hipblasZsyrkStridedBatched_v2
 
-#define hipblasCSyrkx hipblasCSyrkx_v2
-#define hipblasZSyrkx hipblasZSyrkx_v2
+#define hipblasCsyrkx hipblasCsyrkx_v2
+#define hipblasZsyrkx hipblasZsyrkx_v2
 
-#define hipblasCSyrkxBatched hipblasCSyrkxBatched_v2
-#define hipblasZSyrkxBatched hipblasZSyrkxBatched_v2
+#define hipblasCsyrkxBatched hipblasCsyrkxBatched_v2
+#define hipblasZsyrkxBatched hipblasZsyrkxBatched_v2
 
-#define hipblasCSyrkxStridedBatched hipblasCSyrkxStridedBatched_v2
-#define hipblasZSyrkxStridedBatched hipblasZSyrkxStridedBatched_v2
+#define hipblasCsyrkxStridedBatched hipblasCsyrkxStridedBatched_v2
+#define hipblasZsyrkxStridedBatched hipblasZsyrkxStridedBatched_v2
 
-#define hipblasCSyr2k hipblasCSyr2k_v2
-#define hipblasZSyr2k hipblasZSyr2k_v2
+#define hipblasCsyr2k hipblasCsyr2k_v2
+#define hipblasZsyr2k hipblasZsyr2k_v2
 
-#define hipblasCSyr2kBatched hipblasCSyr2kBatched_v2
-#define hipblasZSyr2kBatched hipblasZSyr2kBatched_v2
+#define hipblasCsyr2kBatched hipblasCsyr2kBatched_v2
+#define hipblasZsyr2kBatched hipblasZsyr2kBatched_v2
 
-#define hipblasCSyr2kStridedBatched hipblasCSyr2kStridedBatched_v2
-#define hipblasZSyr2kStridedBatched hipblasZSyr2kStridedBatched_v2
+#define hipblasCsyr2kStridedBatched hipblasCsyr2kStridedBatched_v2
+#define hipblasZsyr2kStridedBatched hipblasZsyr2kStridedBatched_v2
 
 #define hipblasCgeam hipblasCgeam_v2
 #define hipblasZgeam hipblasZgeam_v2
@@ -22649,6 +22649,15 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 
 #define hipblasChemmStridedBatched hipblasChemmStridedBatched_v2
 #define hipblasZhemmStridedBatched hipblasZhemmStridedBatched_v2
+
+#define hipblasCsymm hipblasCsymm_v2
+#define hipblasZsymm hipblasZsymm_v2
+
+#define hipblasCsymmBatched hipblasCsymmBatched_v2
+#define hipblasZsymmBatched hipblasZsymmBatched_v2
+
+#define hipblasCsymmStridedBatched hipblasCsymmStridedBatched_v2
+#define hipblasZsymmStridedBatched hipblasZsymmStridedBatched_v2
 
 #define hipblasCtrmm hipblasCtrmm_v2
 #define hipblasZtrmm hipblasZtrmm_v2

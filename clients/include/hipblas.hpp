@@ -2093,7 +2093,7 @@ hipblasStatus_t hipblasTrtriBatched(hipblasHandle_t   handle,
                                     int               n,
                                     const T* const    A[],
                                     int               lda,
-                                    T* const          invA[],
+                                    T*                invA[],
                                     int               ldinvA,
                                     int               batch_count);
 
