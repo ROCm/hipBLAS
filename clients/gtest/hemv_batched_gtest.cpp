@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -158,6 +158,27 @@ TEST_P(hemv_batched_gtest, hemv_gtest_float_complex)
     Arguments arg = setup_hemv_arguments(GetParam());
 
     hipblasStatus_t status = testing_hemv_batched<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.N < 0 || arg.lda < arg.N || arg.lda < 1 || arg.incx == 0 || arg.incy == 0
+           || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status);
+        }
+    }
+}
+
+TEST_P(hemv_batched_gtest, hemv_gtest_double_complex)
+{
+    Arguments arg = setup_hemv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_hemv_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
