@@ -147,6 +147,31 @@ TEST_P(blas2_trsv_gtest, trsv_float)
     }
 }
 
+TEST_P(blas2_trsv_gtest, trsv_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_trsv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trsv<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 TEST_P(blas2_trsv_gtest, trsv_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -194,6 +219,26 @@ TEST_P(blas2_trsv_gtest, trsv_batched_float)
     }
 }
 
+TEST_P(blas2_trsv_gtest, trsv_batched_float_complex)
+{
+    Arguments arg = setup_trsv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trsv_batched<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 TEST_P(blas2_trsv_gtest, trsv_batched_double_complex)
 {
     Arguments arg = setup_trsv_arguments(GetParam());
@@ -219,6 +264,26 @@ TEST_P(blas2_trsv_gtest, trsv_strided_batched_float)
     Arguments arg = setup_trsv_arguments(GetParam());
 
     hipblasStatus_t status = testing_trsv_strided_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas2_trsv_gtest, trsv_strided_batched_float_complex)
+{
+    Arguments arg = setup_trsv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_trsv_strided_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)

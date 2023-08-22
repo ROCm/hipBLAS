@@ -185,6 +185,56 @@ TEST_P(blas2_tbmv_gtest, tbmv_double)
     }
 }
 
+TEST_P(blas2_tbmv_gtest, tbmv_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_tbmv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_tbmv<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.K < 0 || arg.lda < arg.M || arg.incx == 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas2_tbmv_gtest, tbmv_double_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_tbmv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_tbmv<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.K < 0 || arg.lda < arg.M || arg.incx == 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 #ifndef __HIP_PLATFORM_NVCC__
 
 TEST_P(blas2_tbmv_gtest, tbmv_batched_float)
@@ -207,11 +257,91 @@ TEST_P(blas2_tbmv_gtest, tbmv_batched_float)
     }
 }
 
+TEST_P(blas2_tbmv_gtest, tbmv_batched_float_complex)
+{
+    Arguments arg = setup_tbmv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_tbmv_batched<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.K < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas2_tbmv_gtest, tbmv_batched_double_complex)
+{
+    Arguments arg = setup_tbmv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_tbmv_batched<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.K < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 TEST_P(blas2_tbmv_gtest, tbmv_strided_batched_float)
 {
     Arguments arg = setup_tbmv_arguments(GetParam());
 
     hipblasStatus_t status = testing_tbmv_strided_batched<float>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.K < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas2_tbmv_gtest, tbmv_strided_batched_float_complex)
+{
+    Arguments arg = setup_tbmv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_tbmv_strided_batched<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.K < 0 || arg.lda < arg.M || arg.incx == 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(blas2_tbmv_gtest, tbmv_strided_batched_double_complex)
+{
+    Arguments arg = setup_tbmv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_tbmv_strided_batched<hipblasDoubleComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)

@@ -205,6 +205,27 @@ TEST_P(gbmv_strided_batched_gtest, gbmv_gtest_float_complex)
     }
 }
 
+TEST_P(gbmv_strided_batched_gtest, gbmv_gtest_double_complex)
+{
+    Arguments arg = setup_gbmv_arguments(GetParam());
+
+    hipblasStatus_t status = testing_gbmv_strided_batched<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || arg.KL < 0 || arg.KU < 0 || arg.lda < arg.KL + arg.KU + 1
+           || arg.incx == 0 || arg.incy == 0 || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 // notice we are using vector of vector
 // so each elment in xxx_range is a avector,
 // ValuesIn take each element (a vector) and combine them and feed them to test_p
