@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -142,6 +142,33 @@ protected:
     virtual void TearDown() {}
 };
 
+TEST_P(hemm_gtest, hemm_gtest_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_hemm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_hemm<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N))
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 TEST_P(hemm_gtest, hemm_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -171,6 +198,33 @@ TEST_P(hemm_gtest, hemm_gtest_double_complex)
 
 #ifndef __HIP_PLATFORM_NVCC__
 
+TEST_P(hemm_gtest, hemm_batched_gtest_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_hemm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_hemm_batched<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 TEST_P(hemm_gtest, hemm_batched_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -181,6 +235,33 @@ TEST_P(hemm_gtest, hemm_batched_gtest_double_complex)
     Arguments arg = setup_hemm_arguments(GetParam());
 
     hipblasStatus_t status = testing_hemm_batched<hipblasDoubleComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+
+        if(arg.M < 0 || arg.N < 0 || arg.ldc < arg.M || arg.ldb < arg.M
+           || (arg.side == 'L' ? arg.lda < arg.M : arg.lda < arg.N) || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(hemm_gtest, hemm_strided_batched_gtest_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_hemm_arguments(GetParam());
+
+    hipblasStatus_t status = testing_hemm_strided_batched<hipblasComplex>(arg);
 
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
