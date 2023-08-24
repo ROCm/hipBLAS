@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -170,6 +170,32 @@ TEST_P(geam_gtest, geam_gtest_float)
     }
 }
 
+TEST_P(geam_gtest, geam_gtest_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_geam_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geam<hipblasComplex>(arg);
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || (arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+           || (arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
 TEST_P(geam_gtest, geam_gtest_double_complex)
 {
     // GetParam return a tuple. Tee setup routine unpack the tuple
@@ -208,6 +234,36 @@ TEST_P(geam_gtest, geam_batched_gtest_float)
     Arguments arg = setup_geam_arguments(GetParam());
 
     hipblasStatus_t status = testing_geam_batched<float>(arg);
+
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || (arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+           || (arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
+           || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(geam_gtest, geam_batched_gtest_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_geam_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geam_batched<hipblasComplex>(arg);
 
     if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
         return; // for cuda
@@ -268,6 +324,36 @@ TEST_P(geam_gtest, geam_strided_batched_gtest_float)
     Arguments arg = setup_geam_arguments(GetParam());
 
     hipblasStatus_t status = testing_geam_strided_batched<float>(arg);
+
+    if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
+        return; // for cuda
+
+    // if not success, then the input argument is problematic, so detect the error message
+    if(status != HIPBLAS_STATUS_SUCCESS)
+    {
+        if(arg.M < 0 || arg.N < 0 || (arg.transA == 'N' ? arg.lda < arg.M : arg.lda < arg.K)
+           || (arg.transB == 'N' ? arg.ldb < arg.K : arg.ldb < arg.N) || arg.ldc < arg.M
+           || arg.batch_count < 0)
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_INVALID_VALUE, status);
+        }
+        else
+        {
+            EXPECT_EQ(HIPBLAS_STATUS_SUCCESS, status); // fail
+        }
+    }
+}
+
+TEST_P(geam_gtest, geam_strided_batched_gtest_float_complex)
+{
+    // GetParam return a tuple. Tee setup routine unpack the tuple
+    // and initializes arg(Arguments) which will be passed to testing routine
+    // The Arguments data struture have physical meaning associated.
+    // while the tuple is non-intuitive.
+
+    Arguments arg = setup_geam_arguments(GetParam());
+
+    hipblasStatus_t status = testing_geam_strided_batched<hipblasComplex>(arg);
 
     if(status == HIPBLAS_STATUS_NOT_SUPPORTED)
         return; // for cuda
