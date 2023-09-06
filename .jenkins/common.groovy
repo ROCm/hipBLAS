@@ -47,6 +47,13 @@ def runTestCommand (platform, project)
                 """
 
     platform.runCommand(this, v2TestCommand)
+
+    def yamlTestCommand = """#!/usr/bin/env bash
+                    set -x
+                    cd ${project.paths.project_build_prefix}/build/release/clients/staging
+                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes --yaml hipblas_smoke.yaml
+                """
+    platform.runCommand(this, yamlTestCommand)
     junit "${project.paths.project_build_prefix}/build/release/clients/staging/*.xml"
 }
 
