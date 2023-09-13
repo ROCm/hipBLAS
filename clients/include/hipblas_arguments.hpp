@@ -40,6 +40,28 @@
 // Predeclare enumerator
 enum hipblas_argument : int;
 
+// bitmask
+typedef enum hipblas_client_os_
+{
+    LINUX   = 1,
+    WINDOWS = 2,
+    ALL_OS  = 3
+} hipblas_client_os;
+
+// bitmask
+typedef enum hipblas_backend_
+{
+    AMD         = 1,
+    NVIDIA      = 2,
+    ALL_BACKEND = 3
+} hipblas_backend;
+
+typedef enum hipblas_client_api_
+{
+    C,
+    FORTRAN,
+} hipblas_client_api;
+
 // conversion helpers
 
 template <typename T>
@@ -152,6 +174,10 @@ struct Arguments
 
     int atomics_mode = HIPBLAS_ATOMICS_NOT_ALLOWED;
 
+    hipblas_client_os  os_flags;
+    hipblas_backend    backend_flags;
+    hipblas_client_api api;
+
     hipblas_initialization initialization = hipblas_initialization::rand_int;
 
     // clang-format off
@@ -215,6 +241,9 @@ struct Arguments
     OPER(name) SEP                   \
     OPER(category) SEP               \
     OPER(atomics_mode) SEP           \
+    OPER(os_flags) SEP               \
+    OPER(backend_flags) SEP          \
+    OPER(api) SEP                    \
     OPER(initialization)
 
     // clang-format on
@@ -332,7 +361,7 @@ namespace ArgumentsHelper
             func("beta", arg.get_beta<decltype(T)>());
         };
 };
-    // clang-format on
+// clang-format on
 
 #else
 
