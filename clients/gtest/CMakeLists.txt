@@ -1,28 +1,28 @@
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+#Copyright(C) 2016 - 2023 Advanced Micro Devices, Inc.All rights reserved.
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell cop-
-# ies of the Software, and to permit persons to whom the Software is furnished
-# to do so, subject to the following conditions:
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files(the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and / or sell cop -
+#ies of the Software, and to permit persons to whom the Software is furnished
+#to do so, subject to the following                                 conditions:
 #
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the                                      Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IM-
-# PLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNE-
-# CTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IM -
+#PLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+#FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR
+#COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+#IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNE -
+#CTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # ########################################################################
 
 set( THREADS_PREFER_PTHREAD_FLAG ON )
 find_package( Threads REQUIRED )
 
-# Linking lapack library requires fortran flags
+#Linking lapack library requires fortran flags
 if(NOT WIN32)
     enable_language( Fortran )
 endif()
@@ -155,7 +155,7 @@ target_include_directories( hipblas_v2-test
 target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
 target_compile_definitions( hipblas_v2-test PRIVATE GOOGLE_TEST )
 
-# External header includes included as SYSTEM files
+#External header includes included as SYSTEM files
 target_include_directories( hipblas-test
   SYSTEM PRIVATE
     $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
@@ -181,7 +181,7 @@ endif()
 target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )
 target_link_libraries( hipblas_v2-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )
 
-# need mf16c flag for float->half convertion
+#need mf16c flag for float->half convertion
 target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 target_compile_options( hipblas_v2-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
@@ -198,7 +198,7 @@ if( NOT USE_CUDA )
   endif( )
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
-    # hip-clang needs specific flag to turn on pthread and m
+#hip - clang needs specific flag to turn on pthread and m
     target_link_libraries( hipblas-test PRIVATE -lpthread -lm )
     target_link_libraries( hipblas_v2-test PRIVATE -lpthread -lm )
 
@@ -225,7 +225,7 @@ else( )
 endif( )
 
 if (WIN32)
-  # for now adding in all .dll as dependency chain is not cmake based on win32
+#for now adding in all.dll as dependency chain is not cmake based on win32
   file( GLOB third_party_dlls
     LIST_DIRECTORIES OFF
     CONFIGURE_DEPENDS

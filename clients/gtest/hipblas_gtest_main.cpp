@@ -66,15 +66,6 @@
 #define HIPBLAS_ALLOW_UNINSTANTIATED_GTEST(testclass)
 #endif
 
-// #define INSTANTIATE_TEST_CATEGORY(testclass, category)                                        \
-//     HIPBLAS_ALLOW_UNINSTANTIATED_GTEST(testclass)                                             \
-//     INSTANTIATE_TEST_SUITE_P(                                                                 \
-//         category,                                                                             \
-//         testclass,                                                                            \
-//         testing::ValuesIn(HipBLAS_TestData::begin([](const Arguments& arg) { return true; }), \
-//                           HipBLAS_TestData::end()),                                           \
-//         testclass::PrintToStringParamName());
-
 struct data_driven : public testing::TestWithParam<Arguments>
 {
     virtual void TestBody() {}
@@ -82,6 +73,16 @@ struct data_driven : public testing::TestWithParam<Arguments>
     void operator()(const Arguments& arg)
     {
         run_bench_test(const_cast<Arguments&>(arg), 1, 0);
+    }
+
+    static bool function_filter(const Arguments& arg)
+    {
+        return true;
+    }
+
+    static bool type_filter(const Arguments& arg)
+    {
+        return true;
     }
 
     struct PrintToStringParamName
@@ -107,7 +108,7 @@ TEST_P(data_driven, yaml)
     return data_driven()(GetParam());
 }
 
-// INSTANTIATE_TEST_CATEGORY(data_driven, _);
+INSTANTIATE_TEST_CATEGORY(data_driven, _);
 
 static void print_version_info()
 {
@@ -364,8 +365,6 @@ int main(int argc, char** argv)
 
     int status = 0;
 
-    status = RUN_ALL_TESTS();
-
     if(!datafile)
     {
         status = RUN_ALL_TESTS();
@@ -376,6 +375,7 @@ int main(int argc, char** argv)
         // on the GTEST name convention, so for now internal tests must follow the
         // pattern INSTANTIATE_TEST_SUITE_P(*, *_gtest, *) to be filtered from yaml set
         // via this GTEST_FLAG line:
+        // Temporarily running all tests while transitioning to YAML based testing for hipblas-test suite.
         ::testing::GTEST_FLAG(filter) = ::testing::GTEST_FLAG(filter); // + "-*_gtest.*";
 
         status = RUN_ALL_TESTS();

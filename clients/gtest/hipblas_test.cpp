@@ -88,7 +88,7 @@ extern "C" void hipblas_test_signal_handler(int sig)
               "This could be due to a deadlock caused by mutexes being left locked\n"
               "after a previous test's signal was caught and partially recovered from.\n";
         // We must use write() because it's async-signal-safe and other IO might be blocked
-        write(STDERR_FILENO, msg, sizeof(msg) - 1);
+        auto n = write(STDERR_FILENO, msg, sizeof(msg) - 1);
         abort();
     }
 #endif

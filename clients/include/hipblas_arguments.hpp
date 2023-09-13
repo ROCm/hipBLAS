@@ -361,7 +361,7 @@ namespace ArgumentsHelper
             func("beta", arg.get_beta<decltype(T)>());
         };
 };
-// clang-format on
+    // clang-format on
 
 #else
 

@@ -2815,7 +2815,7 @@ TEST_P(blas1_gtest, asum_float)
     // The Arguments data struture have physical meaning associated.
     // while the tuple is non-intuitive.
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum<float>(arg);
+    hipblasStatus_t status = testing_asum_ret<float>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2837,7 +2837,7 @@ TEST_P(blas1_gtest, asum_float)
 TEST_P(blas1_gtest, asum_float_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum<hipblasComplex>(arg);
+    hipblasStatus_t status = testing_asum_ret<hipblasComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
@@ -2859,7 +2859,7 @@ TEST_P(blas1_gtest, asum_float_complex)
 TEST_P(blas1_gtest, asum_double_complex)
 {
     Arguments       arg    = setup_blas1_arguments(GetParam());
-    hipblasStatus_t status = testing_asum<hipblasDoubleComplex>(arg);
+    hipblasStatus_t status = testing_asum_ret<hipblasDoubleComplex>(arg);
     // if not success, then the input argument is problematic, so detect the error message
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
