@@ -1,1 +1,1 @@
-include: asum_gtest.yaml
+include: blas1/asum_gtest.yaml

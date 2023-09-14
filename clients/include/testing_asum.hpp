@@ -154,6 +154,9 @@ inline void testing_asum(const Arguments& arg)
 template <typename T>
 inline hipblasStatus_t testing_asum_ret(const Arguments& arg)
 {
+    // testing_asum<T> needs to return void to make use of gtest's ASSERTS.
+    // This function continues to return a hipblasStatus_t to be used by hipblas-bench
+    // while all functions are converted to yaml-based testing.
     testing_asum<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }
