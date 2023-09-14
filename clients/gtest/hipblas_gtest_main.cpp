@@ -356,7 +356,11 @@ int main(int argc, char** argv)
 
     hipblas_print_usage_warning();
 
+#ifdef HIPBLAS_V2
+    bool datafile = hipblas_parse_data(argc, argv, hipblas_exepath() + "hipblas_v2_gtest.data");
+#else
     bool datafile = hipblas_parse_data(argc, argv, hipblas_exepath() + "hipblas_gtest.data");
+#endif
 
     ::testing::InitGoogleTest(&argc, argv);
 

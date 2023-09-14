@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ static thread_local struct
 #ifndef WIN32
     sigjmp_buf sigjmp;
 #else
-    jmp_buf sigjmpf;
+    jmp_buf sigjmp;
 #endif
 
     // The signal which was received

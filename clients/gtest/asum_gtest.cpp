@@ -49,6 +49,7 @@ namespace
                 return static_cast<bool>(FILTER<T...>{});
             }
         };
+
         // Filter for which types apply to this suite
         static bool type_filter(const Arguments& arg)
         {
@@ -140,8 +141,8 @@ namespace
                                                                                               \
     TEST_P(NAME, blas1)                                                                       \
     {                                                                                         \
-        /*RUN_TEST_ON_THREADS_STREAMS(*/                                                      \
-        /*hipblas_blas1_dispatch<blas1_##NAME::template testing>(GetParam()));*/              \
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(                                             \
+            hipblas_blas1_dispatch<blas1_##NAME::template testing>(GetParam()));              \
     }                                                                                         \
                                                                                               \
     INSTANTIATE_TEST_CATEGORIES(NAME)

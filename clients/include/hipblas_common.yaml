@@ -103,15 +103,26 @@ Datatypes:
         LINUX: 1
         WINDOWS: 2
         ALL_OS: 3
+      attr_v2:
+        LINUX: 1
+        WINDOWS: 2
+        ALL_OS: 3
   - hipblas_backend:
       bases: [ c_uint32 ]
       attr:
         AMD: 1
         NVIDIA: 2
         ALL_BACKEND: 3
+      attr_v2:
+        AMD: 1
+        NVIDIA: 2
+        ALL_BACKEND: 3
   - hipblas_api:
       bases: [ c_uint32 ]
       attr:
+        C: 0
+        FORTRAN: 1
+      attr_v2:
         C: 0
         FORTRAN: 1
 

@@ -1,15 +1,11 @@
 ---
 include: hipblas_common.yaml
 
-Definitions:
-    - &small_matrix_size_range
-    - { N: 12, incx: 1 }
-    - { N: 16, incx: 2 }
-
 Tests:
-- name: asum_small
+- name: asum_general
   category: quick
   function: asum
   precision: *single_double_precisions_complex_real
-  matrix_size: *small_matrix_size_range
+  N: [ -1, 10, 500, 1000, 7111, 10000 ]
+  incx: [ 1, -1 ]
 ...
