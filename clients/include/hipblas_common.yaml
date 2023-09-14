@@ -377,6 +377,7 @@ Arguments:
   - batch_count: int
   - fortran: c_bool
   - inplace: c_bool
+  - with_flags: c_bool
   - norm_check: int
   - unit_check: int
   - timing: int
@@ -458,6 +459,7 @@ Defaults:
   batch_count: -1
   fortran: false
   inplace: false
+  with_flags: false
   norm_check: 0
   unit_check: 1
   timing: 0
