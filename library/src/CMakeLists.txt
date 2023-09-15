@@ -64,19 +64,12 @@ add_library( hipblas
 )
 add_library( roc::hipblas ALIAS hipblas )
 
-# External header includes included as system files
-target_include_directories( hipblas
-  SYSTEM PRIVATE
-    $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
-)
-
 # Build hipblas from source on AMD platform
 if( NOT USE_CUDA )
   if( NOT TARGET rocblas )
     if( CUSTOM_ROCBLAS )
       set ( ENV{rocblas_DIR} ${CUSTOM_ROCBLAS})
       find_package( rocblas REQUIRED CONFIG NO_CMAKE_PATH )
-      target_include_directories( hipblas BEFORE PRIVATE ${CUSTOM_ROCBLAS}/include)
 
     elseif( WIN32 )
         find_package( rocblas REQUIRED CONFIG PATHS ${ROCBLAS_PATH})
@@ -93,7 +86,6 @@ if( NOT USE_CUDA )
       if( CUSTOM_ROCSOLVER)
         set ( ENV{rocsolver_DIR} ${CUSTOM_ROCSOLVER})
         find_package( rocsolver REQUIRED CONFIG NO_CMAKE_PATH )
-        target_include_directories( hipblas BEFORE PRIVATE ${CUSTOM_ROCSOLVER}/include)
       elseif(WIN32)
         find_package( rocsolver REQUIRED CONFIG PATHS ${ROCSOLVER_PATH} )
       else()
@@ -118,6 +110,14 @@ else( )
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
   )
 endif( )
+
+# External header includes included as system files
+target_include_directories( hipblas
+  SYSTEM PRIVATE
+    $<BUILD_INTERFACE:${ROCBLAS_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${ROCSOLVER_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+)
 
 # Internal header includes
 target_include_directories( hipblas
