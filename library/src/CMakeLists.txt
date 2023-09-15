@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -76,6 +76,8 @@ if( NOT USE_CUDA )
     if( CUSTOM_ROCBLAS )
       set ( ENV{rocblas_DIR} ${CUSTOM_ROCBLAS})
       find_package( rocblas REQUIRED CONFIG NO_CMAKE_PATH )
+      target_include_directories( hipblas BEFORE PRIVATE ${CUSTOM_ROCBLAS}/include)
+
     elseif( WIN32 )
         find_package( rocblas REQUIRED CONFIG PATHS ${ROCBLAS_PATH})
     else()
@@ -91,6 +93,7 @@ if( NOT USE_CUDA )
       if( CUSTOM_ROCSOLVER)
         set ( ENV{rocsolver_DIR} ${CUSTOM_ROCSOLVER})
         find_package( rocsolver REQUIRED CONFIG NO_CMAKE_PATH )
+        target_include_directories( hipblas BEFORE PRIVATE ${CUSTOM_ROCSOLVER}/include)
       elseif(WIN32)
         find_package( rocsolver REQUIRED CONFIG PATHS ${ROCSOLVER_PATH} )
       else()
