@@ -86,6 +86,12 @@ if( NOT USE_CUDA )
       if( CUSTOM_ROCSOLVER)
         set ( ENV{rocsolver_DIR} ${CUSTOM_ROCSOLVER})
         find_package( rocsolver REQUIRED CONFIG NO_CMAKE_PATH )
+
+        # in case of using custom rocsolver and not custom rocblas, we need to have
+        # custom rocsolver include directories before rocblas/hip include directories
+        # in case there is a rocsolver installed on the system.
+        target_include_directories( hipblas
+          SYSTEM PRIVATE $<BUILD_INTERFACE:${ROCSOLVER_INCLUDE_DIRS}> )
       elseif(WIN32)
         find_package( rocsolver REQUIRED CONFIG PATHS ${ROCSOLVER_PATH} )
       else()
