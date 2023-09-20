@@ -25,10 +25,6 @@ cmake_minimum_required( VERSION 3.5 )
 # We use C++14 features, this will add compile option: -std=c++14
 set( CMAKE_CXX_STANDARD 17 )
 
-if (NOT python)
-    set(python "python3") # default for linux
-endif()
-
 # Consider removing this in the future
 # This should appear before the project command, because it does not use FORCE
 if( WIN32 )
@@ -51,6 +47,10 @@ if (NOT WIN32)
 endif( )
 
 project( hipblas LANGUAGES CXX ${fortran_language} )
+
+if (NOT python)
+    set(python "python3") # default for linux
+endif()
 
 # This finds the rocm-cmake project, and installs it if not found
 # rocm-cmake contains common cmake code for rocm projects to help setup and install
