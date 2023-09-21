@@ -238,8 +238,8 @@ public:
         return std::move(name);
     }
 
-    HipBLAS_TestName()                                   = default;
-    HipBLAS_TestName(const HipBLAS_TestName&)            = delete;
+    HipBLAS_TestName()                        = default;
+    HipBLAS_TestName(const HipBLAS_TestName&) = delete;
     HipBLAS_TestName& operator=(const HipBLAS_TestName&) = delete;
 };
 
