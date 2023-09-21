@@ -277,7 +277,6 @@ public:
         std::string operator()(const testing::TestParamInfo<Arguments>& info) const
         {
             std::string name(info.param.category);
-            name += "_";
             name += TEST::name_suffix(info.param);
             return name;
         }

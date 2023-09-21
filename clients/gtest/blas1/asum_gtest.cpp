@@ -62,49 +62,22 @@ namespace
         // Google Test name suffix based on parameters
         static std::string name_suffix(const Arguments& arg)
         {
-            HipBLAS_TestName<asum_test_template> name(arg.name);
-            name << hipblas_datatype2string(arg.a_type);
-
-            if(strstr(arg.function, "_bad_arg") != nullptr)
-            {
-                name << "_bad_arg";
-            }
-            else
-            {
-                constexpr bool is_batched = (BLAS1 == blas1::asum_batched);
-                constexpr bool is_strided = (BLAS1 == blas1::asum_strided_batched);
-
-                name << '_' << arg.N << '_' << arg.incx;
-
-                if(is_strided)
-                {
-                    name << '_' << arg.stride_x;
-                }
-
-                if(is_batched || is_strided)
-                {
-                    name << "_" << arg.batch_count;
-                }
-            }
-
-            if(arg.api == FORTRAN)
-            {
-                name << "_F";
-            }
-
-            return std::move(name);
+            std::string name;
+            testname_asum(arg, name);
+            return name;
         }
     };
 
     // This tells whether the BLAS1 tests are enabled
     template <blas1 BLAS1, typename Ti, typename To, typename Tc>
-    using asum_enabled = std::integral_constant<
-        bool,
-        ((BLAS1 == blas1::asum || BLAS1 == blas1::asum_batched
-          || BLAS1 == blas1::asum_strided_batched)
-         && std::is_same_v<
-             Ti,
-             To> && std::is_same_v<To, Tc> && (std::is_same_v<Ti, hipblasComplex> || std::is_same_v<Ti, hipblasDoubleComplex> || std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))>;
+    using asum_enabled
+        = std::integral_constant<bool,
+                                 ((BLAS1 == blas1::asum || BLAS1 == blas1::asum_batched
+                                   || BLAS1 == blas1::asum_strided_batched)
+                                  && std::is_same_v<Ti, To> && std::is_same_v<To, Tc>
+                                  && (std::is_same_v<Ti, hipblasComplex>
+                                      || std::is_same_v<Ti, hipblasDoubleComplex>
+                                      || std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))>;
 
 // Creates tests for one of the BLAS 1 functions
 // ARG passes 1-3 template arguments to the testing_* function
