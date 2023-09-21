@@ -1,1 +1,9 @@
 include: blas1/asum_gtest.yaml
+include: blas1/axpy_gtest.yaml
+include: blas1/copy_gtest.yaml
+include: blas1/dot_gtest.yaml
+include: blas1/iamaxmin_gtest.yaml
+include: blas1/nrm2_gtest.yaml
+include: blas1/rot_gtest.yaml
+include: blas1/scal_gtest.yaml
+include: blas1/swap_gtest.yaml

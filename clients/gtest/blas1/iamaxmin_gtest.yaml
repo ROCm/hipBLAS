@@ -13,26 +13,29 @@ Definitions:
     - [ -1, 0, 1, 2, 10 ]
 
 Tests:
-  - name: asum_general
+  - name: iamaxmin_general
     category: quick
-    function: asum
-    precision: *single_double_precisions_complex_real
+    function:
+      - iamax: *single_double_precisions_complex_real
+      - iamin: *single_double_precisions_complex_real
     N: *N_range
     incx: *incx_range
 
-  - name: asum_batched_general
+  - name: iamaxmin_batched_general
     category: quick
-    function: asum_batched
-    precision: *single_double_precisions_complex_real
+    function:
+      - iamax_batched: *single_double_precisions_complex_real
+      - iamin_batched: *single_double_precisions_complex_real
     N: *N_range
     incx: *incx_range
     batch_count: *batch_count_range
     hipblas_backend: AMD
 
-  - name: asum_strided_batched_general
+  - name: iamaxmin_strided_batched_general
     category: quick
-    function: asum_strided_batched
-    precision: *single_double_precisions_complex_real
+    function:
+      - iamax_strided_batched: *single_double_precisions_complex_real
+      - iamin_strided_batched: *single_double_precisions_complex_real
     N: *N_range
     incx: *incx_range
     batch_count: *batch_count_range

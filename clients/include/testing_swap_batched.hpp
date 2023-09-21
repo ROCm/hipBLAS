@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ inline void testname_swap_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-inline hipblasStatus_t testing_swap_batched(const Arguments& arg)
+void testing_swap_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasSwapBatchedFn
@@ -57,9 +57,9 @@ inline hipblasStatus_t testing_swap_batched(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(
+        ASSERT_HIPBLAS_SUCCESS(
             hipblasSwapBatchedFn(handle, N, nullptr, incx, nullptr, incy, batch_count));
-        return HIPBLAS_STATUS_SUCCESS;
+        return;
     }
 
     int abs_incx = incx >= 0 ? incx : -incx;
@@ -77,27 +77,27 @@ inline hipblasStatus_t testing_swap_batched(const Arguments& arg)
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);
 
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dy.memcheck());
+    ASSERT_HIP_SUCCESS(dx.memcheck());
+    ASSERT_HIP_SUCCESS(dy.memcheck());
 
     // Initial Data on CPU
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
     hx_cpu.copy_from(hx);
     hy_cpu.copy_from(hy);
-    CHECK_HIP_ERROR(dx.transfer_from(hx));
-    CHECK_HIP_ERROR(dy.transfer_from(hy));
+    ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
+    ASSERT_HIP_SUCCESS(dy.transfer_from(hy));
 
     if(unit_check || norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasSwapBatchedFn(
+        ASSERT_HIPBLAS_SUCCESS(hipblasSwapBatchedFn(
             handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
 
-        CHECK_HIP_ERROR(hx.transfer_from(dx));
-        CHECK_HIP_ERROR(hy.transfer_from(dy));
+        ASSERT_HIP_SUCCESS(hx.transfer_from(dx));
+        ASSERT_HIP_SUCCESS(hy.transfer_from(dy));
 
         /* =====================================================================
                     CPU BLAS
@@ -124,7 +124,7 @@ inline hipblasStatus_t testing_swap_batched(const Arguments& arg)
     if(timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -132,7 +132,7 @@ inline hipblasStatus_t testing_swap_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasSwapBatchedFn(
+            ASSERT_HIPBLAS_SUCCESS(hipblasSwapBatchedFn(
                 handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -144,6 +144,11 @@ inline hipblasStatus_t testing_swap_batched(const Arguments& arg)
                                               swap_gbyte_count<T>(N),
                                               hipblas_error);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_swap_batched_ret(const Arguments& arg)
+{
+    testing_swap_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

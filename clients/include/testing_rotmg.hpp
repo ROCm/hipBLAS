@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ inline void testname_rotmg(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-inline hipblasStatus_t testing_rotmg(const Arguments& arg)
+void testing_rotmg(const Arguments& arg)
 {
     bool FORTRAN        = arg.fortran;
     auto hipblasRotmgFn = FORTRAN ? hipblasRotmg<T, true> : hipblasRotmg<T, false>;
@@ -56,19 +56,19 @@ inline hipblasStatus_t testing_rotmg(const Arguments& arg)
     host_vector<T>   cparams   = hparams;
     host_vector<T>   hparams_d = hparams;
     device_vector<T> dparams(9);
-    CHECK_HIP_ERROR(hipMemcpy(dparams, hparams, 9 * sizeof(T), hipMemcpyHostToDevice));
+    ASSERT_HIP_SUCCESS(hipMemcpy(dparams, hparams, 9 * sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasRotmgFn(
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        ASSERT_HIPBLAS_SUCCESS(hipblasRotmgFn(
             handle, &hparams[0], &hparams[1], &hparams[2], &hparams[3], &hparams[4]));
 
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS(
             hipblasRotmgFn(handle, dparams, dparams + 1, dparams + 2, dparams + 3, dparams + 4));
 
-        CHECK_HIP_ERROR(hipMemcpy(hparams_d, dparams, 9 * sizeof(T), hipMemcpyDeviceToHost));
+        ASSERT_HIP_SUCCESS(hipMemcpy(hparams_d, dparams, 9 * sizeof(T), hipMemcpyDeviceToHost));
 
         // CPU BLAS
         cblas_rotmg<T>(&cparams[0], &cparams[1], &cparams[2], &cparams[3], &cparams[4]);
@@ -89,8 +89,8 @@ inline hipblasStatus_t testing_rotmg(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -98,7 +98,7 @@ inline hipblasStatus_t testing_rotmg(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasRotmgFn(
+            ASSERT_HIPBLAS_SUCCESS(hipblasRotmgFn(
                 handle, dparams, dparams + 1, dparams + 2, dparams + 3, dparams + 4));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -111,6 +111,11 @@ inline hipblasStatus_t testing_rotmg(const Arguments& arg)
                                         hipblas_error_host,
                                         hipblas_error_device);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_rotmg_ret(const Arguments& arg)
+{
+    testing_rotmg<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

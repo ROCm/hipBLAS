@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ inline void testname_swap_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T>
-inline hipblasStatus_t testing_swap_strided_batched(const Arguments& arg)
+void testing_swap_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasSwapStridedBatchedFn
@@ -70,9 +70,9 @@ inline hipblasStatus_t testing_swap_strided_batched(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasSwapStridedBatchedFn(
+        ASSERT_HIPBLAS_SUCCESS(hipblasSwapStridedBatchedFn(
             handle, N, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
-        return HIPBLAS_STATUS_SUCCESS;
+        return;
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
@@ -96,20 +96,20 @@ inline hipblasStatus_t testing_swap_strided_batched(const Arguments& arg)
     hy_cpu = hy;
 
     // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
+    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
     if(unit_check || norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasSwapStridedBatchedFn(
+        ASSERT_HIPBLAS_SUCCESS(hipblasSwapStridedBatchedFn(
             handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+        ASSERT_HIP_SUCCESS(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        ASSERT_HIP_SUCCESS(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
 
         /* =====================================================================
                     CPU BLAS
@@ -134,7 +134,7 @@ inline hipblasStatus_t testing_swap_strided_batched(const Arguments& arg)
     if(timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -142,7 +142,7 @@ inline hipblasStatus_t testing_swap_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasSwapStridedBatchedFn(
+            ASSERT_HIPBLAS_SUCCESS(hipblasSwapStridedBatchedFn(
                 handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -154,6 +154,11 @@ inline hipblasStatus_t testing_swap_strided_batched(const Arguments& arg)
                                                      swap_gbyte_count<T>(N),
                                                      hipblas_error);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_swap_strided_batched_ret(const Arguments& arg)
+{
+    testing_swap_strided_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

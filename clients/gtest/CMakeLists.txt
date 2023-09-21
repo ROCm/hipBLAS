@@ -43,6 +43,14 @@ set(hipblas_test_source
   set_get_atomics_mode_gtest.cpp
   blas1_gtest.cpp
   blas1/asum_gtest.cpp
+  blas1/axpy_gtest.cpp
+  blas1/copy_gtest.cpp
+  blas1/dot_gtest.cpp
+  blas1/iamaxmin_gtest.cpp
+  blas1/nrm2_gtest.cpp
+  blas1/rot_gtest.cpp
+  blas1/scal_gtest.cpp
+  blas1/swap_gtest.cpp
   axpy_ex_gtest.cpp
   dot_ex_gtest.cpp
   nrm2_ex_gtest.cpp
@@ -270,12 +278,12 @@ set( HIPBLAS_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_gtest.data")
 set( HIPBLAS_V2_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_v2_gtest.data")
 add_custom_command( OUTPUT "${HIPBLAS_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_TEST_DATA}"
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml blas1/asum_gtest.yaml hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml blas1/asum_gtest.yaml blas1/axpy_gtest.yaml blas1/copy_gtest.yaml blas1/dot_gtest.yaml blas1/iamaxmin_gtest.yaml blas1/nrm2_gtest.yaml blas1/rot_gtest.yaml blas1/scal_gtest.yaml blas1/swap_gtest.yaml hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_command( OUTPUT "${HIPBLAS_V2_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_V2_TEST_DATA}" --hipblas_v2
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml blas1/asum_gtest.yaml hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml blas1/asum_gtest.yaml blas1/axpy_gtest.yaml blas1/copy_gtest.yaml blas1/dot_gtest.yaml blas1/iamaxmin_gtest.yaml blas1/nrm2_gtest.yaml blas1/rot_gtest.yaml blas1/scal_gtest.yaml blas1/swap_gtest.yaml hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_target( hipblas-test-data DEPENDS "${HIPBLAS_TEST_DATA}" )

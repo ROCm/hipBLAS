@@ -5,36 +5,37 @@ Definitions:
   - &N_range
     - [ -1, 10, 500, 1000, 7111, 10000 ]
 
-  - &incx_range
-    - { incx:  1 }
-    - { incx: -1 }
+  - &incx_incy_range
+    - { incx:  1, incy:  1 }
+    - { incx:  1, incy:  2 }
+    - { incx: -1, incy: -1 }
 
   - &batch_count_range
     - [ -1, 0, 1, 2, 10 ]
 
 Tests:
-  - name: asum_general
+  - name: copy_general
     category: quick
-    function: asum
+    function: copy
     precision: *single_double_precisions_complex_real
     N: *N_range
-    incx: *incx_range
+    incx_incy: *incx_incy_range
 
-  - name: asum_batched_general
+  - name: copy_batched_general
     category: quick
-    function: asum_batched
+    function: copy_batched
     precision: *single_double_precisions_complex_real
     N: *N_range
-    incx: *incx_range
+    incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     hipblas_backend: AMD
 
-  - name: asum_strided_batched_general
+  - name: copy_strided_batched_general
     category: quick
-    function: asum_strided_batched
+    function: copy_strided_batched
     precision: *single_double_precisions_complex_real
     N: *N_range
-    incx: *incx_range
+    incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
     hipblas_backend: AMD

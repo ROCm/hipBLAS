@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ inline void testname_scal_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T, typename U = T>
-inline hipblasStatus_t testing_scal_batched(const Arguments& arg)
+void testing_scal_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasScalBatchedFn
@@ -57,8 +57,9 @@ inline hipblasStatus_t testing_scal_batched(const Arguments& arg)
     // memory
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasScalBatchedFn(handle, N, nullptr, nullptr, incx, batch_count));
-        return HIPBLAS_STATUS_SUCCESS;
+        ASSERT_HIPBLAS_SUCCESS(
+            hipblasScalBatchedFn(handle, N, nullptr, nullptr, incx, batch_count));
+        return;
     }
 
     size_t sizeX         = size_t(N) * incx;
@@ -72,25 +73,25 @@ inline hipblasStatus_t testing_scal_batched(const Arguments& arg)
 
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dz(N, incx, batch_count);
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dz.memcheck());
+    ASSERT_HIP_SUCCESS(dx.memcheck());
+    ASSERT_HIP_SUCCESS(dz.memcheck());
 
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
     hz.copy_from(hx);
 
-    CHECK_HIP_ERROR(dx.transfer_from(hx));
-    CHECK_HIP_ERROR(dz.transfer_from(hx));
+    ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
+    ASSERT_HIP_SUCCESS(dz.transfer_from(hx));
 
     if(unit_check || norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(
+        ASSERT_HIPBLAS_SUCCESS(
             hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hx.transfer_from(dx));
+        ASSERT_HIP_SUCCESS(hx.transfer_from(dx));
 
         /* =====================================================================
                     CPU BLAS
@@ -116,7 +117,7 @@ inline hipblasStatus_t testing_scal_batched(const Arguments& arg)
     if(timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -124,7 +125,7 @@ inline hipblasStatus_t testing_scal_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(
+            ASSERT_HIPBLAS_SUCCESS(
                 hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -136,6 +137,11 @@ inline hipblasStatus_t testing_scal_batched(const Arguments& arg)
                                               scal_gbyte_count<T>(N),
                                               hipblas_error);
     }
+}
 
+template <typename T, typename U = T>
+hipblasStatus_t testing_scal_batched_ret(const Arguments& arg)
+{
+    testing_scal_batched<T, U>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

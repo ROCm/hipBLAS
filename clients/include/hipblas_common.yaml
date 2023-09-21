@@ -219,6 +219,13 @@ C precisions complex and real: &single_double_precisions_complex_real
   - *single_precision_complex
   - *double_precision_complex
 
+C precisions complex and real and half real: &single_double_precisions_complex_real_half_real
+  -
+  - *single_precision
+  - *double_precision
+  - *single_precision_complex
+  - *double_precision_complex
+
 Short simple precisions complex and real: &half_single_precisions_complex_real
   - *half_precision
   - *single_precision

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ inline void testname_rotg_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-inline hipblasStatus_t testing_rotg_batched(const Arguments& arg)
+void testing_rotg_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
     bool FORTRAN = arg.fortran;
@@ -49,14 +49,8 @@ inline hipblasStatus_t testing_rotg_batched(const Arguments& arg)
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
     // check to prevent undefined memory allocation error
-    if(batch_count == 0)
-    {
-        return HIPBLAS_STATUS_SUCCESS;
-    }
-    else if(batch_count < 0)
-    {
-        return HIPBLAS_STATUS_INVALID_VALUE;
-    }
+    if(batch_count <= 0)
+        return;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
@@ -100,31 +94,31 @@ inline hipblasStatus_t testing_rotg_batched(const Arguments& arg)
     rc.copy_from(hc);
     rs.copy_from(hs);
 
-    CHECK_HIP_ERROR(da.transfer_from(ha));
-    CHECK_HIP_ERROR(db.transfer_from(hb));
-    CHECK_HIP_ERROR(dc.transfer_from(hc));
-    CHECK_HIP_ERROR(ds.transfer_from(hs));
+    ASSERT_HIP_SUCCESS(da.transfer_from(ha));
+    ASSERT_HIP_SUCCESS(db.transfer_from(hb));
+    ASSERT_HIP_SUCCESS(dc.transfer_from(hc));
+    ASSERT_HIP_SUCCESS(ds.transfer_from(hs));
 
     if(arg.unit_check || arg.norm_check)
     {
         // hipBLAS
         // test host
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasRotgBatchedFn(handle, ha, hb, hc, hs, batch_count));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        ASSERT_HIPBLAS_SUCCESS(hipblasRotgBatchedFn(handle, ha, hb, hc, hs, batch_count));
 
         // test device
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR((hipblasRotgBatchedFn(handle,
-                                                  da.ptr_on_device(),
-                                                  db.ptr_on_device(),
-                                                  dc.ptr_on_device(),
-                                                  ds.ptr_on_device(),
-                                                  batch_count)));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS((hipblasRotgBatchedFn(handle,
+                                                     da.ptr_on_device(),
+                                                     db.ptr_on_device(),
+                                                     dc.ptr_on_device(),
+                                                     ds.ptr_on_device(),
+                                                     batch_count)));
 
-        CHECK_HIP_ERROR(ra.transfer_from(da));
-        CHECK_HIP_ERROR(rb.transfer_from(db));
-        CHECK_HIP_ERROR(rc.transfer_from(dc));
-        CHECK_HIP_ERROR(rs.transfer_from(ds));
+        ASSERT_HIP_SUCCESS(ra.transfer_from(da));
+        ASSERT_HIP_SUCCESS(rb.transfer_from(db));
+        ASSERT_HIP_SUCCESS(rc.transfer_from(dc));
+        ASSERT_HIP_SUCCESS(rs.transfer_from(ds));
 
         // CBLAS
         for(int b = 0; b < batch_count; b++)
@@ -165,8 +159,8 @@ inline hipblasStatus_t testing_rotg_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -174,12 +168,12 @@ inline hipblasStatus_t testing_rotg_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR((hipblasRotgBatchedFn(handle,
-                                                      da.ptr_on_device(),
-                                                      db.ptr_on_device(),
-                                                      dc.ptr_on_device(),
-                                                      ds.ptr_on_device(),
-                                                      batch_count)));
+            ASSERT_HIPBLAS_SUCCESS((hipblasRotgBatchedFn(handle,
+                                                         da.ptr_on_device(),
+                                                         db.ptr_on_device(),
+                                                         dc.ptr_on_device(),
+                                                         ds.ptr_on_device(),
+                                                         batch_count)));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -191,6 +185,11 @@ inline hipblasStatus_t testing_rotg_batched(const Arguments& arg)
                                               hipblas_error_host,
                                               hipblas_error_device);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_rotg_batched_ret(const Arguments& arg)
+{
+    testing_rotg_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

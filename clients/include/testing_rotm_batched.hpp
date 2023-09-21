@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ inline void testname_rotm_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-inline hipblasStatus_t testing_rotm_batched(const Arguments& arg)
+void testing_rotm_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasRotmBatchedFn
@@ -55,10 +55,9 @@ inline hipblasStatus_t testing_rotm_batched(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(
+        ASSERT_HIPBLAS_SUCCESS(
             hipblasRotmBatchedFn(handle, N, nullptr, incx, nullptr, incy, nullptr, batch_count));
-
-        return HIPBLAS_STATUS_SUCCESS;
+        return;
     }
 
     int abs_incx = incx >= 0 ? incx : -incx;
@@ -95,23 +94,23 @@ inline hipblasStatus_t testing_rotm_batched(const Arguments& arg)
                 hparam[b][0] = FLAGS[i];
 
             // Test device
-            CHECK_HIP_ERROR(dx.transfer_from(hx));
-            CHECK_HIP_ERROR(dy.transfer_from(hy));
-            CHECK_HIP_ERROR(dparam.transfer_from(hparam));
-            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-            CHECK_HIPBLAS_ERROR(hipblasRotmBatchedFn(handle,
-                                                     N,
-                                                     dx.ptr_on_device(),
-                                                     incx,
-                                                     dy.ptr_on_device(),
-                                                     incy,
-                                                     dparam.ptr_on_device(),
-                                                     batch_count));
+            ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
+            ASSERT_HIP_SUCCESS(dy.transfer_from(hy));
+            ASSERT_HIP_SUCCESS(dparam.transfer_from(hparam));
+            ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+            ASSERT_HIPBLAS_SUCCESS(hipblasRotmBatchedFn(handle,
+                                                        N,
+                                                        dx.ptr_on_device(),
+                                                        incx,
+                                                        dy.ptr_on_device(),
+                                                        incy,
+                                                        dparam.ptr_on_device(),
+                                                        batch_count));
 
             host_batch_vector<T> rx(N, incx, batch_count);
             host_batch_vector<T> ry(N, incy, batch_count);
-            CHECK_HIP_ERROR(rx.transfer_from(dx));
-            CHECK_HIP_ERROR(ry.transfer_from(dy));
+            ASSERT_HIP_SUCCESS(rx.transfer_from(dx));
+            ASSERT_HIP_SUCCESS(ry.transfer_from(dy));
 
             host_batch_vector<T> cx(N, incx, batch_count);
             host_batch_vector<T> cy(N, incy, batch_count);
@@ -147,11 +146,11 @@ inline hipblasStatus_t testing_rotm_batched(const Arguments& arg)
         for(int b = 0; b < batch_count; b++)
             hparam[b][0] = 0;
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIP_ERROR(dx.transfer_from(hx));
-        CHECK_HIP_ERROR(dy.transfer_from(hy));
-        CHECK_HIP_ERROR(dparam.transfer_from(hparam));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
+        ASSERT_HIP_SUCCESS(dy.transfer_from(hy));
+        ASSERT_HIP_SUCCESS(dparam.transfer_from(hparam));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -159,14 +158,14 @@ inline hipblasStatus_t testing_rotm_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasRotmBatchedFn(handle,
-                                                     N,
-                                                     dx.ptr_on_device(),
-                                                     incx,
-                                                     dy.ptr_on_device(),
-                                                     incy,
-                                                     dparam.ptr_on_device(),
-                                                     batch_count));
+            ASSERT_HIPBLAS_SUCCESS(hipblasRotmBatchedFn(handle,
+                                                        N,
+                                                        dx.ptr_on_device(),
+                                                        incx,
+                                                        dy.ptr_on_device(),
+                                                        incy,
+                                                        dparam.ptr_on_device(),
+                                                        batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -178,6 +177,11 @@ inline hipblasStatus_t testing_rotm_batched(const Arguments& arg)
                                               0,
                                               hipblas_error_device);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_rotm_batched_ret(const Arguments& arg)
+{
+    testing_rotm_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

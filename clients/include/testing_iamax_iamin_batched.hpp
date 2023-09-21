@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,7 @@ using hipblas_iamax_iamin_batched_t = hipblasStatus_t (*)(
     hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
 
 template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
-inline hipblasStatus_t testing_iamax_iamin_batched(const Arguments&                 arg,
-                                                   hipblas_iamax_iamin_batched_t<T> func)
+void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batched_t<T> func)
 {
     int N           = arg.N;
     int incx        = arg.incx;
@@ -51,24 +50,24 @@ inline hipblasStatus_t testing_iamax_iamin_batched(const Arguments&             
         device_vector<int> d_hipblas_result_0(std::max(1, batch_count));
         host_vector<int>   h_hipblas_result_0(std::max(1, batch_count));
         hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
-        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
-                                  h_hipblas_result_0,
-                                  sizeof(int) * std::max(1, batch_count),
-                                  hipMemcpyHostToDevice));
+        ASSERT_HIP_SUCCESS(hipMemcpy(d_hipblas_result_0,
+                                     h_hipblas_result_0,
+                                     sizeof(int) * std::max(1, batch_count),
+                                     hipMemcpyHostToDevice));
 
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(func(handle, N, nullptr, incx, batch_count, d_hipblas_result_0));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS(func(handle, N, nullptr, incx, batch_count, d_hipblas_result_0));
 
         if(batch_count > 0)
         {
             host_vector<int> cpu_0(batch_count);
             host_vector<int> gpu_0(batch_count);
-            CHECK_HIP_ERROR(hipMemcpy(
+            ASSERT_HIP_SUCCESS(hipMemcpy(
                 gpu_0, d_hipblas_result_0, sizeof(int) * batch_count, hipMemcpyDeviceToHost));
             unit_check_general<int>(1, batch_count, 1, cpu_0, gpu_0);
         }
 
-        return HIPBLAS_STATUS_SUCCESS;
+        return;
     }
 
     host_batch_vector<T> hx(N, incx, batch_count);
@@ -78,11 +77,11 @@ inline hipblasStatus_t testing_iamax_iamin_batched(const Arguments&             
 
     device_batch_vector<T> dx(N, incx, batch_count);
     device_vector<int>     d_hipblas_result_device(batch_count);
-    CHECK_HIP_ERROR(dx.memcheck());
+    ASSERT_HIP_SUCCESS(dx.memcheck());
 
     // Initial Data on CPU
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
-    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
 
     double gpu_time_used;
     int    hipblas_error_host = 0, hipblas_error_device = 0;
@@ -93,17 +92,17 @@ inline hipblasStatus_t testing_iamax_iamin_batched(const Arguments&             
                     HIPBLAS
         =================================================================== */
         // device_pointer
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS(
             func(handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result_device));
-        CHECK_HIP_ERROR(hipMemcpy(hipblas_result_device,
-                                  d_hipblas_result_device,
-                                  sizeof(int) * batch_count,
-                                  hipMemcpyDeviceToHost));
+        ASSERT_HIP_SUCCESS(hipMemcpy(hipblas_result_device,
+                                     d_hipblas_result_device,
+                                     sizeof(int) * batch_count,
+                                     hipMemcpyDeviceToHost));
 
         // host_pointer
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        ASSERT_HIPBLAS_SUCCESS(
             func(handle, N, dx.ptr_on_device(), incx, batch_count, hipblas_result_host));
 
         /* =====================================================================
@@ -136,8 +135,8 @@ inline hipblasStatus_t testing_iamax_iamin_batched(const Arguments&             
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -145,7 +144,7 @@ inline hipblasStatus_t testing_iamax_iamin_batched(const Arguments&             
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(
+            ASSERT_HIPBLAS_SUCCESS(
                 func(handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result_device));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -158,8 +157,6 @@ inline hipblasStatus_t testing_iamax_iamin_batched(const Arguments&             
                                                     hipblas_error_host,
                                                     hipblas_error_device);
     }
-
-    return HIPBLAS_STATUS_SUCCESS;
 }
 
 inline void testname_amax_batched(const Arguments& arg, std::string& name)
@@ -168,13 +165,20 @@ inline void testname_amax_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-inline hipblasStatus_t testing_amax_batched(const Arguments& arg)
+void testing_amax_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasIamaxBatchedFn
         = FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
 
-    return testing_iamax_iamin_batched<T, cblas_iamax<T>>(arg, hipblasIamaxBatchedFn);
+    testing_iamax_iamin_batched<T, cblas_iamax<T>>(arg, hipblasIamaxBatchedFn);
+}
+
+template <typename T>
+hipblasStatus_t testing_amax_batched_ret(const Arguments& arg)
+{
+    testing_amax_batched<T>(arg);
+    return HIPBLAS_STATUS_SUCCESS;
 }
 
 inline void testname_amin_batched(const Arguments& arg, std::string& name)
@@ -189,5 +193,12 @@ inline hipblasStatus_t testing_amin_batched(const Arguments& arg)
     auto hipblasIaminBatchedFn
         = FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
 
-    return testing_iamax_iamin_batched<T, cblas_iamin<T>>(arg, hipblasIaminBatchedFn);
+    testing_iamax_iamin_batched<T, cblas_iamin<T>>(arg, hipblasIaminBatchedFn);
+}
+
+template <typename T>
+hipblasStatus_t testing_amin_batched_ret(const Arguments& arg)
+{
+    testing_amin_batched<T>(arg);
+    return HIPBLAS_STATUS_SUCCESS;
 }
