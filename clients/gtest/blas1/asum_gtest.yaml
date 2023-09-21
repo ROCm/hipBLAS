@@ -1,0 +1,11 @@
+---
+include: hipblas_common.yaml
+
+Tests:
+- name: asum_general
+  category: quick
+  function: asum
+  precision: *single_double_precisions_complex_real
+  N: [ -1, 10, 500, 1000, 7111, 10000 ]
+  incx: [ 1, -1 ]
+...

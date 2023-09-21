@@ -35,12 +35,14 @@ find_package( GTest REQUIRED )
 
 set(hipblas_test_source
   hipblas_gtest_main.cpp
+  hipblas_test.cpp
   auxiliary_gtest.cpp
   set_get_pointer_mode_gtest.cpp
   set_get_vector_gtest.cpp
   set_get_matrix_gtest.cpp
   set_get_atomics_mode_gtest.cpp
   blas1_gtest.cpp
+  blas1/asum_gtest.cpp
   axpy_ex_gtest.cpp
   dot_ex_gtest.cpp
   nrm2_ex_gtest.cpp
@@ -196,7 +198,7 @@ if( NOT USE_CUDA )
   endif( )
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
-    # hip-clang needs specific flag to turn on pthread and m
+# hip-clang needs specific flag to turn on pthread and m
     target_link_libraries( hipblas-test PRIVATE -lpthread -lm )
     target_link_libraries( hipblas_v2-test PRIVATE -lpthread -lm )
 
@@ -223,7 +225,7 @@ else( )
 endif( )
 
 if (WIN32)
-  # for now adding in all .dll as dependency chain is not cmake based on win32
+# for now adding in all .dll as dependency chain is not cmake based on win32
   file( GLOB third_party_dlls
     LIST_DIRECTORIES OFF
     CONFIGURE_DEPENDS
@@ -264,8 +266,23 @@ set_target_properties( hipblas-test PROPERTIES
     DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 
-add_dependencies( hipblas-test hipblas-common )
-add_dependencies( hipblas_v2-test hipblas-common )
+set( HIPBLAS_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_gtest.data")
+set( HIPBLAS_V2_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_v2_gtest.data")
+add_custom_command( OUTPUT "${HIPBLAS_TEST_DATA}"
+                    COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_TEST_DATA}"
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml blas1/asum_gtest.yaml hipblas_gtest.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+add_custom_command( OUTPUT "${HIPBLAS_V2_TEST_DATA}"
+                    COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_V2_TEST_DATA}" --hipblas_v2
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml blas1/asum_gtest.yaml hipblas_gtest.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+add_custom_target( hipblas-test-data DEPENDS "${HIPBLAS_TEST_DATA}" )
+add_custom_target( hipblas_v2-test-data DEPENDS "${HIPBLAS_V2_TEST_DATA}" )
+
+add_dependencies( hipblas-test hipblas-test-data hipblas-common )
+add_dependencies( hipblas_v2-test hipblas_v2-test-data hipblas-common )
 
 rocm_install(TARGETS hipblas-test COMPONENT tests)
 rocm_install(TARGETS hipblas_v2-test COMPONENT tests)
