@@ -37,7 +37,7 @@ inline void testname_asum(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-inline void testing_asum(const Arguments& arg)
+void testing_asum(const Arguments& arg)
 {
     using Tr           = real_t<T>;
     bool FORTRAN       = arg.fortran;
@@ -54,16 +54,15 @@ inline void testing_asum(const Arguments& arg)
         device_vector<Tr> d_hipblas_result_0(1);
         host_vector<Tr>   h_hipblas_result_0(1);
         hipblas_init_nan(h_hipblas_result_0.data(), 1);
-        CHECK_HIP_ERROR_NO_RETURN(
+        ASSERT_HIP_SUCCESS(
             hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr), hipMemcpyHostToDevice));
 
-        CHECK_HIPBLAS_ERROR_NO_RETURN(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR_NO_RETURN(hipblasAsumFn(handle, N, nullptr, incx, d_hipblas_result_0));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS(hipblasAsumFn(handle, N, nullptr, incx, d_hipblas_result_0));
 
         host_vector<Tr> cpu_0(1);
         host_vector<Tr> gpu_0(1);
-        CHECK_HIP_ERROR_NO_RETURN(
-            hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(Tr), hipMemcpyDeviceToHost));
+        ASSERT_HIP_SUCCESS(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(Tr), hipMemcpyDeviceToHost));
         unit_check_general<Tr>(1, 1, 1, cpu_0, gpu_0);
 
         return;
@@ -84,8 +83,7 @@ inline void testing_asum(const Arguments& arg)
     hipblas_init_vector(hx, arg, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR_NO_RETURN(
-        hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
+    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -93,13 +91,13 @@ inline void testing_asum(const Arguments& arg)
                     HIPBLAS
         =================================================================== */
         // hipblasAsum accept both dev/host pointer for the scalar
-        CHECK_HIPBLAS_ERROR_NO_RETURN(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR_NO_RETURN(hipblasAsumFn(handle, N, dx, incx, d_hipblas_result));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS(hipblasAsumFn(handle, N, dx, incx, d_hipblas_result));
 
-        CHECK_HIPBLAS_ERROR_NO_RETURN(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR_NO_RETURN(hipblasAsumFn(handle, N, dx, incx, &hipblas_result_host));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        ASSERT_HIPBLAS_SUCCESS(hipblasAsumFn(handle, N, dx, incx, &hipblas_result_host));
 
-        CHECK_HIP_ERROR_NO_RETURN(
+        ASSERT_HIP_SUCCESS(
             hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -126,8 +124,8 @@ inline void testing_asum(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR_NO_RETURN(hipblasGetStream(handle, &stream));
-        CHECK_HIPBLAS_ERROR_NO_RETURN(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -135,7 +133,7 @@ inline void testing_asum(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR_NO_RETURN(hipblasAsumFn(handle, N, dx, incx, d_hipblas_result));
+            ASSERT_HIPBLAS_SUCCESS(hipblasAsumFn(handle, N, dx, incx, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -152,7 +150,7 @@ inline void testing_asum(const Arguments& arg)
 }
 
 template <typename T>
-inline hipblasStatus_t testing_asum_ret(const Arguments& arg)
+hipblasStatus_t testing_asum_ret(const Arguments& arg)
 {
     // testing_asum<T> needs to return void to make use of gtest's ASSERTS.
     // This function continues to return a hipblasStatus_t to be used by hipblas-bench

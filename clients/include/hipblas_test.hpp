@@ -76,10 +76,10 @@ typedef long long ssize_t; /* x64 only supported */
 
 // Extra macro so that macro arguments get expanded before calling Google Test
 // Note that gtest's ASSERT_EQ must be placed in a void function. Renaming this
-// CHECK_HIP_ERROR_NO_RETURN to be used alongside CHECK_HIP_ERROR defined in utility.h
+// ASSERT_HIP_SUCCESS to be used alongside CHECK_HIP_ERROR defined in utility.h
 // until this version can be used everywhere.
 #define CHECK_HIP_ERROR2(ERROR) ASSERT_EQ(ERROR, hipSuccess)
-#define CHECK_HIP_ERROR_NO_RETURN(ERROR) CHECK_HIP_ERROR2(ERROR)
+#define ASSERT_HIP_SUCCESS(ERROR) CHECK_HIP_ERROR2(ERROR)
 
 #define CHECK_DEVICE_ALLOCATION(ERROR)                   \
     do                                                   \
@@ -130,7 +130,7 @@ inline void hipblas_expect_status(hipblasStatus_t status, hipblasStatus_t expect
     }
 }
 
-#define CHECK_HIP_ERROR_NO_RETURN(ERROR)                                            \
+#define ASSERT_HIP_SUCCESS(ERROR)                                                   \
     do                                                                              \
     {                                                                               \
         /* Use error__ in case ERROR contains "error" */                            \
@@ -143,14 +143,14 @@ inline void hipblas_expect_status(hipblasStatus_t status, hipblasStatus_t expect
         }                                                                           \
     } while(0)
 
-#define CHECK_DEVICE_ALLOCATION CHECK_HIP_ERROR_NO_RETURN
+#define CHECK_DEVICE_ALLOCATION ASSERT_HIP_SUCCESS
 
 #define EXPECT_HIPBLAS_STATUS2 hipblas_expect_status
 
 #endif // GOOGLE_TEST
 
 #define CHECK_HIPBLAS_ERROR2(STATUS) EXPECT_HIPBLAS_STATUS2(STATUS, HIPBLAS_STATUS_SUCCESS)
-#define CHECK_HIPBLAS_ERROR_NO_RETURN(STATUS) CHECK_HIPBLAS_ERROR2(STATUS)
+#define ASSERT_HIPBLAS_SUCCESS(STATUS) CHECK_HIPBLAS_ERROR2(STATUS)
 
 #ifdef GOOGLE_TEST
 
@@ -238,8 +238,8 @@ public:
         return std::move(name);
     }
 
-    HipBLAS_TestName()                        = default;
-    HipBLAS_TestName(const HipBLAS_TestName&) = delete;
+    HipBLAS_TestName()                                   = default;
+    HipBLAS_TestName(const HipBLAS_TestName&)            = delete;
     HipBLAS_TestName& operator=(const HipBLAS_TestName&) = delete;
 };
 
