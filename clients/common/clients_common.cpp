@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -556,7 +556,7 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
     {
         static const func_map fmap = {
             // L1
-            {"asum", testing_asum<T>},
+            {"asum", testing_asum_ret<T>},
             {"asum_batched", testing_asum_batched<T>},
             {"asum_strided_batched", testing_asum_strided_batched<T>},
             {"axpy", testing_axpy<T>},
@@ -754,7 +754,7 @@ struct perf_blas<
     {
         static const func_map map = {
             // L1
-            {"asum", testing_asum<T>},
+            {"asum", testing_asum_ret<T>},
             {"asum_batched", testing_asum_batched<T>},
             {"asum_strided_batched", testing_asum_strided_batched<T>},
             {"axpy", testing_axpy<T>},
