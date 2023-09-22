@@ -41,7 +41,6 @@ set(hipblas_test_source
   set_get_vector_gtest.cpp
   set_get_matrix_gtest.cpp
   set_get_atomics_mode_gtest.cpp
-  blas1_gtest.cpp
   blas1/asum_gtest.cpp
   blas1/axpy_gtest.cpp
   blas1/copy_gtest.cpp
