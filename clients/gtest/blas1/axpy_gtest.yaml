@@ -14,6 +14,9 @@ Definitions:
     - { alpha: 2.0, alphai:  2.0, beta:  0.0, betai: 0.0 }
     - { alpha: 2.0, alphai: -1.0, beta: -1.0, betai: 2.0 }
 
+  - &batch_count_range
+    - [ -1, 0, 1, 2, 10 ]
+
 Tests:
   - name: axpy_general
     category: quick
@@ -21,7 +24,7 @@ Tests:
     precision: *single_double_precisions_complex_real
     alpha_beta: *alpha_beta_range
     N: *N_range
-    incx_incy: *incx_range
+    incx_incy: *incx_incy_range
 
   # half precision only rocBLAS backend
   - name: axpy_general_half
@@ -30,7 +33,7 @@ Tests:
     precision: *half_precision
     alpha_beta: *alpha_beta_range
     N: *N_range
-    incx_incy: *incx_range
+    incx_incy: *incx_incy_range
     hipblas_backend: AMD
 
   - name: axpy_batched_general
@@ -39,7 +42,7 @@ Tests:
     precision: *single_double_precisions_complex_real_half_real
     alpha_beta: *alpha_beta_range
     N: *N_range
-    incx_incy: *incx_range
+    incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     hipblas_backend: AMD
 
@@ -49,7 +52,7 @@ Tests:
     precision: *single_double_precisions_complex_real_half_real
     alpha_beta: *alpha_beta_range
     N: *N_range
-    incx_incy: *incx_range
+    incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
     hipblas_backend: AMD

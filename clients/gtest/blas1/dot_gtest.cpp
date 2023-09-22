@@ -24,8 +24,8 @@
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
 #include "testing_dot.hpp"
+#include "testing_dot_batched.hpp"
 #include "testing_dot_strided_batched.hpp"
-#include "testing_dpt_batched.hpp"
 #include "type_dispatch.hpp"
 
 namespace
@@ -124,7 +124,7 @@ namespace
         };                                                                                    \
     };                                                                                        \
                                                                                               \
-    using NAME = asum_test_template<blas1_##NAME::template testing, blas1::NAME>;             \
+    using NAME = dot_test_template<blas1_##NAME::template testing, blas1::NAME>;              \
                                                                                               \
     template <>                                                                               \
     inline bool NAME::function_filter(const Arguments& arg)                                   \

@@ -159,13 +159,13 @@ void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batch
     }
 }
 
-inline void testname_amax_batched(const Arguments& arg, std::string& name)
+inline void testname_iamax_batched(const Arguments& arg, std::string& name)
 {
     hipblasIamaxIaminBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
-void testing_amax_batched(const Arguments& arg)
+void testing_iamax_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasIamaxBatchedFn
@@ -175,19 +175,19 @@ void testing_amax_batched(const Arguments& arg)
 }
 
 template <typename T>
-hipblasStatus_t testing_amax_batched_ret(const Arguments& arg)
+hipblasStatus_t testing_iamax_batched_ret(const Arguments& arg)
 {
-    testing_amax_batched<T>(arg);
+    testing_iamax_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-inline void testname_amin_batched(const Arguments& arg, std::string& name)
+inline void testname_iamin_batched(const Arguments& arg, std::string& name)
 {
     hipblasIamaxIaminBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
-inline hipblasStatus_t testing_amin_batched(const Arguments& arg)
+void testing_iamin_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasIaminBatchedFn
@@ -197,8 +197,8 @@ inline hipblasStatus_t testing_amin_batched(const Arguments& arg)
 }
 
 template <typename T>
-hipblasStatus_t testing_amin_batched_ret(const Arguments& arg)
+hipblasStatus_t testing_iamin_batched_ret(const Arguments& arg)
 {
-    testing_amin_batched<T>(arg);
+    testing_iamin_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

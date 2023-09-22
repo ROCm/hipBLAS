@@ -6,8 +6,7 @@ Definitions:
     - [ -1, 10, 500, 1000, 7111, 10000 ]
 
   - &incx_range
-    - { incx:  1 }
-    - { incx: -1 }
+    - [-1, 1 ]
 
   - &alpha_beta_range
     - { alpha: 2.0, alphai:  2.0, beta:  0.0, betai: 0.0 }
@@ -21,7 +20,7 @@ Tests:
     category: quick
     function:
       - scal: *single_double_precisions_complex_real
-      - scal: *scal_single_double_complex_real_alpha_complex_out
+      - scal: *single_double_complex_real_in_complex_out
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx: *incx_range
@@ -30,7 +29,7 @@ Tests:
     category: quick
     function:
       - scal_batched: *single_double_precisions_complex_real
-      - scal_batched: *scal_single_double_complex_real_alpha_complex_out
+      - scal_batched: *single_double_complex_real_in_complex_out
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx: *incx_range
@@ -41,7 +40,7 @@ Tests:
     category: quick
     function:
       - scal_strided_batched: *single_double_precisions_complex_real
-      - scal_strided_batched: *scal_single_double_complex_real_alpha_complex_out
+      - scal_strided_batched: *single_double_complex_real_in_complex_out
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx: *incx_range

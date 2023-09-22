@@ -175,13 +175,13 @@ void testing_iamax_iamin_strided_batched(const Arguments&                       
     }
 }
 
-inline void testname_amax_strided_batched(const Arguments& arg, std::string& name)
+inline void testname_iamax_strided_batched(const Arguments& arg, std::string& name)
 {
     hipblasIamaxIaminStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
-void testing_amax_strided_batched(const Arguments& arg)
+void testing_iamax_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasIamaxStridedBatchedFn
@@ -191,19 +191,19 @@ void testing_amax_strided_batched(const Arguments& arg)
 }
 
 template <typename T>
-hipblasStatus_t testing_amax_strided_batched_ret(const Arguments& arg)
+hipblasStatus_t testing_iamax_strided_batched_ret(const Arguments& arg)
 {
-    testing_amax_strided_batched<T>(arg);
+    testing_iamax_strided_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }
 
-inline void testname_amin_strided_batched(const Arguments& arg, std::string& name)
+inline void testname_iamin_strided_batched(const Arguments& arg, std::string& name)
 {
     hipblasIamaxIaminStridedBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
-void testing_amin_strided_batched(const Arguments& arg)
+void testing_iamin_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasIaminStridedBatchedFn
@@ -213,8 +213,8 @@ void testing_amin_strided_batched(const Arguments& arg)
 }
 
 template <typename T>
-hipblasStatus_t testing_amin_strided_batched_ret(const Arguments& arg)
+hipblasStatus_t testing_iamin_strided_batched_ret(const Arguments& arg)
 {
-    testing_amin_strided_batched<T>(arg);
+    testing_iamin_strided_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

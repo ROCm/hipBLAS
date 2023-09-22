@@ -37,7 +37,7 @@ inline void testname_copy_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-inline hipblasStatus_t testing_copy_batched(const Arguments& arg)
+void testing_copy_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
     auto hipblasCopyBatchedFn

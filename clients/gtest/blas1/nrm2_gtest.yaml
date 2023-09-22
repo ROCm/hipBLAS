@@ -6,8 +6,7 @@ Definitions:
     - [ -1, 10, 500, 1000, 7111, 10000 ]
 
   - &incx_range
-    - { incx:  1 }
-    - { incx: -1 }
+    - [-1, 1 ]
 
   - &batch_count_range
     - [ -1, 0, 1, 2, 10 ]

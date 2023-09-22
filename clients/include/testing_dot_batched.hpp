@@ -196,7 +196,8 @@ void testing_dot_batched(const Arguments& arg)
 template <typename T>
 inline hipblasStatus_t testing_dotc_batched(const Arguments& arg)
 {
-    return testing_dot_batched<T, true>(arg);
+    testing_dot_batched<T, true>(arg);
+    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T, bool CONJ = false>
