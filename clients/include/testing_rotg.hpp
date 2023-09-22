@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasRotgModel = ArgumentModel<>;
+using hipblasRotgModel = ArgumentModel<e_a_type>;
 
 inline void testname_rotg(const Arguments& arg, std::string& name)
 {

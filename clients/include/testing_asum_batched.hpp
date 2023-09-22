@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasAsumBatchedModel = ArgumentModel<e_N, e_incx, e_batch_count>;
+using hipblasAsumBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_batch_count>;
 
 inline void testname_asum_batched(const Arguments& arg, std::string& name)
 {

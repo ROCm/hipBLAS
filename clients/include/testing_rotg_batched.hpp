@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasRotgBatchedModel = ArgumentModel<e_batch_count>;
+using hipblasRotgBatchedModel = ArgumentModel<e_a_type, e_batch_count>;
 
 inline void testname_rotg_batched(const Arguments& arg, std::string& name)
 {

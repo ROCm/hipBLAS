@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasAxpyBatchedModel = ArgumentModel<e_N, e_alpha, e_incx, e_incy, e_batch_count>;
+using hipblasAxpyBatchedModel = ArgumentModel<e_a_type, e_N, e_alpha, e_incx, e_incy, e_batch_count>;
 
 inline void testname_axpy_batched(const Arguments& arg, std::string& name)
 {

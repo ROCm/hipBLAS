@@ -27,7 +27,7 @@
 
 #include "testing_common.hpp"
 
-using hipblasIamaxIaminModel = ArgumentModel<e_N, e_incx>;
+using hipblasIamaxIaminModel = ArgumentModel<e_a_type, e_N, e_incx>;
 
 template <typename T>
 using hipblas_iamax_iamin_t

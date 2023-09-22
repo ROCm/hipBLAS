@@ -27,7 +27,7 @@
 
 #include "testing_common.hpp"
 
-using hipblasIamaxIaminBatchedModel = ArgumentModel<e_N, e_incx, e_batch_count>;
+using hipblasIamaxIaminBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_batch_count>;
 
 template <typename T>
 using hipblas_iamax_iamin_batched_t = hipblasStatus_t (*)(

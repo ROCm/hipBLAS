@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasRotModel = ArgumentModel<e_N, e_incx, e_incy>;
+using hipblasRotModel = ArgumentModel<e_a_type, e_c_type, e_N, e_incx, e_incy>;
 
 inline void testname_rot(const Arguments& arg, std::string& name)
 {

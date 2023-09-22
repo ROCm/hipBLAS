@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasNrm2Model = ArgumentModel<e_N, e_incx>;
+using hipblasNrm2Model = ArgumentModel<e_a_type, e_N, e_incx>;
 
 inline void testname_nrm2(const Arguments& arg, std::string& name)
 {

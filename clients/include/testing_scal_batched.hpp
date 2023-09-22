@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasScalBatchedModel = ArgumentModel<e_N, e_alpha, e_incx, e_batch_count>;
+using hipblasScalBatchedModel = ArgumentModel<e_a_type, e_c_type, e_N, e_alpha, e_incx, e_batch_count>;
 
 inline void testname_scal_batched(const Arguments& arg, std::string& name)
 {

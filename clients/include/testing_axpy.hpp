@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasAxpyModel = ArgumentModel<e_N, e_alpha, e_incx, e_incy>;
+using hipblasAxpyModel = ArgumentModel<e_a_type, e_N, e_alpha, e_incx, e_incy>;
 
 inline void testname_axpy(const Arguments& arg, std::string& name)
 {

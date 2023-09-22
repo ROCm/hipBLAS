@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasAsumModel = ArgumentModel<e_N, e_incx>;
+using hipblasAsumModel = ArgumentModel<e_a_type, e_N, e_incx>;
 
 inline void testname_asum(const Arguments& arg, std::string& name)
 {

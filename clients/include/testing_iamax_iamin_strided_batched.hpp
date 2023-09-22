@@ -28,7 +28,7 @@
 #include "testing_common.hpp"
 
 using hipblasIamaxIaminStridedBatchedModel
-    = ArgumentModel<e_N, e_incx, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_a_type, e_N, e_incx, e_stride_scale, e_batch_count>;
 
 template <typename T>
 using hipblas_iamax_iamin_strided_batched_t = hipblasStatus_t (*)(hipblasHandle_t handle,

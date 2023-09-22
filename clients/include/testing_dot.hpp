@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasDotModel = ArgumentModel<e_N, e_incx, e_incy>;
+using hipblasDotModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy>;
 
 inline void testname_dot(const Arguments& arg, std::string& name)
 {

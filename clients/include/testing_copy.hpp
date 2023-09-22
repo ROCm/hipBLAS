@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasCopyModel = ArgumentModel<e_N, e_incx, e_incy>;
+using hipblasCopyModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy>;
 
 inline void testname_copy(const Arguments& arg, std::string& name)
 {

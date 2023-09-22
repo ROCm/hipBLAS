@@ -30,7 +30,7 @@
 /* ============================================================================================ */
 
 using hipblasDotStridedBatchedModel
-    = ArgumentModel<e_N, e_incx, e_incy, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_stride_scale, e_batch_count>;
 
 inline void testname_dot_strided_batched(const Arguments& arg, std::string& name)
 {

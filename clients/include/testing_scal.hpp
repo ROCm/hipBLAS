@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasScalModel = ArgumentModel<e_N, e_alpha, e_incx>;
+using hipblasScalModel = ArgumentModel<e_a_type, e_c_type, e_N, e_alpha, e_incx>;
 
 inline void testname_scal(const Arguments& arg, std::string& name)
 {

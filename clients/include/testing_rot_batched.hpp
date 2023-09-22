@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasRotBatchedModel = ArgumentModel<e_N, e_incx, e_incy, e_batch_count>;
+using hipblasRotBatchedModel = ArgumentModel<e_a_type, e_c_type, e_N, e_incx, e_incy, e_batch_count>;
 
 inline void testname_rot_batched(const Arguments& arg, std::string& name)
 {

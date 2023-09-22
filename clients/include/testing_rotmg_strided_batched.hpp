@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasRotmgStridedBatchedModel = ArgumentModel<e_stride_scale, e_batch_count>;
+using hipblasRotmgStridedBatchedModel = ArgumentModel<e_a_type, e_stride_scale, e_batch_count>;
 
 inline void testname_rotmg_strided_batched(const Arguments& arg, std::string& name)
 {
