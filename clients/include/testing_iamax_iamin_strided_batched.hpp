@@ -28,7 +28,7 @@
 #include "testing_common.hpp"
 
 using hipblasIamaxIaminStridedBatchedModel
-    = ArgumentModel<e_a_type, e_N, e_incx, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_a_type, e_N, e_incx, e_stride_scale, e_batch_count, e_api>;
 
 template <typename T>
 using hipblas_iamax_iamin_strided_batched_t = hipblasStatus_t (*)(hipblasHandle_t handle,
@@ -183,7 +183,7 @@ inline void testname_iamax_strided_batched(const Arguments& arg, std::string& na
 template <typename T>
 void testing_iamax_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIamaxStridedBatchedFn
         = FORTRAN ? hipblasIamaxStridedBatched<T, true> : hipblasIamaxStridedBatched<T, false>;
 
@@ -205,7 +205,7 @@ inline void testname_iamin_strided_batched(const Arguments& arg, std::string& na
 template <typename T>
 void testing_iamin_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIaminStridedBatchedFn
         = FORTRAN ? hipblasIaminStridedBatched<T, true> : hipblasIaminStridedBatched<T, false>;
 

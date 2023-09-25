@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasCopyBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_batch_count>;
+using hipblasCopyBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_batch_count, e_api>;
 
 inline void testname_copy_batched(const Arguments& arg, std::string& name)
 {
@@ -39,7 +39,7 @@ inline void testname_copy_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_copy_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasCopyBatchedFn
         = FORTRAN ? hipblasCopyBatched<T, true> : hipblasCopyBatched<T, false>;
 

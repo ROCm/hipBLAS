@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasSwapModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy>;
+using hipblasSwapModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_api>;
 
 inline void testname_swap(const Arguments& arg, std::string& name)
 {
@@ -39,7 +39,7 @@ inline void testname_swap(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_swap(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSwapFn = FORTRAN ? hipblasSwap<T, true> : hipblasSwap<T, false>;
 
     int N          = arg.N;

@@ -29,7 +29,8 @@
 
 /* ============================================================================================ */
 
-using hipblasAxpyBatchedModel = ArgumentModel<e_a_type, e_N, e_alpha, e_incx, e_incy, e_batch_count>;
+using hipblasAxpyBatchedModel
+    = ArgumentModel<e_a_type, e_N, e_alpha, e_incx, e_incy, e_batch_count, e_api>;
 
 inline void testname_axpy_batched(const Arguments& arg, std::string& name)
 {
@@ -39,7 +40,7 @@ inline void testname_axpy_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_axpy_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyBatchedFn
         = FORTRAN ? hipblasAxpyBatched<T, true> : hipblasAxpyBatched<T, false>;
 

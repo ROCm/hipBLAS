@@ -27,7 +27,7 @@
 
 #include "testing_common.hpp"
 
-using hipblasIamaxIaminModel = ArgumentModel<e_a_type, e_N, e_incx>;
+using hipblasIamaxIaminModel = ArgumentModel<e_a_type, e_N, e_incx, e_api>;
 
 template <typename T>
 using hipblas_iamax_iamin_t
@@ -152,7 +152,7 @@ inline void testname_iamax(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_iamax(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIamaxFn = FORTRAN ? hipblasIamax<T, true> : hipblasIamax<T, false>;
 
     testing_iamax_iamin<T, cblas_iamax<T>>(arg, hipblasIamaxFn);
@@ -173,7 +173,7 @@ inline void testname_iamin(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_iamin(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIaminFn = FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;
 
     testing_iamax_iamin<T, cblas_iamin<T>>(arg, hipblasIamin<T>);

@@ -29,7 +29,8 @@
 
 /* ============================================================================================ */
 
-using hipblasScalBatchedModel = ArgumentModel<e_a_type, e_c_type, e_N, e_alpha, e_incx, e_batch_count>;
+using hipblasScalBatchedModel
+    = ArgumentModel<e_a_type, e_c_type, e_N, e_alpha, e_incx, e_batch_count, e_api>;
 
 inline void testname_scal_batched(const Arguments& arg, std::string& name)
 {
@@ -39,7 +40,7 @@ inline void testname_scal_batched(const Arguments& arg, std::string& name)
 template <typename T, typename U = T>
 void testing_scal_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalBatchedFn
         = FORTRAN ? hipblasScalBatched<T, U, true> : hipblasScalBatched<T, U, false>;
 

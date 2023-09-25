@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasRotmModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy>;
+using hipblasRotmModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_api>;
 
 inline void testname_rotm(const Arguments& arg, std::string& name)
 {
@@ -39,7 +39,7 @@ inline void testname_rotm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_rotm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotmFn = FORTRAN ? hipblasRotm<T, true> : hipblasRotm<T, false>;
 
     int N    = arg.N;

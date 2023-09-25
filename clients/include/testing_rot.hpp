@@ -29,7 +29,8 @@
 
 /* ============================================================================================ */
 
-using hipblasRotModel = ArgumentModel<e_a_type, e_c_type, e_N, e_incx, e_incy>;
+using hipblasRotModel
+    = ArgumentModel<e_a_type, e_c_type, e_compute_type, e_N, e_incx, e_incy, e_api>;
 
 inline void testname_rot(const Arguments& arg, std::string& name)
 {
@@ -39,7 +40,7 @@ inline void testname_rot(const Arguments& arg, std::string& name)
 template <typename T, typename U = T, typename V = T>
 void testing_rot(const Arguments& arg)
 {
-    bool FORTRAN      = arg.fortran;
+    bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotFn = FORTRAN ? hipblasRot<T, U, V, true> : hipblasRot<T, U, V, false>;
 
     int N    = arg.N;

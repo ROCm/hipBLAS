@@ -18,6 +18,7 @@ Tests:
     precision: *single_double_precisions_complex_real
     N: *N_range
     incx: *incx_range
+    api: [ FORTRAN, C ]
 
   - name: asum_batched_general
     category: quick
@@ -26,6 +27,7 @@ Tests:
     N: *N_range
     incx: *incx_range
     batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
     hipblas_backend: AMD
 
   - name: asum_strided_batched_general
@@ -36,5 +38,6 @@ Tests:
     incx: *incx_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
+    api: [ FORTRAN, C ]
     hipblas_backend: AMD
 ...

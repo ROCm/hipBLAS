@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasRotgModel = ArgumentModel<e_a_type>;
+using hipblasRotgModel = ArgumentModel<e_a_type, e_api>;
 
 inline void testname_rotg(const Arguments& arg, std::string& name)
 {
@@ -40,7 +40,7 @@ template <typename T>
 void testing_rotg(const Arguments& arg)
 {
     using U            = real_t<T>;
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotgFn = FORTRAN ? hipblasRotg<T, U, true> : hipblasRotg<T, U, false>;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;

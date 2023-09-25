@@ -30,7 +30,7 @@
 /* ============================================================================================ */
 
 using hipblasDotStridedBatchedModel
-    = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_stride_scale, e_batch_count, e_api>;
 
 inline void testname_dot_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -45,7 +45,7 @@ inline void testname_dotc_strided_batched(const Arguments& arg, std::string& nam
 template <typename T, bool CONJ = false>
 void testing_dot_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotStridedBatchedFn
         = FORTRAN
               ? (CONJ ? hipblasDotcStridedBatched<T, true> : hipblasDotStridedBatched<T, true>)
@@ -136,12 +136,28 @@ void testing_dot_strided_batched(const Arguments& arg)
         =================================================================== */
         // hipblasDot accept both dev/host pointer for the scalar
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS((hipblasDotStridedBatchedFn)(
-            handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, d_hipblas_result));
+        ASSERT_HIPBLAS_SUCCESS((hipblasDotStridedBatchedFn)(handle,
+                                                            N,
+                                                            dx,
+                                                            incx,
+                                                            stridex,
+                                                            dy,
+                                                            incy,
+                                                            stridey,
+                                                            batch_count,
+                                                            d_hipblas_result));
 
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS((hipblasDotStridedBatchedFn)(
-            handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, h_hipblas_result1));
+        ASSERT_HIPBLAS_SUCCESS((hipblasDotStridedBatchedFn)(handle,
+                                                            N,
+                                                            dx,
+                                                            incx,
+                                                            stridex,
+                                                            dy,
+                                                            incy,
+                                                            stridey,
+                                                            batch_count,
+                                                            h_hipblas_result1));
 
         ASSERT_HIP_SUCCESS(hipMemcpy(
             h_hipblas_result2, d_hipblas_result, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
@@ -186,8 +202,16 @@ void testing_dot_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS((hipblasDotStridedBatchedFn)(
-                handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, d_hipblas_result));
+            ASSERT_HIPBLAS_SUCCESS((hipblasDotStridedBatchedFn)(handle,
+                                                                N,
+                                                                dx,
+                                                                incx,
+                                                                stridex,
+                                                                dy,
+                                                                incy,
+                                                                stridey,
+                                                                batch_count,
+                                                                d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasAsumModel = ArgumentModel<e_a_type, e_N, e_incx>;
+using hipblasAsumModel = ArgumentModel<e_a_type, e_N, e_incx, e_api>;
 
 inline void testname_asum(const Arguments& arg, std::string& name)
 {
@@ -40,7 +40,7 @@ template <typename T>
 void testing_asum(const Arguments& arg)
 {
     using Tr           = real_t<T>;
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAsumFn = FORTRAN ? hipblasAsum<T, Tr, true> : hipblasAsum<T, Tr, false>;
 
     int N    = arg.N;

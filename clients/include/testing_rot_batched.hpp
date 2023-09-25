@@ -29,7 +29,8 @@
 
 /* ============================================================================================ */
 
-using hipblasRotBatchedModel = ArgumentModel<e_a_type, e_c_type, e_N, e_incx, e_incy, e_batch_count>;
+using hipblasRotBatchedModel
+    = ArgumentModel<e_a_type, e_c_type, e_compute_type, e_N, e_incx, e_incy, e_batch_count, e_api>;
 
 inline void testname_rot_batched(const Arguments& arg, std::string& name)
 {
@@ -39,7 +40,7 @@ inline void testname_rot_batched(const Arguments& arg, std::string& name)
 template <typename T, typename U = T, typename V = T>
 void testing_rot_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotBatchedFn
         = FORTRAN ? hipblasRotBatched<T, U, V, true> : hipblasRotBatched<T, U, V, false>;
 

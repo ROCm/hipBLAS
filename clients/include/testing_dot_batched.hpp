@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasDotBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_batch_count>;
+using hipblasDotBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_batch_count, e_api>;
 
 inline void testname_dot_batched(const Arguments& arg, std::string& name)
 {
@@ -44,7 +44,7 @@ inline void testname_dotc_batched(const Arguments& arg, std::string& name)
 template <typename T, bool CONJ = false>
 void testing_dot_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotBatchedFn
         = FORTRAN ? (CONJ ? hipblasDotcBatched<T, true> : hipblasDotBatched<T, true>)
                   : (CONJ ? hipblasDotcBatched<T, false> : hipblasDotBatched<T, false>);

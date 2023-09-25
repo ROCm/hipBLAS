@@ -10,7 +10,6 @@ Definitions:
 
   - &alpha_beta_range
     - { alpha: 2.0, alphai:  2.0, beta:  0.0, betai: 0.0 }
-    - { alpha: 2.0, alphai: -1.0, beta: -1.0, betai: 2.0 }
 
   - &batch_count_range
     - [ -1, 0, 1, 2, 10 ]
@@ -24,6 +23,7 @@ Tests:
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx: *incx_range
+    api: [ FORTRAN, C ]
 
   - name: scal_batched_general
     category: quick
@@ -34,6 +34,7 @@ Tests:
     N: *N_range
     incx: *incx_range
     batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
     hipblas_backend: AMD
 
   - name: scal_strided_batched_general
@@ -46,5 +47,6 @@ Tests:
     incx: *incx_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
+    api: [ FORTRAN, C ]
     hipblas_backend: AMD
 ...

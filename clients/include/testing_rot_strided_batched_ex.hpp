@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@
 /* ============================================================================================ */
 
 using hipblasRotStridedBatchedExModel
-    = ArgumentModel<e_N, e_incx, e_incy, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_N, e_incx, e_incy, e_stride_scale, e_batch_count, e_api>;
 
 inline void testname_rot_strided_batched_ex(const Arguments& arg, std::string& name)
 {
@@ -41,7 +41,7 @@ template <typename Tex, typename Tx = Tex, typename Tcs = Tx>
 inline hipblasStatus_t testing_rot_strided_batched_ex_template(const Arguments& arg)
 {
     using Ty     = Tx;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotStridedBatchedExFn
         = FORTRAN ? hipblasRotStridedBatchedExFortran : hipblasRotStridedBatchedEx;
 

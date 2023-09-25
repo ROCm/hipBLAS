@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasCopyModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy>;
+using hipblasCopyModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_api>;
 
 inline void testname_copy(const Arguments& arg, std::string& name)
 {
@@ -39,7 +39,7 @@ inline void testname_copy(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_copy(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasCopyFn = FORTRAN ? hipblasCopy<T, true> : hipblasCopy<T, false>;
 
     int N    = arg.N;

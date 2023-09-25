@@ -30,7 +30,7 @@
 /* ============================================================================================ */
 
 using hipblasScalStridedBatchedModel
-    = ArgumentModel<e_a_type, e_c_type, e_N, e_alpha, e_incx, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_a_type, e_c_type, e_N, e_alpha, e_incx, e_stride_scale, e_batch_count, e_api>;
 
 inline void testname_scal_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -40,7 +40,7 @@ inline void testname_scal_strided_batched(const Arguments& arg, std::string& nam
 template <typename T, typename U = T>
 void testing_scal_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalStridedBatchedFn
         = FORTRAN ? hipblasScalStridedBatched<T, U, true> : hipblasScalStridedBatched<T, U, false>;
 

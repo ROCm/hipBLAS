@@ -29,8 +29,15 @@
 
 /* ============================================================================================ */
 
-using hipblasRotStridedBatchedModel
-    = ArgumentModel<e_a_type, e_c_type, e_N, e_incx, e_incy, e_stride_scale, e_batch_count>;
+using hipblasRotStridedBatchedModel = ArgumentModel<e_a_type,
+                                                    e_c_type,
+                                                    e_compute_type,
+                                                    e_N,
+                                                    e_incx,
+                                                    e_incy,
+                                                    e_stride_scale,
+                                                    e_batch_count,
+                                                    e_api>;
 
 inline void testname_rot_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -40,7 +47,7 @@ inline void testname_rot_strided_batched(const Arguments& arg, std::string& name
 template <typename T, typename U = T, typename V = T>
 void testing_rot_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN                    = arg.fortran;
+    bool FORTRAN                    = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotStridedBatchedFn = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
                                               : hipblasRotStridedBatched<T, U, V, false>;
 

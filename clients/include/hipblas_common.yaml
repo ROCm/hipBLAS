@@ -117,7 +117,7 @@ Datatypes:
         AMD: 1
         NVIDIA: 2
         ALL_BACKEND: 3
-  - hipblas_api:
+  - hipblas_client_api:
       bases: [ c_uint32 ]
       attr:
         C: 0
@@ -427,7 +427,7 @@ Arguments:
   - atomics_mode: hipblas_atomics_mode
   - os_flags: hipblas_client_os
   - backend_flags: hipblas_backend
-  - api: hipblas_api
+  - api: hipblas_client_api
   - initialization: hipblas_initialization
   # - known_bug_platforms: c_char*64
   # - c_noalias_d: c_bool

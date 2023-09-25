@@ -29,7 +29,8 @@
 
 /* ============================================================================================ */
 
-using hipblasRotmgStridedBatchedModel = ArgumentModel<e_a_type, e_stride_scale, e_batch_count>;
+using hipblasRotmgStridedBatchedModel
+    = ArgumentModel<e_a_type, e_stride_scale, e_batch_count, e_api>;
 
 inline void testname_rotmg_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -39,7 +40,7 @@ inline void testname_rotmg_strided_batched(const Arguments& arg, std::string& na
 template <typename T>
 void testing_rotmg_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotmgStridedBatchedFn
         = FORTRAN ? hipblasRotmgStridedBatched<T, true> : hipblasRotmgStridedBatched<T, false>;
 

@@ -30,7 +30,7 @@
 /* ============================================================================================ */
 
 using hipblasSwapStridedBatchedModel
-    = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_stride_scale, e_batch_count, e_api>;
 
 inline void testname_swap_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -40,7 +40,7 @@ inline void testname_swap_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_swap_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSwapStridedBatchedFn
         = FORTRAN ? hipblasSwapStridedBatched<T, true> : hipblasSwapStridedBatched<T, false>;
 

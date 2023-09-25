@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasScalModel = ArgumentModel<e_a_type, e_c_type, e_N, e_alpha, e_incx>;
+using hipblasScalModel = ArgumentModel<e_a_type, e_c_type, e_N, e_alpha, e_incx, e_api>;
 
 inline void testname_scal(const Arguments& arg, std::string& name)
 {
@@ -39,7 +39,7 @@ inline void testname_scal(const Arguments& arg, std::string& name)
 template <typename T, typename U = T>
 void testing_scal(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalFn = FORTRAN ? hipblasScal<T, U, true> : hipblasScal<T, U, false>;
 
     int N    = arg.N;

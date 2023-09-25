@@ -29,7 +29,8 @@
 
 /* ============================================================================================ */
 
-using hipblasNrm2StridedBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_stride_scale, e_batch_count>;
+using hipblasNrm2StridedBatchedModel
+    = ArgumentModel<e_a_type, e_N, e_incx, e_stride_scale, e_batch_count, e_api>;
 
 inline void testname_nrm2_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -40,7 +41,7 @@ template <typename T>
 void testing_nrm2_strided_batched(const Arguments& arg)
 {
     using Tr                         = real_t<T>;
-    bool FORTRAN                     = arg.fortran;
+    bool FORTRAN                     = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasNrm2StridedBatchedFn = FORTRAN ? hipblasNrm2StridedBatched<T, Tr, true>
                                                : hipblasNrm2StridedBatched<T, Tr, false>;
 

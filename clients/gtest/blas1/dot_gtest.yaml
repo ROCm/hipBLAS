@@ -21,15 +21,17 @@ Tests:
       - dotc: *single_double_precisions_complex
     N: *N_range
     incx_incy: *incx_incy_range
-    hipblas_backend: NVIDIA
+    api: [ FORTRAN, C ]
 
   # half/bf16 precision only rocBLAS backend
   - name: dot_general_amd
     category: quick
     function:
-      - dot: *half_bfloat_single_double_complex_real_precisions
+      - dot: *half_precision
+      - dot: *bf16_precision
     N: *N_range
     incx_incy: *incx_incy_range
+    api: [ FORTRAN, C ]
     hipblas_backend: AMD
 
   - name: dot_batched_general
@@ -40,6 +42,7 @@ Tests:
     N: *N_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
     hipblas_backend: AMD
 
   - name: dot_strided_batched_general
@@ -51,5 +54,6 @@ Tests:
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
+    api: [ FORTRAN, C ]
     hipblas_backend: AMD
 ...

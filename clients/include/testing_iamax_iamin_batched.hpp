@@ -27,7 +27,7 @@
 
 #include "testing_common.hpp"
 
-using hipblasIamaxIaminBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_batch_count>;
+using hipblasIamaxIaminBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_batch_count, e_api>;
 
 template <typename T>
 using hipblas_iamax_iamin_batched_t = hipblasStatus_t (*)(
@@ -167,7 +167,7 @@ inline void testname_iamax_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_iamax_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIamaxBatchedFn
         = FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
 
@@ -189,7 +189,7 @@ inline void testname_iamin_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_iamin_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIaminBatchedFn
         = FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
 

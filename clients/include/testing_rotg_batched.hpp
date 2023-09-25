@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasRotgBatchedModel = ArgumentModel<e_a_type, e_batch_count>;
+using hipblasRotgBatchedModel = ArgumentModel<e_a_type, e_batch_count, e_api>;
 
 inline void testname_rotg_batched(const Arguments& arg, std::string& name)
 {
@@ -40,7 +40,7 @@ template <typename T>
 void testing_rotg_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotgBatchedFn
         = FORTRAN ? hipblasRotgBatched<T, U, true> : hipblasRotgBatched<T, U, false>;
 

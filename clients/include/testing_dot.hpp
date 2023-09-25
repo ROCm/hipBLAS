@@ -29,7 +29,7 @@
 
 /* ============================================================================================ */
 
-using hipblasDotModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy>;
+using hipblasDotModel = ArgumentModel<e_a_type, e_N, e_incx, e_incy, e_api>;
 
 inline void testname_dot(const Arguments& arg, std::string& name)
 {
@@ -44,7 +44,7 @@ inline void testname_dotc(const Arguments& arg, std::string& name)
 template <typename T, bool CONJ = false>
 void testing_dot(const Arguments& arg)
 {
-    bool FORTRAN      = arg.fortran;
+    bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotFn = FORTRAN ? (CONJ ? hipblasDotc<T, true> : hipblasDot<T, true>)
                                 : (CONJ ? hipblasDotc<T, false> : hipblasDot<T, false>);
 

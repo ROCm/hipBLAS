@@ -29,7 +29,8 @@
 
 /* ============================================================================================ */
 
-using hipblasAsumStridedBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_stride_scale, e_batch_count>;
+using hipblasAsumStridedBatchedModel
+    = ArgumentModel<e_a_type, e_N, e_incx, e_stride_scale, e_batch_count, e_api>;
 
 inline void testname_asum_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -40,7 +41,7 @@ template <typename T>
 void testing_asum_strided_batched(const Arguments& arg)
 {
     using Tr                         = real_t<T>;
-    bool FORTRAN                     = arg.fortran;
+    bool FORTRAN                     = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAsumStridedBatchedFn = FORTRAN ? hipblasAsumStridedBatched<T, Tr, true>
                                                : hipblasAsumStridedBatched<T, Tr, false>;
 
