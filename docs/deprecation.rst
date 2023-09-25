@@ -6,7 +6,7 @@ Deprecations by version
 Announced in hipBLAS 0.49
 *************************
 
-Inplace hipblasXtrmm will be replaced with out of place hipblasXtrmm
+Inplace hipblasXtrmm will be replaced with out-of-place hipblasXtrmm
 ====================================================================
 
 The hipblasXtrmm API, along with batched versions, will be changing in hipBLAS 1.0

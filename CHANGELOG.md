@@ -2,8 +2,8 @@
 
 ## (Unreleased) hipBLAS 2.0.0 for ROCm 6.0.0
 ### Deprecated
-- hipblasDatatype_t is deprecated and will be removed and replaced with hipDataType
-- hipblasComplex and hipblasDoubleComplex are deprecated and will be removed and replaced with hipComplex and hipDoubleComplex
+- hipblasDatatype_t is deprecated and will be removed in a future release and replaced with hipDataType
+- hipblasComplex and hipblasDoubleComplex are deprecated and will be removed in a future release and replaced with hipComplex and hipDoubleComplex
 ### Removed
 - hipblasXtrmm that calculates B <- alpha * op(A) * B is removed and replaced with hipblasXtrmm that calculates C <- alpha * op(A) * B
 
