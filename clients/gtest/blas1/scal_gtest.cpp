@@ -21,11 +21,11 @@
  * ************************************************************************ */
 #include "blas1_gtest.hpp"
 
+#include "blas1/testing_scal.hpp"
+#include "blas1/testing_scal_batched.hpp"
+#include "blas1/testing_scal_strided_batched.hpp"
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
-#include "testing_scal.hpp"
-#include "testing_scal_batched.hpp"
-#include "testing_scal_strided_batched.hpp"
 #include "type_dispatch.hpp"
 
 namespace

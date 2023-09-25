@@ -30,7 +30,7 @@
 /* ============================================================================================ */
 
 using hipblasRotStridedBatchedExModel
-    = ArgumentModel<e_N, e_incx, e_incy, e_stride_scale, e_batch_count, e_api>;
+    = ArgumentModel<e_N, e_incx, e_incy, e_stride_scale, e_batch_count>;
 
 inline void testname_rot_strided_batched_ex(const Arguments& arg, std::string& name)
 {
