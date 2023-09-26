@@ -1,0 +1,57 @@
+---
+include: hipblas_common.yaml
+
+Definitions:
+  - &M_range
+    - [ -1, 11, 16, 32, 65 ]
+
+  - &incx_incy_range
+    - { incx:  1, incy:  2 }
+    - { incx:  0, incy:  0 }
+    - { incx: -1, incy: -1 }
+
+  - &alpha_beta_range
+    - { alpha: -0.5, beta:  1.5 }
+    - { alpha:  2.0, beta: -1.0 }
+    - { alpha:  0.0, beta:  0.0 }
+
+  - &batch_count_range
+    - [ -1, 0, 1, 2, 10 ]
+
+Tests:
+  - name: spmv_general
+    category: quick
+    function: spmv
+    precision: *single_double_precisions
+    uplo: [ 'L', 'U' ]
+    alpha_beta: *alpha_beta_range
+    M: *M_range
+    incx_incy: *incx_incy_range
+    api: [ FORTRAN, C ]
+
+
+  - name: spmv_batched_general
+    category: quick
+    function: spmv_batched
+    precision: *single_double_precisions
+    uplo: [ 'L', 'U' ]
+    alpha_beta: *alpha_beta_range
+    M: *M_range
+    incx_incy: *incx_incy_range
+    batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+
+  - name: spmv_strided_batched_general
+    category: quick
+    function: spmv_strided_batched
+    precision: *single_double_precisions
+    uplo: [ 'L', 'U' ]
+    alpha_beta: *alpha_beta_range
+    M: *M_range
+    incx_incy: *incx_incy_range
+    batch_count: *batch_count_range
+    stride_scale: [ 1.0, 2.5 ]
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+...

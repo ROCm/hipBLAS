@@ -1,0 +1,53 @@
+---
+include: hipblas_common.yaml
+
+Definitions:
+  - &M_range
+    - [ -1, 11, 16, 32, 65 ]
+
+  - &incx_range
+    - [ -1, 0, 2 ]
+
+  - &batch_count_range
+    - [ -1, 0, 1, 2, 10 ]
+
+Tests:
+  - name: tpmv_general
+    category: quick
+    function: tpmv
+    precision: *single_double_precisions_complex_real
+    transA: [ 'N', 'T', 'C' ]
+    uplo: [ 'L', 'U' ]
+    diag: [ 'N', 'U' ]
+    M: *M_range
+    incx: *incx_range
+    api: [ FORTRAN, C ]
+
+
+  - name: tpmv_batched_general
+    category: quick
+    function: tpmv_batched
+    precision: *single_double_precisions_complex_real
+    transA: [ 'N', 'T', 'C' ]
+    uplo: [ 'L', 'U' ]
+    diag: [ 'N', 'U' ]
+    M: *M_range
+    incx: *incx_range
+    batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+
+  - name: tpmv_strided_batched_general
+    category: quick
+    function: tpmv_strided_batched
+    precision: *single_double_precisions_complex_real
+    transA: [ 'N', 'T', 'C' ]
+    uplo: [ 'L', 'U' ]
+    diag: [ 'N', 'U' ]
+    M: *M_range
+    incx: *incx_range
+    batch_count: *batch_count_range
+    stride_scale: [ 1.0, 2.5 ]
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+...

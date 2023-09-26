@@ -100,72 +100,75 @@
 #include "testing_swap_batched.hpp"
 #include "testing_swap_strided_batched.hpp"
 // blas2
-#include "testing_gbmv.hpp"
-#include "testing_gbmv_batched.hpp"
-#include "testing_gbmv_strided_batched.hpp"
-#include "testing_gemv.hpp"
-#include "testing_gemv_batched.hpp"
-#include "testing_gemv_strided_batched.hpp"
-#include "testing_ger.hpp"
-#include "testing_ger_batched.hpp"
-#include "testing_ger_strided_batched.hpp"
-#include "testing_hbmv.hpp"
-#include "testing_hbmv_batched.hpp"
-#include "testing_hbmv_strided_batched.hpp"
-#include "testing_hemv.hpp"
-#include "testing_hemv_batched.hpp"
-#include "testing_hemv_strided_batched.hpp"
-#include "testing_her.hpp"
-#include "testing_her2.hpp"
-#include "testing_her2_batched.hpp"
-#include "testing_her2_strided_batched.hpp"
-#include "testing_her_batched.hpp"
-#include "testing_her_strided_batched.hpp"
-#include "testing_hpmv.hpp"
-#include "testing_hpmv_batched.hpp"
-#include "testing_hpmv_strided_batched.hpp"
-#include "testing_hpr.hpp"
-#include "testing_hpr2.hpp"
-#include "testing_hpr2_batched.hpp"
-#include "testing_hpr2_strided_batched.hpp"
-#include "testing_hpr_batched.hpp"
-#include "testing_hpr_strided_batched.hpp"
-#include "testing_sbmv.hpp"
-#include "testing_sbmv_batched.hpp"
-#include "testing_sbmv_strided_batched.hpp"
-#include "testing_spmv.hpp"
-#include "testing_spmv_batched.hpp"
-#include "testing_spmv_strided_batched.hpp"
-#include "testing_spr.hpp"
-#include "testing_spr2.hpp"
-#include "testing_spr2_batched.hpp"
-#include "testing_spr2_strided_batched.hpp"
-#include "testing_spr_batched.hpp"
-#include "testing_spr_strided_batched.hpp"
-#include "testing_symv.hpp"
-#include "testing_symv_batched.hpp"
-#include "testing_symv_strided_batched.hpp"
-#include "testing_syr.hpp"
-#include "testing_syr2.hpp"
-#include "testing_syr2_batched.hpp"
-#include "testing_syr2_strided_batched.hpp"
-#include "testing_syr_batched.hpp"
-#include "testing_syr_strided_batched.hpp"
-#include "testing_tbmv.hpp"
-#include "testing_tbmv_batched.hpp"
-#include "testing_tbmv_strided_batched.hpp"
-#include "testing_tbsv.hpp"
-#include "testing_tbsv_batched.hpp"
-#include "testing_tbsv_strided_batched.hpp"
-#include "testing_tpmv.hpp"
-#include "testing_tpmv_batched.hpp"
-#include "testing_tpmv_strided_batched.hpp"
-#include "testing_tpsv.hpp"
-#include "testing_tpsv_batched.hpp"
-#include "testing_tpsv_strided_batched.hpp"
-#include "testing_trmv.hpp"
-#include "testing_trmv_batched.hpp"
-#include "testing_trmv_strided_batched.hpp"
+#include "blas2/testing_gbmv.hpp"
+#include "blas2/testing_gbmv_batched.hpp"
+#include "blas2/testing_gbmv_strided_batched.hpp"
+#include "blas2/testing_gemv.hpp"
+#include "blas2/testing_gemv_batched.hpp"
+#include "blas2/testing_gemv_strided_batched.hpp"
+#include "blas2/testing_ger.hpp"
+#include "blas2/testing_ger_batched.hpp"
+#include "blas2/testing_ger_strided_batched.hpp"
+#include "blas2/testing_hbmv.hpp"
+#include "blas2/testing_hbmv_batched.hpp"
+#include "blas2/testing_hbmv_strided_batched.hpp"
+#include "blas2/testing_hemv.hpp"
+#include "blas2/testing_hemv_batched.hpp"
+#include "blas2/testing_hemv_strided_batched.hpp"
+#include "blas2/testing_her.hpp"
+#include "blas2/testing_her2.hpp"
+#include "blas2/testing_her2_batched.hpp"
+#include "blas2/testing_her2_strided_batched.hpp"
+#include "blas2/testing_her_batched.hpp"
+#include "blas2/testing_her_strided_batched.hpp"
+#include "blas2/testing_hpmv.hpp"
+#include "blas2/testing_hpmv_batched.hpp"
+#include "blas2/testing_hpmv_strided_batched.hpp"
+#include "blas2/testing_hpr.hpp"
+#include "blas2/testing_hpr2.hpp"
+#include "blas2/testing_hpr2_batched.hpp"
+#include "blas2/testing_hpr2_strided_batched.hpp"
+#include "blas2/testing_hpr_batched.hpp"
+#include "blas2/testing_hpr_strided_batched.hpp"
+#include "blas2/testing_sbmv.hpp"
+#include "blas2/testing_sbmv_batched.hpp"
+#include "blas2/testing_sbmv_strided_batched.hpp"
+#include "blas2/testing_spmv.hpp"
+#include "blas2/testing_spmv_batched.hpp"
+#include "blas2/testing_spmv_strided_batched.hpp"
+#include "blas2/testing_spr.hpp"
+#include "blas2/testing_spr2.hpp"
+#include "blas2/testing_spr2_batched.hpp"
+#include "blas2/testing_spr2_strided_batched.hpp"
+#include "blas2/testing_spr_batched.hpp"
+#include "blas2/testing_spr_strided_batched.hpp"
+#include "blas2/testing_symv.hpp"
+#include "blas2/testing_symv_batched.hpp"
+#include "blas2/testing_symv_strided_batched.hpp"
+#include "blas2/testing_syr.hpp"
+#include "blas2/testing_syr2.hpp"
+#include "blas2/testing_syr2_batched.hpp"
+#include "blas2/testing_syr2_strided_batched.hpp"
+#include "blas2/testing_syr_batched.hpp"
+#include "blas2/testing_syr_strided_batched.hpp"
+#include "blas2/testing_tbmv.hpp"
+#include "blas2/testing_tbmv_batched.hpp"
+#include "blas2/testing_tbmv_strided_batched.hpp"
+#include "blas2/testing_tbsv.hpp"
+#include "blas2/testing_tbsv_batched.hpp"
+#include "blas2/testing_tbsv_strided_batched.hpp"
+#include "blas2/testing_tpmv.hpp"
+#include "blas2/testing_tpmv_batched.hpp"
+#include "blas2/testing_tpmv_strided_batched.hpp"
+#include "blas2/testing_tpsv.hpp"
+#include "blas2/testing_tpsv_batched.hpp"
+#include "blas2/testing_tpsv_strided_batched.hpp"
+#include "blas2/testing_trmv.hpp"
+#include "blas2/testing_trmv_batched.hpp"
+#include "blas2/testing_trmv_strided_batched.hpp"
+#include "blas2/testing_trsv.hpp"
+#include "blas2/testing_trsv_batched.hpp"
+#include "blas2/testing_trsv_strided_batched.hpp"
 // blas3
 #include "syrkx_reference.hpp"
 #include "testing_dgmm.hpp"
@@ -213,9 +216,6 @@
 #include "testing_trsm_ex.hpp"
 #include "testing_trsm_strided_batched.hpp"
 #include "testing_trsm_strided_batched_ex.hpp"
-#include "testing_trsv.hpp"
-#include "testing_trsv_batched.hpp"
-#include "testing_trsv_strided_batched.hpp"
 #include "testing_trtri.hpp"
 #include "testing_trtri_batched.hpp"
 #include "testing_trtri_strided_batched.hpp"
@@ -594,54 +594,54 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"scal_strided_batched", testing_scal_strided_batched_ret<T>},
 
             // L2
-            {"gbmv", testing_gbmv<T>},
-            {"gbmv_batched", testing_gbmv_batched<T>},
-            {"gbmv_strided_batched", testing_gbmv_strided_batched<T>},
-            {"gemv", testing_gemv<T>},
-            {"gemv_batched", testing_gemv_batched<T>},
-            {"gemv_strided_batched", testing_gemv_strided_batched<T>},
-            {"ger", testing_ger<T, false>},
-            {"ger_batched", testing_ger_batched<T, false>},
-            {"ger_strided_batched", testing_ger_strided_batched<T, false>},
-            {"sbmv", testing_sbmv<T>},
-            {"sbmv_batched", testing_sbmv_batched<T>},
-            {"sbmv_strided_batched", testing_sbmv_strided_batched<T>},
-            {"spmv", testing_spmv<T>},
-            {"spmv_batched", testing_spmv_batched<T>},
-            {"spmv_strided_batched", testing_spmv_strided_batched<T>},
-            {"spr", testing_spr<T>},
-            {"spr_batched", testing_spr_batched<T>},
-            {"spr_strided_batched", testing_spr_strided_batched<T>},
-            {"spr2", testing_spr2<T>},
-            {"spr2_batched", testing_spr2_batched<T>},
-            {"spr2_strided_batched", testing_spr2_strided_batched<T>},
-            {"symv", testing_symv<T>},
-            {"symv_batched", testing_symv_batched<T>},
-            {"symv_strided_batched", testing_symv_strided_batched<T>},
-            {"syr", testing_syr<T>},
-            {"syr_batched", testing_syr_batched<T>},
-            {"syr_strided_batched", testing_syr_strided_batched<T>},
-            {"syr2", testing_syr2<T>},
-            {"syr2_batched", testing_syr2_batched<T>},
-            {"syr2_strided_batched", testing_syr2_strided_batched<T>},
-            {"tbmv", testing_tbmv<T>},
-            {"tbmv_batched", testing_tbmv_batched<T>},
-            {"tbmv_strided_batched", testing_tbmv_strided_batched<T>},
-            {"tbsv", testing_tbsv<T>},
-            {"tbsv_batched", testing_tbsv_batched<T>},
-            {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
-            {"tpmv", testing_tpmv<T>},
-            {"tpmv_batched", testing_tpmv_batched<T>},
-            {"tpmv_strided_batched", testing_tpmv_strided_batched<T>},
-            {"tpsv", testing_tpsv<T>},
-            {"tpsv_batched", testing_tpsv_batched<T>},
-            {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
-            {"trmv", testing_trmv<T>},
-            {"trmv_batched", testing_trmv_batched<T>},
-            {"trmv_strided_batched", testing_trmv_strided_batched<T>},
-            {"trsv", testing_trsv<T>},
-            {"trsv_batched", testing_trsv_batched<T>},
-            {"trsv_strided_batched", testing_trsv_strided_batched<T>},
+            {"gbmv", testing_gbmv_ret<T>},
+            {"gbmv_batched", testing_gbmv_batched_ret<T>},
+            {"gbmv_strided_batched", testing_gbmv_strided_batched_ret<T>},
+            {"gemv", testing_gemv_ret<T>},
+            {"gemv_batched", testing_gemv_batched_ret<T>},
+            {"gemv_strided_batched", testing_gemv_strided_batched_ret<T>},
+            {"ger", testing_ger_ret<T, false>},
+            {"ger_batched", testing_ger_batched_ret<T, false>},
+            {"ger_strided_batched", testing_ger_strided_batched_ret<T, false>},
+            {"sbmv", testing_sbmv_ret<T>},
+            {"sbmv_batched", testing_sbmv_batched_ret<T>},
+            {"sbmv_strided_batched", testing_sbmv_strided_batched_ret<T>},
+            {"spmv", testing_spmv_ret<T>},
+            {"spmv_batched", testing_spmv_batched_ret<T>},
+            {"spmv_strided_batched", testing_spmv_strided_batched_ret<T>},
+            {"spr", testing_spr_ret<T>},
+            {"spr_batched", testing_spr_batched_ret<T>},
+            {"spr_strided_batched", testing_spr_strided_batched_ret<T>},
+            {"spr2", testing_spr2_ret<T>},
+            {"spr2_batched", testing_spr2_batched_ret<T>},
+            {"spr2_strided_batched", testing_spr2_strided_batched_ret<T>},
+            {"symv", testing_symv_ret<T>},
+            {"symv_batched", testing_symv_batched_ret<T>},
+            {"symv_strided_batched", testing_symv_strided_batched_ret<T>},
+            {"syr", testing_syr_ret<T>},
+            {"syr_batched", testing_syr_batched_ret<T>},
+            {"syr_strided_batched", testing_syr_strided_batched_ret<T>},
+            {"syr2", testing_syr2_ret<T>},
+            {"syr2_batched", testing_syr2_batched_ret<T>},
+            {"syr2_strided_batched", testing_syr2_strided_batched_ret<T>},
+            {"tbmv", testing_tbmv_ret<T>},
+            {"tbmv_batched", testing_tbmv_batched_ret<T>},
+            {"tbmv_strided_batched", testing_tbmv_strided_batched_ret<T>},
+            {"tbsv", testing_tbsv_ret<T>},
+            {"tbsv_batched", testing_tbsv_batched_ret<T>},
+            {"tbsv_strided_batched", testing_tbsv_strided_batched_ret<T>},
+            {"tpmv", testing_tpmv_ret<T>},
+            {"tpmv_batched", testing_tpmv_batched_ret<T>},
+            {"tpmv_strided_batched", testing_tpmv_strided_batched_ret<T>},
+            {"tpsv", testing_tpsv_ret<T>},
+            {"tpsv_batched", testing_tpsv_batched_ret<T>},
+            {"tpsv_strided_batched", testing_tpsv_strided_batched_ret<T>},
+            {"trmv", testing_trmv_ret<T>},
+            {"trmv_batched", testing_trmv_batched_ret<T>},
+            {"trmv_strided_batched", testing_trmv_strided_batched_ret<T>},
+            {"trsv", testing_trsv_ret<T>},
+            {"trsv_batched", testing_trsv_batched_ret<T>},
+            {"trsv_strided_batched", testing_trsv_strided_batched_ret<T>},
 
             // L3
             {"geam", testing_geam<T>},
@@ -789,69 +789,69 @@ struct perf_blas<
             {"scal_strided_batched", testing_scal_strided_batched_ret<T>},
 
             // L2
-            {"gemv", testing_gemv<T>},
-            {"gemv_batched", testing_gemv_batched<T>},
-            {"gemv_strided_batched", testing_gemv_strided_batched<T>},
-            {"gbmv", testing_gbmv<T>},
-            {"gbmv_batched", testing_gbmv_batched<T>},
-            {"gbmv_strided_batched", testing_gbmv_strided_batched<T>},
-            {"geru", testing_ger<T, false>},
-            {"geru_batched", testing_ger_batched<T, false>},
-            {"geru_strided_batched", testing_ger_strided_batched<T, false>},
-            {"gerc", testing_ger<T, true>},
-            {"gerc_batched", testing_ger_batched<T, true>},
-            {"gerc_strided_batched", testing_ger_strided_batched<T, true>},
-            {"hbmv", testing_hbmv<T>},
-            {"hbmv_batched", testing_hbmv_batched<T>},
-            {"hbmv_strided_batched", testing_hbmv_strided_batched<T>},
-            {"hemv", testing_hemv<T>},
-            {"hemv_batched", testing_hemv_batched<T>},
-            {"hemv_strided_batched", testing_hemv_strided_batched<T>},
-            {"her", testing_her<T>},
-            {"her_batched", testing_her_batched<T>},
-            {"her_strided_batched", testing_her_strided_batched<T>},
-            {"her2", testing_her2<T>},
-            {"her2_batched", testing_her2_batched<T>},
-            {"her2_strided_batched", testing_her2_strided_batched<T>},
-            {"hpmv", testing_hpmv<T>},
-            {"hpmv_batched", testing_hpmv_batched<T>},
-            {"hpmv_strided_batched", testing_hpmv_strided_batched<T>},
-            {"hpr", testing_hpr<T>},
-            {"hpr_batched", testing_hpr_batched<T>},
-            {"hpr_strided_batched", testing_hpr_strided_batched<T>},
-            {"hpr2", testing_hpr2<T>},
-            {"hpr2_batched", testing_hpr2_batched<T>},
-            {"hpr2_strided_batched", testing_hpr2_strided_batched<T>},
-            {"spr", testing_spr<T>},
-            {"spr_batched", testing_spr_batched<T>},
-            {"spr_strided_batched", testing_spr_strided_batched<T>},
-            {"symv", testing_symv<T>},
-            {"symv_batched", testing_symv_batched<T>},
-            {"symv_strided_batched", testing_symv_strided_batched<T>},
-            {"syr", testing_syr<T>},
-            {"syr_batched", testing_syr_batched<T>},
-            {"syr_strided_batched", testing_syr_strided_batched<T>},
-            {"syr2", testing_syr2<T>},
-            {"syr2_batched", testing_syr2_batched<T>},
-            {"syr2_strided_batched", testing_syr2_strided_batched<T>},
-            {"tbmv", testing_tbmv<T>},
-            {"tbmv_batched", testing_tbmv_batched<T>},
-            {"tbmv_strided_batched", testing_tbmv_strided_batched<T>},
-            {"tbsv", testing_tbsv<T>},
-            {"tbsv_batched", testing_tbsv_batched<T>},
-            {"tbsv_strided_batched", testing_tbsv_strided_batched<T>},
-            {"tpmv", testing_tpmv<T>},
-            {"tpmv_batched", testing_tpmv_batched<T>},
-            {"tpmv_strided_batched", testing_tpmv_strided_batched<T>},
-            {"tpsv", testing_tpsv<T>},
-            {"tpsv_batched", testing_tpsv_batched<T>},
-            {"tpsv_strided_batched", testing_tpsv_strided_batched<T>},
-            {"trmv", testing_trmv<T>},
-            {"trmv_batched", testing_trmv_batched<T>},
-            {"trmv_strided_batched", testing_trmv_strided_batched<T>},
-            {"trsv", testing_trsv<T>},
-            {"trsv_batched", testing_trsv_batched<T>},
-            {"trsv_strided_batched", testing_trsv_strided_batched<T>},
+            {"gemv", testing_gemv_ret<T>},
+            {"gemv_batched", testing_gemv_batched_ret<T>},
+            {"gemv_strided_batched", testing_gemv_strided_batched_ret<T>},
+            {"gbmv", testing_gbmv_ret<T>},
+            {"gbmv_batched", testing_gbmv_batched_ret<T>},
+            {"gbmv_strided_batched", testing_gbmv_strided_batched_ret<T>},
+            {"geru", testing_ger_ret<T, false>},
+            {"geru_batched", testing_ger_batched_ret<T, false>},
+            {"geru_strided_batched", testing_ger_strided_batched_ret<T, false>},
+            {"gerc", testing_ger_ret<T, true>},
+            {"gerc_batched", testing_ger_batched_ret<T, true>},
+            {"gerc_strided_batched", testing_ger_strided_batched_ret<T, true>},
+            {"hbmv", testing_hbmv_ret<T>},
+            {"hbmv_batched", testing_hbmv_batched_ret<T>},
+            {"hbmv_strided_batched", testing_hbmv_strided_batched_ret<T>},
+            {"hemv", testing_hemv_ret<T>},
+            {"hemv_batched", testing_hemv_batched_ret<T>},
+            {"hemv_strided_batched", testing_hemv_strided_batched_ret<T>},
+            {"her", testing_her_ret<T>},
+            {"her_batched", testing_her_batched_ret<T>},
+            {"her_strided_batched", testing_her_strided_batched_ret<T>},
+            {"her2", testing_her2_ret<T>},
+            {"her2_batched", testing_her2_batched_ret<T>},
+            {"her2_strided_batched", testing_her2_strided_batched_ret<T>},
+            {"hpmv", testing_hpmv_ret<T>},
+            {"hpmv_batched", testing_hpmv_batched_ret<T>},
+            {"hpmv_strided_batched", testing_hpmv_strided_batched_ret<T>},
+            {"hpr", testing_hpr_ret<T>},
+            {"hpr_batched", testing_hpr_batched_ret<T>},
+            {"hpr_strided_batched", testing_hpr_strided_batched_ret<T>},
+            {"hpr2", testing_hpr2_ret<T>},
+            {"hpr2_batched", testing_hpr2_batched_ret<T>},
+            {"hpr2_strided_batched", testing_hpr2_strided_batched_ret<T>},
+            {"spr", testing_spr_ret<T>},
+            {"spr_batched", testing_spr_batched_ret<T>},
+            {"spr_strided_batched", testing_spr_strided_batched_ret<T>},
+            {"symv", testing_symv_ret<T>},
+            {"symv_batched", testing_symv_batched_ret<T>},
+            {"symv_strided_batched", testing_symv_strided_batched_ret<T>},
+            {"syr", testing_syr_ret<T>},
+            {"syr_batched", testing_syr_batched_ret<T>},
+            {"syr_strided_batched", testing_syr_strided_batched_ret<T>},
+            {"syr2", testing_syr2_ret<T>},
+            {"syr2_batched", testing_syr2_batched_ret<T>},
+            {"syr2_strided_batched", testing_syr2_strided_batched_ret<T>},
+            {"tbmv", testing_tbmv_ret<T>},
+            {"tbmv_batched", testing_tbmv_batched_ret<T>},
+            {"tbmv_strided_batched", testing_tbmv_strided_batched_ret<T>},
+            {"tbsv", testing_tbsv_ret<T>},
+            {"tbsv_batched", testing_tbsv_batched_ret<T>},
+            {"tbsv_strided_batched", testing_tbsv_strided_batched_ret<T>},
+            {"tpmv", testing_tpmv_ret<T>},
+            {"tpmv_batched", testing_tpmv_batched_ret<T>},
+            {"tpmv_strided_batched", testing_tpmv_strided_batched_ret<T>},
+            {"tpsv", testing_tpsv_ret<T>},
+            {"tpsv_batched", testing_tpsv_batched_ret<T>},
+            {"tpsv_strided_batched", testing_tpsv_strided_batched_ret<T>},
+            {"trmv", testing_trmv_ret<T>},
+            {"trmv_batched", testing_trmv_batched_ret<T>},
+            {"trmv_strided_batched", testing_trmv_strided_batched_ret<T>},
+            {"trsv", testing_trsv_ret<T>},
+            {"trsv_batched", testing_trsv_batched_ret<T>},
+            {"trsv_strided_batched", testing_trsv_strided_batched_ret<T>},
 
             // L3
             {"dgmm", testing_dgmm<T>},

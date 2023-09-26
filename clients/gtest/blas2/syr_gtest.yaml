@@ -1,0 +1,56 @@
+---
+include: hipblas_common.yaml
+
+Definitions:
+  - &size_range
+    - { M: -1, N: -1, lda: -1 }
+    - { M: 11, N: 11, lda: 11 }
+    - { M: 16, N: 16, lda: 16 }
+    - { M: 32, N: 32, lda: 32 }
+    - { M: 65, N: 65, lda: 65 }
+
+  - &incx_range
+    - [ -1, 0, 2 ]
+
+  - &alpha_range
+    - [ -0.5, 2.0, 0.0 ]
+
+  - &batch_count_range
+    - [ -1, 0, 1, 2, 10 ]
+
+Tests:
+  - name: syr_general
+    category: quick
+    function: syr
+    precision: *single_double_precisions_complex_real
+    uplo: [ 'L', 'U' ]
+    alpha: *alpha_range
+    matrix_size: *size_range
+    incx: *incx_range
+    api: [ FORTRAN, C ]
+
+  - name: syr_batched_general
+    category: quick
+    function: syr_batched
+    precision: *single_double_precisions_complex_real
+    uplo: [ 'L', 'U' ]
+    alpha: *alpha_range
+    matrix_size: *size_range
+    incx: *incx_range
+    batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+
+  - name: syr_strided_batched_general
+    category: quick
+    function: syr_strided_batched
+    precision: *single_double_precisions_complex_real
+    uplo: [ 'L', 'U' ]
+    alpha: *alpha_range
+    matrix_size: *size_range
+    incx: *incx_range
+    batch_count: *batch_count_range
+    stride_scale: [ 1.0, 2.5 ]
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+...
