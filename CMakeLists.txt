@@ -87,7 +87,7 @@ rocm_setup_version( VERSION ${VERSION_STRING} )
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${ROCM_PATH}/lib/cmake/hip /opt/rocm/lib/cmake/hip ${HIP_DIR}/cmake )
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
-list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
+list( APPEND CMAKE_PREFIX_PATH ${ROCM_PATH}/lib/cmake/hip /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
 
 option( BUILD_VERBOSE "Output additional build information" OFF )
 
@@ -108,13 +108,9 @@ endif()
 
 # Hip headers required of all clients; clients use hip to allocate device memory
 if( USE_CUDA)
-    find_package( HIP MODULE REQUIRED )
+    find_package( hip CONFIG REQUIRED )
 else( )
     find_package( hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm)
-endif( )
-
-if( USE_CUDA )
-    list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
 endif( )
 
 option(BUILD_CODE_COVERAGE "Build with code coverage enabled" OFF)
