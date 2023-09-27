@@ -113,10 +113,6 @@ else( )
     find_package( hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm)
 endif( )
 
-if( USE_CUDA )
-    list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
-endif( )
-
 option(BUILD_CODE_COVERAGE "Build with code coverage enabled" OFF)
 if(BUILD_CODE_COVERAGE)
   add_compile_options(-fprofile-arcs -ftest-coverage)
