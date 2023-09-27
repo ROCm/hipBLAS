@@ -2,21 +2,23 @@
 Deprecations by version
 #######################
 
+
 Announced in hipBLAS 0.49
 *************************
 
-Replace inplace hipblasXtrmm with out of place hipblasXtrmm
-===========================================================
+Inplace hipblasXtrmm will be replaced with out-of-place hipblasXtrmm
+====================================================================
 
 The hipblasXtrmm API, along with batched versions, will be changing in hipBLAS 1.0
 release to allow in-place and out-of-place behavior. This change will introduce an
 output matrix 'C', matching the rocblas_xtrmm_outofplace API and the cublasXtrmm API.
 
+
 Announced in hipBLAS 0.53
 *************************
 
-Remove packed_int8x4 datatype
-=============================
+packed_int8x4 datatype will be removed
+======================================
 
 The packed_int8x4 datatype will be removed in hipBLAS 1.0. There are two int8 datatypes:
 
@@ -27,17 +29,18 @@ int8_t is the C99 unsigned 8 bit integer. packed_int8x4 has 4 consecutive int8_t
 in the k dimension packed into 32 bits. packed_int8x4 is only used in hipblasGemmEx.
 int8_t will continue to be available in hipblasGemmEx.
 
-Announced in hipBLAS 1.0
-^^^^^^^^^^^^^^^^^^^^^^^^
 
-Replace Legacy BLAS in-place trmm functions with trmm functions that support both in-place and out-of-place functionality
-=========================================================================================================================
+Announced in hipBLAS 1.0
+************************
+
+Legacy BLAS in-place trmm functions will be replaced with trmm functions that support both in-place and out-of-place functionality
+==================================================================================================================================
 Use of the deprecated Legacy BLAS in-place trmm functions will give deprecation warnings telling
 you to compile with -DHIPBLAS_V1 and use the new in-place and out-of-place trmm functions.
 
 Note that there are no deprecation warnings for the hipBLAS Fortran API.
 
-The Legacy BLAS in-place trmm calculates B <- alpha * op(A) * B. Matrix B is replaced in-place by
+The Legacy BLAS in-place trmm calculates B <- alpha * op(A) * B. Matrix B is overwritten by
 triangular matrix A multiplied by matrix B. The prototype in the include file rocblas-functions.h is:
 
 ::
@@ -55,7 +58,7 @@ triangular matrix A multiplied by matrix B. The prototype in the include file ro
                                  float*             BP,
                                  int                ldb);
 
-hipBLAS 1.0 deprecates the legacy BLAS trmm functionality and replaces it with C <- alpha * op(A) * B. The prototype is:
+The above is replaced by an in-place and out-of-place trmm that calculates C <- alpha * op(A) * B. The prototype is:
 
 ::
 
@@ -80,23 +83,23 @@ ldc equal to ldb.
 There are similar deprecations for the _batched and _strided_batched versions of trmm.
 
 Removed in hipBLAS 1.0
-^^^^^^^^^^^^^^^^^^^^^^
+**********************
 
 HIPBLAS_INT8_DATATYPE_PACK_INT8x4 hipblasGemmEx support removed
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+===============================================================
 
-Packed int8x4 was removed as support for arbitrary dimensioned int8_t data is a superset of this functionality:
+Packed int8x4 is removed as support for arbitrary dimensioned int8_t data is a superset of this functionality:
 
-* enum hipblasInt8Datatype_t was removed
-* function hipblasSetInt8Datatype was removed
-* function hipblasGetInt8Datatype was removed
+* enum hipblasInt8Datatype_t is removed
+* function hipblasSetInt8Datatype is removed
+* function hipblasGetInt8Datatype is removed
 
 Announced in hipBLAS 2.0
-^^^^^^^^^^^^^^^^^^^^^^^^
+************************
 
-Remove hipblasDatatype_t and replace with hipDataType
+hipblasDatatype_t will be replaced with hipDataType
 =====================================================
-Use of the deprecated hipblasDatatype_t will give deprecation warnings telling you to compile with -DHIPBLAS_V2
+Use of hipblasDatatype_t will give deprecation warnings telling you to compile with -DHIPBLAS_V2
 and to use hipDataType instead. All functions which currently use hipblasDatatype_t are therefore deprecated as well,
 and will be replaced with functions which use hipDataType in the place of hipblasDatatype_t. These functions include:
 hipblasTrsmEx, hipblasGemmEx, hipblasGemmExWithFlags, hipblasAxpyEx, hipblasDot(c)Ex, hipblasNrm2Ex, hipblasRotEx, hipblasScalEx,
@@ -106,7 +109,7 @@ Note that there are no deprecation warnings for the hipBLAS Fortran API.
 
 hipblasDatatype_t will be removed in a future release, and the use of this type in the API will be replaced with hipDataType.
 
-Remove hipblasComplex and hipblasDoubleComplex, replaced by hipComplex and hipDoubleComplex
+hipblasComplex and hipblasDoubleComplex will be replaced by hipComplex and hipDoubleComplex
 ===========================================================================================
 Use of these datatypes will give deprecation warnings telling you to compile with -DHIPBLAS_V2 and to use HIP complex types
 instead. All functions which currently use hipblasComplex and hipblasDoubleComplex are therefore deprecated as well,
@@ -120,10 +123,10 @@ hipComplex and hipDoubleComplex.
 ROCM_MATHLIBS_API_USE_HIP_COMPLEX is also deprecated as the behavior provided by defining it will be the default in the future.
 
 Removed in hipBLAS 2.0
-^^^^^^^^^^^^^^^^^^^^^^
+**********************
 
-Legacy BLAS in-place trmm
-'''''''''''''''''''''''''
+Legacy BLAS in-place trmm is removed 
+====================================
 The legacay BLAS in-place hipblasXtrmm that calculates B <- alpha * op(A) * B is removed and replaced with the
 out-of-place hipblasXtrmm that calculates C <- alpha * op(A) * B.
 
