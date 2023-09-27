@@ -337,7 +337,7 @@ Half bfloat single double complex real: &half_bfloat_single_double_complex_real_
   - *hpa_bf16_precision
   - *single_precision
   - *double_precision
-  - *half_precision_complex
+  # - *half_precision_complex
   - *single_precision_complex
   - *double_precision_complex
 
