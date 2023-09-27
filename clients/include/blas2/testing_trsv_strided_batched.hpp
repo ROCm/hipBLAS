@@ -148,7 +148,7 @@ void testing_trsv_strided_batched(const Arguments& arg)
                 {
                     T diag = hAb[j + j * lda];
                     for(int i = 0; i <= j; i++)
-                        hAb[i + j * lda] = hA[b + j * lda] / diag;
+                        hAb[i + j * lda] = hAb[i + j * lda] / diag;
                 }
         }
 

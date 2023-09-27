@@ -134,7 +134,7 @@ void testing_tpsv_strided_batched(const Arguments& arg)
                 {
                     T diag = hAb[j + j * N];
                     for(int i = 0; i <= j; i++)
-                        hAb[i + j * N] = hA[b + j * N] / diag;
+                        hAb[i + j * N] = hAb[i + j * N] / diag;
                 }
         }
 
