@@ -12,17 +12,17 @@ Definitions:
     - [ -1, 0, 1, 2, 10 ]
 
 Tests:
-  - name: asum_general
+  - name: nrm2_general
     category: quick
-    function: asum
+    function: nrm2
     precision: *single_double_precisions_complex_real
     N: *N_range
     incx: *incx_range
     api: [ FORTRAN, C ]
 
-  - name: asum_batched_general
+  - name: nrm2_batched_general
     category: quick
-    function: asum_batched
+    function: nrm2_batched
     precision: *single_double_precisions_complex_real
     N: *N_range
     incx: *incx_range
@@ -30,9 +30,9 @@ Tests:
     api: [ FORTRAN, C ]
     hipblas_backend: AMD
 
-  - name: asum_strided_batched_general
+  - name: nrm2_strided_batched_general
     category: quick
-    function: asum_strided_batched
+    function: nrm2_strided_batched
     precision: *single_double_precisions_complex_real
     N: *N_range
     incx: *incx_range

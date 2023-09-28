@@ -48,57 +48,58 @@
 #include "testing_set_get_vector.hpp"
 #include "testing_set_get_vector_async.hpp"
 // blas1
-#include "testing_asum.hpp"
-#include "testing_asum_batched.hpp"
-#include "testing_asum_strided_batched.hpp"
-#include "testing_axpy.hpp"
-#include "testing_axpy_batched.hpp"
 #include "testing_axpy_batched_ex.hpp"
 #include "testing_axpy_ex.hpp"
-#include "testing_axpy_strided_batched.hpp"
 #include "testing_axpy_strided_batched_ex.hpp"
-#include "testing_copy.hpp"
-#include "testing_copy_batched.hpp"
-#include "testing_copy_strided_batched.hpp"
-#include "testing_dot.hpp"
-#include "testing_dot_batched.hpp"
 #include "testing_dot_batched_ex.hpp"
 #include "testing_dot_ex.hpp"
-#include "testing_dot_strided_batched.hpp"
 #include "testing_dot_strided_batched_ex.hpp"
-#include "testing_iamax_iamin.hpp"
-#include "testing_iamax_iamin_batched.hpp"
-#include "testing_iamax_iamin_strided_batched.hpp"
-#include "testing_nrm2.hpp"
-#include "testing_nrm2_batched.hpp"
 #include "testing_nrm2_batched_ex.hpp"
 #include "testing_nrm2_ex.hpp"
-#include "testing_nrm2_strided_batched.hpp"
 #include "testing_nrm2_strided_batched_ex.hpp"
-#include "testing_rot.hpp"
-#include "testing_rot_batched.hpp"
 #include "testing_rot_batched_ex.hpp"
 #include "testing_rot_ex.hpp"
-#include "testing_rot_strided_batched.hpp"
 #include "testing_rot_strided_batched_ex.hpp"
-#include "testing_rotg.hpp"
-#include "testing_rotg_batched.hpp"
-#include "testing_rotg_strided_batched.hpp"
-#include "testing_rotm.hpp"
-#include "testing_rotm_batched.hpp"
-#include "testing_rotm_strided_batched.hpp"
-#include "testing_rotmg.hpp"
-#include "testing_rotmg_batched.hpp"
-#include "testing_rotmg_strided_batched.hpp"
-#include "testing_scal.hpp"
-#include "testing_scal_batched.hpp"
 #include "testing_scal_batched_ex.hpp"
 #include "testing_scal_ex.hpp"
-#include "testing_scal_strided_batched.hpp"
 #include "testing_scal_strided_batched_ex.hpp"
-#include "testing_swap.hpp"
-#include "testing_swap_batched.hpp"
-#include "testing_swap_strided_batched.hpp"
+
+#include "blas1/testing_asum.hpp"
+#include "blas1/testing_asum_batched.hpp"
+#include "blas1/testing_asum_strided_batched.hpp"
+#include "blas1/testing_axpy.hpp"
+#include "blas1/testing_axpy_batched.hpp"
+#include "blas1/testing_axpy_strided_batched.hpp"
+#include "blas1/testing_copy.hpp"
+#include "blas1/testing_copy_batched.hpp"
+#include "blas1/testing_copy_strided_batched.hpp"
+#include "blas1/testing_dot.hpp"
+#include "blas1/testing_dot_batched.hpp"
+#include "blas1/testing_dot_strided_batched.hpp"
+#include "blas1/testing_iamax_iamin.hpp"
+#include "blas1/testing_iamax_iamin_batched.hpp"
+#include "blas1/testing_iamax_iamin_strided_batched.hpp"
+#include "blas1/testing_nrm2.hpp"
+#include "blas1/testing_nrm2_batched.hpp"
+#include "blas1/testing_nrm2_strided_batched.hpp"
+#include "blas1/testing_rot.hpp"
+#include "blas1/testing_rot_batched.hpp"
+#include "blas1/testing_rot_strided_batched.hpp"
+#include "blas1/testing_rotg.hpp"
+#include "blas1/testing_rotg_batched.hpp"
+#include "blas1/testing_rotg_strided_batched.hpp"
+#include "blas1/testing_rotm.hpp"
+#include "blas1/testing_rotm_batched.hpp"
+#include "blas1/testing_rotm_strided_batched.hpp"
+#include "blas1/testing_rotmg.hpp"
+#include "blas1/testing_rotmg_batched.hpp"
+#include "blas1/testing_rotmg_strided_batched.hpp"
+#include "blas1/testing_scal.hpp"
+#include "blas1/testing_scal_batched.hpp"
+#include "blas1/testing_scal_strided_batched.hpp"
+#include "blas1/testing_swap.hpp"
+#include "blas1/testing_swap_batched.hpp"
+#include "blas1/testing_swap_strided_batched.hpp"
 // blas2
 #include "testing_gbmv.hpp"
 #include "testing_gbmv_batched.hpp"
@@ -296,12 +297,12 @@ void get_test_name(const Arguments& arg, std::string& name)
         {"dotc", testname_dotc},
         {"dotc_batched", testname_dotc_batched},
         {"dotc_strided_batched", testname_dotc_strided_batched},
-        {"iamax", testname_amax},
-        {"iamax_batched", testname_amax_batched},
-        {"iamax_strided_batched", testname_amax_strided_batched},
-        {"iamin", testname_amin},
-        {"iamin_batched", testname_amin_batched},
-        {"iamin_strided_batched", testname_amin_strided_batched},
+        {"iamax", testname_iamax},
+        {"iamax_batched", testname_iamax_batched},
+        {"iamax_strided_batched", testname_iamax_strided_batched},
+        {"iamin", testname_iamin},
+        {"iamin_batched", testname_iamin_batched},
+        {"iamin_strided_batched", testname_iamin_strided_batched},
         {"nrm2", testname_nrm2},
         {"nrm2_batched", testname_nrm2_batched},
         {"nrm2_strided_batched", testname_nrm2_strided_batched},
@@ -557,41 +558,41 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
         static const func_map fmap = {
             // L1
             {"asum", testing_asum_ret<T>},
-            {"asum_batched", testing_asum_batched<T>},
-            {"asum_strided_batched", testing_asum_strided_batched<T>},
-            {"axpy", testing_axpy<T>},
-            {"axpy_batched", testing_axpy_batched<T>},
-            {"axpy_strided_batched", testing_axpy_strided_batched<T>},
-            {"copy", testing_copy<T>},
-            {"copy_batched", testing_copy_batched<T>},
-            {"copy_strided_batched", testing_copy_strided_batched<T>},
-            {"dot", testing_dot<T>},
-            {"dot_batched", testing_dot_batched<T>},
-            {"dot_strided_batched", testing_dot_strided_batched<T>},
-            {"iamax", testing_amax<T>},
-            {"iamax_batched", testing_amax_batched<T>},
-            {"iamax_strided_batched", testing_amax_strided_batched<T>},
-            {"iamin", testing_amin<T>},
-            {"iamin_batched", testing_amin_batched<T>},
-            {"iamin_strided_batched", testing_amin_strided_batched<T>},
-            {"nrm2", testing_nrm2<T>},
-            {"nrm2_batched", testing_nrm2_batched<T>},
-            {"nrm2_strided_batched", testing_nrm2_strided_batched<T>},
-            {"rotg", testing_rotg<T>},
-            {"rotg_batched", testing_rotg_batched<T>},
-            {"rotg_strided_batched", testing_rotg_strided_batched<T>},
-            {"rotm", testing_rotm<T>},
-            {"rotm_batched", testing_rotm_batched<T>},
-            {"rotm_strided_batched", testing_rotm_strided_batched<T>},
-            {"rotmg", testing_rotmg<T>},
-            {"rotmg_batched", testing_rotmg_batched<T>},
-            {"rotmg_strided_batched", testing_rotmg_strided_batched<T>},
-            {"swap", testing_swap<T>},
-            {"swap_batched", testing_swap_batched<T>},
-            {"swap_strided_batched", testing_swap_strided_batched<T>},
-            {"scal", testing_scal<T>},
-            {"scal_batched", testing_scal_batched<T>},
-            {"scal_strided_batched", testing_scal_strided_batched<T>},
+            {"asum_batched", testing_asum_batched_ret<T>},
+            {"asum_strided_batched", testing_asum_strided_batched_ret<T>},
+            {"axpy", testing_axpy_ret<T>},
+            {"axpy_batched", testing_axpy_batched_ret<T>},
+            {"axpy_strided_batched", testing_axpy_strided_batched_ret<T>},
+            {"copy", testing_copy_ret<T>},
+            {"copy_batched", testing_copy_batched_ret<T>},
+            {"copy_strided_batched", testing_copy_strided_batched_ret<T>},
+            {"dot", testing_dot_ret<T>},
+            {"dot_batched", testing_dot_batched_ret<T>},
+            {"dot_strided_batched", testing_dot_strided_batched_ret<T>},
+            {"iamax", testing_iamax_ret<T>},
+            {"iamax_batched", testing_iamax_batched_ret<T>},
+            {"iamax_strided_batched", testing_iamax_strided_batched_ret<T>},
+            {"iamin", testing_iamin_ret<T>},
+            {"iamin_batched", testing_iamin_batched_ret<T>},
+            {"iamin_strided_batched", testing_iamin_strided_batched_ret<T>},
+            {"nrm2", testing_nrm2_ret<T>},
+            {"nrm2_batched", testing_nrm2_batched_ret<T>},
+            {"nrm2_strided_batched", testing_nrm2_strided_batched_ret<T>},
+            {"rotg", testing_rotg_ret<T>},
+            {"rotg_batched", testing_rotg_batched_ret<T>},
+            {"rotg_strided_batched", testing_rotg_strided_batched_ret<T>},
+            {"rotm", testing_rotm_ret<T>},
+            {"rotm_batched", testing_rotm_batched_ret<T>},
+            {"rotm_strided_batched", testing_rotm_strided_batched_ret<T>},
+            {"rotmg", testing_rotmg_ret<T>},
+            {"rotmg_batched", testing_rotmg_batched_ret<T>},
+            {"rotmg_strided_batched", testing_rotmg_strided_batched_ret<T>},
+            {"swap", testing_swap_ret<T>},
+            {"swap_batched", testing_swap_batched_ret<T>},
+            {"swap_strided_batched", testing_swap_strided_batched_ret<T>},
+            {"scal", testing_scal_ret<T>},
+            {"scal_batched", testing_scal_batched_ret<T>},
+            {"scal_strided_batched", testing_scal_strided_batched_ret<T>},
 
             // L2
             {"gbmv", testing_gbmv<T>},
@@ -714,9 +715,9 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, hipblasBfloat16>{}>> : h
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"dot", testing_dot<T>},
-            {"dot_batched", testing_dot_batched<T>},
-            {"dot_strided_batched", testing_dot_strided_batched<T>},
+            {"dot", testing_dot_ret<T>},
+            {"dot_batched", testing_dot_batched_ret<T>},
+            {"dot_strided_batched", testing_dot_strided_batched_ret<T>},
         };
         run_function(map, arg);
     }
@@ -728,12 +729,12 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, hipblasHalf>{}>> : hipbl
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"axpy", testing_axpy<T>},
-            {"axpy_batched", testing_axpy_batched<T>},
-            {"axpy_strided_batched", testing_axpy_strided_batched<T>},
-            {"dot", testing_dot<T>},
-            {"dot_batched", testing_dot_batched<T>},
-            {"dot_strided_batched", testing_dot_strided_batched<T>},
+            {"axpy", testing_axpy_ret<T>},
+            {"axpy_batched", testing_axpy_batched_ret<T>},
+            {"axpy_strided_batched", testing_axpy_strided_batched_ret<T>},
+            {"dot", testing_dot_ret<T>},
+            {"dot_batched", testing_dot_batched_ret<T>},
+            {"dot_strided_batched", testing_dot_strided_batched_ret<T>},
             {"gemm", testing_gemm<T>},
             {"gemm_batched", testing_gemm_batched<T>},
             {"gemm_strided_batched", testing_gemm_strided_batched<T>},
@@ -755,38 +756,38 @@ struct perf_blas<
         static const func_map map = {
             // L1
             {"asum", testing_asum_ret<T>},
-            {"asum_batched", testing_asum_batched<T>},
-            {"asum_strided_batched", testing_asum_strided_batched<T>},
-            {"axpy", testing_axpy<T>},
-            {"axpy_batched", testing_axpy_batched<T>},
-            {"axpy_strided_batched", testing_axpy_strided_batched<T>},
-            {"copy", testing_copy<T>},
-            {"copy_batched", testing_copy_batched<T>},
-            {"copy_strided_batched", testing_copy_strided_batched<T>},
-            {"dot", testing_dot<T>},
-            {"dot_batched", testing_dot_batched<T>},
-            {"dot_strided_batched", testing_dot_strided_batched<T>},
-            {"dotc", testing_dotc<T>},
-            {"dotc_batched", testing_dotc_batched<T>},
-            {"dotc_strided_batched", testing_dotc_strided_batched<T>},
-            {"iamax", testing_amax<T>},
-            {"iamax_batched", testing_amax_batched<T>},
-            {"iamax_strided_batched", testing_amax_strided_batched<T>},
-            {"iamin", testing_amin<T>},
-            {"iamin_batched", testing_amin_batched<T>},
-            {"iamin_strided_batched", testing_amin_strided_batched<T>},
-            {"nrm2", testing_nrm2<T>},
-            {"nrm2_batched", testing_nrm2_batched<T>},
-            {"nrm2_strided_batched", testing_nrm2_strided_batched<T>},
-            {"rotg", testing_rotg<T>},
-            {"rotg_batched", testing_rotg_batched<T>},
-            {"rotg_strided_batched", testing_rotg_strided_batched<T>},
-            {"swap", testing_swap<T>},
-            {"swap_batched", testing_swap_batched<T>},
-            {"swap_strided_batched", testing_swap_strided_batched<T>},
-            {"scal", testing_scal<T>},
-            {"scal_batched", testing_scal_batched<T>},
-            {"scal_strided_batched", testing_scal_strided_batched<T>},
+            {"asum_batched", testing_asum_batched_ret<T>},
+            {"asum_strided_batched", testing_asum_strided_batched_ret<T>},
+            {"axpy", testing_axpy_ret<T>},
+            {"axpy_batched", testing_axpy_batched_ret<T>},
+            {"axpy_strided_batched", testing_axpy_strided_batched_ret<T>},
+            {"copy", testing_copy_ret<T>},
+            {"copy_batched", testing_copy_batched_ret<T>},
+            {"copy_strided_batched", testing_copy_strided_batched_ret<T>},
+            {"dot", testing_dot_ret<T>},
+            {"dot_batched", testing_dot_batched_ret<T>},
+            {"dot_strided_batched", testing_dot_strided_batched_ret<T>},
+            {"dotc", testing_dotc_ret<T>},
+            {"dotc_batched", testing_dotc_batched_ret<T>},
+            {"dotc_strided_batched", testing_dotc_strided_batched_ret<T>},
+            {"iamax", testing_iamax_ret<T>},
+            {"iamax_batched", testing_iamax_batched_ret<T>},
+            {"iamax_strided_batched", testing_iamax_strided_batched_ret<T>},
+            {"iamin", testing_iamin_ret<T>},
+            {"iamin_batched", testing_iamin_batched_ret<T>},
+            {"iamin_strided_batched", testing_iamin_strided_batched_ret<T>},
+            {"nrm2", testing_nrm2_ret<T>},
+            {"nrm2_batched", testing_nrm2_batched_ret<T>},
+            {"nrm2_strided_batched", testing_nrm2_strided_batched_ret<T>},
+            {"rotg", testing_rotg_ret<T>},
+            {"rotg_batched", testing_rotg_batched_ret<T>},
+            {"rotg_strided_batched", testing_rotg_strided_batched_ret<T>},
+            {"swap", testing_swap_ret<T>},
+            {"swap_batched", testing_swap_batched_ret<T>},
+            {"swap_strided_batched", testing_swap_strided_batched_ret<T>},
+            {"scal", testing_scal_ret<T>},
+            {"scal_batched", testing_scal_batched_ret<T>},
+            {"scal_strided_batched", testing_scal_strided_batched_ret<T>},
 
             // L2
             {"gemv", testing_gemv<T>},
@@ -1100,9 +1101,9 @@ struct perf_blas_rot<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"rot", testing_rot<Ti, To, Tc>},
-            {"rot_batched", testing_rot_batched<Ti, To, Tc>},
-            {"rot_strided_batched", testing_rot_strided_batched<Ti, To, Tc>},
+            {"rot", testing_rot_ret<Ti, To, Tc>},
+            {"rot_batched", testing_rot_batched_ret<Ti, To, Tc>},
+            {"rot_strided_batched", testing_rot_strided_batched_ret<Ti, To, Tc>},
         };
         run_function(map, arg);
     }
@@ -1128,9 +1129,9 @@ struct perf_blas_scal<
     void operator()(const Arguments& arg)
     {
         static const func_map map = {
-            {"scal", testing_scal<Ta, Tb>},
-            {"scal_batched", testing_scal_batched<Ta, Tb>},
-            {"scal_strided_batched", testing_scal_strided_batched<Ta, Tb>},
+            {"scal", testing_scal_ret<Ta, Tb>},
+            {"scal_batched", testing_scal_batched_ret<Ta, Tb>},
+            {"scal_strided_batched", testing_scal_strided_batched_ret<Ta, Tb>},
         };
         run_function(map, arg);
     }

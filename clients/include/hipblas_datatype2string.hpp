@@ -108,7 +108,7 @@ inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
     case HIPBLAS_R_64F:
         return "f64_r";
     case HIPBLAS_C_16F:
-        return "f16_k";
+        return "f16_c";
     case HIPBLAS_C_32F:
         return "f32_c";
     case HIPBLAS_C_64F:

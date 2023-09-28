@@ -21,9 +21,9 @@
  * ************************************************************************ */
 #include "blas1_gtest.hpp"
 
-#include "blas1/testing_asum.hpp"
-#include "blas1/testing_asum_batched.hpp"
-#include "blas1/testing_asum_strided_batched.hpp"
+#include "blas1/testing_copy.hpp"
+#include "blas1/testing_copy_batched.hpp"
+#include "blas1/testing_copy_strided_batched.hpp"
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
 #include "type_dispatch.hpp"
@@ -34,7 +34,7 @@ namespace
     // BLAS1 testing template
     // ----------------------------------------------------------------------------
     template <template <typename...> class FILTER, blas1 BLAS1>
-    struct asum_test_template : public HipBLAS_Test<asum_test_template<FILTER, BLAS1>, FILTER>
+    struct copy_test_template : public HipBLAS_Test<copy_test_template<FILTER, BLAS1>, FILTER>
     {
         template <typename... T>
         struct type_filter_functor
@@ -53,7 +53,7 @@ namespace
         // Filter for which types apply to this suite
         static bool type_filter(const Arguments& arg)
         {
-            return hipblas_blas1_dispatch<asum_test_template::template type_filter_functor>(arg);
+            return hipblas_blas1_dispatch<copy_test_template::template type_filter_functor>(arg);
         }
 
         // Filter for which functions apply to this suite
@@ -63,22 +63,22 @@ namespace
         static std::string name_suffix(const Arguments& arg)
         {
             std::string name;
-            if constexpr(BLAS1 == blas1::asum)
-                testname_asum(arg, name);
-            else if constexpr(BLAS1 == blas1::asum_batched)
-                testname_asum_batched(arg, name);
-            else if constexpr(BLAS1 == blas1::asum_strided_batched)
-                testname_asum_strided_batched(arg, name);
+            if constexpr(BLAS1 == blas1::copy)
+                testname_copy(arg, name);
+            else if constexpr(BLAS1 == blas1::copy_batched)
+                testname_copy_batched(arg, name);
+            else if constexpr(BLAS1 == blas1::copy_strided_batched)
+                testname_copy_strided_batched(arg, name);
             return std::move(name);
         }
     };
 
     // This tells whether the BLAS1 tests are enabled
     template <blas1 BLAS1, typename Ti, typename To, typename Tc>
-    using asum_enabled = std::integral_constant<
+    using copy_enabled = std::integral_constant<
         bool,
-        ((BLAS1 == blas1::asum || BLAS1 == blas1::asum_batched
-          || BLAS1 == blas1::asum_strided_batched)
+        ((BLAS1 == blas1::copy || BLAS1 == blas1::copy_batched
+          || BLAS1 == blas1::copy_strided_batched)
          && std::is_same_v<
              Ti,
              To> && std::is_same_v<To, Tc> && (std::is_same_v<Ti, hipblasComplex> || std::is_same_v<Ti, hipblasDoubleComplex> || std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))>;
@@ -94,7 +94,7 @@ namespace
         };                                                                                    \
                                                                                               \
         template <typename Ti, typename To, typename Tc>                                      \
-        struct testing<Ti, To, Tc, std::enable_if_t<asum_enabled<blas1::NAME, Ti, To, Tc>{}>> \
+        struct testing<Ti, To, Tc, std::enable_if_t<copy_enabled<blas1::NAME, Ti, To, Tc>{}>> \
             : hipblas_test_valid                                                              \
         {                                                                                     \
             void operator()(const Arguments& arg)                                             \
@@ -110,7 +110,7 @@ namespace
         };                                                                                    \
     };                                                                                        \
                                                                                               \
-    using NAME = asum_test_template<blas1_##NAME::template testing, blas1::NAME>;             \
+    using NAME = copy_test_template<blas1_##NAME::template testing, blas1::NAME>;             \
                                                                                               \
     template <>                                                                               \
     inline bool NAME::function_filter(const Arguments& arg)                                   \
@@ -130,8 +130,8 @@ namespace
 #define ARG2(Ti, To, Tc) Ti, To
 #define ARG3(Ti, To, Tc) Ti, To, Tc
 
-    BLAS1_TESTING(asum, ARG1)
-    BLAS1_TESTING(asum_batched, ARG1)
-    BLAS1_TESTING(asum_strided_batched, ARG1)
+    BLAS1_TESTING(copy, ARG1)
+    BLAS1_TESTING(copy_batched, ARG1)
+    BLAS1_TESTING(copy_strided_batched, ARG1)
 
 } // namespace

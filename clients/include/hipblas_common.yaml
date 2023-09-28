@@ -117,7 +117,7 @@ Datatypes:
         AMD: 1
         NVIDIA: 2
         ALL_BACKEND: 3
-  - hipblas_api:
+  - hipblas_client_api:
       bases: [ c_uint32 ]
       attr:
         C: 0
@@ -214,6 +214,13 @@ C precisions complex: &single_double_precisions_complex
   - *double_precision_complex
 
 C precisions complex and real: &single_double_precisions_complex_real
+  - *single_precision
+  - *double_precision
+  - *single_precision_complex
+  - *double_precision_complex
+
+C precisions complex and real and half real: &single_double_precisions_complex_real_half_real
+  - *half_precision
   - *single_precision
   - *double_precision
   - *single_precision_complex
@@ -330,7 +337,7 @@ Half bfloat single double complex real: &half_bfloat_single_double_complex_real_
   - *hpa_bf16_precision
   - *single_precision
   - *double_precision
-  - *half_precision_complex
+  # - *half_precision_complex
   - *single_precision_complex
   - *double_precision_complex
 
@@ -420,7 +427,7 @@ Arguments:
   - atomics_mode: hipblas_atomics_mode
   - os_flags: hipblas_client_os
   - backend_flags: hipblas_backend
-  - api: hipblas_api
+  - api: hipblas_client_api
   - initialization: hipblas_initialization
   # - known_bug_platforms: c_char*64
   # - c_noalias_d: c_bool
