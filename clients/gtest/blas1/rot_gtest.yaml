@@ -1,0 +1,76 @@
+---
+include: hipblas_common.yaml
+
+Definitions:
+  - &N_range
+    - [ -1, 10, 500, 1000, 7111, 10000 ]
+
+  - &incx_incy_range
+    - { incx:  1, incy:  1 }
+    - { incx:  1, incy:  2 }
+    - { incx: -1, incy: -1 }
+
+  - &batch_count_range
+    - [ -1, 0, 1, 2, 10 ]
+
+Tests:
+  # rot, rotm
+  - name: rot_general
+    category: quick
+    function:
+      - rot: *rot_precisions
+      - rotm: *single_double_precisions
+    N: *N_range
+    incx_incy: *incx_incy_range
+    api: [ FORTRAN, C ]
+
+  - name: rot_batched_general
+    category: quick
+    function:
+      - rot_batched: *rot_precisions
+      - rotm_batched: *single_double_precisions
+    N: *N_range
+    incx_incy: *incx_incy_range
+    batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+
+  - name: rot_strided_batched_general
+    category: quick
+    function:
+      - rot_strided_batched: *rot_precisions
+      - rotm_strided_batched: *single_double_precisions
+    N: *N_range
+    incx_incy: *incx_incy_range
+    batch_count: *batch_count_range
+    stride_scale: [ 1.0, 2.5 ]
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+
+  # rotg, rotmg
+  - name: rotg_general
+    category: quick
+    function:
+      - rotg: *rotg_precisions
+      - rotmg: *single_double_precisions
+    api: [ FORTRAN, C ]
+
+  - name: rotg_batched_general
+    category: quick
+    function:
+      - rotg_batched: *rotg_precisions
+      - rotmg_batched: *single_double_precisions
+    batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+
+  - name: rotg_strided_batched_general
+    category: quick
+    function:
+      - rotg_strided_batched: *rotg_precisions
+      - rotmg_strided_batched: *single_double_precisions
+    batch_count: *batch_count_range
+    stride_scale: [ 1.0, 2.5 ]
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+...

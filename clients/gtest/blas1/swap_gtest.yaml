@@ -5,37 +5,39 @@ Definitions:
   - &N_range
     - [ -1, 10, 500, 1000, 7111, 10000 ]
 
-  - &incx_range
-    - [-1, 1 ]
+  - &incx_incy_range
+    - { incx:  1, incy:  1 }
+    - { incx:  1, incy:  2 }
+    - { incx: -1, incy: -1 }
 
   - &batch_count_range
     - [ -1, 0, 1, 2, 10 ]
 
 Tests:
-  - name: asum_general
+  - name: swap_general
     category: quick
-    function: asum
+    function: swap
     precision: *single_double_precisions_complex_real
     N: *N_range
-    incx: *incx_range
+    incx_incy: *incx_incy_range
     api: [ FORTRAN, C ]
 
-  - name: asum_batched_general
+  - name: swap_batched_general
     category: quick
-    function: asum_batched
+    function: swap_batched
     precision: *single_double_precisions_complex_real
     N: *N_range
-    incx: *incx_range
+    incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     api: [ FORTRAN, C ]
     hipblas_backend: AMD
 
-  - name: asum_strided_batched_general
+  - name: swap_strided_batched_general
     category: quick
-    function: asum_strided_batched
+    function: swap_strided_batched
     precision: *single_double_precisions_complex_real
     N: *N_range
-    incx: *incx_range
+    incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
