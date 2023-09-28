@@ -21,11 +21,11 @@
  * ************************************************************************ */
 #include "blas1_gtest.hpp"
 
+#include "blas1/testing_asum.hpp"
+#include "blas1/testing_asum_batched.hpp"
+#include "blas1/testing_asum_strided_batched.hpp"
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
-#include "testing_asum.hpp"
-#include "testing_asum_batched.hpp"
-#include "testing_asum_strided_batched.hpp"
 #include "type_dispatch.hpp"
 
 namespace

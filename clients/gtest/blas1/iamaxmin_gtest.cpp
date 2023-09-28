@@ -21,11 +21,11 @@
  * ************************************************************************ */
 #include "blas1_gtest.hpp"
 
+#include "blas1/testing_iamax_iamin.hpp"
+#include "blas1/testing_iamax_iamin_batched.hpp"
+#include "blas1/testing_iamax_iamin_strided_batched.hpp"
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
-#include "testing_iamax_iamin.hpp"
-#include "testing_iamax_iamin_batched.hpp"
-#include "testing_iamax_iamin_strided_batched.hpp"
 #include "type_dispatch.hpp"
 
 namespace

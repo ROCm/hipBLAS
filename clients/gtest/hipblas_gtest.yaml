@@ -9,7 +9,7 @@ include: blas1/scal_gtest.yaml
 include: blas1/swap_gtest.yaml
 include: blas2/gbmv_gtest.yaml
 include: blas2/gemv_gtest.yaml
-# include: blas2/ger_gtest.yaml
+include: blas2/ger_gtest.yaml
 include: blas2/hbmv_gtest.yaml
 include: blas2/hemv_gtest.yaml
 include: blas2/her_gtest.yaml

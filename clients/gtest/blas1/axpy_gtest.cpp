@@ -21,11 +21,11 @@
  * ************************************************************************ */
 #include "blas1_gtest.hpp"
 
+#include "blas1/testing_axpy.hpp"
+#include "blas1/testing_axpy_batched.hpp"
+#include "blas1/testing_axpy_strided_batched.hpp"
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
-#include "testing_axpy.hpp"
-#include "testing_axpy_batched.hpp"
-#include "testing_axpy_strided_batched.hpp"
 #include "type_dispatch.hpp"
 
 namespace
