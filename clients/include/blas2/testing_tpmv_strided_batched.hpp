@@ -31,7 +31,7 @@
 /* ============================================================================================ */
 
 using hipblasTpmvStridedBatchedModel
-    = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_M, e_incx, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_N, e_incx, e_stride_scale, e_batch_count>;
 
 inline void testname_tpmv_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -48,15 +48,15 @@ void testing_tpmv_strided_batched(const Arguments& arg)
     hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
     hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
-    int                M            = arg.M;
+    int                N            = arg.N;
     int                incx         = arg.incx;
     double             stride_scale = arg.stride_scale;
     int                batch_count  = arg.batch_count;
 
     int           abs_incx = incx >= 0 ? incx : -incx;
-    size_t        dim_A    = size_t(M) * (M + 1) / 2;
+    size_t        dim_A    = size_t(N) * (N + 1) / 2;
     hipblasStride stride_A = dim_A * stride_scale;
-    hipblasStride stride_x = size_t(M) * abs_incx * stride_scale;
+    hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
 
     size_t A_size = stride_A * batch_count;
     size_t X_size = stride_x * batch_count;
@@ -65,11 +65,11 @@ void testing_tpmv_strided_batched(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || !incx || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+    bool invalid_size = N < 0 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasTpmvStridedBatchedFn(
-            handle, uplo, transA, diag, M, nullptr, stride_A, nullptr, incx, stride_x, batch_count);
+            handle, uplo, transA, diag, N, nullptr, stride_A, nullptr, incx, stride_x, batch_count);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
@@ -89,7 +89,7 @@ void testing_tpmv_strided_batched(const Arguments& arg)
     hipblas_init_matrix(
         hA, arg, dim_A, 1, 1, stride_A, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
-        hx, arg, M, abs_incx, stride_x, batch_count, hipblas_client_never_set_nan, false, true);
+        hx, arg, N, abs_incx, stride_x, batch_count, hipblas_client_never_set_nan, false, true);
     hres = hx;
 
     // copy data from CPU to device
@@ -102,7 +102,7 @@ void testing_tpmv_strided_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         ASSERT_HIPBLAS_SUCCESS(hipblasTpmvStridedBatchedFn(
-            handle, uplo, transA, diag, M, dA, stride_A, dx, incx, stride_x, batch_count));
+            handle, uplo, transA, diag, N, dA, stride_A, dx, incx, stride_x, batch_count));
 
         // copy output from device to CPU
         ASSERT_HIP_SUCCESS(hipMemcpy(hres.data(), dx, sizeof(T) * X_size, hipMemcpyDeviceToHost));
@@ -113,19 +113,19 @@ void testing_tpmv_strided_batched(const Arguments& arg)
         for(int b = 0; b < batch_count; b++)
         {
             cblas_tpmv<T>(
-                uplo, transA, diag, M, hA.data() + b * stride_A, hx.data() + b * stride_x, incx);
+                uplo, transA, diag, N, hA.data() + b * stride_A, hx.data() + b * stride_x, incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, abs_incx, stride_x, hx, hres);
+            unit_check_general<T>(1, N, batch_count, abs_incx, stride_x, hx, hres);
         }
         if(arg.norm_check)
         {
             hipblas_error = norm_check_general<T>(
-                'F', 1, M, abs_incx, stride_x, hx.data(), hres.data(), batch_count);
+                'F', 1, N, abs_incx, stride_x, hx.data(), hres.data(), batch_count);
         }
     }
 
@@ -141,15 +141,15 @@ void testing_tpmv_strided_batched(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             ASSERT_HIPBLAS_SUCCESS(hipblasTpmvStridedBatchedFn(
-                handle, uplo, transA, diag, M, dA, stride_A, dx, incx, stride_x, batch_count));
+                handle, uplo, transA, diag, N, dA, stride_A, dx, incx, stride_x, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
         hipblasTpmvStridedBatchedModel{}.log_args<T>(std::cout,
                                                      arg,
                                                      gpu_time_used,
-                                                     tpmv_gflop_count<T>(M),
-                                                     tpmv_gbyte_count<T>(M),
+                                                     tpmv_gflop_count<T>(N),
+                                                     tpmv_gbyte_count<T>(N),
                                                      hipblas_error);
     }
 }

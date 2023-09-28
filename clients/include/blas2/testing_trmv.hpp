@@ -30,7 +30,7 @@
 
 /* ============================================================================================ */
 
-using hipblasTrmvModel = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_M, e_lda, e_incx>;
+using hipblasTrmvModel = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_N, e_lda, e_incx>;
 
 inline void testname_trmv(const Arguments& arg, std::string& name)
 {
@@ -46,23 +46,23 @@ void testing_trmv(const Arguments& arg)
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
-    int                M      = arg.M;
+    int                N      = arg.N;
     int                lda    = arg.lda;
     int                incx   = arg.incx;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
-    size_t x_size   = size_t(M) * abs_incx;
-    size_t A_size   = size_t(lda) * M;
+    size_t x_size   = size_t(N) * abs_incx;
+    size_t A_size   = size_t(lda) * N;
 
     hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx;
-    if(invalid_size || !M)
+    bool invalid_size = N < 0 || lda < N || lda < 1 || !incx;
+    if(invalid_size || !N)
     {
         hipblasStatus_t actual
-            = hipblasTrmvFn(handle, uplo, transA, diag, M, nullptr, lda, nullptr, incx);
+            = hipblasTrmvFn(handle, uplo, transA, diag, N, nullptr, lda, nullptr, incx);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
@@ -79,8 +79,8 @@ void testing_trmv(const Arguments& arg)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, M, M, lda, 0, 1, hipblas_client_never_set_nan, true, false);
-    hipblas_init_vector(hx, arg, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(hA, arg, N, N, lda, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hres = hx;
@@ -94,7 +94,7 @@ void testing_trmv(const Arguments& arg)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasTrmvFn(handle, uplo, transA, diag, M, dA, lda, dx, incx));
+        ASSERT_HIPBLAS_SUCCESS(hipblasTrmvFn(handle, uplo, transA, diag, N, dA, lda, dx, incx));
 
         // copy output from device to CPU
         ASSERT_HIP_SUCCESS(hipMemcpy(hres.data(), dx, sizeof(T) * x_size, hipMemcpyDeviceToHost));
@@ -102,17 +102,17 @@ void testing_trmv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_trmv<T>(uplo, transA, diag, M, hA.data(), lda, hx.data(), incx);
+        cblas_trmv<T>(uplo, transA, diag, N, hA.data(), lda, hx.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, abs_incx, hx, hres);
+            unit_check_general<T>(1, N, abs_incx, hx, hres);
         }
         if(arg.norm_check)
         {
-            hipblas_error = norm_check_general<T>('F', 1, M, abs_incx, hx.data(), hres.data());
+            hipblas_error = norm_check_general<T>('F', 1, N, abs_incx, hx.data(), hres.data());
         }
     }
 
@@ -127,15 +127,15 @@ void testing_trmv(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasTrmvFn(handle, uplo, transA, diag, M, dA, lda, dx, incx));
+            ASSERT_HIPBLAS_SUCCESS(hipblasTrmvFn(handle, uplo, transA, diag, N, dA, lda, dx, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         hipblasTrmvModel{}.log_args<T>(std::cout,
                                        arg,
                                        gpu_time_used,
-                                       trmv_gflop_count<T>(M),
-                                       trmv_gbyte_count<T>(M),
+                                       trmv_gflop_count<T>(N),
+                                       trmv_gbyte_count<T>(N),
                                        hipblas_error);
     }
 }

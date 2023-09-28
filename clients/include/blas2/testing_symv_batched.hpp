@@ -31,7 +31,7 @@
 /* ============================================================================================ */
 
 using hipblasSymvBatchedModel
-    = ArgumentModel<e_a_type, e_uplo, e_M, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>;
+    = ArgumentModel<e_a_type, e_uplo, e_N, e_alpha, e_lda, e_incx, e_beta, e_incy, e_batch_count>;
 
 inline void testname_symv_batched(const Arguments& arg, std::string& name)
 {
@@ -46,25 +46,25 @@ void testing_symv_batched(const Arguments& arg)
         = FORTRAN ? hipblasSymvBatched<T, true> : hipblasSymvBatched<T, false>;
 
     hipblasFillMode_t uplo        = char2hipblas_fill(arg.uplo);
-    int               M           = arg.M;
+    int               N           = arg.N;
     int               lda         = arg.lda;
     int               incx        = arg.incx;
     int               incy        = arg.incy;
     int               batch_count = arg.batch_count;
 
     int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t A_size   = size_t(lda) * M;
+    size_t A_size   = size_t(lda) * N;
 
     hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx || !incy || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+    bool invalid_size = N < 0 || lda < N || lda < 1 || !incx || !incy || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasSymvBatchedFn(handle,
                                                       uplo,
-                                                      M,
+                                                      N,
                                                       nullptr,
                                                       nullptr,
                                                       lda,
@@ -86,16 +86,16 @@ void testing_symv_batched(const Arguments& arg)
 
     // arrays of pointers-to-host on host
     host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hx(M, incx, batch_count);
-    host_batch_vector<T> hy(M, incy, batch_count);
-    host_batch_vector<T> hy_cpu(M, incy, batch_count);
-    host_batch_vector<T> hy_host(M, incy, batch_count);
-    host_batch_vector<T> hy_device(M, incy, batch_count);
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hy(N, incy, batch_count);
+    host_batch_vector<T> hy_cpu(N, incy, batch_count);
+    host_batch_vector<T> hy_host(N, incy, batch_count);
+    host_batch_vector<T> hy_device(N, incy, batch_count);
 
     // device arrays
     device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dx(M, incx, batch_count);
-    device_batch_vector<T> dy(M, incy, batch_count);
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<T>       d_alpha(1);
     device_vector<T>       d_beta(1);
 
@@ -123,7 +123,7 @@ void testing_symv_batched(const Arguments& arg)
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         ASSERT_HIPBLAS_SUCCESS(hipblasSymvBatchedFn(handle,
                                                     uplo,
-                                                    M,
+                                                    N,
                                                     &h_alpha,
                                                     dA.ptr_on_device(),
                                                     lda,
@@ -141,7 +141,7 @@ void testing_symv_batched(const Arguments& arg)
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         ASSERT_HIPBLAS_SUCCESS(hipblasSymvBatchedFn(handle,
                                                     uplo,
-                                                    M,
+                                                    N,
                                                     d_alpha,
                                                     dA.ptr_on_device(),
                                                     lda,
@@ -159,22 +159,22 @@ void testing_symv_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_symv<T>(uplo, M, h_alpha, hA[b], lda, hx[b], incx, h_beta, hy_cpu[b], incy);
+            cblas_symv<T>(uplo, N, h_alpha, hA[b], lda, hx[b], incx, h_beta, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, abs_incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, batch_count, abs_incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy_device);
         }
         if(arg.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_host, batch_count);
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_device, batch_count);
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device, batch_count);
         }
     }
 
@@ -194,7 +194,7 @@ void testing_symv_batched(const Arguments& arg)
 
             ASSERT_HIPBLAS_SUCCESS(hipblasSymvBatchedFn(handle,
                                                         uplo,
-                                                        M,
+                                                        N,
                                                         d_alpha,
                                                         dA.ptr_on_device(),
                                                         lda,
@@ -210,8 +210,8 @@ void testing_symv_batched(const Arguments& arg)
         hipblasSymvBatchedModel{}.log_args<T>(std::cout,
                                               arg,
                                               gpu_time_used,
-                                              symv_gflop_count<T>(M),
-                                              symv_gbyte_count<T>(M),
+                                              symv_gflop_count<T>(N),
+                                              symv_gbyte_count<T>(N),
                                               hipblas_error_host,
                                               hipblas_error_device);
     }

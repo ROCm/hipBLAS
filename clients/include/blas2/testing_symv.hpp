@@ -31,7 +31,7 @@
 /* ============================================================================================ */
 
 using hipblasSymvModel
-    = ArgumentModel<e_a_type, e_uplo, e_M, e_alpha, e_lda, e_incx, e_beta, e_incy>;
+    = ArgumentModel<e_a_type, e_uplo, e_N, e_alpha, e_lda, e_incx, e_beta, e_incy>;
 
 inline void testname_symv(const Arguments& arg, std::string& name)
 {
@@ -45,16 +45,16 @@ void testing_symv(const Arguments& arg)
     auto hipblasSymvFn = FORTRAN ? hipblasSymv<T, true> : hipblasSymv<T, false>;
 
     hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
-    int               M    = arg.M;
+    int               N    = arg.N;
     int               lda  = arg.lda;
     int               incx = arg.incx;
     int               incy = arg.incy;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t x_size   = size_t(M) * abs_incx;
-    size_t y_size   = size_t(M) * abs_incy;
-    size_t A_size   = size_t(lda) * M;
+    size_t x_size   = size_t(N) * abs_incx;
+    size_t y_size   = size_t(N) * abs_incy;
+    size_t A_size   = size_t(lda) * N;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -62,11 +62,11 @@ void testing_symv(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx || !incy;
-    if(invalid_size || !M)
+    bool invalid_size = N < 0 || lda < N || lda < 1 || !incx || !incy;
+    if(invalid_size || !N)
     {
         hipblasStatus_t actual = hipblasSymvFn(
-            handle, uplo, M, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy);
+            handle, uplo, N, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
@@ -92,9 +92,9 @@ void testing_symv(const Arguments& arg)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, M, M, lda, 0, 1, hipblas_client_alpha_sets_nan, true, false);
-    hipblas_init_vector(hx, arg, M, abs_incx, 0, 1, hipblas_client_alpha_sets_nan);
-    hipblas_init_vector(hy, arg, M, abs_incy, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hA, arg, N, N, lda, 0, 1, hipblas_client_alpha_sets_nan, true, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan);
+    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hy_cpu = hy;
@@ -113,7 +113,7 @@ void testing_symv(const Arguments& arg)
         =================================================================== */
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         ASSERT_HIPBLAS_SUCCESS(
-            hipblasSymvFn(handle, uplo, M, &h_alpha, dA, lda, dx, incx, &h_beta, dy, incy));
+            hipblasSymvFn(handle, uplo, N, &h_alpha, dA, lda, dx, incx, &h_beta, dy, incy));
 
         ASSERT_HIP_SUCCESS(
             hipMemcpy(hy_host.data(), dy, sizeof(T) * y_size, hipMemcpyDeviceToHost));
@@ -121,7 +121,7 @@ void testing_symv(const Arguments& arg)
 
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         ASSERT_HIPBLAS_SUCCESS(
-            hipblasSymvFn(handle, uplo, M, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
+            hipblasSymvFn(handle, uplo, N, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
 
         // copy output from device to CPU
         ASSERT_HIP_SUCCESS(
@@ -131,28 +131,28 @@ void testing_symv(const Arguments& arg)
            CPU BLAS
         =================================================================== */
         cblas_symv<T>(
-            uplo, M, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
+            uplo, N, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, abs_incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, abs_incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, N, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, abs_incy, hy_cpu, hy_device);
         }
         if(arg.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu.data(), hy_host.data());
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu.data(), hy_host.data());
             hipblas_error_device
-                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu.data(), hy_device.data());
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu.data(), hy_device.data());
         }
     }
 
     if(arg.timing)
     {
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy.data(), sizeof(T) * M * incy, hipMemcpyHostToDevice));
+        ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy.data(), sizeof(T) * N * incy, hipMemcpyHostToDevice));
         hipStream_t stream;
         ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
@@ -163,15 +163,15 @@ void testing_symv(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             ASSERT_HIPBLAS_SUCCESS(
-                hipblasSymvFn(handle, uplo, M, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
+                hipblasSymvFn(handle, uplo, N, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         hipblasSymvModel{}.log_args<T>(std::cout,
                                        arg,
                                        gpu_time_used,
-                                       symv_gflop_count<T>(M),
-                                       symv_gbyte_count<T>(M),
+                                       symv_gflop_count<T>(N),
+                                       symv_gbyte_count<T>(N),
                                        hipblas_error_host,
                                        hipblas_error_device);
     }

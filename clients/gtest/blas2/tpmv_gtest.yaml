@@ -2,7 +2,7 @@
 include: hipblas_common.yaml
 
 Definitions:
-  - &M_range
+  - &N_range
     - [ -1, 11, 16, 32, 65 ]
 
   - &incx_range
@@ -19,7 +19,7 @@ Tests:
     transA: [ 'N', 'T', 'C' ]
     uplo: [ 'L', 'U' ]
     diag: [ 'N', 'U' ]
-    M: *M_range
+    N: *N_range
     incx: *incx_range
     api: [ FORTRAN, C ]
 
@@ -31,7 +31,7 @@ Tests:
     transA: [ 'N', 'T', 'C' ]
     uplo: [ 'L', 'U' ]
     diag: [ 'N', 'U' ]
-    M: *M_range
+    N: *N_range
     incx: *incx_range
     batch_count: *batch_count_range
     api: [ FORTRAN, C ]
@@ -44,7 +44,7 @@ Tests:
     transA: [ 'N', 'T', 'C' ]
     uplo: [ 'L', 'U' ]
     diag: [ 'N', 'U' ]
-    M: *M_range
+    N: *N_range
     incx: *incx_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]

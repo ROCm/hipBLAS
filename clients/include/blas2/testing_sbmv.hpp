@@ -31,7 +31,7 @@
 /* ============================================================================================ */
 
 using hipblasSbmvModel
-    = ArgumentModel<e_a_type, e_uplo, e_M, e_K, e_alpha, e_lda, e_incx, e_beta, e_incy>;
+    = ArgumentModel<e_a_type, e_uplo, e_N, e_K, e_alpha, e_lda, e_incx, e_beta, e_incy>;
 
 inline void testname_sbmv(const Arguments& arg, std::string& name)
 {
@@ -44,7 +44,7 @@ void testing_sbmv(const Arguments& arg)
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSbmvFn = FORTRAN ? hipblasSbmv<T, true> : hipblasSbmv<T, false>;
 
-    int M    = arg.M;
+    int N    = arg.N;
     int K    = arg.K;
     int lda  = arg.lda;
     int incx = arg.incx;
@@ -52,9 +52,9 @@ void testing_sbmv(const Arguments& arg)
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t x_size   = size_t(M) * abs_incx;
-    size_t y_size   = size_t(M) * abs_incy;
-    size_t A_size   = size_t(lda) * M;
+    size_t x_size   = size_t(N) * abs_incx;
+    size_t y_size   = size_t(N) * abs_incy;
+    size_t A_size   = size_t(lda) * N;
 
     hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
 
@@ -62,11 +62,11 @@ void testing_sbmv(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || K < 0 || lda < K + 1 || lda < 1 || !incx || !incy;
-    if(invalid_size || !M)
+    bool invalid_size = N < 0 || K < 0 || lda < K + 1 || lda < 1 || !incx || !incy;
+    if(invalid_size || !N)
     {
         hipblasStatus_t actual = hipblasSbmvFn(
-            handle, uplo, M, K, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy);
+            handle, uplo, N, K, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
@@ -92,9 +92,9 @@ void testing_sbmv(const Arguments& arg)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, M, M, lda, 0, 1, hipblas_client_alpha_sets_nan, true, false);
-    hipblas_init_vector(hx, arg, M, abs_incx, 0, 1, hipblas_client_alpha_sets_nan);
-    hipblas_init_vector(hy, arg, M, abs_incy, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hA, arg, N, N, lda, 0, 1, hipblas_client_alpha_sets_nan, true, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan);
+    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hy_cpu = hy;
@@ -113,7 +113,7 @@ void testing_sbmv(const Arguments& arg)
         =================================================================== */
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         ASSERT_HIPBLAS_SUCCESS(
-            hipblasSbmvFn(handle, uplo, M, K, &h_alpha, dA, lda, dx, incx, &h_beta, dy, incy));
+            hipblasSbmvFn(handle, uplo, N, K, &h_alpha, dA, lda, dx, incx, &h_beta, dy, incy));
 
         // copy output from device to CPU
         ASSERT_HIP_SUCCESS(
@@ -122,7 +122,7 @@ void testing_sbmv(const Arguments& arg)
 
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         ASSERT_HIPBLAS_SUCCESS(
-            hipblasSbmvFn(handle, uplo, M, K, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
+            hipblasSbmvFn(handle, uplo, N, K, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
 
         ASSERT_HIP_SUCCESS(
             hipMemcpy(hy_device.data(), dy, sizeof(T) * y_size, hipMemcpyDeviceToHost));
@@ -131,19 +131,19 @@ void testing_sbmv(const Arguments& arg)
            CPU BLAS
         =================================================================== */
         cblas_sbmv<T>(
-            uplo, M, K, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
+            uplo, N, K, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, abs_incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, abs_incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, N, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, abs_incy, hy_cpu, hy_device);
         }
         if(arg.norm_check)
         {
-            hipblas_error_host   = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_host);
-            hipblas_error_device = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_device);
+            hipblas_error_host   = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host);
+            hipblas_error_device = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device);
         }
     }
 
@@ -161,15 +161,15 @@ void testing_sbmv(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             ASSERT_HIPBLAS_SUCCESS(
-                hipblasSbmvFn(handle, uplo, M, K, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
+                hipblasSbmvFn(handle, uplo, N, K, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         hipblasSbmvModel{}.log_args<T>(std::cout,
                                        arg,
                                        gpu_time_used,
-                                       sbmv_gflop_count<T>(M, K),
-                                       sbmv_gbyte_count<T>(M, K),
+                                       sbmv_gflop_count<T>(N, K),
+                                       sbmv_gbyte_count<T>(N, K),
                                        hipblas_error_host,
                                        hipblas_error_device);
     }

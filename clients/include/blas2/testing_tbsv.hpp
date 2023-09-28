@@ -30,7 +30,7 @@
 
 /* ============================================================================================ */
 
-using hipblasTbsvModel = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_M, e_K, e_lda, e_incx>;
+using hipblasTbsvModel = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_N, e_K, e_lda, e_incx>;
 
 inline void testname_tbsv(const Arguments& arg, std::string& name)
 {
@@ -46,7 +46,7 @@ void testing_tbsv(const Arguments& arg)
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    int                M      = arg.M;
+    int                N      = arg.N;
     int                K      = arg.K;
     int                incx   = arg.incx;
     int                lda    = arg.lda;
@@ -55,20 +55,20 @@ void testing_tbsv(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || K < 0 || lda < K + 1 || !incx;
-    if(invalid_size || !M)
+    bool invalid_size = N < 0 || K < 0 || lda < K + 1 || !incx;
+    if(invalid_size || !N)
     {
         hipblasStatus_t actual
-            = hipblasTbsvFn(handle, uplo, transA, diag, M, K, nullptr, lda, nullptr, incx);
+            = hipblasTbsvFn(handle, uplo, transA, diag, N, K, nullptr, lda, nullptr, incx);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
     }
 
     int    abs_incx = incx < 0 ? -incx : incx;
-    size_t size_A   = size_t(M) * M;
-    size_t size_AB  = size_t(lda) * M;
-    size_t size_x   = abs_incx * size_t(M);
+    size_t size_A   = size_t(N) * N;
+    size_t size_AB  = size_t(lda) * N;
+    size_t size_x   = abs_incx * size_t(N);
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(size_A);
@@ -85,21 +85,21 @@ void testing_tbsv(const Arguments& arg)
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, arg, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, arg, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
-    banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, M, M, K);
+    banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, N, K);
 
-    prepare_triangular_solve((T*)hA, M, (T*)AAT, M, arg.uplo);
+    prepare_triangular_solve((T*)hA, N, (T*)AAT, N, arg.uplo);
     if(diag == HIPBLAS_DIAG_UNIT)
     {
-        make_unit_diagonal(uplo, (T*)hA, M, M);
+        make_unit_diagonal(uplo, (T*)hA, N, N);
     }
 
-    regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, M, (T*)hAB, lda, M, K);
+    regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, (T*)hAB, lda, N, K);
     ASSERT_HIP_SUCCESS(hipMemcpy(dAB, hAB.data(), sizeof(T) * size_AB, hipMemcpyHostToDevice));
 
-    cblas_tbmv<T>(uplo, transA, diag, M, K, hAB, lda, hb, incx);
+    cblas_tbmv<T>(uplo, transA, diag, N, K, hAB, lda, hb, incx);
     hx_or_b_1 = hb;
 
     // copy data from CPU to device
@@ -112,18 +112,18 @@ void testing_tbsv(const Arguments& arg)
     if(arg.unit_check || arg.norm_check)
     {
         ASSERT_HIPBLAS_SUCCESS(
-            hipblasTbsvFn(handle, uplo, transA, diag, M, K, dAB, lda, dx_or_b, incx));
+            hipblasTbsvFn(handle, uplo, transA, diag, N, K, dAB, lda, dx_or_b, incx));
 
         // copy output from device to CPU
         ASSERT_HIP_SUCCESS(
             hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost));
 
         // Calculating error
-        hipblas_error = std::abs(vector_norm_1<T>(M, abs_incx, hx.data(), hx_or_b_1.data()));
+        hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
 
         if(arg.unit_check)
         {
-            double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * M;
+            double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
             unit_check_error(hipblas_error, tolerance);
         }
     }
@@ -140,15 +140,15 @@ void testing_tbsv(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             ASSERT_HIPBLAS_SUCCESS(
-                hipblasTbsvFn(handle, uplo, transA, diag, M, K, dAB, lda, dx_or_b, incx));
+                hipblasTbsvFn(handle, uplo, transA, diag, N, K, dAB, lda, dx_or_b, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
         hipblasTbsvModel{}.log_args<T>(std::cout,
                                        arg,
                                        gpu_time_used,
-                                       tbsv_gflop_count<T>(M, K),
-                                       tbsv_gbyte_count<T>(M, K),
+                                       tbsv_gflop_count<T>(N, K),
+                                       tbsv_gbyte_count<T>(N, K),
                                        hipblas_error);
     }
 }

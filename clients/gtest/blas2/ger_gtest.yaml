@@ -11,11 +11,8 @@ Definitions:
     - { incx:  0, incy: -1 }
     - { incx: -1, incy: -1 }
 
-  - &alpha_beta_range
-    - { alpha:  1.0, beta:  0.0 }
-    - { alpha: -1.0, beta: -1.0 }
-    - { alpha:  2.0, beta:  1.0 }
-    - { alpha:  0.0, beta:  1.0 }
+  - &alpha_range
+    - [ -1.0, 0.0, 1.0, 2.0 ]
 
   - &batch_count_range
     - [ -1, 0, 1, 5 ]
@@ -25,9 +22,9 @@ Tests:
     category: quick
     function:
       - ger: *single_double_precisions
-      - geru: *single_double_precisions
+      - geru: *single_double_precisions_complex
       - gerc: *single_double_precisions_complex
-    alpha_beta: *alpha_beta_range
+    alpha: *alpha_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     api: [ FORTRAN, C ]
@@ -37,9 +34,9 @@ Tests:
     category: quick
     function:
       - ger_batched: *single_double_precisions
-      - geru_batched: *single_double_precisions
+      - geru_batched: *single_double_precisions_complex
       - gerc_batched: *single_double_precisions_complex
-    alpha_beta: *alpha_beta_range
+    alpha: *alpha_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
@@ -50,9 +47,9 @@ Tests:
     category: quick
     function:
       - ger_strided_batched: *single_double_precisions
-      - geru_strided_batched: *single_double_precisions
+      - geru_strided_batched: *single_double_precisions_complex
       - gerc_strided_batched: *single_double_precisions_complex
-    alpha_beta: *alpha_beta_range
+    alpha: *alpha_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range

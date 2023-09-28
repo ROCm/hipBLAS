@@ -31,7 +31,7 @@
 /* ============================================================================================ */
 
 using hipblasTrmvBatchedModel
-    = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_M, e_lda, e_incx, e_batch_count>;
+    = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_N, e_lda, e_incx, e_batch_count>;
 
 inline void testname_trmv_batched(const Arguments& arg, std::string& name)
 {
@@ -48,23 +48,23 @@ void testing_trmv_batched(const Arguments& arg)
     hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
     hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
-    int                M           = arg.M;
+    int                N           = arg.N;
     int                lda         = arg.lda;
     int                incx        = arg.incx;
     int                batch_count = arg.batch_count;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
-    size_t A_size   = size_t(lda) * M;
+    size_t A_size   = size_t(lda) * N;
 
     hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+    bool invalid_size = N < 0 || lda < N || lda < 1 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasTrmvBatchedFn(
-            handle, uplo, transA, diag, M, nullptr, lda, nullptr, incx, batch_count);
+            handle, uplo, transA, diag, N, nullptr, lda, nullptr, incx, batch_count);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
@@ -74,11 +74,11 @@ void testing_trmv_batched(const Arguments& arg)
 
     // arrays of pointers-to-host on host
     host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hx(M, incx, batch_count);
-    host_batch_vector<T> hres(M, incx, batch_count);
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hres(N, incx, batch_count);
 
     device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dx(M, incx, batch_count);
+    device_batch_vector<T> dx(N, incx, batch_count);
 
     ASSERT_HIP_SUCCESS(dA.memcheck());
     ASSERT_HIP_SUCCESS(dx.memcheck());
@@ -99,7 +99,7 @@ void testing_trmv_batched(const Arguments& arg)
                                                     uplo,
                                                     transA,
                                                     diag,
-                                                    M,
+                                                    N,
                                                     dA.ptr_on_device(),
                                                     lda,
                                                     dx.ptr_on_device(),
@@ -113,18 +113,18 @@ void testing_trmv_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trmv<T>(uplo, transA, diag, M, hA[b], lda, hx[b], incx);
+            cblas_trmv<T>(uplo, transA, diag, N, hA[b], lda, hx[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, abs_incx, hx, hres);
+            unit_check_general<T>(1, N, batch_count, abs_incx, hx, hres);
         }
         if(arg.norm_check)
         {
-            hipblas_error = norm_check_general<T>('F', 1, M, abs_incx, hx, hres, batch_count);
+            hipblas_error = norm_check_general<T>('F', 1, N, abs_incx, hx, hres, batch_count);
         }
     }
 
@@ -143,7 +143,7 @@ void testing_trmv_batched(const Arguments& arg)
                                                         uplo,
                                                         transA,
                                                         diag,
-                                                        M,
+                                                        N,
                                                         dA.ptr_on_device(),
                                                         lda,
                                                         dx.ptr_on_device(),
@@ -155,8 +155,8 @@ void testing_trmv_batched(const Arguments& arg)
         hipblasTrmvBatchedModel{}.log_args<T>(std::cout,
                                               arg,
                                               gpu_time_used,
-                                              trmv_gflop_count<T>(M),
-                                              trmv_gbyte_count<T>(M),
+                                              trmv_gflop_count<T>(N),
+                                              trmv_gbyte_count<T>(N),
                                               hipblas_error);
     }
 }

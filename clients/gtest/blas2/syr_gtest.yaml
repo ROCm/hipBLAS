@@ -3,11 +3,11 @@ include: hipblas_common.yaml
 
 Definitions:
   - &size_range
-    - { M: -1, N: -1, lda: -1 }
-    - { M: 11, N: 11, lda: 11 }
-    - { M: 16, N: 16, lda: 16 }
-    - { M: 32, N: 32, lda: 32 }
-    - { M: 65, N: 65, lda: 65 }
+    - { N: -1, lda: -1 }
+    - { N: 11, lda: 11 }
+    - { N: 16, lda: 16 }
+    - { N: 32, lda: 32 }
+    - { N: 65, lda: 65 }
 
   - &incx_range
     - [ -1, 0, 2 ]

@@ -34,7 +34,7 @@ using hipblasTrmvStridedBatchedModel = ArgumentModel<e_a_type,
                                                      e_uplo,
                                                      e_transA,
                                                      e_diag,
-                                                     e_M,
+                                                     e_N,
                                                      e_lda,
                                                      e_incx,
                                                      e_stride_scale,
@@ -55,15 +55,15 @@ void testing_trmv_strided_batched(const Arguments& arg)
     hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
     hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
-    int                M            = arg.M;
+    int                N            = arg.N;
     int                lda          = arg.lda;
     int                incx         = arg.incx;
     double             stride_scale = arg.stride_scale;
     int                batch_count  = arg.batch_count;
 
     int           abs_incx = incx >= 0 ? incx : -incx;
-    hipblasStride stride_A = size_t(lda) * M * stride_scale;
-    hipblasStride stride_x = size_t(M) * abs_incx * stride_scale;
+    hipblasStride stride_A = size_t(lda) * N * stride_scale;
+    hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
 
     size_t A_size = stride_A * batch_count;
     size_t X_size = stride_x * batch_count;
@@ -72,14 +72,14 @@ void testing_trmv_strided_batched(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+    bool invalid_size = N < 0 || lda < N || lda < 1 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasTrmvStridedBatchedFn(handle,
                                                              uplo,
                                                              transA,
                                                              diag,
-                                                             M,
+                                                             N,
                                                              nullptr,
                                                              lda,
                                                              stride_A,
@@ -104,9 +104,9 @@ void testing_trmv_strided_batched(const Arguments& arg)
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, arg, M, M, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
+        hA, arg, N, N, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
-        hx, arg, M, abs_incx, stride_x, batch_count, hipblas_client_never_set_nan, false, true);
+        hx, arg, N, abs_incx, stride_x, batch_count, hipblas_client_never_set_nan, false, true);
     hres = hx;
 
     // copy data from CPU to device
@@ -119,7 +119,7 @@ void testing_trmv_strided_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         ASSERT_HIPBLAS_SUCCESS(hipblasTrmvStridedBatchedFn(
-            handle, uplo, transA, diag, M, dA, lda, stride_A, dx, incx, stride_x, batch_count));
+            handle, uplo, transA, diag, N, dA, lda, stride_A, dx, incx, stride_x, batch_count));
 
         ASSERT_HIP_SUCCESS(hipMemcpy(hres.data(), dx, sizeof(T) * X_size, hipMemcpyDeviceToHost));
 
@@ -131,7 +131,7 @@ void testing_trmv_strided_batched(const Arguments& arg)
             cblas_trmv<T>(uplo,
                           transA,
                           diag,
-                          M,
+                          N,
                           hA.data() + b * stride_A,
                           lda,
                           hx.data() + b * stride_x,
@@ -142,12 +142,12 @@ void testing_trmv_strided_batched(const Arguments& arg)
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, abs_incx, stride_x, hx, hres);
+            unit_check_general<T>(1, N, batch_count, abs_incx, stride_x, hx, hres);
         }
         if(arg.norm_check)
         {
             hipblas_error
-                = norm_check_general<T>('F', 1, M, abs_incx, stride_x, hx, hres, batch_count);
+                = norm_check_general<T>('F', 1, N, abs_incx, stride_x, hx, hres, batch_count);
         }
     }
 
@@ -163,15 +163,15 @@ void testing_trmv_strided_batched(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             ASSERT_HIPBLAS_SUCCESS(hipblasTrmvStridedBatchedFn(
-                handle, uplo, transA, diag, M, dA, lda, stride_A, dx, incx, stride_x, batch_count));
+                handle, uplo, transA, diag, N, dA, lda, stride_A, dx, incx, stride_x, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         hipblasTrmvStridedBatchedModel{}.log_args<T>(std::cout,
                                                      arg,
                                                      gpu_time_used,
-                                                     trmv_gflop_count<T>(M),
-                                                     trmv_gbyte_count<T>(M),
+                                                     trmv_gflop_count<T>(N),
+                                                     trmv_gbyte_count<T>(N),
                                                      hipblas_error);
     }
 }

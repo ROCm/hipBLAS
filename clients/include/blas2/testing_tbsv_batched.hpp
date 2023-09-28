@@ -31,7 +31,7 @@
 /* ============================================================================================ */
 
 using hipblasTbsvBatchedModel
-    = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_M, e_K, e_lda, e_incx, e_batch_count>;
+    = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_N, e_K, e_lda, e_incx, e_batch_count>;
 
 inline void testname_tbsv_batched(const Arguments& arg, std::string& name)
 {
@@ -48,26 +48,26 @@ void testing_tbsv_batched(const Arguments& arg)
     hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
     hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
     hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
-    int                M           = arg.M;
+    int                N           = arg.N;
     int                K           = arg.K;
     int                incx        = arg.incx;
     int                lda         = arg.lda;
     int                batch_count = arg.batch_count;
 
     int    abs_incx = incx < 0 ? -incx : incx;
-    size_t size_A   = size_t(M) * M;
-    size_t size_AB  = size_t(lda) * M;
-    size_t size_x   = abs_incx * size_t(M);
+    size_t size_A   = size_t(N) * N;
+    size_t size_AB  = size_t(lda) * N;
+    size_t size_x   = abs_incx * size_t(N);
 
     hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || K < 0 || lda < K + 1 || !incx || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+    bool invalid_size = N < 0 || K < 0 || lda < K + 1 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasTbsvBatchedFn(
-            handle, uplo, transA, diag, M, K, nullptr, lda, nullptr, incx, batch_count);
+            handle, uplo, transA, diag, N, K, nullptr, lda, nullptr, incx, batch_count);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
@@ -77,12 +77,12 @@ void testing_tbsv_batched(const Arguments& arg)
     host_batch_vector<T> hA(size_A, 1, batch_count);
     host_batch_vector<T> hAB(size_AB, 1, batch_count);
     host_batch_vector<T> AAT(size_A, 1, batch_count);
-    host_batch_vector<T> hb(M, incx, batch_count);
-    host_batch_vector<T> hx(M, incx, batch_count);
-    host_batch_vector<T> hx_or_b(M, incx, batch_count);
+    host_batch_vector<T> hb(N, incx, batch_count);
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hx_or_b(N, incx, batch_count);
 
     device_batch_vector<T> dAB(size_AB, 1, batch_count);
-    device_batch_vector<T> dx_or_b(M, incx, batch_count);
+    device_batch_vector<T> dx_or_b(N, incx, batch_count);
 
     ASSERT_HIP_SUCCESS(dAB.memcheck());
     ASSERT_HIP_SUCCESS(dx_or_b.memcheck());
@@ -96,18 +96,18 @@ void testing_tbsv_batched(const Arguments& arg)
 
     for(int b = 0; b < batch_count; b++)
     {
-        banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], M, M, K);
+        banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], N, N, K);
 
-        prepare_triangular_solve((T*)hA[b], M, (T*)AAT[b], M, arg.uplo);
+        prepare_triangular_solve((T*)hA[b], N, (T*)AAT[b], N, arg.uplo);
         if(diag == HIPBLAS_DIAG_UNIT)
         {
-            make_unit_diagonal(uplo, (T*)hA[b], M, M);
+            make_unit_diagonal(uplo, (T*)hA[b], N, N);
         }
 
-        regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], M, (T*)hAB[b], lda, M, K);
+        regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], N, (T*)hAB[b], lda, N, K);
 
         // Calculate hb = hA*hx;
-        cblas_tbmv<T>(uplo, transA, diag, M, K, hAB[b], lda, hb[b], incx);
+        cblas_tbmv<T>(uplo, transA, diag, N, K, hAB[b], lda, hb[b], incx);
     }
 
     hx_or_b.copy_from(hb);
@@ -124,7 +124,7 @@ void testing_tbsv_batched(const Arguments& arg)
                                                     uplo,
                                                     transA,
                                                     diag,
-                                                    M,
+                                                    N,
                                                     K,
                                                     dAB.ptr_on_device(),
                                                     lda,
@@ -139,10 +139,10 @@ void testing_tbsv_batched(const Arguments& arg)
         // For norm_check/bench, currently taking the cumulative sum of errors over all batches
         for(int b = 0; b < batch_count; b++)
         {
-            hipblas_error = std::abs(vector_norm_1<T>(M, abs_incx, hx[b], hx_or_b[b]));
+            hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx[b], hx_or_b[b]));
             if(arg.unit_check)
             {
-                double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * M;
+                double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
                 unit_check_error(hipblas_error, tolerance);
             }
 
@@ -165,7 +165,7 @@ void testing_tbsv_batched(const Arguments& arg)
                                                         uplo,
                                                         transA,
                                                         diag,
-                                                        M,
+                                                        N,
                                                         K,
                                                         dAB.ptr_on_device(),
                                                         lda,
@@ -178,8 +178,8 @@ void testing_tbsv_batched(const Arguments& arg)
         hipblasTbsvBatchedModel{}.log_args<T>(std::cout,
                                               arg,
                                               gpu_time_used,
-                                              tbsv_gflop_count<T>(M, K),
-                                              tbsv_gbyte_count<T>(M, K),
+                                              tbsv_gflop_count<T>(N, K),
+                                              tbsv_gbyte_count<T>(N, K),
                                               cumulative_hipblas_error);
     }
 }

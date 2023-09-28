@@ -34,7 +34,7 @@ using hipblasTbsvStridedBatchedModel = ArgumentModel<e_a_type,
                                                      e_uplo,
                                                      e_transA,
                                                      e_diag,
-                                                     e_M,
+                                                     e_N,
                                                      e_K,
                                                      e_lda,
                                                      e_incx,
@@ -56,7 +56,7 @@ void testing_tbsv_strided_batched(const Arguments& arg)
     hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
     hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
     hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
-    int                M            = arg.M;
+    int                N            = arg.N;
     int                K            = arg.K;
     int                incx         = arg.incx;
     int                lda          = arg.lda;
@@ -64,9 +64,9 @@ void testing_tbsv_strided_batched(const Arguments& arg)
     int                batch_count  = arg.batch_count;
 
     int           abs_incx = incx < 0 ? -incx : incx;
-    hipblasStride strideA  = size_t(M) * M;
-    hipblasStride strideAB = size_t(M) * lda * stride_scale;
-    hipblasStride stridex  = size_t(abs_incx) * M * stride_scale;
+    hipblasStride strideA  = size_t(N) * N;
+    hipblasStride strideAB = size_t(N) * lda * stride_scale;
+    hipblasStride stridex  = size_t(abs_incx) * N * stride_scale;
     size_t        size_A   = strideA * batch_count;
     size_t        size_AB  = strideAB * batch_count;
     size_t        size_x   = stridex * batch_count;
@@ -75,14 +75,14 @@ void testing_tbsv_strided_batched(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || K < 0 || lda < K + 1 || !incx || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+    bool invalid_size = N < 0 || K < 0 || lda < K + 1 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasTbsvStridedBatchedFn(handle,
                                                              uplo,
                                                              transA,
                                                              diag,
-                                                             M,
+                                                             N,
                                                              K,
                                                              nullptr,
                                                              lda,
@@ -110,9 +110,9 @@ void testing_tbsv_strided_batched(const Arguments& arg)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, M, M, M, strideA, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hA, arg, N, N, N, strideA, batch_count, hipblas_client_never_set_nan, true);
     hipblas_init_vector(
-        hx, arg, M, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
+        hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
     for(int b = 0; b < batch_count; b++)
@@ -121,18 +121,18 @@ void testing_tbsv_strided_batched(const Arguments& arg)
         T* hABbat = hAB.data() + b * strideAB;
         T* AATbat = AAT.data() + b * strideA;
         T* hbbat  = hb.data() + b * stridex;
-        banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, hAbat, M, M, K);
+        banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, hAbat, N, N, K);
 
-        prepare_triangular_solve(hAbat, M, AATbat, M, arg.uplo);
+        prepare_triangular_solve(hAbat, N, AATbat, N, arg.uplo);
         if(diag == HIPBLAS_DIAG_UNIT)
         {
-            make_unit_diagonal(uplo, hAbat, M, M);
+            make_unit_diagonal(uplo, hAbat, N, N);
         }
 
-        regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, hAbat, M, hABbat, lda, M, K);
+        regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, hAbat, N, hABbat, lda, N, K);
 
         // Calculate hb = hA*hx;
-        cblas_tbmv<T>(uplo, transA, diag, M, K, hABbat, lda, hbbat, incx);
+        cblas_tbmv<T>(uplo, transA, diag, N, K, hABbat, lda, hbbat, incx);
     }
 
     hx_or_b_1 = hb;
@@ -151,7 +151,7 @@ void testing_tbsv_strided_batched(const Arguments& arg)
                                                            uplo,
                                                            transA,
                                                            diag,
-                                                           M,
+                                                           N,
                                                            K,
                                                            dAB,
                                                            lda,
@@ -170,10 +170,10 @@ void testing_tbsv_strided_batched(const Arguments& arg)
         for(int b = 0; b < batch_count; b++)
         {
             hipblas_error = std::abs(vector_norm_1<T>(
-                M, abs_incx, hx.data() + b * stridex, hx_or_b_1.data() + b * stridex));
+                N, abs_incx, hx.data() + b * stridex, hx_or_b_1.data() + b * stridex));
             if(arg.unit_check)
             {
-                double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * M;
+                double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
                 unit_check_error(hipblas_error, tolerance);
             }
 
@@ -196,7 +196,7 @@ void testing_tbsv_strided_batched(const Arguments& arg)
                                                                uplo,
                                                                transA,
                                                                diag,
-                                                               M,
+                                                               N,
                                                                K,
                                                                dAB,
                                                                lda,
@@ -211,8 +211,8 @@ void testing_tbsv_strided_batched(const Arguments& arg)
         hipblasTbsvStridedBatchedModel{}.log_args<T>(std::cout,
                                                      arg,
                                                      gpu_time_used,
-                                                     tbsv_gflop_count<T>(M, K),
-                                                     tbsv_gbyte_count<T>(M, K),
+                                                     tbsv_gflop_count<T>(N, K),
+                                                     tbsv_gbyte_count<T>(N, K),
                                                      cumulative_hipblas_error);
     }
 }

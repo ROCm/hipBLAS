@@ -32,7 +32,7 @@
 
 using hipblasSymvStridedBatchedModel = ArgumentModel<e_a_type,
                                                      e_uplo,
-                                                     e_M,
+                                                     e_N,
                                                      e_alpha,
                                                      e_lda,
                                                      e_incx,
@@ -54,7 +54,7 @@ void testing_symv_strided_batched(const Arguments& arg)
         = FORTRAN ? hipblasSymvStridedBatched<T, true> : hipblasSymvStridedBatched<T, false>;
 
     hipblasFillMode_t uplo         = char2hipblas_fill(arg.uplo);
-    int               M            = arg.M;
+    int               N            = arg.N;
     int               lda          = arg.lda;
     int               incx         = arg.incx;
     int               incy         = arg.incy;
@@ -63,9 +63,9 @@ void testing_symv_strided_batched(const Arguments& arg)
 
     int           abs_incx = incx >= 0 ? incx : -incx;
     int           abs_incy = incy >= 0 ? incy : -incy;
-    hipblasStride stride_A = size_t(lda) * M * stride_scale;
-    hipblasStride stride_x = size_t(M) * abs_incx * stride_scale;
-    hipblasStride stride_y = size_t(M) * abs_incy * stride_scale;
+    hipblasStride stride_A = size_t(lda) * N * stride_scale;
+    hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stride_y = size_t(N) * abs_incy * stride_scale;
 
     size_t A_size = stride_A * batch_count;
     size_t X_size = stride_x * batch_count;
@@ -75,12 +75,12 @@ void testing_symv_strided_batched(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx || !incy || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+    bool invalid_size = N < 0 || lda < N || lda < 1 || !incx || !incy || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasSymvStridedBatchedFn(handle,
                                                              uplo,
-                                                             M,
+                                                             N,
                                                              nullptr,
                                                              nullptr,
                                                              lda,
@@ -119,9 +119,9 @@ void testing_symv_strided_batched(const Arguments& arg)
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, arg, M, M, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hx, arg, M, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan);
-    hipblas_init_vector(hy, arg, M, abs_incy, stride_y, batch_count, hipblas_client_beta_sets_nan);
+        hA, arg, N, N, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, N, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan);
+    hipblas_init_vector(hy, arg, N, abs_incy, stride_y, batch_count, hipblas_client_beta_sets_nan);
     hy_cpu = hy;
 
     // copy data from CPU to device
@@ -139,7 +139,7 @@ void testing_symv_strided_batched(const Arguments& arg)
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         ASSERT_HIPBLAS_SUCCESS(hipblasSymvStridedBatchedFn(handle,
                                                            uplo,
-                                                           M,
+                                                           N,
                                                            &h_alpha,
                                                            dA,
                                                            lda,
@@ -160,7 +160,7 @@ void testing_symv_strided_batched(const Arguments& arg)
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         ASSERT_HIPBLAS_SUCCESS(hipblasSymvStridedBatchedFn(handle,
                                                            uplo,
-                                                           M,
+                                                           N,
                                                            d_alpha,
                                                            dA,
                                                            lda,
@@ -183,7 +183,7 @@ void testing_symv_strided_batched(const Arguments& arg)
         for(int b = 0; b < batch_count; b++)
         {
             cblas_symv<T>(uplo,
-                          M,
+                          N,
                           h_alpha,
                           hA.data() + b * stride_A,
                           lda,
@@ -198,15 +198,15 @@ void testing_symv_strided_batched(const Arguments& arg)
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, abs_incy, stride_y, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, batch_count, abs_incy, stride_y, hy_cpu, hy_device);
+            unit_check_general<T>(1, N, batch_count, abs_incy, stride_y, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, batch_count, abs_incy, stride_y, hy_cpu, hy_device);
         }
         if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<T>(
-                'F', 1, M, abs_incy, stride_y, hy_cpu, hy_host, batch_count);
+                'F', 1, N, abs_incy, stride_y, hy_cpu, hy_host, batch_count);
             hipblas_error_device = norm_check_general<T>(
-                'F', 1, M, abs_incy, stride_y, hy_cpu, hy_device, batch_count);
+                'F', 1, N, abs_incy, stride_y, hy_cpu, hy_device, batch_count);
         }
     }
 
@@ -226,7 +226,7 @@ void testing_symv_strided_batched(const Arguments& arg)
 
             ASSERT_HIPBLAS_SUCCESS(hipblasSymvStridedBatchedFn(handle,
                                                                uplo,
-                                                               M,
+                                                               N,
                                                                d_alpha,
                                                                dA,
                                                                lda,
@@ -245,8 +245,8 @@ void testing_symv_strided_batched(const Arguments& arg)
         hipblasSymvStridedBatchedModel{}.log_args<T>(std::cout,
                                                      arg,
                                                      gpu_time_used,
-                                                     symv_gflop_count<T>(M),
-                                                     symv_gbyte_count<T>(M),
+                                                     symv_gflop_count<T>(N),
+                                                     symv_gbyte_count<T>(N),
                                                      hipblas_error_host,
                                                      hipblas_error_device);
     }

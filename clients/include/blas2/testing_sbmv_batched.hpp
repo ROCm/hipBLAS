@@ -32,7 +32,7 @@
 
 using hipblasSbmvBatchedModel = ArgumentModel<e_a_type,
                                               e_uplo,
-                                              e_M,
+                                              e_N,
                                               e_K,
                                               e_alpha,
                                               e_lda,
@@ -53,14 +53,14 @@ void testing_sbmv_batched(const Arguments& arg)
     auto hipblasSbmvBatchedFn
         = FORTRAN ? hipblasSbmvBatched<T, true> : hipblasSbmvBatched<T, false>;
 
-    int M    = arg.M;
+    int N    = arg.N;
     int K    = arg.K;
     int lda  = arg.lda;
     int incx = arg.incx;
     int incy = arg.incy;
 
     int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t A_size   = size_t(lda) * M;
+    size_t A_size   = size_t(lda) * N;
 
     int batch_count = arg.batch_count;
 
@@ -71,12 +71,12 @@ void testing_sbmv_batched(const Arguments& arg)
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size
-        = M < 0 || K < 0 || lda < K + 1 || lda < 1 || !incx || !incy || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+        = N < 0 || K < 0 || lda < K + 1 || lda < 1 || !incx || !incy || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasSbmvBatchedFn(handle,
                                                       uplo,
-                                                      M,
+                                                      N,
                                                       K,
                                                       nullptr,
                                                       nullptr,
@@ -99,16 +99,16 @@ void testing_sbmv_batched(const Arguments& arg)
 
     // arrays of pointers-to-host on host
     host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hx(M, incx, batch_count);
-    host_batch_vector<T> hy(M, incy, batch_count);
-    host_batch_vector<T> hy_cpu(M, incy, batch_count);
-    host_batch_vector<T> hy_host(M, incy, batch_count);
-    host_batch_vector<T> hy_device(M, incy, batch_count);
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hy(N, incy, batch_count);
+    host_batch_vector<T> hy_cpu(N, incy, batch_count);
+    host_batch_vector<T> hy_host(N, incy, batch_count);
+    host_batch_vector<T> hy_device(N, incy, batch_count);
 
     // device arrays
     device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dx(M, incx, batch_count);
-    device_batch_vector<T> dy(M, incy, batch_count);
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<T>       d_alpha(1);
     device_vector<T>       d_beta(1);
 
@@ -137,7 +137,7 @@ void testing_sbmv_batched(const Arguments& arg)
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         ASSERT_HIPBLAS_SUCCESS(hipblasSbmvBatchedFn(handle,
                                                     uplo,
-                                                    M,
+                                                    N,
                                                     K,
                                                     &h_alpha,
                                                     dA.ptr_on_device(),
@@ -155,7 +155,7 @@ void testing_sbmv_batched(const Arguments& arg)
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         ASSERT_HIPBLAS_SUCCESS(hipblasSbmvBatchedFn(handle,
                                                     uplo,
-                                                    M,
+                                                    N,
                                                     K,
                                                     d_alpha,
                                                     dA.ptr_on_device(),
@@ -174,23 +174,23 @@ void testing_sbmv_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_sbmv<T>(uplo, M, K, h_alpha, hA[b], lda, hx[b], incx, h_beta, hy_cpu[b], incy);
+            cblas_sbmv<T>(uplo, N, K, h_alpha, hA[b], lda, hx[b], incx, h_beta, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, abs_incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, batch_count, abs_incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, batch_count, abs_incy, hy_cpu, hy_device);
         }
 
         if(arg.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_host, batch_count);
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_device, batch_count);
+                = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device, batch_count);
         }
     }
 
@@ -210,7 +210,7 @@ void testing_sbmv_batched(const Arguments& arg)
             }
             ASSERT_HIPBLAS_SUCCESS(hipblasSbmvBatchedFn(handle,
                                                         uplo,
-                                                        M,
+                                                        N,
                                                         K,
                                                         d_alpha,
                                                         dA.ptr_on_device(),
@@ -227,8 +227,8 @@ void testing_sbmv_batched(const Arguments& arg)
         hipblasSbmvBatchedModel{}.log_args<T>(std::cout,
                                               arg,
                                               gpu_time_used,
-                                              sbmv_gflop_count<T>(M, K),
-                                              sbmv_gbyte_count<T>(M, K),
+                                              sbmv_gflop_count<T>(N, K),
+                                              sbmv_gbyte_count<T>(N, K),
                                               hipblas_error_host,
                                               hipblas_error_device);
     }

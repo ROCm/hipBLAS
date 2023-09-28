@@ -30,7 +30,7 @@
 
 /* ============================================================================================ */
 
-using hipblasSpmvModel = ArgumentModel<e_a_type, e_uplo, e_M, e_alpha, e_incx, e_beta, e_incy>;
+using hipblasSpmvModel = ArgumentModel<e_a_type, e_uplo, e_N, e_alpha, e_incx, e_beta, e_incy>;
 
 inline void testname_spmv(const Arguments& arg, std::string& name)
 {
@@ -44,15 +44,15 @@ void testing_spmv(const Arguments& arg)
     auto hipblasSpmvFn = FORTRAN ? hipblasSpmv<T, true> : hipblasSpmv<T, false>;
 
     hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
-    int               M    = arg.M;
+    int               N    = arg.N;
     int               incx = arg.incx;
     int               incy = arg.incy;
 
     int    abs_incx = incx >= 0 ? incx : -incx;
     int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t x_size   = size_t(M) * abs_incx;
-    size_t y_size   = size_t(M) * abs_incy;
-    size_t A_size   = size_t(M) * (M + 1) / 2;
+    size_t x_size   = size_t(N) * abs_incx;
+    size_t y_size   = size_t(N) * abs_incy;
+    size_t A_size   = size_t(N) * (N + 1) / 2;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -60,11 +60,11 @@ void testing_spmv(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || !incx || !incy;
-    if(invalid_size || !M)
+    bool invalid_size = N < 0 || !incx || !incy;
+    if(invalid_size || !N)
     {
         hipblasStatus_t actual = hipblasSpmvFn(
-            handle, uplo, M, nullptr, nullptr, nullptr, incx, nullptr, nullptr, incy);
+            handle, uplo, N, nullptr, nullptr, nullptr, incx, nullptr, nullptr, incy);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
@@ -91,8 +91,8 @@ void testing_spmv(const Arguments& arg)
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, arg, A_size, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, true, false);
-    hipblas_init_vector(hx, arg, M, abs_incx, 0, 1, hipblas_client_alpha_sets_nan);
-    hipblas_init_vector(hy, arg, M, abs_incy, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan);
+    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hy_cpu = hy;
@@ -111,7 +111,7 @@ void testing_spmv(const Arguments& arg)
         =================================================================== */
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         ASSERT_HIPBLAS_SUCCESS(
-            hipblasSpmvFn(handle, uplo, M, &h_alpha, dA, dx, incx, &h_beta, dy, incy));
+            hipblasSpmvFn(handle, uplo, N, &h_alpha, dA, dx, incx, &h_beta, dy, incy));
 
         ASSERT_HIP_SUCCESS(
             hipMemcpy(hy_host.data(), dy, sizeof(T) * y_size, hipMemcpyDeviceToHost));
@@ -119,7 +119,7 @@ void testing_spmv(const Arguments& arg)
 
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         ASSERT_HIPBLAS_SUCCESS(
-            hipblasSpmvFn(handle, uplo, M, d_alpha, dA, dx, incx, d_beta, dy, incy));
+            hipblasSpmvFn(handle, uplo, N, d_alpha, dA, dx, incx, d_beta, dy, incy));
 
         ASSERT_HIP_SUCCESS(
             hipMemcpy(hy_device.data(), dy, sizeof(T) * y_size, hipMemcpyDeviceToHost));
@@ -127,19 +127,19 @@ void testing_spmv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_spmv<T>(uplo, M, h_alpha, hA.data(), hx.data(), incx, h_beta, hy_cpu.data(), incy);
+        cblas_spmv<T>(uplo, N, h_alpha, hA.data(), hx.data(), incx, h_beta, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, abs_incy, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, abs_incy, hy_cpu, hy_device);
+            unit_check_general<T>(1, N, abs_incy, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, abs_incy, hy_cpu, hy_device);
         }
         if(arg.norm_check)
         {
-            hipblas_error_host   = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_host);
-            hipblas_error_device = norm_check_general<T>('F', 1, M, abs_incy, hy_cpu, hy_device);
+            hipblas_error_host   = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_host);
+            hipblas_error_device = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy_device);
         }
     }
 
@@ -157,15 +157,15 @@ void testing_spmv(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             ASSERT_HIPBLAS_SUCCESS(
-                hipblasSpmvFn(handle, uplo, M, d_alpha, dA, dx, incx, d_beta, dy, incy));
+                hipblasSpmvFn(handle, uplo, N, d_alpha, dA, dx, incx, d_beta, dy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
         hipblasSpmvModel{}.log_args<T>(std::cout,
                                        arg,
                                        gpu_time_used,
-                                       spmv_gflop_count<T>(M),
-                                       spmv_gbyte_count<T>(M),
+                                       spmv_gflop_count<T>(N),
+                                       spmv_gbyte_count<T>(N),
                                        hipblas_error_host,
                                        hipblas_error_device);
     }

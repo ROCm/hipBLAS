@@ -30,7 +30,7 @@
 
 /* ============================================================================================ */
 
-using hipblasTrsvModel = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_M, e_lda, e_incx>;
+using hipblasTrsvModel = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_N, e_lda, e_incx>;
 
 inline void testname_trsv(const Arguments& arg, std::string& name)
 {
@@ -46,23 +46,23 @@ void testing_trsv(const Arguments& arg)
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    int                M      = arg.M;
+    int                N      = arg.N;
     int                incx   = arg.incx;
     int                lda    = arg.lda;
 
     int    abs_incx = incx < 0 ? -incx : incx;
-    size_t size_A   = size_t(lda) * M;
-    size_t size_x   = abs_incx * size_t(M);
+    size_t size_A   = size_t(lda) * N;
+    size_t size_x   = abs_incx * size_t(N);
 
     hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx;
-    if(invalid_size || !M)
+    bool invalid_size = N < 0 || lda < N || lda < 1 || !incx;
+    if(invalid_size || !N)
     {
         hipblasStatus_t actual
-            = hipblasTrsvFn(handle, uplo, transA, diag, M, nullptr, lda, nullptr, incx);
+            = hipblasTrsvFn(handle, uplo, transA, diag, N, nullptr, lda, nullptr, incx);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
@@ -81,16 +81,16 @@ void testing_trsv(const Arguments& arg)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, M, M, lda, 0, 1, hipblas_client_never_set_nan, true, false);
-    hipblas_init_vector(hx, arg, M, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(hA, arg, N, N, lda, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
     //  calculate AAT = hA * hA ^ T
     cblas_gemm<T>(HIPBLAS_OP_N,
                   HIPBLAS_OP_T,
-                  M,
-                  M,
-                  M,
+                  N,
+                  N,
+                  N,
                   (T)1.0,
                   hA.data(),
                   lda,
@@ -101,10 +101,10 @@ void testing_trsv(const Arguments& arg)
                   lda);
 
     //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
-    for(int i = 0; i < M; i++)
+    for(int i = 0; i < N; i++)
     {
         T t = 0.0;
-        for(int j = 0; j < M; j++)
+        for(int j = 0; j < N; j++)
         {
             hA[i + j * lda] = AAT[i + j * lda];
             t += std::abs(AAT[i + j * lda]);
@@ -112,20 +112,20 @@ void testing_trsv(const Arguments& arg)
         hA[i + i * lda] = t;
     }
     //  calculate Cholesky factorization of SPD matrix hA
-    cblas_potrf<T>(arg.uplo, M, hA.data(), lda);
+    cblas_potrf<T>(arg.uplo, N, hA.data(), lda);
 
     //  make hA unit diagonal if diag == rocblas_diagonal_unit
     if(arg.diag == 'U' || arg.diag == 'u')
     {
         if('L' == arg.uplo || 'l' == arg.uplo)
-            for(int i = 0; i < M; i++)
+            for(int i = 0; i < N; i++)
             {
                 T diag = hA[i + i * lda];
                 for(int j = 0; j <= i; j++)
                     hA[i + j * lda] = hA[i + j * lda] / diag;
             }
         else
-            for(int j = 0; j < M; j++)
+            for(int j = 0; j < N; j++)
             {
                 T diag = hA[j + j * lda];
                 for(int i = 0; i <= j; i++)
@@ -134,7 +134,7 @@ void testing_trsv(const Arguments& arg)
     }
 
     // Calculate hb = hA*hx;
-    cblas_trmv<T>(uplo, transA, diag, M, hA.data(), lda, hb.data(), incx);
+    cblas_trmv<T>(uplo, transA, diag, N, hA.data(), lda, hb.data(), incx);
     hx_or_b_1 = hb;
 
     // copy data from CPU to device
@@ -149,18 +149,18 @@ void testing_trsv(const Arguments& arg)
     {
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         ASSERT_HIPBLAS_SUCCESS(
-            hipblasTrsvFn(handle, uplo, transA, diag, M, dA, lda, dx_or_b, incx));
+            hipblasTrsvFn(handle, uplo, transA, diag, N, dA, lda, dx_or_b, incx));
 
         // copy output from device to CPU
         ASSERT_HIP_SUCCESS(
             hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost));
 
         // Calculating error
-        hipblas_error = std::abs(vector_norm_1<T>(M, abs_incx, hx.data(), hx_or_b_1.data()));
+        hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
 
         if(arg.unit_check)
         {
-            double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * M;
+            double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
             unit_check_error(hipblas_error, tolerance);
         }
     }
@@ -178,15 +178,15 @@ void testing_trsv(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             ASSERT_HIPBLAS_SUCCESS(
-                hipblasTrsvFn(handle, uplo, transA, diag, M, dA, lda, dx_or_b, incx));
+                hipblasTrsvFn(handle, uplo, transA, diag, N, dA, lda, dx_or_b, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
         hipblasTrsvModel{}.log_args<T>(std::cout,
                                        arg,
                                        gpu_time_used,
-                                       trsv_gflop_count<T>(M),
-                                       trsv_gbyte_count<T>(M),
+                                       trsv_gflop_count<T>(N),
+                                       trsv_gbyte_count<T>(N),
                                        hipblas_error);
     }
 }

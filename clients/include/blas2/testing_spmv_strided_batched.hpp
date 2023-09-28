@@ -32,7 +32,7 @@
 
 using hipblasSpmvStridedBatchedModel = ArgumentModel<e_a_type,
                                                      e_uplo,
-                                                     e_M,
+                                                     e_N,
                                                      e_alpha,
                                                      e_incx,
                                                      e_beta,
@@ -53,7 +53,7 @@ void testing_spmv_strided_batched(const Arguments& arg)
         = FORTRAN ? hipblasSpmvStridedBatched<T, true> : hipblasSpmvStridedBatched<T, false>;
 
     hipblasFillMode_t uplo         = char2hipblas_fill(arg.uplo);
-    int               M            = arg.M;
+    int               N            = arg.N;
     int               incx         = arg.incx;
     int               incy         = arg.incy;
     double            stride_scale = arg.stride_scale;
@@ -61,10 +61,10 @@ void testing_spmv_strided_batched(const Arguments& arg)
 
     int           abs_incx = incx >= 0 ? incx : -incx;
     int           abs_incy = incy >= 0 ? incy : -incy;
-    size_t        dim_A    = size_t(M) * (M + 1) / 2;
+    size_t        dim_A    = size_t(N) * (N + 1) / 2;
     hipblasStride stride_A = dim_A * stride_scale;
-    hipblasStride stride_x = size_t(M) * abs_incx * stride_scale;
-    hipblasStride stride_y = size_t(M) * abs_incy * stride_scale;
+    hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stride_y = size_t(N) * abs_incy * stride_scale;
 
     size_t A_size = stride_A * batch_count;
     size_t X_size = stride_x * batch_count;
@@ -74,12 +74,12 @@ void testing_spmv_strided_batched(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || !incx || !incy || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+    bool invalid_size = N < 0 || !incx || !incy || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasSpmvStridedBatchedFn(handle,
                                                              uplo,
-                                                             M,
+                                                             N,
                                                              nullptr,
                                                              nullptr,
                                                              stride_A,
@@ -118,8 +118,8 @@ void testing_spmv_strided_batched(const Arguments& arg)
     // Initial Data on CPU
     hipblas_init_matrix(
         hA, arg, dim_A, 1, 1, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hx, arg, M, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan);
-    hipblas_init_vector(hy, arg, M, abs_incy, stride_y, batch_count, hipblas_client_beta_sets_nan);
+    hipblas_init_vector(hx, arg, N, abs_incx, stride_x, batch_count, hipblas_client_alpha_sets_nan);
+    hipblas_init_vector(hy, arg, N, abs_incy, stride_y, batch_count, hipblas_client_beta_sets_nan);
 
     hy_cpu = hy;
 
@@ -138,7 +138,7 @@ void testing_spmv_strided_batched(const Arguments& arg)
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         ASSERT_HIPBLAS_SUCCESS(hipblasSpmvStridedBatchedFn(handle,
                                                            uplo,
-                                                           M,
+                                                           N,
                                                            &h_alpha,
                                                            dA,
                                                            stride_A,
@@ -158,7 +158,7 @@ void testing_spmv_strided_batched(const Arguments& arg)
         ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         ASSERT_HIPBLAS_SUCCESS(hipblasSpmvStridedBatchedFn(handle,
                                                            uplo,
-                                                           M,
+                                                           N,
                                                            d_alpha,
                                                            dA,
                                                            stride_A,
@@ -180,7 +180,7 @@ void testing_spmv_strided_batched(const Arguments& arg)
         for(int b = 0; b < batch_count; b++)
         {
             cblas_spmv<T>(uplo,
-                          M,
+                          N,
                           h_alpha,
                           hA.data() + b * stride_A,
                           hx.data() + b * stride_x,
@@ -194,15 +194,15 @@ void testing_spmv_strided_batched(const Arguments& arg)
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, batch_count, abs_incy, stride_y, hy_cpu, hy_host);
-            unit_check_general<T>(1, M, batch_count, abs_incy, stride_y, hy_cpu, hy_device);
+            unit_check_general<T>(1, N, batch_count, abs_incy, stride_y, hy_cpu, hy_host);
+            unit_check_general<T>(1, N, batch_count, abs_incy, stride_y, hy_cpu, hy_device);
         }
         if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<T>(
-                'F', 1, M, abs_incy, stride_y, hy_cpu, hy_host, batch_count);
+                'F', 1, N, abs_incy, stride_y, hy_cpu, hy_host, batch_count);
             hipblas_error_device = norm_check_general<T>(
-                'F', 1, M, abs_incy, stride_y, hy_cpu, hy_device, batch_count);
+                'F', 1, N, abs_incy, stride_y, hy_cpu, hy_device, batch_count);
         }
     }
 
@@ -222,7 +222,7 @@ void testing_spmv_strided_batched(const Arguments& arg)
             }
             ASSERT_HIPBLAS_SUCCESS(hipblasSpmvStridedBatchedFn(handle,
                                                                uplo,
-                                                               M,
+                                                               N,
                                                                d_alpha,
                                                                dA,
                                                                stride_A,
@@ -241,8 +241,8 @@ void testing_spmv_strided_batched(const Arguments& arg)
         hipblasSpmvStridedBatchedModel{}.log_args<T>(std::cout,
                                                      arg,
                                                      gpu_time_used,
-                                                     spmv_gflop_count<T>(M),
-                                                     spmv_gbyte_count<T>(M),
+                                                     spmv_gflop_count<T>(N),
+                                                     spmv_gbyte_count<T>(N),
                                                      hipblas_error_host,
                                                      hipblas_error_device);
     }

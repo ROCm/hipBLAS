@@ -31,7 +31,7 @@
 /* ============================================================================================ */
 
 using hipblasTrsvBatchedModel
-    = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_M, e_lda, e_incx, e_batch_count>;
+    = ArgumentModel<e_a_type, e_uplo, e_transA, e_diag, e_N, e_lda, e_incx, e_batch_count>;
 
 inline void testname_trsv_batched(const Arguments& arg, std::string& name)
 {
@@ -48,23 +48,23 @@ void testing_trsv_batched(const Arguments& arg)
     hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
     hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
     hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
-    int                M           = arg.M;
+    int                N           = arg.N;
     int                incx        = arg.incx;
     int                lda         = arg.lda;
     int                batch_count = arg.batch_count;
 
     int    abs_incx = incx < 0 ? -incx : incx;
-    size_t size_A   = size_t(lda) * M;
+    size_t size_A   = size_t(lda) * N;
 
     hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || lda < M || lda < 1 || !incx || batch_count < 0;
-    if(invalid_size || !M || !batch_count)
+    bool invalid_size = N < 0 || lda < N || lda < 1 || !incx || batch_count < 0;
+    if(invalid_size || !N || !batch_count)
     {
         hipblasStatus_t actual = hipblasTrsvBatchedFn(
-            handle, uplo, transA, diag, M, nullptr, lda, nullptr, incx, batch_count);
+            handle, uplo, transA, diag, N, nullptr, lda, nullptr, incx, batch_count);
         EXPECT_HIPBLAS_STATUS2(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
@@ -73,12 +73,12 @@ void testing_trsv_batched(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(size_A, 1, batch_count);
     host_batch_vector<T> AAT(size_A, 1, batch_count);
-    host_batch_vector<T> hb(M, incx, batch_count);
-    host_batch_vector<T> hx(M, incx, batch_count);
-    host_batch_vector<T> hx_or_b_1(M, incx, batch_count);
+    host_batch_vector<T> hb(N, incx, batch_count);
+    host_batch_vector<T> hx(N, incx, batch_count);
+    host_batch_vector<T> hx_or_b_1(N, incx, batch_count);
 
     device_batch_vector<T> dA(size_A, 1, batch_count);
-    device_batch_vector<T> dx_or_b(M, incx, batch_count);
+    device_batch_vector<T> dx_or_b(N, incx, batch_count);
 
     ASSERT_HIP_SUCCESS(dA.memcheck());
     ASSERT_HIP_SUCCESS(dx_or_b.memcheck());
@@ -95,9 +95,9 @@ void testing_trsv_batched(const Arguments& arg)
         //  calculate AAT = hA * hA ^ T
         cblas_gemm<T>(HIPBLAS_OP_N,
                       HIPBLAS_OP_T,
-                      M,
-                      M,
-                      M,
+                      N,
+                      N,
+                      N,
                       (T)1.0,
                       (T*)hA[b],
                       lda,
@@ -108,10 +108,10 @@ void testing_trsv_batched(const Arguments& arg)
                       lda);
 
         //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
-        for(int i = 0; i < M; i++)
+        for(int i = 0; i < N; i++)
         {
             T t = 0.0;
-            for(int j = 0; j < M; j++)
+            for(int j = 0; j < N; j++)
             {
                 hA[b][i + j * lda] = AAT[b][i + j * lda];
                 t += std::abs(AAT[b][i + j * lda]);
@@ -120,20 +120,20 @@ void testing_trsv_batched(const Arguments& arg)
         }
 
         //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(arg.uplo, M, hA[b], lda);
+        cblas_potrf<T>(arg.uplo, N, hA[b], lda);
 
         //  make hA unit diagonal if diag == rocblas_diagonal_unit
         if(arg.diag == 'U' || arg.diag == 'u')
         {
             if('L' == arg.uplo || 'l' == arg.uplo)
-                for(int i = 0; i < M; i++)
+                for(int i = 0; i < N; i++)
                 {
                     T diag = hA[b][i + i * lda];
                     for(int j = 0; j <= i; j++)
                         hA[b][i + j * lda] = hA[b][i + j * lda] / diag;
                 }
             else
-                for(int j = 0; j < M; j++)
+                for(int j = 0; j < N; j++)
                 {
                     T diag = hA[b][j + j * lda];
                     for(int i = 0; i <= j; i++)
@@ -145,7 +145,7 @@ void testing_trsv_batched(const Arguments& arg)
     for(int b = 0; b < batch_count; b++)
     {
         // Calculate hb = hA*hx;
-        cblas_trmv<T>(uplo, transA, diag, M, hA[b], lda, hb[b], incx);
+        cblas_trmv<T>(uplo, transA, diag, N, hA[b], lda, hb[b], incx);
     }
 
     hx_or_b_1.copy_from(hb);
@@ -163,7 +163,7 @@ void testing_trsv_batched(const Arguments& arg)
                                                     uplo,
                                                     transA,
                                                     diag,
-                                                    M,
+                                                    N,
                                                     dA.ptr_on_device(),
                                                     lda,
                                                     dx_or_b.ptr_on_device(),
@@ -176,10 +176,10 @@ void testing_trsv_batched(const Arguments& arg)
         // For norm_check/bench, currently taking the cumulative sum of errors over all batches
         for(int b = 0; b < batch_count; b++)
         {
-            hipblas_error = std::abs(vector_norm_1<T>(M, abs_incx, hx[b], hx_or_b_1[b]));
+            hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx[b], hx_or_b_1[b]));
             if(arg.unit_check)
             {
-                double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * M;
+                double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
                 unit_check_error(hipblas_error, tolerance);
             }
 
@@ -203,7 +203,7 @@ void testing_trsv_batched(const Arguments& arg)
                                                         uplo,
                                                         transA,
                                                         diag,
-                                                        M,
+                                                        N,
                                                         dA.ptr_on_device(),
                                                         lda,
                                                         dx_or_b.ptr_on_device(),
@@ -215,8 +215,8 @@ void testing_trsv_batched(const Arguments& arg)
         hipblasTrsvBatchedModel{}.log_args<T>(std::cout,
                                               arg,
                                               gpu_time_used,
-                                              trsv_gflop_count<T>(M),
-                                              trsv_gbyte_count<T>(M),
+                                              trsv_gflop_count<T>(N),
+                                              trsv_gbyte_count<T>(N),
                                               cumulative_hipblas_error);
     }
 }

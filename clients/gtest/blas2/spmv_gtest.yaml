@@ -2,7 +2,7 @@
 include: hipblas_common.yaml
 
 Definitions:
-  - &M_range
+  - &N_range
     - [ -1, 11, 16, 32, 65 ]
 
   - &incx_incy_range
@@ -25,7 +25,7 @@ Tests:
     precision: *single_double_precisions
     uplo: [ 'L', 'U' ]
     alpha_beta: *alpha_beta_range
-    M: *M_range
+    N: *N_range
     incx_incy: *incx_incy_range
     api: [ FORTRAN, C ]
 
@@ -36,7 +36,7 @@ Tests:
     precision: *single_double_precisions
     uplo: [ 'L', 'U' ]
     alpha_beta: *alpha_beta_range
-    M: *M_range
+    N: *N_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     api: [ FORTRAN, C ]
@@ -48,7 +48,7 @@ Tests:
     precision: *single_double_precisions
     uplo: [ 'L', 'U' ]
     alpha_beta: *alpha_beta_range
-    M: *M_range
+    N: *N_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
