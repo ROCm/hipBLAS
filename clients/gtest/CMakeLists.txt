@@ -55,35 +55,29 @@ set(hipblas_test_source
   nrm2_ex_gtest.cpp
   rot_ex_gtest.cpp
   scal_ex_gtest.cpp
-  gbmv_gtest.cpp
-  gbmv_batched_gtest.cpp
-  gbmv_strided_batched_gtest.cpp
-  gemv_gtest.cpp
-  gemv_batched_gtest.cpp
-  gemv_strided_batched_gtest.cpp
-  ger_gtest.cpp
-  hbmv_gtest.cpp
-  hemv_gtest.cpp
-  hemv_batched_gtest.cpp
-  hemv_strided_batched_gtest.cpp
-  her_gtest.cpp
-  her2_gtest.cpp
-  hpmv_gtest.cpp
-  hpr_gtest.cpp
-  hpr2_gtest.cpp
-  sbmv_gtest.cpp
-  spmv_gtest.cpp
-  spr_gtest.cpp
-  spr2_gtest.cpp
-  symv_gtest.cpp
-  syr_gtest.cpp
-  syr2_gtest.cpp
-  tbmv_gtest.cpp
-  tbsv_gtest.cpp
-  tpmv_gtest.cpp
-  tpsv_gtest.cpp
-  trmv_gtest.cpp
-  trsv_gtest.cpp
+  blas2/gbmv_gtest.cpp
+  blas2/gemv_gtest.cpp
+  blas2/ger_gtest.cpp
+  blas2/hbmv_gtest.cpp
+  blas2/hemv_gtest.cpp
+  blas2/her_gtest.cpp
+  blas2/her2_gtest.cpp
+  blas2/hpmv_gtest.cpp
+  blas2/hpr_gtest.cpp
+  blas2/hpr2_gtest.cpp
+  blas2/sbmv_gtest.cpp
+  blas2/spmv_gtest.cpp
+  blas2/spr_gtest.cpp
+  blas2/spr2_gtest.cpp
+  blas2/symv_gtest.cpp
+  blas2/syr_gtest.cpp
+  blas2/syr2_gtest.cpp
+  blas2/tbmv_gtest.cpp
+  blas2/tbsv_gtest.cpp
+  blas2/tpmv_gtest.cpp
+  blas2/tpsv_gtest.cpp
+  blas2/trmv_gtest.cpp
+  blas2/trsv_gtest.cpp
   dgmm_gtest.cpp
   gemm_gtest.cpp
   gemm_ex_gtest.cpp
@@ -275,14 +269,26 @@ set_target_properties( hipblas-test PROPERTIES
 
 set( HIPBLAS_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_gtest.data")
 set( HIPBLAS_V2_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_v2_gtest.data")
+set( HIPBLAS_L1_YAML_DATA blas1/asum_gtest.yaml blas1/axpy_gtest.yaml blas1/copy_gtest.yaml
+                          blas1/dot_gtest.yaml  blas1/iamaxmin_gtest.yaml blas1/nrm2_gtest.yaml
+                          blas1/rot_gtest.yaml  blas1/scal_gtest.yaml blas1/swap_gtest.yaml )
+set( HIPBLAS_L2_YAML_DATA blas2/gbmv_gtest.yaml blas2/gemv_gtest.yaml blas2/ger_gtest.yaml
+                          blas2/hbmv_gtest.yaml blas2/hemv_gtest.yaml blas2/her_gtest.yaml
+                          blas2/her2_gtest.yaml blas2/hpmv_gtest.yaml blas2/hpr_gtest.yaml
+                          blas2/hpr2_gtest.yaml blas2/sbmv_gtest.yaml blas2/spmv_gtest.yaml
+                          blas2/spr_gtest.yaml  blas2/spr2_gtest.yaml blas2/symv_gtest.yaml
+                          blas2/syr_gtest.yaml  blas2/syr2_gtest.yaml blas2/tbmv_gtest.yaml
+                          blas2/tbsv_gtest.yaml blas2/tpmv_gtest.yaml blas2/tpsv_gtest.yaml
+                          blas2/trmv_gtest.yaml blas2/trsv_gtest.yaml )
+
 add_custom_command( OUTPUT "${HIPBLAS_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_TEST_DATA}"
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml blas1/asum_gtest.yaml blas1/axpy_gtest.yaml blas1/copy_gtest.yaml blas1/dot_gtest.yaml blas1/iamaxmin_gtest.yaml blas1/nrm2_gtest.yaml blas1/rot_gtest.yaml blas1/scal_gtest.yaml blas1/swap_gtest.yaml hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_command( OUTPUT "${HIPBLAS_V2_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_V2_TEST_DATA}" --hipblas_v2
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml blas1/asum_gtest.yaml blas1/axpy_gtest.yaml blas1/copy_gtest.yaml blas1/dot_gtest.yaml blas1/iamaxmin_gtest.yaml blas1/nrm2_gtest.yaml blas1/rot_gtest.yaml blas1/scal_gtest.yaml blas1/swap_gtest.yaml hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_target( hipblas-test-data DEPENDS "${HIPBLAS_TEST_DATA}" )

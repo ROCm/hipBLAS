@@ -1655,18 +1655,18 @@ void cblas_syr2_local(
     if(uplo == HIPBLAS_FILL_MODE_UPPER)
         for(int j = 0; j < n; ++j)
         {
-            T tmpx = alpha * x[j * incx];
-            T tmpy = alpha * y[j * incx];
+            T tmpx = alpha * x[j * int64_t(incx)];
+            T tmpy = alpha * y[j * int64_t(incy)];
             for(int i = 0; i <= j; ++i)
-                A[i + j * lda] += x[i * incx] * tmpy + y[i * incy] * tmpx;
+                A[i + j * size_t(lda)] += x[i * int64_t(incx)] * tmpy + y[i * int64_t(incy)] * tmpx;
         }
     else
         for(int j = 0; j < n; ++j)
         {
             T tmpx = alpha * x[j * incx];
-            T tmpy = alpha * y[j * incx];
+            T tmpy = alpha * y[j * incy];
             for(int i = j; i < n; ++i)
-                A[i + j * lda] += x[i * incx] * tmpy + y[i * incy] * tmpx;
+                A[i + j * size_t(lda)] += x[i * int64_t(incx)] * tmpy + y[i * int64_t(incy)] * tmpx;
         }
 }
 
