@@ -204,7 +204,6 @@ public:
         std::replace(params.begin(), params.end(), '-', 'n');
         std::replace(params.begin(), params.end(), '.', 'p');
         name += params;
-
         name += (arg.api == hipblas_client_api::FORTRAN ? "_F" : "_C");
     }
 };
