@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -64,18 +64,13 @@ add_library( hipblas
 )
 add_library( roc::hipblas ALIAS hipblas )
 
-# External header includes included as system files
-target_include_directories( hipblas
-  SYSTEM PRIVATE
-    $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
-)
-
 # Build hipblas from source on AMD platform
 if( NOT USE_CUDA )
   if( NOT TARGET rocblas )
     if( CUSTOM_ROCBLAS )
       set ( ENV{rocblas_DIR} ${CUSTOM_ROCBLAS})
       find_package( rocblas REQUIRED CONFIG NO_CMAKE_PATH )
+
     elseif( WIN32 )
         find_package( rocblas REQUIRED CONFIG PATHS ${ROCBLAS_PATH})
     else()
@@ -91,6 +86,12 @@ if( NOT USE_CUDA )
       if( CUSTOM_ROCSOLVER)
         set ( ENV{rocsolver_DIR} ${CUSTOM_ROCSOLVER})
         find_package( rocsolver REQUIRED CONFIG NO_CMAKE_PATH )
+
+        # in case of using custom rocsolver and not custom rocblas, we need to have
+        # custom rocsolver include directories before rocblas/hip include directories
+        # in case there is a rocsolver installed on the system.
+        target_include_directories( hipblas
+          SYSTEM PRIVATE $<BUILD_INTERFACE:${ROCSOLVER_INCLUDE_DIRS}> )
       elseif(WIN32)
         find_package( rocsolver REQUIRED CONFIG PATHS ${ROCSOLVER_PATH} )
       else()
@@ -115,6 +116,14 @@ else( )
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
   )
 endif( )
+
+# External header includes included as system files
+target_include_directories( hipblas
+  SYSTEM PRIVATE
+    $<BUILD_INTERFACE:${ROCBLAS_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${ROCSOLVER_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${HIP_INCLUDE_DIRS}>
+)
 
 # Internal header includes
 target_include_directories( hipblas
