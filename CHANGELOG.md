@@ -1,13 +1,20 @@
 # Change Log for hipBLAS
 
-## (Unreleased) hipBLAS 1.1.0
+## (Unreleased) hipBLAS 2.0.0 for ROCm 6.0.0
+### Deprecated
+- hipblasDatatype_t is deprecated and will be removed in a future release and replaced with hipDataType
+- hipblasComplex and hipblasDoubleComplex are deprecated and will be removed in a future release and replaced with hipComplex and hipDoubleComplex
+### Removed
+- hipblasXtrmm that calculates B <- alpha * op(A) * B is removed and replaced with hipblasXtrmm that calculates C <- alpha * op(A) * B
+
+## hipBLAS 1.1.0 for ROCm 5.7.0
 ### Changed
 - updated documentation requirements
 
 ### Dependencies
 - dependency rocSOLVER now depends on rocSPARSE
 
-## (Unreleased) hipBLAS 1.0.0
+## hipBLAS 1.0.0 for ROCm 5.6.0
 ### Changed
 - added const qualifier to hipBLAS functions (swap, sbmv, spmv, symv, trsm) where missing
 
@@ -19,7 +26,7 @@
 - in-place trmm is deprecated. It will be replaced by trmm which includes both in-place and
   out-of-place functionality
 
-## (Unreleased) hipBLAS 0.54.0
+## hipBLAS 0.54.0 for ROCm 5.5.0
 ### Added
 - added option to opt-in to use __half for hipblasHalf type in the API for c++ users who define HIPBLAS_USE_HIP_HALF
 - added scripts to plot performance for multiple functions
