@@ -2,7 +2,7 @@
 
 ## hipBLAS 2.0.0 for ROCm 6.0.0
 ### Added
-- added option to opt-in to use of hip_bfloat16 in the API for users who define HIPBLAS_USE_HIP_BFLOAT16
+- added option to define HIPBLAS_USE_HIP_BFLOAT16 to switch API to use hip_bfloat16 type
 - added hipblasGemmExWithFlags API
 ### Deprecated
 - hipblasDatatype_t is deprecated and will be removed in a future release and replaced with hipDataType
