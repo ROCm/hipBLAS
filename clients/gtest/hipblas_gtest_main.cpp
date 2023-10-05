@@ -66,15 +66,6 @@
 #define HIPBLAS_ALLOW_UNINSTANTIATED_GTEST(testclass)
 #endif
 
-#define INSTANTIATE_TEST_CATEGORY(testclass, category)                                        \
-    HIPBLAS_ALLOW_UNINSTANTIATED_GTEST(testclass)                                             \
-    INSTANTIATE_TEST_SUITE_P(                                                                 \
-        category,                                                                             \
-        testclass,                                                                            \
-        testing::ValuesIn(HipBLAS_TestData::begin([](const Arguments& arg) { return true; }), \
-                          HipBLAS_TestData::end()),                                           \
-        testclass::PrintToStringParamName());
-
 struct data_driven : public testing::TestWithParam<Arguments>
 {
     virtual void TestBody() {}
@@ -82,6 +73,16 @@ struct data_driven : public testing::TestWithParam<Arguments>
     void operator()(const Arguments& arg)
     {
         run_bench_test(const_cast<Arguments&>(arg), 1, 0);
+    }
+
+    static bool function_filter(const Arguments& arg)
+    {
+        return true;
+    }
+
+    static bool type_filter(const Arguments& arg)
+    {
+        return true;
     }
 
     struct PrintToStringParamName
@@ -271,6 +272,17 @@ static void hipblas_set_listener()
 
     if(gtest_listener && !strcmp(gtest_listener, "NO_PASS_LINE_IN_LOG"))
     {
+        std::cout << "environment GTEST_LISTENER=NO_PASS_LINE_IN_LOG is now the default.\n"
+                     "To see pass lines use: GTEST_LISTENER=PASS_LINE_IN_LOG"
+                  << std::endl;
+    }
+
+    if(gtest_listener && !strcmp(gtest_listener, "PASS_LINE_IN_LOG"))
+    {
+    }
+    else
+    {
+        // default is now the same as GTEST_LISTENER=NO_PASS_LINE_IN_LOG
         listener->showTestNames      = false;
         listener->showSuccesses      = false;
         listener->showInlineFailures = true; // easier reading
@@ -280,24 +292,75 @@ static void hipblas_set_listener()
     listeners.Append(listener);
 }
 
+static void hipblas_print_usage_warning()
+{
+    std::string warning(
+        "parsing of test data may take a couple minutes before any test output appears...");
+
+    std::cout << "info: " << warning << "\n" << std::endl;
+}
+
+static std::string hipblas_capture_args(int argc, char** argv)
+{
+    std::ostringstream cmdLine;
+    cmdLine << "command line: ";
+    for(int i = 0; i < argc; i++)
+    {
+        if(argv[i])
+            cmdLine << std::string(argv[i]) << " ";
+    }
+    return cmdLine.str();
+}
+
+static void hipblas_print_args(const std::string& args)
+{
+    std::cout << args << std::endl;
+    std::cout.flush();
+}
+
+static void hipblas_set_test_device()
+{
+    int device_id    = 0;
+    int device_count = query_device_property();
+    if(device_count <= 0)
+    {
+        std::cerr << "Error: No devices found" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    set_device(device_id);
+}
+
 /* =====================================================================
       Main function:
 =================================================================== */
 
 int main(int argc, char** argv)
 {
+    std::string args = hipblas_capture_args(argc, argv);
+
+    auto* no_signal_handling = getenv("HIPBLAS_TEST_NO_SIGACTION");
+    if(no_signal_handling)
+    {
+        std::cout << "hipblas-test INFO: sigactions disabled." << std::endl;
+    }
+    else
+    {
+        // Set signal handler
+        hipblas_test_sigaction();
+    }
+
     print_version_info();
 
-    // print device info
-    int device_count = query_device_property();
-    if(device_count <= 0)
-    {
-        std::cerr << "Error: No devices found" << std::endl;
-        return EXIT_FAILURE;
-    }
-    set_device(0); // use first device
+    // Set test device
+    hipblas_set_test_device();
 
-    bool datafile = hipblas_parse_data(argc, argv);
+    hipblas_print_usage_warning();
+
+#ifdef HIPBLAS_V2
+    bool datafile = hipblas_parse_data(argc, argv, hipblas_exepath() + "hipblas_v2_gtest.data");
+#else
+    bool datafile = hipblas_parse_data(argc, argv, hipblas_exepath() + "hipblas_gtest.data");
+#endif
 
     ::testing::InitGoogleTest(&argc, argv);
 
@@ -307,18 +370,24 @@ int main(int argc, char** argv)
     int status = 0;
 
     if(!datafile)
+    {
         status = RUN_ALL_TESTS();
+    }
     else
     {
         // remove standard non-yaml based gtests defined with explicit code. This depends
         // on the GTEST name convention, so for now internal tests must follow the
         // pattern INSTANTIATE_TEST_SUITE_P(*, *_gtest, *) to be filtered from yaml set
         // via this GTEST_FLAG line:
-        ::testing::GTEST_FLAG(filter) = ::testing::GTEST_FLAG(filter) + "-*_gtest.*";
+        // Temporarily running all tests while transitioning to YAML based testing for hipblas-test suite.
+        ::testing::GTEST_FLAG(filter) = ::testing::GTEST_FLAG(filter); // + "-*_gtest.*";
 
         status = RUN_ALL_TESTS();
     }
 
     print_version_info(); // redundant, but convenient when tests fail
+
+    hipblas_print_args(args);
+
     return status;
 }

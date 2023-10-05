@@ -326,7 +326,6 @@ Definitions:
     precision: *single_double_precisions_complex
     uplo: [ U, L ]
     side: [L, R]
-    transA: [ N, C ]
     alpha_beta: *alpha_beta_range
     matrix_size: *hemm_dims
 
@@ -589,9 +588,6 @@ Tests:
       #- dot:   *half_bfloat_single_double_complex_real_precisions
       - dot:   *single_double_precisions_complex_real
       - dotc:  *single_double_precisions_complex
-      - swap: *single_double_precisions_complex_real
-      - rot:   *rot_precisions
-      - rotm:  *single_double_precisions
       #*single_double_precisions_complex_real
 
 
@@ -605,9 +601,6 @@ Tests:
       #- dot_batched:   *half_bfloat_single_double_complex_real_precisions
       - dot_batched:   *single_double_precisions_complex_real
       - dotc_batched:  *single_double_precisions_complex
-      - swap_batched: *single_double_precisions_complex_real
-      - rot_batched:   *rot_precisions
-      - rotm_batched:  *single_double_precisions
       #*single_double_precisions_complex_real
 
   - name: blas1_strided_batched
@@ -621,9 +614,6 @@ Tests:
       #- dot_strided_batched:   *half_bfloat_single_double_complex_real_precisions
       - dot_strided_batched:   *single_double_precisions_complex_real
       - dotc_strided_batched:  *single_double_precisions_complex
-      - swap_strided_batched: *single_double_precisions_complex_real
-      - rot_strided_batched:   *rot_precisions
-      - rotm_strided_batched:  *single_double_precisions
       #*single_double_precisions_complex_real
 
 # Swap, rot, and rotm get their own for quick tests as they write to x and y

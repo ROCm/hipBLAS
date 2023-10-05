@@ -10464,7 +10464,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2StridedBatched_v2(hipblasHandle_t    
         x := A**T*x   or
         x := A**H*x,
 
-    x is a vectors and A is a banded m by m matrix (see description below).
+    x is a vectors and A is a banded n by n matrix (see description below).
 
     - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : s,d,c,z
@@ -10485,7 +10485,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2StridedBatched_v2(hipblasHandle_t    
                                      1's and is not referenced.
               HIPBLAS_DIAG_NON_UNIT: No assumptions are made of A's main diagonal.
     @param[in]
-    m         [int]
+    n         [int]
               the number of rows and columns of the matrix represented by A.
     @param[in]
     k         [int]
@@ -10503,7 +10503,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2StridedBatched_v2(hipblasHandle_t    
                 The matrix is compacted so that the main diagonal resides on the k'th
                 row, the first super diagonal resides on the RHS of the k-1'th row, etc,
                 with the k'th diagonal on the RHS of the 0'th row.
-                   Ex: (HIPBLAS_FILL_MODE_UPPER; m = 5; k = 2)
+                   Ex: (HIPBLAS_FILL_MODE_UPPER; n = 5; k = 2)
                       1 6 9 0 0              0 0 9 8 7
                       0 2 7 8 0              0 6 7 8 9
                       0 0 3 8 7     ---->    1 2 3 4 5
@@ -10515,7 +10515,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZsyr2StridedBatched_v2(hipblasHandle_t    
                 assumed to be 0.
                 The matrix is compacted so that the main diagonal resides on the 0'th row,
                 working up to the k'th diagonal residing on the LHS of the k'th row.
-                   Ex: (HIPBLAS_FILL_MODE_LOWER; m = 5; k = 2)
+                   Ex: (HIPBLAS_FILL_MODE_LOWER; n = 5; k = 2)
                       1 0 0 0 0              1 2 3 4 5
                       6 2 0 0 0              6 7 8 9 0
                       9 7 3 0 0     ---->    9 8 7 0 0
@@ -10536,7 +10536,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStbmv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             int                k,
                                             const float*       AP,
                                             int                lda,
@@ -10547,7 +10547,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtbmv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             int                k,
                                             const double*      AP,
                                             int                lda,
@@ -10558,7 +10558,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmv(hipblasHandle_t       handle,
                                             hipblasFillMode_t     uplo,
                                             hipblasOperation_t    transA,
                                             hipblasDiagType_t     diag,
-                                            int                   m,
+                                            int                   n,
                                             int                   k,
                                             const hipblasComplex* AP,
                                             int                   lda,
@@ -10569,7 +10569,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
                                             hipblasDiagType_t           diag,
-                                            int                         m,
+                                            int                         n,
                                             int                         k,
                                             const hipblasDoubleComplex* AP,
                                             int                         lda,
@@ -10580,7 +10580,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmv_v2(hipblasHandle_t    handle,
                                                hipblasFillMode_t  uplo,
                                                hipblasOperation_t transA,
                                                hipblasDiagType_t  diag,
-                                               int                m,
+                                               int                n,
                                                int                k,
                                                const hipComplex*  AP,
                                                int                lda,
@@ -10591,7 +10591,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmv_v2(hipblasHandle_t         handle,
                                                hipblasFillMode_t       uplo,
                                                hipblasOperation_t      transA,
                                                hipblasDiagType_t       diag,
-                                               int                     m,
+                                               int                     n,
                                                int                     k,
                                                const hipDoubleComplex* AP,
                                                int                     lda,
@@ -10610,7 +10610,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmv_v2(hipblasHandle_t         handle,
         x_i := A_i**H*x_i,
 
     where (A_i, x_i) is the i-th instance of the batch.
-    x_i is a vector and A_i is an m by m matrix, for i = 1, ..., batchCount.
+    x_i is a vector and A_i is an n by n matrix, for i = 1, ..., batchCount.
 
     - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
@@ -10631,7 +10631,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmv_v2(hipblasHandle_t         handle,
                                      1's and is not referenced.
               HIPBLAS_DIAG_NON_UNIT: No assumptions are made of each A_i's main diagonal.
     @param[in]
-    m         [int]
+    n         [int]
               the number of rows and columns of the matrix represented by each A_i.
     @param[in]
     k         [int]
@@ -10649,7 +10649,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmv_v2(hipblasHandle_t         handle,
                 The matrix is compacted so that the main diagonal resides on the k'th
                 row, the first super diagonal resides on the RHS of the k-1'th row, etc,
                 with the k'th diagonal on the RHS of the 0'th row.
-                   Ex: (HIPBLAS_FILL_MODE_UPPER; m = 5; k = 2)
+                   Ex: (HIPBLAS_FILL_MODE_UPPER; n = 5; k = 2)
                       1 6 9 0 0              0 0 9 8 7
                       0 2 7 8 0              0 6 7 8 9
                       0 0 3 8 7     ---->    1 2 3 4 5
@@ -10661,7 +10661,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmv_v2(hipblasHandle_t         handle,
                 assumed to be 0.
                 The matrix is compacted so that the main diagonal resides on the 0'th row,
                 working up to the k'th diagonal residing on the LHS of the k'th row.
-                   Ex: (HIPBLAS_FILL_MODE_LOWER; m = 5; k = 2)
+                   Ex: (HIPBLAS_FILL_MODE_LOWER; n = 5; k = 2)
                       1 0 0 0 0              1 2 3 4 5
                       6 2 0 0 0              6 7 8 9 0
                       9 7 3 0 0     ---->    9 8 7 0 0
@@ -10685,7 +10685,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStbmvBatched(hipblasHandle_t    handle,
                                                    hipblasFillMode_t  uplo,
                                                    hipblasOperation_t transA,
                                                    hipblasDiagType_t  diag,
-                                                   int                m,
+                                                   int                n,
                                                    int                k,
                                                    const float* const AP[],
                                                    int                lda,
@@ -10697,7 +10697,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtbmvBatched(hipblasHandle_t     handle,
                                                    hipblasFillMode_t   uplo,
                                                    hipblasOperation_t  transA,
                                                    hipblasDiagType_t   diag,
-                                                   int                 m,
+                                                   int                 n,
                                                    int                 k,
                                                    const double* const AP[],
                                                    int                 lda,
@@ -10709,7 +10709,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmvBatched(hipblasHandle_t             h
                                                    hipblasFillMode_t           uplo,
                                                    hipblasOperation_t          transA,
                                                    hipblasDiagType_t           diag,
-                                                   int                         m,
+                                                   int                         n,
                                                    int                         k,
                                                    const hipblasComplex* const AP[],
                                                    int                         lda,
@@ -10721,7 +10721,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvBatched(hipblasHandle_t              
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
                                                    hipblasDiagType_t                 diag,
-                                                   int                               m,
+                                                   int                               n,
                                                    int                               k,
                                                    const hipblasDoubleComplex* const AP[],
                                                    int                               lda,
@@ -10733,7 +10733,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmvBatched_v2(hipblasHandle_t         ha
                                                       hipblasFillMode_t       uplo,
                                                       hipblasOperation_t      transA,
                                                       hipblasDiagType_t       diag,
-                                                      int                     m,
+                                                      int                     n,
                                                       int                     k,
                                                       const hipComplex* const AP[],
                                                       int                     lda,
@@ -10745,7 +10745,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvBatched_v2(hipblasHandle_t           
                                                       hipblasFillMode_t             uplo,
                                                       hipblasOperation_t            transA,
                                                       hipblasDiagType_t             diag,
-                                                      int                           m,
+                                                      int                           n,
                                                       int                           k,
                                                       const hipDoubleComplex* const AP[],
                                                       int                           lda,
@@ -10765,7 +10765,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvBatched_v2(hipblasHandle_t           
         x_i := A_i**H*x_i,
 
     where (A_i, x_i) is the i-th instance of the batch.
-    x_i is a vector and A_i is an m by m matrix, for i = 1, ..., batchCount.
+    x_i is a vector and A_i is an n by n matrix, for i = 1, ..., batchCount.
 
     - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
@@ -10786,7 +10786,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvBatched_v2(hipblasHandle_t           
                                      1's and is not referenced.
               HIPBLAS_DIAG_NON_UNIT: No assumptions are made of each A_i's main diagonal.
     @param[in]
-    m         [int]
+    n         [int]
               the number of rows and columns of the matrix represented by each A_i.
     @param[in]
     k         [int]
@@ -10804,7 +10804,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvBatched_v2(hipblasHandle_t           
                 The matrix is compacted so that the main diagonal resides on the k'th
                 row, the first super diagonal resides on the RHS of the k-1'th row, etc,
                 with the k'th diagonal on the RHS of the 0'th row.
-                   Ex: (HIPBLAS_FILL_MODE_UPPER; m = 5; k = 2)
+                   Ex: (HIPBLAS_FILL_MODE_UPPER; n = 5; k = 2)
                       1 6 9 0 0              0 0 9 8 7
                       0 2 7 8 0              0 6 7 8 9
                       0 0 3 8 7     ---->    1 2 3 4 5
@@ -10816,7 +10816,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvBatched_v2(hipblasHandle_t           
                 assumed to be 0.
                 The matrix is compacted so that the main diagonal resides on the 0'th row,
                 working up to the k'th diagonal residing on the LHS of the k'th row.
-                   Ex: (HIPBLAS_FILL_MODE_LOWER; m = 5; k = 2)
+                   Ex: (HIPBLAS_FILL_MODE_LOWER; n = 5; k = 2)
                       1 0 0 0 0              1 2 3 4 5
                       6 2 0 0 0              6 7 8 9 0
                       9 7 3 0 0     ---->    9 8 7 0 0
@@ -10846,7 +10846,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStbmvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           int                k,
                                                           const float*       AP,
                                                           int                lda,
@@ -10860,7 +10860,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtbmvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           int                k,
                                                           const double*      AP,
                                                           int                lda,
@@ -10874,7 +10874,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t     uplo,
                                                           hipblasOperation_t    transA,
                                                           hipblasDiagType_t     diag,
-                                                          int                   m,
+                                                          int                   n,
                                                           int                   k,
                                                           const hipblasComplex* AP,
                                                           int                   lda,
@@ -10888,7 +10888,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
                                                           hipblasDiagType_t           diag,
-                                                          int                         m,
+                                                          int                         n,
                                                           int                         k,
                                                           const hipblasDoubleComplex* AP,
                                                           int                         lda,
@@ -10902,7 +10902,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtbmvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t  uplo,
                                                              hipblasOperation_t transA,
                                                              hipblasDiagType_t  diag,
-                                                             int                m,
+                                                             int                n,
                                                              int                k,
                                                              const hipComplex*  AP,
                                                              int                lda,
@@ -10916,7 +10916,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbmvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t       uplo,
                                                              hipblasOperation_t      transA,
                                                              hipblasDiagType_t       diag,
-                                                             int                     m,
+                                                             int                     n,
                                                              int                     k,
                                                              const hipDoubleComplex* AP,
                                                              int                     lda,
@@ -11388,12 +11388,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtbsvStridedBatched_v2(hipblasHandle_t    
             HIPBLAS_DIAG_NON_UNIT:  A is not assumed to be unit triangular.
 
     @param[in]
-    m       [int]
-            m specifies the number of rows of A. m >= 0.
+    n       [int]
+            n specifies the number of rows of A. n >= 0.
 
     @param[in]
     AP       device pointer storing matrix A,
-            of dimension at least ( m * ( m + 1 ) / 2 ).
+            of dimension at least ( n * ( n + 1 ) / 2 ).
           Before entry with uplo = HIPBLAS_FILL_MODE_UPPER, the array A
           must contain the upper triangular matrix packed sequentially,
           column by column, so that A[0] contains a_{0,0}, A[1] and A[2] contain
@@ -11418,7 +11418,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStpmv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             const float*       AP,
                                             float*             x,
                                             int                incx);
@@ -11427,7 +11427,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtpmv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             const double*      AP,
                                             double*            x,
                                             int                incx);
@@ -11436,7 +11436,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmv(hipblasHandle_t       handle,
                                             hipblasFillMode_t     uplo,
                                             hipblasOperation_t    transA,
                                             hipblasDiagType_t     diag,
-                                            int                   m,
+                                            int                   n,
                                             const hipblasComplex* AP,
                                             hipblasComplex*       x,
                                             int                   incx);
@@ -11445,7 +11445,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
                                             hipblasDiagType_t           diag,
-                                            int                         m,
+                                            int                         n,
                                             const hipblasDoubleComplex* AP,
                                             hipblasDoubleComplex*       x,
                                             int                         incx);
@@ -11454,7 +11454,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmv_v2(hipblasHandle_t    handle,
                                                hipblasFillMode_t  uplo,
                                                hipblasOperation_t transA,
                                                hipblasDiagType_t  diag,
-                                               int                m,
+                                               int                n,
                                                const hipComplex*  AP,
                                                hipComplex*        x,
                                                int                incx);
@@ -11463,7 +11463,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmv_v2(hipblasHandle_t         handle,
                                                hipblasFillMode_t       uplo,
                                                hipblasOperation_t      transA,
                                                hipblasDiagType_t       diag,
-                                               int                     m,
+                                               int                     n,
                                                const hipDoubleComplex* AP,
                                                hipDoubleComplex*       x,
                                                int                     incx);
@@ -11502,12 +11502,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmv_v2(hipblasHandle_t         handle,
             HIPBLAS_DIAG_NON_UNIT:  A_i is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of matrices A_i. m >= 0.
+    n         [int]
+              n specifies the number of rows of matrices A_i. n >= 0.
 
     @param[in]
     AP         device pointer storing pointer of matrices A_i,
-              of dimension ( lda, m )
+              of dimension ( lda, n )
 
     @param[in]
     x         device pointer storing vectors x_i.
@@ -11527,7 +11527,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStpmvBatched(hipblasHandle_t    handle,
                                                    hipblasFillMode_t  uplo,
                                                    hipblasOperation_t transA,
                                                    hipblasDiagType_t  diag,
-                                                   int                m,
+                                                   int                n,
                                                    const float* const AP[],
                                                    float* const       x[],
                                                    int                incx,
@@ -11537,7 +11537,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtpmvBatched(hipblasHandle_t     handle,
                                                    hipblasFillMode_t   uplo,
                                                    hipblasOperation_t  transA,
                                                    hipblasDiagType_t   diag,
-                                                   int                 m,
+                                                   int                 n,
                                                    const double* const AP[],
                                                    double* const       x[],
                                                    int                 incx,
@@ -11547,7 +11547,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvBatched(hipblasHandle_t             h
                                                    hipblasFillMode_t           uplo,
                                                    hipblasOperation_t          transA,
                                                    hipblasDiagType_t           diag,
-                                                   int                         m,
+                                                   int                         n,
                                                    const hipblasComplex* const AP[],
                                                    hipblasComplex* const       x[],
                                                    int                         incx,
@@ -11557,7 +11557,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvBatched(hipblasHandle_t              
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
                                                    hipblasDiagType_t                 diag,
-                                                   int                               m,
+                                                   int                               n,
                                                    const hipblasDoubleComplex* const AP[],
                                                    hipblasDoubleComplex* const       x[],
                                                    int                               incx,
@@ -11567,7 +11567,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvBatched_v2(hipblasHandle_t         ha
                                                       hipblasFillMode_t       uplo,
                                                       hipblasOperation_t      transA,
                                                       hipblasDiagType_t       diag,
-                                                      int                     m,
+                                                      int                     n,
                                                       const hipComplex* const AP[],
                                                       hipComplex* const       x[],
                                                       int                     incx,
@@ -11577,7 +11577,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvBatched_v2(hipblasHandle_t           
                                                       hipblasFillMode_t             uplo,
                                                       hipblasOperation_t            transA,
                                                       hipblasDiagType_t             diag,
-                                                      int                           m,
+                                                      int                           n,
                                                       const hipDoubleComplex* const AP[],
                                                       hipDoubleComplex* const       x[],
                                                       int                           incx,
@@ -11618,12 +11618,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvBatched_v2(hipblasHandle_t           
             HIPBLAS_DIAG_NON_UNIT:  A_i is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of matrices A_i. m >= 0.
+    n         [int]
+              n specifies the number of rows of matrices A_i. n >= 0.
 
     @param[in]
     AP         device pointer of the matrix A_0,
-              of dimension ( lda, m )
+              of dimension ( lda, n )
 
     @param[in]
     strideA  [hipblasStride]
@@ -11651,7 +11651,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStpmvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           const float*       AP,
                                                           hipblasStride      strideA,
                                                           float*             x,
@@ -11663,7 +11663,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtpmvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           const double*      AP,
                                                           hipblasStride      strideA,
                                                           double*            x,
@@ -11675,7 +11675,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t     uplo,
                                                           hipblasOperation_t    transA,
                                                           hipblasDiagType_t     diag,
-                                                          int                   m,
+                                                          int                   n,
                                                           const hipblasComplex* AP,
                                                           hipblasStride         strideA,
                                                           hipblasComplex*       x,
@@ -11687,7 +11687,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
                                                           hipblasDiagType_t           diag,
-                                                          int                         m,
+                                                          int                         n,
                                                           const hipblasDoubleComplex* AP,
                                                           hipblasStride               strideA,
                                                           hipblasDoubleComplex*       x,
@@ -11699,7 +11699,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpmvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t  uplo,
                                                              hipblasOperation_t transA,
                                                              hipblasDiagType_t  diag,
-                                                             int                m,
+                                                             int                n,
                                                              const hipComplex*  AP,
                                                              hipblasStride      strideA,
                                                              hipComplex*        x,
@@ -11711,7 +11711,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t       uplo,
                                                              hipblasOperation_t      transA,
                                                              hipblasDiagType_t       diag,
-                                                             int                     m,
+                                                             int                     n,
                                                              const hipDoubleComplex* AP,
                                                              hipblasStride           strideA,
                                                              hipDoubleComplex*       x,
@@ -11757,8 +11757,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpmvStridedBatched_v2(hipblasHandle_t    
             HIPBLAS_DIAG_NON_UNIT: A is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of b. m >= 0.
+    n         [int]
+              n specifies the number of rows of b. n >= 0.
 
     @param[in]
     AP        device pointer storing the packed version of matrix A,
@@ -11777,7 +11777,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStpsv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             const float*       AP,
                                             float*             x,
                                             int                incx);
@@ -11786,7 +11786,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtpsv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             const double*      AP,
                                             double*            x,
                                             int                incx);
@@ -11795,7 +11795,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsv(hipblasHandle_t       handle,
                                             hipblasFillMode_t     uplo,
                                             hipblasOperation_t    transA,
                                             hipblasDiagType_t     diag,
-                                            int                   m,
+                                            int                   n,
                                             const hipblasComplex* AP,
                                             hipblasComplex*       x,
                                             int                   incx);
@@ -11804,7 +11804,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
                                             hipblasDiagType_t           diag,
-                                            int                         m,
+                                            int                         n,
                                             const hipblasDoubleComplex* AP,
                                             hipblasDoubleComplex*       x,
                                             int                         incx);
@@ -11813,7 +11813,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsv_v2(hipblasHandle_t    handle,
                                                hipblasFillMode_t  uplo,
                                                hipblasOperation_t transA,
                                                hipblasDiagType_t  diag,
-                                               int                m,
+                                               int                n,
                                                const hipComplex*  AP,
                                                hipComplex*        x,
                                                int                incx);
@@ -11822,7 +11822,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsv_v2(hipblasHandle_t         handle,
                                                hipblasFillMode_t       uplo,
                                                hipblasOperation_t      transA,
                                                hipblasDiagType_t       diag,
-                                               int                     m,
+                                               int                     n,
                                                const hipDoubleComplex* AP,
                                                hipDoubleComplex*       x,
                                                int                     incx);
@@ -11866,8 +11866,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsv_v2(hipblasHandle_t         handle,
             HIPBLAS_DIAG_NON_UNIT: each A_i is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of each b_i. m >= 0.
+    n         [int]
+              n specifies the number of rows of each b_i. n >= 0.
 
     @param[in]
     AP        device array of device pointers storing the packed versions of each matrix A_i,
@@ -11889,7 +11889,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStpsvBatched(hipblasHandle_t    handle,
                                                    hipblasFillMode_t  uplo,
                                                    hipblasOperation_t transA,
                                                    hipblasDiagType_t  diag,
-                                                   int                m,
+                                                   int                n,
                                                    const float* const AP[],
                                                    float* const       x[],
                                                    int                incx,
@@ -11899,7 +11899,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtpsvBatched(hipblasHandle_t     handle,
                                                    hipblasFillMode_t   uplo,
                                                    hipblasOperation_t  transA,
                                                    hipblasDiagType_t   diag,
-                                                   int                 m,
+                                                   int                 n,
                                                    const double* const AP[],
                                                    double* const       x[],
                                                    int                 incx,
@@ -11909,7 +11909,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsvBatched(hipblasHandle_t             h
                                                    hipblasFillMode_t           uplo,
                                                    hipblasOperation_t          transA,
                                                    hipblasDiagType_t           diag,
-                                                   int                         m,
+                                                   int                         n,
                                                    const hipblasComplex* const AP[],
                                                    hipblasComplex* const       x[],
                                                    int                         incx,
@@ -11919,7 +11919,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsvBatched(hipblasHandle_t              
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
                                                    hipblasDiagType_t                 diag,
-                                                   int                               m,
+                                                   int                               n,
                                                    const hipblasDoubleComplex* const AP[],
                                                    hipblasDoubleComplex* const       x[],
                                                    int                               incx,
@@ -11929,7 +11929,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsvBatched_v2(hipblasHandle_t         ha
                                                       hipblasFillMode_t       uplo,
                                                       hipblasOperation_t      transA,
                                                       hipblasDiagType_t       diag,
-                                                      int                     m,
+                                                      int                     n,
                                                       const hipComplex* const AP[],
                                                       hipComplex* const       x[],
                                                       int                     incx,
@@ -11939,7 +11939,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsvBatched_v2(hipblasHandle_t           
                                                       hipblasFillMode_t             uplo,
                                                       hipblasOperation_t            transA,
                                                       hipblasDiagType_t             diag,
-                                                      int                           m,
+                                                      int                           n,
                                                       const hipDoubleComplex* const AP[],
                                                       hipDoubleComplex* const       x[],
                                                       int                           incx,
@@ -11984,8 +11984,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsvBatched_v2(hipblasHandle_t           
             HIPBLAS_DIAG_NON_UNIT: each A_i is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of each b_i. m >= 0.
+    n         [int]
+              n specifies the number of rows of each b_i. n >= 0.
 
     @param[in]
     AP        device pointer pointing to the first packed matrix A_1,
@@ -12014,7 +12014,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStpsvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           const float*       AP,
                                                           hipblasStride      strideA,
                                                           float*             x,
@@ -12026,7 +12026,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtpsvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           const double*      AP,
                                                           hipblasStride      strideA,
                                                           double*            x,
@@ -12038,7 +12038,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t     uplo,
                                                           hipblasOperation_t    transA,
                                                           hipblasDiagType_t     diag,
-                                                          int                   m,
+                                                          int                   n,
                                                           const hipblasComplex* AP,
                                                           hipblasStride         strideA,
                                                           hipblasComplex*       x,
@@ -12050,7 +12050,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
                                                           hipblasDiagType_t           diag,
-                                                          int                         m,
+                                                          int                         n,
                                                           const hipblasDoubleComplex* AP,
                                                           hipblasStride               strideA,
                                                           hipblasDoubleComplex*       x,
@@ -12062,7 +12062,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtpsvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t  uplo,
                                                              hipblasOperation_t transA,
                                                              hipblasDiagType_t  diag,
-                                                             int                m,
+                                                             int                n,
                                                              const hipComplex*  AP,
                                                              hipblasStride      strideA,
                                                              hipComplex*        x,
@@ -12074,7 +12074,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t       uplo,
                                                              hipblasOperation_t      transA,
                                                              hipblasDiagType_t       diag,
-                                                             int                     m,
+                                                             int                     n,
                                                              const hipDoubleComplex* AP,
                                                              hipblasStride           strideA,
                                                              hipDoubleComplex*       x,
@@ -12116,17 +12116,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtpsvStridedBatched_v2(hipblasHandle_t    
             HIPBLAS_DIAG_NON_UNIT:  A is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of A. m >= 0.
+    n         [int]
+              n specifies the number of rows of A. n >= 0.
 
     @param[in]
     AP        device pointer storing matrix A,
-              of dimension ( lda, m )
+              of dimension ( lda, n )
 
     @param[in]
     lda       [int]
               specifies the leading dimension of A.
-              lda = max( 1, m ).
+              lda = max( 1, n ).
 
     @param[in]
     x         device pointer storing vector x.
@@ -12141,7 +12141,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             const float*       AP,
                                             int                lda,
                                             float*             x,
@@ -12151,7 +12151,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             const double*      AP,
                                             int                lda,
                                             double*            x,
@@ -12161,7 +12161,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmv(hipblasHandle_t       handle,
                                             hipblasFillMode_t     uplo,
                                             hipblasOperation_t    transA,
                                             hipblasDiagType_t     diag,
-                                            int                   m,
+                                            int                   n,
                                             const hipblasComplex* AP,
                                             int                   lda,
                                             hipblasComplex*       x,
@@ -12171,7 +12171,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
                                             hipblasDiagType_t           diag,
-                                            int                         m,
+                                            int                         n,
                                             const hipblasDoubleComplex* AP,
                                             int                         lda,
                                             hipblasDoubleComplex*       x,
@@ -12181,7 +12181,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmv_v2(hipblasHandle_t    handle,
                                                hipblasFillMode_t  uplo,
                                                hipblasOperation_t transA,
                                                hipblasDiagType_t  diag,
-                                               int                m,
+                                               int                n,
                                                const hipComplex*  AP,
                                                int                lda,
                                                hipComplex*        x,
@@ -12191,7 +12191,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmv_v2(hipblasHandle_t         handle,
                                                hipblasFillMode_t       uplo,
                                                hipblasOperation_t      transA,
                                                hipblasDiagType_t       diag,
-                                               int                     m,
+                                               int                     n,
                                                const hipDoubleComplex* AP,
                                                int                     lda,
                                                hipDoubleComplex*       x,
@@ -12231,17 +12231,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmv_v2(hipblasHandle_t         handle,
             HIPBLAS_DIAG_NON_UNIT:  A_i is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of matrices A_i. m >= 0.
+    n         [int]
+              n specifies the number of rows of matrices A_i. n >= 0.
 
     @param[in]
     AP        device pointer storing pointer of matrices A_i,
-              of dimension ( lda, m )
+              of dimension ( lda, n )
 
     @param[in]
     lda       [int]
               specifies the leading dimension of A_i.
-              lda >= max( 1, m ).
+              lda >= max( 1, n ).
 
     @param[in]
     x         device pointer storing vectors x_i.
@@ -12261,7 +12261,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmvBatched(hipblasHandle_t    handle,
                                                    hipblasFillMode_t  uplo,
                                                    hipblasOperation_t transA,
                                                    hipblasDiagType_t  diag,
-                                                   int                m,
+                                                   int                n,
                                                    const float* const AP[],
                                                    int                lda,
                                                    float* const       x[],
@@ -12272,7 +12272,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmvBatched(hipblasHandle_t     handle,
                                                    hipblasFillMode_t   uplo,
                                                    hipblasOperation_t  transA,
                                                    hipblasDiagType_t   diag,
-                                                   int                 m,
+                                                   int                 n,
                                                    const double* const AP[],
                                                    int                 lda,
                                                    double* const       x[],
@@ -12283,7 +12283,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmvBatched(hipblasHandle_t             h
                                                    hipblasFillMode_t           uplo,
                                                    hipblasOperation_t          transA,
                                                    hipblasDiagType_t           diag,
-                                                   int                         m,
+                                                   int                         n,
                                                    const hipblasComplex* const AP[],
                                                    int                         lda,
                                                    hipblasComplex* const       x[],
@@ -12294,7 +12294,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmvBatched(hipblasHandle_t              
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
                                                    hipblasDiagType_t                 diag,
-                                                   int                               m,
+                                                   int                               n,
                                                    const hipblasDoubleComplex* const AP[],
                                                    int                               lda,
                                                    hipblasDoubleComplex* const       x[],
@@ -12305,7 +12305,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmvBatched_v2(hipblasHandle_t         ha
                                                       hipblasFillMode_t       uplo,
                                                       hipblasOperation_t      transA,
                                                       hipblasDiagType_t       diag,
-                                                      int                     m,
+                                                      int                     n,
                                                       const hipComplex* const AP[],
                                                       int                     lda,
                                                       hipComplex* const       x[],
@@ -12316,7 +12316,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmvBatched_v2(hipblasHandle_t           
                                                       hipblasFillMode_t             uplo,
                                                       hipblasOperation_t            transA,
                                                       hipblasDiagType_t             diag,
-                                                      int                           m,
+                                                      int                           n,
                                                       const hipDoubleComplex* const AP[],
                                                       int                           lda,
                                                       hipDoubleComplex* const       x[],
@@ -12358,17 +12358,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmvBatched_v2(hipblasHandle_t           
             HIPBLAS_DIAG_NON_UNIT:  A_i is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of matrices A_i. m >= 0.
+    n         [int]
+              n specifies the number of rows of matrices A_i. n >= 0.
 
     @param[in]
     AP        device pointer of the matrix A_0,
-              of dimension ( lda, m )
+              of dimension ( lda, n )
 
     @param[in]
     lda       [int]
               specifies the leading dimension of A_i.
-              lda >= max( 1, m ).
+              lda >= max( 1, n ).
 
     @param[in]
     strideA  [hipblasStride]
@@ -12396,7 +12396,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           const float*       AP,
                                                           int                lda,
                                                           hipblasStride      strideA,
@@ -12409,7 +12409,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           const double*      AP,
                                                           int                lda,
                                                           hipblasStride      strideA,
@@ -12422,7 +12422,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t     uplo,
                                                           hipblasOperation_t    transA,
                                                           hipblasDiagType_t     diag,
-                                                          int                   m,
+                                                          int                   n,
                                                           const hipblasComplex* AP,
                                                           int                   lda,
                                                           hipblasStride         strideA,
@@ -12435,7 +12435,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
                                                           hipblasDiagType_t           diag,
-                                                          int                         m,
+                                                          int                         n,
                                                           const hipblasDoubleComplex* AP,
                                                           int                         lda,
                                                           hipblasStride               strideA,
@@ -12448,7 +12448,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t  uplo,
                                                              hipblasOperation_t transA,
                                                              hipblasDiagType_t  diag,
-                                                             int                m,
+                                                             int                n,
                                                              const hipComplex*  AP,
                                                              int                lda,
                                                              hipblasStride      strideA,
@@ -12461,7 +12461,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t       uplo,
                                                              hipblasOperation_t      transA,
                                                              hipblasDiagType_t       diag,
-                                                             int                     m,
+                                                             int                     n,
                                                              const hipDoubleComplex* AP,
                                                              int                     lda,
                                                              hipblasStride           strideA,
@@ -12504,17 +12504,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmvStridedBatched_v2(hipblasHandle_t    
             HIPBLAS_DIAG_NON_UNIT:  A is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of b. m >= 0.
+    n         [int]
+              n specifies the number of rows of b. n >= 0.
 
     @param[in]
     AP        device pointer storing matrix A,
-              of dimension ( lda, m )
+              of dimension ( lda, n )
 
     @param[in]
     lda       [int]
               specifies the leading dimension of A.
-              lda = max( 1, m ).
+              lda = max( 1, n ).
 
     @param[in]
     x         device pointer storing vector x.
@@ -12529,7 +12529,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             const float*       AP,
                                             int                lda,
                                             float*             x,
@@ -12539,7 +12539,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsv(hipblasHandle_t    handle,
                                             hipblasFillMode_t  uplo,
                                             hipblasOperation_t transA,
                                             hipblasDiagType_t  diag,
-                                            int                m,
+                                            int                n,
                                             const double*      AP,
                                             int                lda,
                                             double*            x,
@@ -12549,7 +12549,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsv(hipblasHandle_t       handle,
                                             hipblasFillMode_t     uplo,
                                             hipblasOperation_t    transA,
                                             hipblasDiagType_t     diag,
-                                            int                   m,
+                                            int                   n,
                                             const hipblasComplex* AP,
                                             int                   lda,
                                             hipblasComplex*       x,
@@ -12559,7 +12559,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsv(hipblasHandle_t             handle,
                                             hipblasFillMode_t           uplo,
                                             hipblasOperation_t          transA,
                                             hipblasDiagType_t           diag,
-                                            int                         m,
+                                            int                         n,
                                             const hipblasDoubleComplex* AP,
                                             int                         lda,
                                             hipblasDoubleComplex*       x,
@@ -12569,7 +12569,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsv_v2(hipblasHandle_t    handle,
                                                hipblasFillMode_t  uplo,
                                                hipblasOperation_t transA,
                                                hipblasDiagType_t  diag,
-                                               int                m,
+                                               int                n,
                                                const hipComplex*  AP,
                                                int                lda,
                                                hipComplex*        x,
@@ -12579,7 +12579,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsv_v2(hipblasHandle_t         handle,
                                                hipblasFillMode_t       uplo,
                                                hipblasOperation_t      transA,
                                                hipblasDiagType_t       diag,
-                                               int                     m,
+                                               int                     n,
                                                const hipDoubleComplex* AP,
                                                int                     lda,
                                                hipDoubleComplex*       x,
@@ -12596,7 +12596,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsv_v2(hipblasHandle_t         handle,
 
     where (A_i, x_i, b_i) is the i-th instance of the batch.
     x_i and b_i are vectors and A_i is an
-    m by m triangular matrix.
+    n by n triangular matrix.
 
     The vector x is overwritten on b.
 
@@ -12621,8 +12621,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsv_v2(hipblasHandle_t         handle,
             HIPBLAS_DIAG_NON_UNIT:  A is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of b. m >= 0.
+    n         [int]
+              n specifies the number of rows of b. n >= 0.
 
     @param[in]
     AP         device array of device pointers storing each matrix A_i.
@@ -12630,7 +12630,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsv_v2(hipblasHandle_t         handle,
     @param[in]
     lda       [int]
               specifies the leading dimension of each A_i.
-              lda = max(1, m)
+              lda = max(1, n)
 
     @param[in]
     x         device array of device pointers storing each vector x_i.
@@ -12649,7 +12649,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsvBatched(hipblasHandle_t    handle,
                                                    hipblasFillMode_t  uplo,
                                                    hipblasOperation_t transA,
                                                    hipblasDiagType_t  diag,
-                                                   int                m,
+                                                   int                n,
                                                    const float* const AP[],
                                                    int                lda,
                                                    float* const       x[],
@@ -12660,7 +12660,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsvBatched(hipblasHandle_t     handle,
                                                    hipblasFillMode_t   uplo,
                                                    hipblasOperation_t  transA,
                                                    hipblasDiagType_t   diag,
-                                                   int                 m,
+                                                   int                 n,
                                                    const double* const AP[],
                                                    int                 lda,
                                                    double* const       x[],
@@ -12671,7 +12671,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsvBatched(hipblasHandle_t             h
                                                    hipblasFillMode_t           uplo,
                                                    hipblasOperation_t          transA,
                                                    hipblasDiagType_t           diag,
-                                                   int                         m,
+                                                   int                         n,
                                                    const hipblasComplex* const AP[],
                                                    int                         lda,
                                                    hipblasComplex* const       x[],
@@ -12682,7 +12682,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvBatched(hipblasHandle_t              
                                                    hipblasFillMode_t                 uplo,
                                                    hipblasOperation_t                transA,
                                                    hipblasDiagType_t                 diag,
-                                                   int                               m,
+                                                   int                               n,
                                                    const hipblasDoubleComplex* const AP[],
                                                    int                               lda,
                                                    hipblasDoubleComplex* const       x[],
@@ -12693,7 +12693,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsvBatched_v2(hipblasHandle_t         ha
                                                       hipblasFillMode_t       uplo,
                                                       hipblasOperation_t      transA,
                                                       hipblasDiagType_t       diag,
-                                                      int                     m,
+                                                      int                     n,
                                                       const hipComplex* const AP[],
                                                       int                     lda,
                                                       hipComplex* const       x[],
@@ -12704,7 +12704,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvBatched_v2(hipblasHandle_t           
                                                       hipblasFillMode_t             uplo,
                                                       hipblasOperation_t            transA,
                                                       hipblasDiagType_t             diag,
-                                                      int                           m,
+                                                      int                           n,
                                                       const hipDoubleComplex* const AP[],
                                                       int                           lda,
                                                       hipDoubleComplex* const       x[],
@@ -12721,7 +12721,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvBatched_v2(hipblasHandle_t           
          A_i*x_i = b_i or A_i**T*x_i = b_i,
 
     where (A_i, x_i, b_i) is the i-th instance of the batch.
-    x_i and b_i are vectors and A_i is an m by m triangular matrix, for i = 1, ..., batchCount.
+    x_i and b_i are vectors and A_i is an n by n triangular matrix, for i = 1, ..., batchCount.
 
     The vector x is overwritten on b.
 
@@ -12746,11 +12746,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvBatched_v2(hipblasHandle_t           
             HIPBLAS_DIAG_NON_UNIT:  A is not assumed to be unit triangular.
 
     @param[in]
-    m         [int]
-              m specifies the number of rows of each b_i. m >= 0.
+    n         [int]
+              n specifies the number of rows of each b_i. n >= 0.
 
     @param[in]
-    AP         device pointer to the first matrix (A_1) in the batch, of dimension ( lda, m )
+    AP         device pointer to the first matrix (A_1) in the batch, of dimension ( lda, n )
 
     @param[in]
     strideA  [hipblasStride]
@@ -12759,7 +12759,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvBatched_v2(hipblasHandle_t           
     @param[in]
     lda       [int]
               specifies the leading dimension of each A_i.
-              lda = max( 1, m ).
+              lda = max( 1, n ).
 
     @param[in, out]
     x         device pointer to the first vector (x_1) in the batch.
@@ -12782,7 +12782,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrsvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           const float*       AP,
                                                           int                lda,
                                                           hipblasStride      strideA,
@@ -12795,7 +12795,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrsvStridedBatched(hipblasHandle_t    han
                                                           hipblasFillMode_t  uplo,
                                                           hipblasOperation_t transA,
                                                           hipblasDiagType_t  diag,
-                                                          int                m,
+                                                          int                n,
                                                           const double*      AP,
                                                           int                lda,
                                                           hipblasStride      strideA,
@@ -12808,7 +12808,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t     uplo,
                                                           hipblasOperation_t    transA,
                                                           hipblasDiagType_t     diag,
-                                                          int                   m,
+                                                          int                   n,
                                                           const hipblasComplex* AP,
                                                           int                   lda,
                                                           hipblasStride         strideA,
@@ -12821,7 +12821,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvStridedBatched(hipblasHandle_t       
                                                           hipblasFillMode_t           uplo,
                                                           hipblasOperation_t          transA,
                                                           hipblasDiagType_t           diag,
-                                                          int                         m,
+                                                          int                         n,
                                                           const hipblasDoubleComplex* AP,
                                                           int                         lda,
                                                           hipblasStride               strideA,
@@ -12834,7 +12834,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrsvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t  uplo,
                                                              hipblasOperation_t transA,
                                                              hipblasDiagType_t  diag,
-                                                             int                m,
+                                                             int                n,
                                                              const hipComplex*  AP,
                                                              int                lda,
                                                              hipblasStride      strideA,
@@ -12847,7 +12847,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrsvStridedBatched_v2(hipblasHandle_t    
                                                              hipblasFillMode_t       uplo,
                                                              hipblasOperation_t      transA,
                                                              hipblasDiagType_t       diag,
-                                                             int                     m,
+                                                             int                     n,
                                                              const hipDoubleComplex* AP,
                                                              int                     lda,
                                                              hipblasStride           strideA,

@@ -186,7 +186,6 @@ public:
 
         auto sep = "_";
         name_list << sep << arg.function;
-        name_list << sep << hipblas_datatype2string(arg.a_type);
 
         // Output (name, value) pairs to name_list and value_list
         auto print = [&](const char* name, auto&& value) mutable {
@@ -205,6 +204,7 @@ public:
         std::replace(params.begin(), params.end(), '-', 'n');
         std::replace(params.begin(), params.end(), '.', 'p');
         name += params;
+        name += (arg.api == hipblas_client_api::FORTRAN ? "_F" : "_C");
     }
 };
 
