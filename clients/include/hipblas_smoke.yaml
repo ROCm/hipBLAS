@@ -326,7 +326,6 @@ Definitions:
     precision: *single_double_precisions_complex
     uplo: [ U, L ]
     side: [L, R]
-    transA: [ N, C ]
     alpha_beta: *alpha_beta_range
     matrix_size: *hemm_dims
 

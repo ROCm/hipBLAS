@@ -30,3 +30,17 @@ include: blas2/tpmv_gtest.yaml
 include: blas2/tpsv_gtest.yaml
 include: blas2/trmv_gtest.yaml
 include: blas2/trsv_gtest.yaml
+include: blas3/dgmm_gtest.yaml
+include: blas3/geam_gtest.yaml
+include: blas3/gemm_gtest.yaml
+include: blas3/hemm_gtest.yaml
+include: blas3/her2k_gtest.yaml
+include: blas3/herk_gtest.yaml
+include: blas3/herkx_gtest.yaml
+include: blas3/symm_gtest.yaml
+include: blas3/syr2k_gtest.yaml
+include: blas3/syrk_gtest.yaml
+include: blas3/syrkx_gtest.yaml
+include: blas3/trmm_gtest.yaml
+include: blas3/trsm_gtest.yaml
+include: blas3/trtri_gtest.yaml
