@@ -1,0 +1,51 @@
+---
+include: hipblas_common.yaml
+
+Definitions:
+  - &N_range
+    - [ -1, 10, 500, 1000, 7111, 10000 ]
+
+  - &incx_incy_range
+    - { incx:  1, incy:  1 }
+    - { incx:  2, incy:  3 }
+    - { incx: -1, incy: -1 }
+
+  - &alpha_beta_range
+    - { alpha: 2.0, alphai:  2.0, beta:  0.0, betai: 0.0 }
+
+  - &batch_count_range
+    - [ -1, 0, 1, 2, 10 ]
+
+Tests:
+  - name: axpy_ex_general
+    category: quick
+    function: axpy_ex
+    precision: *bfloat_half_single_double_complex_real_precisions
+    alpha_beta: *alpha_beta_range
+    N: *N_range
+    incx_incy: *incx_incy_range
+    api: [ FORTRAN, C ]
+
+  - name: axpy_batched_ex_general
+    category: quick
+    function: axpy_batched_ex
+    precision: *bfloat_half_single_double_complex_real_precisions
+    alpha_beta: *alpha_beta_range
+    N: *N_range
+    incx_incy: *incx_incy_range
+    batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+
+  - name: axpy_strided_batched_ex_general
+    category: quick
+    function: axpy_strided_batched_ex
+    precision: *bfloat_half_single_double_complex_real_precisions
+    alpha_beta: *alpha_beta_range
+    N: *N_range
+    incx_incy: *incx_incy_range
+    batch_count: *batch_count_range
+    stride_scale: [ 1.0, 2.5 ]
+    api: [ FORTRAN, C ]
+    hipblas_backend: AMD
+...

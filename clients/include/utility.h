@@ -211,6 +211,26 @@ struct real_t_impl<T, std::enable_if_t<is_complex<T>>>
 template <typename T>
 using real_t = typename real_t_impl<T>::type;
 
+/* =============================================================================================== */
+/* Epsilon helpers for near checks.                                                                */
+template <typename>
+constexpr double hipblas_type_epsilon = 0;
+template <>
+constexpr double hipblas_type_epsilon<float> = std::numeric_limits<float>::epsilon();
+template <>
+constexpr double hipblas_type_epsilon<double> = std::numeric_limits<double>::epsilon();
+template <>
+constexpr double hipblas_type_epsilon<hipblasComplex> = std::numeric_limits<float>::epsilon();
+template <>
+constexpr double
+    hipblas_type_epsilon<hipblasDoubleComplex> = std::numeric_limits<double>::epsilon();
+template <>
+constexpr double
+    hipblas_type_epsilon<hipblasHalf> = 1.0009765625; // fp16 0x3C01 in double precision
+template <>
+constexpr double
+    hipblas_type_epsilon<hipblasBfloat16> = 1.0078125; // bf16 0x3F81 in double precision
+
 /* ============================================================================================ */
 /*! \brief  Random number generator which generates NaN values */
 
@@ -438,6 +458,13 @@ inline hipblasBfloat16 random_hpl_generator()
 {
     return hipblasBfloat16(
         float_to_bfloat16(std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng)));
+}
+
+template <>
+inline hipblasHalf random_hpl_generator()
+{
+    return hipblasHalf(
+        float_to_half(std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng)));
 }
 
 /* ============================================================================================ */

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -126,7 +126,7 @@ auto hipblas_blas1_ex_dispatch(const Arguments& arg)
     {
         return TEST<hipblasHalf, hipblasHalf, hipblasHalf, float>{}(arg);
     }
-    else if((is_rot || is_dot) && Ta == Tx && Tx == Ty && Ta == HIPBLAS_R_16B
+    else if((is_rot || is_dot || is_axpy) && Ta == Tx && Tx == Ty && Ta == HIPBLAS_R_16B
             && Tex == HIPBLAS_R_32F)
     {
         return TEST<hipblasBfloat16, hipblasBfloat16, hipblasBfloat16, float>{}(arg);
@@ -135,18 +135,32 @@ auto hipblas_blas1_ex_dispatch(const Arguments& arg)
     {
         return TEST<float, hipblasHalf, hipblasHalf, float>{}(arg);
     }
-    else if((is_scal || is_nrm2 || is_axpy) && Ta == Tx && Ta == HIPBLAS_R_16F
-            && Tex == HIPBLAS_R_32F)
+    else if((is_scal || is_nrm2) && Ta == Tx && Ta == HIPBLAS_R_16F && Tex == HIPBLAS_R_32F)
     {
         // half scal, nrm2, axpy
         return TEST<hipblasHalf, hipblasHalf, float>{}(arg);
+    }
+    else if((is_scal || is_nrm2) && Ta == Tx && Ta == HIPBLAS_R_16B && Tex == HIPBLAS_R_32F)
+    {
+        // bfloat16 scal, nrm2
+        return TEST<hipblasBfloat16, hipblasBfloat16, float>{}(arg);
+    }
+    else if(is_axpy && Ta == Tex && Tx == Ty && (Tx == HIPBLAS_R_16B || Tx == HIPBLAS_R_16F)
+            && Tex == HIPBLAS_R_32F)
+    {
+        // axpy bfloat16 with float alpha
+        return TEST<float, hipblasBfloat16, hipblasBfloat16, float>{}(arg);
     }
     // exclusive functions cases
     else if(is_scal)
     {
         // scal_ex ordering: <alphaType, dataType, exType> opposite order of scal test
-
-        if(Ta == HIPBLAS_R_32F && Tx == HIPBLAS_R_16F && Tex == HIPBLAS_R_32F)
+        if(Ta == Tex && Tx == HIPBLAS_R_16B && Tex == HIPBLAS_R_32F)
+        {
+            // scal bfloat16 with float alpha
+            return TEST<float, hipblasBfloat16, float>{}(arg);
+        }
+        else if(Ta == HIPBLAS_R_32F && Tx == HIPBLAS_R_16F && Tex == HIPBLAS_R_32F)
         {
             // scal half with float alpha
             return TEST<float, hipblasHalf, float>{}(arg);

@@ -212,6 +212,56 @@ void zsymv_(char*                 uplo,
 
 // axpy
 template <>
+void cblas_axpy<hipblasBfloat16, hipblasBfloat16>(int                    n,
+                                                  const hipblasBfloat16  alpha,
+                                                  const hipblasBfloat16* x,
+                                                  int                    incx,
+                                                  hipblasBfloat16*       y,
+                                                  int                    incy)
+{
+    size_t             abs_incx = incx >= 0 ? incx : -incx;
+    size_t             abs_incy = incy >= 0 ? incy : -incy;
+    std::vector<float> x_float(n * abs_incx);
+    std::vector<float> y_float(n * abs_incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = bfloat16_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = bfloat16_to_float(y[i * abs_incy]);
+    }
+
+    cblas_saxpy(n, bfloat16_to_float(alpha), x_float.data(), incx, y_float.data(), incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        y[i * abs_incy] = float_to_bfloat16(y_float[i * abs_incy]);
+    }
+}
+
+template <>
+void cblas_axpy<float, hipblasBfloat16>(
+    int n, const float alpha, const hipblasBfloat16* x, int incx, hipblasBfloat16* y, int incy)
+{
+    size_t             abs_incx = incx >= 0 ? incx : -incx;
+    size_t             abs_incy = incy >= 0 ? incy : -incy;
+    std::vector<float> x_float(n * abs_incx);
+    std::vector<float> y_float(n * abs_incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        x_float[i * abs_incx] = bfloat16_to_float(x[i * abs_incx]);
+        y_float[i * abs_incy] = bfloat16_to_float(y[i * abs_incy]);
+    }
+
+    cblas_saxpy(n, alpha, x_float.data(), incx, y_float.data(), incy);
+
+    for(size_t i = 0; i < n; i++)
+    {
+        y[i * abs_incy] = float_to_bfloat16(y_float[i * abs_incy]);
+    }
+}
+
+template <>
 void cblas_axpy<hipblasHalf, hipblasHalf>(
     int n, const hipblasHalf alpha, const hipblasHalf* x, int incx, hipblasHalf* y, int incy)
 {
@@ -312,6 +362,23 @@ void cblas_scal<hipblasHalf>(int n, const hipblasHalf alpha, hipblasHalf* x, int
 }
 
 template <>
+void cblas_scal<hipblasBfloat16>(int n, const hipblasBfloat16 alpha, hipblasBfloat16* x, int incx)
+{
+    if(n <= 0 || incx <= 0)
+        return;
+
+    std::vector<float> x_float(n * incx);
+
+    for(size_t i = 0; i < n; i++)
+        x_float[i * incx] = bfloat16_to_float(x[i * incx]);
+
+    cblas_sscal(n, bfloat16_to_float(alpha), x_float.data(), incx);
+
+    for(size_t i = 0; i < n; i++)
+        x[i * incx] = float_to_bfloat16(x_float[i * incx]);
+}
+
+template <>
 void cblas_scal<hipblasHalf, float>(int n, const float alpha, hipblasHalf* x, int incx)
 {
     if(n <= 0 || incx <= 0)
@@ -326,6 +393,23 @@ void cblas_scal<hipblasHalf, float>(int n, const float alpha, hipblasHalf* x, in
 
     for(size_t i = 0; i < n; i++)
         x[i * incx] = float_to_half(x_float[i * incx]);
+}
+
+template <>
+void cblas_scal<hipblasBfloat16, float>(int n, const float alpha, hipblasBfloat16* x, int incx)
+{
+    if(n <= 0 || incx <= 0)
+        return;
+
+    std::vector<float> x_float(n * incx);
+
+    for(size_t i = 0; i < n; i++)
+        x_float[i * incx] = bfloat16_to_float(x[i * incx]);
+
+    cblas_sscal(n, alpha, x_float.data(), incx);
+
+    for(size_t i = 0; i < n; i++)
+        x[i * incx] = float_to_bfloat16(x_float[i * incx]);
 }
 
 template <>
@@ -567,6 +651,23 @@ void cblas_nrm2<hipblasHalf, hipblasHalf>(int                n,
         x_float[i * incx] = half_to_float(x[i * incx]);
 
     *result = float_to_half(cblas_snrm2(n, x_float.data(), incx));
+}
+
+template <>
+void cblas_nrm2<hipblasBfloat16, hipblasBfloat16>(int                    n,
+                                                  const hipblasBfloat16* x,
+                                                  int                    incx,
+                                                  hipblasBfloat16*       result)
+{
+    if(n <= 0 || incx <= 0)
+        return;
+
+    std::vector<float> x_float(n * incx);
+
+    for(size_t i = 0; i < n; i++)
+        x_float[i * incx] = bfloat16_to_float(x[i * incx]);
+
+    *result = float_to_bfloat16(cblas_snrm2(n, x_float.data(), incx));
 }
 
 template <>

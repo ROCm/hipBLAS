@@ -44,3 +44,10 @@ include: blas3/syrkx_gtest.yaml
 include: blas3/trmm_gtest.yaml
 include: blas3/trsm_gtest.yaml
 include: blas3/trtri_gtest.yaml
+include: blas_ex/axpy_ex_gtest.yaml
+include: blas_ex/dot_ex_gtest.yaml
+include: blas_ex/nrm2_ex_gtest.yaml
+include: blas_ex/rot_ex_gtest.yaml
+include: blas_ex/scal_ex_gtest.yaml
+include: blas_ex/gemm_ex_gtest.yaml
+include: blas_ex/trsm_ex_gtest.yaml
