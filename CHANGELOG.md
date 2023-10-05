@@ -1,9 +1,13 @@
 # Change Log for hipBLAS
 
-## (Unreleased) hipBLAS 2.0.0 for ROCm 6.0.0
+## hipBLAS 2.0.0 for ROCm 6.0.0
+### Added
+- added option to opt-in to use of hip_bfloat16 in the API for users who define HIPBLAS_USE_HIP_BFLOAT16
+- added hipblasGemmExWithFlags API
 ### Deprecated
 - hipblasDatatype_t is deprecated and will be removed in a future release and replaced with hipDataType
 - hipblasComplex and hipblasDoubleComplex are deprecated and will be removed in a future release and replaced with hipComplex and hipDoubleComplex
+- use of hipblasDatatype_t for hipblasGemmEx for compute-type is deprecated and will be replaced with hipblasComputeType_t in a future release
 ### Removed
 - hipblasXtrmm that calculates B <- alpha * op(A) * B is removed and replaced with hipblasXtrmm that calculates C <- alpha * op(A) * B
 
