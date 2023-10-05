@@ -40,6 +40,28 @@
 // Predeclare enumerator
 enum hipblas_argument : int;
 
+// bitmask
+typedef enum hipblas_client_os_
+{
+    LINUX   = 1,
+    WINDOWS = 2,
+    ALL_OS  = 3
+} hipblas_client_os;
+
+// bitmask
+typedef enum hipblas_backend_
+{
+    AMD         = 1,
+    NVIDIA      = 2,
+    ALL_BACKEND = 3
+} hipblas_backend;
+
+typedef enum hipblas_client_api_
+{
+    C,
+    FORTRAN,
+} hipblas_client_api;
+
 // conversion helpers
 
 template <typename T>
@@ -152,6 +174,10 @@ struct Arguments
 
     int atomics_mode = HIPBLAS_ATOMICS_NOT_ALLOWED;
 
+    hipblas_client_os  os_flags;
+    hipblas_backend    backend_flags;
+    hipblas_client_api api;
+
     hipblas_initialization initialization = hipblas_initialization::rand_int;
 
     // clang-format off
@@ -215,6 +241,9 @@ struct Arguments
     OPER(name) SEP                   \
     OPER(category) SEP               \
     OPER(atomics_mode) SEP           \
+    OPER(os_flags) SEP               \
+    OPER(backend_flags) SEP          \
+    OPER(api) SEP                    \
     OPER(initialization)
 
     // clang-format on
@@ -306,13 +335,19 @@ namespace ArgumentsHelper
     static constexpr auto apply = nullptr;
 
     // Macro defining specializations for specific arguments
-    // e_alpha and e_beta get turned into negative sentinel value specializations
+    // e_alpha, e_beta, and datatypes get turned into negative sentinel value specializations
     // clang-format off
 #define APPLY(NAME)                                                                         \
     template <>                                                                             \
     HIPBLAS_CLANG_STATIC constexpr auto                                                     \
         apply<e_##NAME == e_alpha ? hipblas_argument(-1)                                    \
-                                  : e_##NAME == e_beta ? hipblas_argument(-2) : e_##NAME> = \
+                                  : e_##NAME == e_beta ? hipblas_argument(-2)               \
+                                  : e_##NAME == e_a_type ? hipblas_argument(-3)             \
+                                  : e_##NAME == e_b_type ? hipblas_argument(-4)             \
+                                  : e_##NAME == e_c_type ? hipblas_argument(-5)             \
+                                  : e_##NAME == e_d_type ? hipblas_argument(-6)             \
+                                  : e_##NAME == e_compute_type ? hipblas_argument(-7)       \
+                                  : e_##NAME> = \
             [](auto&& func, const Arguments& arg, auto) { func(#NAME, arg.NAME); }
 
     // Specialize apply for each Argument
@@ -330,6 +365,37 @@ namespace ArgumentsHelper
     HIPBLAS_CLANG_STATIC constexpr auto apply<e_beta> =
         [](auto&& func, const Arguments& arg, auto T) {
             func("beta", arg.get_beta<decltype(T)>());
+        };
+
+    // Specialization for datatypes
+    template <>
+    HIPBLAS_CLANG_STATIC constexpr auto apply<e_a_type> =
+        [](auto&& func, const Arguments& arg, auto T) {
+            func("a_type", hipblas_datatype2string(arg.a_type));
+        };
+
+    template <>
+    HIPBLAS_CLANG_STATIC constexpr auto apply<e_b_type> =
+        [](auto&& func, const Arguments& arg, auto T) {
+            func("b_type", hipblas_datatype2string(arg.b_type));
+        };
+
+    template <>
+    HIPBLAS_CLANG_STATIC constexpr auto apply<e_c_type> =
+        [](auto&& func, const Arguments& arg, auto T) {
+            func("c_type", hipblas_datatype2string(arg.c_type));
+        };
+
+    template <>
+    HIPBLAS_CLANG_STATIC constexpr auto apply<e_d_type> =
+        [](auto&& func, const Arguments& arg, auto T) {
+            func("d_type", hipblas_datatype2string(arg.d_type));
+        };
+
+    template <>
+    HIPBLAS_CLANG_STATIC constexpr auto apply<e_compute_type> =
+        [](auto&& func, const Arguments& arg, auto T) {
+            func("compute_type", hipblas_datatype2string(arg.compute_type));
         };
 };
     // clang-format on

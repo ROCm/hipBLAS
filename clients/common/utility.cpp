@@ -29,6 +29,7 @@
 #endif
 
 #include "hipblas.h"
+#include "hipblas_test.hpp"
 #include "utility.h"
 #include <chrono>
 #include <cstdlib>
