@@ -22,6 +22,7 @@ Tests:
     diag: [ 'N', 'U' ]
     matrix_size: *size_range
     api: [ FORTRAN, C ]
+    backend_flags: AMD
 
   - name: trtri_batched_general
     category: quick
@@ -32,7 +33,7 @@ Tests:
     matrix_size: *size_range
     batch_count: *batch_count_range
     api: [ FORTRAN, C ]
-    hipblas_backend: AMD
+    backend_flags: AMD
 
   - name: trtri_strided_batched_general
     category: quick
@@ -44,5 +45,5 @@ Tests:
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
-    hipblas_backend: AMD
+    backend_flags: AMD
 ...
