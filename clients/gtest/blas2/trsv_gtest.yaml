@@ -39,7 +39,7 @@ Tests:
     incx: *incx_range
     batch_count: *batch_count_range
     api: [ FORTRAN, C ]
-    hipblas_backend: AMD
+    backend_flags: AMD
 
   - name: trsv_strided_batched_general
     category: quick
@@ -53,5 +53,5 @@ Tests:
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
-    hipblas_backend: AMD
+    backend_flags: AMD
 ...
