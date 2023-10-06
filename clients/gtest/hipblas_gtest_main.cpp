@@ -77,6 +77,8 @@ struct data_driven : public testing::TestWithParam<Arguments>
 
     static bool function_filter(const Arguments& arg)
     {
+        if(!hipblas_client_global_filters(args))
+            return false;
         return true;
     }
 
