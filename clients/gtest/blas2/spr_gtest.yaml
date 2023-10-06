@@ -18,12 +18,23 @@ Tests:
   - name: spr_general
     category: quick
     function: spr
-    precision: *single_double_precisions_complex_real
+    precision: *single_double_precisions
     uplo: [ 'L', 'U' ]
     alpha: *alpha_range
     N: *N_range
     incx: *incx_range
     api: [ FORTRAN, C ]
+
+  - name: spr_complex_general
+    category: quick
+    function: spr
+    precision: *single_double_precisions_complex
+    uplo: [ 'L', 'U' ]
+    alpha: *alpha_range
+    N: *N_range
+    incx: *incx_range
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
 
   - name: spr_batched_general
     category: quick

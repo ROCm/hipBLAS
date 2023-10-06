@@ -22,6 +22,7 @@ Tests:
     diag: [ 'N', 'U' ]
     matrix_size: *size_range
     api: [ FORTRAN, C ]
+    backend_flags: AMD
 
   - name: trtri_batched_general
     category: quick
