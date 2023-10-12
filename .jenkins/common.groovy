@@ -13,6 +13,16 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
             getDependenciesCommand += auxiliary.getLibrary(libraryName, platform.jenkinsLabel, null, sameOrg)
         }
     }
+    if (env.BRANCH_NAME ==~ /PR-\d+/)
+    {
+        pullRequest.labels.each
+        {
+            if (it == "noSolver")
+            {
+                project.paths.build_command = project.paths.build_command.replaceAll(' -c', ' -cn')
+            }
+        }
+    }
 
     String centos = platform.jenkinsLabel.contains('centos7') ? 'source scl_source enable devtoolset-7' : ':'
 
