@@ -15,12 +15,9 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
     }
     if (env.BRANCH_NAME ==~ /PR-\d+/)
     {
-        pullRequest.labels.each
+        if (pullRequest.labels.contains("noSolver"))
         {
-            if (it == "noSolver")
-            {
-                project.paths.build_command = project.paths.build_command.replaceAll(' -c', ' -cn')
-            }
+            project.paths.build_command = project.paths.build_command.replaceAll(' -c', ' -cn')
         }
     }
 
