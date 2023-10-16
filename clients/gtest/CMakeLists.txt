@@ -35,64 +35,65 @@ find_package( GTest REQUIRED )
 
 set(hipblas_test_source
   hipblas_gtest_main.cpp
+  hipblas_test.cpp
   auxiliary_gtest.cpp
   set_get_pointer_mode_gtest.cpp
   set_get_vector_gtest.cpp
   set_get_matrix_gtest.cpp
   set_get_atomics_mode_gtest.cpp
-  blas1_gtest.cpp
+  blas1/asum_gtest.cpp
+  blas1/axpy_gtest.cpp
+  blas1/copy_gtest.cpp
+  blas1/dot_gtest.cpp
+  blas1/iamaxmin_gtest.cpp
+  blas1/nrm2_gtest.cpp
+  blas1/rot_gtest.cpp
+  blas1/scal_gtest.cpp
+  blas1/swap_gtest.cpp
   axpy_ex_gtest.cpp
   dot_ex_gtest.cpp
   nrm2_ex_gtest.cpp
   rot_ex_gtest.cpp
   scal_ex_gtest.cpp
-  gbmv_gtest.cpp
-  gbmv_batched_gtest.cpp
-  gbmv_strided_batched_gtest.cpp
-  gemv_gtest.cpp
-  gemv_batched_gtest.cpp
-  gemv_strided_batched_gtest.cpp
-  ger_gtest.cpp
-  hbmv_gtest.cpp
-  hemv_gtest.cpp
-  hemv_batched_gtest.cpp
-  hemv_strided_batched_gtest.cpp
-  her_gtest.cpp
-  her2_gtest.cpp
-  hpmv_gtest.cpp
-  hpr_gtest.cpp
-  hpr2_gtest.cpp
-  sbmv_gtest.cpp
-  spmv_gtest.cpp
-  spr_gtest.cpp
-  spr2_gtest.cpp
-  symv_gtest.cpp
-  syr_gtest.cpp
-  syr2_gtest.cpp
-  tbmv_gtest.cpp
-  tbsv_gtest.cpp
-  tpmv_gtest.cpp
-  tpsv_gtest.cpp
-  trmv_gtest.cpp
-  trsv_gtest.cpp
-  dgmm_gtest.cpp
-  gemm_gtest.cpp
-  gemm_ex_gtest.cpp
-  gemm_strided_batched_gtest.cpp
-  gemm_batched_gtest.cpp
-  hemm_gtest.cpp
-  geam_gtest.cpp
-  herk_gtest.cpp
-  her2k_gtest.cpp
-  herkx_gtest.cpp
-  symm_gtest.cpp
-  syrk_gtest.cpp
-  syr2k_gtest.cpp
-  syrkx_gtest.cpp
-  trsm_gtest.cpp
+  blas2/gbmv_gtest.cpp
+  blas2/gemv_gtest.cpp
+  blas2/ger_gtest.cpp
+  blas2/hbmv_gtest.cpp
+  blas2/hemv_gtest.cpp
+  blas2/her_gtest.cpp
+  blas2/her2_gtest.cpp
+  blas2/hpmv_gtest.cpp
+  blas2/hpr_gtest.cpp
+  blas2/hpr2_gtest.cpp
+  blas2/sbmv_gtest.cpp
+  blas2/spmv_gtest.cpp
+  blas2/spr_gtest.cpp
+  blas2/spr2_gtest.cpp
+  blas2/symv_gtest.cpp
+  blas2/syr_gtest.cpp
+  blas2/syr2_gtest.cpp
+  blas2/tbmv_gtest.cpp
+  blas2/tbsv_gtest.cpp
+  blas2/tpmv_gtest.cpp
+  blas2/tpsv_gtest.cpp
+  blas2/trmv_gtest.cpp
+  blas2/trsv_gtest.cpp
+  blas3/dgmm_gtest.cpp
+  blas3/gemm_gtest.cpp
+  blas3/hemm_gtest.cpp
+  blas3/geam_gtest.cpp
+  blas3/herk_gtest.cpp
+  blas3/her2k_gtest.cpp
+  blas3/herkx_gtest.cpp
+  blas3/symm_gtest.cpp
+  blas3/syrk_gtest.cpp
+  blas3/syr2k_gtest.cpp
+  blas3/syrkx_gtest.cpp
+  blas3/trsm_gtest.cpp
+  blas3/trmm_gtest.cpp
+  blas3/trtri_gtest.cpp
   trsm_ex_gtest.cpp
-  trmm_gtest.cpp
-  trtri_gtest.cpp
+  gemm_ex_gtest.cpp
 )
 
 if( BUILD_WITH_SOLVER )
@@ -196,7 +197,7 @@ if( NOT USE_CUDA )
   endif( )
 
   if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
-    # hip-clang needs specific flag to turn on pthread and m
+# hip-clang needs specific flag to turn on pthread and m
     target_link_libraries( hipblas-test PRIVATE -lpthread -lm )
     target_link_libraries( hipblas_v2-test PRIVATE -lpthread -lm )
 
@@ -223,7 +224,7 @@ else( )
 endif( )
 
 if (WIN32)
-  # for now adding in all .dll as dependency chain is not cmake based on win32
+# for now adding in all .dll as dependency chain is not cmake based on win32
   file( GLOB third_party_dlls
     LIST_DIRECTORIES OFF
     CONFIGURE_DEPENDS
@@ -264,8 +265,41 @@ set_target_properties( hipblas-test PROPERTIES
     DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 
-add_dependencies( hipblas-test hipblas-common )
-add_dependencies( hipblas_v2-test hipblas-common )
+set( HIPBLAS_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_gtest.data")
+set( HIPBLAS_V2_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_v2_gtest.data")
+set( HIPBLAS_L1_YAML_DATA blas1/asum_gtest.yaml blas1/axpy_gtest.yaml blas1/copy_gtest.yaml
+                          blas1/dot_gtest.yaml  blas1/iamaxmin_gtest.yaml blas1/nrm2_gtest.yaml
+                          blas1/rot_gtest.yaml  blas1/scal_gtest.yaml blas1/swap_gtest.yaml )
+set( HIPBLAS_L2_YAML_DATA blas2/gbmv_gtest.yaml blas2/gemv_gtest.yaml blas2/ger_gtest.yaml
+                          blas2/hbmv_gtest.yaml blas2/hemv_gtest.yaml blas2/her_gtest.yaml
+                          blas2/her2_gtest.yaml blas2/hpmv_gtest.yaml blas2/hpr_gtest.yaml
+                          blas2/hpr2_gtest.yaml blas2/sbmv_gtest.yaml blas2/spmv_gtest.yaml
+                          blas2/spr_gtest.yaml  blas2/spr2_gtest.yaml blas2/symv_gtest.yaml
+                          blas2/syr_gtest.yaml  blas2/syr2_gtest.yaml blas2/tbmv_gtest.yaml
+                          blas2/tbsv_gtest.yaml blas2/tpmv_gtest.yaml blas2/tpsv_gtest.yaml
+                          blas2/trmv_gtest.yaml blas2/trsv_gtest.yaml )
+
+set( HIPBLAS_L3_YAML_DATA blas3/dgmm_gtest.yaml blas3/geam_gtest.yaml blas3/gemm_gtest.yaml
+                          blas3/hemm_gtest.yaml blas3/herk_gtest.yaml blas3/her2k_gtest.yaml
+                          blas3/herkx_gtest.yaml blas3/symm_gtest.yaml blas3/syrk_gtest.yaml
+                          blas3/syr2k_gtest.yaml blas3/syrkx_gtest.yaml blas3/trmm_gtest.yaml
+                          blas3/trsm_gtest.yaml blas3/trtri_gtest.yaml )
+
+add_custom_command( OUTPUT "${HIPBLAS_TEST_DATA}"
+                    COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_TEST_DATA}"
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" hipblas_gtest.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+add_custom_command( OUTPUT "${HIPBLAS_V2_TEST_DATA}"
+                    COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_V2_TEST_DATA}" --hipblas_v2
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" hipblas_gtest.yaml
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+add_custom_target( hipblas-test-data DEPENDS "${HIPBLAS_TEST_DATA}" )
+add_custom_target( hipblas_v2-test-data DEPENDS "${HIPBLAS_V2_TEST_DATA}" )
+
+add_dependencies( hipblas-test hipblas-test-data hipblas-common )
+add_dependencies( hipblas_v2-test hipblas_v2-test-data hipblas-common )
 
 rocm_install(TARGETS hipblas-test COMPONENT tests)
 rocm_install(TARGETS hipblas_v2-test COMPONENT tests)

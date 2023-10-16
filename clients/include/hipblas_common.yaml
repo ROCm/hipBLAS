@@ -97,6 +97,34 @@ Datatypes:
         64f_pedantic: 8
         32i: 9
         32i_pedantic: 10
+  - hipblas_client_os:
+      bases: [ c_uint32 ]
+      attr:
+        LINUX: 1
+        WINDOWS: 2
+        ALL_OS: 3
+      attr_v2:
+        LINUX: 1
+        WINDOWS: 2
+        ALL_OS: 3
+  - hipblas_backend:
+      bases: [ c_uint32 ]
+      attr:
+        AMD: 1
+        NVIDIA: 2
+        ALL_BACKEND: 3
+      attr_v2:
+        AMD: 1
+        NVIDIA: 2
+        ALL_BACKEND: 3
+  - hipblas_client_api:
+      bases: [ c_uint32 ]
+      attr:
+        C: 0
+        FORTRAN: 1
+      attr_v2:
+        C: 0
+        FORTRAN: 1
 
 Real precisions: &real_precisions
   - &half_precision
@@ -186,6 +214,13 @@ C precisions complex: &single_double_precisions_complex
   - *double_precision_complex
 
 C precisions complex and real: &single_double_precisions_complex_real
+  - *single_precision
+  - *double_precision
+  - *single_precision_complex
+  - *double_precision_complex
+
+C precisions complex and real and half real: &single_double_precisions_complex_real_half_real
+  - *half_precision
   - *single_precision
   - *double_precision
   - *single_precision_complex
@@ -302,7 +337,7 @@ Half bfloat single double complex real: &half_bfloat_single_double_complex_real_
   - *hpa_bf16_precision
   - *single_precision
   - *double_precision
-  - *half_precision_complex
+  # - *half_precision_complex
   - *single_precision_complex
   - *double_precision_complex
 
@@ -390,6 +425,9 @@ Arguments:
   - name: c_char*64
   - category: c_char*64
   - atomics_mode: hipblas_atomics_mode
+  - os_flags: hipblas_client_os
+  - backend_flags: hipblas_backend
+  - api: hipblas_client_api
   - initialization: hipblas_initialization
   # - known_bug_platforms: c_char*64
   # - c_noalias_d: c_bool
@@ -472,6 +510,9 @@ Defaults:
   category: nightly
   # default benchmarking to faster atomics_allowed (test is default not allowed)
   atomics_mode: atomics_allowed
+  os_flags: ALL_OS
+  backend_flags: ALL_BACKEND
+  api: C
   initialization: rand_int
   compute_type_gemm: 2
 #workspace_size: 0
