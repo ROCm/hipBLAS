@@ -163,7 +163,6 @@ Definitions:
     - { N:    65 }
 
   - &spr_common_args
-    precision: *single_double_precisions_complex_real
     uplo: [ U, L ]
     alpha_beta: *complex_alpha_range
     incx: *incx_range
@@ -326,7 +325,6 @@ Definitions:
     precision: *single_double_precisions_complex
     uplo: [ U, L ]
     side: [L, R]
-    transA: [ N, C ]
     alpha_beta: *alpha_beta_range
     matrix_size: *hemm_dims
 
@@ -439,6 +437,7 @@ Tests:
       - rotg_batched: *rotg_precisions
       - rotmg_batched: *single_double_precisions
       #*single_double_precisions_complex_real
+    backend_flags: AMD
 
   - name: blas1_strided_batched
     category: quick
@@ -448,6 +447,7 @@ Tests:
       - rotg_strided_batched: *rotg_precisions
       - rotmg_strided_batched: *single_double_precisions
       #*single_double_precisions_complex_real
+    backend_flags: AMD
 
 # All functions with alpha and incx and incy
 
@@ -481,6 +481,7 @@ Tests:
       #- axpy_batched:  *half_single_precisions_complex_real
       - axpy_batched:  *single_double_precisions_complex_real
       - axpy_batched_ex: *half_single_double_complex_real_precisions
+    backend_flags: AMD
 
   - name: blas1_strided_batched_with_alpha
     category: quick
@@ -494,7 +495,7 @@ Tests:
       #- axpy_strided_batched: *half_single_precisions_complex_real
       - axpy_strided_batched: *single_double_precisions_complex_real
       - axpy_strided_batched_ex: *half_single_double_complex_real_precisions
-
+    backend_flags: AMD
 
 
 # All functions with alpha and incx but no incy
@@ -525,6 +526,7 @@ Tests:
       - scal_batched_ex: *single_double_precisions_complex_real
       #- scal_batched_ex: *scal_ex_single_double_complex_real_alpha_complex_out
       - scal_batched_ex: *hpa_half_half_precisions
+    backend_flags: AMD
 
   - name: blas1_strided_batched
     category: quick
@@ -540,7 +542,7 @@ Tests:
       - scal_strided_batched_ex: *single_double_precisions_complex_real
       #- scal_strided_batched_ex: *scal_ex_single_double_complex_real_alpha_complex_out
       - scal_strided_batched_ex: *hpa_half_half_precisions
-
+    backend_flags: AMD
 
 # All functions with incx, no incy, no alpha
 # nrm2,asum,iamax,iamin all variants
@@ -565,6 +567,7 @@ Tests:
       - nrm2_batched: *single_double_precisions_complex_real
       - iamax_batched: *single_double_precisions_complex_real
       - iamin_batched: *single_double_precisions_complex_real
+    backend_flags: AMD
 
   - name: blas1_strided_batched
     category: quick
@@ -577,6 +580,7 @@ Tests:
       - nrm2_strided_batched: *single_double_precisions_complex_real
       - iamax_strided_batched: *single_double_precisions_complex_real
       - iamin_strided_batched: *single_double_precisions_complex_real
+    backend_flags: AMD
 
 # All functions with incx, incy, no alpha
 
@@ -589,9 +593,6 @@ Tests:
       #- dot:   *half_bfloat_single_double_complex_real_precisions
       - dot:   *single_double_precisions_complex_real
       - dotc:  *single_double_precisions_complex
-      - swap: *single_double_precisions_complex_real
-      - rot:   *rot_precisions
-      - rotm:  *single_double_precisions
       #*single_double_precisions_complex_real
 
 
@@ -605,10 +606,8 @@ Tests:
       #- dot_batched:   *half_bfloat_single_double_complex_real_precisions
       - dot_batched:   *single_double_precisions_complex_real
       - dotc_batched:  *single_double_precisions_complex
-      - swap_batched: *single_double_precisions_complex_real
-      - rot_batched:   *rot_precisions
-      - rotm_batched:  *single_double_precisions
       #*single_double_precisions_complex_real
+    backend_flags: AMD
 
   - name: blas1_strided_batched
     category: quick
@@ -621,10 +620,8 @@ Tests:
       #- dot_strided_batched:   *half_bfloat_single_double_complex_real_precisions
       - dot_strided_batched:   *single_double_precisions_complex_real
       - dotc_strided_batched:  *single_double_precisions_complex
-      - swap_strided_batched: *single_double_precisions_complex_real
-      - rot_strided_batched:   *rot_precisions
-      - rotm_strided_batched:  *single_double_precisions
       #*single_double_precisions_complex_real
+    backend_flags: AMD
 
 # Swap, rot, and rotm get their own for quick tests as they write to x and y
 
@@ -651,6 +648,7 @@ Tests:
       - rot_batched:   *rot_precisions
       - rotm_batched:  *single_double_precisions
       #*single_double_precisions_complex_real
+    backend_flags: AMD
 
   - name: blas1
     category: quick
@@ -663,6 +661,7 @@ Tests:
       - rot_strided_batched:   *rot_precisions
       - rotm_strided_batched:  *single_double_precisions
       #*single_double_precisions_complex_real
+    backend_flags: AMD
 
 ###########
 # Level 2 #
@@ -671,253 +670,371 @@ Tests:
 # gbmv
   - name: gbmv
     category: quick
+    function: gbmv
+    arguments: *gbmv_common_args
+
+  - name: gbmv_batched
+    category: quick
     function:
-    - gbmv
-    - gbmv_batched
-    - gbmv_strided_batched
+        - gbmv_batched
+        - gbmv_strided_batched
     arguments: *gbmv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: gemv
     category: quick
+    function: gemv
+    arguments: *gemv_common_args
+
+  - name: gemv_batched
+    category: quick
     function:
-    - gemv
-    - gemv_batched
-    - gemv_strided_batched
+        - gemv_batched
+        - gemv_strided_batched
     arguments: *gemv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: ger
     category: quick
+    function: ger
+    arguments: *ger_common_args
+
+  - name: ger_batched
+    category: quick
     function:
-    - ger
-    - ger_batched
-    - ger_strided_batched
+        - ger_batched
+        - ger_strided_batched
     arguments: *ger_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
-  - name: gerc
+  - name: geruc
     category: quick
     function:
-    - gerc
-    - gerc_batched
-    - gerc_strided_batched
+        - gerc
+        - geru
+    arguments: *geruc_common_args
+
+  - name: geruc_batched
+    category: quick
+    function:
+        - gerc_batched
+        - gerc_strided_batched
+        - geru_batched
+        - geru_strided_batched
     arguments: *geruc_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
-
-  - name: geru
-    category: quick
-    function:
-    - geru
-    - geru_batched
-    - geru_strided_batched
-    arguments: *geruc_common_args
-    batch_count: *batch_count_range
-    stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: hbmv
     category: quick
+    function: hbmv
+    arguments: *hbmv_common_args
+
+  - name: hbmv_batched
+    category: quick
     function:
-    - hbmv
-    - hbmv_batched
-    - hbmv_strided_batched
+        - hbmv_batched
+        - hbmv_strided_batched
     arguments: *hbmv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: hemv
     category: quick
+    function: hemv
+    arguments: *hemv_common_args
+
+  - name: hemv_batched
+    category: quick
     function:
-    - hemv
-    - hemv_batched
-    - hemv_strided_batched
+        - hemv_batched
+        - hemv_strided_batched
     arguments: *hemv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: her
     category: quick
+    function: her
+    arguments: *her_common_args
+
+  - name: her_batched
+    category: quick
     function:
-    - her
-    - her_batched
-    - her_strided_batched
+        - her_batched
+        - her_strided_batched
     arguments: *her_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: her2
     category: quick
+    function: her2
+    arguments: *her2_common_args
+
+  - name: her2_batched
+    category: quick
     function:
-    - her2
-    - her2_batched
-    - her2_strided_batched
+        - her2_batched
+        - her2_strided_batched
     arguments: *her2_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: hpmv
     category: quick
+    function: hpmv
+    arguments: *hpmv_common_args
+
+  - name: hpmv_batched
+    category: quick
     function:
-    - hpmv
-    - hpmv_batched
-    - hpmv_strided_batched
+        - hpmv_batched
+        - hpmv_strided_batched
     arguments: *hpmv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: hpr
     category: quick
+    function: hpr
+    arguments: *hpr_common_args
+
+  - name: hpr_batched
+    category: quick
     function:
-    - hpr
-    - hpr_batched
-    - hpr_strided_batched
+        - hpr_batched
+        - hpr_strided_batched
     arguments: *hpr_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: hpr2
     category: quick
+    function: hpr2
+    arguments: *hpr2_common_args
+
+  - name: hpr2_batched
+    category: quick
     function:
-    - hpr2
-    - hpr2_batched
-    - hpr2_strided_batched
+        - hpr2_batched
+        - hpr2_strided_batched
     arguments: *hpr2_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: sbmv
     category: quick
+    function: sbmv
+    arguments: *sbmv_common_args
+
+  - name: sbmv_batched
+    category: quick
     function:
-    - sbmv
-    - sbmv_batched
-    - sbmv_strided_batched
+        - sbmv_batched
+        - sbmv_strided_batched
     arguments: *sbmv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: spmv
     category: quick
+    function: spmv
+    arguments: *spmv_common_args
+
+  - name: spmv_batched
+    category: quick
     function:
-    - spmv
-    - spmv_batched
-    - spmv_strided_batched
+        - spmv_batched
+        - spmv_strided_batched
     arguments: *spmv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
-  - name: spr
+  - name: spr_NVIDIA
     category: quick
+    precision: *single_double_precisions
+    function: spr
+    arguments: *spr_common_args
+    backend_flags: NVIDIA
+
+  - name: spr_AMD
+    category: quick
+    precision: *single_double_precisions_complex_real
     function:
-    - spr
-    - spr_batched
-    - spr_strided_batched
+        - spr
+        - spr_batched
+        - spr_strided_batched
     arguments: *spr_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: spr2
     category: quick
+    function: spr2
+    arguments: *spr2_common_args
+
+  - name: spr2_batched
+    category: quick
     function:
-    - spr2
-    - spr2_batched
-    - spr2_strided_batched
+        - spr2_batched
+        - spr2_strided_batched
     arguments: *spr2_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: symv
     category: quick
+    function: symv
+    arguments: *symv_common_args
+
+  - name: symv_batched
+    category: quick
     function:
-    - symv
-    - symv_batched
-    - symv_strided_batched
+        - symv_batched
+        - symv_strided_batched
     arguments: *symv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: syr
     category: quick
+    function: syr
+    arguments: *syr_common_args
+
+  - name: syr_batched
+    category: quick
     function:
-    - syr
-    - syr_batched
-    - syr_strided_batched
+        - syr_batched
+        - syr_strided_batched
     arguments: *syr_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: syr2
     category: quick
+    function: syr2
+    arguments: *syr2_common_args
+
+  - name: syr2_batched
+    category: quick
     function:
-    - syr2
-    - syr2_batched
-    - syr2_strided_batched
+        - syr2_batched
+        - syr2_strided_batched
     arguments: *syr2_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: tbmv
     category: quick
+    function: tbmv
+    arguments: *tbmv_common_args
+
+  - name: tbmv_batched
+    category: quick
     function:
-    - tbmv
-    - tbmv_batched
-    - tbmv_strided_batched
+        - tbmv_batched
+        - tbmv_strided_batched
     arguments: *tbmv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: tpmv
     category: quick
+    function: tpmv
+    arguments: *tpmv_common_args
+
+  - name: tpmv_batched
+    category: quick
     function:
-    - tpmv
-    - tpmv_batched
-    - tpmv_strided_batched
+        - tpmv_batched
+        - tpmv_strided_batched
     arguments: *tpmv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: trmv
     category: quick
+    function: trmv
+    arguments: *trmv_common_args
+
+  - name: trmv_batched
+    category: quick
     function:
-    - trmv
-    - trmv_batched
-    - trmv_strided_batched
+        - trmv_batched
+        - trmv_strided_batched
     arguments: *trmv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: tbsv
     category: quick
+    function: tbsv
+    arguments: *tbsv_common_args
+
+  - name: tbsv_batched
+    category: quick
     function:
-    - tbsv
-    - tbsv_batched
-    - tbsv_strided_batched
+        - tbsv_batched
+        - tbsv_strided_batched
     arguments: *tbsv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: tpsv
     category: quick
+    function: tpsv
+    arguments: *tpsv_common_args
+
+  - name: tpsv_batched
+    category: quick
     function:
-    - tpsv
-    - tpsv_batched
-    - tpsv_strided_batched
+        - tpsv_batched
+        - tpsv_strided_batched
     arguments: *tpsv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: trsv
     category: quick
+    function: trsv
+    arguments: *trsv_common_args
+
+  - name: trsv_batched
+    category: quick
     function:
-    - trsv
-    - trsv_batched
-    - trsv_strided_batched
+        - trsv_batched
+        - trsv_strided_batched
     arguments: *trsv_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   ###########
   # Level 3 #
@@ -925,124 +1042,184 @@ Tests:
 
   - name: dgmm
     category: quick
+    function: dgmm
+    arguments: *dgmm_common_args
+
+  - name: dgmm_batched
+    category: quick
     function:
-    - dgmm
-    - dgmm_batched
-    - dgmm_strided_batched
+        - dgmm_batched
+        - dgmm_strided_batched
     arguments: *dgmm_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: geam
     category: quick
+    function: geam
+    arguments: *geam_common_args
+
+  - name: geam_batched
+    category: quick
     function:
-    - geam
-    - geam_batched
-    - geam_strided_batched
+        - geam_batched
+        - geam_strided_batched
     arguments: *geam_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: hemm
     category: quick
+    function: hemm
+    arguments: *hemm_common_args
+
+  - name: hemm_batched
+    category: quick
     function:
-    - hemm
-    - hemm_batched
-    - hemm_strided_batched
+        - hemm_batched
+        - hemm_strided_batched
     arguments: *hemm_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: herk
     category: quick
+    function: herk
+    arguments: *herk_common_args
+
+  - name: herk_batched
+    category: quick
     function:
-    - herk
-    - herk_batched
-    - herk_strided_batched
+        - herk_batched
+        - herk_strided_batched
     arguments: *herk_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: her2k
     category: quick
+    function: her2k
+    arguments: *her2k_common_args
+
+  - name: her2k_batched
+    category: quick
     function:
-    - her2k
-    - her2k_batched
-    - her2k_strided_batched
+        - her2k_batched
+        - her2k_strided_batched
     arguments: *her2k_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: herkx
     category: quick
+    function: herkx
+    arguments: *herkx_common_args
+
+  - name: herkx_batched
+    category: quick
     function:
-    - herkx
-    - herkx_batched
-    - herkx_strided_batched
+        - herkx_batched
+        - herkx_strided_batched
     arguments: *herkx_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: symm
     category: quick
+    function: symm
+    arguments: *symm_common_args
+
+  - name: symm_batched
+    category: quick
     function:
-    - symm
-    - symm_batched
-    - symm_strided_batched
+        - symm_batched
+        - symm_strided_batched
     arguments: *symm_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: syrk
     category: quick
+    function: syrk
+    arguments: *syrk_common_args
+
+  - name: syrk_batched
+    category: quick
     function:
-    - syrk
-    - syrk_batched
-    - syrk_strided_batched
+        - syrk_batched
+        - syrk_strided_batched
     arguments: *syrk_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: syr2k
     category: quick
+    function: syr2k
+    arguments: *syr2k_common_args
+
+  - name: syr2k_batched
+    category: quick
     function:
-    - syr2k
-    - syr2k_batched
-    - syr2k_strided_batched
+        - syr2k_batched
+        - syr2k_strided_batched
     arguments: *syr2k_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: syrkx
     category: quick
+    function: syrkx
+    arguments: *syrkx_common_args
+
+  - name: syrkx_batched
+    category: quick
     function:
-    - syrkx
-    - syrkx_batched
-    - syrkx_strided_batched
+        - syrkx_batched
+        - syrkx_strided_batched
     arguments: *syrkx_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
 # gemms
 
   - name: gemm
     category: quick
+    function: gemm
+    arguments: *gemm_common_args
+
+  - name: gemm_batched
+    category: quick
     function:
-    - gemm
-    - gemm_batched
-    - gemm_strided_batched
+        - gemm_batched
+        - gemm_strided_batched
     arguments: *gemm_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
   - name: gemm_ex
     category: quick
+    function: gemm_ex
+    arguments: *gemm_ex_common_args
+
+  - name: gemm_batched_ex
+    category: quick
     function:
-    - gemm_ex
-    - gemm_batched_ex
-    - gemm_strided_batched_ex
+        - gemm_batched_ex
+        - gemm_strided_batched_ex
     arguments: *gemm_ex_common_args
     batch_count: *batch_count_range
     stride_scale: [ 1 ]
+    backend_flags: AMD
 
 ...
