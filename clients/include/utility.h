@@ -222,14 +222,14 @@ constexpr double hipblas_type_epsilon<double> = std::numeric_limits<double>::eps
 template <>
 constexpr double hipblas_type_epsilon<hipblasComplex> = std::numeric_limits<float>::epsilon();
 template <>
-constexpr double
-    hipblas_type_epsilon<hipblasDoubleComplex> = std::numeric_limits<double>::epsilon();
+constexpr double hipblas_type_epsilon<hipblasDoubleComplex>
+    = std::numeric_limits<double>::epsilon();
 template <>
-constexpr double
-    hipblas_type_epsilon<hipblasHalf> = 1.0009765625; // fp16 0x3C01 in double precision
+constexpr double hipblas_type_epsilon<hipblasHalf>
+    = 0.0009765625; // diff between 1 and fp16 0x3C01 in double precision
 template <>
-constexpr double
-    hipblas_type_epsilon<hipblasBfloat16> = 1.0078125; // bf16 0x3F81 in double precision
+constexpr double hipblas_type_epsilon<hipblasBfloat16>
+    = 0.0078125; //diff between 1 and bf16 0x3F81 in double precision
 
 /* ============================================================================================ */
 /*! \brief  Random number generator which generates NaN values */
@@ -457,14 +457,14 @@ template <>
 inline hipblasBfloat16 random_hpl_generator()
 {
     return hipblasBfloat16(
-        float_to_bfloat16(std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng)));
+        float_to_bfloat16(std::uniform_real_distribution<float>(-0.5f, 0.5f)(hipblas_rng)));
 }
 
 template <>
 inline hipblasHalf random_hpl_generator()
 {
     return hipblasHalf(
-        float_to_half(std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng)));
+        float_to_half(std::uniform_real_distribution<float>(-0.5f, 0.5f)(hipblas_rng)));
 }
 
 /* ============================================================================================ */
@@ -1023,10 +1023,10 @@ public:
 
     ~hipblasLocalHandle();
 
-    hipblasLocalHandle(const hipblasLocalHandle&) = delete;
-    hipblasLocalHandle(hipblasLocalHandle&&)      = delete;
+    hipblasLocalHandle(const hipblasLocalHandle&)            = delete;
+    hipblasLocalHandle(hipblasLocalHandle&&)                 = delete;
     hipblasLocalHandle& operator=(const hipblasLocalHandle&) = delete;
-    hipblasLocalHandle& operator=(hipblasLocalHandle&&) = delete;
+    hipblasLocalHandle& operator=(hipblasLocalHandle&&)      = delete;
 
     // Allow hipblasLocalHandle to be used anywhere hipblas_handle is expected
     operator hipblasHandle_t&()
