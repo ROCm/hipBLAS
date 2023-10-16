@@ -79,7 +79,7 @@ include( ROCMInstallSymlinks )
 include( ROCMClients )
 include( ROCMHeaderWrapper )
 
-set ( VERSION_STRING "2.0.0" )
+set ( VERSION_STRING "2.1.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 # Append our library helper cmake path and the cmake path for hip (for convenience)
@@ -87,7 +87,7 @@ rocm_setup_version( VERSION ${VERSION_STRING} )
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${ROCM_PATH}/lib/cmake/hip /opt/rocm/lib/cmake/hip ${HIP_DIR}/cmake )
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
-list( APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
+list( APPEND CMAKE_PREFIX_PATH ${ROCM_PATH}/lib/cmake/hip /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
 
 option( BUILD_VERBOSE "Output additional build information" OFF )
 
@@ -107,15 +107,16 @@ if (USE_CUDA)
 endif()
 
 # Hip headers required of all clients; clients use hip to allocate device memory
-if( USE_CUDA)
-    find_package( HIP MODULE REQUIRED )
-else( )
-    find_package( hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm)
-endif( )
-
 if( USE_CUDA )
-    list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
-endif( )
+    find_package( hip CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm )
+    # support for cuda backend with hip < 6.0
+    if( NOT hip_FOUND )
+        find_package( HIP MODULE REQUIRED )
+        list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
+    endif()
+else()
+    find_package( hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm)
+endif()
 
 option(BUILD_CODE_COVERAGE "Build with code coverage enabled" OFF)
 if(BUILD_CODE_COVERAGE)
@@ -201,7 +202,7 @@ endif( )
 
 # Package specific CPACK vars
 if( NOT USE_CUDA )
-  rocm_package_add_dependencies(DEPENDS "rocblas >= 4.0.0" "rocsolver >= 3.24.0")
+  rocm_package_add_dependencies(DEPENDS "rocblas >= 4.1.0" "rocsolver >= 3.25.0")
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )

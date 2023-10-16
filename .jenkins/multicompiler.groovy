@@ -17,7 +17,15 @@ def runCI =
 
     //customize for project
     prj.paths.build_command = buildCommand
-    prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER']
+
+    if (pullRequest.labels.contains("noSolver"))
+    {
+        prj.libraryDependencies = ['rocBLAS']
+    }
+    else
+    {
+        prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER']
+    }
 
     // Define test architectures, optional rocm version argument is available
     def nodes = new dockerNodes(nodeDetails, jobName, prj)
@@ -94,7 +102,7 @@ ci: {
     }
 
     String hostBuildCommand = './install.sh -c --compiler=g++'
-    String hipClangBuildCommand = './install.sh -c --compiler=/opt/rocm/hip/bin/hipcc'
+    String hipClangBuildCommand = './install.sh -c --compiler=/opt/rocm/bin/hipcc'
     String clangBuildCommand = './install.sh -c --compiler=clang++'
 
     setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
