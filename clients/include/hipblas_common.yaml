@@ -312,32 +312,34 @@ scal_ex precisions: &scal_ex_complex_real_alpha_complex_out
   - &scal_ex_double_precision_complex_real_alpha_complex_out
     { a_type: f64_r, b_type: f64_c, c_type: f64_c, d_type: f64_c, compute_type: f64_c }
 
-scal_ex Single double joined: &scal_ex_single_double_complex_real_alpha_complex_out
-  - *scal_ex_single_precision_complex_real_alpha_complex_out
-  - *scal_ex_double_precision_complex_real_alpha_complex_out
-
-Hpa bfloat half single double complex real: &scal_ex_bfloat_half_single_double_complex_real_precisions
+Hpa bfloat half single double complex real: &scal_ex_precision_all
   - *single_precision
   - *double_precision
   - *single_precision_complex
   - *double_precision_complex
+  - *hpa_half_float_alpha
+  - *alpha_f32_hpa_bf16_precision
+
+Scal ex precisions amd: &scal_ex_precision_amd
+  - *hpa_bf16_precision
   - *hpa_half_precision
   - *half_precision
-  - *hpa_half_float_alpha
-  - *hpa_bf16_precision
-  - *alpha_f32_hpa_bf16_precision
+  - *scal_ex_single_precision_complex_real_alpha_complex_out
+  - *scal_ex_double_precision_complex_real_alpha_complex_out
 
 #############################################
 #           Used for axpy_ex                #
 #############################################
-Hpa bfloat half single double complex real: &bfloat_half_single_double_complex_real_precisions
-  - *hpa_bf16_precision
+Hpa bfloat half single double complex real: &axpy_ex_precision_all
   - *alpha_f32_hpa_bf16_precision
   - *hpa_half_float_alpha
   - *single_precision
   - *double_precision
   - *single_precision_complex
   - *double_precision_complex
+
+Axpy ex precisions amd: &axpy_ex_precision_amd
+  - *hpa_bf16_precision
   - *hpa_half_precision
   - *half_precision
 
@@ -387,6 +389,15 @@ rotg precisions: &rotg_precisions
 #############################################
 Half bfloat single double complex real: &half_bfloat_single_double_complex_real_precisions
   - *half_precision
+  - *hpa_bf16_precision
+  - *single_precision
+  - *double_precision
+  # - *half_precision_complex
+  - *single_precision_complex
+  - *double_precision_complex
+
+# dot_ex on nvidia doesn't include half_precision support
+Dot ex precisions no half: &dot_ex_precision_all
   - *hpa_bf16_precision
   - *single_precision
   - *double_precision

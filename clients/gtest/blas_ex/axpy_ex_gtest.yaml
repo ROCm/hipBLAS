@@ -19,17 +19,29 @@ Definitions:
 Tests:
   - name: axpy_ex_general
     category: quick
-    function: axpy_ex
-    precision: *bfloat_half_single_double_complex_real_precisions
+    function:
+      - axpy_ex: *axpy_ex_precision_all
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx_incy: *incx_incy_range
     api: [ FORTRAN, C ]
 
+  - name: axpy_ex_general_amd
+    category: quick
+    function:
+      - axpy_ex: *axpy_ex_precision_all
+      - axpy_ex: *axpy_ex_precision_amd
+    alpha_beta: *alpha_beta_range
+    N: *N_range
+    incx_incy: *incx_incy_range
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
   - name: axpy_batched_ex_general
     category: quick
-    function: axpy_batched_ex
-    precision: *bfloat_half_single_double_complex_real_precisions
+    function:
+      - axpy_batched_ex: *axpy_ex_precision_all
+      - axpy_batched_ex: *axpy_ex_precision_amd
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx_incy: *incx_incy_range
@@ -39,8 +51,9 @@ Tests:
 
   - name: axpy_strided_batched_ex_general
     category: quick
-    function: axpy_strided_batched_ex
-    precision: *bfloat_half_single_double_complex_real_precisions
+    function:
+      - axpy_strided_batched_ex: *axpy_ex_precision_all
+      - axpy_strided_batched_ex: *axpy_ex_precision_amd
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx_incy: *incx_incy_range

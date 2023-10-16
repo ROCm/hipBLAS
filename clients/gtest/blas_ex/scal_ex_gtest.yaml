@@ -18,18 +18,27 @@ Tests:
   - name: scal_ex_general
     category: quick
     function:
-      - scal_ex: *scal_ex_bfloat_half_single_double_complex_real_precisions
-      - scal_ex: *scal_ex_single_double_complex_real_alpha_complex_out
+      - scal_ex: *scal_ex_precision_all
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx: *incx_range
     api: [ FORTRAN, C ]
 
+  - name: scal_ex_general_amd
+    category: quick
+    function:
+      - scal_ex: *scal_ex_precision_amd
+    alpha_beta: *alpha_beta_range
+    N: *N_range
+    incx: *incx_range
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
   - name: scal_batched_ex_general
     category: quick
     function:
-      - scal_batched_ex: *scal_ex_bfloat_half_single_double_complex_real_precisions
-      - scal_batched_ex: *scal_ex_single_double_complex_real_alpha_complex_out
+      - scal_batched_ex: *scal_ex_precision_all
+      - scal_batched_ex: *scal_ex_precision_amd
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx: *incx_range
@@ -40,8 +49,8 @@ Tests:
   - name: scal_strided_batched_ex_general
     category: quick
     function:
-      - scal_strided_batched_ex: *scal_ex_bfloat_half_single_double_complex_real_precisions
-      - scal_strided_batched_ex: *scal_ex_single_double_complex_real_alpha_complex_out
+      - scal_strided_batched_ex: *scal_ex_precision_all
+      - scal_strided_batched_ex: *scal_ex_precision_amd
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx: *incx_range

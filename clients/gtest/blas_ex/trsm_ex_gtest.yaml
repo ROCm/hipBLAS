@@ -25,6 +25,7 @@ Tests:
     matrix_size: *size_range
     alpha_beta: *alpha_range
     api: [ FORTRAN, C ]
+    backend_flags: AMD
 
   - name: trsm_batched_ex_general
     category: quick
