@@ -104,10 +104,8 @@ namespace
         Ti,
         To,
         Tc,
-        std::enable_if_t<
-            !std::is_same_v<
-                Ti,
-                void> && !(std::is_same_v<Ti, Tc> && std::is_same_v<Ti, hipblasBfloat16>)>>
+        std::enable_if_t<!std::is_same_v<Ti, void>
+                         && !(std::is_same_v<Ti, Tc> && std::is_same_v<Ti, hipblasBfloat16>)>>
         : hipblas_test_valid
     {
         void operator()(const Arguments& arg)
@@ -127,7 +125,7 @@ namespace
     TEST_P(gemm_ex, blas3)
     {
         CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
-            hipblas_simple_dispatch<gemm_ex_testing>(GetParam()));
+            hipblas_gemm_dispatch<gemm_ex_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(gemm_ex);
 
@@ -135,7 +133,7 @@ namespace
     TEST_P(gemm_batched_ex, blas3)
     {
         CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
-            hipblas_simple_dispatch<gemm_ex_testing>(GetParam()));
+            hipblas_gemm_dispatch<gemm_ex_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(gemm_batched_ex);
 
@@ -143,7 +141,7 @@ namespace
     TEST_P(gemm_strided_batched_ex, blas3)
     {
         CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
-            hipblas_simple_dispatch<gemm_ex_testing>(GetParam()));
+            hipblas_gemm_dispatch<gemm_ex_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(gemm_strided_batched_ex);
 

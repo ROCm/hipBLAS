@@ -29,7 +29,6 @@ Tests:
   - name: axpy_ex_general_amd
     category: quick
     function:
-      - axpy_ex: *axpy_ex_precision_all
       - axpy_ex: *axpy_ex_precision_amd
     alpha_beta: *alpha_beta_range
     N: *N_range

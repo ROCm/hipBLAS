@@ -41,7 +41,7 @@ void testing_axpy(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyFn = FORTRAN ? hipblasAxpy<T, true> : hipblasAxpy<T, false>;
-    std::cout << "yo.\n";
+
     int N    = arg.N;
     int incx = arg.incx;
     int incy = arg.incy;

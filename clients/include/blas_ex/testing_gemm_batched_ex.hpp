@@ -46,7 +46,9 @@ using hipblasGemmBatchedExModel = ArgumentModel<e_a_type,
                                                 e_ldb,
                                                 e_beta,
                                                 e_ldc,
-                                                e_batch_count>;
+                                                e_batch_count,
+                                                e_with_flags,
+                                                e_flags>;
 
 inline void testname_gemm_batched_ex(const Arguments& arg, std::string& name)
 {

@@ -276,7 +276,7 @@ try
 
         ("compute_type_gemm",
          value<std::string>(&compute_type_gemm), "Precision of computation for gemm_ex with HIPBLAS_V2 define"
-         "Options: 16f,16f_pedantic,32f,32f_pedantic,32f_fast_16f,32f_fast_16bf,32f_fast_tf32,64f,64f_pedantic,32i,32i_pedantic")
+         "Options: c16f,c16f_pedantic,c32f,c32f_pedantic,c32f_fast_16f,c32f_fast_16bf,c32f_fast_tf32,c64f,c64f_pedantic,c32i,c32i_pedantic")
 
         ("initialization",
          value<std::string>(&initialization)->default_value("hpl"),

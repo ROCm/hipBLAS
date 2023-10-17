@@ -47,7 +47,9 @@ using hipblasGemmStridedBatchedExModel = ArgumentModel<e_a_type,
                                                        e_beta,
                                                        e_ldc,
                                                        e_stride_scale,
-                                                       e_batch_count>;
+                                                       e_batch_count,
+                                                       e_with_flags,
+                                                       e_flags>;
 // strides not logged
 
 inline void testname_gemm_strided_batched_ex(const Arguments& arg, std::string& name)

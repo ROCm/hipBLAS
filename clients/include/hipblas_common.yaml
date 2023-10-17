@@ -74,29 +74,29 @@ Datatypes:
   - hipblasComputeType_t:
       bases: [ c_int ]
       attr:
-        16f: 0
-        16f_pedantic: 1
-        32f: 2
-        32f_pedantic: 3
-        32f_fast_16f: 4
-        32f_fast_16bf: 5
-        32f_fast_tf32: 6
-        64f: 7
-        64f_pedantic: 8
-        32i: 9
-        32i_pedantic: 10
+        c16f: 0
+        c16f_pedantic: 1
+        c32f: 2
+        c32f_pedantic: 3
+        c32f_fast_16f: 4
+        c32f_fast_16bf: 5
+        c32f_fast_tf32: 6
+        c64f: 7
+        c64f_pedantic: 8
+        c32i: 9
+        c32i_pedantic: 10
       attr_v2:
-        16f: 0
-        16f_pedantic: 1
-        32f: 2
-        32f_pedantic: 3
-        32f_fast_16f: 4
-        32f_fast_16bf: 5
-        32f_fast_tf32: 6
-        64f: 7
-        64f_pedantic: 8
-        32i: 9
-        32i_pedantic: 10
+        c16f: 0
+        c16f_pedantic: 1
+        c32f: 2
+        c32f_pedantic: 3
+        c32f_fast_16f: 4
+        c32f_fast_16bf: 5
+        c32f_fast_tf32: 6
+        c64f: 7
+        c64f_pedantic: 8
+        c32i: 9
+        c32i_pedantic: 10
   - hipblas_client_os:
       bases: [ c_uint32 ]
       attr:
@@ -149,6 +149,10 @@ Real precisions: &real_precisions
     { a_type:  bf16_r, b_type:  bf16_r, c_type: f32_r, d_type: f32_r, compute_type: f32_r }
   - &hpa_half_in_single_out_precision
     { a_type: f16_r, b_type: f16_r, c_type: f32_r, d_type: f32_r, compute_type: f32_r }
+  - &single_precision_ex
+    { a_type: f32_r, b_type: f32_r, c_type: f32_r, d_type: f32_r, compute_type: f32_r, compute_type_gemm: c32f }
+  - &double_precision_ex
+    { a_type: f64_r, b_type: f64_r, c_type: f64_r, d_type: f64_r, compute_type: f64_r, compute_type_gemm: c64f }
 
 C precisions: &single_double_precisions
   - *single_precision
@@ -203,6 +207,10 @@ Complex precisions: &complex_precisions
     { a_type:  i8_c, b_type:  i8_c, c_type: i32_c, d_type: i32_c, compute_type: i32_c }
   - &hpa_bf16_precision_complex
     { a_type:  bf16_c, b_type:  bf16_c, c_type: bf16_c, d_type: bf16_c, compute_type: f32_c }
+  - &single_precision_complex_ex
+    { a_type: f32_c, b_type: f32_c, c_type: f32_c, d_type: f32_c, compute_type: f32_c, compute_type_gemm: c32f }
+  - &double_precision_complex_ex
+    { a_type: f64_c, b_type: f64_c, c_type: f64_c, d_type: f64_c, compute_type: f64_c, compute_type_gemm: c64f }
 
 Half Precision complex and real: &half_precision_complex_real
   - *half_precision
@@ -237,6 +245,12 @@ C precisions complex and real: &single_double_precisions_complex_real
   - *double_precision
   - *single_precision_complex
   - *double_precision_complex
+
+C precisions complex and real: &single_double_precisions_complex_real_gemm_ex
+  - *single_precision_ex
+  - *double_precision_ex
+  - *single_precision_complex_ex
+  - *double_precision_complex_ex
 
 C precisions complex and real and half real: &single_double_precisions_complex_real_half_real
   - *half_precision

@@ -45,7 +45,9 @@ using hipblasGemmExModel = ArgumentModel<e_a_type,
                                          e_lda,
                                          e_ldb,
                                          e_beta,
-                                         e_ldc>;
+                                         e_ldc,
+                                         e_with_flags,
+                                         e_flags>;
 
 inline void testname_gemm_ex(const Arguments& arg, std::string& name)
 {
