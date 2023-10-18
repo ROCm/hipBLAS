@@ -104,8 +104,10 @@ namespace
         Ti,
         To,
         Tc,
-        std::enable_if_t<!std::is_same_v<Ti, void>
-                         && !(std::is_same_v<Ti, Tc> && std::is_same_v<Ti, hipblasBfloat16>)>>
+        std::enable_if_t<
+            !std::is_same_v<
+                Ti,
+                void> && !(std::is_same_v<Ti, Tc> && std::is_same_v<Ti, hipblasBfloat16>)>>
         : hipblas_test_valid
     {
         void operator()(const Arguments& arg)
