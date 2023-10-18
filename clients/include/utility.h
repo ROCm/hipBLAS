@@ -226,10 +226,10 @@ constexpr double
     hipblas_type_epsilon<hipblasDoubleComplex> = std::numeric_limits<double>::epsilon();
 template <>
 constexpr double hipblas_type_epsilon<
-    hipblasHalf> = 0.0009765625; // diff between 1 and fp16 0x3C01 in double precision
+    hipblasHalf> = 0.0009765625; // in fp16 diff between 0x3C00 (1.0) and fp16 0x3C01
 template <>
 constexpr double hipblas_type_epsilon<
-    hipblasBfloat16> = 0.0078125; //diff between 1 and bf16 0x3F81 in double precision
+    hipblasBfloat16> = 0.0078125; // in bf16 diff between 0x3F80 (1.0) and bf16 0x3F81 in double precision
 
 /* ============================================================================================ */
 /*! \brief  Random number generator which generates NaN values */
