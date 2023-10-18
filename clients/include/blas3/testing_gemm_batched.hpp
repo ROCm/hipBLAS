@@ -232,8 +232,17 @@ void testing_gemm_batched(const Arguments& arg)
 
         if(arg.unit_check)
         {
-            unit_check_general<T>(M, N, batch_count, ldc, hC_copy, hC_host);
-            unit_check_general<T>(M, N, batch_count, ldc, hC_copy, hC_device);
+            if(std::is_same_v<T, hipblasHalf> && (getArchMajor() == 11))
+            {
+                const double tol = K * sum_error_tolerance_for_gfx11<T, T, T>;
+                near_check_general<T>(M, N, batch_count, ldc, hC_copy, hC_host, tol);
+                near_check_general<T>(M, N, batch_count, ldc, hC_copy, hC_device, tol);
+            }
+            else
+            {
+                unit_check_general<T>(M, N, batch_count, ldc, hC_copy, hC_host);
+                unit_check_general<T>(M, N, batch_count, ldc, hC_copy, hC_device);
+            }
         }
 
         if(arg.norm_check)

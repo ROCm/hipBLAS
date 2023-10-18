@@ -150,27 +150,27 @@ inline constexpr auto hipblas_computetype2string(hipblasComputeType_t type)
     switch(type)
     {
     case HIPBLAS_COMPUTE_16F:
-        return "16f";
+        return "c16f";
     case HIPBLAS_COMPUTE_16F_PEDANTIC:
-        return "16f_pedantic";
+        return "c16f_pedantic";
     case HIPBLAS_COMPUTE_32F:
-        return "32f";
+        return "c32f";
     case HIPBLAS_COMPUTE_32F_PEDANTIC:
-        return "32f_pedantic";
+        return "c32f_pedantic";
     case HIPBLAS_COMPUTE_32F_FAST_16F:
-        return "32f_fast_16f";
+        return "c32f_fast_16f";
     case HIPBLAS_COMPUTE_32F_FAST_16BF:
-        return "32f_fast_16Bf";
+        return "c32f_fast_16Bf";
     case HIPBLAS_COMPUTE_32F_FAST_TF32:
-        return "32f_fast_tf32";
+        return "c32f_fast_tf32";
     case HIPBLAS_COMPUTE_64F:
-        return "64f";
+        return "c64f";
     case HIPBLAS_COMPUTE_64F_PEDANTIC:
-        return "64f_pedantic";
+        return "c64f_pedantic";
     case HIPBLAS_COMPUTE_32I:
-        return "32i";
+        return "c32i";
     case HIPBLAS_COMPUTE_32I_PEDANTIC:
-        return "32i_pedantic";
+        return "c32i_pedantic";
     default:
         return "invalid";
     }

@@ -50,11 +50,6 @@ set(hipblas_test_source
   blas1/rot_gtest.cpp
   blas1/scal_gtest.cpp
   blas1/swap_gtest.cpp
-  axpy_ex_gtest.cpp
-  dot_ex_gtest.cpp
-  nrm2_ex_gtest.cpp
-  rot_ex_gtest.cpp
-  scal_ex_gtest.cpp
   blas2/gbmv_gtest.cpp
   blas2/gemv_gtest.cpp
   blas2/ger_gtest.cpp
@@ -92,8 +87,13 @@ set(hipblas_test_source
   blas3/trsm_gtest.cpp
   blas3/trmm_gtest.cpp
   blas3/trtri_gtest.cpp
-  trsm_ex_gtest.cpp
-  gemm_ex_gtest.cpp
+  blas_ex/axpy_ex_gtest.cpp
+  blas_ex/dot_ex_gtest.cpp
+  blas_ex/nrm2_ex_gtest.cpp
+  blas_ex/rot_ex_gtest.cpp
+  blas_ex/scal_ex_gtest.cpp
+  blas_ex/trsm_ex_gtest.cpp
+  blas_ex/gemm_ex_gtest.cpp
 )
 
 if( BUILD_WITH_SOLVER )
@@ -285,14 +285,16 @@ set( HIPBLAS_L3_YAML_DATA blas3/dgmm_gtest.yaml blas3/geam_gtest.yaml blas3/gemm
                           blas3/syr2k_gtest.yaml blas3/syrkx_gtest.yaml blas3/trmm_gtest.yaml
                           blas3/trsm_gtest.yaml blas3/trtri_gtest.yaml )
 
+set( HIPBLAS_EX_YAML_DATA blas_ex/axpy_ex_gtest.yaml blas_ex/dot_ex_gtest.yaml blas_ex/nrm2_ex_gtest.yaml blas_ex/rot_ex_gtest.yaml blas_ex/scal_ex_gtest.yaml blas_ex/gemm_ex_gtest.yaml blas_ex/trsm_ex_gtest.yaml )
+
 add_custom_command( OUTPUT "${HIPBLAS_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_TEST_DATA}"
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_command( OUTPUT "${HIPBLAS_V2_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_V2_TEST_DATA}" --hipblas_v2
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_target( hipblas-test-data DEPENDS "${HIPBLAS_TEST_DATA}" )

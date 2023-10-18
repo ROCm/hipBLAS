@@ -189,17 +189,17 @@ hipblasDatatype_t string2hipblas_datatype(const std::string& value)
 
 hipblasComputeType_t string2hipblas_computetype(const std::string& value)
 {
-    return value == "16f"           ? HIPBLAS_COMPUTE_16F :
-           value == "16f_pedantic"  ? HIPBLAS_COMPUTE_16F_PEDANTIC :
-           value == "32f"           ? HIPBLAS_COMPUTE_32F :
-           value == "32f_pedantic"  ? HIPBLAS_COMPUTE_32F_PEDANTIC :
-           value == "32f_fast_16f"  ? HIPBLAS_COMPUTE_32F_FAST_16F :
-           value == "32f_fast_16Bf" ? HIPBLAS_COMPUTE_32F_FAST_16BF :
-           value == "32f_fast_tf32" ? HIPBLAS_COMPUTE_32F_FAST_TF32 :
-           value == "64f"           ? HIPBLAS_COMPUTE_64F :
-           value == "64f_pedantic"  ? HIPBLAS_COMPUTE_64F_PEDANTIC :
-           value == "32i"           ? HIPBLAS_COMPUTE_32I :
-           value == "32i_pedantic"  ? HIPBLAS_COMPUTE_32I_PEDANTIC :
+    return value == "c16f"           ? HIPBLAS_COMPUTE_16F :
+           value == "c16f_pedantic"  ? HIPBLAS_COMPUTE_16F_PEDANTIC :
+           value == "c32f"           ? HIPBLAS_COMPUTE_32F :
+           value == "c32f_pedantic"  ? HIPBLAS_COMPUTE_32F_PEDANTIC :
+           value == "c32f_fast_16f"  ? HIPBLAS_COMPUTE_32F_FAST_16F :
+           value == "c32f_fast_16Bf" ? HIPBLAS_COMPUTE_32F_FAST_16BF :
+           value == "c32f_fast_tf32" ? HIPBLAS_COMPUTE_32F_FAST_TF32 :
+           value == "c64f"           ? HIPBLAS_COMPUTE_64F :
+           value == "c64f_pedantic"  ? HIPBLAS_COMPUTE_64F_PEDANTIC :
+           value == "c32i"           ? HIPBLAS_COMPUTE_32I :
+           value == "c32i_pedantic"  ? HIPBLAS_COMPUTE_32I_PEDANTIC :
            HIPBLAS_COMPUTE_32F; // Default
 }
 // clang-format on
