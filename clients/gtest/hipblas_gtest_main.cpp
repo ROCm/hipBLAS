@@ -66,52 +66,6 @@
 #define HIPBLAS_ALLOW_UNINSTANTIATED_GTEST(testclass)
 #endif
 
-struct data_driven : public testing::TestWithParam<Arguments>
-{
-    virtual void TestBody() {}
-
-    void operator()(const Arguments& arg)
-    {
-        run_bench_test(const_cast<Arguments&>(arg), 1, 0);
-    }
-
-    static bool function_filter(const Arguments& arg)
-    {
-        if(!hipblas_client_global_filters(arg))
-            return false;
-        return true;
-    }
-
-    static bool type_filter(const Arguments& arg)
-    {
-        return true;
-    }
-
-    struct PrintToStringParamName
-    {
-        std::string operator()(const testing::TestParamInfo<Arguments>& info) const
-        {
-            std::string name(info.param.category);
-
-            get_test_name(info.param, name);
-
-            // random trailer used as logged Arguments may not be unique
-            char buf[256];
-            sprintf(buf, "_%d", rand());
-            name += buf;
-
-            return name;
-        }
-    };
-};
-
-TEST_P(data_driven, yaml)
-{
-    return data_driven()(GetParam());
-}
-
-INSTANTIATE_TEST_CATEGORY(data_driven, _);
-
 static void print_version_info()
 {
     // clang-format off

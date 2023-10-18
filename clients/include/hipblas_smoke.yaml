@@ -460,15 +460,7 @@ Tests:
     function:
       #- axpy:  *half_single_precisions_complex_real
       - axpy:  *single_double_precisions_complex_real
-      - axpy_ex: *half_single_double_complex_real_precisions
-
-  - name: axpy_ex_compute_check
-    category: quick
-    N: *N_range
-    incx_incy: *incx_incy_range
-    alpha_beta: *alpha_beta_range
-    function:
-      - axpy_ex: *hpa_half_precision
+      - axpy_ex: *axpy_ex_precision_all
 
   - name: blas1_batched_with_alpha
     category: quick
@@ -509,9 +501,8 @@ Tests:
     function:
       - scal:  *single_double_precisions_complex_real
       #- scal:  *scal_ex_single_double_complex_real_alpha_complex_out
-      - scal_ex: *single_double_precisions_complex_real
+      - scal_ex: *scal_ex_precision_all
       #- scal_ex: *scal_ex_single_double_complex_real_alpha_complex_out
-      - scal_ex: *hpa_half_half_precisions
 
   - name: blas1_batched
     category: quick
@@ -523,9 +514,8 @@ Tests:
     function:
       - scal_batched: *single_double_precisions_complex_real
       #- scal_batched: *scal_ex_single_double_complex_real_alpha_complex_out
-      - scal_batched_ex: *single_double_precisions_complex_real
-      #- scal_batched_ex: *scal_ex_single_double_complex_real_alpha_complex_out
-      - scal_batched_ex: *hpa_half_half_precisions
+      - scal_batched_ex: *scal_ex_precision_all
+      - scal_batched_ex: *scal_ex_precision_amd
     backend_flags: AMD
 
   - name: blas1_strided_batched
@@ -539,9 +529,8 @@ Tests:
     function:
       - scal_strided_batched: *single_double_precisions_complex_real
       #- scal_strided_batched: *scal_ex_single_double_complex_real_alpha_complex_out
-      - scal_strided_batched_ex: *single_double_precisions_complex_real
-      #- scal_strided_batched_ex: *scal_ex_single_double_complex_real_alpha_complex_out
-      - scal_strided_batched_ex: *hpa_half_half_precisions
+      - scal_strided_batched_ex: *scal_ex_precision_all
+      - scal_strided_batched_ex: *scal_ex_precision_amd
     backend_flags: AMD
 
 # All functions with incx, no incy, no alpha
