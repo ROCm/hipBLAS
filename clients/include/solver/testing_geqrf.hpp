@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
 
 #include "testing_common.hpp"
 
-using hipblasGeqrfModel = ArgumentModel<e_M, e_N, e_lda>;
+using hipblasGeqrfModel = ArgumentModel<e_a_type, e_M, e_N, e_lda>;
 
 inline void testname_geqrf(const Arguments& arg, std::string& name)
 {
@@ -67,7 +67,7 @@ inline hipblasStatus_t setup_geqrf_testing(
 }
 
 template <typename T>
-inline hipblasStatus_t testing_geqrf_bad_arg(const Arguments& arg)
+void testing_geqrf_bad_arg(const Arguments& arg)
 {
     auto hipblasGeqrfFn = arg.fortran ? hipblasGeqrf<T, true> : hipblasGeqrf<T, false>;
 
@@ -84,45 +84,43 @@ inline hipblasStatus_t testing_geqrf_bad_arg(const Arguments& arg)
     device_vector<T> dIpiv(K);
     int              info = 0;
 
-    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS2(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, nullptr),
+    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, nullptr),
                           HIPBLAS_STATUS_INVALID_VALUE);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, -1, N, dA, lda, dIpiv, &info),
+    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, -1, N, dA, lda, dIpiv, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-1, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, -1, dA, lda, dIpiv, &info),
+    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, -1, dA, lda, dIpiv, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, nullptr, lda, dIpiv, &info),
+    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, nullptr, lda, dIpiv, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, M - 1, dIpiv, &info),
+    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, dA, M - 1, dIpiv, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info),
+    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-5, info);
 
     // If M == 0 || N == 0, A and ipiv can be nullptr
-    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, 0, N, nullptr, lda, nullptr, &info),
+    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, 0, N, nullptr, lda, nullptr, &info),
                           HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, 0, nullptr, lda, nullptr, &info),
+    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, 0, nullptr, lda, nullptr, &info),
                           HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
-
-    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
-inline hipblasStatus_t testing_geqrf(const Arguments& arg)
+void testing_geqrf(const Arguments& arg)
 {
     using U             = real_t<T>;
     bool FORTRAN        = arg.fortran;
@@ -143,7 +141,7 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || lda < std::max(1, M);
     if(invalid_size || !M || !N)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -157,16 +155,16 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
 
     double gpu_time_used, hipblas_error;
 
-    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS2(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
 
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
+    ASSERT_HIPBLAS_SUCCESS(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
 
     // Copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hA1, dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
+    ASSERT_HIP_SUCCESS(hipMemcpy(hA1, dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
+    ASSERT_HIP_SUCCESS(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -202,7 +200,7 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -210,7 +208,7 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
+            ASSERT_HIPBLAS_SUCCESS(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -221,6 +219,11 @@ inline hipblasStatus_t testing_geqrf(const Arguments& arg)
                                         ArgumentLogging::NA_value,
                                         hipblas_error);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_geqrf_ret(const Arguments& arg)
+{
+    testing_geqrf<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

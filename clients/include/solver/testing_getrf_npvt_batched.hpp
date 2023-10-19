@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,96 +28,84 @@
 
 #include "testing_common.hpp"
 
-using hipblasGetrfStridedBatchedModel = ArgumentModel<e_N, e_lda, e_stride_scale, e_batch_count>;
+using hipblasGetrfNpvtBatchedModel = ArgumentModel<e_a_type, e_N, e_lda, e_batch_count>;
 
-inline void testname_getrf_strided_batched(const Arguments& arg, std::string& name)
+inline void testname_getrf_npvt_batched(const Arguments& arg, std::string& name)
 {
-    hipblasGetrfStridedBatchedModel{}.test_name(arg, name);
+    hipblasGetrfNpvtBatchedModel{}.test_name(arg, name);
 }
 
 template <typename T>
-inline hipblasStatus_t testing_getrf_strided_batched(const Arguments& arg)
+void testing_getrf_npvt_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
     bool FORTRAN = arg.fortran;
-    auto hipblasGetrfStridedBatchedFn
-        = FORTRAN ? hipblasGetrfStridedBatched<T, true> : hipblasGetrfStridedBatched<T, false>;
+    auto hipblasGetrfBatchedFn
+        = FORTRAN ? hipblasGetrfBatched<T, true> : hipblasGetrfBatched<T, false>;
 
-    int    M            = arg.N;
-    int    N            = arg.N;
-    int    lda          = arg.lda;
-    int    batch_count  = arg.batch_count;
-    double stride_scale = arg.stride_scale;
+    int M           = arg.N;
+    int N           = arg.N;
+    int lda         = arg.lda;
+    int batch_count = arg.batch_count;
 
-    hipblasStride strideA   = size_t(lda) * N * stride_scale;
-    hipblasStride strideP   = std::min(M, N) * stride_scale;
-    size_t        A_size    = strideA * batch_count;
+    hipblasStride strideP   = std::min(M, N);
+    size_t        A_size    = size_t(lda) * N;
     size_t        Ipiv_size = strideP * batch_count;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M || batch_count < 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return;
     }
     if(batch_count == 0)
     {
-        return HIPBLAS_STATUS_SUCCESS;
+        return;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T>   hA(A_size);
-    host_vector<T>   hA1(A_size);
-    host_vector<int> hIpiv(Ipiv_size);
-    host_vector<int> hIpiv1(Ipiv_size);
-    host_vector<int> hInfo(batch_count);
-    host_vector<int> hInfo1(batch_count);
+    host_batch_vector<T> hA(A_size, 1, batch_count);
+    host_batch_vector<T> hA1(A_size, 1, batch_count);
+    host_vector<int>     hIpiv(Ipiv_size);
+    host_vector<int>     hInfo(batch_count);
+    host_vector<int>     hInfo1(batch_count);
 
-    device_vector<T>   dA(A_size);
-    device_vector<int> dIpiv(Ipiv_size);
-    device_vector<int> dInfo(batch_count);
+    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_vector<int>     dInfo(batch_count);
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
-    srand(1);
+    hipblas_init(hA, true);
     for(int b = 0; b < batch_count; b++)
     {
-        T* hAb = hA.data() + b * strideA;
-
-        hipblas_init<T>(hAb, M, N, lda);
-
         // scale A to avoid singularities
         for(int i = 0; i < M; i++)
         {
             for(int j = 0; j < N; j++)
             {
                 if(i == j)
-                    hAb[i + j * lda] += 400;
+                    hA[b][i + j * lda] += 400;
                 else
-                    hAb[i + j * lda] -= 4;
+                    hA[b][i + j * lda] -= 4;
             }
         }
     }
 
-    // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(int)));
-    CHECK_HIP_ERROR(hipMemset(dInfo, 0, batch_count * sizeof(int)));
+    ASSERT_HIP_SUCCESS(dA.transfer_from(hA));
+    ASSERT_HIP_SUCCESS(hipMemset(dInfo, 0, batch_count * sizeof(int)));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasGetrfStridedBatchedFn(
-            handle, N, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count));
+        ASSERT_HIPBLAS_SUCCESS(
+            hipblasGetrfBatchedFn(handle, N, dA.ptr_on_device(), lda, nullptr, dInfo, batch_count));
 
         // Copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(
-            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(
+        ASSERT_HIP_SUCCESS(hA1.transfer_from(dA));
+        ASSERT_HIP_SUCCESS(
             hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -125,11 +113,10 @@ inline hipblasStatus_t testing_getrf_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            hInfo[b] = cblas_getrf(M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP);
+            hInfo[b] = cblas_getrf(M, N, hA[b], lda, hIpiv.data() + b * strideP);
         }
 
-        hipblas_error = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);
-
+        hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1, batch_count);
         if(arg.unit_check)
         {
             U      eps       = std::numeric_limits<U>::epsilon();
@@ -142,7 +129,7 @@ inline hipblasStatus_t testing_getrf_strided_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -150,18 +137,23 @@ inline hipblasStatus_t testing_getrf_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGetrfStridedBatchedFn(
-                handle, N, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count));
+            ASSERT_HIPBLAS_SUCCESS(hipblasGetrfBatchedFn(
+                handle, N, dA.ptr_on_device(), lda, nullptr, dInfo, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasGetrfStridedBatchedModel{}.log_args<T>(std::cout,
-                                                      arg,
-                                                      gpu_time_used,
-                                                      getrf_gflop_count<T>(N, M),
-                                                      ArgumentLogging::NA_value,
-                                                      hipblas_error);
+        hipblasGetrfNpvtBatchedModel{}.log_args<T>(std::cout,
+                                                   arg,
+                                                   gpu_time_used,
+                                                   getrf_gflop_count<T>(N, M),
+                                                   ArgumentLogging::NA_value,
+                                                   hipblas_error);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_getrf_npvt_batched_ret(const Arguments& arg)
+{
+    testing_getrf_npvt_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

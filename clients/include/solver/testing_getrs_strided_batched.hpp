@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
 #include "testing_common.hpp"
 
 using hipblasGetrsStridedBatchedModel
-    = ArgumentModel<e_N, e_lda, e_ldb, e_stride_scale, e_batch_count>;
+    = ArgumentModel<e_a_type, e_N, e_lda, e_ldb, e_stride_scale, e_batch_count>;
 
 inline void testname_getrs_strided_batched(const Arguments& arg, std::string& name)
 {
@@ -102,7 +102,7 @@ inline hipblasStatus_t setup_getrs_strided_batched_testing(host_vector<T>&     h
 }
 
 template <typename T>
-inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& arg)
+void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
 {
     auto hipblasGetrsStridedBatchedFn
         = arg.fortran ? hipblasGetrsStridedBatched<T, true> : hipblasGetrsStridedBatched<T, false>;
@@ -134,12 +134,12 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
 
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         setup_getrs_strided_batched_testing(
             hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, strideA, strideB, strideP, batch_count),
         HIPBLAS_STATUS_SUCCESS);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        N,
                                                        nrhs,
@@ -155,7 +155,7 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
                                                        batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        -1,
                                                        nrhs,
@@ -172,7 +172,7 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        N,
                                                        -1,
@@ -189,7 +189,7 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        N,
                                                        nrhs,
@@ -206,7 +206,7 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        N,
                                                        nrhs,
@@ -223,7 +223,7 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-5, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        N,
                                                        nrhs,
@@ -240,7 +240,7 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-7, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        N,
                                                        nrhs,
@@ -257,7 +257,7 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-9, info);
 
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        N,
                                                        nrhs,
@@ -274,14 +274,14 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-10, info);
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsStridedBatchedFn(
             handle, op, N, nrhs, dA, lda, strideA, dIpiv, strideP, dB, ldb, strideB, &info, -1),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-13, info);
 
     // If N == 0, A, B, and ipiv can be nullptr
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        0,
                                                        nrhs,
@@ -299,7 +299,7 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
     EXPECT_EQ(0, info);
 
     // if nrhs == 0, B can be nullptr
-    EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
+    EXPECT_HIPBLAS_STATUS2(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
                                                        N,
                                                        0,
@@ -317,12 +317,10 @@ inline hipblasStatus_t testing_getrs_strided_batched_bad_arg(const Arguments& ar
     EXPECT_EQ(0, info);
 
     // can't make any assumptions about ptrs when batch_count < 0, this is handled by rocSOLVER
-
-    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
-inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
+void testing_getrs_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
     bool FORTRAN = arg.fortran;
@@ -345,11 +343,11 @@ inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
     // Check to prevent memory allocation error
     if(N < 0 || lda < N || ldb < N || batch_count < 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return;
     }
     if(batch_count == 0)
     {
-        return HIPBLAS_STATUS_SUCCESS;
+        return;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -369,7 +367,7 @@ inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         setup_getrs_strided_batched_testing(
             hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, strideA, strideB, strideP, batch_count),
         HIPBLAS_STATUS_SUCCESS);
@@ -379,7 +377,7 @@ inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasGetrsStridedBatchedFn(handle,
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetrsStridedBatchedFn(handle,
                                                          op,
                                                          N,
                                                          1,
@@ -395,8 +393,8 @@ inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
                                                          batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hB1.data(), dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(
+        ASSERT_HIP_SUCCESS(hipMemcpy(hB1.data(), dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
+        ASSERT_HIP_SUCCESS(
             hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -430,7 +428,7 @@ inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -438,7 +436,7 @@ inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGetrsStridedBatchedFn(handle,
+            ASSERT_HIPBLAS_SUCCESS(hipblasGetrsStridedBatchedFn(handle,
                                                              op,
                                                              N,
                                                              1,
@@ -462,5 +460,11 @@ inline hipblasStatus_t testing_getrs_strided_batched(const Arguments& arg)
                                                       ArgumentLogging::NA_value,
                                                       hipblas_error);
     }
+}
+
+template <typename T>
+hipblasStatus_t testing_getrs_strided_batched_ret(const Arguments& arg)
+{
+    testing_getrs_strided_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

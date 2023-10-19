@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@
 
 #include "testing_common.hpp"
 
-using hipblasGetrsBatchedModel = ArgumentModel<e_N, e_lda, e_ldb, e_batch_count>;
+using hipblasGetrsBatchedModel = ArgumentModel<e_a_type, e_N, e_lda, e_ldb, e_batch_count>;
 
 inline void testname_getrs_batched(const Arguments& arg, std::string& name)
 {
@@ -92,7 +92,7 @@ inline hipblasStatus_t setup_getrs_batched_testing(host_batch_vector<T>&   hA,
 }
 
 template <typename T>
-inline hipblasStatus_t testing_getrs_batched_bad_arg(const Arguments& arg)
+void testing_getrs_batched_bad_arg(const Arguments& arg)
 {
     auto hipblasGetrsBatchedFn
         = arg.fortran ? hipblasGetrsBatched<T, true> : hipblasGetrsBatched<T, false>;
@@ -125,47 +125,47 @@ inline hipblasStatus_t testing_getrs_batched_bad_arg(const Arguments& arg)
 
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         setup_getrs_batched_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count),
         HIPBLAS_STATUS_SUCCESS);
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(handle, op, -1, nrhs, dAp, lda, dIpiv, dBp, ldb, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(handle, op, N, -1, dAp, lda, dIpiv, dBp, ldb, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, N - 1, dIpiv, dBp, ldb, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-5, info);
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, N - 1, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-8, info);
 
     // cuBLAS returns HIPBLAS_STATUS_EXECUTION_FAILED and gives info == 0
 #ifndef __HIP_PLATFORM_NVCC__
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, ldb, &info, -1),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-10, info);
 #endif
 
     // If N == 0, A, B, and ipiv can be nullptr
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(
             handle, op, 0, nrhs, nullptr, lda, nullptr, nullptr, ldb, &info, batch_count),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
     // if nrhs == 0, B can be nullptr
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(handle, op, N, 0, dAp, lda, dIpiv, nullptr, ldb, &info, batch_count),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
@@ -174,33 +174,31 @@ inline hipblasStatus_t testing_getrs_batched_bad_arg(const Arguments& arg)
 
     // cuBLAS beckend doesn't check for nullptrs, including info, hipBLAS/rocSOLVER does
 #ifndef __HIP_PLATFORM_NVCC__
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, dIpiv, dBp, ldb, nullptr, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(
             handle, op, N, nrhs, nullptr, lda, dIpiv, dBp, ldb, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(handle, op, N, nrhs, dAp, lda, nullptr, dBp, ldb, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-6, info);
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         hipblasGetrsBatchedFn(
             handle, op, N, nrhs, dAp, lda, dIpiv, nullptr, ldb, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-7, info);
 #endif
-
-    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
-inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
+void testing_getrs_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
     bool FORTRAN = arg.fortran;
@@ -220,11 +218,11 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
     // Check to prevent memory allocation error
     if(N < 0 || lda < N || ldb < N || batch_count < 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return;
     }
     if(batch_count == 0)
     {
-        return HIPBLAS_STATUS_SUCCESS;
+        return;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -244,7 +242,7 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    EXPECT_HIPBLAS_STATUS(
+    EXPECT_HIPBLAS_STATUS2(
         setup_getrs_batched_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count),
         HIPBLAS_STATUS_SUCCESS);
 
@@ -253,7 +251,7 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasGetrsBatchedFn(handle,
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetrsBatchedFn(handle,
                                                   op,
                                                   N,
                                                   1,
@@ -266,8 +264,8 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
                                                   batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hB1.transfer_from(dB));
-        CHECK_HIP_ERROR(
+        ASSERT_HIP_SUCCESS(hB1.transfer_from(dB));
+        ASSERT_HIP_SUCCESS(
             hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -294,7 +292,7 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -302,7 +300,7 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGetrsBatchedFn(handle,
+            ASSERT_HIPBLAS_SUCCESS(hipblasGetrsBatchedFn(handle,
                                                       op,
                                                       N,
                                                       1,
@@ -323,6 +321,11 @@ inline hipblasStatus_t testing_getrs_batched(const Arguments& arg)
                                                ArgumentLogging::NA_value,
                                                hipblas_error);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_getrs_batched_ret(const Arguments& arg)
+{
+    testing_getrs_batched<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }
