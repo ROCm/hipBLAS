@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,58 +30,64 @@
 
 /* ============================================================================================ */
 
-using hipblasSetGetVectorModel = ArgumentModel<e_M, e_incx, e_incy, e_incd>;
+using hipblasSetGetMatrixModel = ArgumentModel<e_a_type, e_M, e_N, e_lda, e_ldb, e_ldc>;
 
-inline void testname_set_get_vector(const Arguments& arg, std::string& name)
+inline void testname_set_get_matrix(const Arguments& arg, std::string& name)
 {
-    hipblasSetGetVectorModel{}.test_name(arg, name);
+    hipblasSetGetMatrixModel{}.test_name(arg, name);
 }
 
 template <typename T>
-inline hipblasStatus_t testing_set_get_vector(const Arguments& arg)
+void testing_set_get_matrix(const Arguments& arg)
 {
     bool FORTRAN            = arg.fortran;
-    auto hipblasSetVectorFn = FORTRAN ? hipblasSetVectorFortran : hipblasSetVector;
-    auto hipblasGetVectorFn = FORTRAN ? hipblasGetVectorFortran : hipblasGetVector;
+    auto hipblasSetMatrixFn = FORTRAN ? hipblasSetMatrixFortran : hipblasSetMatrix;
+    auto hipblasGetMatrixFn = FORTRAN ? hipblasGetMatrixFortran : hipblasGetMatrix;
 
-    int M    = arg.M;
-    int incx = arg.incx;
-    int incy = arg.incy;
-    int incd = arg.incd;
-
-    hipblasStatus_t status     = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_set = HIPBLAS_STATUS_SUCCESS;
-    hipblasStatus_t status_get = HIPBLAS_STATUS_SUCCESS;
+    int rows = arg.rows;
+    int cols = arg.cols;
+    int lda  = arg.lda;
+    int ldb  = arg.ldb;
+    int ldc  = arg.ldc;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || incx <= 0 || incy <= 0 || incd <= 0)
+    if(rows < 0 || cols < 0 || lda <= 0 || ldb <= 0 || ldc <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hx(M * incx);
-    host_vector<T> hy(M * incy);
-    host_vector<T> hy_ref(M * incy);
+    host_vector<T> ha(cols * lda);
+    host_vector<T> hb(cols * ldb);
+    host_vector<T> hb_ref(cols * ldb);
+    host_vector<T> hc(cols * ldc);
 
-    device_vector<T> db(M * incd);
+    device_vector<T> dc(cols * ldc);
 
     double             hipblas_error = 0.0, gpu_time_used = 0.0;
     hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
     srand(1);
-    hipblas_init<T>(hx, 1, M, incx);
-    hipblas_init<T>(hy, 1, M, incy);
-    hy_ref = hy;
+    hipblas_init<T>(ha, rows, cols, lda);
+    hipblas_init<T>(hb, rows, cols, ldb);
+    hb_ref = hb;
+    for(int i = 0; i < cols * ldc; i++)
+    {
+        hc[i] = 100 + i;
+    };
+    ASSERT_HIP_SUCCESS(hipMemcpy(dc, hc.data(), sizeof(T) * ldc * cols, hipMemcpyHostToDevice));
+    for(int i = 0; i < cols * ldc; i++)
+    {
+        hc[i] = 99.0;
+    };
 
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
-
-    CHECK_HIPBLAS_ERROR(hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
+    ASSERT_HIPBLAS_SUCCESS(hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
+    ASSERT_HIPBLAS_SUCCESS(hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -90,27 +96,30 @@ inline hipblasStatus_t testing_set_get_vector(const Arguments& arg)
         =================================================================== */
 
         // reference calculation
-        for(int i = 0; i < M; i++)
+        for(int i1 = 0; i1 < rows; i1++)
         {
-            hy_ref[i * incy] = hx[i * incx];
+            for(int i2 = 0; i2 < cols; i2++)
+            {
+                hb_ref[i1 + i2 * ldb] = ha[i1 + i2 * lda];
+            }
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, incy, hy, hy_ref);
+            unit_check_general<T>(rows, cols, ldb, hb, hb_ref);
         }
         if(arg.norm_check)
         {
-            hipblas_error = norm_check_general<T>('F', 1, M, incy, hy, hy_ref);
+            hipblas_error = norm_check_general<T>('F', rows, cols, ldb, hb, hb_ref);
         }
     }
 
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -118,18 +127,25 @@ inline hipblasStatus_t testing_set_get_vector(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
-            CHECK_HIPBLAS_ERROR(hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
+            ASSERT_HIPBLAS_SUCCESS(
+                hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
+            ASSERT_HIPBLAS_SUCCESS(
+                hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasSetGetVectorModel{}.log_args<T>(std::cout,
+        hipblasSetGetMatrixModel{}.log_args<T>(std::cout,
                                                arg,
                                                gpu_time_used,
                                                ArgumentLogging::NA_value,
-                                               set_get_vector_gbyte_count<T>(M),
+                                               set_get_matrix_gbyte_count<T>(rows, cols),
                                                hipblas_error);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_set_get_matrix_ret(const Arguments& arg)
+{
+    testing_set_get_matrix<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

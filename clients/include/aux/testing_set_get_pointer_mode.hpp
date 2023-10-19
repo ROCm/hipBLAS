@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,16 @@
  * SOFTWARE.
  *
  * ************************************************************************ */
+#include "testing_common.hpp"
 
-#include "hipblas.h"
-#ifdef GOOGLE_TEST
-#include <gtest/gtest.h>
-#endif
-#include <stdexcept>
-//#include "utility.h"
+/* ============================================================================================ */
 
-using std::vector;
+inline void testname_set_get_pointer_mode(const Arguments& arg, std::string& name)
+{
+    ArgumentModel<>{}.test_name(arg, name);
+}
 
-/* =====================================================================
-README: This file contains testers to verify the correctness of
-        BLAS routines with google test
-
-        It is supposed to be played/used by advance / expert users
-        Normal users only need to get the library routines without testers
-     =================================================================== */
-
-/* =====================================================================
-     BLAS set-get_pointer_mode:
-=================================================================== */
-
-TEST(hipblas_set_pointer, hipblas_get_pointer)
+void testing_set_get_pointer_mode(const Arguments& arg)
 {
     hipblasPointerMode_t mode = HIPBLAS_POINTER_MODE_DEVICE;
 
@@ -66,4 +53,10 @@ TEST(hipblas_set_pointer, hipblas_get_pointer)
     EXPECT_EQ(HIPBLAS_POINTER_MODE_HOST, mode);
 
     hipblasDestroy(handle);
+}
+
+hipblasStatus_t testing_set_get_pointer_mode_ret(const Arguments& arg)
+{
+    testing_set_get_pointer_mode(arg);
+    return HIPBLAS_STATUS_SUCCESS;
 }

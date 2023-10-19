@@ -37,10 +37,8 @@ set(hipblas_test_source
   hipblas_gtest_main.cpp
   hipblas_test.cpp
   auxiliary_gtest.cpp
-  set_get_pointer_mode_gtest.cpp
-  set_get_vector_gtest.cpp
-  set_get_matrix_gtest.cpp
-  set_get_atomics_mode_gtest.cpp
+  aux/set_get_mode_gtest.cpp
+  aux/set_get_matrix_vector_gtest.cpp
   blas1/asum_gtest.cpp
   blas1/axpy_gtest.cpp
   blas1/copy_gtest.cpp
@@ -259,6 +257,9 @@ set_target_properties( hipblas-test PROPERTIES
 
 set( HIPBLAS_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_gtest.data")
 set( HIPBLAS_V2_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_v2_gtest.data")
+
+set( HIPBLAS_AUX_YAML_DATA aux/set_get_matrix_vector_gtest.yaml aux/set_get_mode_gtest.yaml )
+
 set( HIPBLAS_L1_YAML_DATA blas1/asum_gtest.yaml blas1/axpy_gtest.yaml blas1/copy_gtest.yaml
                           blas1/dot_gtest.yaml  blas1/iamaxmin_gtest.yaml blas1/nrm2_gtest.yaml
                           blas1/rot_gtest.yaml  blas1/scal_gtest.yaml blas1/swap_gtest.yaml )
@@ -286,12 +287,12 @@ endif()
 
 add_custom_command( OUTPUT "${HIPBLAS_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_TEST_DATA}"
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" "${HIPBLAS_SOLVER_YAML_DATA}" hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_AUX_YAML_DATA}" "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" "${HIPBLAS_SOLVER_YAML_DATA}" hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_command( OUTPUT "${HIPBLAS_V2_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_V2_TEST_DATA}" --hipblas_v2
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" "${HIPBLAS_SOLVER_YAML_DATA}" hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_AUX_YAML_DATA}" "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" "${HIPBLAS_SOLVER_YAML_DATA}" hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_target( hipblas-test-data DEPENDS "${HIPBLAS_TEST_DATA}" )

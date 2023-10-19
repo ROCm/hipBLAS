@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ inline void testname_set_get_atomics_mode(const Arguments& arg, std::string& nam
     ArgumentModel<>{}.test_name(arg, name);
 }
 
-inline hipblasStatus_t testing_set_get_atomics_mode(const Arguments& arg)
+void testing_set_get_atomics_mode(const Arguments& arg)
 {
     bool FORTRAN                 = arg.fortran;
     auto hipblasSetAtomicsModeFn = FORTRAN ? hipblasSetAtomicsModeFortran : hipblasSetAtomicsMode;
@@ -46,20 +46,24 @@ inline hipblasStatus_t testing_set_get_atomics_mode(const Arguments& arg)
 
     // Not checking default as rocBLAS defaults to allowed
     // and cuBLAS defaults to not allowed.
-    // CHECK_HIPBLAS_ERROR(hipblasGetAtomicsModeFn(handle, &mode));
+    // ASSERT_HIPBLAS_SUCCESS(hipblasGetAtomicsModeFn(handle, &mode));
 
     // EXPECT_EQ(HIPBLAS_ATOMICS_ALLOWED, mode);
 
     // Make sure set()/get() functions work
-    CHECK_HIPBLAS_ERROR(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_NOT_ALLOWED));
-    CHECK_HIPBLAS_ERROR(hipblasGetAtomicsModeFn(handle, &mode));
+    ASSERT_HIPBLAS_SUCCESS(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_NOT_ALLOWED));
+    ASSERT_HIPBLAS_SUCCESS(hipblasGetAtomicsModeFn(handle, &mode));
 
     EXPECT_EQ(HIPBLAS_ATOMICS_NOT_ALLOWED, mode);
 
-    CHECK_HIPBLAS_ERROR(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_ALLOWED));
-    CHECK_HIPBLAS_ERROR(hipblasGetAtomicsModeFn(handle, &mode));
+    ASSERT_HIPBLAS_SUCCESS(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_ALLOWED));
+    ASSERT_HIPBLAS_SUCCESS(hipblasGetAtomicsModeFn(handle, &mode));
 
     EXPECT_EQ(HIPBLAS_ATOMICS_ALLOWED, mode);
+}
 
+hipblasStatus_t testing_set_get_atomics_mode_ret(const Arguments& arg)
+{
+    testing_set_get_atomics_mode(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,30 +30,34 @@
 
 /* ============================================================================================ */
 
-using hipblasSetGetVectorAsyncModel = ArgumentModel<e_M, e_incx, e_incy, e_incd>;
+using hipblasSetGetVectorModel = ArgumentModel<e_a_type, e_M, e_incx, e_incy, e_incd>;
 
-inline void testname_set_get_vector_async(const Arguments& arg, std::string& name)
+inline void testname_set_get_vector(const Arguments& arg, std::string& name)
 {
-    hipblasSetGetVectorAsyncModel{}.test_name(arg, name);
+    hipblasSetGetVectorModel{}.test_name(arg, name);
 }
 
 template <typename T>
-inline hipblasStatus_t testing_set_get_vector_async(const Arguments& arg)
+void testing_set_get_vector(const Arguments& arg)
 {
-    bool FORTRAN                 = arg.fortran;
-    auto hipblasSetVectorAsyncFn = FORTRAN ? hipblasSetVectorAsyncFortran : hipblasSetVectorAsync;
-    auto hipblasGetVectorAsyncFn = FORTRAN ? hipblasGetVectorAsyncFortran : hipblasGetVectorAsync;
+    bool FORTRAN            = arg.fortran;
+    auto hipblasSetVectorFn = FORTRAN ? hipblasSetVectorFortran : hipblasSetVector;
+    auto hipblasGetVectorFn = FORTRAN ? hipblasGetVectorFortran : hipblasGetVector;
 
     int M    = arg.M;
     int incx = arg.incx;
     int incy = arg.incy;
     int incd = arg.incd;
 
+    hipblasStatus_t status     = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_set = HIPBLAS_STATUS_SUCCESS;
+    hipblasStatus_t status_get = HIPBLAS_STATUS_SUCCESS;
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     if(M < 0 || incx <= 0 || incy <= 0 || incd <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -66,9 +70,6 @@ inline hipblasStatus_t testing_set_get_vector_async(const Arguments& arg)
     double             hipblas_error = 0.0, gpu_time_used = 0.0;
     hipblasLocalHandle handle(arg);
 
-    hipStream_t stream;
-    hipblasGetStream(handle, &stream);
-
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(hx, 1, M, incx);
@@ -78,12 +79,9 @@ inline hipblasStatus_t testing_set_get_vector_async(const Arguments& arg)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    CHECK_HIPBLAS_ERROR(
-        hipblasSetVectorAsyncFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd, stream));
-    CHECK_HIPBLAS_ERROR(
-        hipblasGetVectorAsyncFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy, stream));
+    ASSERT_HIPBLAS_SUCCESS(hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
 
-    CHECK_HIP_ERROR(hipStreamSynchronize(stream));
+    ASSERT_HIPBLAS_SUCCESS(hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -101,7 +99,7 @@ inline hipblasStatus_t testing_set_get_vector_async(const Arguments& arg)
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, M, incy, hy.data(), hy_ref.data());
+            unit_check_general<T>(1, M, incy, hy, hy_ref);
         }
         if(arg.norm_check)
         {
@@ -112,7 +110,7 @@ inline hipblasStatus_t testing_set_get_vector_async(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -120,20 +118,23 @@ inline hipblasStatus_t testing_set_get_vector_async(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(
-                hipblasSetVectorAsyncFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd, stream));
-            CHECK_HIPBLAS_ERROR(
-                hipblasGetVectorAsyncFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy, stream));
+            ASSERT_HIPBLAS_SUCCESS(hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
+            ASSERT_HIPBLAS_SUCCESS(hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasSetGetVectorAsyncModel{}.log_args<T>(std::cout,
-                                                    arg,
-                                                    gpu_time_used,
-                                                    ArgumentLogging::NA_value,
-                                                    set_get_vector_gbyte_count<T>(M),
-                                                    hipblas_error);
+        hipblasSetGetVectorModel{}.log_args<T>(std::cout,
+                                               arg,
+                                               gpu_time_used,
+                                               ArgumentLogging::NA_value,
+                                               set_get_vector_gbyte_count<T>(M),
+                                               hipblas_error);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_set_get_vector_ret(const Arguments& arg)
+{
+    testing_set_get_vector<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,19 +30,19 @@
 
 /* ============================================================================================ */
 
-using hipblasSetGetMatrixModel = ArgumentModel<e_M, e_N, e_lda, e_ldb, e_ldc>;
+using hipblasSetGetMatrixAsyncModel = ArgumentModel<e_a_type, e_M, e_N, e_lda, e_ldb, e_ldc>;
 
-inline void testname_set_get_matrix(const Arguments& arg, std::string& name)
+inline void testname_set_get_matrix_async(const Arguments& arg, std::string& name)
 {
-    hipblasSetGetMatrixModel{}.test_name(arg, name);
+    hipblasSetGetMatrixAsyncModel{}.test_name(arg, name);
 }
 
 template <typename T>
-inline hipblasStatus_t testing_set_get_matrix(const Arguments& arg)
+void testing_set_get_matrix_async(const Arguments& arg)
 {
-    bool FORTRAN            = arg.fortran;
-    auto hipblasSetMatrixFn = FORTRAN ? hipblasSetMatrixFortran : hipblasSetMatrix;
-    auto hipblasGetMatrixFn = FORTRAN ? hipblasGetMatrixFortran : hipblasGetMatrix;
+    bool FORTRAN                 = arg.fortran;
+    auto hipblasSetMatrixAsyncFn = FORTRAN ? hipblasSetMatrixAsyncFortran : hipblasSetMatrixAsync;
+    auto hipblasGetMatrixAsyncFn = FORTRAN ? hipblasGetMatrixAsyncFortran : hipblasGetMatrixAsync;
 
     int rows = arg.rows;
     int cols = arg.cols;
@@ -54,7 +54,7 @@ inline hipblasStatus_t testing_set_get_matrix(const Arguments& arg)
     // memory
     if(rows < 0 || cols < 0 || lda <= 0 || ldb <= 0 || ldc <= 0)
     {
-        return HIPBLAS_STATUS_INVALID_VALUE;
+        return;
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
@@ -68,6 +68,9 @@ inline hipblasStatus_t testing_set_get_matrix(const Arguments& arg)
     double             hipblas_error = 0.0, gpu_time_used = 0.0;
     hipblasLocalHandle handle(arg);
 
+    hipStream_t stream;
+    hipblasGetStream(handle, &stream);
+
     // Initial Data on CPU
     srand(1);
     hipblas_init<T>(ha, rows, cols, lda);
@@ -77,7 +80,7 @@ inline hipblasStatus_t testing_set_get_matrix(const Arguments& arg)
     {
         hc[i] = 100 + i;
     };
-    CHECK_HIP_ERROR(hipMemcpy(dc, hc.data(), sizeof(T) * ldc * cols, hipMemcpyHostToDevice));
+    ASSERT_HIP_SUCCESS(hipMemcpy(dc, hc.data(), sizeof(T) * ldc * cols, hipMemcpyHostToDevice));
     for(int i = 0; i < cols * ldc; i++)
     {
         hc[i] = 99.0;
@@ -86,8 +89,12 @@ inline hipblasStatus_t testing_set_get_matrix(const Arguments& arg)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    CHECK_HIPBLAS_ERROR(hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
-    CHECK_HIPBLAS_ERROR(hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
+    ASSERT_HIPBLAS_SUCCESS(
+        hipblasSetMatrixAsyncFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc, stream));
+    ASSERT_HIPBLAS_SUCCESS(
+        hipblasGetMatrixAsyncFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb, stream));
+
+    ASSERT_HIP_SUCCESS(hipStreamSynchronize(stream));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -119,7 +126,7 @@ inline hipblasStatus_t testing_set_get_matrix(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -127,20 +134,25 @@ inline hipblasStatus_t testing_set_get_matrix(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(
-                hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
-            CHECK_HIPBLAS_ERROR(
-                hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
+            ASSERT_HIPBLAS_SUCCESS(hipblasSetMatrixAsyncFn(
+                rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc, stream));
+            ASSERT_HIPBLAS_SUCCESS(hipblasGetMatrixAsyncFn(
+                rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb, stream));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
-        hipblasSetGetMatrixModel{}.log_args<T>(std::cout,
-                                               arg,
-                                               gpu_time_used,
-                                               ArgumentLogging::NA_value,
-                                               set_get_matrix_gbyte_count<T>(rows, cols),
-                                               hipblas_error);
+        hipblasSetGetMatrixAsyncModel{}.log_args<T>(std::cout,
+                                                    arg,
+                                                    gpu_time_used,
+                                                    ArgumentLogging::NA_value,
+                                                    set_get_matrix_gbyte_count<T>(rows, cols),
+                                                    hipblas_error);
     }
+}
 
+template <typename T>
+hipblasStatus_t testing_set_get_matrix_async_ret(const Arguments& arg)
+{
+    testing_set_get_matrix_async<T>(arg);
     return HIPBLAS_STATUS_SUCCESS;
 }

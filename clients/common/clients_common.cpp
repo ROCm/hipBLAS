@@ -43,10 +43,10 @@
 #include <string>
 #include <type_traits>
 // aux
-#include "testing_set_get_matrix.hpp"
-#include "testing_set_get_matrix_async.hpp"
-#include "testing_set_get_vector.hpp"
-#include "testing_set_get_vector_async.hpp"
+#include "aux/testing_set_get_matrix.hpp"
+#include "aux/testing_set_get_matrix_async.hpp"
+#include "aux/testing_set_get_vector.hpp"
+#include "aux/testing_set_get_vector_async.hpp"
 // blas1
 #include "blas1/testing_asum.hpp"
 #include "blas1/testing_asum_batched.hpp"
@@ -700,10 +700,10 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
 #endif
 
             // Aux
-            {"set_get_vector", testing_set_get_vector<T>},
-            {"set_get_vector_async", testing_set_get_vector_async<T>},
-            {"set_get_matrix", testing_set_get_matrix<T>},
-            {"set_get_matrix_async", testing_set_get_matrix_async<T>},
+            {"set_get_vector", testing_set_get_vector_ret<T>},
+            {"set_get_vector_async", testing_set_get_vector_async_ret<T>},
+            {"set_get_matrix", testing_set_get_matrix_ret<T>},
+            {"set_get_matrix_async", testing_set_get_matrix_async_ret<T>},
         };
         run_function(fmap, arg);
     }
