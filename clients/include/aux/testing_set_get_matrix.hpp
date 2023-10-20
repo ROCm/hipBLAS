@@ -86,8 +86,10 @@ void testing_set_get_matrix(const Arguments& arg)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    ASSERT_HIPBLAS_SUCCESS(hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
-    ASSERT_HIPBLAS_SUCCESS(hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
+    ASSERT_HIPBLAS_SUCCESS(
+        hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
+    ASSERT_HIPBLAS_SUCCESS(
+        hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
 
     if(arg.unit_check || arg.norm_check)
     {

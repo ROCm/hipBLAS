@@ -20,11 +20,11 @@
  *
  * ************************************************************************ */
 
+#include "hipblas_data.hpp"
+#include "hipblas_test.hpp"
 #include "solver/testing_getrs.hpp"
 #include "solver/testing_getrs_batched.hpp"
 #include "solver/testing_getrs_strided_batched.hpp"
-#include "hipblas_data.hpp"
-#include "hipblas_test.hpp"
 #include "type_dispatch.hpp"
 
 namespace
@@ -126,21 +126,24 @@ namespace
     using getrs = getrs_template<getrs_testing, GETRS>;
     TEST_P(getrs, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getrs_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getrs_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getrs);
 
     using getrs_batched = getrs_template<getrs_testing, GETRS_BATCHED>;
     TEST_P(getrs_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getrs_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getrs_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getrs_batched);
 
     using getrs_strided_batched = getrs_template<getrs_testing, GETRS_STRIDED_BATCHED>;
     TEST_P(getrs_strided_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getrs_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getrs_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getrs_strided_batched);
 

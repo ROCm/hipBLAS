@@ -100,7 +100,8 @@ void testing_getrf(const Arguments& arg)
 
         // Copy output from device to CPU
         ASSERT_HIP_SUCCESS(hipMemcpy(hA1, dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+        ASSERT_HIP_SUCCESS(
+            hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
         ASSERT_HIP_SUCCESS(hipMemcpy(hInfo1, dInfo, sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================

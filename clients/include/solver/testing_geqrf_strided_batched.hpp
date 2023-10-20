@@ -103,21 +103,22 @@ void testing_geqrf_strided_batched_bad_arg(const Arguments& arg)
     int              info = 0;
 
     EXPECT_HIPBLAS_STATUS2(setup_geqrf_strided_batched_testing(
-                              hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count),
-                          HIPBLAS_STATUS_SUCCESS);
+                               hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count),
+                           HIPBLAS_STATUS_SUCCESS);
+
+    EXPECT_HIPBLAS_STATUS2(
+        hipblasGeqrfStridedBatchedFn(
+            handle, M, N, dA, lda, strideA, dIpiv, strideP, nullptr, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfStridedBatchedFn(
-                              handle, M, N, dA, lda, strideA, dIpiv, strideP, nullptr, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
-
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfStridedBatchedFn(
-                              handle, -1, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                               handle, -1, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count),
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-1, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfStridedBatchedFn(
-                              handle, M, -1, dA, lda, strideA, dIpiv, strideP, &info, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                               handle, M, -1, dA, lda, strideA, dIpiv, strideP, &info, batch_count),
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
     EXPECT_HIPBLAS_STATUS2(
@@ -126,14 +127,16 @@ void testing_geqrf_strided_batched_bad_arg(const Arguments& arg)
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfStridedBatchedFn(
-                              handle, M, N, dA, M - 1, strideA, dIpiv, strideP, &info, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS2(
+        hipblasGeqrfStridedBatchedFn(
+            handle, M, N, dA, M - 1, strideA, dIpiv, strideP, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfStridedBatchedFn(
-                              handle, M, N, dA, lda, strideA, nullptr, strideP, &info, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS2(
+        hipblasGeqrfStridedBatchedFn(
+            handle, M, N, dA, lda, strideA, nullptr, strideP, &info, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-6, info);
 
     EXPECT_HIPBLAS_STATUS2(
@@ -218,8 +221,8 @@ void testing_geqrf_strided_batched(const Arguments& arg)
     double gpu_time_used, hipblas_error;
 
     EXPECT_HIPBLAS_STATUS2(setup_geqrf_strided_batched_testing(
-                              hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count),
-                          HIPBLAS_STATUS_SUCCESS);
+                               hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count),
+                           HIPBLAS_STATUS_SUCCESS);
 
     /* =====================================================================
            HIPBLAS
@@ -229,7 +232,8 @@ void testing_geqrf_strided_batched(const Arguments& arg)
 
     // Copy output from device to CPU
     ASSERT_HIP_SUCCESS(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-    ASSERT_HIP_SUCCESS(hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
+    ASSERT_HIP_SUCCESS(
+        hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
 
     if(arg.unit_check || arg.norm_check)
     {

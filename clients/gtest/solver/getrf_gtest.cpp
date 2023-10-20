@@ -20,14 +20,14 @@
  *
  * ************************************************************************ */
 
+#include "hipblas_data.hpp"
+#include "hipblas_test.hpp"
 #include "solver/testing_getrf.hpp"
 #include "solver/testing_getrf_batched.hpp"
-#include "solver/testing_getrf_strided_batched.hpp"
 #include "solver/testing_getrf_npvt.hpp"
 #include "solver/testing_getrf_npvt_batched.hpp"
 #include "solver/testing_getrf_npvt_strided_batched.hpp"
-#include "hipblas_data.hpp"
-#include "hipblas_test.hpp"
+#include "solver/testing_getrf_strided_batched.hpp"
 #include "type_dispatch.hpp"
 
 namespace
@@ -148,42 +148,48 @@ namespace
     using getrf = getrf_template<getrf_testing, GETRF>;
     TEST_P(getrf, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getrf_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getrf_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getrf);
 
     using getrf_batched = getrf_template<getrf_testing, GETRF_BATCHED>;
     TEST_P(getrf_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getrf_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getrf_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getrf_batched);
 
     using getrf_strided_batched = getrf_template<getrf_testing, GETRF_STRIDED_BATCHED>;
     TEST_P(getrf_strided_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getrf_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getrf_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getrf_strided_batched);
 
     using getrf_npvt = getrf_template<getrf_testing, GETRF_NPVT>;
     TEST_P(getrf_npvt, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getrf_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getrf_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getrf_npvt);
 
     using getrf_npvt_batched = getrf_template<getrf_testing, GETRF_NPVT_BATCHED>;
     TEST_P(getrf_npvt_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getrf_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getrf_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getrf_npvt_batched);
 
     using getrf_npvt_strided_batched = getrf_template<getrf_testing, GETRF_NPVT_STRIDED_BATCHED>;
     TEST_P(getrf_npvt_strided_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getrf_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getrf_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getrf_npvt_strided_batched);
 

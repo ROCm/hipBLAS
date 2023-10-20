@@ -112,14 +112,14 @@ void testing_getri_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         ASSERT_HIPBLAS_SUCCESS(hipblasGetriBatchedFn(handle,
-                                                  N,
-                                                  dA.ptr_on_device(),
-                                                  lda,
-                                                  dIpiv,
-                                                  dC.ptr_on_device(),
-                                                  lda,
-                                                  dInfo,
-                                                  batch_count));
+                                                     N,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     dIpiv,
+                                                     dC.ptr_on_device(),
+                                                     lda,
+                                                     dInfo,
+                                                     batch_count));
 
         // Copy output from device to CPU
         ASSERT_HIP_SUCCESS(hA1.transfer_from(dC));
@@ -164,14 +164,14 @@ void testing_getri_batched(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             ASSERT_HIPBLAS_SUCCESS(hipblasGetriBatchedFn(handle,
-                                                      N,
-                                                      dA.ptr_on_device(),
-                                                      lda,
-                                                      dIpiv,
-                                                      dC.ptr_on_device(),
-                                                      lda,
-                                                      dInfo,
-                                                      batch_count));
+                                                         N,
+                                                         dA.ptr_on_device(),
+                                                         lda,
+                                                         dIpiv,
+                                                         dC.ptr_on_device(),
+                                                         lda,
+                                                         dInfo,
+                                                         batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

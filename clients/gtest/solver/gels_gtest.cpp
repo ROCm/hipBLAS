@@ -20,11 +20,11 @@
  *
  * ************************************************************************ */
 
+#include "hipblas_data.hpp"
+#include "hipblas_test.hpp"
 #include "solver/testing_gels.hpp"
 #include "solver/testing_gels_batched.hpp"
 #include "solver/testing_gels_strided_batched.hpp"
-#include "hipblas_data.hpp"
-#include "hipblas_test.hpp"
 #include "type_dispatch.hpp"
 
 namespace

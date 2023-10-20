@@ -59,22 +59,22 @@ void testing_gels_bad_arg(const Arguments& arg)
     int                info = 0;
 
     EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, dB, ldb, nullptr, dInfo),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opBad, M, N, nrhs, dA, lda, dB, ldb, &info, dInfo),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-1, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, -1, N, nrhs, dA, lda, dB, ldb, &info, dInfo),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, -1, nrhs, dA, lda, dB, ldb, &info, dInfo),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, -1, dA, lda, dB, ldb, &info, dInfo),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
     EXPECT_HIPBLAS_STATUS2(
@@ -83,7 +83,7 @@ void testing_gels_bad_arg(const Arguments& arg)
     EXPECT_EQ(-5, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, nrhs, dA, M - 1, dB, ldb, &info, dInfo),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-6, info);
 
     EXPECT_HIPBLAS_STATUS2(
@@ -103,7 +103,7 @@ void testing_gels_bad_arg(const Arguments& arg)
     EXPECT_EQ(-8, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, dB, ldb, &info, nullptr),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-10, info);
 
     // If M == 0 || N == 0, A can be nullptr
@@ -119,7 +119,7 @@ void testing_gels_bad_arg(const Arguments& arg)
 
     // If nrhs == 0, B can be nullptr
     EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, 0, dA, lda, nullptr, ldb, &info, dInfo),
-                          HIPBLAS_STATUS_SUCCESS);
+                           HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
     // If M == 0 && N == 0, B can be nullptr

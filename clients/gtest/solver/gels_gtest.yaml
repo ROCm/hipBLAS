@@ -23,10 +23,20 @@ Tests:
     category: quick
     function: gels_batched
     precision: *single_double_precisions_complex_real
-    transA: [ 'N', 'T', 'C' ]
+    transA: [ 'N' ]
     matrix_size: *size_range
     batch_count: *batch_count_range
     api: [ FORTRAN, C ]
+
+  - name: gels_batched_amd
+    category: quick
+    function: gels_batched
+    precision: *single_double_precisions_complex_real
+    transA: [ 'T', 'C' ]
+    matrix_size: *size_range
+    batch_count: *batch_count_range
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
 
   - name: gels_strided_batched_general
     category: quick

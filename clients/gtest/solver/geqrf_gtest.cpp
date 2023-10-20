@@ -20,11 +20,11 @@
  *
  * ************************************************************************ */
 
+#include "hipblas_data.hpp"
+#include "hipblas_test.hpp"
 #include "solver/testing_geqrf.hpp"
 #include "solver/testing_geqrf_batched.hpp"
 #include "solver/testing_geqrf_strided_batched.hpp"
-#include "hipblas_data.hpp"
-#include "hipblas_test.hpp"
 #include "type_dispatch.hpp"
 
 namespace
@@ -126,21 +126,24 @@ namespace
     using geqrf = geqrf_template<geqrf_testing, GEQRF>;
     TEST_P(geqrf, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<geqrf_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<geqrf_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(geqrf);
 
     using geqrf_batched = geqrf_template<geqrf_testing, GEQRF_BATCHED>;
     TEST_P(geqrf_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<geqrf_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<geqrf_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(geqrf_batched);
 
     using geqrf_strided_batched = geqrf_template<geqrf_testing, GEQRF_STRIDED_BATCHED>;
     TEST_P(geqrf_strided_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<geqrf_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<geqrf_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(geqrf_strided_batched);
 

@@ -214,21 +214,24 @@ using real_t = typename real_t_impl<T>::type;
 /* =============================================================================================== */
 /* Epsilon helpers for near checks.                                                                */
 template <typename>
-constexpr double hipblas_type_epsilon = 0;
+HIPBLAS_CLANG_STATIC constexpr double hipblas_type_epsilon = 0;
 template <>
-constexpr double hipblas_type_epsilon<float> = std::numeric_limits<float>::epsilon();
+HIPBLAS_CLANG_STATIC constexpr double
+    hipblas_type_epsilon<float> = std::numeric_limits<float>::epsilon();
 template <>
-constexpr double hipblas_type_epsilon<double> = std::numeric_limits<double>::epsilon();
+HIPBLAS_CLANG_STATIC constexpr double
+    hipblas_type_epsilon<double> = std::numeric_limits<double>::epsilon();
 template <>
-constexpr double hipblas_type_epsilon<hipblasComplex> = std::numeric_limits<float>::epsilon();
+HIPBLAS_CLANG_STATIC constexpr double
+    hipblas_type_epsilon<hipblasComplex> = std::numeric_limits<float>::epsilon();
 template <>
-constexpr double
+HIPBLAS_CLANG_STATIC constexpr double
     hipblas_type_epsilon<hipblasDoubleComplex> = std::numeric_limits<double>::epsilon();
 template <>
-constexpr double hipblas_type_epsilon<
+HIPBLAS_CLANG_STATIC constexpr double hipblas_type_epsilon<
     hipblasHalf> = 0.0009765625; // in fp16 diff between 0x3C00 (1.0) and fp16 0x3C01
 template <>
-constexpr double hipblas_type_epsilon<
+HIPBLAS_CLANG_STATIC constexpr double hipblas_type_epsilon<
     hipblasBfloat16> = 0.0078125; // in bf16 diff between 0x3F80 (1.0) and bf16 0x3F81 in double precision
 
 /* ============================================================================================ */

@@ -118,8 +118,10 @@ void testing_set_get_vector(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
-            ASSERT_HIPBLAS_SUCCESS(hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
+            ASSERT_HIPBLAS_SUCCESS(
+                hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
+            ASSERT_HIPBLAS_SUCCESS(
+                hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

@@ -36,7 +36,7 @@ find_package( GTest REQUIRED )
 set(hipblas_test_source
   hipblas_gtest_main.cpp
   hipblas_test.cpp
-  auxiliary_gtest.cpp
+  aux/auxiliary_gtest.cpp
   aux/set_get_mode_gtest.cpp
   aux/set_get_matrix_vector_gtest.cpp
   blas1/asum_gtest.cpp

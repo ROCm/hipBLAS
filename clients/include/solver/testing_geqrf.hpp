@@ -87,35 +87,35 @@ void testing_geqrf_bad_arg(const Arguments& arg)
     EXPECT_HIPBLAS_STATUS2(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, nullptr),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, -1, N, dA, lda, dIpiv, &info),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-1, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, -1, dA, lda, dIpiv, &info),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, nullptr, lda, dIpiv, &info),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, dA, M - 1, dIpiv, &info),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-5, info);
 
     // If M == 0 || N == 0, A and ipiv can be nullptr
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, 0, N, nullptr, lda, nullptr, &info),
-                          HIPBLAS_STATUS_SUCCESS);
+                           HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, 0, nullptr, lda, nullptr, &info),
-                          HIPBLAS_STATUS_SUCCESS);
+                           HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 }
 

@@ -94,8 +94,9 @@ void testing_geqrf_batched_bad_arg(const Arguments& arg)
     T* const* dAp    = dA.ptr_on_device();
     T* const* dIpivp = dIpiv.ptr_on_device();
 
-    EXPECT_HIPBLAS_STATUS2(setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count),
-                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS2(
+        setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
 
     EXPECT_HIPBLAS_STATUS2(
         hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, dIpivp, nullptr, batch_count),
@@ -117,7 +118,7 @@ void testing_geqrf_batched_bad_arg(const Arguments& arg)
     EXPECT_EQ(-4, info);
 
     EXPECT_HIPBLAS_STATUS2(hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, dIpivp, &info, -1),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-7, info);
 
     // If M == 0 || N == 0, A and ipiv can be nullptr
@@ -185,8 +186,9 @@ void testing_geqrf_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error;
 
-    EXPECT_HIPBLAS_STATUS2(setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count),
-                          HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS2(
+        setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count),
+        HIPBLAS_STATUS_SUCCESS);
 
     /* =====================================================================
            HIPBLAS

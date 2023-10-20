@@ -29,7 +29,8 @@
 
 #include "testing_common.hpp"
 
-using hipblasGelsBatchedModel = ArgumentModel<e_a_type, e_transA, e_M, e_N, e_lda, e_ldb, e_batch_count>;
+using hipblasGelsBatchedModel
+    = ArgumentModel<e_a_type, e_transA, e_M, e_N, e_lda, e_ldb, e_batch_count>;
 
 inline void testname_gels_batched(const Arguments& arg, std::string& name)
 {
@@ -248,17 +249,17 @@ void testing_gels_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         ASSERT_HIPBLAS_SUCCESS(hipblasGelsBatchedFn(handle,
-                                                 trans,
-                                                 M,
-                                                 N,
-                                                 nrhs,
-                                                 dA.ptr_on_device(),
-                                                 lda,
-                                                 dB.ptr_on_device(),
-                                                 ldb,
-                                                 &info_input,
-                                                 dInfo,
-                                                 batchCount));
+                                                    trans,
+                                                    M,
+                                                    N,
+                                                    nrhs,
+                                                    dA.ptr_on_device(),
+                                                    lda,
+                                                    dB.ptr_on_device(),
+                                                    ldb,
+                                                    &info_input,
+                                                    dInfo,
+                                                    batchCount));
 
         // copy output from device to CPU
         ASSERT_HIP_SUCCESS(hB_res.transfer_from(dB));
@@ -310,17 +311,17 @@ void testing_gels_batched(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             ASSERT_HIPBLAS_SUCCESS(hipblasGelsBatchedFn(handle,
-                                                     trans,
-                                                     M,
-                                                     N,
-                                                     nrhs,
-                                                     dA.ptr_on_device(),
-                                                     lda,
-                                                     dB.ptr_on_device(),
-                                                     ldb,
-                                                     &info_input,
-                                                     dInfo,
-                                                     batchCount));
+                                                        trans,
+                                                        M,
+                                                        N,
+                                                        nrhs,
+                                                        dA.ptr_on_device(),
+                                                        lda,
+                                                        dB.ptr_on_device(),
+                                                        ldb,
+                                                        &info_input,
+                                                        dInfo,
+                                                        batchCount));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

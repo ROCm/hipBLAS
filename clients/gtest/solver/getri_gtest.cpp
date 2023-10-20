@@ -20,10 +20,10 @@
  *
  * ************************************************************************ */
 
-#include "solver/testing_getri_batched.hpp"
-#include "solver/testing_getri_npvt_batched.hpp"
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
+#include "solver/testing_getri_batched.hpp"
+#include "solver/testing_getri_npvt_batched.hpp"
 #include "type_dispatch.hpp"
 
 namespace
@@ -116,14 +116,16 @@ namespace
     using getri_batched = getri_template<getri_testing, GETRI_BATCHED>;
     TEST_P(getri_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getri_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getri_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getri_batched);
 
     using getri_npvt_batched = getri_template<getri_testing, GETRI_NPVT_BATCHED>;
     TEST_P(getri_npvt_batched, solver)
     {
-        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(hipblas_simple_dispatch<getri_testing>(GetParam()));
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(
+            hipblas_simple_dispatch<getri_testing>(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(getri_npvt_batched);
 
