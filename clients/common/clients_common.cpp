@@ -43,10 +43,10 @@
 #include <string>
 #include <type_traits>
 // aux
-#include "testing_set_get_matrix.hpp"
-#include "testing_set_get_matrix_async.hpp"
-#include "testing_set_get_vector.hpp"
-#include "testing_set_get_vector_async.hpp"
+#include "aux/testing_set_get_matrix.hpp"
+#include "aux/testing_set_get_matrix_async.hpp"
+#include "aux/testing_set_get_vector.hpp"
+#include "aux/testing_set_get_vector_async.hpp"
 // blas1
 #include "blas1/testing_asum.hpp"
 #include "blas1/testing_asum_batched.hpp"
@@ -222,23 +222,23 @@
 #include "blas_ex/testing_trsm_strided_batched_ex.hpp"
 // solver functions
 #ifdef __HIP_PLATFORM_SOLVER__
-#include "testing_gels.hpp"
-#include "testing_gels_batched.hpp"
-#include "testing_gels_strided_batched.hpp"
-#include "testing_geqrf.hpp"
-#include "testing_geqrf_batched.hpp"
-#include "testing_geqrf_strided_batched.hpp"
-#include "testing_getrf.hpp"
-#include "testing_getrf_batched.hpp"
-#include "testing_getrf_npvt.hpp"
-#include "testing_getrf_npvt_batched.hpp"
-#include "testing_getrf_npvt_strided_batched.hpp"
-#include "testing_getrf_strided_batched.hpp"
-#include "testing_getri_batched.hpp"
-#include "testing_getri_npvt_batched.hpp"
-#include "testing_getrs.hpp"
-#include "testing_getrs_batched.hpp"
-#include "testing_getrs_strided_batched.hpp"
+#include "solver/testing_gels.hpp"
+#include "solver/testing_gels_batched.hpp"
+#include "solver/testing_gels_strided_batched.hpp"
+#include "solver/testing_geqrf.hpp"
+#include "solver/testing_geqrf_batched.hpp"
+#include "solver/testing_geqrf_strided_batched.hpp"
+#include "solver/testing_getrf.hpp"
+#include "solver/testing_getrf_batched.hpp"
+#include "solver/testing_getrf_npvt.hpp"
+#include "solver/testing_getrf_npvt_batched.hpp"
+#include "solver/testing_getrf_npvt_strided_batched.hpp"
+#include "solver/testing_getrf_strided_batched.hpp"
+#include "solver/testing_getri_batched.hpp"
+#include "solver/testing_getri_npvt_batched.hpp"
+#include "solver/testing_getrs.hpp"
+#include "solver/testing_getrs_batched.hpp"
+#include "solver/testing_getrs_strided_batched.hpp"
 #endif
 
 #include "utility.h"
@@ -680,30 +680,30 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex_ret<T>},
 
 #ifdef __HIP_PLATFORM_SOLVER__
-            {"geqrf", testing_geqrf<T>},
-            {"geqrf_batched", testing_geqrf_batched<T>},
-            {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
-            {"getrf", testing_getrf<T>},
-            {"getrf_batched", testing_getrf_batched<T>},
-            {"getrf_strided_batched", testing_getrf_strided_batched<T>},
-            {"getrf_npvt", testing_getrf_npvt<T>},
-            {"getrf_npvt_batched", testing_getrf_npvt_batched<T>},
-            {"getrf_npvt_strided_batched", testing_getrf_npvt_strided_batched<T>},
-            {"getri_batched", testing_getri_batched<T>},
-            {"getri_npvt_batched", testing_getri_npvt_batched<T>},
-            {"getrs", testing_getrs<T>},
-            {"getrs_batched", testing_getrs_batched<T>},
-            {"getrs_strided_batched", testing_getrs_strided_batched<T>},
-            {"gels", testing_gels<T>},
-            {"gels_batched", testing_gels_batched<T>},
-            {"gels_strided_batched", testing_gels_strided_batched<T>},
+            {"geqrf", testing_geqrf_ret<T>},
+            {"geqrf_batched", testing_geqrf_batched_ret<T>},
+            {"geqrf_strided_batched", testing_geqrf_strided_batched_ret<T>},
+            {"getrf", testing_getrf_ret<T>},
+            {"getrf_batched", testing_getrf_batched_ret<T>},
+            {"getrf_strided_batched", testing_getrf_strided_batched_ret<T>},
+            {"getrf_npvt", testing_getrf_npvt_ret<T>},
+            {"getrf_npvt_batched", testing_getrf_npvt_batched_ret<T>},
+            {"getrf_npvt_strided_batched", testing_getrf_npvt_strided_batched_ret<T>},
+            {"getri_batched", testing_getri_batched_ret<T>},
+            {"getri_npvt_batched", testing_getri_npvt_batched_ret<T>},
+            {"getrs", testing_getrs_ret<T>},
+            {"getrs_batched", testing_getrs_batched_ret<T>},
+            {"getrs_strided_batched", testing_getrs_strided_batched_ret<T>},
+            {"gels", testing_gels_ret<T>},
+            {"gels_batched", testing_gels_batched_ret<T>},
+            {"gels_strided_batched", testing_gels_strided_batched_ret<T>},
 #endif
 
             // Aux
-            {"set_get_vector", testing_set_get_vector<T>},
-            {"set_get_vector_async", testing_set_get_vector_async<T>},
-            {"set_get_matrix", testing_set_get_matrix<T>},
-            {"set_get_matrix_async", testing_set_get_matrix_async<T>},
+            {"set_get_vector", testing_set_get_vector_ret<T>},
+            {"set_get_vector_async", testing_set_get_vector_async_ret<T>},
+            {"set_get_matrix", testing_set_get_matrix_ret<T>},
+            {"set_get_matrix_async", testing_set_get_matrix_async_ret<T>},
         };
         run_function(fmap, arg);
     }
@@ -902,23 +902,23 @@ struct perf_blas<
             {"trmm_strided_batched", testing_trmm_strided_batched_ret<T>},
 
 #ifdef __HIP_PLATFORM_SOLVER__
-            {"geqrf", testing_geqrf<T>},
-            {"geqrf_batched", testing_geqrf_batched<T>},
-            {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
-            {"getrf", testing_getrf<T>},
-            {"getrf_batched", testing_getrf_batched<T>},
-            {"getrf_strided_batched", testing_getrf_strided_batched<T>},
-            {"getrf_npvt", testing_getrf_npvt<T>},
-            {"getrf_npvt_batched", testing_getrf_npvt_batched<T>},
-            {"getrf_npvt_strided_batched", testing_getrf_npvt_strided_batched<T>},
-            {"getri_batched", testing_getri_batched<T>},
-            {"getri_npvt_batched", testing_getri_npvt_batched<T>},
-            {"getrs", testing_getrs<T>},
-            {"getrs_batched", testing_getrs_batched<T>},
-            {"getrs_strided_batched", testing_getrs_strided_batched<T>},
-            {"gels", testing_gels<T>},
-            {"gels_batched", testing_gels_batched<T>},
-            {"gels_strided_batched", testing_gels_strided_batched<T>},
+            {"geqrf", testing_geqrf_ret<T>},
+            {"geqrf_batched", testing_geqrf_batched_ret<T>},
+            {"geqrf_strided_batched", testing_geqrf_strided_batched_ret<T>},
+            {"getrf", testing_getrf_ret<T>},
+            {"getrf_batched", testing_getrf_batched_ret<T>},
+            {"getrf_strided_batched", testing_getrf_strided_batched_ret<T>},
+            {"getrf_npvt", testing_getrf_npvt_ret<T>},
+            {"getrf_npvt_batched", testing_getrf_npvt_batched_ret<T>},
+            {"getrf_npvt_strided_batched", testing_getrf_npvt_strided_batched_ret<T>},
+            {"getri_batched", testing_getri_batched_ret<T>},
+            {"getri_npvt_batched", testing_getri_npvt_batched_ret<T>},
+            {"getrs", testing_getrs_ret<T>},
+            {"getrs_batched", testing_getrs_batched_ret<T>},
+            {"getrs_strided_batched", testing_getrs_strided_batched_ret<T>},
+            {"gels", testing_gels_ret<T>},
+            {"gels_batched", testing_gels_batched_ret<T>},
+            {"gels_strided_batched", testing_gels_strided_batched_ret<T>},
 #endif
         };
         run_function(map, arg);

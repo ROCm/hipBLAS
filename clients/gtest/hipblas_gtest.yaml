@@ -51,3 +51,10 @@ include: blas_ex/rot_ex_gtest.yaml
 include: blas_ex/scal_ex_gtest.yaml
 include: blas_ex/gemm_ex_gtest.yaml
 include: blas_ex/trsm_ex_gtest.yaml
+include: solver/gels_gtest.yaml
+include: solver/geqrf_gtest.yaml
+include: solver/getrf_gtest.yaml
+include: solver/getri_gtest.yaml
+include: solver/getrs_gtest.yaml
+include: aux/set_get_matrix_vector_gtest.yaml
+include: aux/set_get_mode_gtest.yaml
