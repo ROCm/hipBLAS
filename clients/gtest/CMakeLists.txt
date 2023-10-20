@@ -36,11 +36,9 @@ find_package( GTest REQUIRED )
 set(hipblas_test_source
   hipblas_gtest_main.cpp
   hipblas_test.cpp
-  auxiliary_gtest.cpp
-  set_get_pointer_mode_gtest.cpp
-  set_get_vector_gtest.cpp
-  set_get_matrix_gtest.cpp
-  set_get_atomics_mode_gtest.cpp
+  aux/auxiliary_gtest.cpp
+  aux/set_get_mode_gtest.cpp
+  aux/set_get_matrix_vector_gtest.cpp
   blas1/asum_gtest.cpp
   blas1/axpy_gtest.cpp
   blas1/copy_gtest.cpp
@@ -98,19 +96,11 @@ set(hipblas_test_source
 
 if( BUILD_WITH_SOLVER )
   set( hipblas_solver_test_source
-    getrf_gtest.cpp
-    getrf_batched_gtest.cpp
-    getrf_strided_batched_gtest.cpp
-    getrs_gtest.cpp
-    getrs_batched_gtest.cpp
-    getrs_strided_batched_gtest.cpp
-    getri_batched_gtest.cpp
-    geqrf_gtest.cpp
-    geqrf_batched_gtest.cpp
-    geqrf_strided_batched_gtest.cpp
-    gels_gtest.cpp
-    gels_batched_gtest.cpp
-    gels_strided_batched_gtest.cpp
+    solver/getrf_gtest.cpp
+    solver/getrs_gtest.cpp
+    solver/getri_gtest.cpp
+    solver/geqrf_gtest.cpp
+    solver/gels_gtest.cpp
   )
 endif( )
 
@@ -267,6 +257,9 @@ set_target_properties( hipblas-test PROPERTIES
 
 set( HIPBLAS_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_gtest.data")
 set( HIPBLAS_V2_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_v2_gtest.data")
+
+set( HIPBLAS_AUX_YAML_DATA aux/set_get_matrix_vector_gtest.yaml aux/set_get_mode_gtest.yaml )
+
 set( HIPBLAS_L1_YAML_DATA blas1/asum_gtest.yaml blas1/axpy_gtest.yaml blas1/copy_gtest.yaml
                           blas1/dot_gtest.yaml  blas1/iamaxmin_gtest.yaml blas1/nrm2_gtest.yaml
                           blas1/rot_gtest.yaml  blas1/scal_gtest.yaml blas1/swap_gtest.yaml )
@@ -285,16 +278,21 @@ set( HIPBLAS_L3_YAML_DATA blas3/dgmm_gtest.yaml blas3/geam_gtest.yaml blas3/gemm
                           blas3/syr2k_gtest.yaml blas3/syrkx_gtest.yaml blas3/trmm_gtest.yaml
                           blas3/trsm_gtest.yaml blas3/trtri_gtest.yaml )
 
-set( HIPBLAS_EX_YAML_DATA blas_ex/axpy_ex_gtest.yaml blas_ex/dot_ex_gtest.yaml blas_ex/nrm2_ex_gtest.yaml blas_ex/rot_ex_gtest.yaml blas_ex/scal_ex_gtest.yaml blas_ex/gemm_ex_gtest.yaml blas_ex/trsm_ex_gtest.yaml )
+set( HIPBLAS_EX_YAML_DATA blas_ex/axpy_ex_gtest.yaml blas_ex/dot_ex_gtest.yaml blas_ex/nrm2_ex_gtest.yaml
+                          blas_ex/rot_ex_gtest.yaml blas_ex/scal_ex_gtest.yaml blas_ex/gemm_ex_gtest.yaml blas_ex/trsm_ex_gtest.yaml )
+
+if( BUILD_WITH_SOLVER )
+  set( HIPBLAS_SOLVER_YAML_DATA solver/gels_gtest.yaml solver/geqrf_gtest.yaml solver/getrf_gtest.yaml solver/getri_gtest.yaml solver/getrs_gtest.yaml )
+endif()
 
 add_custom_command( OUTPUT "${HIPBLAS_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_TEST_DATA}"
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_AUX_YAML_DATA}" "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" "${HIPBLAS_SOLVER_YAML_DATA}" hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_command( OUTPUT "${HIPBLAS_V2_TEST_DATA}"
                     COMMAND ${python} ../common/hipblas_gentest.py -I ../include hipblas_gtest.yaml -o "${HIPBLAS_V2_TEST_DATA}" --hipblas_v2
-                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" hipblas_gtest.yaml
+                    DEPENDS ../common/hipblas_gentest.py ../include/hipblas_common.yaml "${HIPBLAS_AUX_YAML_DATA}" "${HIPBLAS_L1_YAML_DATA}" "${HIPBLAS_L2_YAML_DATA}" "${HIPBLAS_L3_YAML_DATA}" "${HIPBLAS_EX_YAML_DATA}" "${HIPBLAS_SOLVER_YAML_DATA}" hipblas_gtest.yaml
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 add_custom_target( hipblas-test-data DEPENDS "${HIPBLAS_TEST_DATA}" )
