@@ -185,10 +185,3 @@ void testing_her_batched(const Arguments& arg)
                                              hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_her_batched_ret(const Arguments& arg)
-{
-    testing_her_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

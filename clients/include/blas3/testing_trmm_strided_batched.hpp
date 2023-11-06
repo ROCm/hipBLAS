@@ -539,13 +539,6 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
 }
 
 template <typename T>
-hipblasStatus_t testing_trmm_strided_batched_bad_arg_ret(const Arguments& arg)
-{
-    testing_trmm_strided_batched_bad_arg<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}
-
-template <typename T>
 void testing_trmm_strided_batched(const Arguments& arg)
 {
     auto hipblasTrmmStridedBatchedFn
@@ -757,11 +750,4 @@ void testing_trmm_strided_batched(const Arguments& arg)
                                                      hipblas_error_host,
                                                      hipblas_error_device);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_trmm_strided_batched_ret(const Arguments& arg)
-{
-    testing_trmm_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

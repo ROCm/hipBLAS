@@ -141,10 +141,3 @@ void testing_nrm2(const Arguments& arg)
                                        hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_nrm2_ret(const Arguments& arg)
-{
-    testing_nrm2<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

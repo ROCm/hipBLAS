@@ -276,10 +276,3 @@ void testing_trsm_ex(const Arguments& arg)
                                          hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_trsm_ex_ret(const Arguments& arg)
-{
-    testing_trsm_ex<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

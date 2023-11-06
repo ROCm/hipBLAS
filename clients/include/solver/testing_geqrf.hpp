@@ -220,10 +220,3 @@ void testing_geqrf(const Arguments& arg)
                                         hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_geqrf_ret(const Arguments& arg)
-{
-    testing_geqrf<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

@@ -171,17 +171,3 @@ void testing_dotc(const Arguments& arg)
 {
     testing_dot<T, true>(arg);
 }
-
-template <typename T, bool CONJ = false>
-hipblasStatus_t testing_dot_ret(const Arguments& arg)
-{
-    testing_dot<T, CONJ>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}
-
-template <typename T>
-hipblasStatus_t testing_dotc_ret(const Arguments& arg)
-{
-    testing_dotc<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

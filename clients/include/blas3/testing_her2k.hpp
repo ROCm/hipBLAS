@@ -169,10 +169,3 @@ void testing_her2k(const Arguments& arg)
                                         hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_her2k_ret(const Arguments& arg)
-{
-    testing_her2k<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

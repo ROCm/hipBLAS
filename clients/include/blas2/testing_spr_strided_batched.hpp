@@ -173,10 +173,3 @@ void testing_spr_strided_batched(const Arguments& arg)
                                                     hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_spr_strided_batched_ret(const Arguments& arg)
-{
-    testing_spr_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

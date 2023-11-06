@@ -220,10 +220,3 @@ void testing_trsv_batched(const Arguments& arg)
                                               cumulative_hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_trsv_batched_ret(const Arguments& arg)
-{
-    testing_trsv_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

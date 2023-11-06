@@ -145,10 +145,3 @@ void testing_swap_batched(const Arguments& arg)
                                               hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_swap_batched_ret(const Arguments& arg)
-{
-    testing_swap_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

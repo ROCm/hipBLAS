@@ -170,10 +170,3 @@ void testing_tbmv_batched(const Arguments& arg)
                                               hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_tbmv_batched_ret(const Arguments& arg)
-{
-    testing_tbmv_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

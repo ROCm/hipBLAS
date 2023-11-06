@@ -194,10 +194,3 @@ void testing_spr2_batched(const Arguments& arg)
                                               hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_spr2_batched_ret(const Arguments& arg)
-{
-    testing_spr2_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

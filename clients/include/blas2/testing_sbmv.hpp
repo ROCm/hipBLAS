@@ -174,10 +174,3 @@ void testing_sbmv(const Arguments& arg)
                                        hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_sbmv_ret(const Arguments& arg)
-{
-    testing_sbmv<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

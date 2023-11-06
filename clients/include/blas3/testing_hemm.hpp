@@ -164,10 +164,3 @@ void testing_hemm(const Arguments& arg)
                                        hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_hemm_ret(const Arguments& arg)
-{
-    testing_hemm<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

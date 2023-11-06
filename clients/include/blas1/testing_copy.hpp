@@ -140,10 +140,3 @@ void testing_copy(const Arguments& arg)
                                        hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_copy_ret(const Arguments& arg)
-{
-    testing_copy<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

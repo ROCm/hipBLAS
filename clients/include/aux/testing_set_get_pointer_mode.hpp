@@ -54,9 +54,3 @@ void testing_set_get_pointer_mode(const Arguments& arg)
 
     hipblasDestroy(handle);
 }
-
-hipblasStatus_t testing_set_get_pointer_mode_ret(const Arguments& arg)
-{
-    testing_set_get_pointer_mode(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

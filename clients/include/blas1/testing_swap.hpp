@@ -145,10 +145,3 @@ void testing_swap(const Arguments& arg)
                                        hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_swap_ret(const Arguments& arg)
-{
-    testing_swap<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

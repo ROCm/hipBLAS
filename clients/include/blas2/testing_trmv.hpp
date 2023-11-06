@@ -139,10 +139,3 @@ void testing_trmv(const Arguments& arg)
                                        hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_trmv_ret(const Arguments& arg)
-{
-    testing_trmv<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

@@ -226,22 +226,7 @@ void testing_dot_strided_batched(const Arguments& arg)
 }
 
 template <typename T>
-inline hipblasStatus_t testing_dotc_strided_batched(const Arguments& arg)
+void testing_dotc_strided_batched(const Arguments& arg)
 {
     testing_dot_strided_batched<T, true>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}
-
-template <typename T, bool CONJ = false>
-inline hipblasStatus_t testing_dot_strided_batched_ret(const Arguments& arg)
-{
-    testing_dot_strided_batched<T, CONJ>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}
-
-template <typename T>
-inline hipblasStatus_t testing_dotc_strided_batched_ret(const Arguments& arg)
-{
-    testing_dotc_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

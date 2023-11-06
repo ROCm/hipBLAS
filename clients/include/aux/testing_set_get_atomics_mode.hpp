@@ -61,9 +61,3 @@ void testing_set_get_atomics_mode(const Arguments& arg)
 
     EXPECT_EQ(HIPBLAS_ATOMICS_ALLOWED, mode);
 }
-
-hipblasStatus_t testing_set_get_atomics_mode_ret(const Arguments& arg)
-{
-    testing_set_get_atomics_mode(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

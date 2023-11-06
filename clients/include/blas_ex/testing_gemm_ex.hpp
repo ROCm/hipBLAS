@@ -373,10 +373,3 @@ void testing_gemm_ex(const Arguments& arg)
                                           hipblas_error_device);
     }
 }
-
-template <typename Ti, typename To = Ti, typename Tex = To>
-hipblasStatus_t testing_gemm_ex_ret(const Arguments& arg)
-{
-    testing_gemm_ex<Ti, To, Tex>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

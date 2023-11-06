@@ -258,10 +258,3 @@ void testing_getrs(const Arguments& arg)
                                         hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_getrs_ret(const Arguments& arg)
-{
-    testing_getrs<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

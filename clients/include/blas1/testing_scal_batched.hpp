@@ -139,10 +139,3 @@ void testing_scal_batched(const Arguments& arg)
                                               hipblas_error);
     }
 }
-
-template <typename T, typename U = T>
-hipblasStatus_t testing_scal_batched_ret(const Arguments& arg)
-{
-    testing_scal_batched<T, U>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

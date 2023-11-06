@@ -131,10 +131,3 @@ void testing_scal(const Arguments& arg)
                                        hipblas_error);
     }
 }
-
-template <typename T, typename U = T>
-hipblasStatus_t testing_scal_ret(const Arguments& arg)
-{
-    testing_scal<T, U>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

@@ -193,10 +193,3 @@ void testing_scal_batched_ex(const Arguments& arg)
                                                  hipblas_error_device);
     }
 }
-
-template <typename Ta, typename Tx = Ta, typename Tex = Tx>
-hipblasStatus_t testing_scal_batched_ex_ret(const Arguments& arg)
-{
-    testing_scal_batched_ex<Ta, Tx, Tex>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

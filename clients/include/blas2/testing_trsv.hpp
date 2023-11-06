@@ -190,10 +190,3 @@ void testing_trsv(const Arguments& arg)
                                        hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_trsv_ret(const Arguments& arg)
-{
-    testing_trsv<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

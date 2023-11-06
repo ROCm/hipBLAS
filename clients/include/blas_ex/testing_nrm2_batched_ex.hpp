@@ -208,10 +208,3 @@ void testing_nrm2_batched_ex(const Arguments& arg)
                                                  hipblas_error_device);
     }
 }
-
-template <typename Tx, typename Tr = Tx, typename Tex = Tr>
-hipblasStatus_t testing_nrm2_batched_ex_ret(const Arguments& arg)
-{
-    testing_nrm2_batched_ex<Tx, Tr, Tex>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

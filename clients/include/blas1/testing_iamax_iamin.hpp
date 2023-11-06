@@ -158,13 +158,6 @@ void testing_iamax(const Arguments& arg)
     testing_iamax_iamin<T, cblas_iamax<T>>(arg, hipblasIamaxFn);
 }
 
-template <typename T>
-inline hipblasStatus_t testing_iamax_ret(const Arguments& arg)
-{
-    testing_iamax<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}
-
 inline void testname_iamin(const Arguments& arg, std::string& name)
 {
     hipblasIamaxIaminModel{}.test_name(arg, name);
@@ -177,11 +170,4 @@ void testing_iamin(const Arguments& arg)
     auto hipblasIaminFn = FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;
 
     testing_iamax_iamin<T, cblas_iamin<T>>(arg, hipblasIamin<T>);
-}
-
-template <typename T>
-inline hipblasStatus_t testing_iamin_ret(const Arguments& arg)
-{
-    testing_iamin<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

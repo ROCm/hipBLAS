@@ -185,10 +185,3 @@ void testing_rot_ex(const Arguments& arg)
                                          hipblas_error_device);
     }
 }
-
-template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
-hipblasStatus_t testing_rot_ex_ret(const Arguments& arg)
-{
-    testing_rot_ex<Tx, Ty, Tcs, Tex>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

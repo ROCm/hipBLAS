@@ -199,10 +199,3 @@ void testing_ger_batched(const Arguments& arg)
                                              hipblas_error_device);
     }
 }
-
-template <typename T, bool CONJ>
-hipblasStatus_t testing_ger_batched_ret(const Arguments& arg)
-{
-    testing_ger_batched<T, CONJ>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

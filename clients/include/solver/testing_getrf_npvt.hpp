@@ -137,10 +137,3 @@ void testing_getrf_npvt(const Arguments& arg)
                                             hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_getrf_npvt_ret(const Arguments& arg)
-{
-    testing_getrf_npvt<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

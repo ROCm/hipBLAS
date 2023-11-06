@@ -163,10 +163,3 @@ void testing_syrkx(const Arguments& arg)
                                         hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_syrkx_ret(const Arguments& arg)
-{
-    testing_syrkx<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

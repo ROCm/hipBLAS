@@ -223,10 +223,3 @@ void testing_tpsv_batched(const Arguments& arg)
                                               cumulative_hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_tpsv_batched_ret(const Arguments& arg)
-{
-    testing_tpsv_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

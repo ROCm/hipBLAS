@@ -215,10 +215,3 @@ void testing_rot_strided_batched(const Arguments& arg)
                                                     hipblas_error_device);
     }
 }
-
-template <typename T, typename U = T, typename V = T>
-hipblasStatus_t testing_rot_strided_batched_ret(const Arguments& arg)
-{
-    testing_rot_strided_batched<T, U, V>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

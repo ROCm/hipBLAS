@@ -135,10 +135,3 @@ void testing_set_get_vector_async(const Arguments& arg)
                                                     hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_set_get_vector_async_ret(const Arguments& arg)
-{
-    testing_set_get_vector_async<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

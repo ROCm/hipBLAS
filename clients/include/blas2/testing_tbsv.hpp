@@ -152,10 +152,3 @@ void testing_tbsv(const Arguments& arg)
                                        hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_tbsv_ret(const Arguments& arg)
-{
-    testing_tbsv<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

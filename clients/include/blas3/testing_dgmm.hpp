@@ -169,10 +169,3 @@ void testing_dgmm(const Arguments& arg)
                                        hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_dgmm_ret(const Arguments& arg)
-{
-    testing_dgmm<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

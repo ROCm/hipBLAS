@@ -166,10 +166,3 @@ void testing_syr2(const Arguments& arg)
                                        hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_syr2_ret(const Arguments& arg)
-{
-    testing_syr2<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

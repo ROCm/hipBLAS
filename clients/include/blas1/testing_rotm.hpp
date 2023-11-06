@@ -171,10 +171,3 @@ void testing_rotm(const Arguments& arg)
                                        hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_rotm_ret(const Arguments& arg)
-{
-    testing_rotm<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

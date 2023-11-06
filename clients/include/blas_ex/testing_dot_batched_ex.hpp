@@ -256,10 +256,3 @@ void testing_dotc_batched_ex(const Arguments& arg)
 {
     testing_dot_batched_ex<Tx, Ty, Tr, Tex, true>(arg);
 }
-
-template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
-hipblasStatus_t testing_dot_batched_ex_ret(const Arguments& arg)
-{
-    testing_dot_batched_ex<Tx, Ty, Tr, Tex, CONJ>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

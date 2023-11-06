@@ -150,10 +150,3 @@ void testing_trtri(const Arguments& arg)
                                         hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_trtri_ret(const Arguments& arg)
-{
-    testing_trtri<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

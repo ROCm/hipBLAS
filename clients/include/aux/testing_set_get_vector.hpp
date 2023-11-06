@@ -133,10 +133,3 @@ void testing_set_get_vector(const Arguments& arg)
                                                hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_set_get_vector_ret(const Arguments& arg)
-{
-    testing_set_get_vector<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

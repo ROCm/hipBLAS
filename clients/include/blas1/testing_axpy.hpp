@@ -160,10 +160,3 @@ void testing_axpy(const Arguments& arg)
                                        hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_axpy_ret(const Arguments& arg)
-{
-    testing_axpy<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

@@ -176,10 +176,3 @@ void testing_symv(const Arguments& arg)
                                        hipblas_error_device);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_symv_ret(const Arguments& arg)
-{
-    testing_symv<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

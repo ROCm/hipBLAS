@@ -144,10 +144,3 @@ void testing_set_get_matrix(const Arguments& arg)
                                                hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_set_get_matrix_ret(const Arguments& arg)
-{
-    testing_set_get_matrix<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

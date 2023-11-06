@@ -216,10 +216,3 @@ void testing_tbsv_strided_batched(const Arguments& arg)
                                                      cumulative_hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_tbsv_strided_batched_ret(const Arguments& arg)
-{
-    testing_tbsv_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

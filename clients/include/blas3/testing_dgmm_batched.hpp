@@ -195,10 +195,3 @@ void testing_dgmm_batched(const Arguments& arg)
                                               hipblas_error);
     }
 }
-
-template <typename T>
-hipblasStatus_t testing_dgmm_batched_ret(const Arguments& arg)
-{
-    testing_dgmm_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}

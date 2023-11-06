@@ -173,10 +173,3 @@ void testing_axpy_ex(const Arguments& arg)
                                           hipblas_error_device);
     }
 }
-
-template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
-hipblasStatus_t testing_axpy_ex_ret(const Arguments& arg)
-{
-    testing_axpy_ex<Ta, Tx, Ty, Tex>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}
